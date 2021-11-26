@@ -1722,8 +1722,8 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
 
   // Check that content settings for different URLs get applied to the
   // correct URL. That is, setting a cookie on https://example2.com
-  // should create a host node for http://example2.com and thus content
-  // settings set on that host node should apply to http://example2.com.
+  // should create a host node for https://example2.com and thus content
+  // settings set on that host node should apply to https://example2.com.
 
   cookies_model.UpdateSearchResults(std::u16string(u"file://"));
   EXPECT_EQ("", GetDisplayedCookies(&cookies_model));
@@ -1735,7 +1735,7 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
   EXPECT_EQ("J", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
-      cookie_settings, GURL("http://example2.com"));
+      cookie_settings, GURL("https://example2.com"));
 
   cookies_model.UpdateSearchResults(std::u16string(u"example3.com"));
   EXPECT_EQ("K", GetDisplayedCookies(&cookies_model));

@@ -48,6 +48,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -177,6 +178,19 @@ LocalDataContainer* GetLocalDataContainerForNode(CookieTreeNode* node) {
   CHECK_EQ(host->GetDetailedInfo().node_type,
            CookieTreeNode::DetailedInfo::TYPE_HOST);
   return node->GetModel()->data_container();
+}
+
+bool IsHttps(net::CookieSourceScheme cookie_source_scheme) {
+  switch (cookie_source_scheme) {
+    case net::CookieSourceScheme::kSecure:
+      return true;
+    case net::CookieSourceScheme::kNonSecure:
+      return false;
+    case net::CookieSourceScheme::kUnset:
+      // Older cookies don't have a source scheme. Associate them with https
+      // since the majority of pageloads are https.
+      return true;
+  }
 }
 
 }  // namespace
@@ -1529,14 +1543,10 @@ void CookiesTreeModel::PopulateCookieInfoWithFilter(
   notifier->StartBatchUpdate();
   for (auto it = container->cookie_list_.begin();
        it != container->cookie_list_.end(); ++it) {
-    // Cookies ignore schemes, so group all HTTP and HTTPS cookies together.
-    // TODO(crbug.com/1031721): This will not be true when Scheme-Bound Cookies
-    // is implemented. Investigate whether passing it->SourceScheme() instead of
-    // false is appropriate here.
     GURL source = (it->Domain() == ".")
                       ? GURL("http://./")
                       : net::cookie_util::CookieOriginToURL(
-                            it->Domain(), false /* is_https */);
+                            it->Domain(), IsHttps(it->SourceScheme()));
 
     if (filter.empty() || (CookieTreeHostNode::TitleForUrl(source).find(
                                filter) != std::u16string::npos)) {
