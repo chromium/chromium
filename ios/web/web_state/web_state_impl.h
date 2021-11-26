@@ -44,7 +44,6 @@ class NavigationContextImpl;
 class NavigationManager;
 class SessionCertificatePolicyCacheImpl;
 class WebFrame;
-class WebUIIOS;
 
 // Implementation of WebState.
 // Generally mirrors //content's WebContents implementation.
@@ -58,17 +57,25 @@ class WebUIIOS;
 //  - SessionWindows are transient owners, passing ownership into WebControllers
 //    during session restore, and discarding owned copies of WebStateImpls after
 //    writing them out for session saves.
-class WebStateImpl : public WebState, public NavigationManagerDelegate {
+class WebStateImpl final : public WebState {
  public:
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
-  // Constructor for WebStatesImpls created for deserialized sessions
+
+  // Constructor for WebStateImpls created for deserialized sessions
   WebStateImpl(const CreateParams& params, CRWSessionStorage* session_storage);
 
   WebStateImpl(const WebStateImpl&) = delete;
   WebStateImpl& operator=(const WebStateImpl&) = delete;
 
-  ~WebStateImpl() override;
+  ~WebStateImpl() final;
+
+  // Factory function creating a WebStateImpl with a fake
+  // CRWWebViewNavigationProxy for testing.
+  static std::unique_ptr<WebStateImpl>
+  CreateWithFakeWebViewNavigationProxyForTesting(
+      const CreateParams& params,
+      id<CRWWebViewNavigationProxy> web_view_for_testing);
 
   // Gets/Sets the CRWWebController that backs this object.
   CRWWebController* GetWebController();
@@ -226,6 +233,10 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // Cancels all dialogs associated with this web_state.
   void CancelDialogs();
 
+  // Returns a CRWWebViewNavigationProxy protocol that can be used to access
+  // navigation related functions on the main WKWebView.
+  id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const;
+
   // Registers |frame| as a new web frame and notifies any observers.
   void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
 
@@ -297,110 +308,63 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
 
-  // NavigationManagerDelegate:
-  void ClearDialogs() final;
-  void RecordPageStateInNavigationItem() final;
-  void LoadCurrentItem(NavigationInitiationType type) final;
-  void LoadIfNecessary() final;
-  void Reload() final;
-  void OnNavigationItemCommitted(NavigationItem* item) final;
-  WebState* GetWebState() final;
-  void SetWebStateUserAgent(UserAgentType user_agent_type) final;
-  id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const override;
-  void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
-                               NavigationItem* item,
-                               NavigationInitiationType type,
-                               bool has_user_gesture) final;
-  void RemoveWebView() final;
-  NavigationItemImpl* GetPendingItem() final;
-
  protected:
   // WebState:
   void AddPolicyDecider(WebStatePolicyDecider* decider) final;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) final;
 
  private:
-  // Called when a dialog presented by JavaScriptDialogPresented is dismissed.
-  void JavaScriptDialogClosed();
+  // Forward-declaration of the two internal classes used to implement
+  // the "unrealized" state of the WebState. See the documentation at
+  // //docs/ios/unrealized_web_state.md for more details.
+  class RealizedWebState;
+  class SerializedData;
 
-  // Creates a WebUIIOS object for |url| that is owned by the caller. Returns
-  // nullptr if |url| does not correspond to a WebUI page.
-  std::unique_ptr<WebUIIOS> CreateWebUIIOS(const GURL& url);
+  // Type aliases for the various ObserverList or ScriptCommandCallback map
+  // used by WebStateImpl (those are reused by the RealizedWebState class).
+  using WebStateObserverList =
+      base::ObserverList<WebStateObserver, true>::Unchecked;
 
-  // Returns true if |web_controller_| has been set.
-  bool Configured() const;
+  using WebStatePolicyDeciderList =
+      base::ObserverList<WebStatePolicyDecider, true>::Unchecked;
 
-  // Notifies observers that |frame| will be removed and then removes it.
-  void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
+  using ScriptCommandCallbackMap =
+      std::map<std::string,
+               base::RepeatingCallbackList<ScriptCommandCallbackSignature>>;
 
-  // Restores session history into the navigation manager.
-  void RestoreSessionStorage(CRWSessionStorage* session_storage);
+  // Force the WebState to become realized (if in "unrealized" state) and
+  // then return a pointer to the RealizedWebState. Safe to call if the
+  // WebState is already realized.
+  RealizedWebState* RealizedState();
 
-  // Delegate, not owned by this object.
-  WebStateDelegate* delegate_ = nullptr;
-
-  // Stores whether the web state is currently loading a page.
-  bool is_loading_ = false;
-
-  // Stores whether the web state is currently being destroyed.
+  // Stores whether the web state is currently being destroyed. This is not
+  // stored in RealizedWebState/SerializedData as a WebState can be destroyed
+  // before becoming realized.
   bool is_being_destroyed_ = false;
 
-  // The CRWWebController that backs this object.
-  __strong CRWWebController* web_controller_ = nil;
-
-  // The NavigationManagerImpl that stores session info for this WebStateImpl.
-  std::unique_ptr<NavigationManagerImpl> navigation_manager_;
-
-  // The associated WebFramesManagerImpl.
-  WebFramesManagerImpl web_frames_manager_;
-
-  // The SessionCertificatePolicyCacheImpl that stores the certificate policy
-  // information for this WebStateImpl.
-  std::unique_ptr<SessionCertificatePolicyCacheImpl> certificate_policy_cache_;
-
-  // |WebUIIOS| object for the current page if it is a WebUI page that
-  // uses the web-based WebUI framework, or nullptr otherwise.
-  std::unique_ptr<WebUIIOS> web_ui_;
-
   // A list of observers notified when page state changes. Weak references.
-  base::ObserverList<WebStateObserver, true>::Unchecked observers_;
+  // This is not stored in RealizedWebState/SerializedData to allow adding
+  // observers to an "unrealized" WebState (which is required to listen for
+  // `WebStateRealized`).
+  WebStateObserverList observers_;
 
   // All the WebStatePolicyDeciders asked for navigation decision. Weak
-  // references.
-  base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
+  // references. This is not stored in RealizedWebState/SerializedData to
+  // allow adding policy decider to an "unrealized" WebState.
+  WebStatePolicyDeciderList policy_deciders_;
 
-  std::string mime_type_;
+  // Callbacks associated to command prefixes. This is not stored in
+  // RealizedWebState/SerializedData to to allow registering command
+  // callback on an "unrealized" WebState.
+  ScriptCommandCallbackMap script_command_callbacks_;
 
-  // Returned by reference.
-  std::u16string empty_string16_;
-
-  // Callbacks associated to command prefixes.
-  std::map<std::string,
-           base::RepeatingCallbackList<ScriptCommandCallbackSignature>>
-      script_command_callbacks_;
-
-  // Whether this WebState has an opener.  See
-  // WebState::CreateParams::created_with_opener_ for more details.
-  bool created_with_opener_ = false;
-
-  // The most recently restored session history that has not yet committed in
-  // the WKWebView. This is reset in OnNavigationItemCommitted().
-  __strong CRWSessionStorage* restored_session_storage_ = nil;
-
-  // Favicons URLs received in OnFaviconUrlUpdated.
-  // WebStateObserver:FaviconUrlUpdated must be called for same-document
-  // navigations, so this cache will be used to avoid running expensive favicon
-  // fetching JavaScript.
-  std::vector<FaviconURL> cached_favicon_urls_;
-
-  // Whether a JavaScript dialog is currently being presented.
-  bool running_javascript_dialog_ = false;
-
-  // The InterfaceBinder exposed by WebStateImpl. Used to handle Mojo interface
-  // requests from the main frame.
-  InterfaceBinder interface_binder_{this};
-
-  UserAgentType user_agent_type_ = UserAgentType::NONE;
+  // The instances of the two internal classes used to implement the
+  // "unrealized" state of the WebState. One important invariant is
+  // that except at all point either `pimpl_` or `saved_` is valid
+  // and not null (except right at the end of the destructor or at
+  // the beginning of the constructor).
+  std::unique_ptr<RealizedWebState> pimpl_;
+  std::unique_ptr<SerializedData> saved_;
 
   base::WeakPtrFactory<WebStateImpl> weak_factory_{this};
 };

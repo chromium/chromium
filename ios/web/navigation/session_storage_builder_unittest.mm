@@ -4,6 +4,7 @@
 
 #import "ios/web/navigation/session_storage_builder.h"
 
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
@@ -14,111 +15,105 @@
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface CRWFakeWebViewNavigationProxy : NSObject <CRWWebViewNavigationProxy>
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (void)setCurrentURL:(NSString*)currentItemURL
+         backListURLs:(NSArray<NSString*>*)backListURLs
+      forwardListURLs:(NSArray<NSString*>*)forwardListURLs;
+
+@end
+
+@implementation CRWFakeWebViewNavigationProxy {
+  NSURL* _URL;
+  CRWFakeBackForwardList* _backForwardList;
+}
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _backForwardList = [[CRWFakeBackForwardList alloc] init];
+  }
+  return self;
+}
+
+- (void)setCurrentURL:(NSString*)currentItemURL
+         backListURLs:(NSArray<NSString*>*)backListURLs
+      forwardListURLs:(NSArray<NSString*>*)forwardListURLs {
+  [_backForwardList setCurrentURL:currentItemURL
+                     backListURLs:backListURLs
+                  forwardListURLs:forwardListURLs];
+  _URL = [NSURL URLWithString:currentItemURL];
+}
+
+- (WKBackForwardList*)backForwardList {
+  return (id)_backForwardList;
+}
+
+- (NSURL*)URL {
+  return _URL;
+}
+
+@end
+
 namespace web {
 
 using wk_navigation_util::kMaxSessionSize;
 
-// WebState that provides Mock CRWWebViewNavigationProxy object.
-class WebStateWithMockProxy : public WebStateImpl {
+class SessionStorageBuilderTest : public WebTest {
  public:
-  explicit WebStateWithMockProxy(const CreateParams& params)
-      : WebStateImpl(params),
-        mock_web_view_(OCMProtocolMock(@protocol(CRWWebViewNavigationProxy))),
-        fake_wk_list_([[CRWFakeBackForwardList alloc] init]) {
-    OCMStub([mock_web_view_ backForwardList]).andReturn(fake_wk_list_);
+  SessionStorageBuilderTest() {}
+  ~SessionStorageBuilderTest() override {}
+
+  void SetUp() override {
+    WebTest::SetUp();
+
+    web_state_ = WebStateImpl::CreateWithFakeWebViewNavigationProxyForTesting(
+        WebState::CreateParams(GetBrowserState()),
+        [[CRWFakeWebViewNavigationProxy alloc] init]);
   }
 
-  id<CRWWebViewNavigationProxy> mock_web_view() { return mock_web_view_; }
+  void TearDown() override {
+    web_state_.reset();
+    WebTest::TearDown();
+  }
 
-  CRWFakeBackForwardList* fake_wk_list() { return fake_wk_list_; }
+  CRWFakeWebViewNavigationProxy* fake_web_view() {
+    return base::mac::ObjCCastStrict<CRWFakeWebViewNavigationProxy>(
+        web_state()->GetWebViewNavigationProxy());
+  }
+
+  WebStateImpl* web_state() { return web_state_.get(); }
 
  private:
-  id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const override {
-    return mock_web_view_;
-  }
-
-  id mock_web_view_ = nil;
-  CRWFakeBackForwardList* fake_wk_list_ = nil;
+  std::unique_ptr<WebStateImpl> web_state_;
 };
-
-using SessionStorageBuilderTest = WebTest;
-
-void SetNavigationItemSizedStrings(WebStateWithMockProxy& web_state,
-                                   int index,
-                                   int url_length,
-                                   int virtual_url_length,
-                                   int title_length,
-                                   int referrer_url_length) {
-  NavigationItemImpl* item =
-      web_state.GetNavigationManagerImpl().GetNavigationItemImplAtIndex(index);
-  if (url_length) {
-    NSString* url = [@"https://" stringByPaddingToLength:url_length
-                                              withString:@"a"
-                                         startingAtIndex:0];
-    item->SetURL(GURL(base::SysNSStringToUTF8(url)));
-  } else {
-    item->SetURL(GURL());
-  }
-  if (virtual_url_length) {
-    NSString* virtual_url =
-        [@"https://" stringByPaddingToLength:virtual_url_length
-                                  withString:@"b"
-                             startingAtIndex:0];
-    item->SetVirtualURL(GURL(base::SysNSStringToUTF8(virtual_url)));
-  } else {
-    item->SetVirtualURL(GURL());
-  }
-  if (title_length) {
-    NSString* title = [@"" stringByPaddingToLength:title_length
-                                        withString:@"c"
-                                   startingAtIndex:0];
-    item->SetTitle(base::SysNSStringToUTF16(title));
-  } else {
-    item->SetTitle(base::SysNSStringToUTF16(@""));
-  }
-
-  Referrer referrer;
-  if (referrer_url_length) {
-    NSString* referrer_url =
-        [@"https://" stringByPaddingToLength:referrer_url_length
-                                  withString:@"d"
-                             startingAtIndex:0];
-    referrer.url = GURL(base::SysNSStringToUTF8(referrer_url));
-  }
-  item->SetReferrer(referrer);
-}
 
 // Tests building storage for session that is longer than kMaxSessionSize with
 // last committed item at the end of the session.
 TEST_F(SessionStorageBuilderTest, BuildStorageForExtraLongSession) {
   // Create WebState with navigation item count that exceeds kMaxSessionSize.
-  WebState::CreateParams params(GetBrowserState());
-  WebStateWithMockProxy web_state(params);
-
   NSMutableArray* back_urls = [NSMutableArray array];
   for (int i = 0; i < kMaxSessionSize; i++) {
     [back_urls addObject:[NSString stringWithFormat:@"http://%d.test", i]];
   }
-  NSString* const current_url = @"http://current.test";
-  [web_state.fake_wk_list() setCurrentURL:current_url
-                             backListURLs:back_urls
-                          forwardListURLs:nil];
-  OCMStub([web_state.mock_web_view() URL])
-      .andReturn([NSURL URLWithString:current_url]);
-  NavigationManager* navigation_manager = web_state.GetNavigationManager();
+  NSString* current_url = @"http://current.test";
+  [fake_web_view() setCurrentURL:current_url
+                    backListURLs:back_urls
+                 forwardListURLs:nil];
+  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
   int original_item_count = navigation_manager->GetItemCount();
   ASSERT_EQ(kMaxSessionSize + 1, original_item_count);
 
   // Verify that storage item count does not exceed kMaxSessionSize.
   CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
-      web_state, web_state.GetNavigationManagerImpl(),
-      web_state.GetSessionCertificatePolicyCacheImpl());
+      *web_state(), web_state()->GetNavigationManagerImpl(),
+      web_state()->GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   int stored_item_count = storage.itemStorages.count;
   ASSERT_EQ(kMaxSessionSize, stored_item_count);
@@ -138,32 +133,28 @@ TEST_F(SessionStorageBuilderTest, BuildStorageForExtraLongSession) {
 // not longer than kMaxSessionSize.
 TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
   // Create WebState with navigation item count that exceeds kMaxSessionSize.
-  WebState::CreateParams params(GetBrowserState());
-  WebStateWithMockProxy web_state(params);
-
   NSMutableArray* back_urls = [NSMutableArray array];
   for (int i = 0; i < kMaxSessionSize; i++) {
     [back_urls addObject:[NSString stringWithFormat:@"http://%d.test", i]];
   }
   NSString* const current_url = @"http://current.test";
-  [web_state.fake_wk_list() setCurrentURL:current_url
-                             backListURLs:back_urls
-                          forwardListURLs:nil];
-  OCMStub([web_state.mock_web_view() URL])
-      .andReturn([NSURL URLWithString:current_url]);
-  NavigationManager* navigation_manager = web_state.GetNavigationManager();
+  [fake_web_view() setCurrentURL:current_url
+                    backListURLs:back_urls
+                 forwardListURLs:nil];
+  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
   int original_item_count = navigation_manager->GetItemCount();
   ASSERT_EQ(kMaxSessionSize + 1, original_item_count);
 
   const int kSkippedItemIndex = kMaxSessionSize - 1;
-  web_state.GetNavigationManagerImpl()
+  web_state()
+      ->GetNavigationManagerImpl()
       .GetNavigationItemImplAtIndex(kSkippedItemIndex)
       ->SetShouldSkipSerialization(true);
 
   // Verify that storage item count does not exceed kMaxSessionSize.
   CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
-      web_state, web_state.GetNavigationManagerImpl(),
-      web_state.GetSessionCertificatePolicyCacheImpl());
+      *web_state(), web_state()->GetNavigationManagerImpl(),
+      web_state()->GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   int stored_item_count = storage.itemStorages.count;
   ASSERT_EQ(kMaxSessionSize, stored_item_count);
@@ -171,7 +162,7 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
   // Verify that URLs in the storage match original URLs without skipped item.
   for (int storage_index = 0, item_index = 0;
        storage_index < kMaxSessionSize &&
-       item_index < web_state.GetNavigationManagerImpl().GetItemCount();
+       item_index < web_state()->GetNavigationManagerImpl().GetItemCount();
        storage_index++, item_index++) {
     if (item_index == kSkippedItemIndex) {
       item_index++;
@@ -188,32 +179,27 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
 // url::kMaxURLChars.
 TEST_F(SessionStorageBuilderTest, SkipLongUrls) {
   // Create WebState with navigation item count that exceeds kMaxSessionSize.
-  WebState::CreateParams params(GetBrowserState());
-  WebStateWithMockProxy web_state(params);
-
   NSString* long_url =
       [@"https://" stringByPaddingToLength:url::kMaxURLChars + 1
                                 withString:@"a"
                            startingAtIndex:0];
   NSString* normal_url = @"https://foo.test";
-  NSString* const current_url = normal_url;
-  [web_state.fake_wk_list() setCurrentURL:normal_url
-                             backListURLs:@[ long_url ]
-                          forwardListURLs:nil];
-  OCMStub([web_state.mock_web_view() URL])
-      .andReturn([NSURL URLWithString:current_url]);
-  NavigationManager* navigation_manager = web_state.GetNavigationManager();
+  [fake_web_view() setCurrentURL:normal_url
+                    backListURLs:@[ long_url ]
+                 forwardListURLs:nil];
+  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
   ASSERT_EQ(2, navigation_manager->GetItemCount());
 
-  web_state.GetNavigationManagerImpl()
+  web_state()
+      ->GetNavigationManagerImpl()
       .GetNavigationItemImplAtIndex(1)
       ->SetReferrer(web::Referrer(GURL(base::SysNSStringToUTF8(long_url)),
                                   web::ReferrerPolicy::ReferrerPolicyDefault));
 
   // Verify that storage has single item and that item does not have a referrer.
   CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
-      web_state, web_state.GetNavigationManagerImpl(),
-      web_state.GetSessionCertificatePolicyCacheImpl());
+      *web_state(), web_state()->GetNavigationManagerImpl(),
+      web_state()->GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   ASSERT_EQ(1U, storage.itemStorages.count);
 

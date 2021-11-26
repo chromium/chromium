@@ -251,7 +251,6 @@ TEST_F(CRWWebControllerTest, CancelCommittedNavigation) {
 // Tests returning pending item stored in navigation context.
 TEST_F(CRWWebControllerTest, TestPendingItem) {
   ASSERT_FALSE([web_controller() lastPendingItemForNewNavigation]);
-  ASSERT_FALSE(web_controller().webStateImpl->GetPendingItem());
 
   // Create pending item by simulating a renderer-initiated navigation.
   [navigation_delegate_ webView:mock_web_view_
@@ -259,11 +258,7 @@ TEST_F(CRWWebControllerTest, TestPendingItem) {
 
   NavigationItemImpl* item = [web_controller() lastPendingItemForNewNavigation];
 
-  // Verify that the same item is returned by NavigationManagerDelegate and
-  // CRWWebController.
   ASSERT_TRUE(item);
-  EXPECT_EQ(item, web_controller().webStateImpl->GetPendingItem());
-
   EXPECT_EQ(kTestURLString, item->GetURL());
 }
 
