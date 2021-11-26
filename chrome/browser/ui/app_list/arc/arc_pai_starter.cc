@@ -15,6 +15,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/prefs/pref_service.h"
@@ -24,8 +25,8 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryTime = base::Minutes(2);
-constexpr base::TimeDelta kMaxRetryTime = base::Minutes(30);
+constexpr base::TimeDelta kMinRetryTime = base::Minutes(10);
+constexpr base::TimeDelta kMaxRetryTime = base::Minutes(60);
 
 }  // namespace
 
@@ -52,6 +53,11 @@ ArcPaiStarter::~ArcPaiStarter() {
 std::unique_ptr<ArcPaiStarter> ArcPaiStarter::CreateIfNeeded(Profile* profile) {
   if (profile->GetPrefs()->GetBoolean(prefs::kArcPaiStarted))
     return nullptr;
+
+  // No PAI is expected for managed user.
+  if (arc::policy_util::IsAccountManaged(profile))
+    return nullptr;
+
   return std::make_unique<ArcPaiStarter>(profile);
 }
 

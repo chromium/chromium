@@ -1375,19 +1375,20 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
   scoped_refptr<extensions::Extension> arc_support_host_;
 };
 
-class ArcDefaultAppForManagedUserTest : public ArcPlayStoreAppTest {
+class ArcPlayStoreManagedUserAppTest : public ArcPlayStoreAppTest {
  public:
-  ArcDefaultAppForManagedUserTest() = default;
-  ArcDefaultAppForManagedUserTest(const ArcDefaultAppForManagedUserTest&) =
+  ArcPlayStoreManagedUserAppTest() = default;
+  ArcPlayStoreManagedUserAppTest(const ArcPlayStoreManagedUserAppTest&) =
       delete;
-  ArcDefaultAppForManagedUserTest& operator=(
-      const ArcDefaultAppForManagedUserTest&) = delete;
-  ~ArcDefaultAppForManagedUserTest() override = default;
+  ArcPlayStoreManagedUserAppTest& operator=(
+      const ArcPlayStoreManagedUserAppTest&) = delete;
+  ~ArcPlayStoreManagedUserAppTest() override = default;
 
  protected:
   bool IsEnabledByPolicy() const {
     switch (GetArcState()) {
       case ArcState::ARC_PLAY_STORE_MANAGED_AND_ENABLED:
+        return true;
       case ArcState::ARC_PLAY_STORE_MANAGED_AND_DISABLED:
       case ArcState::ARC_WITHOUT_PLAY_STORE:
         return false;
@@ -3676,7 +3677,7 @@ TEST_P(ArcDefaultAppTest, DefaultAppInstallMetrics) {
       install_histogram, /* InstallationCounterReasonEnum::DEFAULT */ 1, 1);
 }
 
-TEST_P(ArcDefaultAppForManagedUserTest, DefaultAppsForManagedUser) {
+TEST_P(ArcPlayStoreManagedUserAppTest, DefaultAppsForManagedUser) {
   const ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
 
@@ -3699,6 +3700,12 @@ TEST_P(ArcDefaultAppForManagedUserTest, DefaultAppsForManagedUser) {
   }
 }
 
+TEST_P(ArcPlayStoreManagedUserAppTest, PaiDisabledForManagedUser) {
+  arc::ArcSessionManager* const session_manager = arc::ArcSessionManager::Get();
+  ASSERT_TRUE(session_manager);
+  EXPECT_FALSE(session_manager->pai_starter());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ArcAppModelBuilderTest,
                          ::testing::ValuesIn(kUnmanagedArcStates));
@@ -3709,7 +3716,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ArcAppLauncherForDefaultAppTest,
                          ::testing::ValuesIn(kUnmanagedArcStates));
 INSTANTIATE_TEST_SUITE_P(All,
-                         ArcDefaultAppForManagedUserTest,
+                         ArcPlayStoreManagedUserAppTest,
                          ::testing::ValuesIn(kManagedArcStates));
 INSTANTIATE_TEST_SUITE_P(All,
                          ArcPlayStoreAppTest,
