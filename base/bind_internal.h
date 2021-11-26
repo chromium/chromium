@@ -48,7 +48,7 @@
 //                     signature adapters are applied.
 //  StorageTraits<> -- Type traits that determine how a bound argument is
 //                     stored in BindState.
-//  InvokeHelper<> -- Take a Functor + arguments and actully invokes it.
+//  InvokeHelper<> -- Take a Functor + arguments and actually invokes it.
 //                    Handle the differing syntaxes needed for WeakPtr<>
 //                    support.  This is separate from Invoker to avoid creating
 //                    multiple version of Invoker<>.
@@ -88,7 +88,9 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-  T* ptr_;
+  using ImplType = std::
+      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+  ImplType ptr_;
 };
 
 // Storage type for std::reference_wrapper so `BindState` can internally store
@@ -106,9 +108,9 @@ class UnretainedRefWrapper {
   T& get() const { return *ptr_; }
 
  private:
-  // This is intentionally a pointer to ensure the Big Rewrite will change this
-  // to raw_ptr.
-  T* const ptr_;
+  using ImplType = std::
+      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+  ImplType const ptr_;
 };
 
 template <typename T>
@@ -656,26 +658,15 @@ using MakeFunctorTraits = FunctorTraits<std::decay_t<Functor>>;
 // StorageTraits<>
 //
 // See description at top of file.
-template <typename T, typename SFINAE = void>
+template <typename T>
 struct StorageTraits {
   using Type = T;
 };
 
-// For T*, conditionally store as UnretainedWrapper<T> for safety. When the Big
-// Rewrite lands, UnretainedWrapper's internal T* field will be rewritten to
-// raw_ptr<T>, transitively providing safety.
-//
-// There is a bit of additional complexity here because raw_ptr<T> does not
-// support pointers to functions or pointers to Objective-C objects - this is
-// why the raw_ptr_traits::IsSupportedType needs to be consulted.
-//
-// TODO(dcheng): It should not be possible to instantiate raw_ptr<T> for
-// unsupported types, as that would allow this trait to be significantly
-// simplified.
+// For T*, store as UnretainedWrapper<T> for safety, as it internally uses
+// raw_ptr<T> (when possible).
 template <typename T>
-struct StorageTraits<
-    T*,
-    std::enable_if_t<raw_ptr_traits::IsSupportedType<T>::value>> {
+struct StorageTraits<T*> {
   using Type = UnretainedWrapper<T>;
 };
 
