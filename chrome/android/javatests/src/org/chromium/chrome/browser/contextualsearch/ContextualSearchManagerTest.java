@@ -4014,7 +4014,7 @@ public class ContextualSearchManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
+    @DisableIf.Build(message = "crbug.com/1240342")
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
