@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/page_info/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
@@ -46,6 +48,8 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace {
+
+using optimization_guide::proto::OptimizationType;
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
 class OptimizationGuideConsumerWebContentsObserver
@@ -288,8 +292,19 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 #endif
 }
 
+class OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest() {
+    feature_list_.InitWithFeatures({}, {page_info::kPageInfoAboutThisSite});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceBrowserTest,
+    OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest,
     NavigateToPageWithHintsButNoRegistrationDoesNotAttemptToLoadHint) {
   PushHintsComponentAndWaitForCompletion();
 
@@ -397,10 +412,13 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
-  // NOSCRIPT = 1, so bit mask is 10, which equals 2.
+
+  int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite))
+    expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
-      2);
+      expected_types);
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -435,10 +453,12 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
-  // NOSCRIPT = 1, so bit mask is 10, which equals 2.
+  int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite))
+    expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
-      2);
+      expected_types);
 }
 
 IN_PROC_BROWSER_TEST_F(
