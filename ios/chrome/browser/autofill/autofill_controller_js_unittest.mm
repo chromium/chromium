@@ -1913,39 +1913,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   }];
 }
 
-// TODO(crbug/1131038): Remove once using renderer IDs is launched.
 TEST_F(AutofillControllerJsTest, FillActiveFormField) {
-  LoadHtml(kHTMLForTestingElements);
-
-  NSString* newValue = @"new value";
-  EXPECT_NSEQ(newValue,
-              ExecuteJavaScript([NSString
-                  stringWithFormat:
-                      @"var element=document.getElementsByName('lastname')[0];"
-                       "element.focus();"
-                       "var "
-                       "data={\"name\":\"lastname\",\"value\":\"%@\","
-                       "\"identifier\":\"lastname\"};"
-                       "__gCrWeb.autofill.fillActiveFormField(data);"
-                       "element.value",
-                      newValue]));
-
-  EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"var element=document.getElementsByName('gl')[0];"
-                            "element.focus();"
-                            "var oldValue = element.value;"
-                            "var "
-                            "data={\"name\":\"lastname\",\"value\":\"%@\","
-                            "\"identifier\":\"lastname\"};"
-                            "__gCrWeb.autofill.fillActiveFormField(data);"
-                            "element.value === oldValue",
-                           newValue]))
-      << "A non-form element's value should changed.";
-}
-
-TEST_F(AutofillControllerJsTest, FillActiveFormFieldUsingRendererIDs) {
   LoadHtml(kHTMLForTestingElements);
 
   web::WebFrame* main_frame = WaitForMainFrame();
@@ -1965,32 +1933,30 @@ TEST_F(AutofillControllerJsTest, FillActiveFormFieldUsingRendererIDs) {
   ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
 
   NSString* newValue = @"new value";
-  EXPECT_NSEQ(
-      newValue,
-      ExecuteJavaScript([NSString
-          stringWithFormat:
-              @"var element=document.getElementsByName('lastname')[0];"
-               "element.focus();"
-               "var "
-               "data={\"name\":\"lastname\",\"value\":\"%@\","
-               "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-               "__gCrWeb.autofill.fillActiveFormFieldUsingRendererIDs(data);"
-               "element.value",
-              newValue]));
+  EXPECT_NSEQ(newValue,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:
+                      @"var element=document.getElementsByName('lastname')[0];"
+                       "element.focus();"
+                       "var "
+                       "data={\"name\":\"lastname\",\"value\":\"%@\","
+                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "__gCrWeb.autofill.fillActiveFormField(data);"
+                       "element.value",
+                      newValue]));
 
-  EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:
-              @"var element=document.getElementsByName('gl')[0];"
-               "element.focus();"
-               "var oldValue = element.value;"
-               "var "
-               "data={\"name\":\"lastname\",\"value\":\"%@\","
-               "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-               "__gCrWeb.autofill.fillActiveFormFieldUsingRendererIDs(data);"
-               "element.value === oldValue",
-              newValue]))
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:
+                      @"var element=document.getElementsByName('gl')[0];"
+                       "element.focus();"
+                       "var oldValue = element.value;"
+                       "var "
+                       "data={\"name\":\"lastname\",\"value\":\"%@\","
+                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "__gCrWeb.autofill.fillActiveFormField(data);"
+                       "element.value === oldValue",
+                      newValue]))
       << "A non-form element's value should changed.";
 }
 

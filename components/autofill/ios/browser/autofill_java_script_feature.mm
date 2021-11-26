@@ -91,19 +91,9 @@ void AutofillJavaScriptFeature::FillActiveFormField(
     std::unique_ptr<base::DictionaryValue> data,
     base::OnceCallback<void(BOOL)> callback) {
   DCHECK(data);
-
-  bool has_render_id = !!data->FindKey("unique_renderer_id");
-  bool use_renderer_ids =
-      has_render_id &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-  const std::string filling_function =
-      use_renderer_ids ? "autofill.fillActiveFormFieldUsingRendererIDs"
-                       : "autofill.fillActiveFormField";
-
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*data));
-  CallJavaScriptFunction(frame, filling_function, parameters,
+  CallJavaScriptFunction(frame, "autofill.fillActiveFormField", parameters,
                          autofill::CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
@@ -111,54 +101,31 @@ void AutofillJavaScriptFeature::FillActiveFormField(
 void AutofillJavaScriptFeature::FillForm(
     web::WebFrame* frame,
     std::unique_ptr<base::Value> data,
-    NSString* force_fill_field_identifier,
     autofill::FieldRendererId force_fill_field_unique_id,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(data);
   DCHECK(!callback.is_null());
 
-  bool use_renderer_ids = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-
-  const std::string field_string_id =
-      force_fill_field_identifier
-          ? base::SysNSStringToUTF8(force_fill_field_identifier)
-          : "null";
-  int field_numeric_id = force_fill_field_unique_id
-                             ? force_fill_field_unique_id.value()
-                             : FieldRendererId().value();
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*data));
-  parameters.push_back(base::Value(field_string_id));
-  parameters.push_back(base::Value(field_numeric_id));
-  parameters.push_back(base::Value(use_renderer_ids));
+  parameters.push_back(
+      base::Value(static_cast<int>(force_fill_field_unique_id.value())));
   CallJavaScriptFunction(frame, "autofill.fillForm", parameters,
                          autofill::CreateStringCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
-void AutofillJavaScriptFeature::ClearAutofilledFieldsForFormName(
+void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
     web::WebFrame* frame,
-    NSString* form_name,
     autofill::FormRendererId form_renderer_id,
-    NSString* field_identifier,
     autofill::FieldRendererId field_renderer_id,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(!callback.is_null());
 
-  bool use_renderer_ids = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-  int form_numeric_id =
-      form_renderer_id ? form_renderer_id.value() : FieldRendererId().value();
-  int field_numeric_id =
-      field_renderer_id ? field_renderer_id.value() : FieldRendererId().value();
-
   std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(base::SysNSStringToUTF8(form_name)));
-  parameters.push_back(base::Value(form_numeric_id));
-  parameters.push_back(base::Value(base::SysNSStringToUTF8(field_identifier)));
-  parameters.push_back(base::Value(field_numeric_id));
-  parameters.push_back(base::Value(use_renderer_ids));
+  parameters.push_back(base::Value(static_cast<int>(form_renderer_id.value())));
+  parameters.push_back(
+      base::Value(static_cast<int>(field_renderer_id.value())));
   CallJavaScriptFunction(frame, "autofill.clearAutofilledFields", parameters,
                          autofill::CreateStringCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));

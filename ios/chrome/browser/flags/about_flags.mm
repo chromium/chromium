@@ -520,11 +520,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"modern-tab-strip", flag_descriptions::kModernTabStripName,
      flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kModernTabStrip)},
-    {"autofill-use-renderer-ids",
-     flag_descriptions::kAutofillUseRendererIDsName,
-     flag_descriptions::kAutofillUseRendererIDsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUseUniqueRendererIDsOnIOS)},
     {"minutes-delay-to-restore-gaia-cookies-if-deleted",
      flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieName,
      flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieDescription,

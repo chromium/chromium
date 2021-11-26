@@ -170,13 +170,13 @@ using autofill::FieldRendererId;
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, base::SysNSStringToUTF8(frameID));
   autofill::AutofillJavaScriptFeature::GetInstance()
-      ->ClearAutofilledFieldsForFormName(
-          frame, formName, _lastFormActivityUniqueFormID, fieldIdentifier,
-          _lastFormActivityUniqueFieldID, base::BindOnce(^(NSString*) {
-            if (completionHandler) {
-              completionHandler();
-            }
-          }));
+      ->ClearAutofilledFieldsForForm(frame, _lastFormActivityUniqueFormID,
+                                     _lastFormActivityUniqueFieldID,
+                                     base::BindOnce(^(NSString*) {
+                                       if (completionHandler) {
+                                         completionHandler();
+                                       }
+                                     }));
 }
 
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName

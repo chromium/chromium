@@ -464,12 +464,6 @@ const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 #if defined(OS_IOS)
-// Controls whether or not autofill uses numeric renderer IDs instead of string
-// form and field identifiers in filling logic.
-// TODO(crbug/1131038): Remove once it's launched.
-const base::Feature kAutofillUseUniqueRendererIDsOnIOS{
-    "AutofillUseUniqueRendererIDsOnIOS", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether the creation of new address profiles is enabled in settings
 // on IOS.
 // TODO(crbug/1167105): Remove once it's launched.

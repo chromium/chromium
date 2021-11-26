@@ -65,7 +65,8 @@ using base::UmaHistogramEnumeration;
 @property(nonatomic, assign) std::string lastFocusedElementFrameIdentifier;
 
 // The last seen focused element identifier.
-@property(nonatomic, assign) std::string lastFocusedElementIdentifier;
+@property(nonatomic, assign)
+    autofill::FieldRendererId lastFocusedElementUniqueId;
 
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
@@ -161,7 +162,7 @@ using base::UmaHistogramEnumeration;
   self.lastFocusedElementSecure =
       autofill::IsContextSecureForWebState(webState);
   self.lastFocusedElementPasswordField = params.field_type == "password";
-  self.lastFocusedElementIdentifier = params.field_identifier;
+  self.lastFocusedElementUniqueId = params.unique_field_id;
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
   const GURL frameSecureOrigin = frame->GetSecurityOrigin();
@@ -185,7 +186,8 @@ using base::UmaHistogramEnumeration;
   }
 
   auto data = std::make_unique<base::DictionaryValue>();
-  data->SetString("identifier", self.lastFocusedElementIdentifier);
+  data->SetInteger("unique_renderer_id",
+                   self.lastFocusedElementUniqueId.value());
   data->SetString("value", base::SysNSStringToUTF16(string));
   autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
       activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
