@@ -240,22 +240,13 @@ POLICY_EXPORT extern const char
     kMetricRemoteCommandInvalidationsRegistrationResult[];
 
 POLICY_EXPORT extern const char kMetricUserRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricUserUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricUserRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricUserUnsignedRemoteCommandExecutedTemplate[];
 
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricDeviceUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricDeviceUnsignedRemoteCommandExecutedTemplate[];
 
 POLICY_EXPORT extern const char kMetricCBCMRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricCBCMUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricCBCMRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricCBCMUnsignedRemoteCommandExecutedTemplate[];
 
 // Private set membership UMA histogram names.
 POLICY_EXPORT extern const char kUMAPsmSuccessTime[];

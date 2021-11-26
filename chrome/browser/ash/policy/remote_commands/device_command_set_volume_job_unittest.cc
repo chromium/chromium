@@ -49,8 +49,8 @@ std::unique_ptr<RemoteCommandJob> CreateSetVolumeJob(
       base::WrapUnique<RemoteCommandJob>(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - issued_time, volume);
-  EXPECT_TRUE(
-      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), set_volume_command_proto,
+                        em::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
   return job;
@@ -118,8 +118,8 @@ TEST_F(DeviceCommandSetVolumeTest, VolumeOutOfRange) {
   std::unique_ptr<RemoteCommandJob> job(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - test_start_time_, kVolume);
-  EXPECT_FALSE(
-      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
+  EXPECT_FALSE(job->Init(base::TimeTicks::Now(), set_volume_command_proto,
+                         em::SignedData()));
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
 }
 

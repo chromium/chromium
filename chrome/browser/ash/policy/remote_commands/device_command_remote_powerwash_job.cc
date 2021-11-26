@@ -52,23 +52,16 @@ bool DeviceCommandRemotePowerwashJob::IsExpired(base::TimeTicks now) {
 void DeviceCommandRemotePowerwashJob::RunImpl(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback) {
-  // Don't support unsigned remote powerwash command.
-  if (!signed_command()) {
-    SYSLOG(ERROR) << "Unsigned remote powerwash command received, aborting.";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
-  }
-
   // Set callback which gets called after command is ACKd to the server. We want
   // to start the powerwash process only after the server got the ACK, otherwise
   // we could reboot before ACKing and then the server would never get the ACK.
   service_->SetOnCommandAckedCallback(
-      base::BindOnce(&StartPowerwash, signed_command().value()));
+      base::BindOnce(&StartPowerwash, signed_command()));
 
   // Also set a failsafe timer that starts the powerwash so a faulty network
   // connection doesn't prevent the powerwash from happening.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&StartPowerwash, signed_command().value()),
+      FROM_HERE, base::BindOnce(&StartPowerwash, signed_command()),
       kFailsafeTimerTimeout);
 
   // Ack the command.

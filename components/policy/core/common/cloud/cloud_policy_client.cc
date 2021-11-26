@@ -127,6 +127,31 @@ TranslatePolicyValidationResultSeverity(
   return issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
 }
 
+template <typename T>
+std::vector<T> ToVector(
+    const google::protobuf::RepeatedPtrField<T>& proto_container) {
+  return std::vector<T>(proto_container.begin(), proto_container.end());
+}
+
+std::tuple<DeviceManagementStatus, std::vector<em::SignedData>>
+DecodeRemoteCommands(DeviceManagementStatus status,
+                     const em::DeviceManagementResponse& response) {
+  using MakeTuple =
+      std::tuple<DeviceManagementStatus, std::vector<em::SignedData>>;
+
+  if (status != DM_STATUS_SUCCESS) {
+    return MakeTuple(status, {});
+  }
+  if (!response.remote_command_response().commands().empty()) {
+    // Unsigned remote commands are no longer supported.
+    return MakeTuple(DM_STATUS_RESPONSE_DECODING_ERROR, {});
+  }
+
+  return MakeTuple(
+      DM_STATUS_SUCCESS,
+      ToVector(response.remote_command_response().secure_commands()));
+}
+
 }  // namespace
 
 CloudPolicyClient::RegistrationParameters::RegistrationParameters(
@@ -1389,22 +1414,11 @@ void CloudPolicyClient::OnRemoteCommandsFetched(
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
-  std::vector<em::RemoteCommand> commands;
-  std::vector<em::SignedData> signed_commands;
-  if (status == DM_STATUS_SUCCESS) {
-    if (response.has_remote_command_response()) {
-      for (const auto& command : response.remote_command_response().commands())
-        commands.push_back(command);
+  DeviceManagementStatus decoded_status;
+  std::vector<em::SignedData> commands;
+  std::tie(decoded_status, commands) = DecodeRemoteCommands(status, response);
 
-      for (const auto& secure_command :
-           response.remote_command_response().secure_commands()) {
-        signed_commands.push_back(secure_command);
-      }
-    } else {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
-    }
-  }
-  std::move(callback).Run(status, commands, signed_commands);
+  std::move(callback).Run(decoded_status, commands);
   RemoveJob(job);
 }
 

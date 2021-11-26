@@ -73,13 +73,11 @@ class POLICY_EXPORT RemoteCommandsService
 
   // Returns the metric name to report received commands.
   static const char* GetMetricNameReceivedRemoteCommand(
-      PolicyInvalidationScope scope,
-      bool is_command_signed);
+      PolicyInvalidationScope scope);
   // Returns the metric name to report status of executed commands.
   static std::string GetMetricNameExecutedRemoteCommand(
       PolicyInvalidationScope scope,
-      enterprise_management::RemoteCommand_Type command_type,
-      bool is_command_signed);
+      enterprise_management::RemoteCommand_Type command_type);
 
   RemoteCommandsService(std::unique_ptr<RemoteCommandsFactory> factory,
                         CloudPolicyClient* client,
@@ -122,7 +120,7 @@ class POLICY_EXPORT RemoteCommandsService
   void VerifyAndEnqueueSignedCommand(
       const enterprise_management::SignedData& signed_command);
   void EnqueueCommand(const enterprise_management::RemoteCommand& command,
-                      const enterprise_management::SignedData* signed_command);
+                      const enterprise_management::SignedData& signed_command);
 
   // RemoteCommandsQueue::Observer:
   void OnJobStarted(RemoteCommandJob* command) override;
@@ -131,12 +129,10 @@ class POLICY_EXPORT RemoteCommandsService
   // Callback to handle commands we get from the server.
   void OnRemoteCommandsFetched(
       DeviceManagementStatus status,
-      const std::vector<enterprise_management::RemoteCommand>& commands,
       const std::vector<enterprise_management::SignedData>& signed_commands);
 
   // Records UMA metric of received remote command.
-  void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric,
-                                   bool is_command_signed) const;
+  void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric) const;
   // Records UMA metric of executed remote command.
   void RecordExecutedRemoteCommand(const RemoteCommandJob& command) const;
 

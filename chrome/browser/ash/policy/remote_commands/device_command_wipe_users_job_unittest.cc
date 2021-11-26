@@ -75,7 +75,8 @@ std::unique_ptr<policy::RemoteCommandJob> CreateWipeUsersJob(
   // Create the job and validate.
   auto job = std::make_unique<policy::DeviceCommandWipeUsersJob>(service);
 
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
+                        enterprise_management::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
 

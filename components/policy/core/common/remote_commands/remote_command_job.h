@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -58,13 +57,11 @@ class POLICY_EXPORT RemoteCommandJob {
   // time. It must be consistent to the same parameter passed to Run() below.
   // In order to minimize the error while estimating the command issued time,
   // this method must be called immediately after the command is received from
-  // the server. |signed_command| is passed if we're using signed commands; its
-  // format is the raw serialized command inside of policy data proto plus its
-  // signature, and it's cached in case the actual command implementation needs
-  // to pass its signature on to some other system for verification.
+  // the server. |signed_command| contains the entire remote command and its
+  // signature, the way it was received from the server.
   bool Init(base::TimeTicks now,
             const enterprise_management::RemoteCommand& command,
-            const enterprise_management::SignedData* signed_command);
+            const enterprise_management::SignedData& signed_command);
 
   // Run the command asynchronously. |now| is the time used for marking the
   // execution start. |now_ticks| is the time which will be used for command
@@ -100,7 +97,6 @@ class POLICY_EXPORT RemoteCommandJob {
   base::TimeTicks issued_time() const { return issued_time_; }
   base::Time execution_started_time() const { return execution_started_time_; }
   Status status() const { return status_; }
-  bool has_signed_data() const { return signed_command_.has_value(); }
 
   // Returns whether execution of this command is finished.
   bool IsExecutionFinished() const;
@@ -153,8 +149,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // The default implementation does nothing.
   virtual void TerminateImpl();
 
-  const absl::optional<enterprise_management::SignedData>& signed_command()
-      const {
+  const enterprise_management::SignedData& signed_command() const {
     return signed_command_;
   }
 
@@ -172,9 +167,8 @@ class POLICY_EXPORT RemoteCommandJob {
   // The time when the command started running.
   base::Time execution_started_time_;
 
-  // Serialized command inside policy data proto with signature in case of a
-  // signed command, otherwise empty.
-  absl::optional<enterprise_management::SignedData> signed_command_;
+  // Serialized command inside policy data proto with signature.
+  enterprise_management::SignedData signed_command_;
 
   std::unique_ptr<ResultPayload> result_payload_;
 

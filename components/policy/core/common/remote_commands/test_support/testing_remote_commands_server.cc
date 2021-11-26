@@ -20,7 +20,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "crypto/signature_creator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -59,21 +58,11 @@ std::string SignDataWithTestKey(const std::string& data) {
 }
 
 struct TestingRemoteCommandsServer::RemoteCommandWithCallback {
-  RemoteCommandWithCallback(const em::SignedData& signed_command_proto,
+  RemoteCommandWithCallback(const em::SignedData& command_proto,
                             base::TimeTicks issued_time,
                             ResultReportedCallback reported_callback)
-      : command_proto(absl::nullopt),
-        signed_command_proto(signed_command_proto),
-        command_id(GetCommandIdOrDefault(signed_command_proto)),
-        issued_time(issued_time),
-        reported_callback(std::move(reported_callback)) {}
-
-  RemoteCommandWithCallback(const em::RemoteCommand& command_proto,
-                            base::TimeTicks issued_time,
-                            ResultReportedCallback reported_callback)
-      : command_proto(command_proto),
-        signed_command_proto(absl::nullopt),
-        command_id(command_proto.command_id()),
+      : command_id(GetCommandIdOrDefault(command_proto)),
+        command_proto(command_proto),
         issued_time(issued_time),
         reported_callback(std::move(reported_callback)) {}
 
@@ -83,9 +72,8 @@ struct TestingRemoteCommandsServer::RemoteCommandWithCallback {
 
   ~RemoteCommandWithCallback() = default;
 
-  absl::optional<em::RemoteCommand> command_proto;
-  absl::optional<em::SignedData> signed_command_proto;
   int command_id;
+  em::SignedData command_proto;
   base::TimeTicks issued_time;
   ResultReportedCallback reported_callback;
 };
@@ -106,16 +94,6 @@ TestingRemoteCommandsServer::~TestingRemoteCommandsServer() {
 }
 
 void TestingRemoteCommandsServer::IssueCommand(
-    const em::RemoteCommand& command,
-    ResultReportedCallback reported_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  base::AutoLock auto_lock(lock_);
-
-  commands_.emplace_back(command, clock_->NowTicks(),
-                         std::move(reported_callback));
-}
-
-void TestingRemoteCommandsServer::IssueSignedCommand(
     const em::SignedData& signed_data,
     ResultReportedCallback reported_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -129,35 +107,23 @@ void TestingRemoteCommandsServer::OnNextFetchCommandsCallReturnNothing() {
   return_nothing_for_next_fetch_ = true;
 }
 
-void TestingRemoteCommandsServer::FetchCommands(
+std::vector<em::SignedData> TestingRemoteCommandsServer::FetchCommands(
     std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
-    const RemoteCommandResults& previous_job_results,
-    std::vector<em::RemoteCommand>* fetched_commands,
-    std::vector<em::SignedData>* signed_commands) {
+    const RemoteCommandResults& previous_job_results) {
   base::AutoLock auto_lock(lock_);
 
   HandleRemoteCommandResults(previous_job_results);
 
   if (return_nothing_for_next_fetch_) {
     return_nothing_for_next_fetch_ = false;
-    return;
+    return {};
   }
 
-  for (const auto& command_with_callback : commands_) {
-    if (command_with_callback.signed_command_proto) {
-      // Signed commands.
-      signed_commands->push_back(
-          command_with_callback.signed_command_proto.value());
-    } else if (!last_command_id ||
-               command_with_callback.command_id > *last_command_id) {
-      // Old style, unsigned commands.
-      fetched_commands->push_back(command_with_callback.command_proto.value());
-      // Simulate the age of commands calculation on the server side.
-      fetched_commands->back().set_age_of_command(
-          (clock_->NowTicks() - command_with_callback.issued_time)
-              .InMilliseconds());
-    }
-  }
+  std::vector<em::SignedData> result;
+  for (const auto& command_with_callback : commands_)
+    result.push_back(command_with_callback.command_proto);
+
+  return result;
 }
 
 void TestingRemoteCommandsServer::HandleRemoteCommandResults(

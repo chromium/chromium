@@ -186,7 +186,7 @@ void DeviceCommandGetRoutineUpdateJobTest::InitializeJob(
       GenerateCommandProto(unique_id, base::TimeTicks::Now() - issued_time,
                            idleness_cutoff, terminate_upon_input, id, command,
                            include_output),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(unique_id, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
@@ -208,7 +208,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
                   chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>::
                                       type>::max()),
           /*include_output=*/false),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
@@ -227,7 +227,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingId) {
                            chromeos::cros_healthd::mojom::
                                DiagnosticRoutineCommandEnum::kGetStatus,
                            /*include_output=*/true),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
@@ -245,7 +245,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingCommand) {
                            /*terminate_upon_input=*/false,
                            /*id=*/1293, /*command=*/absl::nullopt,
                            /*include_output=*/true),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
@@ -266,7 +266,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
           /*id=*/457658,
           chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
           /*include_output=*/absl::nullopt),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());

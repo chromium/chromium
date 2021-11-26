@@ -18,7 +18,6 @@
 #include "base/threading/thread_checker.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -57,16 +56,14 @@ class TestingRemoteCommandsServer {
   using RemoteCommandResults =
       std::vector<enterprise_management::RemoteCommandResult>;
 
-  // Create and add a command with |type| as command type and |payload| as
-  // command payload if it's not empty. |clock_| will be used to get the
-  // command issue time. |reported_callback| will be called from the same
-  // thread when a command result is reported back to the server.
-  // Commands with |reported_callback| set are required to be reported back to
-  // the server and |reported_callback| itself will be called at that time.
-  void IssueCommand(const enterprise_management::RemoteCommand& command,
+  using RemoteCommands = std::vector<enterprise_management::SignedData>;
+
+  // Add a command that will be returned on the next FetchCommands() call.
+  // |clock_| will be used to get the command issue time.
+  // |reported_callback| will be called from the same thread when a command
+  // result is reported back to the server.
+  void IssueCommand(const enterprise_management::SignedData& signed_data,
                     ResultReportedCallback reported_callback);
-  void IssueSignedCommand(const enterprise_management::SignedData& signed_data,
-                          ResultReportedCallback reported_callback);
 
   // Calling this will tell the server to return no commands on the next
   // call to FetchCommands().
@@ -82,11 +79,9 @@ class TestingRemoteCommandsServer {
   // and client for remote command fetching.
   // Unlike every other methods in the class, this method can be called from
   // any thread.
-  void FetchCommands(
+  RemoteCommands FetchCommands(
       std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
-      const RemoteCommandResults& previous_job_results,
-      std::vector<enterprise_management::RemoteCommand>* fetched_commands,
-      std::vector<enterprise_management::SignedData>* signed_commands);
+      const RemoteCommandResults& previous_job_results);
 
   // Set alternative clock for obtaining the command issue time. The default
   // clock uses the system clock.

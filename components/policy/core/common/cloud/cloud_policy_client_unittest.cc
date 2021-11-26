@@ -182,9 +182,7 @@ struct MockStatusCallbackObserver {
 struct MockRemoteCommandsObserver {
   MOCK_METHOD(void,
               OnRemoteCommandsFetched,
-              (DeviceManagementStatus,
-               const std::vector<em::RemoteCommand>&,
-               const std::vector<em::SignedData>&));
+              (DeviceManagementStatus, const std::vector<em::SignedData>&));
 };
 
 struct MockDeviceDMTokenCallbackObserver {
@@ -2173,11 +2171,11 @@ TEST_F(CloudPolicyClientTest, RequestCancelOnUnregister) {
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
-TEST_F(CloudPolicyClientTest, FetchRemoteCommands) {
-  RegisterClient();
+TEST_F(CloudPolicyClientTest, ShouldRejectUnsignedCommands) {
+  const DeviceManagementStatus expected_error =
+      DM_STATUS_RESPONSE_DECODING_ERROR;
 
-  em::DeviceManagementRequest remote_command_request =
-      GetRemoteCommandRequest();
+  RegisterClient();
 
   em::DeviceManagementResponse remote_command_response;
   em::RemoteCommand* command =
@@ -2190,30 +2188,74 @@ TEST_F(CloudPolicyClientTest, FetchRemoteCommands) {
   ExpectAndCaptureJob(remote_command_response);
 
   StrictMock<MockRemoteCommandsObserver> remote_commands_observer;
-  EXPECT_CALL(
-      remote_commands_observer,
-      OnRemoteCommandsFetched(
-          DM_STATUS_SUCCESS,
-          ElementsAre(MatchProto(
-              remote_command_response.remote_command_response().commands(0))),
-          _))
+  EXPECT_CALL(remote_commands_observer,
+              OnRemoteCommandsFetched(expected_error, _))
       .Times(1);
   CloudPolicyClient::RemoteCommandCallback callback =
       base::BindOnce(&MockRemoteCommandsObserver::OnRemoteCommandsFetched,
                      base::Unretained(&remote_commands_observer));
 
-  const std::vector<em::RemoteCommandResult> command_results(
-      1, remote_command_request.remote_command_request().command_results(0));
   client_->FetchRemoteCommands(
-      std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId),
-      command_results, std::move(callback));
+      std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
+      std::move(callback));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
-            job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(job_request_.SerializePartialAsString(),
-            remote_command_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest,
+       ShouldIgnoreSignedCommandsIfUnsignedCommandsArePresent) {
+  const DeviceManagementStatus expected_error =
+      DM_STATUS_RESPONSE_DECODING_ERROR;
+
+  RegisterClient();
+
+  em::DeviceManagementResponse remote_command_response;
+  auto* response = remote_command_response.mutable_remote_command_response();
+  response->add_commands();
+  response->add_secure_commands();
+
+  ExpectAndCaptureJob(remote_command_response);
+
+  std::vector<em::SignedData> received_commands;
+  StrictMock<MockRemoteCommandsObserver> remote_commands_observer;
+  EXPECT_CALL(remote_commands_observer,
+              OnRemoteCommandsFetched(expected_error, _))
+      .WillOnce(SaveArg<1>(&received_commands));
+  CloudPolicyClient::RemoteCommandCallback callback =
+      base::BindOnce(&MockRemoteCommandsObserver::OnRemoteCommandsFetched,
+                     base::Unretained(&remote_commands_observer));
+
+  client_->FetchRemoteCommands(
+      std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
+      std::move(callback));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(received_commands, ElementsAre());
+}
+
+TEST_F(CloudPolicyClientTest, ShouldNotFailIfRemoteCommandResponseIsEmpty) {
+  const DeviceManagementStatus expected_result = DM_STATUS_SUCCESS;
+
+  RegisterClient();
+
+  em::DeviceManagementResponse empty_server_response;
+
+  ExpectAndCaptureJob(empty_server_response);
+
+  std::vector<em::SignedData> received_commands;
+  StrictMock<MockRemoteCommandsObserver> remote_commands_observer;
+  EXPECT_CALL(remote_commands_observer,
+              OnRemoteCommandsFetched(expected_result, _))
+      .Times(1);
+  CloudPolicyClient::RemoteCommandCallback callback =
+      base::BindOnce(&MockRemoteCommandsObserver::OnRemoteCommandsFetched,
+                     base::Unretained(&remote_commands_observer));
+
+  client_->FetchRemoteCommands(
+      std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
+      std::move(callback));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(received_commands, ElementsAre());
 }
 
 TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
@@ -2235,7 +2277,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   EXPECT_CALL(
       remote_commands_observer,
       OnRemoteCommandsFetched(
-          DM_STATUS_SUCCESS, _,
+          DM_STATUS_SUCCESS,
           ElementsAre(MatchProto(
               remote_command_response.remote_command_response().secure_commands(
                   0)))))
@@ -2245,10 +2287,9 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   CloudPolicyClient::RemoteCommandCallback callback =
       base::BindLambdaForTesting(
           [&](DeviceManagementStatus status,
-              const std::vector<enterprise_management::RemoteCommand>& commands,
               const std::vector<enterprise_management::SignedData>&
                   signed_commands) {
-            remote_commands_observer.OnRemoteCommandsFetched(status, commands,
+            remote_commands_observer.OnRemoteCommandsFetched(status,
                                                              signed_commands);
             run_loop.Quit();
           });

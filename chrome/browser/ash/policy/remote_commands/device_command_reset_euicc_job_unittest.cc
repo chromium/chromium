@@ -95,7 +95,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
     auto reset_euicc_command_proto =
         GenerateResetEuiccCommandProto(base::TimeTicks::Now() - issued_time);
     EXPECT_TRUE(job->Init(base::TimeTicks::Now(), reset_euicc_command_proto,
-                          /*signed_command=*/nullptr));
+                          em::SignedData()));
     EXPECT_EQ(kUniqueID, job->unique_id());
     EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
     return job;

@@ -453,6 +453,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed.Unsigned"
     enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
+  <obsolete>
+    Removed in M97 since unsigned commands are no longer supported.
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -660,6 +663,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.DeviceRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <obsolete>
+    Removed in M97 since unsigned commands are no longer supported.
+  </obsolete>
   <owner>asumaneev@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -2366,6 +2372,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.UserRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <obsolete>
+    Removed in M97 since unsigned commands are no longer supported.
+  </obsolete>
   <owner>asumaneev@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
