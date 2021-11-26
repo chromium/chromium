@@ -628,36 +628,28 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // In the 32-bit case, PCScan is always disabled, but we'll deliberately
   // misrepresent it as enabled here (and later ignored when analyzing results),
   // in order to keep each population at 33%.
-  //
-  // Also note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
-  // feature is enabled for the purpose of this Finch setting, while in fact
-  // there are no behavior changes.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrAndPCScan",
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
       "BackupRefPtrEnabled"
 #else
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)
           ? "PCScanEnabled"
           : "Disabled"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   );
 
   // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
   // which simply compiles in the BackupRefPtr support, but keeps it disabled at
   // run-time (which can be further enabled via Finch).
-  //
-  // Also note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
-  // feature is enabled for the purpose of this Finch setting, while in fact
-  // there are no behavior changes.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrSupport",
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
       "CompiledIn"
 #else
       "Disabled"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   );
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -685,16 +677,12 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   //    ChromeVariations policy.
   // 2) The experiment binary (USE_BACKUP_REF_PTR) is delivered via Google
   //    Update to fraction X of the non-enterprise population.
-  //    Note, USE_BACKUP_REF_PTR_FAKE is only used to fake that the feature is
-  //    enabled for the purpose of this Finch setting, while in fact there are
-  //    no behavior changes. Note, however, PCScan will be kept away from the
-  //    fake experiment binary, just as it would be from a regular one.
   // 3) The control group is established in fraction X of non-enterprise
   //    popluation via Finch (PartitionAllocBackupRefPtrControl). Since this
   //    Finch is applicable only to 1-X of the non-enterprise population, we
   //    need to set it to Y=X/(1-X). E.g. if X=.333, Y=.5; if X=.01, Y=.0101.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   constexpr bool kIsBrpOn = true;  // experiment binary only
 #else
   constexpr bool kIsBrpOn = false;  // non-experiment binary
@@ -722,6 +710,15 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrNoEnterprise", group_name);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "FakeBinaryExperiment",
+#if BUILDFLAG(USE_FAKE_BINARY_EXPERIMENT)
+      "Enabled",
+#else
+      "Disabled"
+#endif
+  );
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {

@@ -295,8 +295,6 @@ buildflag_header("buildflags") {
 
   # BackupRefPtr(BRP) build flags.
   _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
-  _use_backup_ref_ptr_fake =
-      use_backup_ref_ptr_fake && use_partition_alloc && !is_nacl
   _put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot && _use_backup_ref_ptr
   _never_remove_from_brp_pool_from_blocklist =
@@ -311,10 +309,11 @@ buildflag_header("buildflags") {
     "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
 
     "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
-    "USE_BACKUP_REF_PTR_FAKE=$_use_backup_ref_ptr_fake",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
+
+    "USE_FAKE_BINARY_EXPERIMENT=$use_fake_binary_experiment",
   ]
 }
 

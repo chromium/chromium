@@ -60,11 +60,8 @@ declare_args() {
   use_partition_alloc = !is_ios || target_environment == "simulator"
 
   # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
-  # of raw_ptr<T>, and enable PartitionAlloc support for it. The _fake option
-  # doesn't enable BRP, but pretends it's enabled for the syntethic field trial
-  #(for testing purposes only).
+  # of raw_ptr<T>, and enable PartitionAlloc support for it.
   use_backup_ref_ptr = false
-  use_backup_ref_ptr_fake = false
 
   # If BRP is enabled, additional options are available:
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
@@ -77,6 +74,11 @@ declare_args() {
   put_ref_count_in_previous_slot = false
   never_remove_from_brp_pool_blocklist = false
   enable_backup_ref_ptr_slow_checks = false
+
+  # Registers the binary for a fake binary A/B experiment. The binaries built
+  # with this flag have no behavior difference, except for setting a synthetic
+  # Finch.
+  use_fake_binary_experiment = false
 }
 
 if (!use_partition_alloc && use_allocator == "partition") {
