@@ -143,23 +143,34 @@
   return settingsCell;
 }
 
-- (NSIndexPath*)indexForCellPathWithOffset:(NSInteger)offset
-                                  fromPath:(NSIndexPath*)cellPath {
-  if (!cellPath || !offset)
+- (NSIndexPath*)indexForNextCellPathWithOffset:(NSInteger)offset
+                                      fromPath:(NSIndexPath*)cellPath {
+  if (!cellPath || !offset) {
     return nil;
-
-  const NSInteger cellSection = [cellPath section];
-  const NSInteger nextCellRow = [cellPath row] + offset;
-  if ((0 <= nextCellRow) &&
-      (nextCellRow < [self.tableView numberOfRowsInSection:cellSection])) {
-    return [NSIndexPath indexPathForRow:nextCellRow inSection:cellSection];
   }
 
-  const NSInteger nextCellSection = cellSection + offset;
-  if ((0 <= nextCellSection) &&
-      (nextCellSection < [self.tableView numberOfSections]) &&
-      ([self.tableView numberOfRowsInSection:nextCellSection] > 0)) {
-    return [NSIndexPath indexPathForRow:0 inSection:nextCellSection];
+  NSInteger cellSection = [cellPath section];
+  NSInteger nextCellRow = [cellPath row] + offset;
+
+  while (cellSection >= 0 && cellSection < [self.tableView numberOfSections]) {
+    while (nextCellRow >= 0 &&
+           nextCellRow < [self.tableView numberOfRowsInSection:cellSection]) {
+      NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
+                                                      inSection:cellSection];
+      if ([self isItemAtIndexPathTextEditCell:cellIndexPath]) {
+        return cellIndexPath;
+      }
+      nextCellRow += offset;
+    }
+
+    cellSection += offset;
+    if (offset > 0) {
+      nextCellRow = 0;
+    } else {
+      if (cellSection >= 0) {
+        nextCellRow = [self.tableView numberOfRowsInSection:cellSection] - 1;
+      }
+    }
   }
 
   return nil;
@@ -175,45 +186,16 @@
 }
 
 - (void)moveToAnotherTextFieldWithOffset:(NSInteger)offset {
-  NSIndexPath* cellPath = [self indexPathForCurrentTextField];
-  DCHECK(cellPath);
+  NSIndexPath* currentCellPath = [self indexPathForCurrentTextField];
+  DCHECK(currentCellPath);
 
-  NSInteger cellSection = [cellPath section];
-  NSInteger nextCellRow = [cellPath row] + offset;
-  BOOL nextTextFieldFound = NO;
+  NSIndexPath* nextCellPath =
+      [self indexForNextCellPathWithOffset:offset fromPath:currentCellPath];
 
-  while (cellSection >= 0 && cellSection < [self.tableView numberOfSections]) {
-    while (nextCellRow >= 0 &&
-           nextCellRow < [self.tableView numberOfRowsInSection:cellSection]) {
-      NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
-                                                      inSection:cellSection];
-      if ([self isItemAtIndexPathTextEditCell:cellIndexPath]) {
-        nextTextFieldFound = YES;
-        break;
-      }
-      nextCellRow += offset;
-    }
-
-    if (nextTextFieldFound) {
-      break;
-    }
-
-    cellSection += offset;
-    if (offset > 0) {
-      nextCellRow = 0;
-    } else {
-      if (cellSection >= 0) {
-        nextCellRow = [self.tableView numberOfRowsInSection:cellSection] - 1;
-      }
-    }
-  }
-
-  if (nextTextFieldFound) {
-    NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
-                                                    inSection:cellSection];
+  if (nextCellPath) {
     TableViewTextEditCell* nextCell =
         base::mac::ObjCCastStrict<TableViewTextEditCell>(
-            [self.tableView cellForRowAtIndexPath:cellIndexPath]);
+            [self.tableView cellForRowAtIndexPath:nextCellPath]);
     [nextCell.textField becomeFirstResponder];
   } else {
     [[_currentEditingCell textField] resignFirstResponder];
@@ -222,10 +204,10 @@
 
 - (void)updateAccessoryViewButtonState {
   NSIndexPath* currentPath = [self indexPathForCurrentTextField];
-  NSIndexPath* nextPath = [self indexForCellPathWithOffset:1
-                                                  fromPath:currentPath];
-  NSIndexPath* previousPath = [self indexForCellPathWithOffset:-1
+  NSIndexPath* nextPath = [self indexForNextCellPathWithOffset:1
                                                       fromPath:currentPath];
+  NSIndexPath* previousPath = [self indexForNextCellPathWithOffset:-1
+                                                          fromPath:currentPath];
 
   BOOL isValidPreviousPath =
       previousPath && [[self.tableView cellForRowAtIndexPath:previousPath]

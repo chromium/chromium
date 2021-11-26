@@ -976,6 +976,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypePassword:
       return YES;
     case ItemTypeWebsite:
+      if (self.credentialType == CredentialTypeNew) {
+        return YES;
+      }
+      return NO;
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
