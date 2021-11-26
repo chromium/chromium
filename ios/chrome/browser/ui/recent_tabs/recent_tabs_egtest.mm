@@ -346,7 +346,8 @@ GURL TestPageURL() {
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
-- (void)testContextMenuOpenInNewWindow {
+// Test is flaky. https://crbug.com/1273942.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
