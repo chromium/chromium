@@ -10,27 +10,34 @@ assert_true(document.prerendering);
 i.contentWindow.onbeforeunload = function(e) {
   // Call preventDefault() or set `returnValue` to trigger the prompt
   // on beforeunload event.
+  // The prompt actually doesn't show up in a prerendered page and
+  // unload proceeds.
   e.preventDefault();
   e.returnValue = 'You have a return value.';
 }
 
-function reloadWindowLocation() {
-  i.contentWindow.location.reload(true);
-  return new Promise(resolve => {
-    i.contentWindow.onunload = function(e) {
-      // Unload event should be triggered since changing the page
-      // location is not blocked by the prompt on beforeunload in the
-      // prerenderer.
-      resolve();
-    }
+async function navigateWindowLocation() {
+  const bc = new BroadcastChannel('inner-channel');
+  const promise = new Promise(resolve => {
+    bc.addEventListener('message', e => {
+      resolve(e.data);
+      bc.close();
+    }, {
+      once: true
+    });
   });
+  i.contentWindow.location.href = 'prompt-by-before-unload-inner-frame.html';
+  return promise;
 }
 
 async function asyncPromptOnBeforeUnload() {
   const bc = new BroadcastChannel('prerender-channel');
   try {
-    await reloadWindowLocation();
-    bc.postMessage('unloaded without the prompt by beforeunload.');
+    const result = await navigateWindowLocation();
+    if (result == 'a new page is loaded')
+      bc.postMessage('unloaded without the prompt by beforeunload.');
+    else
+      bc.postMessage('unexpected result.');
   } catch (err) {
     bc.postMessage(err);
   } finally {
