@@ -162,14 +162,13 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
       &XDGPopupWrapperImpl::Repositioned,
   };
 
-  struct xdg_positioner* positioner =
-      CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner(wayland_window_->parent_window());
   if (!positioner)
     return false;
 
   xdg_popup_.reset(xdg_surface_get_popup(xdg_surface_wrapper_->xdg_surface(),
                                          parent_xdg_surface->xdg_surface(),
-                                         positioner));
+                                         positioner.get()));
   if (!xdg_popup_)
     return false;
 
@@ -186,8 +185,6 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
       }
     }
   }
-
-  xdg_positioner_destroy(positioner);
 
   GrabIfPossible(connection_, wayland_window_->parent_window());
 
@@ -216,16 +213,17 @@ bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   params_.bounds = new_bounds;
 
   // Create a new positioner with new bounds.
-  auto* positioner = CreatePositioner(wayland_window_->parent_window());
-  DCHECK(positioner);
+  auto positioner = CreatePositioner(wayland_window_->parent_window());
+  if (!positioner)
+    return false;
+
   // TODO(msisov): figure out how we can make use of the reposition token.
   // The protocol says the token itself is opaque, and has no other special
   // meaning.
-  xdg_popup_reposition(xdg_popup_.get(), positioner, ++next_reposition_token_);
-  connection_->ScheduleFlush();
+  xdg_popup_reposition(xdg_popup_.get(), positioner.get(),
+                       ++next_reposition_token_);
 
-  // We can safely destroy the object now.
-  xdg_positioner_destroy(positioner);
+  connection_->ScheduleFlush();
   return true;
 }
 
@@ -239,12 +237,12 @@ void XDGPopupWrapperImpl::Grab(uint32_t serial) {
   xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial);
 }
 
-struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
+wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner(
     WaylandWindow* parent_window) {
-  struct xdg_positioner* positioner;
-  positioner = xdg_wm_base_create_positioner(connection_->shell());
+  wl::Object<xdg_positioner> positioner(
+      xdg_wm_base_create_positioner(connection_->shell()));
   if (!positioner)
-    return nullptr;
+    return {};
 
   gfx::Rect anchor_rect;
   OwnedWindowAnchorPosition anchor_position;
@@ -253,14 +251,16 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
   FillAnchorData(params_, &anchor_rect, &anchor_position, &anchor_gravity,
                  &constraint_adjustment);
 
-  xdg_positioner_set_anchor_rect(positioner, anchor_rect.x(), anchor_rect.y(),
-                                 anchor_rect.width(), anchor_rect.height());
-  xdg_positioner_set_size(positioner, params_.bounds.width(),
+  xdg_positioner_set_anchor_rect(positioner.get(), anchor_rect.x(),
+                                 anchor_rect.y(), anchor_rect.width(),
+                                 anchor_rect.height());
+  xdg_positioner_set_size(positioner.get(), params_.bounds.width(),
                           params_.bounds.height());
-  xdg_positioner_set_anchor(positioner, TranslateAnchor(anchor_position));
-  xdg_positioner_set_gravity(positioner, TranslateGravity(anchor_gravity));
+  xdg_positioner_set_anchor(positioner.get(), TranslateAnchor(anchor_position));
+  xdg_positioner_set_gravity(positioner.get(),
+                             TranslateGravity(anchor_gravity));
   xdg_positioner_set_constraint_adjustment(
-      positioner, TranslateConstraintAdjustment(constraint_adjustment));
+      positioner.get(), TranslateConstraintAdjustment(constraint_adjustment));
   return positioner;
 }
 
