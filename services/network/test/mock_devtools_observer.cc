@@ -98,10 +98,20 @@ void MockDevToolsObserver::OnTrustTokenOperationDone(
 void MockDevToolsObserver::OnCorsError(
     const absl::optional<std::string>& devtools_request_id,
     const absl::optional<::url::Origin>& initiator_origin,
+    mojom::ClientSecurityStatePtr client_security_state,
     const GURL& url,
-    const network::CorsErrorStatus& status) {
-  params_of_cors_error_.emplace(devtools_request_id, initiator_origin, url,
-                                status);
+    const network::CorsErrorStatus& status,
+    bool is_warning) {
+  OnCorsErrorParams params;
+  params.devtools_request_id = devtools_request_id;
+  params.initiator_origin = initiator_origin;
+  params.client_security_state = std::move(client_security_state);
+  params.url = url;
+  params.status = status;
+  params.is_warning = is_warning;
+
+  params_of_cors_error_ = std::move(params);
+
   wait_for_cors_error_.Quit();
 }
 
@@ -155,17 +165,12 @@ MockDevToolsObserver::OnPrivateNetworkRequestParams::
 MockDevToolsObserver::OnPrivateNetworkRequestParams::
     ~OnPrivateNetworkRequestParams() = default;
 
-MockDevToolsObserver::OnCorsErrorParams::OnCorsErrorParams(
-    const absl::optional<std::string>& devtools_request_id,
-    const absl::optional<::url::Origin>& initiator_origin,
-    const GURL& url,
-    const network::CorsErrorStatus& status)
-    : devtools_request_id(devtools_request_id),
-      initiator_origin(initiator_origin),
-      url(url),
-      status(status) {}
+MockDevToolsObserver::OnCorsErrorParams::OnCorsErrorParams() = default;
 MockDevToolsObserver::OnCorsErrorParams::OnCorsErrorParams(
     OnCorsErrorParams&&) = default;
+MockDevToolsObserver::OnCorsErrorParams&
+MockDevToolsObserver::OnCorsErrorParams::operator=(OnCorsErrorParams&&) =
+    default;
 MockDevToolsObserver::OnCorsErrorParams::~OnCorsErrorParams() = default;
 
 }  // namespace network

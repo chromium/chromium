@@ -417,6 +417,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // net::URLRequest.
   bool ShouldForceIgnoreTopFramePartyForCookies() const;
 
+  // Returns the client security state that applies to the current request.
+  // May return nullptr.
+  const mojom::ClientSecurityState* GetClientSecurityState() const;
+
   // Applies Private Network Access checks to the current request.
   //
   // `resource_address_space` specifies the IP address space of the remote

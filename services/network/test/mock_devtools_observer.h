@@ -100,8 +100,10 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   void OnCorsError(const absl::optional<std::string>& devtool_request_id,
                    const absl::optional<::url::Origin>& initiator_origin,
+                   mojom::ClientSecurityStatePtr client_security_state,
                    const GURL& url,
-                   const network::CorsErrorStatus& status) override;
+                   const network::CorsErrorStatus& status,
+                   bool is_warning) override;
 
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override;
 
@@ -158,16 +160,17 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   }
 
   struct OnCorsErrorParams {
-    OnCorsErrorParams(const absl::optional<std::string>& devtools_request_id,
-                      const absl::optional<::url::Origin>& initiator_origin,
-                      const GURL& url,
-                      const network::CorsErrorStatus& status);
+    OnCorsErrorParams();
     OnCorsErrorParams(OnCorsErrorParams&&);
+    OnCorsErrorParams& operator=(OnCorsErrorParams&&);
     ~OnCorsErrorParams();
+
     absl::optional<std::string> devtools_request_id;
     absl::optional<::url::Origin> initiator_origin;
+    mojom::ClientSecurityStatePtr client_security_state;
     GURL url;
     network::CorsErrorStatus status;
+    bool is_warning = false;
   };
 
   const absl::optional<OnCorsErrorParams>& cors_error_params() const {

@@ -14,7 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
  public:
   using DeleteCallback = base::OnceCallback<void(mojom::URLLoader* loader)>;
 
+  // Raw pointer arguments must outlive the returned instance.
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       int32_t process_id,
@@ -62,8 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      absl::optional<mojom::PrivateNetworkRequestPolicy>
-          factory_private_network_request_policy);
+      const mojom::ClientSecurityState* factory_client_security_state);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -126,6 +126,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // actual request.
   void OnUpstreamConnectionError();
 
+  // Reports the error represented by `status` to DevTools, if possible.
+  // If `is_warning` is true, then the error is only reported as a warning.
+  void ReportCorsErrorToDevTools(const CorsErrorStatus& status,
+                                 bool is_warning = false);
+
   // Handles OnComplete() callback.
   void HandleComplete(const URLLoaderCompletionStatus& status);
 
@@ -139,6 +144,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   bool PassesTimingAllowOriginCheck(
       const mojom::URLResponseHead& response) const;
+
+  // Returns the client security state that applies to this request.
+  // May return nullptr.
+  const mojom::ClientSecurityState* GetClientSecurityState() const;
+
+  // Returns a clone of the value returned by `GetClientSecurityState()`.
+  mojom::ClientSecurityStatePtr CloneClientSecurityState() const;
+
+  // Returns whether preflight errors due exclusively to Private Network Access
+  // checks should be ignored.
+  //
+  // This is used to soft-launch Private Network Access preflights: we send
+  // preflights but do not require them to succeed.
+  //
+  // TODO(https://crbug.com/1268378): Remove this once it never returns true.
+  bool ShouldIgnorePrivateNetworkAccessErrors() const;
 
   static absl::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
@@ -216,16 +237,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   net::IsolationInfo isolation_info_;
 
-  // If set to true, then preflight errors due exclusively to Private Network
-  // Access checks are ignored. This is used to soft-launch Private Betwork
-  // Access preflights: we send preflights but do not require them to succeed.
+  // The client security state set on the factory that created this loader.
+  //
+  // If non-null, this is used over any request-specific client security state
+  // passed in `request_.trusted_params`.
   //
   // NOTE: A default value is set here in order to avoid any risk of undefined
   // behavior, but it should never be used since the constructor always
   // initializes this member explicitly.
-  //
-  // TODO(https://crbug.com/1268378): Remove this once it is never set to true.
-  const bool should_ignore_private_network_access_errors_ = false;
+  const mojom::ClientSecurityState* factory_client_security_state_ = nullptr;
 
   bool has_authorization_covered_by_wildcard_ = false;
 

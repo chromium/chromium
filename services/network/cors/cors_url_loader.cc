@@ -224,29 +224,6 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
   return absl::nullopt;
 }
 
-// Computes the policy to use, given the factory and request-specific policies.
-absl::optional<mojom::PrivateNetworkRequestPolicy>
-CombinePrivateNetworkRequestPolicies(
-    absl::optional<mojom::PrivateNetworkRequestPolicy> factory_policy,
-    const ResourceRequest& request) {
-  if (factory_policy.has_value()) {
-    return factory_policy;
-  }
-
-  if (request.trusted_params && request.trusted_params->client_security_state) {
-    return request.trusted_params->client_security_state
-        ->private_network_request_policy;
-  }
-
-  return absl::nullopt;
-}
-
-bool ShouldIgnorePrivateNetworkAccessErrors(
-    absl::optional<mojom::PrivateNetworkRequestPolicy> policy) {
-  return policy &&
-         *policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
-}
-
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 }  // namespace
 
@@ -270,8 +247,7 @@ CorsURLLoader::CorsURLLoader(
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    absl::optional<mojom::PrivateNetworkRequestPolicy>
-        factory_private_network_request_policy)
+    const mojom::ClientSecurityState* factory_client_security_state)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -290,11 +266,7 @@ CorsURLLoader::CorsURLLoader(
       non_wildcard_request_headers_support_(
           non_wildcard_request_headers_support),
       isolation_info_(isolation_info),
-      should_ignore_private_network_access_errors_(
-          ShouldIgnorePrivateNetworkAccessErrors(
-              CombinePrivateNetworkRequestPolicies(
-                  factory_private_network_request_policy,
-                  request_))),
+      factory_client_security_state_(factory_client_security_state),
       devtools_observer_(std::move(devtools_observer)),
       // CORS preflight related events are logged in a series of URL_REQUEST
       // logs.
@@ -384,9 +356,9 @@ void CorsURLLoader::FollowRedirect(
   }
 
   network::URLLoader::LogConcerningRequestHeaders(
-      modified_headers, true /* added_during_redirect */);
+      modified_headers, /*added_during_redirect=*/true);
   network::URLLoader::LogConcerningRequestHeaders(
-      modified_cors_exempt_headers, true /* added_during_redirect */);
+      modified_cors_exempt_headers, /*added_during_redirect=*/true);
 
   for (const auto& name : removed_headers) {
     request_.headers.RemoveHeader(name);
@@ -750,10 +722,19 @@ void CorsURLLoader::StartRequest() {
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       non_wildcard_request_headers_support_,
       PreflightController::EnforcePrivateNetworkAccessHeader(
-          !should_ignore_private_network_access_errors_),
+          !ShouldIgnorePrivateNetworkAccessErrors()),
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
-      network_loader_factory_, isolation_info_, std::move(devtools_observer),
-      net_log_);
+      network_loader_factory_, isolation_info_, CloneClientSecurityState(),
+      std::move(devtools_observer), net_log_);
+}
+
+void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
+                                              bool is_warning) {
+  DCHECK(devtools_observer_);
+
+  devtools_observer_->OnCorsError(
+      request_.devtools_request_id, request_.request_initiator,
+      CloneClientSecurityState(), request_.url, status, is_warning);
 }
 
 void CorsURLLoader::OnPreflightRequestComplete(
@@ -769,6 +750,11 @@ void CorsURLLoader::OnPreflightRequestComplete(
     HandleComplete(status.has_value() ? URLLoaderCompletionStatus(*status)
                                       : URLLoaderCompletionStatus(net_error));
     return;
+  }
+
+  // Even if we ignore the error, report it as a warning to DevTools.
+  if (devtools_observer_ && status) {
+    ReportCorsErrorToDevTools(*status, /*is_warning=*/true);
   }
 
   StartNetworkRequest();
@@ -815,9 +801,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
   }
 
   if (devtools_observer_ && status.cors_error_status) {
-    devtools_observer_->OnCorsError(request_.devtools_request_id,
-                                    request_.request_initiator, request_.url,
-                                    *status.cors_error_status);
+    ReportCorsErrorToDevTools(*status.cors_error_status);
   }
 
   // If we detect a private network access when we were not expecting one, we
@@ -838,7 +822,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     // network access, then we rely on `PreflightController` to ignore
     // PNA-specific preflight errors during this second preflight request.
     should_ignore_preflight_errors_ =
-        should_ignore_private_network_access_errors_ &&
+        ShouldIgnorePrivateNetworkAccessErrors() &&
         !NeedsPreflight(request_).has_value();
 
     network_client_receiver_.reset();
@@ -936,6 +920,40 @@ bool CorsURLLoader::PassesTimingAllowOriginCheck(
   }
 
   return false;
+}
+
+// Computes the client security state to use, given the factory and
+// request-specific values.
+//
+// WARNING: This should be kept in sync with similar logic in
+// `network::URLLoader::GetClientSecurityState()`.
+const mojom::ClientSecurityState* CorsURLLoader::GetClientSecurityState()
+    const {
+  if (factory_client_security_state_) {
+    return factory_client_security_state_;
+  }
+
+  if (request_.trusted_params) {
+    // NOTE: This could return nullptr.
+    return request_.trusted_params->client_security_state.get();
+  }
+
+  return nullptr;
+}
+
+mojom::ClientSecurityStatePtr CorsURLLoader::CloneClientSecurityState() const {
+  const mojom::ClientSecurityState* state = GetClientSecurityState();
+  if (!state) {
+    return nullptr;
+  }
+
+  return state->Clone();
+}
+
+bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors() const {
+  const mojom::ClientSecurityState* state = GetClientSecurityState();
+  return state && state->private_network_request_policy ==
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 }
 
 // static

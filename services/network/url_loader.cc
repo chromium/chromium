@@ -1078,22 +1078,29 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
-    mojom::IPAddressSpace resource_address_space) const {
+// WARNING: This should be kept in sync with similar logic in
+// `network::cors::CorsURLLoader::GetClientSecurityState()`.
+const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() const {
   // Depending on the type of URL request, we source the client security state
   // from either the URLRequest's trusted params (for navigations, which share
   // a factory) or the URLLoaderFactory's params. We prefer the factory params
   // over the request params, as the former always come from the browser
   // process.
-  const mojom::ClientSecurityStatePtr& security_state =
-      factory_params_->client_security_state
-          ? factory_params_->client_security_state
-          : request_client_security_state_;
+  if (factory_params_->client_security_state) {
+    return factory_params_->client_security_state.get();
+  }
+
+  return request_client_security_state_.get();
+}
+
+PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
+    mojom::IPAddressSpace resource_address_space) const {
+  const mojom::ClientSecurityState* security_state = GetClientSecurityState();
 
   // Fully-qualify function name to disambiguate it, otherwise it resolves to
   // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
   PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
-      security_state.get(), target_ip_address_space_, options_,
+      security_state, target_ip_address_space_, options_,
       resource_address_space);
 
   bool is_warning = false;

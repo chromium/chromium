@@ -127,11 +127,16 @@ interface DevToolsObserver {
   // to share sensitive information with DevTools, and is handled in the browser
   // process. Called even when |devtool_request_id| is not available to the
   // URLLoader to ensure CORS issues are recorded even if DevTools is closed.
+  //
+  // |is_warning| being true indicates that the error was suppressed and treated
+  // as a simple warning, as opposed to having caused the request to fail.
   OnCorsError(
     string? devtool_request_id,
     url.mojom.Origin? initiator_origin,
+    ClientSecurityState? client_security_state,
     url.mojom.Url url,
-    CorsErrorStatus status);
+    CorsErrorStatus status,
+    bool is_warning);
 
   // Called when parsing the .wbn file has succeeded. The event
   // contains the information about the web bundle contents.

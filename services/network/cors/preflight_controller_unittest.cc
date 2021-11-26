@@ -221,7 +221,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
   TestURLLoaderFactory url_loader_factory;
-  PreflightController preflight_controller(nullptr /* network_service */);
+  PreflightController preflight_controller(/*network_service=*/nullptr);
 
   network::ResourceRequest request;
   request.url = GURL("https://example.com/");
@@ -232,16 +232,18 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(false),
       NonWildcardRequestHeadersSupport(false),
-      EnforcePrivateNetworkAccessHeader(false), false /* tainted */,
+      EnforcePrivateNetworkAccessHeader(false), /*tainted=*/false,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+      /*client_security_state=*/nullptr,
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(true),
       NonWildcardRequestHeadersSupport(false),
-      EnforcePrivateNetworkAccessHeader(false), false /* tainted */,
+      EnforcePrivateNetworkAccessHeader(false), /*tainted=*/false,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+      /*client_security_state=*/nullptr,
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
   ASSERT_EQ(2, url_loader_factory.NumPending());
@@ -357,8 +359,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   void OnCorsError(const absl::optional<std::string>& devtool_request_id,
                    const absl::optional<::url::Origin>& initiator_origin,
+                   mojom::ClientSecurityStatePtr client_security_state,
                    const GURL& url,
-                   const network::CorsErrorStatus& status) override {}
+                   const network::CorsErrorStatus& status,
+                   bool is_warning) override {}
+
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
     receivers_.Add(this, std::move(observer));
   }
@@ -450,7 +455,8 @@ class PreflightControllerTest : public testing::Test {
         non_wildcard_request_headers_support_,
         EnforcePrivateNetworkAccessHeader(false), tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
-        isolation_info, devtools_observer_->Bind(),
+        isolation_info, /*client_security_state=*/nullptr,
+        devtools_observer_->Bind(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
                                     net::NetLogSourceType::URL_REQUEST));
     run_loop_->Run();
@@ -669,7 +675,7 @@ TEST_F(PreflightControllerTest, CheckTaintedRequest) {
   request.url = GetURL("/tainted");
   request.request_initiator = test_initiator_origin();
 
-  PerformPreflightCheck(request, true /* tainted */);
+  PerformPreflightCheck(request, /*tainted=*/true);
   EXPECT_EQ(net::OK, net_error());
   ASSERT_FALSE(status());
   EXPECT_EQ(1u, access_count());
@@ -770,18 +776,18 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   // Status 200-299 should pass.
   EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
       response_url, 200, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin));
   EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
       response_url, 299, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin));
 
   // Status 300 should fail.
   absl::optional<CorsErrorStatus> invalid_status_error =
       PreflightController::CheckPreflightAccessForTesting(
           response_url, 300, allow_all_header,
-          absl::nullopt /* allow_credentials_header */,
+          /*allow_credentials_header=*/absl::nullopt,
           network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(invalid_status_error);
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
@@ -790,7 +796,7 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   // Status 0 should fail too.
   invalid_status_error = PreflightController::CheckPreflightAccessForTesting(
       response_url, 0, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(invalid_status_error);
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,

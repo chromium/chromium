@@ -95,6 +95,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
       const net::IsolationInfo& isolation_info,
+      mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const net::NetLogWithSource& net_log);
 

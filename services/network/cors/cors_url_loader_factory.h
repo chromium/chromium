@@ -123,8 +123,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const std::string debug_tag_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
-  const absl::optional<mojom::PrivateNetworkRequestPolicy>
-      private_network_request_policy_;
+  const mojom::ClientSecurityStatePtr client_security_state_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

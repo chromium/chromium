@@ -3412,21 +3412,63 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessDoesNotShareCache) {
   EXPECT_EQ(GetRequest().method, "OPTIONS");
 }
 
-mojom::ClientSecurityStatePtr
-MakeClientSecurityStateWithPrivateNetworkRequestPolicy(
-    mojom::PrivateNetworkRequestPolicy policy) {
-  auto state = mojom::ClientSecurityState::New();
-  state->private_network_request_policy = policy;
-  return state;
-}
+class ClientSecurityStateBuilder {
+ public:
+  ClientSecurityStateBuilder() = default;
+  ~ClientSecurityStateBuilder() = default;
 
-ResourceRequest::TrustedParams MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-    mojom::PrivateNetworkRequestPolicy policy) {
-  ResourceRequest::TrustedParams params;
-  params.client_security_state =
-      MakeClientSecurityStateWithPrivateNetworkRequestPolicy(policy);
-  return params;
-}
+  ClientSecurityStateBuilder& WithPrivateNetworkRequestPolicy(
+      mojom::PrivateNetworkRequestPolicy policy) {
+    state_.private_network_request_policy = policy;
+    return *this;
+  }
+
+  ClientSecurityStateBuilder& WithIPAddressSpace(mojom::IPAddressSpace space) {
+    state_.ip_address_space = space;
+    return *this;
+  }
+
+  ClientSecurityStateBuilder& WithIsSecureContext(bool is_secure_context) {
+    state_.is_web_secure_context = is_secure_context;
+    return *this;
+  }
+
+  mojom::ClientSecurityStatePtr Build() const { return state_.Clone(); }
+
+ private:
+  mojom::ClientSecurityState state_;
+};
+
+class RequestTrustedParamsBuilder {
+ public:
+  RequestTrustedParamsBuilder() = default;
+  ~RequestTrustedParamsBuilder() = default;
+
+  RequestTrustedParamsBuilder& WithClientSecurityState(
+      mojom::ClientSecurityStatePtr client_security_state) {
+    params_.client_security_state = std::move(client_security_state);
+    return *this;
+  }
+
+  // Convenience shortcut for a default `ClientSecurityState` with a `policy`.
+  RequestTrustedParamsBuilder& WithPrivateNetworkRequestPolicy(
+      mojom::PrivateNetworkRequestPolicy policy) {
+    return WithClientSecurityState(ClientSecurityStateBuilder()
+                                       .WithPrivateNetworkRequestPolicy(policy)
+                                       .Build());
+  }
+
+  RequestTrustedParamsBuilder& WithDevToolsObserver(
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer) {
+    params_.devtools_observer = std::move(devtools_observer);
+    return *this;
+  }
+
+  ResourceRequest::TrustedParams Build() const { return params_; }
+
+ private:
+  ResourceRequest::TrustedParams params_;
+};
 
 // The following `PrivateNetworkAccessPolicyWarn*` tests verify the correct
 // functioning of the `kPreflightWarn` private network request policy. That is,
@@ -3460,8 +3502,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnSimpleNetError) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3499,8 +3544,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnSimpleCorsError) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3540,8 +3588,11 @@ TEST_F(CorsURLLoaderTest,
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3584,8 +3635,11 @@ TEST_F(CorsURLLoaderTest,
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3628,8 +3682,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnPreflightNetError) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3658,13 +3715,24 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnPreflightCorsError) {
   factory_params.is_trusted = true;
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
+  MockDevToolsObserver devtools_observer;
+
   ResourceRequest request;
   request.method = "PUT";
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3681,6 +3749,20 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnPreflightCorsError) {
   EXPECT_THAT(
       client().completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader)));
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
 }
 
 // This test verifies that when:
@@ -3698,13 +3780,27 @@ TEST_F(CorsURLLoaderTest,
   factory_params.is_trusted = true;
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
+  MockDevToolsObserver devtools_observer;
+
   ResourceRequest request;
   request.method = "PUT";
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
+  // Without this, the devtools observer is not passed to `PreflightController`
+  // and warnings suppressed inside `PreflightController` are not observed.
+  request.devtools_request_id = "devtools";
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3725,6 +3821,21 @@ TEST_F(CorsURLLoaderTest,
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::OK);
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.devtools_request_id, "devtools");
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal));
+  EXPECT_TRUE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
 }
 
 // The following `PrivateNetworkAccessPolicyBlock*` tests verify that PNA
@@ -3750,8 +3861,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyBlockNetError) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3780,13 +3894,24 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyBlockCorsError) {
   factory_params.is_trusted = true;
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
+  MockDevToolsObserver devtools_observer;
+
   ResourceRequest request;
   request.method = "GET";
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3803,6 +3928,20 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyBlockCorsError) {
   EXPECT_THAT(
       client().completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader)));
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
 }
 
 // This test verifies that when:
@@ -3820,13 +3959,24 @@ TEST_F(CorsURLLoaderTest,
   factory_params.is_trusted = true;
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
+  MockDevToolsObserver devtools_observer;
+
   ResourceRequest request;
   request.method = "GET";
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3846,6 +3996,20 @@ TEST_F(CorsURLLoaderTest,
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowExternal)));
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
 }
 
 // This test verifies that when:
@@ -3863,13 +4027,24 @@ TEST_F(CorsURLLoaderTest,
   factory_params.is_trusted = true;
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
+  MockDevToolsObserver devtools_observer;
+
   ResourceRequest request;
   request.method = "GET";
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3891,6 +4066,21 @@ TEST_F(CorsURLLoaderTest,
       client().completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
                                "invalid-value")));
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
+                            "invalid-value"));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
 }
 
 // The following `PrivateNetworkAccessPolicyOn*` tests verify that the private
@@ -3915,8 +4105,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyOnRequestOnly) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3942,8 +4135,10 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyOnFactoryOnly) {
 
   ResetFactoryParams factory_params;
   factory_params.client_security_state =
-      MakeClientSecurityStateWithPrivateNetworkRequestPolicy(
-          mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+      ClientSecurityStateBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .Build();
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
   ResourceRequest request;
@@ -3978,8 +4173,10 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyOnFactoryAndRequest) {
   ResetFactoryParams factory_params;
   factory_params.is_trusted = true;
   factory_params.client_security_state =
-      MakeClientSecurityStateWithPrivateNetworkRequestPolicy(
-          mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+      ClientSecurityStateBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .Build();
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
   ResourceRequest request;
@@ -3987,8 +4184,11 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyOnFactoryAndRequest) {
   request.mode = mojom::RequestMode::kCors;
   request.url = GURL("https://example.com/");
   request.request_initiator = initiator_origin;
-  request.trusted_params = MakeTrustedParamsWithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .Build();
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
