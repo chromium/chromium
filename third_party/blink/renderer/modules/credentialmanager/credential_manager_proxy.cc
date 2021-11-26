@@ -16,7 +16,8 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
       authenticator_(window.GetExecutionContext()),
       credential_manager_(window.GetExecutionContext()),
       webotp_service_(window.GetExecutionContext()),
-      payment_credential_(window.GetExecutionContext()) {
+      payment_credential_(window.GetExecutionContext()),
+      fedcm_get_request_(window.GetExecutionContext()) {
   LocalFrame* frame = window.GetFrame();
   DCHECK(frame);
   frame->GetBrowserInterfaceBroker().GetInterface(
@@ -52,6 +53,31 @@ CredentialManagerProxy::PaymentCredential() {
   return payment_credential_.get();
 }
 
+template <typename Interface>
+void CredentialManagerProxy::BindRemoteForFedCm(
+    HeapMojoRemote<Interface>& remote) {
+  if (remote.is_bound())
+    return;
+
+  LocalFrame* frame = GetSupplementable()->GetFrame();
+  // TODO(kenrb): Work out whether kUserInteraction is the best task type
+  // here. It might be appropriate to create a new one.
+  frame->GetBrowserInterfaceBroker().GetInterface(
+      remote.BindNewPipeAndPassReceiver(
+          frame->GetTaskRunner(TaskType::kUserInteraction)));
+  remote.set_disconnect_handler(WTF::Bind(
+      &CredentialManagerProxy::OnConnectionError, WrapWeakPersistent(this)));
+}
+
+mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCMGetRequest() {
+  BindRemoteForFedCm(fedcm_get_request_);
+  return fedcm_get_request_.get();
+}
+
+void CredentialManagerProxy::OnConnectionError() {
+  fedcm_get_request_.reset();
+}
+
 // static
 CredentialManagerProxy* CredentialManagerProxy::From(
     ScriptState* script_state) {
@@ -71,6 +97,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(credential_manager_);
   visitor->Trace(webotp_service_);
   visitor->Trace(payment_credential_);
+  visitor->Trace(fedcm_get_request_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 

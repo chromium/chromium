@@ -25,83 +25,6 @@ using mojom::blink::ProvideIdTokenStatus;
 using mojom::blink::RequestIdTokenStatus;
 using mojom::blink::RequestMode;
 
-RequestMode ToRequestMode(const String& mode) {
-  if (mode == "mediated") {
-    return RequestMode::kMediated;
-  } else {
-    return RequestMode::kPermission;
-  }
-}
-
-void OnRequestIdToken(ScriptPromiseResolver* resolver,
-                      RequestIdTokenStatus status,
-                      const WTF::String& id_token) {
-  switch (status) {
-    case RequestIdTokenStatus::kApprovalDeclined: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "User declined the sign-in attempt."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorTooManyRequests: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
-          "Only one navigator.id.get request may be outstanding at one time."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "The indicated provider does not support WebID."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorFetchingWellKnown: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Error fetching the provider's .well-known configuration."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorInvalidWellKnown: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Provider's .well-known configuration is invalid."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorFetchingSignin: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Error attempting to reach the provider's sign-in endpoint."));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorInvalidSigninResponse: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Provider's sign-in response is invalid"));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorInvalidAccountsResponse: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Provider's accounts response is invalid"));
-      return;
-    }
-    case RequestIdTokenStatus::kErrorInvalidTokenResponse: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError,
-          "Provider's token response is invalid"));
-      return;
-    }
-    case RequestIdTokenStatus::kError: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
-      return;
-    }
-    case RequestIdTokenStatus::kSuccess: {
-      resolver->Resolve(id_token);
-      return;
-    }
-  }
-}
-
 void OnLogout(ScriptPromiseResolver* resolver, LogoutStatus status) {
   // TODO(kenrb); There should be more thought put into how this API works.
   // Returning success or failure doesn't have a lot of meaning. If some
@@ -132,40 +55,6 @@ WebId::WebId(ExecutionContext& context)
     : ExecutionContextClient(&context),
       auth_request_(&context),
       auth_response_(&context) {}
-
-ScriptPromise WebId::get(ScriptState* script_state,
-                         const WebIdRequestOptions* options,
-                         ExceptionState& exception_state) {
-  DCHECK(options->hasMode());
-
-  // TODO(kenrb): Add some renderer-side validation here, such as validating
-  // |provider|, and making sure the calling context is legal. Some of this
-  // has not been spec'd yet.
-  KURL provider = KURL(NullURL(), options->provider());
-  if (!provider.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Invalid provider URL.");
-    return ScriptPromise();
-  }
-
-  BindRemote(auth_request_);
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  String client_id = options->hasClientId() ? options->clientId() : "";
-  String nonce = options->hasNonce() ? options->nonce() : "";
-
-  DCHECK(options->hasPreferAutoSignIn());
-  bool prefer_auto_sign_in = options->preferAutoSignIn();
-
-  auth_request_->RequestIdToken(
-      provider, client_id, nonce, ToRequestMode(options->mode()),
-      prefer_auto_sign_in,
-      WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
-
-  return promise;
-}
 
 ScriptPromise WebId::provide(ScriptState* script_state, String id_token) {
   BindRemote(auth_response_);

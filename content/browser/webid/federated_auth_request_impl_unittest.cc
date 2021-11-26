@@ -190,7 +190,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Wellknown file not found",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFedCmNotSupportedByProvider, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kWebIdNotSupported,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 

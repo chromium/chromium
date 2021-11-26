@@ -140,6 +140,7 @@ class IdpTestServer {
 
 }  // namespace
 
+// TODO(yigu): Update the tests (e.g. well-known) to cover mediation mode.
 class WebIdBrowserTest : public ContentBrowserTest {
  public:
   WebIdBrowserTest() = default;
@@ -197,11 +198,16 @@ class WebIdBrowserTest : public ContentBrowserTest {
   std::string GetBasicRequestString() {
     return R"(
         (async () => {
-          var x = (await navigator.id.get({
-            provider: ')" +
+          var x = (await navigator.credentials.get({
+            federated: {
+              providers: [{
+                url: ')" +
            BaseIdpUrl() + R"(',
-            client_id: 'client_id_1',
-            nonce: '12345',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+              mode: "permission",
+            }
           }));
           return x;
         }) ()
@@ -294,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
   idp_server()->SetWellKnownResponseDetails({net::HTTP_NOT_FOUND, "", ""});
 
   std::string expected_error =
-      "a JavaScript error: \"NetworkError: The "
-      "indicated provider does not support WebID.\"\n";
+      "a JavaScript error: \"NotSupportedError: The "
+      "indicated provider does not support FedCM.\"\n";
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
 }
 
@@ -303,11 +309,15 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
   std::string script = R"(
         (async () => {
-          var x = (await navigator.id.get({
-            provider: 'http://idp.example)" +
+          var x = (await navigator.credentials.get({
+            federated: {
+              providers: [{
+                url: 'http://idp.example)" +
                        base::NumberToString(https_server().port()) + R"(',
-            client_id: 'client_id_1',
-            nonce: '12345',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }]
+            }
           }));
           return x;
         }) ()

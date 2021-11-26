@@ -10567,7 +10567,6 @@ interface WebGLVertexArrayObject
 interface WebId
     attribute @@toStringTag
     method constructor
-    method get
     method logout
     method provide
 interface WebKitCSSMatrix : DOMMatrixReadOnly

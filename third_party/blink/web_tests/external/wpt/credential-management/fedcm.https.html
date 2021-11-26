@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API basics.</title>
+<link rel="help" href="https://wicg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+  import {fedcm_test} from './support/fedcm-helper.js';
+  const test_options = {
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '1',
+        nonce: '2',
+      }]
+    }
+  };
+
+  fedcm_test(async (t, mock) => {
+    mock.returnIdToken("a_token");
+    const token = await navigator.credentials.get(test_options);
+    assert_equals(token, "a_token");
+  }, "Successfully obtaining id_token should resolve the promise.");
+
+  fedcm_test(async (t, mock) => {
+    mock.returnError("ApprovalDeclined");
+    const result = navigator.credentials.get(test_options);
+    return promise_rejects_dom(t, 'AbortError', result);
+  }, "User approval decline should reject the promise.");
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        clientId: '1',
+        nonce: '2',
+      }]
+    }
+    });
+    return promise_rejects_js(t, TypeError, result);
+  }, "Reject when url is missing" );
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'test',
+        clientId: '1',
+        nonce: '2',
+      }]
+    }
+    });
+    return promise_rejects_dom(t, "InvalidStateError", result);
+  }, "Reject when url is invalid");
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        nonce: '2',
+      }]
+    }
+    });
+    return promise_rejects_js(t, TypeError, result);
+  }, "Reject when clientId is missing" );
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '',
+        nonce: '1',
+      }]
+    }
+    });
+    return promise_rejects_dom(t, "InvalidStateError", result);
+  }, "Reject when clientId is empty");
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '1',
+      }]
+    }
+    });
+    return promise_rejects_js(t, TypeError, result);
+  }, "Reject when nonce is missing" );
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://idp.test',
+        clientId: '1',
+        nonce: '',
+      }]
+    }
+    });
+    return promise_rejects_dom(t, "InvalidStateError", result);
+  }, "Reject when nonce is empty");
+
+  promise_test(function(t) {
+    // Logout API not supported yet.
+    return promise_rejects_dom(t, "NotSupportedError",
+      FederatedCredential.logout([{
+        account_id: "1234",
+        endpoint: "https://rp.example/logout.php"
+      }])
+    );
+  }, "navigator.credentials.logout() basic.");
+</script>

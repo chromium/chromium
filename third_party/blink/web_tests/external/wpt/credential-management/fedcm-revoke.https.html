@@ -7,19 +7,20 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <script type="module">
-  import {webid_test} from './resources/webid-helper.js';
+  import {fedcm_test} from './support/fedcm-helper.js';
 
   const provider = {
-    provider: "https://idp.example/",
-    clientId: ""
+    url: "https://idp.example/",
+    clientId: "1234",
+    nonce: "5678"
   };
 
-  webid_test(async (t, mock) => {
+  fedcm_test(async (t, mock) => {
     mock.revokeReturn("kSuccess");
     await FederatedCredential.revoke("foo@bar.com", provider);
   }, "Successfully revoking a token should resolve the promise.");
 
-  webid_test(async (t, mock) => {
+  fedcm_test(async (t, mock) => {
     mock.revokeReturn("kError");
     const result = FederatedCredential.revoke("foo@bar.com", provider);
     return promise_rejects_dom(t, "NetworkError", result);

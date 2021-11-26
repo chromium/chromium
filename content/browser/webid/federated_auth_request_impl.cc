@@ -209,7 +209,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::Endpoints endpoints) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kWebIdNotSupported: {
-      CompleteRequest(RequestIdTokenStatus::kErrorWebIdNotSupportedByProvider,
+      CompleteRequest(RequestIdTokenStatus::kErrorFedCmNotSupportedByProvider,
                       "");
       return;
     }

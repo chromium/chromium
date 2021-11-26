@@ -14,7 +14,7 @@ enum RequestIdTokenStatus {
   kSuccess,
   kApprovalDeclined,
   kErrorTooManyRequests,
-  kErrorWebIdNotSupportedByProvider,
+  kErrorFedCmNotSupportedByProvider,
   kErrorFetchingWellKnown,
   kErrorInvalidWellKnown,
   kErrorFetchingSignin,

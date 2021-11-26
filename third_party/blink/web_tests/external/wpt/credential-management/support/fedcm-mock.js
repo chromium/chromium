@@ -1,20 +1,21 @@
 import { RequestMode, RequestIdTokenStatus, LogoutStatus, RevokeStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoIdTokenStatus(status) {
-  switch(status) {
-    case "Success": return RequestIdTokenStatus.kSuccess;
-    case "ApprovalDeclined": return RequestIdTokenStatus.kApprovalDeclined;
-    case "ErrorTooManyRequests": return RequestIdTokenStatus.kErrorTooManyRequests;
-    case "ErrorWebIdNotSupportedByProvider": return RequestIdTokenStatus.kErrorWebIdNotSupportedByProvider;
-    case "ErrorFetchingWellKnown": return RequestIdTokenStatus.kErrorFetchingWellKnown;
-    case "ErrorInvalidWellKnown": return RequestIdTokenStatus.kErrorInvalidWellKnown;
-    case "ErrorFetchingSignin": return RequestIdTokenStatus.kErrorFetchingSignin;
-    case "ErrorInvalidSigninResponse": return RequestIdTokenStatus.kErrorInvalidSigninResponse;
-    case "ErrorInvalidAccountsResponse": return RequestIdTokenStatus.kErrorInvalidAccountsResponse;
-    case "ErrorInvalidTokenResponse": return RequestIdTokenStatus.kErrorInvalidTokenResponse;
-    case "Error": return RequestIdTokenStatus.kError;
-    default: throw new Error(`Invalid status: ${status}`);
-  }
+  return RequestIdTokenStatus["k" + status];
+//  switch(status) {
+//    case "Success": return RequestIdTokenStatus.kSuccess;
+//    case "ApprovalDeclined": return RequestIdTokenStatus.kApprovalDeclined;
+//    case "ErrorTooManyRequests": return RequestIdTokenStatus.kErrorTooManyRequests;
+//    case "ErrorWebIdNotSupportedByProvider": return RequestIdTokenStatus.kErrorWebIdNotSupportedByProvider;
+//    case "ErrorFetchingWellKnown": return RequestIdTokenStatus.kErrorFetchingWellKnown;
+//    case "ErrorInvalidWellKnown": return RequestIdTokenStatus.kErrorInvalidWellKnown;
+//    case "ErrorFetchingSignin": return RequestIdTokenStatus.kErrorFetchingSignin;
+//    case "ErrorInvalidSigninResponse": return RequestIdTokenStatus.kErrorInvalidSigninResponse;
+//    case "ErrorInvalidAccountsResponse": return RequestIdTokenStatus.kErrorInvalidAccountsResponse;
+//    case "ErrorInvalidTokenResponse": return RequestIdTokenStatus.kErrorInvalidTokenResponse;
+//    case "Error": return RequestIdTokenStatus.kError;
+//    default: throw new Error(`Invalid status: ${status}`);
+//  }
 }
 
 // A mock service for responding to federated auth requests.
@@ -29,20 +30,30 @@ export class MockFederatedAuthRequest {
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
     this.logoutStatus_ = LogoutStatus.kError;
+    this.revokeStatus_ = RevokeStatus.kError;
   }
 
-  // Causes the subsequent `navigator.id.get()` to resolve with the token.
+  // Causes the subsequent `navigator.credentials.get()` to resolve with the token.
   returnIdToken(token) {
     this.status_ = RequestIdTokenStatus.kSuccess;
     this.idToken_ = token;
   }
 
-  // Causes the subsequent `navigator.id.get()` to reject with the error.
+  // Causes the subsequent `navigator.credentials.get()` to reject with the error.
   returnError(error) {
     if (error == "Success")
       throw new Error("Success is not a valid error");
     this.status_ = toMojoIdTokenStatus(error);
     this.idToken_ = null;
+  }
+
+  // Causes the subsequent `FederatedCredential.revoke` to reject with this
+  // status.
+  revokeReturn(status) {
+    let validated = RevokeStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.revokeStatus_ = validated;
   }
 
   // Implements
@@ -60,16 +71,23 @@ export class MockFederatedAuthRequest {
     });
   }
 
+  async revoke(provider, client_id, account_id) {
+    return Promise.resolve({
+      status: this.revokeStatus_
+    });
+  }
+
   async reset() {
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
     this.logoutStatus_ = LogoutStatus.kError;
     this.receiver_.$.close();
+    this.revokeStatus_ = RevokeStatus.kError;
     this.interceptor_.stop();
 
     // Clean up and reset mock stubs asynchronously, so that the blink side
     // closes its proxies and notifies JS sensor objects before new test is
     // started.
-    await new Promise(resolve => { setTimeout(resolve, 0); });
+    await new Promise(resolve => { step_timeout(resolve, 0); });
   }
 }

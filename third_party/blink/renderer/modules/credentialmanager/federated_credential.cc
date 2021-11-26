@@ -107,14 +107,15 @@ ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
       auth_request.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kUserInteraction)));
 
-  const String& url = provider->provider();
+  const String& url = provider->url();
   KURL provider_url(url);
   if (!provider_url.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Invalid provider URL.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Provided provider information is incomplete.");
     return ScriptPromise();
   }
-  const String& client_id = provider->getClientIdOr("");
+  const String& client_id = provider->clientId();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

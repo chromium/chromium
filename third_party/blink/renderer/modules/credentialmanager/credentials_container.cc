@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_identity_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_otp_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -93,6 +94,8 @@ using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
+using mojom::blink::RequestIdTokenStatus;
+using mojom::blink::RequestMode;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
 
 constexpr char kCryptotokenOrigin[] =
@@ -813,6 +816,86 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   return true;
 }
 
+RequestMode ToRequestMode(const String& mode) {
+  if (mode == "mediated") {
+    return RequestMode::kMediated;
+  } else {
+    return RequestMode::kPermission;
+  }
+}
+
+void OnRequestIdToken(ScriptPromiseResolver* resolver,
+                      RequestIdTokenStatus status,
+                      const WTF::String& id_token) {
+  // TODO(yigu): we should reject certain promise with unified message and delay
+  // to avoid fingerprinting.
+  switch (status) {
+    case RequestIdTokenStatus::kApprovalDeclined: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "User declined the sign-in attempt."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one navigator.credentials.get request may be outstanding at "
+          "one time."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorFedCmNotSupportedByProvider: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "The indicated provider does not support FedCM."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorFetchingWellKnown: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Error fetching the provider's .well-known configuration."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorInvalidWellKnown: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Provider's .well-known configuration is invalid."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorFetchingSignin: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Error attempting to reach the provider's sign-in endpoint."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorInvalidSigninResponse: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Provider's sign-in response is invalid"));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorInvalidAccountsResponse: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Provider's accounts response is invalid"));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorInvalidTokenResponse: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Provider's token response is invalid"));
+      return;
+    }
+    case RequestIdTokenStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+      return;
+    }
+    case RequestIdTokenStatus::kSuccess: {
+      resolver->Resolve(id_token);
+      return;
+    }
+  }
+}
+
 }  // namespace
 
 const char CredentialsContainer::kSupplementName[] = "CredentialsContainer";
@@ -1041,14 +1124,36 @@ ScriptPromise CredentialsContainer::get(
         if (url.IsValid())
           providers.push_back(std::move(url));
       } else if (provider->IsFederatedIdentityProvider()) {
+        // TODO(yigu): Ideally the logic should be handled in CredentialManager
+        // via Get. However currently it's only for password management and we
+        // should refactor the logic to make it generic.
         if (!RuntimeEnabledFeatures::WebIDEnabled()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
           return promise;
         }
-        // TODO: connect this with the browser Mojo service.
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError, "Not implemented"));
+        // TODO(kenrb): Add some renderer-side validation here, such as
+        // validating |provider|, and making sure the calling context is legal.
+        // Some of this has not been spec'd yet.
+        FederatedIdentityProvider* federated_identity_provider =
+            provider->GetAsFederatedIdentityProvider();
+        KURL provider_url(federated_identity_provider->url());
+        String client_id = federated_identity_provider->clientId();
+        String nonce = federated_identity_provider->nonce();
+        if (!provider_url.IsValid() || client_id == "" || nonce == "") {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kInvalidStateError,
+              "Provided provider information is incomplete."));
+          return promise;
+        }
+        DCHECK(options->federated()->hasPreferAutoSignIn());
+        bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
+        auto* fedcm_get_request =
+            CredentialManagerProxy::From(script_state)->FedCMGetRequest();
+        fedcm_get_request->RequestIdToken(
+            provider_url, client_id, nonce,
+            ToRequestMode(options->federated()->mode()), prefer_auto_sign_in,
+            WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
         return promise;
       }
     }
