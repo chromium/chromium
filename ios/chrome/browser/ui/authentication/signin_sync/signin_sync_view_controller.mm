@@ -36,8 +36,6 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     @"kLearnMoreTextViewAccessibilityIdentifier";
 
-constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
-
 }  // namespace
 
 @interface SigninSyncViewController () <UITextViewDelegate>
@@ -75,7 +73,7 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   int titleTextID = IDS_IOS_FIRST_RUN_SIGNIN_TITLE;
-  [self.delegate addConsentStringID:titleTextID];
+  [self.delegate signinSyncViewController:self addConsentStringID:titleTextID];
   self.titleText = l10n_util::GetNSString(titleTextID);
 
   int subtitleTextID;
@@ -84,7 +82,7 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
   } else {
     subtitleTextID = IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED;
   }
-  [self.delegate addConsentStringID:subtitleTextID];
+  [self.delegate signinSyncViewController:self addConsentStringID:titleTextID];
   self.subtitleText = l10n_util::GetNSString(subtitleTextID);
 
   if (!self.primaryActionString) {
@@ -93,9 +91,10 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
   // Set the consent ID associated with the primary action string to
-  // |kEnableSyncStringID| regardless of its current value because this is the
-  // only string that will be used in the button when enabling sync.
-  [self.delegate addConsentStringID:kEnableSyncStringID];
+  // |self.activateSyncButtonID| regardless of its current value because this
+  // is the only string that will be used in the button when enabling sync.
+  [self.delegate signinSyncViewController:self
+                       addConsentStringID:self.activateSyncButtonID];
 
   if (self.identityControlInTop) {
     [self.topSpecificContentView addSubview:self.identityControl];
@@ -104,6 +103,8 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
   }
 
   UILabel* syncInfoLabel = [self syncInfoLabel];
+  // TODO(crbug.com/1270491) don't show the advanced settings button when there
+  // is no account available/selected.
   UIButton* advanceSyncSettingsButton = [self advanceSyncSettingsButton];
 
   // Add content specific to sync.
@@ -293,7 +294,7 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
   int textID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT;
-  [self.delegate addConsentStringID:textID];
+  [self.delegate signinSyncViewController:self addConsentStringID:textID];
   label.text = l10n_util::GetNSString(textID);
   label.textColor = [UIColor colorNamed:kGrey600Color];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -309,7 +310,7 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
   [button.titleLabel
       setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
   int stringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
-  [self.delegate addConsentStringID:stringID];
+  [self.delegate signinSyncViewController:self addConsentStringID:stringID];
   [button setTitle:l10n_util::GetNSString(stringID)
           forState:UIControlStateNormal];
   [button setTitleColor:[UIColor colorNamed:kBlueColor]
@@ -319,6 +320,10 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
                 action:@selector(showAdvanceSyncSettings)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+- (int)activateSyncButtonID {
+  return IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
 }
 
 #pragma mark - SignInSyncConsumer
@@ -354,7 +359,8 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
 // Callback for |identityControl|.
 - (void)identityButtonControlTapped:(id)sender forEvent:(UIEvent*)event {
   UITouch* touch = event.allTouches.anyObject;
-  [self.delegate showAccountPickerFromPoint:[touch locationInView:nil]];
+  [self.delegate signinSyncViewController:self
+               showAccountPickerFromPoint:[touch locationInView:nil]];
 }
 
 // Updates the UI to adapt for |identityAvailable| or not.
@@ -362,9 +368,11 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {
     self.primaryActionString = l10n_util::GetNSStringF(
-        kEnableSyncStringID,
+        self.activateSyncButtonID,
         base::SysNSStringToUTF16(self.personalizedButtonPrompt));
   } else {
+    // TODO(crbug.com/1271355): We need to determine that string. We may want
+    // to change it.
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
@@ -381,7 +389,7 @@ constexpr int kEnableSyncStringID = IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
 
 // Called when the sync advanced settings button is tapped.
 - (void)showAdvanceSyncSettings {
-  [self.delegate showSyncSettings];
+  [self.delegate signinSyncViewControllerDidTapOnSettings:self];
 }
 
 #pragma mark - UITextViewDelegate

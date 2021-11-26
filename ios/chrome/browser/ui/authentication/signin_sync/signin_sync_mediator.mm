@@ -4,13 +4,21 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/consent_auditor/consent_auditor.h"
+#include "components/sync/driver/sync_service.h"
+#import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_mediator_delegate.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,22 +36,48 @@
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // Authentication service for sign in.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
+// Manager for user's Google identities.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
+// Auditor for user consent.
+@property(nonatomic, assign) consent_auditor::ConsentAuditor* consentAuditor;
+// Service to configure sync.
+@property(nonatomic, assign) SyncSetupService* syncSetupService;
+// Manager for user consent.
+@property(nonatomic, assign)
+    unified_consent::UnifiedConsentService* unifiedConsentService;
+// Manager for the authentication flow.
+@property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
 @implementation SigninSyncMediator
 
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                        authenticationService:
-                            (AuthenticationService*)authenticationService {
+- (instancetype)
+    initWithAuthenticationService:(AuthenticationService*)authenticationService
+                  identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+                   consentAuditor:
+                       (consent_auditor::ConsentAuditor*)consentAuditor
+                 syncSetupService:(SyncSetupService*)syncSetupService
+            unifiedConsentService:
+                (unified_consent::UnifiedConsentService*)unifiedConsentService
+                      syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
     DCHECK(authenticationService);
 
-    _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
+    _identityManager = identityManager;
+    _accountManagerService = accountManagerService;
+    _consentAuditor = consentAuditor;
+    _syncSetupService = syncSetupService;
+    _unifiedConsentService = unifiedConsentService;
+    _syncService = syncService;
+
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
@@ -70,20 +104,36 @@
   _accountManagerServiceObserver.reset();
 }
 
-- (void)startSignInWithAuthenticationFlow:
-            (AuthenticationFlow*)authenticationFlow
-                               completion:(ProceduralBlock)completion {
+- (void)startSyncWithConfirmationID:(const int)confirmationID
+                         consentIDs:(NSArray<NSNumber*>*)consentIDs
+                 authenticationFlow:(AuthenticationFlow*)authenticationFlow {
+  DCHECK(!self.authenticationFlow);
+
   [self.consumer setUIEnabled:NO];
+
+  // Local copy to be captured to make sure that the updates don't propagate to
+  // the authentication flow when it is started.
+  NSArray<NSNumber*>* consentIDsCopy = [consentIDs copy];
+
+  self.authenticationFlow = authenticationFlow;
   __weak __typeof(self) weakSelf = self;
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (!success)
-      return;
-    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                                     addedAccount:weakSelf.addedAccount
-                            advancedSettingsShown:NO];
-    if (completion)
-      completion();
+  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    [weakSelf signinCompletedWithSuccess:success
+                          confirmationID:confirmationID
+                              consentIDs:consentIDsCopy];
+  }];
+}
+
+- (void)prepareAdvancedSettingsWithAuthenticationFlow:
+    (AuthenticationFlow*)authenticationFlow {
+  DCHECK(!self.authenticationFlow);
+
+  [self.consumer setUIEnabled:NO];
+
+  self.authenticationFlow = authenticationFlow;
+  __weak __typeof(self) weakSelf = self;
+  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    [weakSelf signinForAdvancedSettingsCompletedWithSuccess:success];
   }];
 }
 
@@ -141,6 +191,68 @@
                           givenName:self.selectedIdentity.userGivenName
                              avatar:avatar];
   }
+}
+
+// Callback used when the sign-in flow is complete, with/without |success|.
+- (void)signinCompletedWithSuccess:(BOOL)success
+                    confirmationID:(const int)confirmationID
+                        consentIDs:(NSArray<NSNumber*>*)consentIDs {
+  self.authenticationFlow = nil;
+  [self.consumer setUIEnabled:YES];
+
+  if (!success) {
+    return;
+  }
+
+  // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
+  // user_signin_mediator.
+
+  // Set sync consent.
+  sync_pb::UserConsentTypes::SyncConsent syncConsent;
+  syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
+                             UserConsentTypes_ConsentStatus_GIVEN);
+  syncConsent.set_confirmation_grd_id(confirmationID);
+  for (NSNumber* consentID in consentIDs) {
+    syncConsent.add_description_grd_ids([consentID intValue]);
+  }
+
+  // Set the account to enable sync for.
+  DCHECK(self.selectedIdentity);
+  CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
+      base::SysNSStringToUTF8([self.selectedIdentity gaiaID]),
+      base::SysNSStringToUTF8([self.selectedIdentity userEmail]));
+
+  self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
+  self.authenticationService->GrantSyncConsent(self.selectedIdentity);
+
+  self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+
+  // Turn on FirstSetupComplete flag after the authentication service has
+  // granted user consent to start Sync.
+  self.syncSetupService->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  self.syncSetupService->CommitSyncChanges();
+
+  [self.delegate signinSyncMediatorDidSuccessfulyFinishSignin:self];
+}
+
+// Callback used when the sign-in flow used for advanced settings is complete,
+// with/without |success|.
+- (void)signinForAdvancedSettingsCompletedWithSuccess:(BOOL)success {
+  self.authenticationFlow = nil;
+  [self.consumer setUIEnabled:YES];
+
+  if (!success) {
+    return;
+  }
+
+  // Sync has to be set as requested in order to display the preferences
+  // correctly and differentiate the special state where the user is signed
+  // in, but the sync feature can't start yet.
+  _syncService->GetUserSettings()->SetSyncRequested(true);
+
+  [self.delegate
+      signinSyncMediatorDidSuccessfulyFinishSigninForAdvancedSettings:self];
 }
 
 @end

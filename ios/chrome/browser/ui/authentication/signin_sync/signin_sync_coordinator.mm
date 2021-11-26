@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#include "components/sync/driver/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -16,13 +17,20 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/constants.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/consent_auditor_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/user_policy_signout/user_policy_signout_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_mediator.h"
+#import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
@@ -41,6 +49,7 @@
 
 @interface SigninSyncCoordinator () <IdentityChooserCoordinatorDelegate,
                                      PolicyWatcherBrowserAgentObserving,
+                                     SigninSyncMediatorDelegate,
                                      SigninSyncViewControllerDelegate,
                                      UserPolicySignoutCoordinatorDelegate> {
   // Observer for the sign-out policy changes.
@@ -70,11 +79,18 @@
     UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-// YES if this coordinator is currently used in First Run.
+// YES if this coordinator is currently used in First Run. When set to NO, it
+// is assumed that the coordinator is used outside of First Run (i.e., used
+// from Settings).
 @property(nonatomic, readonly) BOOL firstRun;
 // The consent string ids that were pushed that are related to the text for
 // sync.
 @property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
+// Coordinator for showing advanced settings on top of the screen.
+@property(nonatomic, strong)
+    SigninCoordinator* advancedSettingsSigninCoordinator;
+// Browser sign-in state to revert to in case sync is canceled.
+@property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 
 @end
 
@@ -101,30 +117,39 @@
         SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
     AppState* appState = sceneState.appState;
     _firstRun = appState.initStage == InitStageFirstRun;
+    // Make sure that the coordinator is only used for the FRE which is the
+    // only context that is supported at the moment. The coordinator may be
+    // used outside of the FRE but this case isn't supported yet.
+    DCHECK(_firstRun);
   }
   return self;
 }
 
 - (void)start {
-  if (!signin::IsSigninAllowedByPolicy()) {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  if (!signin::IsSigninAllowedByPolicy() ||
+      IsSyncDisabledByPolicy(browserState)) {
+    // Skip the screen if sync is disabled by policy.
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
     return;
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-
-  if (authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    // Don't show sign in screen if there is already an account signed in (for
-    // example going through the FRE then killing the app and restarting the
-    // FRE). Don't record any metric as the user didn't take any action.
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  if (syncSetupService->IsFirstSetupComplete()) {
+    // Skip the screen if sync is already enabled. Sync might be already
+    // enabled if the coordinator is used outside of the FRE OR when tests are
+    // performed with irregular states. We expect sync to be disabled when the
+    // FRE is displayed in a regular situation (i.e., first launch after
+    // install).
     [self.delegate willFinishPresenting];
     return;
   }
+
+  self.signinStateOnStart =
+      signin::GetPrimaryIdentitySigninState(self.browser->GetBrowserState());
 
   PolicyWatcherBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_policyWatcherObserverBridge.get());
@@ -138,9 +163,19 @@
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   self.mediator = [[SigninSyncMediator alloc]
-      initWithAccountManagerService:self.accountManagerService
-              authenticationService:authenticationService];
-
+      initWithAuthenticationService:AuthenticationServiceFactory::
+                                        GetForBrowserState(browserState)
+                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                                        browserState)
+              accountManagerService:self.accountManagerService
+                     consentAuditor:ConsentAuditorFactory::GetForBrowserState(
+                                        browserState)
+                   syncSetupService:syncSetupService
+              unifiedConsentService:UnifiedConsentServiceFactory::
+                                        GetForBrowserState(browserState)
+                        syncService:SyncServiceFactory::GetForBrowserState(
+                                        self.browser->GetBrowserState())];
+  self.mediator.delegate = self;
   self.mediator.selectedIdentity =
       self.accountManagerService->GetDefaultIdentity();
   self.hadIdentitiesAtStartup = self.accountManagerService->HasIdentities();
@@ -167,23 +202,34 @@
   self.mediator = nil;
   [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator = nil;
-  // If advancedSettingsSigninCoordinator wasn't dismissed yet (which can
-  // happen when closing the scene), try to call -interruptWithAction: to
-  // properly cleanup the coordinator.
-  SigninCoordinator* signinCoordiantor = self.addAccountSigninCoordinator;
+
+  // If |_addAccountSigninCoordinator| or |_advancedSettingsSigninCoordinator|
+  // weren't stopped yet (which can happen when closing the scene), try to
+  // call -interruptWithAction: to properly tear down the coordinators.
+  SigninCoordinator* signinCoordinator = self.addAccountSigninCoordinator;
   [self.addAccountSigninCoordinator
       interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
                completion:^() {
-                 [signinCoordiantor stop];
+                 [signinCoordinator stop];
                }];
   self.addAccountSigninCoordinator = nil;
+  signinCoordinator = self.advancedSettingsSigninCoordinator;
+  [self.advancedSettingsSigninCoordinator
+      interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+               completion:^() {
+                 [signinCoordinator stop];
+               }];
+  self.advancedSettingsSigninCoordinator = nil;
+
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
 }
 
 #pragma mark - SigninSyncViewControllerDelegate
 
-- (void)showAccountPickerFromPoint:(CGPoint)point {
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+      showAccountPickerFromPoint:(CGPoint)point {
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -194,18 +240,32 @@
       self.mediator.selectedIdentity;
 }
 
-- (void)showSyncSettings {
-  // TODO(crbug.com/1268669): Implement this.
+- (void)signinSyncViewControllerDidTapOnSettings:
+    (SigninSyncViewController*)signinSyncViewController {
+  DCHECK(self.mediator.selectedIdentity);
+
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+
+  [self.mediator
+      prepareAdvancedSettingsWithAuthenticationFlow:authenticationFlow];
 }
 
-- (void)addConsentStringID:(const int)stringID {
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+              addConsentStringID:(const int)stringID {
   [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
 }
 
 - (void)didTapPrimaryActionButton {
   if (self.mediator.selectedIdentity) {
-    // TODO(crbug.com/1268671): This should start sync as well.
-    [self startSignIn];
+    [self startSync];
   } else {
     [self triggerAddAccount];
   }
@@ -266,6 +326,22 @@
 
 - (void)userPolicySignoutDidDismiss {
   [self dismissSignedOutModalAndSkipScreens:NO];
+}
+
+#pragma mark - SigninSyncMediatorDelegate
+
+- (void)signinSyncMediatorDidSuccessfulyFinishSignin:
+    (SigninSyncMediator*)mediator {
+  if (self.firstRun) {
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSyncScreenCompletionWithSync);
+  }
+  [self.delegate willFinishPresenting];
+}
+
+- (void)signinSyncMediatorDidSuccessfulyFinishSigninForAdvancedSettings:
+    (SigninSyncMediator*)mediator {
+  [self showAdvancedSettings];
 }
 
 #pragma mark - Private
@@ -340,33 +416,50 @@
   }
 }
 
-// TODO(crbug.com/1268671): This should start sync as well.
-// Starts the sign in process.
-- (void)startSignIn {
+// Shows the advanced sync settings on top of the screen.
+- (void)showAdvancedSettings {
+  DCHECK(!self.advancedSettingsSigninCoordinator);
+
+  self.advancedSettingsSigninCoordinator = [SigninCoordinator
+      advancedSettingsSigninCoordinatorWithBaseViewController:
+          self.viewController
+                                                      browser:self.browser
+                                                  signinState:
+                                                      self.signinStateOnStart];
+  __weak __typeof(self) weakSelf = self;
+  self.advancedSettingsSigninCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult advancedSigninResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf onAdvancedSettingsFinished];
+      };
+  [self.advancedSettingsSigninCoordinator start];
+}
+
+// Starts syncing.
+- (void)startSync {
   DCHECK(self.mediator.selectedIdentity);
 
-  self.attemptStatus = first_run::SignInAttemptStatus::ATTEMPTED;
-
-  DCHECK(self.mediator.selectedIdentity);
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
                                   shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                                 postSignInAction:POST_SIGNIN_ACTION_COMMIT_SYNC
                          presentingViewController:self.viewController];
-  __weak __typeof(self) weakSelf = self;
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+
   [self.mediator
-      startSignInWithAuthenticationFlow:authenticationFlow
-                             completion:^() {
-                               [weakSelf
-                                   finishPresentingAndSkipRemainingScreens:NO];
-                               if (self.firstRun) {
-                                 base::UmaHistogramEnumeration(
-                                     "FirstRun.Stage",
-                                     first_run::
-                                         kSignInScreenCompletionWithSignIn);
-                               }
-                             }];
+      startSyncWithConfirmationID:[self.viewController activateSyncButtonID]
+                       consentIDs:self.consentStringIDs
+               authenticationFlow:authenticationFlow];
+}
+
+// Called when advanced settings are dismissed/finished.
+- (void)onAdvancedSettingsFinished {
+  DCHECK(self.advancedSettingsSigninCoordinator);
+
+  [self.advancedSettingsSigninCoordinator stop];
+  self.advancedSettingsSigninCoordinator = nil;
 }
 
 @end

@@ -38,6 +38,7 @@ void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
 // app.
 bool IsSigninAllowed(const PrefService* prefs);
 
+// TODO(crbug.com/1271785): Move this to enterprise_utils.
 // Returns a boolean indicating whether policy allows browser sign-in.
 bool IsSigninAllowedByPolicy();
 

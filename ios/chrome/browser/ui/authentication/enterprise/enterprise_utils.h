@@ -36,4 +36,7 @@ bool HasManagedSyncDataType(ChromeBrowserState* browserState);
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
     ChromeBrowserState* browserState);
 
+// true if sync is disabled.
+bool IsSyncDisabledByPolicy(ChromeBrowserState* browserState);
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ENTERPRISE_ENTERPRISE_UTILS_H_

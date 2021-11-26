@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller_delegate.h"
@@ -22,6 +23,9 @@
 
 // YES if the identity control button has to be in the top of the screen.
 @property(nonatomic, assign) BOOL identityControlInTop;
+
+// The ID of the main button activating sync.
+@property(nonatomic, readonly) int activateSyncButtonID;
 
 @end
 
