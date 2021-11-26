@@ -8,12 +8,13 @@
 #include <queue>
 #include <set>
 #include <utility>
+
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace crostini {
 

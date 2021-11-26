@@ -1114,6 +1114,7 @@ static_library("extensions") {
     deps += [
       "//ash",
       "//ash/components/attestation",
+      "//ash/components/disks",
       "//ash/components/enhanced_network_tts/mojom",
       "//ash/components/settings",
       "//ash/constants",
@@ -1139,7 +1140,6 @@ static_library("extensions") {
       "//chromeos/dbus/power",
       "//chromeos/dbus/update_engine",
       "//chromeos/dbus/util",
-      "//chromeos/disks",
       "//chromeos/language/language_packs",
       "//chromeos/language/public/mojom",
       "//chromeos/login/auth",

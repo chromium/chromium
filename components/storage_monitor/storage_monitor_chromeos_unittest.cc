@@ -10,14 +10,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_info.h"

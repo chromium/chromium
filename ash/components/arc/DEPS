@@ -57,7 +57,4 @@ specific_include_rules = {
   ".*_unittest.cc": [
     "+content/public/test/browser_task_environment.h"
   ],
-  "arc_volume_mounter_bridge_unittest.cc": [
-    "+chromeos/disks",
-  ],
 }

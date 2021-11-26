@@ -31,8 +31,7 @@ components.
 
 For example, //chromeos/dbus contains wrappers around the D-Bus interfaces to
 system daemons like the network configuration manager (shill). Most other
-directories contain low-level utility code. For example, //chromeos/disks has
-utilities for mounting and unmounting disk volumes.
+directories contain low-level utility code.
 
 There are two exceptions:
 

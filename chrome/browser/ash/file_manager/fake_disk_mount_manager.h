@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace file_manager {
 

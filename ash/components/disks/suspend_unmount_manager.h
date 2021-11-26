@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
-#define CHROMEOS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
+#ifndef ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
+#define ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
 
 #include <set>
 #include <string>
@@ -20,7 +20,7 @@ namespace disks {
 class DiskMountManager;
 
 // Class to unmount disks at suspend.
-class COMPONENT_EXPORT(CHROMEOS_DISKS) SuspendUnmountManager
+class COMPONENT_EXPORT(ASH_DISKS) SuspendUnmountManager
     : public PowerManagerClient::Observer {
  public:
   // The ownership of these raw pointers still remains with the caller.
@@ -54,4 +54,4 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) SuspendUnmountManager
 }  // namespace disks
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
+#endif  // ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_

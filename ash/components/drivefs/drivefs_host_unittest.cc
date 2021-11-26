@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/components/drivefs/drivefs_host_observer.h"
 #include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
@@ -25,7 +26,6 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"

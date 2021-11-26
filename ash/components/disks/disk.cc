@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/disks/disk.h"
+#include "ash/components/disks/disk.h"
 
 #include <utility>
 

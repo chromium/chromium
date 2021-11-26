@@ -53,7 +53,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "extensions/shell/browser/shell_audio_controller_chromeos.h"
 #include "extensions/shell/browser/shell_network_controller_chromeos.h"

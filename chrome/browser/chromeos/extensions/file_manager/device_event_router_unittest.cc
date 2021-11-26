@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {

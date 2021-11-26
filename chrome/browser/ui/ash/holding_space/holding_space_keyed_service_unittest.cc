@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/pref_registry/pref_registry_syncable.h"

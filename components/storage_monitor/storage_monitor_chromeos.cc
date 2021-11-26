@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/disks/disk.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -22,7 +23,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/disks/disk.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/mtp_manager_client_chromeos.h"
 #include "components/storage_monitor/removable_device_constants.h"

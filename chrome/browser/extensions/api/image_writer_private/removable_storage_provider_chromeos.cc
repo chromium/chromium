@@ -4,9 +4,9 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace extensions {
 

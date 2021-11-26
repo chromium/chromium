@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -61,7 +62,6 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_device_handler.h"
 #include "components/component_updater/component_updater_service.h"

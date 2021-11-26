@@ -3062,6 +3062,7 @@ static_library("test_support") {
     "//ash/assistant/ui:ui",
     "//ash/components/attestation:test_support",
     "//ash/components/audio",
+    "//ash/components/disks:test_support",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",

@@ -24,7 +24,7 @@
 #include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/disks/disk_mount_manager.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #endif
 
 namespace image_writer_api = extensions::api::image_writer_private;

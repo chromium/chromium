@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/storage_monitor/storage_monitor.h"
 

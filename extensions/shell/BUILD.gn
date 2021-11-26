@@ -232,12 +232,12 @@ source_set("app_shell_lib") {
     ]
     deps += [
       "//ash/components/audio",
+      "//ash/components/disks",
       "//ash/constants",
       "//chromeos/dbus",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/hermes",
       "//chromeos/dbus/power",
-      "//chromeos/disks",
       "//chromeos/login/login_state",
       "//chromeos/network",
       "//ui/chromeos",

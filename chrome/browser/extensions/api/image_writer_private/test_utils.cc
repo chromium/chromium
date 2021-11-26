@@ -20,10 +20,10 @@
 #include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/disks/disk.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/image_burner/fake_image_burner_client.h"
-#include "chromeos/disks/disk.h"
 #endif
 
 namespace extensions {

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/disks/mock_disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 
 #include <stdint.h>
 
 #include <memory>
 #include <utility>
 
+#include "ash/components/disks/disk.h"
 #include "base/strings/string_util.h"
-#include "chromeos/disks/disk.h"
 
 using testing::_;
 using testing::AnyNumber;

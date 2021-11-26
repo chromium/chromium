@@ -7,12 +7,12 @@
 
 #include <string>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "third_party/re2/src/re2/re2.h"
 
 class Profile;

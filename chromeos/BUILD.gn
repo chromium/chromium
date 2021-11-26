@@ -111,7 +111,6 @@ source_set("test_support_source_set") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/dbus:test_support",
-      "//chromeos/disks:test_support",
       "//chromeos/login/auth:test_support",
       "//chromeos/login/login_state:test_support",
       "//chromeos/network:test_support",
@@ -159,7 +158,6 @@ test("chromeos_unittests") {
       "//chromeos/dbus:test_support",
       "//chromeos/dbus:unit_tests",
       "//chromeos/dbus/services:unit_tests",
-      "//chromeos/disks:unit_tests",
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/auth:unit_tests",
       "//chromeos/login/login_state:unit_tests",

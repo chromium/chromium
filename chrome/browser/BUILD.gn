@@ -7661,12 +7661,12 @@ static_library("test_support") {
     configs += [ "//build/config/linux/dbus" ]
     deps += [
       "//ash/components/attestation:test_support",
+      "//ash/components/disks",
       "//ash/public/cpp",
       "//chrome/test:test_support_ui",
       "//chromeos:test_support",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
-      "//chromeos/disks",
       "//chromeos/login/auth",
       "//components/session_manager/core",
       "//components/soda",

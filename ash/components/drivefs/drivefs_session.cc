@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/disks/mount_point.h"
 #include "ash/components/drivefs/drivefs_bootstrap.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chromeos/disks/mount_point.h"
 
 namespace drivefs {
 

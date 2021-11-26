@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_
-#define CHROMEOS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_
+#ifndef ASH_COMPONENTS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_
+#define ASH_COMPONENTS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_
 
 #include <stdint.h>
 
 #include <string>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -150,4 +150,4 @@ class MockDiskMountManager : public DiskMountManager {
 }  // namespace disks
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_
+#endif  // ASH_COMPONENTS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_

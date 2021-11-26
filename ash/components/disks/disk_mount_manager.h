@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DISKS_DISK_MOUNT_MANAGER_H_
-#define CHROMEOS_DISKS_DISK_MOUNT_MANAGER_H_
+#ifndef ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
+#define ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
 
 #include <stdint.h>
 
@@ -40,7 +40,7 @@ enum class FormatFileSystemType {
 
 // This class handles the interaction with cros-disks.
 // Other classes can add themselves as observers.
-class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
+class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
  public:
   // Event types passed to the observers.
   enum DiskEvent {
@@ -266,4 +266,4 @@ using ::chromeos::disks::DiskMountManager;
 }  // namespace disks
 }  // namespace ash
 
-#endif  // CHROMEOS_DISKS_DISK_MOUNT_MANAGER_H_
+#endif  // ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_

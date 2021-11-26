@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/disks/mount_point.h"
+#include "ash/components/disks/mount_point.h"
 
 #include <string>
 #include <utility>

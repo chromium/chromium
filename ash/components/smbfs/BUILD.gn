@@ -15,9 +15,9 @@ component("smbfs") {
   ]
   public_deps = [ "//ash/components/smbfs/mojom" ]
   deps = [
+    "//ash/components/disks",
     "//base",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/disks",
     "//mojo/public/cpp/bindings",
     "//net",
   ]
@@ -33,11 +33,11 @@ source_set("unit_tests") {
 
   deps = [
     ":smbfs",
+    "//ash/components/disks:test_support",
     "//ash/components/smbfs/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/disks:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

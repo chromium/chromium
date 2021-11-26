@@ -14,6 +14,7 @@ source_set("unit_tests") {
     "//ash/components/attestation:unit_tests",
     "//ash/components/audio:unit_tests",
     "//ash/components/device_activity:unit_tests",
+    "//ash/components/disks:unit_tests",
     "//ash/components/drivefs:unit_tests",
     "//ash/components/fwupd:unit_tests",
     "//ash/components/geolocation:unit_tests",

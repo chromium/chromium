@@ -9,6 +9,9 @@ For example, //ash/components/account_manager manages the user's GAIA accounts,
 but only on behalf of Chrome OS code. //components/account_manager_core contains
 cross-platform support for accounts.
 
+Some subdirectories contain low-level utility code. For example,
+//ash/components/disks has utilities for mounting and unmounting disk volumes.
+
 Much of this code used to live in //chromeos/components. The
 [Lacros project](/docs/lacros.md) is extracting browser functionality into a
 separate binary. As part of this migration, code used only by the ash-chrome

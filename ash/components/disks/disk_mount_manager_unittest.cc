@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
@@ -18,8 +20,6 @@
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "dbus/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

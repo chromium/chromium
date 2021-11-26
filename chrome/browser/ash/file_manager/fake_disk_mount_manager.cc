@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/disks/disk.h"
 #include "base/bind.h"
-#include "chromeos/disks/disk.h"
 
 namespace file_manager {
 

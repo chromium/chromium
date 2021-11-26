@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DISKS_MOUNT_POINT_H_
-#define CHROMEOS_DISKS_MOUNT_POINT_H_
+#ifndef ASH_COMPONENTS_DISKS_MOUNT_POINT_H_
+#define ASH_COMPONENTS_DISKS_MOUNT_POINT_H_
 
 #include <memory>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace chromeos {
 namespace disks {
@@ -21,7 +21,7 @@ class DiskMountManager;
 // MountPoint is a thin wrapper around a mount point that was mounted with
 // DiskMountManager. MountPoint 'owns' the mount point and unmounts it on
 // destruction.
-class COMPONENT_EXPORT(CHROMEOS_DISKS) MountPoint {
+class COMPONENT_EXPORT(ASH_DISKS) MountPoint {
  public:
   using DoneCallback =
       base::OnceCallback<void(MountError, std::unique_ptr<MountPoint>)>;
@@ -68,4 +68,4 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) MountPoint {
 }  // namespace disks
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DISKS_MOUNT_POINT_H_
+#endif  // ASH_COMPONENTS_DISKS_MOUNT_POINT_H_

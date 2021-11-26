@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/extension_install_event_logger.h"
 
+#include "ash/components/disks/disk.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -11,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/disks/disk.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
