@@ -70,11 +70,14 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
   static constexpr zwp_linux_buffer_params_v1_listener params_listener = {
       &CreateSucceeded, &CreateFailed};
 
-  struct zwp_linux_buffer_params_v1* params =
-      zwp_linux_dmabuf_v1_create_params(zwp_linux_dmabuf_.get());
+  // Params will be destroyed immediately if create_immed is available.
+  // Otherwise, they will be destroyed after Wayland notifies a new buffer is
+  // created or failed to be created.
+  wl::Object<zwp_linux_buffer_params_v1> params(
+      zwp_linux_dmabuf_v1_create_params(zwp_linux_dmabuf_.get()));
 
   for (size_t i = 0; i < planes_count; i++) {
-    zwp_linux_buffer_params_v1_add(params, fd.get(), i /* plane id */,
+    zwp_linux_buffer_params_v1_add(params.get(), fd.get(), i /* plane id */,
                                    offsets[i], strides[i], modifiers[i] >> 32,
                                    modifiers[i] & UINT32_MAX);
   }
@@ -84,16 +87,17 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
   if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
       ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION) {
     wl::Object<wl_buffer> buffer(zwp_linux_buffer_params_v1_create_immed(
-        params, size.width(), size.height(), format, 0));
+        params.get(), size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));
   } else {
+    zwp_linux_buffer_params_v1_add_listener(params.get(), &params_listener,
+                                            this);
+    zwp_linux_buffer_params_v1_create(params.get(), size.width(), size.height(),
+                                      format, 0);
+
     // Store the |params| with the corresponding |callback| to identify newly
     // created buffer and notify the client about it via the |callback|.
-    pending_params_.emplace(params, std::move(callback));
-
-    zwp_linux_buffer_params_v1_add_listener(params, &params_listener, this);
-    zwp_linux_buffer_params_v1_create(params, size.width(), size.height(),
-                                      format, 0);
+    pending_params_.emplace(std::move(params), std::move(callback));
   }
   connection_->ScheduleFlush();
 }
@@ -127,13 +131,14 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
 void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
     struct zwp_linux_buffer_params_v1* params,
     struct wl_buffer* new_buffer) {
-  auto it = pending_params_.find(params);
+  auto it = std::find_if(
+      pending_params_.begin(), pending_params_.end(),
+      [params](const auto& item) { return item.first.get() == params; });
   DCHECK(it != pending_params_.end());
 
   std::move(it->second).Run(wl::Object<struct wl_buffer>(new_buffer));
 
   pending_params_.erase(it);
-  zwp_linux_buffer_params_v1_destroy(params);
 
   connection_->ScheduleFlush();
 }

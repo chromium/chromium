@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -178,6 +179,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Wait until the buffers are created.
   env.task_environment.RunUntilIdle();
+
+  // The server must notify the buffers are created so that the client is able
+  // to free the resources (destroy the params).
+  auto params_vector = server.zwp_linux_dmabuf_v1()->buffer_params();
+  // To ensure, no other buffers are created, test the size of the vector.
+  for (auto* mock_params : params_vector) {
+    zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                            mock_params->buffer_resource());
+  }
 
   // If the |manager_host| fires the terminate gpu callback, we need to set the
   // callback again.
