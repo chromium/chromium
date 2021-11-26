@@ -406,6 +406,11 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     // it may imply that the preserved spaces are not a leading sequence
     // anymore.
     if (item.IsGeneratedForLineBreak()) {
+      // We wont restore 'generated line breaks' at the start
+      // TODO(jfernandez): How it's possible that we have a generated break at
+      // position 0 ?
+      if (!text_.length())
+        continue;
       wtf_size_t index = text_.length() - 1;
       while (index && text_[index] == kSpaceCharacter)
         --index;
