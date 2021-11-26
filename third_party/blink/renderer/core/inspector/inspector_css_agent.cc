@@ -2541,9 +2541,10 @@ Response InspectorCSSAgent::takeCoverageDelta(
     BuildRulesMap(style_sheet, &rule_to_css_rule);
 
     for (auto used_rule : *entry.value) {
-      CSSStyleRule* css_style_rule = rule_to_css_rule.at(used_rule);
-      if (!css_style_rule)
+      auto rule_to_css_rule_it = rule_to_css_rule.find(used_rule);
+      if (rule_to_css_rule_it == rule_to_css_rule.end())
         continue;
+      CSSStyleRule* css_style_rule = rule_to_css_rule_it->value;
       auto it = css_style_sheet_to_inspector_style_sheet_.find(
           const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
       if (it == css_style_sheet_to_inspector_style_sheet_.end())
