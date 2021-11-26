@@ -612,12 +612,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #pragma mark Multiwindow
 
 - (void)testHistorySyncInMultiwindow {
-// TODO(crbug.com/1252457): Test is flaky on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1252457): Test is flaky on iPad devices.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
   }
-#endif
 
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
