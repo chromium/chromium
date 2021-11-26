@@ -458,10 +458,10 @@ TEST_F(WebAppShortcutCreatorTest, NormalizeTitle) {
 }
 
 TEST_F(WebAppShortcutCreatorTest, UpdateShortcuts) {
-  base::ScopedTempDir other_folder_temp_dir;
-  EXPECT_TRUE(other_folder_temp_dir.CreateUniqueTempDir());
-  base::FilePath other_folder = other_folder_temp_dir.GetPath();
-  base::FilePath other_shim_path = other_folder.Append(shim_base_name_);
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath update_folder = temp_dir.GetPath();
+  base::FilePath other_shim_path = update_folder.Append(shim_base_name_);
 
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());
@@ -513,6 +513,132 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcuts) {
   EXPECT_FALSE(base::PathExists(other_shim_path.Append("Contents")));
 }
 
+TEST_F(WebAppShortcutCreatorTest, UpdateShortcutsWithTitleChange) {
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath update_folder = temp_dir.GetPath();
+  base::FilePath shim_path = update_folder.Append(shim_base_name_);
+
+  NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
+                                                       info_.get());
+
+  std::vector<base::FilePath> bundle_by_id_paths;
+  bundle_by_id_paths.push_back(shim_path);
+  EXPECT_CALL(shortcut_creator, GetAppBundlesByIdUnsorted())
+      .WillOnce(Return(bundle_by_id_paths));
+
+  EXPECT_TRUE(shortcut_creator.BuildShortcut(shim_path));
+
+  // After building, the bundle should exist and have the right name.
+  EXPECT_TRUE(base::PathExists(
+      update_folder.Append("Shortcut Title.app").Append("Contents")));
+
+  // The bundle name (in Info.plist) should also be set to 'Shortcut Title'.
+  base::FilePath plist_path = update_folder.Append("Shortcut Title.app")
+                                  .Append("Contents")
+                                  .Append("Info.plist");
+  EXPECT_TRUE(base::PathExists(plist_path));
+  NSDictionary* plist = [NSDictionary
+      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+  EXPECT_NSEQ(@"Shortcut Title",
+              plist[base::mac::CFToNSCast(kCFBundleNameKey)]);
+
+  // The display name (in InfoPlist.strings) should also be 'Shortcut Title'.
+  NSString* language = [NSLocale preferredLanguages][0];
+  std::string locale_dir_name = base::SysNSStringToUTF8(language) + ".lproj";
+  base::FilePath resource_file_path = plist_path.DirName()
+                                          .Append("Resources")
+                                          .Append(locale_dir_name)
+                                          .Append("InfoPlist.strings");
+  EXPECT_TRUE(base::PathExists(resource_file_path));
+  NSDictionary* resources =
+      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
+                                                     resource_file_path)];
+  EXPECT_NSEQ(@"Shortcut Title", resources[app_mode::kCFBundleDisplayNameKey]);
+
+  // UpdateShortcuts does this as well, but clear the app bundle contents to
+  // ensure expectations are testing against new data. Keep the top-level path
+  // to ensure UpdateShortcuts detects its presence.
+  EXPECT_TRUE(base::DeletePathRecursively(shim_path.Append("Contents")));
+
+  std::vector<base::FilePath> updated_paths;
+  EXPECT_TRUE(shortcut_creator.UpdateShortcuts(false, &updated_paths));
+
+  EXPECT_EQ(
+      std::vector<base::FilePath>{update_folder.Append("Shortcut Title.app")},
+      updated_paths);
+
+  // After updating, the bundle should still exist and have the same name.
+  EXPECT_TRUE(base::PathExists(
+      update_folder.Append("Shortcut Title.app").Append("Contents")));
+
+  // The bundle name (in Info.plist) should still be set to 'Shortcut Title'.
+  plist_path = update_folder.Append("Shortcut Title.app")
+                   .Append("Contents")
+                   .Append("Info.plist");
+  EXPECT_TRUE(base::PathExists(plist_path));
+  plist = [NSDictionary
+      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+  EXPECT_NSEQ(@"Shortcut Title",
+              plist[base::mac::CFToNSCast(kCFBundleNameKey)]);
+
+  // The display name (in InfoPlist.strings) should still be 'Shortcut Title'.
+  resource_file_path = plist_path.DirName()
+                           .Append("Resources")
+                           .Append(locale_dir_name)
+                           .Append("InfoPlist.strings");
+  EXPECT_TRUE(base::PathExists(resource_file_path));
+  resources =
+      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
+                                                     resource_file_path)];
+  EXPECT_NSEQ(@"Shortcut Title", resources[app_mode::kCFBundleDisplayNameKey]);
+
+  // Now simulate an update with a different title.
+  std::unique_ptr<ShortcutInfo> info = GetShortcutInfo();
+  info->title = u"New App Title";
+  NiceMock<WebAppShortcutCreatorMock> shortcut_creator2(app_data_dir_,
+                                                        info.get());
+
+  EXPECT_CALL(shortcut_creator2, GetAppBundlesByIdUnsorted())
+      .WillOnce(Return(bundle_by_id_paths));
+
+  updated_paths.clear();
+  EXPECT_TRUE(shortcut_creator2.UpdateShortcuts(false, &updated_paths));
+
+  EXPECT_EQ(
+      std::vector<base::FilePath>{update_folder.Append("Shortcut Title.app")},
+      updated_paths);
+
+  // After updating, the bundle should not have changed its name. Note that this
+  // assumes an entirely new bundle wasn't created, which is verified by
+  // expectations below.
+  EXPECT_TRUE(base::PathExists(
+      update_folder.Append("Shortcut Title.app").Append("Contents")));
+
+  // The bundle name (in Info.plist) should also still be set to 'Shortcut
+  // Title'.
+  plist_path = update_folder.Append("Shortcut Title.app")
+                   .Append("Contents")
+                   .Append("Info.plist");
+  EXPECT_TRUE(base::PathExists(plist_path));
+  plist = [NSDictionary
+      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+  EXPECT_NSEQ(@"Shortcut Title",
+              plist[base::mac::CFToNSCast(kCFBundleNameKey)]);
+
+  // The display name (in InfoPlist.strings) should have changed to 'New App
+  // Title'.
+  resource_file_path = plist_path.DirName()
+                           .Append("Resources")
+                           .Append(locale_dir_name)
+                           .Append("InfoPlist.strings");
+  EXPECT_TRUE(base::PathExists(resource_file_path));
+  resources =
+      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
+                                                     resource_file_path)];
+  EXPECT_NSEQ(@"New App Title", resources[app_mode::kCFBundleDisplayNameKey]);
+}
+
 TEST_F(WebAppShortcutCreatorTest, UpdateBookmarkAppShortcut) {
   base::ScopedTempDir other_folder_temp_dir;
   EXPECT_TRUE(other_folder_temp_dir.CreateUniqueTempDir());
@@ -536,6 +662,55 @@ TEST_F(WebAppShortcutCreatorTest, UpdateBookmarkAppShortcut) {
   EXPECT_TRUE(shortcut_creator.UpdateShortcuts(false, &updated_paths));
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_FALSE(base::PathExists(other_shim_path.Append("Contents")));
+}
+
+TEST_F(WebAppShortcutCreatorTest, NormalizeColonsInDisplayName) {
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath update_folder = temp_dir.GetPath();
+  base::FilePath shim_path = update_folder.Append("App Title: New.app");
+
+  std::unique_ptr<ShortcutInfo> info = GetShortcutInfo();
+  info->title = u"App Title: New";
+  NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
+                                                       info.get());
+
+  std::vector<base::FilePath> bundle_by_id_paths;
+  bundle_by_id_paths.push_back(shim_path);
+  EXPECT_CALL(shortcut_creator, GetAppBundlesByIdUnsorted())
+      .WillOnce(Return(bundle_by_id_paths));
+
+  EXPECT_TRUE(shortcut_creator.BuildShortcut(shim_path));
+
+  std::vector<base::FilePath> updated_paths;
+  EXPECT_TRUE(shortcut_creator.UpdateShortcuts(false, &updated_paths));
+
+  // After building, the bundle should exist and have the right name.
+  EXPECT_TRUE(base::PathExists(
+      update_folder.Append("App Title: New.app").Append("Contents")));
+
+  // The bundle name (in Info.plist) should also match.
+  base::FilePath plist_path = update_folder.Append("App Title: New.app")
+                                  .Append("Contents")
+                                  .Append("Info.plist");
+  EXPECT_TRUE(base::PathExists(plist_path));
+  NSDictionary* plist = [NSDictionary
+      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+  EXPECT_NSEQ(@"App Title: New",
+              plist[base::mac::CFToNSCast(kCFBundleNameKey)]);
+
+  // The display name (in InfoPlist.strings) should not have the colon.
+  NSString* language = [NSLocale preferredLanguages][0];
+  std::string locale_dir_name = base::SysNSStringToUTF8(language) + ".lproj";
+  base::FilePath resource_file_path = plist_path.DirName()
+                                          .Append("Resources")
+                                          .Append(locale_dir_name)
+                                          .Append("InfoPlist.strings");
+  EXPECT_TRUE(base::PathExists(resource_file_path));
+  NSDictionary* resources =
+      [NSDictionary dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
+                                                     resource_file_path)];
+  EXPECT_NSEQ(@"App Title New", resources[app_mode::kCFBundleDisplayNameKey]);
 }
 
 TEST_F(WebAppShortcutCreatorTest, DeleteShortcutsSingleProfile) {
