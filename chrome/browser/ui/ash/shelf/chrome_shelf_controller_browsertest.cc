@@ -1350,12 +1350,20 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchApp) {
 // The Browsertest verifying FilesManager's features.
 class FilesManagerExtensionTest : public ShelfPlatformAppBrowserTest {
  public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kFilesSWA);
+    ShelfPlatformAppBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     ShelfPlatformAppBrowserTest::SetUpOnMainThread();
     CHECK(profile());
 
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that FilesManager's first shelf context menu item is "New window"
