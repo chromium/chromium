@@ -552,12 +552,7 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 };
 
 // Disabled on multiple platforms due to flakiness. crbug.com/580766
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_SaveHTMLOnlyTabDestroy DISABLED_SaveHTMLOnlyTabDestroy
-#else
-#define MAYBE_SaveHTMLOnlyTabDestroy SaveHTMLOnlyTabDestroy
-#endif
-IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyTabDestroy) {
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   GURL url = NavigateToMockURL("a");
   std::unique_ptr<DelayingDownloadManagerDelegate> delaying_delegate(
       new DelayingDownloadManagerDelegate(browser()->profile()));
