@@ -111,6 +111,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
   constexpr bool is_delegated_context = true;
+  delegated_status_ = DelegationStatus::kCompositedOther;
 
   if (quad_list->size() >= kTooManyQuads ||
       !render_pass_backdrop_filters.empty())
@@ -132,10 +133,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),
         base::StringPrintf("m=%d rid=%d", static_cast<int>(it->material),
                            it->resources.begin()->value()));
-    if (OverlayCandidate::FromDrawQuad(
-            resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
-            is_delegated_context)) {
+    auto candidate_status = OverlayCandidate::FromDrawQuad(
+        resource_provider, surface_damage_rect_list, output_color_matrix, *it,
+        GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
+        is_delegated_context);
+    if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
       // Setting the |uv_rect| will eventually result in setting the
       // |crop_rect_| in wayland. If this results in an empty pixel scale the
       // wayland connection will be terminated. See: wayland_surface.cc
@@ -178,6 +180,14 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 
     } else {
       DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+
+      if (candidate_status ==
+          OverlayCandidate::CandidateStatus::kFailNotAxisAligned) {
+        delegated_status_ = DelegationStatus::kCompositedNotAxisAligned;
+      } else if (candidate_status ==
+                 OverlayCandidate::CandidateStatus::kFailNotOverlay) {
+        delegated_status_ = DelegationStatus::kCompositedNotOverlay;
+      }
     }
   }
 
@@ -197,6 +207,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   for (auto&& each : *candidates) {
     if (!each.overlay_handled) {
       candidates->clear();
+      delegated_status_ = DelegationStatus::kCompositedCheckOverlayFail;
       return false;
     }
   }
@@ -206,6 +217,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   // the |OverlayCandidate|. As keeping with the pattern in
   // overlay_processor_mac we will also set the damage to empty on the
   // successful promotion of all quads.
+  delegated_status_ = DelegationStatus::kFullDelegation;
   return true;
 }
 
@@ -263,10 +275,16 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     previous_frame_overlay_rect_ = gfx::Rect();
   }
 
+  UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
+                            delegated_status_);
   DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
+
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
+                       "DelegatedCompositingStatus", TRACE_EVENT_SCOPE_THREAD,
+                       "delegated_status", delegated_status_);
 }
 
 void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(

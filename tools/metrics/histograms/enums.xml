@@ -20078,6 +20078,14 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Invalid delays">Insufficient amount of data.</int>
 </enum>
 
+<enum name="DelegatedStatus">
+  <int value="0" label="Full Delegation"/>
+  <int value="1" label="Composited Other"/>
+  <int value="2" label="Composited Not Axis Aligned"/>
+  <int value="3" label="Composited Check Overlay Fail"/>
+  <int value="4" label="Composited Not Overlay"/>
+</enum>
+
 <enum name="DeleteCorruptedPasswordsResult">
   <int value="0" label="Success - no passwords were deleted"/>
   <int value="1" label="Success - there were deleted passwords"/>

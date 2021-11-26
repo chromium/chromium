@@ -17871,6 +17871,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
+    expires_after="2022-07-15">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    An enum status result for attempted delegated compositing (success or
+    failure reason) recorded every drawn frame. Currently only recorded for
+    LaCros delegated compositing.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
     units="units" expires_after="2022-04-17">
   <owner>petermcneeley@chromium.org</owner>
@@ -17931,7 +17942,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
-    expires_after="2022-01-09">
+    expires_after="2022-07-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -17945,7 +17956,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
-    expires_after="2022-01-09">
+    expires_after="2022-07-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>

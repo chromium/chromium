@@ -83,7 +83,8 @@ bool OverlayStrategyUnderlayCast::Attempt(
           quad->material == DrawQuad::Material::kVideoHole &&
           OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate);
+              quad, GetPrimaryPlaneDisplayRect(primary_plane),
+              &candidate) == OverlayCandidate::CandidateStatus::kSuccess;
       found_underlay = is_underlay;
     }
 
@@ -109,9 +110,10 @@ bool OverlayStrategyUnderlayCast::Attempt(
     for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
       OverlayCandidate candidate;
       if (it->material != DrawQuad::Material::kVideoHole ||
-          !OverlayCandidate::FromDrawQuad(
+          OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+              *it, GetPrimaryPlaneDisplayRect(primary_plane),
+              &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
         continue;
       }
 
@@ -160,7 +162,8 @@ void OverlayStrategyUnderlayCast::ProposePrioritized(
     if (it->material == DrawQuad::Material::kVideoHole &&
         OverlayCandidate::FromDrawQuad(
             resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+            *it, GetPrimaryPlaneDisplayRect(primary_plane),
+            &candidate) == OverlayCandidate::CandidateStatus::kSuccess) {
       overlay_iter = it;
     }
   }
@@ -210,7 +213,8 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
           quad->material == DrawQuad::Material::kVideoHole &&
           OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate);
+              quad, GetPrimaryPlaneDisplayRect(primary_plane),
+              &candidate) == OverlayCandidate::CandidateStatus::kSuccess;
       found_underlay = is_underlay;
     }
 
@@ -236,9 +240,10 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
     for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
       OverlayCandidate candidate;
       if (it->material != DrawQuad::Material::kVideoHole ||
-          !OverlayCandidate::FromDrawQuad(
+          OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+              *it, GetPrimaryPlaneDisplayRect(primary_plane),
+              &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
         continue;
       }
 

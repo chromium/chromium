@@ -51,9 +51,10 @@ bool OverlayStrategyFullscreen::Attempt(
     return false;
 
   OverlayCandidate candidate;
-  if (!OverlayCandidate::FromDrawQuad(
+  if (OverlayCandidate::FromDrawQuad(
           resource_provider, surface_damage_rect_list, output_color_matrix,
-          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+          quad, GetPrimaryPlaneDisplayRect(primary_plane),
+          &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
     return false;
   }
 
@@ -107,9 +108,10 @@ void OverlayStrategyFullscreen::ProposePrioritized(
     return;
 
   OverlayCandidate candidate;
-  if (!OverlayCandidate::FromDrawQuad(
+  if (OverlayCandidate::FromDrawQuad(
           resource_provider, surface_damage_rect_list, output_color_matrix,
-          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+          quad, GetPrimaryPlaneDisplayRect(primary_plane),
+          &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
     return;
   }
 
