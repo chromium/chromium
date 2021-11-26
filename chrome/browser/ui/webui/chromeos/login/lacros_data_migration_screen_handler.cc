@@ -30,6 +30,10 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
                IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE);
   builder->Add("lacrosDataMigrationSubtitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE);
+  builder->Add("lacrosDataMigrationSkipButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON);
+  builder->Add("lacrosDataMigrationSkipSuggestion",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION);
 }
 
 void LacrosDataMigrationScreenHandler::Bind(LacrosDataMigrationScreen* screen) {
@@ -52,6 +56,10 @@ void LacrosDataMigrationScreenHandler::Show() {
 
 void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {
   CallJS("login.LacrosDataMigrationScreen.setProgressValue", progress);
+}
+
+void LacrosDataMigrationScreenHandler::ShowSkipButton() {
+  CallJS("login.LacrosDataMigrationScreen.showSkipButton");
 }
 
 void LacrosDataMigrationScreenHandler::Initialize() {

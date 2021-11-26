@@ -4078,6 +4078,12 @@
   <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
     <ph name="PERCENT">$1<ex>100</ex></ph>% completed
   </message>
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON" desc="Skip button for data migration.">
+    Skip
+  </message>
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION" desc="Message shown when skip button is visible.">
+    This is taking longer than expected, you can skip or wait until it's done.
+  </message>
 
   <!-- Print Job Notification -->
   <message name="IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of printing notification.">
