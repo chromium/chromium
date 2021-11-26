@@ -364,6 +364,9 @@ class LazilyDeallocatedDeque {
   // We maintain a list of Ring buffers, to enable us to grow without copying,
   // but most of the time we aim to have only one active Ring.
   std::unique_ptr<Ring> head_;
+
+  // `tail_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data and tab_search:top100:2020).
   Ring* tail_ = nullptr;
 
   size_t size_ = 0;

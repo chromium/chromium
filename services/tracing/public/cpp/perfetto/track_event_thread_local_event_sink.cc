@@ -147,6 +147,9 @@ class LazyLegacyEventInitializer {
   }
 
  private:
+  // `track_event_` and `legacy_event_` are not a raw_ptr<...> for performance
+  // reasons (based on analysis of sampling profiler data and
+  // tab_search:top100:2020).
   TrackEvent* track_event_;
   TrackEvent::LegacyEvent* legacy_event_ = nullptr;
 };

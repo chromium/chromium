@@ -71,6 +71,9 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
                       base::TimeTicks execution_start_time);
 
     // An opaque identifier for the task or event.
+    //
+    // `identifier` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     const void* const identifier;
 
     // Whether the task was at some point in a queue that was blocked or low

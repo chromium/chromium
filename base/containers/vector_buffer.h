@@ -185,6 +185,8 @@ class VectorBuffer {
                 .ValueOrDie() <= from_begin_uintptr);
   }
 
+  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
   T* buffer_ = nullptr;
   size_t capacity_ = 0;
 };

@@ -35,6 +35,8 @@ struct _HEAP_32 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
+  // `Heap` is not a raw_ptr<...>, because reinterpret_cast of uninitialized
+  // memory to raw_ptr can cause ref-counting mismatch.
   struct _HEAP_32* Heap;
   char Unknown0[0x24];
   // Offset 0x40
@@ -50,6 +52,8 @@ struct _HEAP_64 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
+  // `Heap` is not a raw_ptr<...>, because reinterpret_cast of uninitialized
+  // memory to raw_ptr can cause ref-counting mismatch.
   struct _HEAP_64* Heap;
   char Unknown0[0x40];
   // Offset 0x70

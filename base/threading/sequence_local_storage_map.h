@@ -59,6 +59,8 @@ class BASE_EXPORT SequenceLocalStorageMap {
     void* value() const { return value_; }
 
    private:
+    // `value_` and `destructor_` are not a raw_ptr<...> for performance reasons
+    // (based on analysis of sampling profiler data and tab_search:top100:2020).
     void* value_;
     DestructorFunc* destructor_;
   };

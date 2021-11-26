@@ -52,6 +52,8 @@ class TaskDestructionDetector {
   void Disable() { timer_ = nullptr; }
 
  private:
+  // `timer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
   TimerBase* timer_;
 };
 

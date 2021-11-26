@@ -114,6 +114,9 @@ class SharedMemIPCServer {
 
   // Points to the shared memory channel control which lives at
   // the start of the shared section.
+  //
+  // `client_control_` is not a raw_ptr<IPCControl>, because reinterpret_cast of
+  // uninitialized memory to raw_ptr can cause ref-counting mismatch.
   IPCControl* client_control_;
 
   // Keeps track of the server side objects that are used to answer an IPC.
@@ -130,6 +133,9 @@ class SharedMemIPCServer {
   DWORD target_process_id_;
 
   // The dispatcher handles 'ready' IPC calls.
+  //
+  // `call_dispatcher_` is not a raw_ptr<Dispatcher>, because reinterpret_cast
+  // of uninitialized memory to raw_ptr can cause ref-counting mismatch.
   Dispatcher* call_dispatcher_;
 };
 

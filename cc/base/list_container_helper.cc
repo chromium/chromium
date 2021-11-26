@@ -262,6 +262,9 @@ class ListContainerHelper::CharAllocator {
   size_t last_list_index_;
 
   // This is equivalent to |storage_[last_list_index_]|.
+  //
+  // `last_list_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   InnerList* last_list_;
 };
 

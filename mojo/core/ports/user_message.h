@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
   virtual size_t GetSizeIfSerialized() const;
 
  private:
+  // `type_info_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   const TypeInfo* const type_info_;
 };
 

@@ -36,8 +36,14 @@ class CC_BASE_EXPORT ListContainerHelper final {
   // This class points to a certain position inside memory of
   // CharAllocator. It is a base class for ListContainer iterators.
   struct CC_BASE_EXPORT PositionInCharAllocator {
+    // `ptr_to_container` is not a raw_ptr<...> for performance reasons (based
+    // on analysis of sampling profiler data and tab_search:top100:2020).
     CharAllocator* ptr_to_container;
+
     size_t vector_index;
+
+    // `item_iterator` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     char* item_iterator;
 
     PositionInCharAllocator(const PositionInCharAllocator& other);

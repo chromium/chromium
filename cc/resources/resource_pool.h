@@ -186,6 +186,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     void SetWasFreedByResourcePool() { resource_ = nullptr; }
 
     bool is_gpu_ = false;
+
+    // `resource_` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     PoolResource* resource_ = nullptr;
   };
 

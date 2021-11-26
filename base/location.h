@@ -107,6 +107,9 @@ class BASE_EXPORT Location {
   const char* function_name_ = nullptr;
   const char* file_name_ = nullptr;
   int line_number_ = -1;
+
+  // `program_counter_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   const void* program_counter_ = nullptr;
 };
 

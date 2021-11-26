@@ -80,6 +80,9 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
    private:
     Value program_blob_;
+
+    // TODO(bartekn): Change this into raw_ptr<...>, after investigating an
+    // earlier crash report most likely caused by a use-after-move.
     PassthroughProgramCache* program_cache_;
   };
 

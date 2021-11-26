@@ -139,7 +139,10 @@ struct CC_PAINT_EXPORT PlaybackParams {
   PlaybackParams(const PlaybackParams& other);
   PlaybackParams& operator=(const PlaybackParams& other);
 
+  // `image_provider` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   ImageProvider* image_provider;
+
   SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
@@ -1246,8 +1249,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
       DCHECK(!buffer->are_ops_destroyed());
     }
 
+    // `buffer_` and `ptr_` are not a raw_ptr<...> for performance reasons
+    // (based on analysis of sampling profiler data and tab_search:top100:2020).
     const PaintOpBuffer* buffer_ = nullptr;
     char* ptr_ = nullptr;
+
     size_t op_offset_ = 0;
   };
 
@@ -1311,9 +1317,13 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
       DCHECK(!buffer->are_ops_destroyed());
     }
 
+    // `buffer_`, `ptr_`, and `offsets_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
     const PaintOpBuffer* buffer_ = nullptr;
     char* ptr_ = nullptr;
     const std::vector<size_t>* offsets_;
+
     size_t op_offset_ = 0;
     size_t offsets_index_ = 0;
   };
@@ -1386,7 +1396,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // FIFO queue of paint ops that have been peeked at.
     base::StackVector<const PaintOp*, 3> stack_;
     DrawColorOp folded_draw_color_;
+
+    // `current_op_` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     const PaintOp* current_op_ = nullptr;
+
     uint8_t current_alpha_ = 255;
   };
 

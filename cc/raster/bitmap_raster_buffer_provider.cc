@@ -85,6 +85,10 @@ class BitmapRasterBufferImpl : public RasterBuffer {
  private:
   const gfx::Size resource_size_;
   const gfx::ColorSpace color_space_;
+
+  // `pixels_` is not a raw_ptr<...> for performance reasons: pointee is never
+  // protected by BackupRefPtr, because the pointer comes either from using
+  // `mmap`, MapViewOfFile or base::AllocPages directly.
   void* const pixels_;
   bool resource_has_previous_content_;
 };

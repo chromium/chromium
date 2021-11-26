@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(int sz) override;
 
  protected:
+  // `str_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data and tab_search:top100:2020).
   std::string* str_;
 };
 

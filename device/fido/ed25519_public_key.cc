@@ -30,6 +30,9 @@ std::unique_ptr<PublicKey> Ed25519PublicKey::ExtractFromCOSEKey(
     const cbor::Value::MapValue& map) {
   // See https://tools.ietf.org/html/rfc8152#section-13.2
   struct COSEKey {
+    // All the fields below are not a raw_ptr<,,,>, because ELEMENT() treats the
+    // raw_ptr<T> as a void*, skipping AddRef() call and causing a ref-counting
+    // mismatch.
     const int64_t* kty;
     const int64_t* crv;
     const std::vector<uint8_t>* key;

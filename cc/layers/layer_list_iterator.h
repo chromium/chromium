@@ -38,7 +38,11 @@ class CC_EXPORT LayerListIterator {
   // The implementation of this iterator is currently tied tightly to the layer
   // tree, but it should be straightforward to reimplement in terms of a list
   // when it's ready.
+
+  // `current_layer` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   Layer* current_layer_;
+
   std::vector<size_t> list_indices_;
 };
 

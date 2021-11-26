@@ -83,6 +83,9 @@ class SandboxedVfsFile {
 // sqlite3_file "subclass" that bridges to a SandboxedVfsFile instance.
 struct SandboxedVfsFileSqliteBridge {
   sqlite3_file sqlite_file;
+  // `sandboxed_vfs_file` is not a raw_ptr<SandboxedVfsFile>, because
+  // reinterpret_cast of uninitialized memory to raw_ptr can cause ref-counting
+  // mismatch.
   SandboxedVfsFile* sandboxed_vfs_file;
 
   static SandboxedVfsFileSqliteBridge& FromSqliteFile(

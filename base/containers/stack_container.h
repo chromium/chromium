@@ -121,6 +121,7 @@ class StackAllocator : public std::allocator<T> {
   }
 
  private:
+  // `source_` is not a raw_ptr<T> for performance reasons: on-stack pointee.
   Source* source_;
 };
 

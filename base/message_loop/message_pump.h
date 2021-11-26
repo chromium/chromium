@@ -106,6 +106,8 @@ class BASE_EXPORT MessagePump {
         outer_->OnBeginWorkItem();
       }
 
+      // `outer_` is not a raw_ptr<...> for performance reasons (based on
+      // analysis of sampling profiler data and tab_search:top100:2020).
       Delegate* outer_;
     };
 

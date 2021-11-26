@@ -70,6 +70,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 struct MakeCredRequest {
+  // All fields below are not a raw_ptr<int64_t>, because ELEMENT() treats the
+  // raw_ptr<T> as a void*, skipping AddRef() call and causing a ref-counting
+  // mismatch.
   const std::vector<uint8_t>* client_data_hash;
   const std::string* rp_id;
   const std::vector<uint8_t>* user_id;
@@ -104,6 +107,9 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
 };
 
 struct AttestationObject {
+  // All the fields below are not a raw_ptr<,,,>, because ELEMENT() treats the
+  // raw_ptr<T> as a void*, skipping AddRef() call and causing a ref-counting
+  // mismatch.
   const std::string* fmt;
   const std::vector<uint8_t>* auth_data;
   const cbor::Value* statement;
@@ -125,6 +131,9 @@ static constexpr StepOrByte<AttestationObject> kAttObjParseSteps[] = {
 };
 
 struct GetAssertionRequest {
+  // All the fields below are not a raw_ptr<,,,>, because ELEMENT() treats the
+  // raw_ptr<T> as a void*, skipping AddRef() call and causing a ref-counting
+  // mismatch.
   const std::string* rp_id;
   const std::vector<uint8_t>* client_data_hash;
   const cbor::Value::ArrayValue* allowed_credentials;

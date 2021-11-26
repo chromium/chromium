@@ -252,6 +252,9 @@ class BASE_EXPORT SequenceManagerImpl
           task_type(pending_task.task_type) {}
 
     Task pending_task;
+
+    // `task_queue` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     internal::TaskQueueImpl* task_queue = nullptr;
     // Save task_queue_name as the task queue can be deleted within the task.
     const char* task_queue_name;

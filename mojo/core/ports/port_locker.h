@@ -61,6 +61,9 @@ class PortLocker {
 #endif
 
  private:
+  // `port_refs_` is not a raw_ptr<T> for performance reasons: PortLocker is
+  // usually short-lived (e.g. allocated on the stack) + the stack (not on the
+  // heap).
   const PortRef** const port_refs_;
   const size_t num_ports_;
 };

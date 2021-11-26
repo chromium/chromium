@@ -142,6 +142,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
     ~ScopedDepthTracker() { --ctx_->stack_depth_; }
 
    private:
+    // `ctx_` is not a raw_ptr<...> for performance reasons: On-stack pointee
+    // (i.e. not covered by BackupRefPtr protection).
     ValidationContext* ctx_;
   };
 

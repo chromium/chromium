@@ -100,6 +100,9 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
   // Pointer to the TLS context. Although this can easily be accessed via the
   // global LazyInstance, accessing a LazyInstance has a large cost relative to
   // the rest of this class and its usages.
+  //
+  // `tls_context` is not a raw_ptr<...> as a performance optimization: The
+  // pointee doesn't need UaF protection (it has a global/static lifetime).
   base::ThreadLocalPointer<RequestContext>* tls_context_;
 };
 

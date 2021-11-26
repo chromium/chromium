@@ -158,6 +158,8 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
   explicit operator bool() const { return get(); }
 
  private:
+  // `list_` is not a raw_ptr<...> for performance reasons: on-stack pointer +
+  // based on analysis of sampling profiler data and tab_search:top100:2020.
   ObserverList* list_ = nullptr;
 };
 
