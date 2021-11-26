@@ -668,6 +668,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount"
+    units="listeners" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Maximum number of listeners receiving the reference output signal during
+    mixed playback. Recoreded when mixing stops (i.e. when all reference signal
+    listeners are gone.)
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.OutputDeviceMixer.MaxMixedStreamCount"
+    units="streams" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Maximum number of output streams mixed simlutaniously by OutputDeviceMixer.
+    Recoreded when mixing stops (when all reference signal listeners are gone).
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.OutputDeviceMixer.MixingDuration" units="ms"
+    expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Duration of the interval between the moment OutputDeviceMixer started mixed
+    playback (referece playback signal is requested by at least one listener and
+    there is at least one stream managed by the mixer playing) and the moment
+    OutputDeviceMixer stopped mixed playback (there are no more listeners). It
+    may include intervals recorded by
+    Media.Audio.OutputDeviceMixer.NoopMixingDuration histogram.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.OutputDeviceMixer.NoopMixingDuration" units="ms"
+    expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Duration of the interval when there are no output streams to mix but there
+    are reference signal listeners present, so OutputDeviceMixer renders silence
+    and feeds it to the listeners as well. Recorded when an output stream starts
+    playing (and thus playback is not empty any more) or when all listeners are
+    gone (and thus mixing stops). There may be multiple such intervals during an
+    interval recorded by Media.Audio.OutputDeviceMixer.MixingDuration.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.Audio.OutputDeviceMixer.StreamDuration.{MixingStatus}.{LatencyTag}"
+    units="ms" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Duration of the interval when an output stream managed by OutputDeviceMixer
+    is playing independently (Unmixed) or as a part of the mix (Mixed). Measured
+    between the moment the stream starts playing or its playback mode
+    (Mixed/Unmixed) changes, and the moment the stream stops playing or its
+    playback mode changes.
+  </summary>
+  <token key="MixingStatus">
+    <variant name="Mixed" summary="Stream is played as a part of the mix"/>
+    <variant name="Unmixed" summary="Stream is played independently"/>
+  </token>
+  <token key="LatencyTag">
+    <variant name="LatencyExactMs"/>
+    <variant name="LatencyInteractive"/>
+    <variant name="LatencyPlayback"/>
+    <variant name="LatencyRtc"/>
+    <variant name="LatencyUnknown"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.PhysicalProcessorsMac" units="units"
     expires_after="2021-07-01">
   <owner>henrika@chromium.org</owner>

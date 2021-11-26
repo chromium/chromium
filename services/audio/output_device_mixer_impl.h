@@ -77,6 +77,7 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
  private:
   class MixTrack;
   class MixableOutputStream;
+  class MixingStats;
 
   struct StreamAutoClose {
     void operator()(media::AudioOutputStream* stream) {
@@ -147,6 +148,10 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   // Delays switching to unmixed playback in case a new listener is coming
   // soon (within kSwitchToIndependentPlaybackDelay).
   base::OneShotTimer switch_to_unmixed_playback_delay_timer_;
+
+  // Non-null when the playback is being mixed. Collects mixing statistics.
+  // Logs them upon the destruction when mixing stops.
+  std::unique_ptr<MixingStats> mixing_stats_;
 
 #if DCHECK_IS_ON()
   bool device_changed_ = false;
