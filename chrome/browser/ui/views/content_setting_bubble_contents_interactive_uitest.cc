@@ -89,6 +89,11 @@ class BubbleWidgetObserver : public views::WidgetObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+class DummyEvent : public ui::Event {
+ public:
+  DummyEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
+};
+
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
                        PrerenderDoesNotCloseBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -111,20 +116,17 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
   EXPECT_FALSE(geolocation_icon.GetVisible());
 
   // Attempt to use geolocation but the permission request will be dismissed.
+  permissions::PermissionRequestObserver request_observer(web_contents());
   ASSERT_TRUE(content::ExecJs(web_contents(), "geolocate();"));
-  permissions::PermissionRequestObserver(web_contents()).Wait();
+  request_observer.Wait();
 
   // Geolocation icon should be on since geolocation API is used.
   EXPECT_TRUE(geolocation_icon.GetVisible());
   // Make sure its content setting bubble doesn't show yet.
   EXPECT_FALSE(geolocation_icon.IsBubbleShowing());
 
-  // Press the geolocation icon.
-  base::RunLoop run_loop;
-  ui_test_utils::MoveMouseToCenterAndPress(&geolocation_icon, ui_controls::LEFT,
-                                           ui_controls::DOWN | ui_controls::UP,
-                                           run_loop.QuitClosure());
-  run_loop.Run();
+  // Click the geolocation icon.
+  geolocation_icon.ShowBubble(DummyEvent());
 
   // Make sure its content setting bubble is shown.
   EXPECT_TRUE(geolocation_icon.IsBubbleShowing());
