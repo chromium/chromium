@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
@@ -219,15 +220,15 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Contains references to sink buttons in the order they appear.
   std::vector<CastDialogSinkButton*> sink_buttons_;
 
-  CastDialogController* controller_;
+  raw_ptr<CastDialogController> controller_;
 
   // ScrollView containing the list of sink buttons.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // View shown while there are no sinks.
-  views::View* no_sinks_view_ = nullptr;
+  raw_ptr<views::View> no_sinks_view_ = nullptr;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // How much |scroll_view_| is scrolled downwards in pixels. Whenever the sink
   // list is updated the scroll position gets reset, so we must manually restore
@@ -236,10 +237,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // The access code cast button allows the user to add a cast device through
   // the chrome://access-code-cast dialog.
-  CastDialogAccessCodeCastButton* access_code_cast_button_ = nullptr;
+  raw_ptr<CastDialogAccessCodeCastButton> access_code_cast_button_ = nullptr;
 
   // The sources menu allows the user to choose a source to cast.
-  views::Button* sources_button_ = nullptr;
+  raw_ptr<views::Button> sources_button_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> sources_menu_model_;
   std::unique_ptr<views::MenuRunner> sources_menu_runner_;
 

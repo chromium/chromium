@@ -16,6 +16,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -284,7 +285,7 @@ class SafeBrowsingDatabaseManager
     GURL url_;
 
     // Not owned.
-    Client* client_;
+    raw_ptr<Client> client_;
   };
 
   SafeBrowsingDatabaseManager(

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "jingle/notifier/base/xmpp_connection.h"
 #include "jingle/notifier/communicator/connection_settings.h"
 #include "jingle/notifier/communicator/login_settings.h"
@@ -73,7 +74,7 @@ class SingleLoginAttempt : public XmppConnection::Delegate {
   void TryConnect(const ConnectionSettings& new_settings);
 
   const LoginSettings login_settings_;
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   const ConnectionSettingsList settings_list_;
   ConnectionSettingsList::const_iterator current_settings_;
   std::unique_ptr<XmppConnection> xmpp_connection_;

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -171,12 +172,12 @@ class DevToolsClientImpl : public DevToolsClient {
   std::unique_ptr<SyncWebSocket> socket_;
   GURL url_;
   // WebViewImpl that owns this instance; nullptr for browser-wide DevTools.
-  WebViewImpl* owner_;
+  raw_ptr<WebViewImpl> owner_;
   const std::string session_id_;
   // parent_ / children_: it's a flat hierarchy - nesting is at most one level
   // deep. children_ holds child sessions - identified by their session id -
   // which send/receive messages via the socket_ of their parent.
-  DevToolsClientImpl* parent_;
+  raw_ptr<DevToolsClientImpl> parent_;
   std::map<std::string, DevToolsClientImpl*> children_;
   bool crashed_;
   bool detached_;
@@ -188,7 +189,7 @@ class DevToolsClientImpl : public DevToolsClient {
   std::list<DevToolsEventListener*> listeners_;
   std::list<DevToolsEventListener*> unnotified_connect_listeners_;
   std::list<DevToolsEventListener*> unnotified_event_listeners_;
-  const internal::InspectorEvent* unnotified_event_;
+  raw_ptr<const internal::InspectorEvent> unnotified_event_;
   std::list<DevToolsEventListener*> unnotified_cmd_response_listeners_;
   scoped_refptr<ResponseInfo> unnotified_cmd_response_info_;
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;

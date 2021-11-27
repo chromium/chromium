@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -286,11 +287,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // NULL until a user has logged in, then points to one
   // of the User instances in |users_|, the |guest_user_| instance or an
   // ephemeral user instance.
-  User* active_user_ = nullptr;
+  raw_ptr<User> active_user_ = nullptr;
 
   // The primary user of the current session. It is recorded for the first
   // signed-in user and does not change thereafter.
-  User* primary_user_ = nullptr;
+  raw_ptr<User> primary_user_ = nullptr;
 
   // List of all known users. User instances are owned by |this|. Regular users
   // are removed by |RemoveUserFromList|, device local accounts by

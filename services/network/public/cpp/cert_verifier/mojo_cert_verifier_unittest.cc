@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -94,7 +95,7 @@ class MojoCertVerifierTest : public PlatformTest {
     }
 
    private:
-    MojoCertVerifierTest* test_;
+    raw_ptr<MojoCertVerifierTest> test_;
 
     net::CertVerifier::Config config_;
     mojo::Remote<mojom::URLLoaderFactoryConnector> reconnector_;

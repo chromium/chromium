@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
@@ -995,7 +996,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestInIncognitoMode
   bool WebRtcEventLogCollectionPolicy() const override { return true; }
 
  private:
-  Browser* browser_{nullptr};  // Does not own the object.
+  raw_ptr<Browser> browser_{nullptr};  // Does not own the object.
 };
 
 IN_PROC_BROWSER_TEST_F(

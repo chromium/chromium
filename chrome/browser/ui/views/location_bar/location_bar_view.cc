@@ -846,7 +846,7 @@ PermissionChip* LocationBarView::DisplayQuietChip(
 
 void LocationBarView::FinalizeChip() {
   DCHECK(chip_);
-  RemoveChildViewT(chip_);
+  RemoveChildViewT(chip_.get());
   chip_ = nullptr;
 }
 
@@ -1454,7 +1454,7 @@ void LocationBarView::UpdateChipVisibility() {
 ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
     const ui::MouseEvent& event) const {
   ui::MouseEvent adjusted(event);
-  adjusted.ConvertLocationToTarget<View>(this, omnibox_view_);
+  adjusted.ConvertLocationToTarget<View>(this, omnibox_view_.get());
   return adjusted;
 }
 

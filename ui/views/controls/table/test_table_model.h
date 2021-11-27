@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_TABLE_TEST_TABLE_MODEL_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/table_model.h"
 
 class TestTableModel : public ui::TableModel {
@@ -25,7 +26,7 @@ class TestTableModel : public ui::TableModel {
 
  private:
   int row_count_;
-  ui::TableModelObserver* observer_;
+  raw_ptr<ui::TableModelObserver> observer_;
 };
 
 #endif  // UI_VIEWS_CONTROLS_TABLE_TEST_TABLE_MODEL_H_

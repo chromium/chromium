@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 
@@ -61,7 +62,7 @@ class VIEWS_EXPORT ButtonController {
   }
 
  private:
-  Button* const button_;
+  const raw_ptr<Button> button_;
 
   // TODO(cyan): Remove |button_| and access everything via the delegate.
   std::unique_ptr<ButtonControllerDelegate> button_controller_delegate_;

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/test_timeouts.h"
@@ -754,7 +755,7 @@ class RenderFrameChangedWatcher : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-  content::RenderFrameHost* created_frame_;
+  raw_ptr<content::RenderFrameHost> created_frame_;
 };
 
 // Test that a browser action popup with a web iframe works correctly. The
@@ -940,8 +941,8 @@ class NavigatingExtensionPopupInteractiveTest
     }
   }
 
-  const Extension* popup_extension_;
-  const Extension* other_extension_;
+  raw_ptr<const Extension> popup_extension_;
+  raw_ptr<const Extension> other_extension_;
 };
 
 // Tests that an extension pop-up cannot be navigated to a web page.

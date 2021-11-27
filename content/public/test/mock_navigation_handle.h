@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -266,13 +267,13 @@ class MockNavigationHandle : public NavigationHandle {
   int64_t navigation_id_;
   GURL url_;
   GURL previous_main_frame_url_;
-  SiteInstance* starting_site_instance_ = nullptr;
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<SiteInstance> starting_site_instance_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   GURL base_url_for_data_url_;
   blink::mojom::Referrer referrer_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
-  RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;
   bool is_prerendered_page_activation_ = false;

@@ -9,6 +9,7 @@
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"
@@ -27,7 +28,7 @@ struct RunState {
         should_quit(false) {
   }
 
-  base::MessagePump::Delegate* delegate;
+  raw_ptr<base::MessagePump::Delegate> delegate;
 
   // Used to count how many Run() invocations are on the stack.
   int run_depth;

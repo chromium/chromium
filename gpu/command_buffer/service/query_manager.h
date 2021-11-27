@@ -15,6 +15,7 @@
 #include "base/atomicops.h"
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"
@@ -143,7 +144,7 @@ class GPU_GLES2_EXPORT QueryManager {
     void RunCallbacks();
 
     // The manager that owns this Query.
-    QueryManager* manager_;
+    raw_ptr<QueryManager> manager_;
 
     // The type of query.
     GLenum target_;
@@ -152,7 +153,7 @@ class GPU_GLES2_EXPORT QueryManager {
     // to ensure it doesn't get released until we wrote results. sync_ points to
     // memory inside buffer_.
     scoped_refptr<gpu::Buffer> buffer_;
-    QuerySync* sync_;
+    raw_ptr<QuerySync> sync_;
 
     // Count to set process count do when completed.
     base::subtle::Atomic32 submit_count_;

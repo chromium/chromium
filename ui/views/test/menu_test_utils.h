@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -67,7 +68,7 @@ class TestMenuDelegate : public MenuDelegate {
   int show_context_menu_count_ = 0;
 
   // The value of the last call to ShowContextMenu.
-  MenuItemView* show_context_menu_source_ = nullptr;
+  raw_ptr<MenuItemView> show_context_menu_source_ = nullptr;
 
   // ID of last executed command.
   int execute_command_id_ = 0;
@@ -76,13 +77,13 @@ class TestMenuDelegate : public MenuDelegate {
   int on_menu_closed_called_count_ = 0;
 
   // The value of the last call to OnMenuClosed.
-  MenuItemView* on_menu_closed_menu_ = nullptr;
+  raw_ptr<MenuItemView> on_menu_closed_menu_ = nullptr;
 
   // The number of times WillHideMenu was called.
   int will_hide_menu_count_ = 0;
 
   // The value of the last call to WillHideMenu.
-  MenuItemView* will_hide_menu_ = nullptr;
+  raw_ptr<MenuItemView> will_hide_menu_ = nullptr;
 
   bool is_drop_performed_ = false;
 };

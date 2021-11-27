@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include "base/metrics/metrics_hashes.h"
@@ -2513,7 +2514,7 @@ class PageLifecycleStateManagerTestDelegate
 
   void OnDeleted() override { manager_ = nullptr; }
 
-  PageLifecycleStateManager* manager_;
+  raw_ptr<PageLifecycleStateManager> manager_;
   base::OnceClosure store_in_back_forward_cache_sent_;
   base::OnceClosure store_in_back_forward_cache_ack_received_;
   base::OnceClosure restore_from_back_forward_cache_sent_;
@@ -2854,7 +2855,7 @@ class RenderViewHostDeletedObserver : public WebContentsObserver {
   bool deleted() const { return deleted_; }
 
  private:
-  RenderViewHost* render_view_host_;
+  raw_ptr<RenderViewHost> render_view_host_;
   bool deleted_;
 };
 

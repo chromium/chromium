@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
@@ -179,7 +180,7 @@ class PrintJobWorker {
 
   // The print job owning this worker thread. It is guaranteed to outlive this
   // object and should be set with SetPrintJob().
-  PrintJob* print_job_ = nullptr;
+  raw_ptr<PrintJob> print_job_ = nullptr;
 
   // Current page number to print.
   PageNumber page_number_;

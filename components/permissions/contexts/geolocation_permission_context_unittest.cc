@@ -19,6 +19,7 @@
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -181,9 +182,10 @@ class GeolocationPermissionContextTests
 
   TestPermissionsClient client_;
   // owned by |manager_|
-  GeolocationPermissionContext* geolocation_permission_context_ = nullptr;
+  raw_ptr<GeolocationPermissionContext> geolocation_permission_context_ =
+      nullptr;
   // owned by |geolocation_permission_context_|
-  TestGeolocationPermissionContextDelegate* delegate_ = nullptr;
+  raw_ptr<TestGeolocationPermissionContextDelegate> delegate_ = nullptr;
   std::vector<std::unique_ptr<content::WebContents>> extra_tabs_;
   std::vector<std::unique_ptr<MockPermissionPromptFactory>>
       mock_permission_prompt_factories_;
@@ -198,8 +200,8 @@ class GeolocationPermissionContextTests
   std::map<int, std::pair<PermissionRequestID::RequestLocalId, bool>>
       responses_;
   int num_permission_updates_ = 0;
-  ContentSettingsPattern* expected_primary_pattern_ = nullptr;
-  ContentSettingsPattern* expected_secondary_pattern_ = nullptr;
+  raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
+  raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
 };
 
 PermissionRequestID GeolocationPermissionContextTests::RequestID(

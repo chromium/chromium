@@ -11,6 +11,7 @@
 #include <list>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
@@ -98,7 +99,7 @@ class RenderMessageFilter
 
   int render_process_id_;
 
-  MediaInternals* media_internals_;
+  raw_ptr<MediaInternals> media_internals_;
 
   base::WeakPtrFactory<RenderMessageFilter> weak_ptr_factory_{this};
 };

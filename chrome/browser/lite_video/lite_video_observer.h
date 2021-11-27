@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "chrome/common/lite_video_service.mojom.h"
@@ -87,7 +88,7 @@ class LiteVideoObserver
 
   // The decider capable of making decisions about whether LiteVideos should be
   // applied and the params to use when throttling media requests.
-  lite_video::LiteVideoDecider* lite_video_decider_ = nullptr;
+  raw_ptr<lite_video::LiteVideoDecider> lite_video_decider_ = nullptr;
 
   // The current metrics about the navigation |this| is observing. Reset
   // after each time the metrics being held are recorded as a UKM event.

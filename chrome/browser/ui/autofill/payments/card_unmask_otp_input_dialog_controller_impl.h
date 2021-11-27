@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
@@ -78,7 +79,7 @@ class CardUnmaskOtpInputDialogControllerImpl
   // Weak reference to the delegate. Used to handle events of the dialog.
   base::WeakPtr<OtpUnmaskDelegate> delegate_;
 
-  CardUnmaskOtpInputDialogView* dialog_view_ = nullptr;
+  raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
 
   // Indicates whether any temporary error has been shown on the dialog. Used
   // for logging.

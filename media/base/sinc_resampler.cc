@@ -263,7 +263,7 @@ void SincResampler::Resample(int frames, float* destination) {
 
   // Step (1) -- Prime the input buffer at the start of the input stream.
   if (!buffer_primed_ && remaining_frames) {
-    read_cb_.Run(request_frames_, r0_);
+    read_cb_.Run(request_frames_, r0_.get());
     buffer_primed_ = true;
   }
 
@@ -321,7 +321,7 @@ void SincResampler::Resample(int frames, float* destination) {
       UpdateRegions(true);
 
     // Step (5) -- Refresh the buffer with more input.
-    read_cb_.Run(request_frames_, r0_);
+    read_cb_.Run(request_frames_, r0_.get());
   }
 }
 

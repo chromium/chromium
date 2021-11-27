@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/layer.h"
@@ -63,7 +64,7 @@ class MockLayerImpl : public LayerImpl {
   MockLayerImpl(LayerTreeImpl* tree_impl, int layer_id)
       : LayerImpl(tree_impl, layer_id), layer_impl_destruction_list_(nullptr) {}
 
-  std::vector<int>* layer_impl_destruction_list_;
+  raw_ptr<std::vector<int>> layer_impl_destruction_list_;
 };
 
 class MockLayer : public Layer {
@@ -91,7 +92,7 @@ class MockLayer : public Layer {
       : layer_impl_destruction_list_(layer_impl_destruction_list) {}
   ~MockLayer() override = default;
 
-  std::vector<int>* layer_impl_destruction_list_;
+  raw_ptr<std::vector<int>> layer_impl_destruction_list_;
 };
 
 void ExpectTreesAreIdentical(Layer* root_layer,

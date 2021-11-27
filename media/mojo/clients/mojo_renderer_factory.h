@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/buildflags.h"
@@ -82,7 +83,7 @@ class MojoRendererFactory final : public RendererFactory {
  private:
   // InterfaceFactory or InterfaceProvider used to create or connect to remote
   // renderer.
-  media::mojom::InterfaceFactory* interface_factory_ = nullptr;
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_ = nullptr;
 };
 
 }  // namespace media

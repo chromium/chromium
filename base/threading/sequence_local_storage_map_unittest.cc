@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -33,7 +34,7 @@ class SetOnDestroy {
   }
 
  private:
-  bool* const was_destroyed_ptr_;
+  const raw_ptr<bool> was_destroyed_ptr_;
 };
 
 template <typename T, typename... Args>

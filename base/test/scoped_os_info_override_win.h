@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 namespace win {
 class OSInfo;
@@ -51,7 +53,7 @@ class ScopedOSInfoOverride {
 
   // The OSInfo taken by this instance at construction and restored at
   // destruction.
-  base::win::OSInfo* original_info_;
+  raw_ptr<base::win::OSInfo> original_info_;
 
   // The OSInfo owned by this scoped object and which overrides
   // base::win::OSInfo::GetIntance() for the lifespan of the object.

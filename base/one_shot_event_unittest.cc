@@ -5,6 +5,7 @@
 #include "base/one_shot_event.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -35,7 +36,7 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
 
   ~RefCountedClass() { *did_delete_instance_ = true; }
 
-  bool* const did_delete_instance_;  // Not owned.
+  const raw_ptr<bool> did_delete_instance_;  // Not owned.
 
   bool did_perform_task_ = false;
 };

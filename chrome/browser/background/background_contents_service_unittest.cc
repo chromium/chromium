@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/background_contents.h"
@@ -60,7 +61,7 @@ class MockBackgroundContents : public BackgroundContents {
  private:
   GURL url_;
 
-  BackgroundContentsService* service_;
+  raw_ptr<BackgroundContentsService> service_;
 
   // The ID of our parent application
   std::string appid_;

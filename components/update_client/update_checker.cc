@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
@@ -89,7 +90,7 @@ class UpdateCheckerImpl : public UpdateChecker {
   base::ThreadChecker thread_checker_;
 
   const scoped_refptr<Configurator> config_;
-  PersistedData* metadata_ = nullptr;
+  raw_ptr<PersistedData> metadata_ = nullptr;
   std::vector<std::string> ids_checked_;
   UpdateCheckCallback update_check_callback_;
   std::unique_ptr<UpdaterState::Attributes> updater_state_attributes_;

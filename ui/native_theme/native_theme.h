@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -566,7 +567,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
-    NativeTheme* const theme_to_update_;
+    const raw_ptr<NativeTheme> theme_to_update_;
   };
 
   mutable std::map<SystemThemeColor, SkColor> system_colors_;

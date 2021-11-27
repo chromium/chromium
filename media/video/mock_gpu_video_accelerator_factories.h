@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -111,7 +112,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   bool fail_to_map_gpu_memory_buffer_ = false;
 
-  gpu::SharedImageInterface* sii_;
+  raw_ptr<gpu::SharedImageInterface> sii_;
 
   std::vector<gfx::GpuMemoryBuffer*> created_memory_buffers_;
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/ui/browser.h"
@@ -79,7 +80,7 @@ class PDFIFrameNavigationThrottleBrowserTest : public InProcessBrowserTest {
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  content::PluginServiceFilter* old_plugin_service_filter_;
+  raw_ptr<content::PluginServiceFilter> old_plugin_service_filter_;
   BlockAllPluginServiceFilter block_all_plugins_;
 };
 

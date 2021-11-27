@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -277,9 +278,9 @@ class ControllerTest : public testing::Test {
   base::TimeTicks now_;
   std::vector<AutofillAssistantState> states_;
   std::vector<bool> keyboard_states_;
-  MockService* mock_service_;
-  MockWebController* mock_web_controller_;
-  MockAutofillAssistantTtsController* mock_tts_controller_;
+  raw_ptr<MockService> mock_service_;
+  raw_ptr<MockWebController> mock_web_controller_;
+  raw_ptr<MockAutofillAssistantTtsController> mock_tts_controller_;
   NiceMock<MockClient> mock_client_;
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
@@ -315,7 +316,7 @@ class NavigationStateChangeListener
   std::vector<NavigationState> events;
 
  private:
-  ScriptExecutorDelegate* const delegate_;
+  const raw_ptr<ScriptExecutorDelegate> delegate_;
 };
 
 NavigationStateChangeListener::~NavigationStateChangeListener() {}

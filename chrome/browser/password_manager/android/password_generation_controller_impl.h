@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -111,7 +112,7 @@ class PasswordGenerationControllerImpl
 
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell the renderer that manual generation was requested.
-  password_manager::PasswordManagerClient* client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // Data for the generation element used to generate the password.
   std::unique_ptr<GenerationElementData> generation_element_data_;

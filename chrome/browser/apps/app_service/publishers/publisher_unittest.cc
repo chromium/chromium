@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -158,7 +159,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
-  web_app::TestWebAppUrlLoader* url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader> url_loader_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -38,7 +39,7 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_

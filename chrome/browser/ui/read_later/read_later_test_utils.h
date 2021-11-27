@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_READ_LATER_READ_LATER_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_READ_LATER_READ_LATER_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
@@ -48,7 +49,7 @@ class ReadingListLoadObserver : public ReadingListModelObserver {
                                   const GURL& url) override {}
   void ReadingListDidApplyChanges(ReadingListModel* model) override {}
 
-  ReadingListModel* const model_;
+  const raw_ptr<ReadingListModel> model_;
   base::RunLoop run_loop_;
 };
 

@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -174,8 +175,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  PasswordStoreInterface* profile_store_;
-  PasswordStoreInterface* account_store_;
+  raw_ptr<PasswordStoreInterface> profile_store_;
+  raw_ptr<PasswordStoreInterface> account_store_;
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   PasswordManager password_manager_;
   GURL last_committed_url_{kTestWebOrigin};
@@ -403,7 +404,7 @@ class CredentialManagerImplTest : public testing::Test,
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
   std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
-  MockAffiliatedMatchHelper* mock_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };
 

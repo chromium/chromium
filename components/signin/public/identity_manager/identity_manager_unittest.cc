@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -250,7 +251,7 @@ class TestIdentityManagerDiagnosticsObserver
       std::move(on_access_token_request_completed_callback_).Run();
   }
 
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   base::OnceClosure on_access_token_requested_callback_;
   base::OnceClosure on_access_token_request_completed_callback_;
   CoreAccountId token_requestor_account_id_;

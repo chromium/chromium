@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_capture/browser/content_capture_frame.h"
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "components/content_capture/common/content_capture_data.h"
@@ -84,7 +85,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   GetContentCaptureSender();
 
   mojo::AssociatedReceiver<mojom::ContentCaptureReceiver> receiver_{this};
-  content::RenderFrameHost* rfh_;
+  raw_ptr<content::RenderFrameHost> rfh_;
   ContentCaptureFrame frame_content_capture_data_;
 
   // The content id of the associated frame, it is composed of RenderProcessHost

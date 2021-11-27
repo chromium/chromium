@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,7 +73,7 @@ class DialogExample::Delegate : public virtual DialogType {
   bool Accept() override { return parent_->AllowDialogClose(true); }
 
  private:
-  DialogExample* parent_;
+  raw_ptr<DialogExample> parent_;
 };
 
 class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {

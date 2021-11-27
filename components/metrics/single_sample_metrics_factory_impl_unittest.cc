@@ -5,6 +5,7 @@
 #include "components/metrics/single_sample_metrics_factory_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -83,7 +84,7 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  SingleSampleMetricsFactoryImpl* factory_;
+  raw_ptr<SingleSampleMetricsFactoryImpl> factory_;
   base::Thread thread_;
   size_t provider_count_ = 0;
 };

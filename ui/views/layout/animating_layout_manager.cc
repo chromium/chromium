@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/animation/animation.h"
@@ -153,7 +154,7 @@ class AnimatingLayoutManager::AnimationDelegate
     }
 
    private:
-    AnimationDelegate* const animation_delegate_;
+    const raw_ptr<AnimationDelegate> animation_delegate_;
   };
   friend class Observer;
 
@@ -164,7 +165,7 @@ class AnimatingLayoutManager::AnimationDelegate
 
   bool ready_to_animate_ = false;
   bool resetting_animation_ = false;
-  AnimatingLayoutManager* const target_layout_manager_;
+  const raw_ptr<AnimatingLayoutManager> target_layout_manager_;
   std::unique_ptr<gfx::SlideAnimation> animation_;
   ViewWidgetObserver view_widget_observer_{this};
   base::ScopedObservation<View, ViewObserver> scoped_observation_{

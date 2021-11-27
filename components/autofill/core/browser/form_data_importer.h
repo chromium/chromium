@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -200,7 +201,7 @@ class FormDataImporter {
   bool has_non_focusable_field_ = false;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* client_;
+  raw_ptr<AutofillClient> client_;
 
   // Responsible for managing credit card save flows (local or upload).
   std::unique_ptr<CreditCardSaveManager> credit_card_save_manager_;
@@ -220,7 +221,7 @@ class FormDataImporter {
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Represents the type of the imported credit card from the submitted form.
   // It will be used to determine whether to offer Upstream or card migration.

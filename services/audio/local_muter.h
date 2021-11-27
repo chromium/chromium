@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_LOCAL_MUTER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -47,7 +48,7 @@ class LocalMuter final : public media::mojom::LocalMuter,
   // Runs the |all_bindings_lost_callback_| when |bindings_| becomes empty.
   void OnBindingLost();
 
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
   const base::UnguessableToken group_id_;
 
   mojo::AssociatedReceiverSet<media::mojom::LocalMuter> receivers_;

@@ -20,6 +20,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/template_util.h"
 #include "base/thread_annotations.h"
@@ -365,7 +366,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   base::Lock capture_lock_ ACQUIRED_AFTER(watch_state_lock_);
   std::atomic<bool> capture_in_progress_{false};
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Registration to receive memory pressure signals.
   base::MemoryPressureListener memory_pressure_listener_;
@@ -653,7 +654,7 @@ class BASE_EXPORT HangWatchState {
   //   |scope| gets deallocated first, violating reverse destruction order.
   //   scope.reset();
   // }
-  WatchHangsInScope* current_watch_hangs_in_scope_{nullptr};
+  raw_ptr<WatchHangsInScope> current_watch_hangs_in_scope_{nullptr};
 #endif
 };
 

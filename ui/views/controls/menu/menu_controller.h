@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -292,11 +293,11 @@ class VIEWS_EXPORT MenuController
     ~State();
 
     // The selected menu item.
-    MenuItemView* item = nullptr;
+    raw_ptr<MenuItemView> item = nullptr;
 
     // Used to capture a hot tracked child button when a nested menu is opened
     // and to restore the hot tracked state when exiting a nested menu.
-    Button* hot_button = nullptr;
+    raw_ptr<Button> hot_button = nullptr;
 
     // If item has a submenu this indicates if the submenu is showing.
     bool submenu_open = false;
@@ -681,7 +682,7 @@ class VIEWS_EXPORT MenuController
   State state_;
 
   // If the user accepted the selection, this is the result.
-  MenuItemView* result_ = nullptr;
+  raw_ptr<MenuItemView> result_ = nullptr;
 
   // The event flags when the user selected the menu.
   int accept_event_flags_ = 0;
@@ -709,13 +710,13 @@ class VIEWS_EXPORT MenuController
   base::OneShotTimer cancel_all_timer_;
 
   // Drop target.
-  MenuItemView* drop_target_ = nullptr;
+  raw_ptr<MenuItemView> drop_target_ = nullptr;
   MenuDelegate::DropPosition drop_position_ =
       MenuDelegate::DropPosition::kUnknow;
 
   // Owner of child windows.
   // WARNING: this may be NULL.
-  Widget* owner_ = nullptr;
+  raw_ptr<Widget> owner_ = nullptr;
 
   // An optional NativeView to which gestures will be forwarded to if
   // RunType::SEND_GESTURE_EVENTS_TO_OWNER is set.
@@ -756,9 +757,9 @@ class VIEWS_EXPORT MenuController
   std::unique_ptr<ViewTracker> active_mouse_view_tracker_;
 
   // Current hot tracked child button if any.
-  Button* hot_button_ = nullptr;
+  raw_ptr<Button> hot_button_ = nullptr;
 
-  internal::MenuControllerDelegate* delegate_;
+  raw_ptr<internal::MenuControllerDelegate> delegate_;
 
   // The timestamp of the event which closed the menu - or 0 otherwise.
   base::TimeTicks closing_event_time_;
@@ -796,7 +797,7 @@ class VIEWS_EXPORT MenuController
   // to. We need this, because if we forward one event to it (e.g., mouse
   // pressed), subsequent events (like dragging) should also go to it, even if
   // the mouse is no longer over the view.
-  MenuHostRootView* current_mouse_event_target_ = nullptr;
+  raw_ptr<MenuHostRootView> current_mouse_event_target_ = nullptr;
 
   // A mask of the EventFlags for the mouse buttons currently pressed.
   int current_mouse_pressed_state_ = 0;

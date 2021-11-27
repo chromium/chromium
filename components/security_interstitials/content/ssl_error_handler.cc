@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
@@ -220,11 +221,12 @@ class ConfigSingleton {
 
   // Callback to call when the interstitial timer is started. Used for
   // testing.
-  SSLErrorHandler::TimerStartedCallback* timer_started_callback_ = nullptr;
+  raw_ptr<SSLErrorHandler::TimerStartedCallback> timer_started_callback_ =
+      nullptr;
 
   // The clock to use when deciding which error type to display. Used for
   // testing.
-  base::Clock* testing_clock_ = nullptr;
+  raw_ptr<base::Clock> testing_clock_ = nullptr;
 
   base::OnceClosure report_network_connectivity_callback_;
 
@@ -395,16 +397,16 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
       std::unique_ptr<security_interstitials::SecurityInterstitialPage>
           interstitial_page);
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   const net::SSLInfo ssl_info_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   const int cert_error_;
   const int options_mask_;
   const GURL request_url_;
   std::unique_ptr<CommonNameMismatchHandler> common_name_mismatch_handler_;
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter_;
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  captive_portal::CaptivePortalService* captive_portal_service_;
+  raw_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
 #endif
   std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
   SSLErrorHandler::OnBlockingPageShownCallback on_blocking_page_shown_callback_;
@@ -527,7 +529,7 @@ void SSLErrorHandlerDelegateImpl::OnBlockingPageReady(
     std::unique_ptr<security_interstitials::SecurityInterstitialPage>
         interstitial_page) {
   if (on_blocking_page_shown_callback_) {
-    on_blocking_page_shown_callback_.Run(web_contents_, request_url_,
+    on_blocking_page_shown_callback_.Run(web_contents_.get(), request_url_,
                                          "SSL_ERROR", cert_error_);
   }
 

@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -613,7 +614,7 @@ class CONTENT_EXPORT RenderFrameHostManager
                            SiteInstanceRelation relation_to_current);
 
     // Set with an existing SiteInstance to be reused.
-    SiteInstance* existing_site_instance;
+    raw_ptr<SiteInstance> existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
     UrlInfo dest_url_info;
@@ -934,10 +935,10 @@ class CONTENT_EXPORT RenderFrameHostManager
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
   // For use in creating RenderFrameHosts.
-  FrameTreeNode* frame_tree_node_;
+  raw_ptr<FrameTreeNode> frame_tree_node_;
 
   // Our delegate, not owned by us. Guaranteed non-null.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Our RenderFrameHost which is responsible for all communication with a child
   // RenderFrame instance.

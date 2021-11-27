@@ -13,6 +13,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -53,7 +54,8 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
   friend class base::RefCounted<LocalStorageHelper>;
   virtual ~LocalStorageHelper();
 
-  content::DOMStorageContext* dom_storage_context_;  // Owned by the context
+  raw_ptr<content::DOMStorageContext>
+      dom_storage_context_;  // Owned by the context
 };
 
 // This class is a thin wrapper around LocalStorageHelper that does not fetch

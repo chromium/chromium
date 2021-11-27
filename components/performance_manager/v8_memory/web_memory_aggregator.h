@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -82,9 +83,9 @@ class WebMemoryAggregator {
   // The origin of the node that requests memory measurement.
   const url::Origin requesting_origin_;
   // The process node of the requesting frame.
-  const ProcessNode* const requesting_process_node_;
+  const raw_ptr<const ProcessNode> requesting_process_node_;
   // The process node of the main frame.
-  const ProcessNode* const main_process_node_;
+  const raw_ptr<const ProcessNode> main_process_node_;
   // The browsing instance id of the requesting frame.
   const content::BrowsingInstanceId browsing_instance_id_;
 

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/cursors/webcursor.h"
 
@@ -53,11 +54,11 @@ class CONTENT_EXPORT CursorManager {
 
   // The view currently underneath the cursor, which corresponds to the cursor
   // currently displayed.
-  RenderWidgetHostViewBase* view_under_cursor_;
+  raw_ptr<RenderWidgetHostViewBase> view_under_cursor_;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
-  RenderWidgetHostViewBase* root_view_;
+  raw_ptr<RenderWidgetHostViewBase> root_view_;
 };
 
 }  // namespace content

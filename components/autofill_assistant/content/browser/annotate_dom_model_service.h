@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -61,7 +62,8 @@ class AnnotateDomModelService
   void OnModelFileLoaded(base::File model_file);
 
   // Optimization Guide Service that provides model files for this service.
-  optimization_guide::OptimizationGuideModelProvider* opt_guide_ = nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideModelProvider> opt_guide_ =
+      nullptr;
 
   // The file that contains the annotate DOM model. Available when the
   // file path has been provided by the Optimization Guide and has been

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_BROWSER_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 
 class Browser;
@@ -30,7 +31,7 @@ class BrowserContentSettingBubbleModelDelegate
   void ShowLearnMorePage(ContentSettingsType type) override;
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_

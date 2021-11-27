@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -206,7 +207,7 @@ class CONTENT_EXPORT NavigationThrottle {
   virtual void CancelDeferredNavigation(ThrottleCheckResult result);
 
  private:
-  NavigationHandle* const navigation_handle_;
+  const raw_ptr<NavigationHandle> navigation_handle_;
 
   // Used in tests.
   base::RepeatingClosure resume_callback_;

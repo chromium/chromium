@@ -4,6 +4,8 @@
 
 #include "base/threading/thread_local_storage.h"
 
+#include "base/memory/raw_ptr.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #include <process.h>
@@ -80,7 +82,7 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   }
 
  private:
-  int* tls_value_ptr_;
+  raw_ptr<int> tls_value_ptr_;
 };
 
 
@@ -139,7 +141,7 @@ class UseTLSDuringDestructionRunner {
  private:
   struct TLSState {
     pthread_key_t key;
-    bool* teardown_works_correctly;
+    raw_ptr<bool> teardown_works_correctly;
   };
 
   // The POSIX TLS destruction API takes as input a single C-function, which is

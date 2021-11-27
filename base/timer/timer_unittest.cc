@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -89,7 +90,7 @@ class OneShotTimerTesterBase {
   std::unique_ptr<OneShotTimer> timer_ = std::make_unique<OneShotTimer>();
 
  private:
-  WaitableEvent* const did_run_;
+  const raw_ptr<WaitableEvent> did_run_;
   const TimeDelta delay_;
   TimeTicks started_time_;
 };
@@ -191,7 +192,7 @@ class RepeatingTimerTester {
 
   RunLoop run_loop_;
   RepeatingClosure quit_closure_;
-  WaitableEvent* const did_run_;
+  const raw_ptr<WaitableEvent> did_run_;
 
   const TimeDelta delay_;
   TimeTicks started_time_;
@@ -338,8 +339,8 @@ struct ResetHelper {
   }
 
  private:
-  DelayTimer* const timer_;
-  DelayTimerTarget* const target_;
+  const raw_ptr<DelayTimer> timer_;
+  const raw_ptr<DelayTimerTarget> target_;
 };
 
 void RunTest_DelayTimer_Reset(

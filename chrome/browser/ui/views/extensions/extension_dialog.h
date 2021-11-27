@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -125,7 +126,7 @@ class ExtensionDialog : public views::DialogDelegate,
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  ExtensionViewViews* extension_view_ = nullptr;
+  raw_ptr<ExtensionViewViews> extension_view_ = nullptr;
 
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>
@@ -136,7 +137,7 @@ class ExtensionDialog : public views::DialogDelegate,
       process_manager_observation_{this};
 
   // The observer of this popup.
-  ExtensionDialogObserver* observer_;
+  raw_ptr<ExtensionDialogObserver> observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_DIALOG_H_

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point.h"
@@ -32,7 +33,7 @@ class EVENTS_EXPORT EventTarget {
 
    private:
     DispatcherApi();
-    EventTarget* target_;
+    raw_ptr<EventTarget> target_;
   };
 
   EventTarget();
@@ -130,7 +131,7 @@ class EVENTS_EXPORT EventTarget {
 
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
-  EventHandler* target_handler_ = nullptr;
+  raw_ptr<EventHandler> target_handler_ = nullptr;
 };
 
 }  // namespace ui

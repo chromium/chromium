@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -165,8 +166,8 @@ class EventModelImplTest : public ::testing::Test {
   base::ThreadTaskRunnerHandle handle_;
 
   std::unique_ptr<EventModelImpl> model_;
-  TestInMemoryEventStore* store_;
-  TestEventStorageValidator* storage_validator_;
+  raw_ptr<TestInMemoryEventStore> store_;
+  raw_ptr<TestEventStorageValidator> storage_validator_;
   bool got_initialize_callback_;
   bool initialize_callback_result_;
 };

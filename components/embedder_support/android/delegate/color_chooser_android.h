@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/color_chooser.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 
@@ -47,7 +48,7 @@ class ColorChooserAndroid : public content::ColorChooser {
 
   // The web contents invoking the color chooser.  No ownership. because it will
   // outlive this class.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace web_contents_delegate_android

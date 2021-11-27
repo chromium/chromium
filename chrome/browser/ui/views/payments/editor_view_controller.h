@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -215,7 +216,7 @@ class EditorViewController : public PaymentRequestSheetController,
   ErrorLabelMap error_labels_;
 
   // The input field view in the editor used to set the initial focus.
-  views::View* initial_focus_field_view_;
+  raw_ptr<views::View> initial_focus_field_view_;
 
   // Identifies where to go back when the editing completes successfully.
   BackNavigationType back_navigation_type_;

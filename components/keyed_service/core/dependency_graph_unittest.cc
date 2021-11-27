@@ -5,6 +5,7 @@
 #include "components/keyed_service/core/dependency_graph.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "components/keyed_service/core/dependency_node.h"
@@ -27,7 +28,7 @@ class DummyNode : public DependencyNode {
   ~DummyNode() { dependency_graph_->RemoveNode(this); }
 
  private:
-  DependencyGraph* dependency_graph_;
+  raw_ptr<DependencyGraph> dependency_graph_;
 };
 
 // Tests that we can deal with a single component.

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/service_filter.h"
@@ -61,7 +62,7 @@ class ServiceInstanceRegistry {
     ~Entry();
 
     base::Token guid;
-    ServiceInstance* instance = nullptr;
+    raw_ptr<ServiceInstance> instance = nullptr;
   };
 
   struct RegularInstanceKey {

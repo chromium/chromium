@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/disassembler.h"
@@ -210,15 +211,15 @@ class DisassemblerElf : public Disassembler {
   void ParseSections();
 
   // Main ELF header.
-  const typename Traits::Elf_Ehdr* header_ = nullptr;
+  raw_ptr<const typename Traits::Elf_Ehdr> header_ = nullptr;
 
   // Section header table, ordered by section id.
   elf::Elf32_Half sections_count_ = 0;
-  const typename Traits::Elf_Shdr* sections_ = nullptr;
+  raw_ptr<const typename Traits::Elf_Shdr> sections_ = nullptr;
 
   // Program header table.
   elf::Elf32_Half segments_count_ = 0;
-  const typename Traits::Elf_Phdr* segments_ = nullptr;
+  raw_ptr<const typename Traits::Elf_Phdr> segments_ = nullptr;
 
   // Bit fields to store the role each section may play.
   std::vector<int> section_judgements_;

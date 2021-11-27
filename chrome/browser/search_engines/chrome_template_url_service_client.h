@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINES_CHROME_TEMPLATE_URL_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_SEARCH_ENGINES_CHROME_TEMPLATE_URL_SERVICE_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -42,11 +43,11 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
                     base::Time visit_time) override;
 
  private:
-  TemplateURLService* owner_;
+  raw_ptr<TemplateURLService> owner_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-  history::HistoryService* history_service_;
+  raw_ptr<history::HistoryService> history_service_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_CHROME_TEMPLATE_URL_SERVICE_CLIENT_H_

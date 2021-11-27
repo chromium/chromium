@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -95,13 +96,13 @@ class NtpCustomBackgroundService : public KeyedService,
   bool IsCustomBackgroundPrefValid();
   void NotifyAboutBackgrounds();
 
-  Profile* const profile_;
-  PrefService* pref_service_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  NtpBackgroundService* background_service_;
+  raw_ptr<NtpBackgroundService> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
       background_service_observation_{this};
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   base::TimeTicks background_updated_timestamp_;
   base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
 

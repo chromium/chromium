@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gin/gin_export.h"
 #include "gin/public/v8_idle_task_runner.h"
@@ -130,7 +131,7 @@ class GIN_EXPORT IsolateHolder {
   void SetUp(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   std::unique_ptr<v8::SnapshotCreator> snapshot_creator_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   std::unique_ptr<PerIsolateData> isolate_data_;
   std::unique_ptr<V8IsolateMemoryDumpProvider> isolate_memory_dump_provider_;
   AccessMode access_mode_;

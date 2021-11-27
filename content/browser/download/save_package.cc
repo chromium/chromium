@@ -326,7 +326,7 @@ void SavePackage::InitWithDownloadItem(
   download_ = item;
   // Confirm above didn't delete the tab out from under us.
   if (!download_created_callback.is_null())
-    std::move(download_created_callback).Run(download_);
+    std::move(download_created_callback).Run(download_.get());
 
   // Check save type and process the save page job.
   if (save_type_ == SAVE_PAGE_TYPE_AS_COMPLETE_HTML) {

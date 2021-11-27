@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,7 +120,7 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   // Called via ~AuctionV8DevToolsSession.
   void SessionDestroyed(AuctionV8DevToolsSession* session);
 
-  AuctionV8Helper* const v8_helper_;  // owns this.
+  const raw_ptr<AuctionV8Helper> v8_helper_;  // owns this.
   const scoped_refptr<base::SequencedTaskRunner> io_session_receiver_sequence_;
 
   // Mojo pipes connected to `this`, and context group IDs associated with them.
@@ -139,7 +140,7 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   std::map<int, ContextGroupInfo> context_groups_;
 
   // Owned by `v8_helper` which owns `this`.
-  DebugCommandQueue* const debug_command_queue_;
+  const raw_ptr<DebugCommandQueue> debug_command_queue_;
   bool paused_ = false;
 
   SEQUENCE_CHECKER(v8_sequence_checker_);

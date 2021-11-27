@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -318,7 +319,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If no browser is created in BrowserMain(), then |browser_| will remain
   // nullptr unless SelectFirstBrowser() is called after the creation of the
   // first browser instance at a later time.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Used to run the process until the BrowserProcess signals the test to quit.
   std::unique_ptr<base::RunLoop> run_loop_;

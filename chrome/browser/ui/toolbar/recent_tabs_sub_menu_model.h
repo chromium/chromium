@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -220,9 +221,10 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Returns true if the command id identifies a device name item.
   bool IsDeviceNameCommandId(int command_id) const;
 
-  Browser* const browser_;  // Weak.
+  const raw_ptr<Browser> browser_;  // Weak.
 
-  sync_sessions::SessionSyncService* const session_sync_service_;  // Weak.
+  const raw_ptr<sync_sessions::SessionSyncService>
+      session_sync_service_;  // Weak.
 
   // Accelerator for reopening last closed tab.
   ui::Accelerator reopen_closed_tab_accelerator_;

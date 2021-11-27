@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {
@@ -44,7 +45,7 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
  private:
   void Respond(ConfirmInfoBarDelegate* delegate);
 
-  infobars::ContentInfoBarManager* infobar_manager_;
+  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   AutoResponseType response_;
 };
 

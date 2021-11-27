@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/examples/example_base.h"
 
@@ -29,10 +30,10 @@ class VIEWS_EXAMPLES_EXPORT ScrollViewExample : public ExampleBase {
   void ButtonPressed(gfx::Rect bounds, SkColor from, SkColor to);
 
   // The content of the scroll view.
-  ScrollableView* scrollable_;
+  raw_ptr<ScrollableView> scrollable_;
 
   // The scroll view to test.
-  ScrollView* scroll_view_;
+  raw_ptr<ScrollView> scroll_view_;
 };
 
 }  // namespace examples

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -346,7 +347,7 @@ class PlatformAppPathLauncher
   }
 
   // The browser context the app should be run in.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   // The id of the extension providing the app. A pointer to the extension is
   // not kept as the extension may be unloaded and deleted during the course of
   // the launch.

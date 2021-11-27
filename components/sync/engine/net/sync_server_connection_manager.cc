@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
@@ -46,11 +47,11 @@ class Connection : public CancelationSignal::Observer {
 
   // Pointer to the factory we use for creating HttpPostProviders. We do not
   // own |factory_|.
-  HttpPostProviderFactory* const factory_;
+  const raw_ptr<HttpPostProviderFactory> factory_;
 
   // Cancelation signal is signalled when engine shuts down. Current blocking
   // operation should be aborted.
-  CancelationSignal* const cancelation_signal_;
+  const raw_ptr<CancelationSignal> cancelation_signal_;
 
   scoped_refptr<HttpPostProviderInterface> const post_provider_;
 

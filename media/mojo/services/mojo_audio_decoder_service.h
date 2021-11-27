@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_context.h"
@@ -74,7 +75,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 
   // A helper object required to get CDM from CDM id.
-  MojoCdmServiceContext* const mojo_cdm_service_context_ = nullptr;
+  const raw_ptr<MojoCdmServiceContext> mojo_cdm_service_context_ = nullptr;
 
   // The destination for the decoded buffers.
   mojo::AssociatedRemote<mojom::AudioDecoderClient> client_;

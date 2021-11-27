@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -36,7 +37,7 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
   void ReadData();
   void WaitComplete(MojoResult result);
 
-  Client* client_;
+  raw_ptr<Client> client_;
   mojo::ScopedDataPipeConsumerHandle source_;
   mojo::SimpleWatcher handle_watcher_;
 

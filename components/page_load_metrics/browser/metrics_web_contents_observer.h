@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -86,7 +87,7 @@ class MetricsWebContentsObserver
     const PageLoadMetricsObserverDelegate* GetDelegateForCommittedLoad();
 
    private:
-    page_load_metrics::MetricsWebContentsObserver* observer_;
+    raw_ptr<page_load_metrics::MetricsWebContentsObserver> observer_;
   };
 
   // Record a set of WebFeatures directly from the browser process. This

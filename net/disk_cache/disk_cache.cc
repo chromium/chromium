@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -62,13 +63,13 @@ class CacheCreator {
   net::CacheType type_;
   net::BackendType backend_type_;
 #if defined(OS_ANDROID)
-  base::android::ApplicationStatusListener* app_status_listener_;
+  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_;
 #endif
-  std::unique_ptr<disk_cache::Backend>* backend_;
+  raw_ptr<std::unique_ptr<disk_cache::Backend>> backend_;
   base::OnceClosure post_cleanup_callback_;
   net::CompletionOnceCallback callback_;
   std::unique_ptr<disk_cache::Backend> created_cache_;
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
   scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker_;
 };
 

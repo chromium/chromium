@@ -132,7 +132,7 @@ void PageInfoMainView::EnsureCookieInfo() {
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
             tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
             .release();
-    site_settings_view_->AddChildView(cookie_button_);
+    site_settings_view_->AddChildView(cookie_button_.get());
   }
 }
 

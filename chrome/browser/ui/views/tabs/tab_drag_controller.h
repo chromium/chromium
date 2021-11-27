@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -224,7 +225,7 @@ class TabDragController : public views::WidgetObserver {
     TabDragData(TabDragData&&);
 
     // The WebContents being dragged.
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
 
     // There is a brief period of time when a tab is being moved from one tab
     // strip to another [after Detach but before Attach] that the TabDragData
@@ -236,7 +237,7 @@ class TabDragController : public views::WidgetObserver {
     int source_model_index;
 
     // If attached this is the view in |attached_context_|.
-    TabSlotView* attached_view;
+    raw_ptr<TabSlotView> attached_view;
 
     // Is the tab pinned?
     bool pinned;
@@ -530,11 +531,11 @@ class TabDragController : public views::WidgetObserver {
 
   // The TabDragContext the drag originated from. This is set to null
   // if destroyed during the drag.
-  TabDragContext* source_context_;
+  raw_ptr<TabDragContext> source_context_;
 
   // The TabDragContext the dragged Tab is currently attached to, or
   // null if the dragged Tab is detached.
-  TabDragContext* attached_context_;
+  raw_ptr<TabDragContext> attached_context_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe the target TabDragContext to attach to after the drag
@@ -643,10 +644,10 @@ class TabDragController : public views::WidgetObserver {
   bool did_restore_window_;
 
   // The TabDragContext to attach to after the move loop completes.
-  TabDragContext* tab_strip_to_attach_to_after_exit_;
+  raw_ptr<TabDragContext> tab_strip_to_attach_to_after_exit_;
 
   // Non-null for the duration of RunMoveLoop.
-  views::Widget* move_loop_widget_;
+  raw_ptr<views::Widget> move_loop_widget_;
 
   // See description above getter.
   bool is_mutating_;

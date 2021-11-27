@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -176,7 +177,7 @@ class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
   }
 
   // Not owned.
-  RenderFrameSubmissionObserver* const frame_observer_;
+  const raw_ptr<RenderFrameSubmissionObserver> frame_observer_;
 };
 
 class RenderWidgetHostViewBrowserTestBase : public ContentBrowserTest {

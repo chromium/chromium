@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -76,7 +77,7 @@ class PreviewModeClient : public PDFEngine::Client {
                                 base::TimeDelta delay) override;
 
  private:
-  Client* const client_;
+  const raw_ptr<Client> client_;
 };
 
 }  // namespace chrome_pdf

@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
@@ -75,7 +76,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-  media::AudioSystem* const audio_system_;
+  const raw_ptr<media::AudioSystem> audio_system_;
 };
 
 }  // namespace content

@@ -177,16 +177,9 @@ TEST_P(GLES2DecoderTest, TexSubImage2DValidArgs) {
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, kWidth, kHeight, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, shared_memory_id_, kSharedMemoryOffset);
-  EXPECT_CALL(*gl_,
-              TexSubImage2D(GL_TEXTURE_2D,
-                            1,
-                            1,
-                            0,
-                            kWidth - 1,
-                            kHeight,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            shared_memory_address_))
+  EXPECT_CALL(
+      *gl_, TexSubImage2D(GL_TEXTURE_2D, 1, 1, 0, kWidth - 1, kHeight, GL_RGBA,
+                          GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -432,16 +425,9 @@ TEST_P(GLES3DecoderTest, TexSubImage2DTypesDoNotMatchUnsizedFormat) {
   DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, kWidth, kHeight, 0, GL_RGBA,
                GL_UNSIGNED_SHORT_4_4_4_4, shared_memory_id_,
                kSharedMemoryOffset);
-  EXPECT_CALL(*gl_,
-              TexSubImage2D(GL_TEXTURE_2D,
-                            1,
-                            1,
-                            0,
-                            kWidth - 1,
-                            kHeight,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            shared_memory_address_))
+  EXPECT_CALL(
+      *gl_, TexSubImage2D(GL_TEXTURE_2D, 1, 1, 0, kWidth - 1, kHeight, GL_RGBA,
+                          GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -457,16 +443,9 @@ TEST_P(GLES3DecoderTest, TexSubImage2DTypesDoNotMatchSizedFormat) {
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA4, kWidth, kHeight, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, shared_memory_id_, kSharedMemoryOffset);
-  EXPECT_CALL(*gl_,
-              TexSubImage2D(GL_TEXTURE_2D,
-                            1,
-                            1,
-                            0,
-                            kWidth - 1,
-                            kHeight,
-                            GL_RGBA,
-                            GL_UNSIGNED_SHORT_4_4_4_4,
-                            shared_memory_address_))
+  EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 1, 1, 0, kWidth - 1, kHeight,
+                                  GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4,
+                                  shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -565,16 +544,9 @@ TEST_P(GLES2DecoderTest, TexImage2DRedefinitionSucceeds) {
                0);
     }
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    EXPECT_CALL(*gl_,
-                TexSubImage2D(GL_TEXTURE_2D,
-                              0,
-                              0,
-                              0,
-                              kWidth,
-                              kHeight - 1,
-                              GL_RGBA,
-                              GL_UNSIGNED_BYTE,
-                              shared_memory_address_))
+    EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, kWidth, kHeight - 1,
+                                    GL_RGBA, GL_UNSIGNED_BYTE,
+                                    shared_memory_address_.get()))
         .Times(1)
         .RetiresOnSaturation();
     // Consider this TexSubImage2D command part of the previous TexImage2D
@@ -2694,8 +2666,9 @@ TEST_P(GLES2DecoderTest, TexSubImage2DClearsAfterTexImage2DNULL) {
   SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, 0, 1, 2, 1, 0);
-  EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
-                                  GL_UNSIGNED_BYTE, shared_memory_address_))
+  EXPECT_CALL(*gl_,
+              TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(2)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -2706,8 +2679,9 @@ TEST_P(GLES2DecoderTest, TexSubImage2DClearsAfterTexImage2DNULL) {
            shared_memory_id_, kSharedMemoryOffset, GL_FALSE);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   // Test if we call it again it does not clear.
-  EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, 1, 1, 1, GL_RGBA,
-                                  GL_UNSIGNED_BYTE, shared_memory_address_))
+  EXPECT_CALL(*gl_,
+              TexSubImage2D(GL_TEXTURE_2D, 0, 0, 1, 1, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -2720,15 +2694,8 @@ TEST_P(GLES2DecoderTest, TexSubImage2DDoesNotClearAfterTexImage2DNULLThenData) {
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                shared_memory_id_, kSharedMemoryOffset);
   EXPECT_CALL(*gl_,
-              TexSubImage2D(GL_TEXTURE_2D,
-                            0,
-                            1,
-                            1,
-                            1,
-                            1,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            shared_memory_address_))
+              TexSubImage2D(GL_TEXTURE_2D, 0, 1, 1, 1, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -2737,15 +2704,8 @@ TEST_P(GLES2DecoderTest, TexSubImage2DDoesNotClearAfterTexImage2DNULLThenData) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   // Test if we call it again it does not clear.
   EXPECT_CALL(*gl_,
-              TexSubImage2D(GL_TEXTURE_2D,
-                            0,
-                            1,
-                            1,
-                            1,
-                            1,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            shared_memory_address_))
+              TexSubImage2D(GL_TEXTURE_2D, 0, 1, 1, 1, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -2766,8 +2726,9 @@ TEST_P(GLES2DecoderTest, TexSubImage2DClearsAfterTexImage2DWithDataThenNULL) {
   SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, 0, 1, 2, 1, 0);
-  EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
-                                  GL_UNSIGNED_BYTE, shared_memory_address_))
+  EXPECT_CALL(*gl_,
+              TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
       .Times(2)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -3897,16 +3858,8 @@ TEST_P(GLES2DecoderManualInitTest, TexSubImage2DFloatOnGLES3) {
                GL_FLOAT,
                0,
                0);
-  EXPECT_CALL(*gl_,
-              TexImage2D(GL_TEXTURE_2D,
-                         0,
-                         GL_RGBA32F,
-                         kWidth,
-                         kHeight,
-                         0,
-                         GL_RGBA,
-                         GL_FLOAT,
-                         shared_memory_address_))
+  EXPECT_CALL(*gl_, TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, kWidth, kHeight, 0,
+                               GL_RGBA, GL_FLOAT, shared_memory_address_.get()))
       .Times(1)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;
@@ -3938,7 +3891,7 @@ TEST_P(GLES2DecoderManualInitTest, TexSubImage2DFloatDoesClearOnGLES3) {
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_FLOAT, 0, kHeight - 1, kWidth, 1, 0);
   EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, _, GL_RGBA,
-                                  GL_FLOAT, shared_memory_address_))
+                                  GL_FLOAT, shared_memory_address_.get()))
       .Times(2)
       .RetiresOnSaturation();
   cmds::TexSubImage2D cmd;

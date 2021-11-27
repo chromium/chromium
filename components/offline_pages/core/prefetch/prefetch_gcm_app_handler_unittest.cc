@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_service_impl.h"
@@ -50,9 +51,9 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<PrefetchServiceTestTaco> prefetch_service_taco_;
 
   // Owned by the taco.
-  TestPrefetchDispatcher* test_dispatcher_;
+  raw_ptr<TestPrefetchDispatcher> test_dispatcher_;
   // Owned by the taco.
-  PrefetchGCMAppHandler* handler_;
+  raw_ptr<PrefetchGCMAppHandler> handler_;
 };
 
 TEST_F(PrefetchGCMAppHandlerTest, TestOnMessage) {

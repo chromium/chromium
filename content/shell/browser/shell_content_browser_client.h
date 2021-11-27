@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
@@ -218,7 +219,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 #endif
 
   // Owned by content::BrowserMainLoop.
-  ShellBrowserMainParts* shell_browser_main_parts_ = nullptr;
+  raw_ptr<ShellBrowserMainParts> shell_browser_main_parts_ = nullptr;
 
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<ShellFieldTrials> field_trials_;

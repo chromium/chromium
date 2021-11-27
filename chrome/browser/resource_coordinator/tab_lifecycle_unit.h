@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
@@ -141,10 +142,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
 
   // List of observers to notify when the discarded state or the auto-
   // discardable state of this tab changes.
-  base::ObserverList<TabLifecycleObserver>::Unchecked* observers_;
+  raw_ptr<base::ObserverList<TabLifecycleObserver>::Unchecked> observers_;
 
   // TabStripModel to which this tab belongs.
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 
   // Last time at which this tab was focused, or TimeTicks::Max() if it is
   // currently focused. For tabs that aren't currently focused this is

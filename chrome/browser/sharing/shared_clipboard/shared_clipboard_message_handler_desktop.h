@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler.h"
 
 class Profile;
@@ -28,7 +29,7 @@ class SharedClipboardMessageHandlerDesktop
   // SharedClipboardMessageHandler implementation.
   void ShowNotification(const std::string& device_name) override;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <vector>
@@ -114,7 +115,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
-  StrictMock<MockPasswordStoreAndroidBackendBridge>* bridge_;
+  raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
 };
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsCompletionCallbackAfterInit) {

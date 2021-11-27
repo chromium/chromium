@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -165,7 +166,7 @@ class WorkerActivatedObserver
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   base::RunLoop run_loop_;
-  ServiceWorkerContextWrapper* context_;
+  raw_ptr<ServiceWorkerContextWrapper> context_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse>

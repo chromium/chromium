@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -99,8 +100,8 @@ class TouchSelectionControllerClientAura::EnvEventObserver
     selection_controller_->HideAndDisallowShowingAutomatically();
   }
 
-  ui::TouchSelectionController* selection_controller_;
-  aura::Window* window_;
+  raw_ptr<ui::TouchSelectionController> selection_controller_;
+  raw_ptr<aura::Window> window_;
 };
 
 TouchSelectionControllerClientAura::TouchSelectionControllerClientAura(

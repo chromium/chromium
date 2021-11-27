@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -122,10 +123,10 @@ class ExtensionViewHost
   bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
 
   // The browser associated with the ExtensionView, if any.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // View that shows the rendered content in the UI.
-  ExtensionView* view_ = nullptr;
+  raw_ptr<ExtensionView> view_ = nullptr;
 
   // The relevant WebContents associated with this ExtensionViewHost, if any.
   base::WeakPtr<content::WebContents> associated_web_contents_;

@@ -37,7 +37,7 @@ DownloadUrlSBClient::DownloadUrlSBClient(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(item_);
   DCHECK(service_);
-  download_item_observation_.Observe(item_);
+  download_item_observation_.Observe(item_.get());
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   extended_reporting_level_ =
@@ -50,7 +50,7 @@ DownloadUrlSBClient::DownloadUrlSBClient(
 // Implements DownloadItem::Observer.
 void DownloadUrlSBClient::OnDownloadDestroyed(
     download::DownloadItem* download) {
-  DCHECK(download_item_observation_.IsObservingSource(item_));
+  DCHECK(download_item_observation_.IsObservingSource(item_.get()));
   download_item_observation_.Reset();
   item_ = nullptr;
 }

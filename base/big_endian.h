@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -136,8 +137,8 @@ class BASE_EXPORT BigEndianWriter {
   template<typename T>
   bool Write(T v);
 
-  char* ptr_;
-  char* end_;
+  raw_ptr<char> ptr_;
+  raw_ptr<char> end_;
 };
 
 }  // namespace base

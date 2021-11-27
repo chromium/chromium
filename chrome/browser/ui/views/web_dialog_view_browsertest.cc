@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -79,9 +80,9 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
 
   bool was_view_deleted() const { return !view_tracker_.view(); }
 
-  views::WebDialogView* view_ = nullptr;
+  raw_ptr<views::WebDialogView> view_ = nullptr;
   bool web_dialog_delegate_destroyed_ = false;
-  ui::test::TestWebDialogDelegate* delegate_ = nullptr;
+  raw_ptr<ui::test::TestWebDialogDelegate> delegate_ = nullptr;
 
  private:
   views::ViewTracker view_tracker_;

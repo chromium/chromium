@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -178,7 +179,7 @@ class AppLauncherHandlerTest : public testing::Test {
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> testing_profile_;
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
-  extensions::ExtensionService* extension_service_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
 };
 
 // Tests that AppLauncherHandler::HandleInstallAppLocally calls the JS method

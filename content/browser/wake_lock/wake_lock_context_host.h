@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_CONTEXT_HOST_H_
 #define CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_CONTEXT_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
@@ -40,7 +41,7 @@ class WakeLockContextHost {
   int id_;
 
   // The WebContents that owns this instance.
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
 
   // The WakeLockContext instance that is connected to this instance.
   mojo::Remote<device::mojom::WakeLockContext> wake_lock_context_;

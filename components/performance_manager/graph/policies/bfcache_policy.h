@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -60,7 +61,7 @@ class BFCachePolicy : public GraphOwned,
   // logic.
   std::map<const PageNode*, base::OneShotTimer> page_to_flush_timer_;
 
-  Graph* graph_;
+  raw_ptr<Graph> graph_;
 };
 
 }  // namespace policies

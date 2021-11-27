@@ -16,6 +16,7 @@
 #include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -172,7 +173,7 @@ class WebSocket::WebSocketEventHandler final
       absl::optional<net::AuthCredentials>* credentials) override;
 
  private:
-  WebSocket* const impl_;
+  const raw_ptr<WebSocket> impl_;
 };
 
 WebSocket::WebSocketEventHandler::WebSocketEventHandler(WebSocket* impl)

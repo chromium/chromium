@@ -373,10 +373,10 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(web_contents_);
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-  theme_service_observation_.Observe(theme_service_);
+  theme_service_observation_.Observe(theme_service_.get());
   ntp_custom_background_service_observation_.Observe(
-      ntp_custom_background_service_);
-  promo_service_observation_.Observe(promo_service_);
+      ntp_custom_background_service_.get());
+  promo_service_observation_.Observe(promo_service_.get());
   page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
                             ntp_custom_background_service_));
 }

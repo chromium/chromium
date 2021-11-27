@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -35,7 +36,7 @@ class BroadcastChannelProvider : public blink::mojom::BroadcastChannelProvider {
   // Note: We use a raw pointer here because each BroadcastChannelProvider is
   // owned by BroadcastChannelService, so the lifetime of the former should not
   // exceed the lifetime of the latter.
-  BroadcastChannelService* broadcast_channel_service_;
+  raw_ptr<BroadcastChannelService> broadcast_channel_service_;
 };
 
 }  // namespace content

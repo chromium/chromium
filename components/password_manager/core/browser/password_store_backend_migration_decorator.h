@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
@@ -86,7 +87,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   // Proxy backend to which all responsibilities are being delegated.
   std::unique_ptr<PasswordStoreBackend> active_backend_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
 

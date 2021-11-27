@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/version.h"
@@ -507,7 +508,7 @@ struct UpdatedExtensionPermissionsInfo {
   Reason reason;
 
   // The extension who's permissions have changed.
-  const Extension* extension;
+  raw_ptr<const Extension> extension;
 
   // The permissions that have changed. For Reason::ADDED, this would contain
   // only the permissions that have added, and for Reason::REMOVED, this would

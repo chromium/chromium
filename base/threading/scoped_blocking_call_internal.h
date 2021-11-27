@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/debug/activity_tracker.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -179,10 +180,10 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   ~UncheckedScopedBlockingCall();
 
  private:
-  BlockingObserver* const blocking_observer_;
+  const raw_ptr<BlockingObserver> blocking_observer_;
 
   // Previous ScopedBlockingCall instantiated on this thread.
-  UncheckedScopedBlockingCall* const previous_scoped_blocking_call_;
+  const raw_ptr<UncheckedScopedBlockingCall> previous_scoped_blocking_call_;
 
   // Whether the BlockingType of the current thread was WILL_BLOCK after this
   // ScopedBlockingCall was instantiated.

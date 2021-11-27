@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -250,7 +251,7 @@ class MockDownloadManagerObserver : public DownloadManager::Observer {
   MOCK_METHOD1(MockManagerGoingDown, void(DownloadManager*));
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
 };
 
 class DownloadFileWithDelayFactory;
@@ -597,7 +598,7 @@ class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
     download_file_ = nullptr;
   }
 
-  ErrorInjectionDownloadFile* download_file_;
+  raw_ptr<ErrorInjectionDownloadFile> download_file_;
   int64_t injected_error_offset_ = -1;
   int64_t injected_error_length_ = 0;
   base::WeakPtrFactory<ErrorInjectionDownloadFileFactory> weak_ptr_factory_{
@@ -673,8 +674,8 @@ class DownloadCreateObserver : DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
-  download::DownloadItem* item_;
+  raw_ptr<DownloadManager> manager_;
+  raw_ptr<download::DownloadItem> item_;
   base::OnceClosure completion_closure_;
 };
 
@@ -704,7 +705,7 @@ class DownloadInProgressObserver : public DownloadTestObserverInProgress {
   }
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
 };
 
 class DownloadCountingObserver : public download::DownloadItem::Observer {
@@ -742,7 +743,7 @@ class DownloadCountingObserver : public download::DownloadItem::Observer {
   virtual bool IsCountReached(download::DownloadItem* download, int count) = 0;
 
  private:
-  download::DownloadItem* item_;
+  raw_ptr<download::DownloadItem> item_;
   int count_;
   base::OnceClosure completion_closure_;
 };
@@ -4868,7 +4869,7 @@ class MhtmlDownloadTest : public DownloadContentTest {
 
  private:
   DownloadTestContentBrowserClient new_client_;
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
 };
 
 // Test allow list for non http schemes which should not trigger

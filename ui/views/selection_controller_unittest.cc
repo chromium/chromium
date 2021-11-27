@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -62,7 +63,7 @@ class TestSelectionControllerDelegate : public SelectionControllerDelegate {
   void UpdateSelectionClipboard() override {}
 
  private:
-  gfx::RenderText* render_text_;
+  raw_ptr<gfx::RenderText> render_text_;
 };
 
 class SelectionControllerTest : public ::testing::Test {

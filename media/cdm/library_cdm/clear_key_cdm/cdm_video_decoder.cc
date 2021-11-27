@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -287,7 +288,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
     std::move(quit_closure).Run();
   }
 
-  CdmHostProxy* const cdm_host_proxy_;
+  const raw_ptr<CdmHostProxy> cdm_host_proxy_;
   std::unique_ptr<VideoDecoder> video_decoder_;
 
   // Results of |video_decoder_| operations. Set iff the callback of the

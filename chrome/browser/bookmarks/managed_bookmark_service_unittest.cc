@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -175,10 +176,10 @@ class ManagedBookmarkServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
   bookmarks::MockBookmarkModelObserver observer_;
-  ManagedBookmarkService* managed_;
-  BookmarkModel* model_;
+  raw_ptr<ManagedBookmarkService> managed_;
+  raw_ptr<BookmarkModel> model_;
 };
 
 TEST_F(ManagedBookmarkServiceTest, LoadInitial) {
@@ -203,7 +204,7 @@ TEST_F(ManagedBookmarkServiceTest, SwapNodes) {
 
   // These two nodes should just be swapped.
   const BookmarkNode* parent = managed_->managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeMoved(model_, parent, 1, parent, 0));
+  EXPECT_CALL(observer_, BookmarkNodeMoved(model_.get(), parent, 1, parent, 0));
   prefs_->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
                          base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -220,7 +221,7 @@ TEST_F(ManagedBookmarkServiceTest, RemoveNode) {
   ASSERT_TRUE(updated->EraseListIter(updated->GetList().begin() + 1));
 
   const BookmarkNode* parent = managed_->managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_, parent, 1, _, _));
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _));
   prefs_->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
                          base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -236,11 +237,12 @@ TEST_F(ManagedBookmarkServiceTest, CreateNewNodes) {
   std::unique_ptr<base::ListValue> updated(new base::ListValue);
   updated->Append(CreateFolder("Container", CreateTestTree()));
 
-  EXPECT_CALL(observer_, BookmarkNodeAdded(model_, _, _)).Times(5);
+  EXPECT_CALL(observer_, BookmarkNodeAdded(model_.get(), _, _)).Times(5);
   // The remaining nodes have been pushed to positions 1 and 2; they'll both be
   // removed when at position 1.
   const BookmarkNode* parent = managed_->managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_, parent, 1, _, _)).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _))
+      .Times(2);
   prefs_->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
                          base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -254,7 +256,8 @@ TEST_F(ManagedBookmarkServiceTest, CreateNewNodes) {
 TEST_F(ManagedBookmarkServiceTest, RemoveAllUserBookmarks) {
   // Remove the policy.
   const BookmarkNode* parent = managed_->managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_, parent, 0, _, _)).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 0, _, _))
+      .Times(2);
   prefs_->RemoveManagedPref(bookmarks::prefs::kManagedBookmarks);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -293,16 +296,16 @@ TEST_F(ManagedBookmarkServiceTest, RemoveAllDoesntRemoveManaged) {
   EXPECT_EQ(2u, managed_->managed_node()->children().size());
 
   EXPECT_CALL(observer_,
-              BookmarkNodeAdded(model_, model_->bookmark_bar_node(), 0));
+              BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 0));
   EXPECT_CALL(observer_,
-              BookmarkNodeAdded(model_, model_->bookmark_bar_node(), 1));
+              BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 1));
   model_->AddURL(model_->bookmark_bar_node(), 0, u"Test",
                  GURL("http://google.com/"));
   model_->AddFolder(model_->bookmark_bar_node(), 1, u"Test Folder");
   EXPECT_EQ(2u, model_->bookmark_bar_node()->children().size());
   Mock::VerifyAndClearExpectations(&observer_);
 
-  EXPECT_CALL(observer_, BookmarkAllUserNodesRemoved(model_, _));
+  EXPECT_CALL(observer_, BookmarkAllUserNodesRemoved(model_.get(), _));
   model_->RemoveAllUserBookmarks();
   EXPECT_EQ(2u, managed_->managed_node()->children().size());
   EXPECT_EQ(0u, model_->bookmark_bar_node()->children().size());

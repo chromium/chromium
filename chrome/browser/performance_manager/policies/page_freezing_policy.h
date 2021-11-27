@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
@@ -150,7 +151,7 @@ class PageFreezingPolicy : public GraphObserver,
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.
-  const PageNode* page_node_being_removed_ = nullptr;
+  raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.
   std::unique_ptr<mechanism::PageFreezer> page_freezer_;

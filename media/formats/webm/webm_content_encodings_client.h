@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_content_encodings.h"
@@ -41,7 +42,7 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
 
  private:
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   std::unique_ptr<ContentEncoding> cur_content_encoding_;
   bool content_encryption_encountered_;
   ContentEncodings content_encodings_;

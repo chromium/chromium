@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -792,7 +793,7 @@ class ViewSourcePrerenderTest : public ViewSourceTest {
                           base::Unretained(this))};
 
   // The WebContents which is expected to request prerendering.
-  content::WebContents* target_ = nullptr;
+  raw_ptr<content::WebContents> target_ = nullptr;
 };
 
 // A frame in a prerendered page should be able to have its source viewed, like

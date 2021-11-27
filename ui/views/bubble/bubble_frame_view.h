@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -92,7 +93,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void SetBubbleBorder(std::unique_ptr<BubbleBorder> border);
 
   const View* title() const {
-    return custom_title_ ? custom_title_ : default_title_;
+    return custom_title_ ? custom_title_.get() : default_title_.get();
   }
   View* title() {
     return const_cast<View*>(
@@ -251,7 +252,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void UpdateClientLayerCornerRadius();
 
   // The bubble border.
-  BubbleBorder* bubble_border_ = nullptr;
+  raw_ptr<BubbleBorder> bubble_border_ = nullptr;
 
   // Margins around the title label.
   gfx::Insets title_margins_;
@@ -263,29 +264,29 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   gfx::Insets footnote_margins_;
 
   // The optional title icon.
-  ImageView* title_icon_ = nullptr;
+  raw_ptr<ImageView> title_icon_ = nullptr;
 
   // One of these fields is used as the dialog title. If SetTitleView is called
   // the custom title view is stored in |custom_title_| and this class assumes
   // ownership. Otherwise |default_title_| is used.
-  Label* default_title_ = nullptr;
-  View* custom_title_ = nullptr;
+  raw_ptr<Label> default_title_ = nullptr;
+  raw_ptr<View> custom_title_ = nullptr;
 
   // The optional close button (the X).
-  Button* close_ = nullptr;
+  raw_ptr<Button> close_ = nullptr;
 
   // The optional minimize button.
-  Button* minimize_ = nullptr;
+  raw_ptr<Button> minimize_ = nullptr;
 
   // The optional progress bar. Used to indicate bubble pending state. By
   // default it is invisible.
-  ProgressBar* progress_indicator_ = nullptr;
+  raw_ptr<ProgressBar> progress_indicator_ = nullptr;
 
   // The optional header view.
-  View* header_view_ = nullptr;
+  raw_ptr<View> header_view_ = nullptr;
 
   // A view to contain the footnote view, if it exists.
-  FootnoteContainerView* footnote_container_ = nullptr;
+  raw_ptr<FootnoteContainerView> footnote_container_ = nullptr;
 
   // Set preference for how the arrow will be adjusted if the window is outside
   // the available bounds.

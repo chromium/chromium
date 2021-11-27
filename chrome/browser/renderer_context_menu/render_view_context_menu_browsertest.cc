@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -433,9 +434,9 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   content::RenderFrameHost* extension_frame() { return extension_frame_; }
 
  private:
-  content::RenderFrameHost* extension_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> extension_frame_ = nullptr;
   guest_view::TestGuestViewManagerFactory factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 class PdfPluginContextMenuBrowserTestWithUnseasonedOverride

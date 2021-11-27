@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -64,7 +65,8 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
       PaymentManager::SetPaymentInstrumentCallback callback,
       payments::mojom::PaymentHandlerStatus status);
 
-  PaymentAppContextImpl* const payment_app_context_;  // Owns PaymentManager.
+  const raw_ptr<PaymentAppContextImpl>
+      payment_app_context_;  // Owns PaymentManager.
   const url::Origin origin_;
   mojo::Receiver<payments::mojom::PaymentManager> receiver_;
   bool should_set_payment_app_info_;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -53,7 +54,7 @@ class TestWebDialogDelegate : public WebDialogDelegate {
  protected:
   const GURL url_;
   gfx::Size size_;
-  bool* did_delete_;
+  raw_ptr<bool> did_delete_;
   bool close_on_escape_;
 };
 

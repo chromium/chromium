@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/common/content_export.h"
 
@@ -43,7 +44,7 @@ class CONTENT_EXPORT GestureNavSimple : public OverscrollControllerDelegate {
                               cc::OverscrollBehavior behavior) override;
   absl::optional<float> GetMaxOverscrollDelta() const override;
 
-  WebContentsImpl* web_contents_ = nullptr;
+  raw_ptr<WebContentsImpl> web_contents_ = nullptr;
 
   OverscrollMode mode_ = OVERSCROLL_NONE;
   OverscrollSource source_ = OverscrollSource::NONE;

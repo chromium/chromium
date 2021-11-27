@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_DELETE_DIRECTIVES_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
@@ -50,7 +51,7 @@ class HistoryDeleteDirectivesModelTypeController
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 };
 
 }  // namespace history

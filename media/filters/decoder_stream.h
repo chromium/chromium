@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -227,7 +228,7 @@ class MEDIA_EXPORT DecoderStream {
   std::unique_ptr<DecoderStreamTraits<StreamType>> traits_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   State state_;
 
@@ -238,9 +239,9 @@ class MEDIA_EXPORT DecoderStream {
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;
 
-  DemuxerStream* stream_;
+  raw_ptr<DemuxerStream> stream_;
 
-  CdmContext* cdm_context_;
+  raw_ptr<CdmContext> cdm_context_;
 
   std::unique_ptr<Decoder> decoder_;
 

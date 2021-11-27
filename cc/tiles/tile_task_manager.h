@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/tile_task.h"
@@ -52,7 +53,7 @@ class CC_EXPORT TileTaskManagerImpl : public TileTaskManager {
  protected:
   explicit TileTaskManagerImpl(TaskGraphRunner* task_graph_runner);
 
-  TaskGraphRunner* task_graph_runner_;
+  raw_ptr<TaskGraphRunner> task_graph_runner_;
   const NamespaceToken namespace_token_;
 };
 

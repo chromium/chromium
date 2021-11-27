@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -203,7 +204,7 @@ class WhatsNewFetcher : public BrowserListObserver {
   }
 
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   bool browser_closed_or_inactive_ = false;
 };
 

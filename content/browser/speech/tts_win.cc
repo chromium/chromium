@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -78,7 +79,7 @@ class TtsEventSink
  private:
   // |worker_| is leaky and must never deleted because TtsEventSink posts
   // asynchronous tasks to it.
-  TtsPlatformImplBackgroundWorker* worker_;
+  raw_ptr<TtsPlatformImplBackgroundWorker> worker_;
   scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   base::Lock lock_;

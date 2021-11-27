@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
@@ -96,8 +97,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
   mojo::Receiver<download_shelf::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
-  content::DownloadManager* const download_manager_;
-  DownloadShelfUIEmbedder* embedder_ = nullptr;
+  const raw_ptr<content::DownloadManager> download_manager_;
+  raw_ptr<DownloadShelfUIEmbedder> embedder_ = nullptr;
   WebuiLoadTimer webui_load_timer_;
 
   // Used to facilitate measuring the time it took from a call to the download

@@ -4,6 +4,7 @@
 
 #include "components/payments/content/payment_request_web_contents_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -39,14 +40,14 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   }
 
   // The PaymentRequestWebContentsManager under test.
-  PaymentRequestWebContentsManager* manager_;
+  raw_ptr<PaymentRequestWebContentsManager> manager_;
 
  private:
   // Necessary supporting members to create the testing environment.
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Used in the creation of PaymentRequests.
   autofill::TestPersonalDataManager test_personal_data_manager_;

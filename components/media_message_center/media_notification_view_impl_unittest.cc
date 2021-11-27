@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -266,7 +267,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
 
   MockMediaNotificationContainer container_;
   test::MockMediaNotificationItem item_;
-  MediaNotificationViewImpl* view_;
+  raw_ptr<MediaNotificationViewImpl> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

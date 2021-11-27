@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -166,7 +167,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   ~MockUrlCheckerDelegate() override = default;
 
  private:
-  SafeBrowsingDatabaseManager* database_manager_;
+  raw_ptr<SafeBrowsingDatabaseManager> database_manager_;
   SBThreatTypeSet threat_types_;
 };
 

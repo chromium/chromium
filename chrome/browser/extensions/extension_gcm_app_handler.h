@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/gcm_driver/common/gcm_message.h"
@@ -97,7 +98,7 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
   static const char* service_name() { return "ExtensionGCMAppHandler"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

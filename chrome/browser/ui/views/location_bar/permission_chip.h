@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
@@ -121,7 +122,7 @@ class PermissionChip : public views::AccessiblePaneView,
   void AnimateCollapse();
   void AnimateExpand();
 
-  permissions::PermissionPrompt::Delegate* const delegate_;
+  const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   // ViewTracker used to track the prompt bubble.
   views::ViewTracker prompt_bubble_tracker_;
@@ -134,7 +135,7 @@ class PermissionChip : public views::AccessiblePaneView,
   base::OneShotTimer dismiss_timer_;
 
   // The button that displays the icon and text.
-  OmniboxChipButton* chip_button_ = nullptr;
+  raw_ptr<OmniboxChipButton> chip_button_ = nullptr;
 
   bool should_start_open_ = false;
   bool should_expand_ = true;

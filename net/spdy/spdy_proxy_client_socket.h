@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -165,7 +166,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* const proxy_delegate_;
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
 
   std::string user_agent_;
 

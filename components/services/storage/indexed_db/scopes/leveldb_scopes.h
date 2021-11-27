@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
@@ -142,7 +143,7 @@ class LevelDBScopes {
   int next_scope_id_ = 0;
   scoped_refptr<LevelDBState> level_db_;
   // The |lock_manager_| is expected to outlive this class.
-  ScopesLockManager* lock_manager_;
+  raw_ptr<ScopesLockManager> lock_manager_;
   TearDownCallback tear_down_callback_;
 
 #if DCHECK_IS_ON()

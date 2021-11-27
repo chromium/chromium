@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -90,7 +91,7 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
                                  base::Unretained(this)));
   }
 
-  ReportingContext* context_;
+  raw_ptr<ReportingContext> context_;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

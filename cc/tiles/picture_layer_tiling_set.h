@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "ui/gfx/geometry/size.h"
@@ -176,7 +177,7 @@ class CC_EXPORT PictureLayerTilingSet {
    private:
     size_t NextTiling() const;
 
-    const PictureLayerTilingSet* set_;
+    raw_ptr<const PictureLayerTilingSet> set_;
     float coverage_scale_;
     PictureLayerTiling::CoverageIterator tiling_iter_;
     size_t current_tiling_;
@@ -210,7 +211,7 @@ class CC_EXPORT PictureLayerTilingSet {
       ~AutoClear() { *state_to_clear_ = StateSinceLastTilePriorityUpdate(); }
 
      private:
-      StateSinceLastTilePriorityUpdate* state_to_clear_;
+      raw_ptr<StateSinceLastTilePriorityUpdate> state_to_clear_;
     };
 
     StateSinceLastTilePriorityUpdate()
@@ -252,7 +253,7 @@ class CC_EXPORT PictureLayerTilingSet {
   const float skewport_target_time_in_seconds_;
   const int skewport_extrapolation_limit_in_screen_pixels_;
   WhichTree tree_;
-  PictureLayerTilingClient* client_;
+  raw_ptr<PictureLayerTilingClient> client_;
   const float max_preraster_distance_;
   // State saved for computing velocities based on finite differences.
   // .front() of the deque refers to the most recent FrameVisibleRect.

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -48,8 +49,8 @@ class CollectorBase {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  Sampler* const sampler_;
-  MetricReportQueue* const metric_report_queue_;
+  const raw_ptr<Sampler> sampler_;
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   base::WeakPtrFactory<CollectorBase> weak_ptr_factory_{this};
 };

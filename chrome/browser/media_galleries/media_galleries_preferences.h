@@ -14,6 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -354,12 +355,12 @@ class MediaGalleriesPreferences
   std::vector<base::OnceClosure> on_initialize_callbacks_;
 
   // The profile that owns |this|.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The ExtensionPrefs used in a testing environment, where KeyedServices
   // aren't used. This will be nullptr unless it is set with
   // SetExtensionPrefsForTesting().
-  extensions::ExtensionPrefs* extension_prefs_for_testing_;
+  raw_ptr<extensions::ExtensionPrefs> extension_prefs_for_testing_;
 
   // An in-memory cache of known galleries.
   MediaGalleriesPrefInfoMap known_galleries_;

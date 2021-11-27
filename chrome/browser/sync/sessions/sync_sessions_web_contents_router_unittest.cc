@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
@@ -48,7 +49,7 @@ class SyncSessionsWebContentsRouterTest
   SyncSessionsWebContentsRouter* router() { return router_; }
 
  private:
-  SyncSessionsWebContentsRouter* router_;
+  raw_ptr<SyncSessionsWebContentsRouter> router_;
 };
 
 // Disabled on android due to complexity of creating a full TabAndroid object

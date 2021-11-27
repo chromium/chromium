@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -61,9 +62,9 @@ class LensSidePanelController : public content::WebContentsObserver,
   void CloseButtonClicked();
 
   base::OnceClosure close_callback_;
-  SidePanel* side_panel_;
-  BrowserView* browser_view_;
-  lens::LensSidePanelView* side_panel_view_;
+  raw_ptr<SidePanel> side_panel_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<lens::LensSidePanelView> side_panel_view_;
 };
 
 }  // namespace lens

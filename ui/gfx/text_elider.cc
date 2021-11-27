@@ -21,6 +21,7 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -396,7 +397,7 @@ class RectangleString {
   bool suppressed_;
 
   // String onto which the output is accumulated.
-  std::u16string* output_;
+  raw_ptr<std::u16string> output_;
 };
 
 void RectangleString::AddString(const std::u16string& input) {
@@ -570,7 +571,7 @@ class RectangleText {
   bool last_line_ended_in_lf_ = false;
 
   // The output vector of lines.
-  std::vector<std::u16string>* lines_;
+  raw_ptr<std::vector<std::u16string>> lines_;
 
   // Indicates whether a word was so long that it had to be truncated or elided
   // to fit the available width.

@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
@@ -37,7 +38,7 @@ class RouteMessageObserver {
   const MediaRoute::Id& route_id() const { return route_id_; }
 
  private:
-  MediaRouter* const router_;
+  const raw_ptr<MediaRouter> router_;
   const MediaRoute::Id route_id_;
 };
 

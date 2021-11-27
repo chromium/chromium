@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
@@ -304,7 +305,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
-  FrameSequenceTracker* tracker_;
+  raw_ptr<FrameSequenceTracker> tracker_;
 };
 
 // Tests that the tracker works correctly when the source-id for the

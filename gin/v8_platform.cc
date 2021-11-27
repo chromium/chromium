@@ -13,6 +13,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
@@ -209,7 +210,7 @@ class JobDelegateImpl : public v8::JobDelegate {
   bool IsJoiningThread() const override { return delegate_->IsJoiningThread(); }
 
  private:
-  base::JobDelegate* delegate_;
+  raw_ptr<base::JobDelegate> delegate_;
 };
 
 class JobHandleImpl : public v8::JobHandle {

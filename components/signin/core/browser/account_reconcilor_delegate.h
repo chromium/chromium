@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
@@ -161,7 +162,7 @@ class AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  AccountReconcilor* reconcilor_;
+  raw_ptr<AccountReconcilor> reconcilor_;
 };
 
 }  // namespace signin

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -60,7 +61,7 @@ class DesktopAttestationService : public AttestationService {
   // Owned by the CBCMController, which is eventually owned by the browser
   // process. Since the current service is owned at the profile level, this
   // respects the browser shutdown sequence.
-  DeviceTrustKeyManager* key_manager_;
+  raw_ptr<DeviceTrustKeyManager> key_manager_;
 
   // Runner for tasks needed to be run in the background.
   scoped_refptr<base::TaskRunner> background_task_runner_;

@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -684,7 +685,7 @@ struct ArrayTraits<viz::QuadList> {
         : it(it), last_shared_quad_state(nullptr) {}
 
     viz::QuadList::ConstIterator it;
-    const viz::SharedQuadState* last_shared_quad_state;
+    raw_ptr<const viz::SharedQuadState> last_shared_quad_state;
   };
 
   static ConstIterator GetBegin(const viz::QuadList& input) {

@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -197,7 +198,7 @@ class ClientSessionTest : public testing::Test {
   MockClientStub client_stub_;
 
   // ClientSession owns |connection_| but tests need it to inject fake events.
-  protocol::FakeConnectionToClient* connection_;
+  raw_ptr<protocol::FakeConnectionToClient> connection_;
 
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
 

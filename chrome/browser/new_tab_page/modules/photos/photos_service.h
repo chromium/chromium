@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -84,8 +85,8 @@ class PhotosService : public KeyedService,
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetMemoriesCallback> callbacks_;
-  signin::IdentityManager* identity_manager_;
-  PrefService* pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<PrefService> pref_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
 };

@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -170,7 +171,7 @@ class RulesetLoadObserver : public RulesMonitorService::TestObserver {
       run_loop_.Quit();
   }
 
-  RulesMonitorService* const service_;
+  const raw_ptr<RulesMonitorService> service_;
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
 };

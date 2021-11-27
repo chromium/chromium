@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -249,11 +250,11 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   TestingProfile profile_;
-  EventRouter* event_router_ = CreateAndUseEventRouter(&profile_);
-  PasswordsPrivateEventRouter* password_router_ =
+  raw_ptr<EventRouter> event_router_ = CreateAndUseEventRouter(&profile_);
+  raw_ptr<PasswordsPrivateEventRouter> password_router_ =
       CreateAndUsePasswordsPrivateEventRouter(&profile_);
   TestEventRouterObserver event_router_observer_{event_router_};
-  BulkLeakCheckService* bulk_leak_check_service_ =
+  raw_ptr<BulkLeakCheckService> bulk_leak_check_service_ =
       CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =

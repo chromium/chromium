@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -103,7 +104,7 @@ class UserEventCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const int64_t expected_event_time_usec_;
 };
 

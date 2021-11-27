@@ -15,6 +15,7 @@
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -150,7 +151,7 @@ class BASE_EXPORT FeatureList {
 
     // Unowned pointer to the FeatureList object we use to look up feature
     // enablement.
-    FeatureList* feature_list_;
+    raw_ptr<FeatureList> feature_list_;
   };
 
   // Describes a feature override. The first member is a Feature that will be
@@ -445,7 +446,7 @@ class BASE_EXPORT FeatureList {
   // the scenario where multiple FieldTrialList are used with the same
   // FeatureList - which can lead to overrides pointing to invalid FieldTrial
   // objects.
-  base::FieldTrialList* field_trial_list_ = nullptr;
+  raw_ptr<base::FieldTrialList> field_trial_list_ = nullptr;
 
   // Whether this object has been fully initialized. This gets set to true as a
   // result of FinalizeInitialization().

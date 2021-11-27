@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TAB_FAVICON_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 
 namespace favicon {
@@ -39,7 +40,7 @@ class TabFavicon : public favicon::FaviconDriverObserver {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobj_;
-  favicon::FaviconDriver* favicon_driver_;
+  raw_ptr<favicon::FaviconDriver> favicon_driver_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_FAVICON_H_

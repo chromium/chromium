@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -161,7 +162,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().
   // These members are only populated from LoadWebAppIcon or LoadExtensionIcon.
   GURL fallback_favicon_url_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()

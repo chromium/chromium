@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -656,8 +657,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   AllowlistedOriginContentBrowserClient content_browser_client_;
-  ContentBrowserClient* old_content_browser_client_;
-  InterestGroupManager* manager_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_;
+  raw_ptr<InterestGroupManager> manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);

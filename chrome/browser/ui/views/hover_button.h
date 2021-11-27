@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -107,11 +108,11 @@ class HoverButton : public views::LabelButton {
                            UpdatesToDisplayCorrectActionTitle);
   friend class PageInfoBubbleViewBrowserTest;
 
-  views::StyledLabel* title_ = nullptr;
-  views::View* label_wrapper_ = nullptr;
-  views::Label* subtitle_ = nullptr;
-  views::View* icon_view_ = nullptr;
-  views::View* secondary_view_ = nullptr;
+  raw_ptr<views::StyledLabel> title_ = nullptr;
+  raw_ptr<views::View> label_wrapper_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::View> icon_view_ = nullptr;
+  raw_ptr<views::View> secondary_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};

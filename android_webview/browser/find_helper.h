@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -54,10 +56,10 @@ class FindHelper {
   bool MaybeHandleEmptySearch(const std::u16string& search_string);
   void NotifyResults(int active_ordinal, int match_count, bool finished);
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   // Listener results are reported to.
-  Listener* listener_ = nullptr;
+  raw_ptr<Listener> listener_ = nullptr;
 
   // Used to check the validity of FindNext operations.
   bool async_find_started_ = false;

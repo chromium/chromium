@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
@@ -69,7 +70,7 @@ class CastSessionClientImpl : public CastSessionClient,
 
   const AutoJoinPolicy auto_join_policy_;
 
-  CastActivity* const activity_;
+  const raw_ptr<CastActivity> activity_;
 
   // The maximum number of pending media requests, used to prevent memory leaks.
   // Normally the number of pending requests should be fairly small, but each

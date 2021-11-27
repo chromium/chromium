@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -218,8 +219,8 @@ class BrowserSwitcherPrefs : public KeyedService,
   void ChromeParametersChanged();
 #endif
 
-  policy::PolicyService* const policy_service_;
-  PrefService* const prefs_;
+  const raw_ptr<policy::PolicyService> policy_service_;
+  const raw_ptr<PrefService> prefs_;
 
   // We need 2 change registrars because we can't bind 2 observers to the same
   // pref on the same registrar.

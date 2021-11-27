@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -134,7 +135,7 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
   TestMediaSinkService dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
   CastMediaSinkServiceImpl media_sink_service_impl_;
   testing::NiceMock<MockObserver> observer_;
 };

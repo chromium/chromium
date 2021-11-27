@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -62,7 +63,7 @@ class TestPasswordManagerClient
   }
 
  private:
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 };
 
 }  // namespace

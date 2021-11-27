@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -52,7 +53,7 @@ class PublisherHost {
   void Initialize();
 
   // Owns this class.
-  AppServiceProxy* proxy_;
+  raw_ptr<AppServiceProxy> proxy_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;

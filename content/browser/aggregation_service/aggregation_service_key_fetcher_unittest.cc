@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -132,7 +133,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestAggregationServiceStorageContext storage_context_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
-  MockNetworkFetcher* network_fetcher_;
+  raw_ptr<MockNetworkFetcher> network_fetcher_;
 
   int num_callbacks_run_ = 0;
   absl::optional<PublicKey> last_fetched_key_ = absl::nullopt;

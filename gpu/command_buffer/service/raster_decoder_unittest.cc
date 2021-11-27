@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -334,7 +335,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
   template <typename T>
   T GetSharedMemoryAs() {
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   GLint GetGLError() {
@@ -357,7 +358,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
   int32_t shared_memory_id_ = 0;
   uint32_t shared_memory_offset_ = 0;
-  void* shared_memory_address_ = nullptr;
+  raw_ptr<void> shared_memory_address_ = nullptr;
 
   const size_t kSharedBufferSize = 2048;
   const uint32_t kSharedMemoryOffset = 132;

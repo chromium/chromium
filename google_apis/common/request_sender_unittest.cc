@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/common/base_requests.h"
@@ -62,7 +63,7 @@ class RequestSenderTest : public testing::Test {
  protected:
   RequestSenderTest()
       : auth_service_(new TestAuthService),
-        request_sender_(base::WrapUnique(auth_service_),
+        request_sender_(base::WrapUnique(auth_service_.get()),
                         nullptr,
                         nullptr,
                         "dummy-user-agent",
@@ -71,7 +72,7 @@ class RequestSenderTest : public testing::Test {
     auth_service_->set_access_token(kTestAccessToken);
   }
 
-  TestAuthService* auth_service_;  // Owned by |request_sender_|.
+  raw_ptr<TestAuthService> auth_service_;  // Owned by |request_sender_|.
   RequestSender request_sender_;
 };
 
@@ -127,9 +128,9 @@ class TestRequest : public AuthenticatedRequestInterface {
   }
 
  private:
-  RequestSender* sender_;
-  bool* start_called_;
-  FinishReason* finish_reason_;
+  raw_ptr<RequestSender> sender_;
+  raw_ptr<bool> start_called_;
+  raw_ptr<FinishReason> finish_reason_;
   std::string passed_access_token_;
   ReAuthenticateCallback passed_reauth_callback_;
   base::WeakPtrFactory<TestRequest> weak_ptr_factory_{this};

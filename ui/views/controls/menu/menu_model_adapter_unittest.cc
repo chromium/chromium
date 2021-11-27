@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_model_delegate.h"
@@ -122,7 +123,7 @@ class MenuModelBase : public ui::MenuModel {
 
     ItemType type;
     std::u16string label;
-    ui::MenuModel* submenu;
+    raw_ptr<ui::MenuModel> submenu;
     bool enabled;
     bool visible;
     bool alerted = false;

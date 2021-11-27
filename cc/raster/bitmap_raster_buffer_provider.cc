@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -37,7 +38,7 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
                                          importance);
   }
 
-  LayerTreeFrameSink* frame_sink;
+  raw_ptr<LayerTreeFrameSink> frame_sink;
   base::WritableSharedMemoryMapping mapping;
 };
 

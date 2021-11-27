@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
@@ -130,7 +131,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   void DisableModuleAnalysis();
 
  private:
-  ModuleDatabaseEventSource* const module_database_event_source_;
+  const raw_ptr<ModuleDatabaseEventSource> module_database_event_source_;
 
   const CertificateInfo& exe_certificate_info_;
   scoped_refptr<ModuleListFilter> module_list_filter_;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // NotifyDestroyed() observers.
   ~DebuggableAuctionWorklet();
 
-  RenderFrameHostImpl* const owning_frame_ = nullptr;
+  const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
   const GURL url_;
 
   bool should_pause_on_start_ = false;

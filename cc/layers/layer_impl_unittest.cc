@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/paint/filter_operation.h"
@@ -324,7 +325,7 @@ class LayerImplScrollTest : public LayerImplTest {
   }
 
  private:
-  LayerImpl* layer_;
+  raw_ptr<LayerImpl> layer_;
 };
 
 class CommitToPendingTreeLayerImplScrollTest : public LayerImplScrollTest {

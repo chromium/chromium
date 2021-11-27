@@ -143,7 +143,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   url_loader_->DownloadToString(
       url_loader_factory_for_testing_ == nullptr
           ? url_loader_factory_.get()
-          : url_loader_factory_for_testing_,
+          : url_loader_factory_for_testing_.get(),
       base::BindOnce(&UserCloudSigninRestrictionPolicyFetcher::
                          OnManagedAccountsSigninRestrictionResult,
                      base::Unretained(this), std::move(callback)),

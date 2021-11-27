@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -778,7 +779,7 @@ class CONTENT_EXPORT WebContentsObserver {
 
   void ResetWebContents();
 
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace content

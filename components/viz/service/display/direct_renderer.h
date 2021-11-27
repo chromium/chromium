@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -113,8 +114,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     DrawingFrame();
     ~DrawingFrame();
 
-    const AggregatedRenderPassList* render_passes_in_draw_order = nullptr;
-    const AggregatedRenderPass* root_render_pass = nullptr;
+    raw_ptr<const AggregatedRenderPassList> render_passes_in_draw_order =
+        nullptr;
+    raw_ptr<const AggregatedRenderPass> root_render_pass = nullptr;
     const AggregatedRenderPass* current_render_pass = nullptr;
 
     gfx::Rect root_damage_rect;
@@ -281,15 +283,15 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace RootRenderPassColorSpace() const;
   gfx::ColorSpace CurrentRenderPassColorSpace() const;
 
-  const RendererSettings* const settings_;
+  const raw_ptr<const RendererSettings> settings_;
   // Points to the viz-global singleton.
-  const DebugRendererSettings* const debug_settings_;
-  OutputSurface* const output_surface_;
-  DisplayResourceProvider* const resource_provider_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
+  const raw_ptr<OutputSurface> output_surface_;
+  const raw_ptr<DisplayResourceProvider> resource_provider_;
   // This can be replaced by test implementations.
   // TODO(weiliangc): For SoftwareRenderer and tests where overlay is not used,
   // use OverlayProcessorStub so this pointer is never null.
-  OverlayProcessorInterface* overlay_processor_;
+  raw_ptr<OverlayProcessorInterface> overlay_processor_;
 
   // Whether it's valid to SwapBuffers with an empty rect. Trivially true when
   // using partial swap.

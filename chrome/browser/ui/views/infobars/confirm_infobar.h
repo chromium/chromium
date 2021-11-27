@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_INFOBARS_CONFIRM_INFOBAR_H_
 #define CHROME_BROWSER_UI_VIEWS_INFOBARS_CONFIRM_INFOBAR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -46,10 +47,10 @@ class ConfirmInfoBar : public InfoBarView {
   // uses this to determine how much space the label and link can take.
   int NonLabelWidth() const;
 
-  views::Label* label_ = nullptr;
-  views::MdTextButton* ok_button_ = nullptr;
-  views::MdTextButton* cancel_button_ = nullptr;
-  views::Link* link_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::MdTextButton> ok_button_ = nullptr;
+  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
+  raw_ptr<views::Link> link_ = nullptr;
   std::unique_ptr<ElevationIconSetter> elevation_icon_setter_;
 };
 

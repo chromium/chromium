@@ -19,6 +19,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/buffer_tracker.h"
@@ -371,7 +372,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
     ~DeferErrorCallbacks();
 
    private:
-    GLES2Implementation* gles2_implementation_;
+    raw_ptr<GLES2Implementation> gles2_implementation_;
   };
 
   struct DeferredErrorCallback {
@@ -391,7 +392,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
     ~SingleThreadChecker();
 
    private:
-    GLES2Implementation* gles2_implementation_;
+    raw_ptr<GLES2Implementation> gles2_implementation_;
   };
 
   // ImplementationBase implementation.
@@ -706,7 +707,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                              PresentationCallback present_callback);
 
   GLES2Util util_;
-  GLES2CmdHelper* helper_;
+  raw_ptr<GLES2CmdHelper> helper_;
   std::string last_error_;
   DebugMarkerManager debug_marker_manager_;
   std::string this_in_hex_;

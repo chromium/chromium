@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -119,7 +120,7 @@ class MockServerSocket : public net::ServerSocket {
   net::IoMode mode_ = net::SYNCHRONOUS;
   int accept_result_ = net::OK;
   net::CompletionOnceCallback accept_callback_;
-  std::unique_ptr<net::StreamSocket>* accept_socket_;
+  raw_ptr<std::unique_ptr<net::StreamSocket>> accept_socket_;
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<net::StaticSocketDataProvider>> data_providers_;
   size_t next_data_provider_index_ = 0;

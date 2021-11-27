@@ -4,6 +4,7 @@
 
 #include "components/zoom/zoom_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -442,7 +443,7 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
   bool is_on_zoom_changed_called_ = false;
 
   content::test::PrerenderTestHelper prerender_helper_;
-  ZoomController* zoom_controller_;
+  raw_ptr<ZoomController> zoom_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,

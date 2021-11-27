@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
@@ -99,42 +100,42 @@ class PageInfoMainView : public views::View,
   std::unique_ptr<views::View> CreateAboutThisSiteSection(
       const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
 
-  PageInfo* presenter_;
+  raw_ptr<PageInfo> presenter_;
 
-  ChromePageInfoUiDelegate* ui_delegate_;
+  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
-  PageInfoNavigationHandler* navigation_handler_;
+  raw_ptr<PageInfoNavigationHandler> navigation_handler_;
 
   // The raw details of the status of the identity check for this site.
   std::u16string details_text_ = std::u16string();
 
   // The button that opens the "Connection" subpage.
-  PageInfoHoverButton* connection_button_ = nullptr;
+  raw_ptr<PageInfoHoverButton> connection_button_ = nullptr;
 
   // The view that contains the certificate, cookie, and permissions sections.
-  views::View* site_settings_view_ = nullptr;
+  raw_ptr<views::View> site_settings_view_ = nullptr;
 
   // The button that opens the "Cookies" dialog.
-  PageInfoHoverButton* cookie_button_ = nullptr;
+  raw_ptr<PageInfoHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  views::View* site_settings_link_ = nullptr;
+  raw_ptr<views::View> site_settings_link_ = nullptr;
 
   // The view that contains the scroll view with permission rows and the reset
   // button, surrounded by separators.
-  views::View* permissions_view_ = nullptr;
+  raw_ptr<views::View> permissions_view_ = nullptr;
 
   // The section that contains "About this site" button that opens a
   // subpage and two separators.
-  views::View* about_this_site_section_ = nullptr;
+  raw_ptr<views::View> about_this_site_section_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.
-  PageInfoSecurityContentView* security_content_view_ = nullptr;
+  raw_ptr<PageInfoSecurityContentView> security_content_view_ = nullptr;
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting
   // VR page.
-  views::View* page_feature_info_view_ = nullptr;
+  raw_ptr<views::View> page_feature_info_view_ = nullptr;
 #endif
 
   // These rows bundle together all the |View|s involved in a single row of the
@@ -144,11 +145,11 @@ class PageInfoMainView : public views::View,
 
   std::vector<ChosenObjectView*> chosen_object_rows_;
 
-  views::Label* title_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 
-  views::View* security_container_view_ = nullptr;
+  raw_ptr<views::View> security_container_view_ = nullptr;
 
-  views::LabelButton* reset_button_ = nullptr;
+  raw_ptr<views::LabelButton> reset_button_ = nullptr;
 
   base::WeakPtrFactory<PageInfoMainView> weak_factory_{this};
 };

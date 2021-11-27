@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -110,9 +111,9 @@ class ReputationService : public KeyedService {
   // ignored.  Used to avoid re-warning the user.
   std::set<std::string> warning_dismissed_etld1s_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  const char* const* sensitive_keywords_;
+  raw_ptr<const char* const> sensitive_keywords_;
   size_t num_sensitive_keywords_;
 
   base::WeakPtrFactory<ReputationService> weak_factory_{this};

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_QRCODE_GENERATOR_QRCODE_GENERATOR_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_QRCODE_GENERATOR_QRCODE_GENERATOR_BUBBLE_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
@@ -60,7 +61,7 @@ class QRCodeGeneratorBubbleController
   void UpdateIcon();
 
   // Will be nullptr if no bubble is currently shown.
-  QRCodeGeneratorBubbleView* qrcode_generator_bubble_ = nullptr;
+  raw_ptr<QRCodeGeneratorBubbleView> qrcode_generator_bubble_ = nullptr;
 
   // True if the bubble is currently shown.
   bool bubble_shown_ = false;

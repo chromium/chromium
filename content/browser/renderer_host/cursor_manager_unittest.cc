@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
@@ -91,7 +92,7 @@ class CursorManagerTest : public testing::Test {
 
   // Tests should set this to nullptr if they've already triggered its
   // destruction.
-  MockRenderWidgetHostViewForCursors* top_view_;
+  raw_ptr<MockRenderWidgetHostViewForCursors> top_view_;
 
   MockRenderWidgetHostDelegate delegate_;
 };

@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -533,7 +534,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     absl::optional<DnsConfig> dns_config_;
   };
 
-  DnsConfigServiceWin* service_;
+  raw_ptr<DnsConfigServiceWin> service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
 };
 

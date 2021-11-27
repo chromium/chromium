@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/image_model.h"
 
@@ -97,7 +98,7 @@ class GlobalErrorWithStandardBubble
 
  private:
   bool has_shown_bubble_view_ = false;
-  GlobalErrorBubbleViewBase* bubble_view_ = nullptr;
+  raw_ptr<GlobalErrorBubbleViewBase> bubble_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_H_

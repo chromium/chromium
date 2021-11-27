@@ -77,7 +77,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
   DCHECK(delegate_);
   if (parent)
     parent_window_tracker_ = NativeWindowTracker::Create(parent);
-  profile_observation_.Observe(profile_);
+  profile_observation_.Observe(profile_.get());
 }
 
 ExtensionUninstallDialog::~ExtensionUninstallDialog() = default;

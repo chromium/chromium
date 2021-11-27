@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
@@ -658,8 +659,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // applies.  |browser_context_| may be used on the UI thread, and
     // |resource_context_| may be used on the IO thread.  If these are null,
     // then the isolated origin applies globally to all profiles.
-    BrowserContext* browser_context_;
-    ResourceContext* resource_context_;
+    raw_ptr<BrowserContext> browser_context_;
+    raw_ptr<ResourceContext> resource_context_;
 
     // True if origins at this or lower level should be treated as distinct
     // isolated origins, effectively isolating all domains below a given domain,

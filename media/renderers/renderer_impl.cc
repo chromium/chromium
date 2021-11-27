@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -76,8 +77,8 @@ class RendererImpl::RendererClientInternal final : public RendererClient {
 
  private:
   DemuxerStream::Type type_;
-  RendererImpl* renderer_;
-  MediaResource* media_resource_;
+  raw_ptr<RendererImpl> renderer_;
+  raw_ptr<MediaResource> media_resource_;
 };
 
 RendererImpl::RendererImpl(

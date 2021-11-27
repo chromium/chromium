@@ -153,7 +153,7 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     added_frame_observer_ = false;
   }
 
-  auto* old_source = begin_frame_source_;
+  auto* old_source = begin_frame_source_.get();
   begin_frame_source_ = begin_frame_source;
 
   FrameSinkBundleImpl* bundle = nullptr;

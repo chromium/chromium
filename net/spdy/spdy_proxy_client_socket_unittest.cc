@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1486,7 +1487,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<SpdyProxyClientSocket>* sock_;
+  raw_ptr<std::unique_ptr<SpdyProxyClientSocket>> sock_;
 };
 
 // If the socket is Reset when both a read and write are pending, and the

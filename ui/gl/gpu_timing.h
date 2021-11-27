@@ -11,6 +11,7 @@
 #include <queue>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 
 // The gpu_timing classes handles the abstraction of GL GPU Timing extensions
@@ -156,7 +157,7 @@ class GL_EXPORT GPUTimingClient
 
   virtual ~GPUTimingClient();
 
-  GPUTimingImpl* gpu_timing_;
+  raw_ptr<GPUTimingImpl> gpu_timing_;
   GPUTiming::TimerType timer_type_ = GPUTiming::kTimerTypeInvalid;
   uint32_t disjoint_counter_ = 0;
 };

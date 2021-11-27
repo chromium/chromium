@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -315,7 +316,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
-  ReportQueueConfiguration* report_queue_config_;
+  raw_ptr<ReportQueueConfiguration> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });

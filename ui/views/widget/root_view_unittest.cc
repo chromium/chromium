@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -46,7 +47,7 @@ class DeleteOnKeyEventView : public View {
 
  private:
   // Set to true in OnKeyPressed().
-  bool* set_on_key_;
+  raw_ptr<bool> set_on_key_;
 };
 
 // Verifies deleting a View in OnKeyPressed() doesn't crash and that the
@@ -114,7 +115,7 @@ class TestContextMenuController : public ContextMenuController {
 
  private:
   int show_context_menu_calls_ = 0;
-  View* menu_source_view_ = nullptr;
+  raw_ptr<View> menu_source_view_ = nullptr;
   ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
 };
 
@@ -432,7 +433,7 @@ class DeleteViewOnEvent : public View {
   ui::EventType delete_event_type_;
 
   // Tracks whether the view was destroyed.
-  bool* was_destroyed_;
+  raw_ptr<bool> was_destroyed_;
 };
 
 // View class which remove itself when it gets an event of type
@@ -481,7 +482,7 @@ class NestedEventOnEvent : public View {
   // The event type which causes the view to generate a nested event.
   ui::EventType nested_event_type_;
   // root view of this view; owned by widget.
-  View* root_view_;
+  raw_ptr<View> root_view_;
 };
 
 }  // namespace
@@ -718,7 +719,7 @@ class DeleteWidgetOnMouseExit : public View {
   void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace

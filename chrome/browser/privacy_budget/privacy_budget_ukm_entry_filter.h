@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "components/ukm/ukm_entry_filter.h"
 
@@ -26,7 +27,7 @@ class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
   void OnStoreRecordingsInReport() final;
 
  private:
-  IdentifiabilityStudyState* const identifiability_study_state_;
+  const raw_ptr<IdentifiabilityStudyState> identifiability_study_state_;
 
   // Keeps track of whether Privacy Budget metadata was reported. This flag is
   // reset each time the UKM service constructs a new UKM report. The goal being

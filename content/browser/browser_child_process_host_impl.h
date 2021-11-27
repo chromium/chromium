@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -194,7 +195,7 @@ class BrowserChildProcessHostImpl
 
   ChildProcessData data_;
   std::string metrics_name_;
-  BrowserChildProcessHostDelegate* delegate_;
+  raw_ptr<BrowserChildProcessHostDelegate> delegate_;
   std::unique_ptr<ChildProcessHost> child_process_host_;
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};

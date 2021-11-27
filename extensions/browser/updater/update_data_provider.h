@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/browser/updater/extension_update_data.h"
@@ -66,7 +67,7 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
                           bool install_immediately,
                           UpdateClientCallback update_client_callback);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

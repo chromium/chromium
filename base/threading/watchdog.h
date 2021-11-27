@@ -22,6 +22,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -74,7 +75,7 @@ class BASE_EXPORT Watchdog {
    private:
     void SetThreadName() const;
 
-    Watchdog* watchdog_;
+    raw_ptr<Watchdog> watchdog_;
   };
 
   enum State { ARMED, DISARMED, SHUTDOWN, JOINABLE };

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"
@@ -49,7 +50,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
                      const std::string& event_name,
                      std::vector<base::Value> event_args);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
@@ -72,7 +73,7 @@ class HistoryAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
  private:
   friend class BrowserContextKeyedAPIFactory<HistoryAPI>;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

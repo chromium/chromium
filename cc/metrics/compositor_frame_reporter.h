@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -419,7 +420,8 @@ class CC_EXPORT CompositorFrameReporter {
   absl::optional<FrameSkippedReason> frame_skip_reason_;
   absl::optional<base::TimeTicks> main_frame_abort_time_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   bool has_partial_update_ = false;
 

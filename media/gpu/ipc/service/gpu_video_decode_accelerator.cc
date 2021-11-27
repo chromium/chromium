@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -198,7 +199,7 @@ class GpuVideoDecodeAccelerator::MessageFilter
                                   base::Unretained(owner_)));
   }
 
-  GpuVideoDecodeAccelerator* owner_;
+  raw_ptr<GpuVideoDecodeAccelerator> owner_;
   const scoped_refptr<base::SequencedTaskRunner> owner_task_runner_;
   const bool decode_on_io_;
   mojo::AssociatedReceiver<mojom::GpuAcceleratedVideoDecoder> receiver_{this};

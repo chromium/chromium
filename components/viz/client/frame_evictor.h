@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 #define COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/client/frame_eviction_manager.h"
 
 namespace viz {
@@ -45,7 +46,7 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   // FrameEvictionManagerClient implementation.
   void EvictCurrentFrame() override;
 
-  FrameEvictorClient* client_;
+  raw_ptr<FrameEvictorClient> client_;
   bool has_surface_ = false;
   bool visible_ = false;
 };

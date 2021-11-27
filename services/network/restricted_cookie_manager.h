@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/linked_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -194,7 +195,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieWithAccessResult& cookie_item);
 
   const mojom::RestrictedCookieManagerRole role_;
-  net::CookieStore* const cookie_store_;
+  const raw_ptr<net::CookieStore> cookie_store_;
   const CookieSettings& cookie_settings_;
 
   url::Origin origin_;

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/paint_flags.h"
@@ -146,7 +147,7 @@ class FakeContentLayerClient : public ContentLayerClient {
   bool fill_with_nonsolid_color_ = false;
   RectPaintVector draw_rects_;
   ImageVector draw_images_;
-  SkCanvas* last_canvas_ = nullptr;
+  raw_ptr<SkCanvas> last_canvas_ = nullptr;
   gfx::Size bounds_;
   bool bounds_set_ = false;
   bool contains_slow_paths_ = false;

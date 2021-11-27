@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,7 +50,7 @@ class TemplateStore {
   // Task runner delegating tasks to the ThreadPool.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<TemplateStore> weak_ptr_factory_{this};
 };

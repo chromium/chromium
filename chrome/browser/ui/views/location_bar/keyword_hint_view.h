@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -46,13 +47,12 @@ class KeywordHintView : public views::Button {
   void OnThemeChanged() override;
 
  private:
+  raw_ptr<Profile> profile_ = nullptr;
 
-  Profile* profile_ = nullptr;
-
-  views::Label* leading_label_ = nullptr;
-  views::View* chip_container_ = nullptr;
-  views::Label* chip_label_ = nullptr;
-  views::Label* trailing_label_ = nullptr;
+  raw_ptr<views::Label> leading_label_ = nullptr;
+  raw_ptr<views::View> chip_container_ = nullptr;
+  raw_ptr<views::Label> chip_label_ = nullptr;
+  raw_ptr<views::Label> trailing_label_ = nullptr;
 
   std::u16string keyword_;
 };

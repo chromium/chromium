@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -177,7 +178,7 @@ class SearchPermissionsServiceTest : public testing::Test {
 
   // This is owned by the SearchPermissionsService which is owned by the
   // profile.
-  TestSearchEngineDelegate* test_delegate_;
+  raw_ptr<TestSearchEngineDelegate> test_delegate_;
 };
 
 TEST_F(SearchPermissionsServiceTest, Initialization) {

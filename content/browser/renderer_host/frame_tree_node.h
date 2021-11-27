@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node_blame_context.h"
@@ -549,7 +550,7 @@ class CONTENT_EXPORT FrameTreeNode {
   static int next_frame_tree_node_id_;
 
   // The FrameTree that owns us.
-  FrameTree* frame_tree_;  // not owned.
+  raw_ptr<FrameTree> frame_tree_;  // not owned.
 
   // A browser-global identifier for the frame in the page, which stays stable
   // even if the frame does a cross-process navigation.
@@ -557,12 +558,12 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // The RenderFrameHost owning this FrameTreeNode, which cannot change for the
   // life of this FrameTreeNode. |nullptr| if this node is the root.
-  RenderFrameHostImpl* const parent_;
+  const raw_ptr<RenderFrameHostImpl> parent_;
 
   // The frame that opened this frame, if any.  Will be set to null if the
   // opener is closed, or if this frame disowns its opener by setting its
   // window.opener to null.
-  FrameTreeNode* opener_ = nullptr;
+  raw_ptr<FrameTreeNode> opener_ = nullptr;
 
   // An observer that clears this node's |opener_| if the opener is destroyed.
   // This observer is added to the |opener_|'s observer list when the |opener_|
@@ -573,7 +574,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // The frame that opened this frame, if any. Contrary to opener_, this
   // cannot be changed unless the original opener is destroyed.
-  FrameTreeNode* original_opener_ = nullptr;
+  raw_ptr<FrameTreeNode> original_opener_ = nullptr;
 
   // The devtools frame token of the frame which opened this frame. This is
   // not cleared even if the opener is destroyed or disowns the frame.

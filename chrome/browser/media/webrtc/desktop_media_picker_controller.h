@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -91,7 +92,7 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   DoneCallback done_callback_;
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists_;
   std::unique_ptr<DesktopMediaPicker> picker_;
-  DesktopMediaPickerFactory* picker_factory_;
+  raw_ptr<DesktopMediaPickerFactory> picker_factory_;
   base::WeakPtrFactory<DesktopMediaPickerController> weak_factory_{this};
 };
 

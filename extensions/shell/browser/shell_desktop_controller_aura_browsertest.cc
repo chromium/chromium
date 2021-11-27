@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -82,7 +83,7 @@ class ShellDesktopControllerAuraBrowserTest : public ShellApiTest {
   scoped_refptr<const Extension> app_;
 
  private:
-  ShellDesktopControllerAura* desktop_controller_ = nullptr;
+  raw_ptr<ShellDesktopControllerAura> desktop_controller_ = nullptr;
 };
 
 // Test that closing the app window stops the DesktopController.

@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -72,7 +73,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const PasswordManagerClient* const client_;
+  const raw_ptr<const PasswordManagerClient> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -90,12 +91,12 @@ class IdleManagerTest : public RenderViewHostTestHarness {
     auto* test_browser_context =
         static_cast<TestBrowserContext*>(browser_context());
     test_browser_context->SetPermissionControllerDelegate(
-        base::WrapUnique(permission_manager_));
+        base::WrapUnique(permission_manager_.get()));
 
     idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
     idle_manager_ = std::make_unique<IdleManagerImpl>(main_rfh());
     scoped_idle_time_provider_ = std::make_unique<ScopedIdleProviderForTest>(
-        base::WrapUnique(idle_time_provider_));
+        base::WrapUnique(idle_time_provider_.get()));
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -171,8 +172,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-  MockPermissionManager* permission_manager_;
-  MockIdleTimeProvider* idle_time_provider_;
+  raw_ptr<MockPermissionManager> permission_manager_;
+  raw_ptr<MockIdleTimeProvider> idle_time_provider_;
   std::unique_ptr<ScopedIdleProviderForTest> scoped_idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;
   mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver_{&idle_monitor_};

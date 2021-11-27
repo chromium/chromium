@@ -16,6 +16,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/pending_task.h"
 #include "base/process/process.h"
@@ -153,7 +154,7 @@ class SimpleActivityThread : public SimpleThread {
   }
 
  private:
-  const void* source_;
+  raw_ptr<const void> source_;
   Activity::Type activity_;
   ActivityData data_;
 

@@ -120,7 +120,7 @@ void OsIntegrationManager::Start() {
   DCHECK(registrar_);
   DCHECK(file_handler_manager_);
 
-  registrar_observation_.Observe(registrar_);
+  registrar_observation_.Observe(registrar_.get());
 
 #if defined(OS_MAC)
   // Ensure that all installed apps are included in the AppShimRegistry when the

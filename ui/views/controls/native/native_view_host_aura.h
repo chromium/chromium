@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -92,7 +93,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void UpdateInsets();
 
   // Our associated NativeViewHost.
-  NativeViewHost* host_;
+  raw_ptr<NativeViewHost> host_;
 
   std::unique_ptr<ClippingWindowDelegate> clipping_window_delegate_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_HINTS_MANAGER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_HINTS_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "components/optimization_guide/core/hints_manager.h"
 
@@ -38,7 +39,7 @@ class ChromeHintsManager : public HintsManager,
 
  private:
   // A reference to the profile. Not owned.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 }  // namespace optimization_guide

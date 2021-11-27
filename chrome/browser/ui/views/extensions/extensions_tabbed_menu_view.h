@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -55,7 +56,7 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView {
   void CreateTabbedPane(ExtensionsToolbarButton::ButtonType button_type_);
 
   // The view containing the menu's two tabs.
-  views::TabbedPane* tabbed_pane_ = nullptr;
+  raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_

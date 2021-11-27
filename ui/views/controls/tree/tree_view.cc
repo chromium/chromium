@@ -196,7 +196,7 @@ void TreeView::StartEditing(TreeModelNode* node) {
     editor_ = new Textfield;
     // Add the editor immediately as GetPreferredSize returns the wrong thing if
     // not parented.
-    AddChildView(editor_);
+    AddChildView(editor_.get());
     editor_->SetFontList(font_list_);
     empty_editor_size_ = editor_->GetPreferredSize();
     editor_->set_controller(this);

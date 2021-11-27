@@ -67,6 +67,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -183,7 +184,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
 
   AudioParameters audio_parameters_;
 
-  RenderCallback* callback_;
+  raw_ptr<RenderCallback> callback_;
 
   // A pointer to the IPC layer that takes care of sending requests over to
   // the implementation. May be set to nullptr after errors.

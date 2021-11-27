@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,7 +74,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   RequestsMap pending_requests_;
   // context_ owns |this|.
-  PermissionServiceContext* context_;
+  raw_ptr<PermissionServiceContext> context_;
   const url::Origin origin_;
   base::WeakPtrFactory<PermissionServiceImpl> weak_factory_{this};
 };

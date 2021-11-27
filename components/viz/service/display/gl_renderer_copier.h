@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "base/unguessable_token.h"
@@ -184,7 +185,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     GLuint transfer_buffer = 0;
 
    private:
-    ContextProvider* const context_provider_;
+    const raw_ptr<ContextProvider> context_provider_;
     GLuint query_ = 0;
   };
 
@@ -239,7 +240,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     gfx::Size chroma_texture_size() const;
 
     base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-    ContextProvider* const context_provider_;
+    const raw_ptr<ContextProvider> context_provider_;
     std::array<int, 3> data_offsets_;
   };
 
@@ -304,7 +305,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     std::array<GLuint, 2> queries_;
 
     base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-    ContextProvider* const context_provider_;
+    const raw_ptr<ContextProvider> context_provider_;
     std::array<int, 2> data_offsets_;
   };
 
@@ -444,8 +445,8 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                                     int plane);
 
   // Injected dependencies.
-  ContextProvider* const context_provider_;
-  TextureDeleter* const texture_deleter_;
+  const raw_ptr<ContextProvider> context_provider_;
+  const raw_ptr<TextureDeleter> texture_deleter_;
 
   // This increments by one for every call to FreeUnusedCachedResources(). It
   // is meant to determine when cached resources should be freed because they

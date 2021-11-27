@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/user_model.h"
 
@@ -47,7 +48,7 @@ class RadioButtonController {
  private:
   friend class RadioButtonControllerTest;
 
-  UserModel* user_model_;
+  raw_ptr<UserModel> user_model_;
   base::WeakPtrFactory<RadioButtonController> weak_ptr_factory_{this};
 };
 

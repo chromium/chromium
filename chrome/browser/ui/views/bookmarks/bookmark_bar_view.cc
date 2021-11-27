@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -463,7 +464,7 @@ class OverflowButton : public BookmarkMenuButtonBase {
   }
 
  private:
-  BookmarkBarView* owner_;
+  raw_ptr<BookmarkBarView> owner_;
 };
 
 void RecordAppLaunch(Profile* profile, const GURL& url) {

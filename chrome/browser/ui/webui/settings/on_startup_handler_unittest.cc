@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,7 +70,7 @@ class OnStartupHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<TestOnStartupHandler> handler_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif

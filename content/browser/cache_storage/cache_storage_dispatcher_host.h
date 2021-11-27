@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -65,7 +66,7 @@ class CacheStorageDispatcherHost {
                                       storage::mojom::CacheStorageOwner owner);
 
   // `this` is owned by `context_`.
-  CacheStorageContextImpl* const context_;
+  const raw_ptr<CacheStorageContextImpl> context_;
 
   mojo::UniqueReceiverSet<blink::mojom::CacheStorage> receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CacheStorageCache>

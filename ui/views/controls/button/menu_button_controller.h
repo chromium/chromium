@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -111,7 +112,7 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   int pressed_lock_count_ = 0;
 
   // Used to let Activate() know if IncrementPressedLocked() was called.
-  bool* increment_pressed_lock_called_ = nullptr;
+  raw_ptr<bool> increment_pressed_lock_called_ = nullptr;
 
   // True if the button was in a disabled state when a menu was run, and
   // should return to it once the press is complete. This can happen if, e.g.,

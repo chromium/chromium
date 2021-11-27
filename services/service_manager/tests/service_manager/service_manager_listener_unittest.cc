@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -73,8 +74,8 @@ class TestListener : public mojom::ServiceManagerListener {
   base::RunLoop wait_for_init_loop_;
 
   absl::optional<base::RunLoop> wait_for_start_loop_;
-  Identity* wait_for_start_identity_ = nullptr;
-  uint32_t* wait_for_start_pid_ = nullptr;
+  raw_ptr<Identity> wait_for_start_identity_ = nullptr;
+  raw_ptr<uint32_t> wait_for_start_pid_ = nullptr;
 };
 
 class TestTargetService : public Service {

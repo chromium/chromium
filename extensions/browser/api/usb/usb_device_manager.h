@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -111,7 +112,7 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   void DispatchEvent(const std::string& event_name,
                      const device::mojom::UsbDeviceInfo& device_info);
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Legacy integer IDs are used in USB extensions API so we need to maps USB
   // device GUIDs to integer IDs.

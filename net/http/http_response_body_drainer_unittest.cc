@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -177,7 +178,7 @@ class MockHttpStream : public HttpStream {
 
   bool closed() const { return closed_; }
 
-  CloseResultWaiter* const result_waiter_;
+  const raw_ptr<CloseResultWaiter> result_waiter_;
   scoped_refptr<IOBuffer> user_buf_;
   CompletionOnceCallback callback_;
   int buf_len_;
@@ -273,8 +274,8 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
   QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;
   CloseResultWaiter result_waiter_;
-  MockHttpStream* const mock_stream_;  // Owned by |drainer_|.
-  HttpResponseBodyDrainer* const drainer_;  // Deletes itself.
+  const raw_ptr<MockHttpStream> mock_stream_;       // Owned by |drainer_|.
+  const raw_ptr<HttpResponseBodyDrainer> drainer_;  // Deletes itself.
 };
 
 TEST_F(HttpResponseBodyDrainerTest, DrainBodySyncSingleOK) {

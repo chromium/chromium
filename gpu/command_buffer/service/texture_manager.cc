@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -413,7 +414,7 @@ class ScopedResetPixelUnpackBuffer{
   }
 
  private:
-    Buffer* buffer_;
+  raw_ptr<Buffer> buffer_;
 };
 
 class ScopedMemTrackerChange {
@@ -434,8 +435,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  Texture* texture_;
-  MemoryTypeTracker* previous_tracker_;
+  raw_ptr<Texture> texture_;
+  raw_ptr<MemoryTypeTracker> previous_tracker_;
   uint32_t previous_size_;
 };
 

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -368,7 +369,8 @@ class WebApkInstallerTest : public ::testing::Test {
   TestingProfile profile_;
   net::EmbeddedTestServer test_server_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
 
   // Builds response to the WebAPK creation request.
   WebApkResponseBuilder webapk_response_builder_;

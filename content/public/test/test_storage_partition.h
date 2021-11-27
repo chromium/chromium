@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -223,28 +224,29 @@ class TestStoragePartition : public StoragePartition {
  private:
   base::FilePath file_path_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
-  network::mojom::NetworkContext* network_context_ = nullptr;
-  network::mojom::CookieManager* cookie_manager_for_browser_process_ = nullptr;
-  storage::QuotaManager* quota_manager_ = nullptr;
-  BackgroundSyncContext* background_sync_context_ = nullptr;
-  storage::FileSystemContext* file_system_context_ = nullptr;
-  storage::DatabaseTracker* database_tracker_ = nullptr;
-  DOMStorageContext* dom_storage_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
+  raw_ptr<network::mojom::CookieManager> cookie_manager_for_browser_process_ =
+      nullptr;
+  raw_ptr<storage::QuotaManager> quota_manager_ = nullptr;
+  raw_ptr<BackgroundSyncContext> background_sync_context_ = nullptr;
+  raw_ptr<storage::FileSystemContext> file_system_context_ = nullptr;
+  raw_ptr<storage::DatabaseTracker> database_tracker_ = nullptr;
+  raw_ptr<DOMStorageContext> dom_storage_context_ = nullptr;
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
-  ServiceWorkerContext* service_worker_context_ = nullptr;
-  DedicatedWorkerService* dedicated_worker_service_ = nullptr;
-  SharedWorkerService* shared_worker_service_ = nullptr;
+  raw_ptr<ServiceWorkerContext> service_worker_context_ = nullptr;
+  raw_ptr<DedicatedWorkerService> dedicated_worker_service_ = nullptr;
+  raw_ptr<SharedWorkerService> shared_worker_service_ = nullptr;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
-  GeneratedCodeCacheContext* generated_code_cache_context_ = nullptr;
-  PlatformNotificationContext* platform_notification_context_ = nullptr;
-  DevToolsBackgroundServicesContext* devtools_background_services_context_ =
-      nullptr;
-  ContentIndexContext* content_index_context_ = nullptr;
-  NativeIOContext* native_io_context_ = nullptr;
-  HostZoomMap* host_zoom_map_ = nullptr;
-  HostZoomLevelContext* host_zoom_level_context_ = nullptr;
-  ZoomLevelDelegate* zoom_level_delegate_ = nullptr;
+  raw_ptr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
+  raw_ptr<PlatformNotificationContext> platform_notification_context_ = nullptr;
+  raw_ptr<DevToolsBackgroundServicesContext>
+      devtools_background_services_context_ = nullptr;
+  raw_ptr<ContentIndexContext> content_index_context_ = nullptr;
+  raw_ptr<NativeIOContext> native_io_context_ = nullptr;
+  raw_ptr<HostZoomMap> host_zoom_map_ = nullptr;
+  raw_ptr<HostZoomLevelContext> host_zoom_level_context_ = nullptr;
+  raw_ptr<ZoomLevelDelegate> zoom_level_delegate_ = nullptr;
   int data_removal_observer_count_ = 0;
 
   // This member must be the last member.

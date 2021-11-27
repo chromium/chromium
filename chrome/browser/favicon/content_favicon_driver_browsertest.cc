@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
@@ -416,7 +417,7 @@ class FaviconUpdateNoLastCommittedEntryTabStripObserver
 
  private:
   base::RunLoop run_loop_;
-  TabStripModel* model_ = nullptr;
+  raw_ptr<TabStripModel> model_ = nullptr;
   std::unique_ptr<PendingTaskWaiter> pending_task_waiter_;
   std::unique_ptr<NoCommittedEntryWebContentsObserver> observer_;
 };

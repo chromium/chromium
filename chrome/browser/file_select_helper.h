@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -271,12 +272,12 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& suggested_path);
 
   // Profile used to set/retrieve the last used directory.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The RenderFrameHost and WebContents for the page showing a file dialog
   // (may only be one such dialog).
-  content::RenderFrameHost* render_frame_host_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // |listener_| receives the result of the FileSelectHelper.
   scoped_refptr<content::FileSelectListener> listener_;

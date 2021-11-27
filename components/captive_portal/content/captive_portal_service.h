@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -174,7 +175,7 @@ class CaptivePortalService : public KeyedService {
   void set_test_url(const GURL& test_url) { test_url_ = test_url; }
 
   // The BrowserContext that owns this CaptivePortalService.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   State state_;
 
@@ -217,7 +218,7 @@ class CaptivePortalService : public KeyedService {
   static TestingState testing_state_;
 
   // Test tick clock used by unit tests.
-  const base::TickClock* const tick_clock_for_testing_;  // Not owned.
+  const raw_ptr<const base::TickClock> tick_clock_for_testing_;  // Not owned.
 };
 
 }  // namespace captive_portal

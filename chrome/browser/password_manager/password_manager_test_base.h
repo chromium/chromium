@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -56,7 +57,7 @@ class NavigationObserver : public content::WebContentsObserver {
 
  private:
   std::string wait_for_path_;
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   bool quit_on_entry_committed_ = false;
   base::RunLoop run_loop_;
 };
@@ -138,7 +139,7 @@ class BubbleObserver {
   void WaitForSaveUnsyncedCredentialsPrompt() const;
 
  private:
-  ManagePasswordsUIController* const passwords_ui_controller_;
+  const raw_ptr<ManagePasswordsUIController> passwords_ui_controller_;
 };
 
 // A helper class that synchronously waits until the password store handles a

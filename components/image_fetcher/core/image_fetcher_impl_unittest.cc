@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -61,7 +62,7 @@ class ImageFetcherImplTest : public testing::Test {
 
  private:
   std::unique_ptr<ImageFetcherImpl> image_fetcher_;
-  FakeImageDecoder* fake_image_decoder_;
+  raw_ptr<FakeImageDecoder> fake_image_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   base::test::TaskEnvironment task_environment_;

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
@@ -232,7 +233,7 @@ class AudioInputTest : public testing::Test {
   std::unique_ptr<FakeAudio> fake_audio_;
 #endif  // BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<AudioManager> audio_manager_;
-  AudioInputStream* audio_input_stream_;
+  raw_ptr<AudioInputStream> audio_input_stream_;
 };
 
 // Test create and close of an AudioInputStream without recording audio.

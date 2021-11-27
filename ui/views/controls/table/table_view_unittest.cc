@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -136,7 +137,7 @@ class TableViewTestHelper {
   }
 
  private:
-  TableView* table_;
+  raw_ptr<TableView> table_;
 };
 
 namespace {
@@ -196,7 +197,7 @@ class TestTableModel2 : public ui::TableModel {
   int CompareValues(int row1, int row2, int column_id) override;
 
  private:
-  ui::TableModelObserver* observer_ = nullptr;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
 
   absl::optional<std::u16string> tooltip_;
 
@@ -607,7 +608,7 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  TableView* table_ = nullptr;
+  raw_ptr<TableView> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -2130,7 +2131,7 @@ class RemoveFocusChangeListenerDelegate : public WidgetDelegate {
   void SetFocusChangeListener(FocusChangeListener* listener);
 
  private:
-  FocusChangeListener* listener_;
+  raw_ptr<FocusChangeListener> listener_;
 };
 
 void RemoveFocusChangeListenerDelegate::SetFocusChangeListener(

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
@@ -284,7 +285,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const BrowserList* active_browser_list_ = nullptr;
+  raw_ptr<const BrowserList> active_browser_list_ = nullptr;
 
  private:
   memory_pressure::test::FakeMemoryPressureMonitor

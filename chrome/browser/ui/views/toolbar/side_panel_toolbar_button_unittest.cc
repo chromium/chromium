@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
@@ -42,7 +43,7 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  ReadingListModel* model_;
+  raw_ptr<ReadingListModel> model_;
 };
 
 TEST_F(SidePanelToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {

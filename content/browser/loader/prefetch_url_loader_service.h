@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/public/browser/browser_thread.h"
@@ -110,7 +111,7 @@ class PrefetchURLLoaderService final
   }
 
   scoped_refptr<URLLoaderFactoryGetter> loader_factory_getter_;
-  BrowserContext* browser_context_ = nullptr;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory,
                     std::unique_ptr<BindContext>>

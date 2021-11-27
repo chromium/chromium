@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -119,7 +120,7 @@ class PerformanceChannelListener : public Listener {
 
  private:
   std::string label_;
-  Sender* sender_;
+  raw_ptr<Sender> sender_;
   int msg_count_;
   size_t msg_size_;
   bool sync_;

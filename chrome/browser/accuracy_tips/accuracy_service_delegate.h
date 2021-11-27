@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
@@ -42,7 +43,7 @@ class AccuracyServiceDelegate
   bool IsSecureConnection(content::WebContents* web_contents) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ACCURACY_TIPS_ACCURACY_SERVICE_DELEGATE_H_

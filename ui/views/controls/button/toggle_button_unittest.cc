@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
@@ -45,7 +46,7 @@ class TestToggleButton : public ToggleButton {
   using View::Focus;
 
  private:
-  int* const counter_;
+  const raw_ptr<int> counter_;
 };
 
 class ToggleButtonTest : public ViewsTestBase {
@@ -86,7 +87,7 @@ class ToggleButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  TestToggleButton* button_ = nullptr;
+  raw_ptr<TestToggleButton> button_ = nullptr;
   int counter_ = 0;
 };
 

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -497,7 +498,7 @@ class ActiveTabDelegateTest : public ActiveTabTest {
     ActiveTabPermissionGranter::SetPlatformDelegate(nullptr);
   }
 
-  ActiveTabPermissionGranterTestDelegate* test_delegate_;
+  raw_ptr<ActiveTabPermissionGranterTestDelegate> test_delegate_;
 };
 
 // Test that the custom platform delegate works as expected.

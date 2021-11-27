@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
@@ -202,7 +203,7 @@ class RemoteToLocalSyncer : public SyncTask {
   MetadataDatabase* metadata_database();
   RemoteChangeProcessor* remote_change_processor();
 
-  SyncEngineContext* sync_context_;  // Not owned.
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
 
   std::unique_ptr<FileTracker> dirty_tracker_;
   std::unique_ptr<FileMetadata> remote_metadata_;

@@ -13,6 +13,7 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_checker.h"
@@ -111,7 +112,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   void ForwardMessage(mojo::Message message);
 
   // |delegate_| is null once the message pipe is closed.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::AssociatedRemote<mojom::Channel> sender_;
   std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
       thread_safe_sender_;

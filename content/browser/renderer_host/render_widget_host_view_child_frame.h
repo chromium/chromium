@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
@@ -262,7 +263,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // frame_connector_ provides a platform abstraction. Messages
   // sent through it are routed to the embedding renderer process.
-  CrossProcessFrameConnector* frame_connector_;
+  raw_ptr<CrossProcessFrameConnector> frame_connector_;
 
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

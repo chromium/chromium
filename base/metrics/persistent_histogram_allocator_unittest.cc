@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -52,7 +53,7 @@ class PersistentHistogramAllocatorTest : public testing::Test {
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
-  PersistentMemoryAllocator* allocator_ = nullptr;
+  raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
 };
 
 TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {

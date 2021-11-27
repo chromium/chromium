@@ -294,7 +294,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
   auto* model = browser->tab_strip_model();
   std::vector<int> tab_indices;
   tab_indices.reserve(visits.size());
-  auto* opener = web_contents_;
+  auto* opener = web_contents_.get();
   for (const auto& visit_ptr : visits) {
     auto* opened_web_contents = opener->OpenURL(
         content::OpenURLParams(visit_ptr->normalized_url, content::Referrer(),

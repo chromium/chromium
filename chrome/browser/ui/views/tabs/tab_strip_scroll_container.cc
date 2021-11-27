@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -126,7 +127,7 @@ class TabStripContainerOverflowIndicator : public views::View {
   }
 
  private:
-  TabStrip* tab_strip_;
+  raw_ptr<TabStrip> tab_strip_;
   views::OverflowIndicatorAlignment side_;
 };
 

@@ -18,6 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -224,7 +225,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   scoped_refptr<const Extension> extension_;
   Debuggee debuggee_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/service_worker_test_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -68,7 +69,7 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
     ~Observer() override { context_->RemoveObserver(this); }
 
    private:
-    ServiceWorkerContextWrapper* const context_;
+    const raw_ptr<ServiceWorkerContextWrapper> context_;
     int64_t version_id_;
     base::OnceClosure stopped_callback_;
   };

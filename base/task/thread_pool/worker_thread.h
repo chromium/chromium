@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
@@ -231,7 +232,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Optional observer notified when a worker enters and exits its main
   // function. Set in Start() and never modified afterwards.
-  WorkerThreadObserver* worker_thread_observer_ = nullptr;
+  raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
 
   // Desired thread priority.
   const ThreadPriority priority_hint_;

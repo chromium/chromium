@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_bus.h"
@@ -55,7 +56,7 @@ class InProcessReceiver {
     void ProcessRtpPacket(std::unique_ptr<Packet> packet) final;
 
    private:
-    InProcessReceiver* in_process_receiver_;
+    raw_ptr<InProcessReceiver> in_process_receiver_;
   };
 
   // Construct a receiver with the given configuration.  |remote_end_point| can

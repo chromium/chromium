@@ -23,6 +23,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
@@ -264,15 +265,15 @@ class MEDIA_EXPORT AudioRendererImpl
 
   std::unique_ptr<AudioDecoderStream> audio_decoder_stream_;
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Cached copy of audio params that the renderer is initialized with.
   AudioParameters audio_parameters_;
 
   // Passed in during Initialize().
-  DemuxerStream* demuxer_stream_;
+  raw_ptr<DemuxerStream> demuxer_stream_;
 
-  RendererClient* client_;
+  raw_ptr<RendererClient> client_;
 
   // Callback provided during Initialize().
   PipelineStatusCallback init_cb_;
@@ -281,7 +282,7 @@ class MEDIA_EXPORT AudioRendererImpl
   base::OnceClosure flush_cb_;
 
   // Overridable tick clock for testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Memory usage of |algorithm_| recorded during the last
   // HandleDecodedBuffer_Locked() call.
@@ -384,7 +385,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // End variables which must be accessed under |lock_|. ----------------------
 
 #if !defined(OS_ANDROID)
-  SpeechRecognitionClient* speech_recognition_client_;
+  raw_ptr<SpeechRecognitionClient> speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
 #endif
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -307,8 +308,8 @@ class AnimationWithImageAssetsTest : public AnimationTest {
   const scoped_refptr<cc::DisplayItemList> display_list_;
   cc::RecordPaintCanvas record_canvas_;
   TestSkottieFrameDataProvider frame_data_provider_;
-  TestSkottieFrameDataProvider::ImageAssetImpl* asset_0_;
-  TestSkottieFrameDataProvider::ImageAssetImpl* asset_1_;
+  raw_ptr<TestSkottieFrameDataProvider::ImageAssetImpl> asset_0_;
+  raw_ptr<TestSkottieFrameDataProvider::ImageAssetImpl> asset_1_;
 };
 
 TEST_F(AnimationTest, InitializationAndLoadingData) {

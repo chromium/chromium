@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -69,7 +70,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
 
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
-  PasswordScriptsFetcher* scripts_fetcher_;
+  raw_ptr<PasswordScriptsFetcher> scripts_fetcher_;
   LeakTypeReply callback_;
   GURL url_;
   std::u16string username_;

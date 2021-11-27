@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -110,7 +111,7 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 // Upon construction, and in response to ReadyToCommitNavigation, installs a

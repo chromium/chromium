@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -164,8 +165,8 @@ class BASE_EXPORT WorkQueue {
   bool InsertFenceImpl(EnqueueOrder fence);
 
   TaskQueueImpl::TaskDeque tasks_;
-  WorkQueueSets* work_queue_sets_ = nullptr;  // NOT OWNED.
-  TaskQueueImpl* const task_queue_;           // NOT OWNED.
+  raw_ptr<WorkQueueSets> work_queue_sets_ = nullptr;  // NOT OWNED.
+  const raw_ptr<TaskQueueImpl> task_queue_;           // NOT OWNED.
   size_t work_queue_set_index_ = 0;
 
   // Iff the queue isn't empty (or appearing to be empty due to a fence) then

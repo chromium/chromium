@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -172,7 +173,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
   disk_cache::Backend* backend_ = nullptr;
 
  private:
-  net::HttpCache* cache_;
+  raw_ptr<net::HttpCache> cache_;
 };
 
 class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {

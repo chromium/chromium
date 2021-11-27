@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace gfx {
@@ -39,7 +40,7 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier_;
-  const gfx::VectorIcon* vector_icon_;
+  raw_ptr<const gfx::VectorIcon> vector_icon_;
   std::u16string message_;
   bool auto_expire_;  // Should it expire automatically on navigation?
   bool should_animate_;

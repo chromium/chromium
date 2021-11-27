@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -287,13 +288,13 @@ class ValidationIntegrationTest : public ValidationTest {
     }
 
    public:
-    ValidationIntegrationTest* owner_;
+    raw_ptr<ValidationIntegrationTest> owner_;
     mojo::Connector connector_;
   };
 
   void PumpMessages() { base::RunLoop().RunUntilIdle(); }
 
-  TestMessageReceiver* test_message_receiver_;
+  raw_ptr<TestMessageReceiver> test_message_receiver_;
   ScopedMessagePipeHandle testee_endpoint_;
 };
 

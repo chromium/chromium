@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -160,7 +161,7 @@ class OutputDeviceMixerImpl::MixTrack {
 
   double volume_ = kDefaultVolume;
 
-  OutputDeviceMixerImpl* const mixer_;
+  const raw_ptr<OutputDeviceMixerImpl> mixer_;
 
   // Callback to notify the audio output client of the device change. Note that
   // all the device change events are initially routed to MixerManager which
@@ -171,8 +172,8 @@ class OutputDeviceMixerImpl::MixTrack {
   base::OnceClosure on_device_change_callback_;
 
   // Callback to request the audio output data from the client.
-  media::AudioOutputStream::AudioSourceCallback* audio_source_callback_ =
-      nullptr;
+  raw_ptr<media::AudioOutputStream::AudioSourceCallback>
+      audio_source_callback_ = nullptr;
 
   // Delivers the audio output into MixingGraph, to be mixed for the reference
   // signal playback.
@@ -270,7 +271,7 @@ class OutputDeviceMixerImpl::MixableOutputStream final
   // MixableOutputStream becomes a no-op.
   base::WeakPtr<OutputDeviceMixerImpl> const mixer_
       GUARDED_BY_CONTEXT(owning_sequence_);
-  MixTrack* const mix_track_;  // Valid only when |mixer_| is valid.
+  const raw_ptr<MixTrack> mix_track_;  // Valid only when |mixer_| is valid.
 };
 
 // Logs mixing statistics upon the destruction. Should be created when mixing

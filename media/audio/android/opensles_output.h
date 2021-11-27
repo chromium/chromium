@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
@@ -92,13 +93,13 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // |buffer_size_bytes_| and |simple_buffer_queue_|.
   base::Lock lock_;
 
-  AudioManagerAndroid* audio_manager_;
+  raw_ptr<AudioManagerAndroid> audio_manager_;
 
   // Audio playback stream type.
   // See SLES/OpenSLES_Android.h for details.
   SLint32 stream_type_;
 
-  AudioSourceCallback* callback_;
+  raw_ptr<AudioSourceCallback> callback_;
 
   // Shared engine interfaces for the app.
   media::ScopedSLObjectItf engine_object_;

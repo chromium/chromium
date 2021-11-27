@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
@@ -224,7 +225,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   GetFileSystemOperationRunnerInternal(
       scoped_refptr<IOThreadState> io_thread_state);
 
-  BrowserPpapiHost* browser_ppapi_host_;
+  raw_ptr<BrowserPpapiHost> browser_ppapi_host_;
 
   PP_FileSystemType type_;
   bool called_open_;  // whether open has been called.

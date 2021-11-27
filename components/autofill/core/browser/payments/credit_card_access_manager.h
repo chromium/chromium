@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -383,22 +384,22 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.
-  AutofillDriver* const driver_;
+  const raw_ptr<AutofillDriver> driver_;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // Client to interact with Payments servers.
-  payments::PaymentsClient* payments_client_;
+  raw_ptr<payments::PaymentsClient> payments_client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   // Weak reference.
   // May be NULL. NULL indicates OTR.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.
-  CreditCardFormEventLogger* form_event_logger_;
+  raw_ptr<CreditCardFormEventLogger> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
   absl::optional<base::TimeTicks> preflight_call_timestamp_;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -28,7 +29,7 @@ class CONTENT_EXPORT DocumentServiceBase {
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  RenderFrameHost* const render_frame_host_ = nullptr;
+  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
 };
 
 }  // namespace internal

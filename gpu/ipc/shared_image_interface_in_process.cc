@@ -5,6 +5,7 @@
 #include "gpu/ipc/shared_image_interface_in_process.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -21,11 +22,11 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
   const GpuPreferences gpu_preferences;
   const GpuDriverBugWorkarounds gpu_workarounds;
   const GpuFeatureInfo gpu_feature_info;
-  gpu::SharedContextState* const context_state;
-  MailboxManager* const mailbox_manager;
-  SharedImageManager* const shared_image_manager;
-  ImageFactory* const image_factory;
-  MemoryTracker* const memory_tracker;
+  const raw_ptr<gpu::SharedContextState> context_state;
+  const raw_ptr<MailboxManager> mailbox_manager;
+  const raw_ptr<SharedImageManager> shared_image_manager;
+  const raw_ptr<ImageFactory> image_factory;
+  const raw_ptr<MemoryTracker> memory_tracker;
   const bool is_for_display_compositor;
 
   SetUpOnGpuParams(const GpuPreferences& gpu_preferences,
@@ -115,7 +116,7 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
 void SharedImageInterfaceInProcess::SetUpOnGpu(
     std::unique_ptr<SetUpOnGpuParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  context_state_ = params->context_state;
+  context_state_ = params->context_state.get();
 
   create_factory_ = base::BindOnce(
       [](std::unique_ptr<SetUpOnGpuParams> params,

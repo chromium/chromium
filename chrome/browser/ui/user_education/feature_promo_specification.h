@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -169,7 +170,7 @@ class FeaturePromoSpecification {
                             ui::ElementIdentifier anchor_element_id,
                             int bubble_body_string_id);
 
-  const base::Feature* feature_ = nullptr;
+  raw_ptr<const base::Feature> feature_ = nullptr;
 
   // The type of promo. A promo with type kUnspecified is not valid.
   PromoType promo_type_ = PromoType::kUnspecifiied;
@@ -192,7 +193,7 @@ class FeaturePromoSpecification {
   std::u16string bubble_title_text_;
 
   // Optional icon that is displayed next to bubble text.
-  const gfx::VectorIcon* bubble_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> bubble_icon_ = nullptr;
 
   // Optional arrow pointing to the promo'd element. Defaults to top left.
   BubbleArrow bubble_arrow_ = kDefaultBubbleArrow;

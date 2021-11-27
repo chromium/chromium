@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
@@ -88,7 +89,7 @@ class GeneratedPasswordLeakDetectionPrefTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_ =
       BuildTestProfile(test_url_loader_factory_);
-  syncer::TestSyncService* sync_service_ =
+  raw_ptr<syncer::TestSyncService> sync_service_ =
       static_cast<syncer::TestSyncService*>(
           SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
               profile(),

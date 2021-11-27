@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
@@ -741,7 +742,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;
-  viz::RasterContextProvider* context_;
+  raw_ptr<viz::RasterContextProvider> context_;
   int max_texture_size_ = 0;
   const PaintImage::GeneratorClientId generator_client_id_;
   bool allow_accelerated_jpeg_decodes_ = false;

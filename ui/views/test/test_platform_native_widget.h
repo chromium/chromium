@@ -6,6 +6,7 @@
 #define UI_VIEWS_TEST_TEST_PLATFORM_NATIVE_WIDGET_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -64,7 +65,7 @@ class TestPlatformNativeWidget : public PlatformNativeWidget {
  private:
   bool mouse_capture_;
   const bool mock_capture_;
-  bool* destroyed_;
+  raw_ptr<bool> destroyed_;
 };
 
 }  // namespace test

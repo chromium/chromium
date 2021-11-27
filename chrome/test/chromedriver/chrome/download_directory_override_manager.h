@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
@@ -29,7 +30,7 @@ class DownloadDirectoryOverrideManager : public DevToolsEventListener {
 
  private:
   Status ApplyOverride();
-  DevToolsClient* client_;
+  raw_ptr<DevToolsClient> client_;
   bool is_connected_;
   std::unique_ptr<std::string> download_directory_;
 };

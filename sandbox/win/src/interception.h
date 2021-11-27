@@ -15,6 +15,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -148,7 +149,7 @@ class InterceptionManager {
     std::wstring dll;                 // Name of dll to intercept.
     std::string function;             // Name of function to intercept.
     std::string interceptor;          // Name of interceptor function.
-    const void* interceptor_address;  // Interceptor's entry point.
+    raw_ptr<const void> interceptor_address;  // Interceptor's entry point.
   };
 
   // Calculates the size of the required configuration buffer.

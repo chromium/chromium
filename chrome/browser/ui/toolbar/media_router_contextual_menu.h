@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -74,8 +75,8 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   void ReportIssue();
 #endif
 
-  Browser* const browser_;
-  Observer* const observer_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Observer> observer_;
 
   // Whether the Cast toolbar icon this context menu is shown for is shown by
   // the administrator policy.

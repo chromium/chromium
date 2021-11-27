@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/identity_manager/ubertoken_fetcher.h"
@@ -86,7 +87,7 @@ class UbertokenFetcherImpl : public UbertokenFetcher,
   // Exchanges an oauth2 access token for an uber-auth token.
   void ExchangeTokens();
 
-  ProfileOAuth2TokenService* token_service_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
   CompletionCallback ubertoken_callback_;
   GaiaAuthFetcherFactory gaia_auth_fetcher_factory_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 #include "content/public/browser/web_contents.h"
@@ -39,8 +40,8 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   // Show is no-op.
   void Dismiss();
 
-  content::WebContents* web_contents_;
-  AutofillSnackbarView* autofill_snackbar_view_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<AutofillSnackbarView> autofill_snackbar_view_ = nullptr;
 };
 
 }  // namespace autofill

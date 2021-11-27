@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -85,8 +86,8 @@ class ForceSigninVerifier
   base::OneShotTimer backoff_request_timer_;
   base::TimeTicks creation_time_;
 
-  Profile* profile_ = nullptr;
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::WeakPtrFactory<ForceSigninVerifier> weak_factory_{this};
 };

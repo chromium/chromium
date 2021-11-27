@@ -29,6 +29,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -708,7 +709,7 @@ class TestRunner {
   ThreadChecker thread_checker_;
 
   std::vector<std::string> tests_to_run_;
-  TestLauncher* const launcher_;
+  const raw_ptr<TestLauncher> launcher_;
   std::vector<scoped_refptr<TaskRunner>> task_runners_;
   // Number of sequenced task runners to use.
   const size_t runner_count_;

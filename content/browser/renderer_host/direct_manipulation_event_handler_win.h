@@ -10,6 +10,7 @@
 #include <directmanipulation.h>
 #include <wrl.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -78,8 +79,8 @@ class DirectManipulationEventHandler
   OnInteraction(_In_ IDirectManipulationViewport2* viewport,
                 _In_ DIRECTMANIPULATION_INTERACTION_TYPE interaction) override;
 
-  DirectManipulationHelper* helper_ = nullptr;
-  ui::WindowEventTarget* event_target_ = nullptr;
+  raw_ptr<DirectManipulationHelper> helper_ = nullptr;
+  raw_ptr<ui::WindowEventTarget> event_target_ = nullptr;
   float device_scale_factor_ = 1.0f;
   float last_scale_ = 1.0f;
   int last_x_offset_ = 0;

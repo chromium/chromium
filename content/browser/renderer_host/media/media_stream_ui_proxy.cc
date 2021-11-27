@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -93,7 +94,7 @@ class MediaStreamUIProxy::Core {
   std::unique_ptr<MediaStreamUI> ui_;
 
   bool tests_use_fake_render_frame_hosts_;
-  RenderFrameHostDelegate* const test_render_delegate_;
+  const raw_ptr<RenderFrameHostDelegate> test_render_delegate_;
 
   base::WeakPtr<Core> weak_this_;
 

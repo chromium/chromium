@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 
 namespace base {
@@ -60,7 +61,7 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
   DWORD GetSizeOfImage() override { return optional_header_->SizeOfImage; }
 
  private:
-  const OPTIONAL_HEADER_TYPE* optional_header_;
+  raw_ptr<const OPTIONAL_HEADER_TYPE> optional_header_;
 };
 
 PeImageReader::PeImageReader() {}

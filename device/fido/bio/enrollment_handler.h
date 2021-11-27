@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "device/fido/bio/enroller.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_constants.h"
@@ -172,7 +173,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
 
   State state_ = State::kWaitingForTouch;
 
-  FidoAuthenticator* authenticator_ = nullptr;
+  raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   std::unique_ptr<BioEnroller> bio_enroller_;
   ReadyCallback ready_callback_;
   ErrorCallback error_callback_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
@@ -51,13 +52,13 @@ class PageInfoRowView : public views::View {
  private:
   friend class test::PageInfoBubbleViewTestApi;
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::View* labels_wrapper_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::View> labels_wrapper_ = nullptr;
 
   // The sum of width of all control views in the right side of the row.
   int controls_width_ = 0;
-  views::FlexLayout* layout_manager_;
+  raw_ptr<views::FlexLayout> layout_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_

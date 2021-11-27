@@ -75,7 +75,7 @@ IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<IntentPickerTabHelper>(*web_contents),
       registrar_(MaybeGetWebAppRegistrar(web_contents)) {
   if (registrar_)
-    registrar_observation_.Observe(registrar_);
+    registrar_observation_.Observe(registrar_.get());
 }
 
 // static

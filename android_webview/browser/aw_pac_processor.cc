@@ -19,6 +19,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -267,7 +268,7 @@ class Bindings : public proxy_resolver::ProxyResolverV8Tracing::Bindings {
   }
 
  private:
-  HostResolver* host_resolver_;
+  raw_ptr<HostResolver> host_resolver_;
 };
 
 
@@ -325,7 +326,7 @@ class Job {
   base::OnceClosure task_;
   int net_error_ = net::ERR_ABORTED;
   base::WaitableEvent event_;
-  AwPacProcessor* processor_;
+  raw_ptr<AwPacProcessor> processor_;
 };
 
 class SetProxyScriptJob : public Job {

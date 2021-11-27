@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
@@ -137,7 +138,7 @@ class SyncCycleContext {
  private:
   base::ObserverList<SyncEngineEventListener>::Unchecked listeners_;
 
-  ServerConnectionManager* const connection_manager_;
+  const raw_ptr<ServerConnectionManager> connection_manager_;
 
   // We use this to stuff extensions activity into CommitMessages so the server
   // can correlate commit traffic with extension-related bookmark mutations.
@@ -161,9 +162,9 @@ class SyncCycleContext {
 
   // We use this to get debug info to send to the server for debugging
   // client behavior on server side.
-  DebugInfoGetter* const debug_info_getter_;
+  const raw_ptr<DebugInfoGetter> debug_info_getter_;
 
-  ModelTypeRegistry* model_type_registry_;
+  raw_ptr<ModelTypeRegistry> model_type_registry_;
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;

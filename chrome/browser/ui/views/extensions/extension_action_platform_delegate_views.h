@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
@@ -58,7 +59,7 @@ class ExtensionActionPlatformDelegateViews
   ToolbarActionViewDelegateViews* GetDelegateViews() const;
 
   // The owning ExtensionActionViewController.
-  ExtensionActionViewController* controller_;
+  raw_ptr<ExtensionActionViewController> controller_;
 
   // The extension key binding accelerator this extension action is listening
   // for (to show the popup).

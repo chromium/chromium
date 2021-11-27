@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -354,7 +355,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
  private:
   // Number of clients that have started capturing.
   int number_clients_capturing_ = 0;
-  CapturableFrameSink::Client* client_ = nullptr;
+  raw_ptr<CapturableFrameSink::Client> client_ = nullptr;
   YUVColor color_ = {0xde, 0xad, 0xbf};
   SizeSet size_set_;
   CompositorFrameMetadata metadata_;
@@ -574,7 +575,7 @@ class FrameSinkVideoCapturerTest : public testing::Test {
   MockFrameSinkManager frame_sink_manager_;
   FakeCapturableFrameSink frame_sink_;
   std::unique_ptr<FrameSinkVideoCapturerImpl> capturer_;
-  InstrumentedVideoCaptureOracle* oracle_;
+  raw_ptr<InstrumentedVideoCaptureOracle> oracle_;
 };
 
 // Tests that the capturer attaches to a frame sink immediately, in the case

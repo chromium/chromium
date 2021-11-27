@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -233,7 +234,7 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   const NotifierId notifier_id_;
 
-  views::ScrollView* scroller_ = nullptr;
+  raw_ptr<views::ScrollView> scroller_ = nullptr;
 
   std::u16string accessible_name_;
 
@@ -259,7 +260,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
-  views::FocusManager* focus_manager_ = nullptr;
+  raw_ptr<views::FocusManager> focus_manager_ = nullptr;
 
   // Radius values used to determine the rounding for the rounded rectangular
   // shape of the notification.

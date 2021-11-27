@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -92,17 +93,17 @@ class ExtensionTelemetryService : public KeyedService {
   void RecordSignalType(ExtensionSignalType signal_type);
 
   // The profile with which this instance of the service is associated.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Observes changes to kSafeBrowsingEnhanced.
   PrefChangeRegistrar pref_change_registrar_;
 
   // Unowned objects used for getting extension information.
-  extensions::ExtensionRegistry* const extension_registry_;
-  extensions::ExtensionPrefs* const extension_prefs_;
+  const raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  const raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 
   // Keeps track of the state of the service.
   bool enabled_;

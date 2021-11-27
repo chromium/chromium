@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -258,7 +259,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void Pin();
   void Unpin();
 
-  StartupData* const startup_data_;
+  const raw_ptr<StartupData> startup_data_;
 
   bool created_watchdog_thread_ = false;
   std::unique_ptr<WatchDogThread> watchdog_thread_;
@@ -273,7 +274,7 @@ class BrowserProcessImpl : public BrowserProcess,
   const std::unique_ptr<PrefService> local_state_;
 
   // |metrics_services_manager_| owns this.
-  ChromeMetricsServicesManagerClient* metrics_services_manager_client_ =
+  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_ =
       nullptr;
 
   // Must be destroyed before |local_state_|.

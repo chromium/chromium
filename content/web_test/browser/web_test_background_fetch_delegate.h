@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,14 +55,14 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
  private:
   class WebTestBackgroundFetchDownloadClient;
 
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
   // In-memory instance of the Download Service lazily created by the delegate.
   std::unique_ptr<download::BackgroundDownloadService> download_service_;
 
   // Weak reference to an instance of our download client.
-  WebTestBackgroundFetchDownloadClient* background_fetch_client_;
+  raw_ptr<WebTestBackgroundFetchDownloadClient> background_fetch_client_;
 };
 
 }  // namespace content

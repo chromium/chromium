@@ -21,6 +21,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
@@ -105,9 +106,9 @@ class ViewportAnchor {
     return tree_impl_->property_trees()->scroll_tree;
   }
 
-  ScrollNode* inner_;
-  ScrollNode* outer_;
-  LayerTreeImpl* tree_impl_;
+  raw_ptr<ScrollNode> inner_;
+  raw_ptr<ScrollNode> outer_;
+  raw_ptr<LayerTreeImpl> tree_impl_;
   gfx::Vector2dF viewport_in_content_coordinates_;
 };
 
@@ -2161,7 +2162,7 @@ struct FindClosestMatchingLayerState {
   FindClosestMatchingLayerState()
       : closest_match(nullptr),
         closest_distance(-std::numeric_limits<float>::infinity()) {}
-  LayerImpl* closest_match;
+  raw_ptr<LayerImpl> closest_match;
   // Note that the positive z-axis points towards the camera, so bigger means
   // closer in this case, counterintuitively.
   float closest_distance;
@@ -2457,7 +2458,7 @@ static void FindClosestMatchingLayerForAttribution(
   // targeted frame so that we can properly attribute the (common) parent ->
   // child frame relationship. This is made possible since we can accurately
   // hit test within layerized subframes, but not for all occluders.
-  if (auto* layer = state->closest_match) {
+  if (auto* layer = state->closest_match.get()) {
     auto& transform_tree =
         layer->layer_tree_impl()->property_trees()->transform_tree;
     for (auto* node = transform_tree.Node(layer->transform_tree_index()); node;
@@ -2484,7 +2485,7 @@ ElementId LayerTreeImpl::FindFrameElementIdAtPoint(
   FindClosestMatchingLayerForAttribution(screen_space_point,
                                          layer_list_[0].get(), &state);
 
-  if (const auto* layer = state.closest_match) {
+  if (const auto* layer = state.closest_match.get()) {
     // TODO(https://crbug.com/1058870): Permit hit testing only if the framed
     // element hit has a simple mask/clip. We don't have enough information
     // about complex masks/clips on the impl-side to do accurate hit testing.

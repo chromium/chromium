@@ -5,6 +5,7 @@
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -33,7 +34,7 @@ class RulesetDistributionListener {
   void AwaitDistribution() { run_loop_.Run(); }
 
  private:
-  RulesetService* service_;
+  raw_ptr<RulesetService> service_;
   base::RunLoop run_loop_;
 };
 

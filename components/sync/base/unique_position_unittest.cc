@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -585,7 +586,7 @@ class IndexedLessThan {
   }
 
  private:
-  const T* values_;
+  raw_ptr<const T> values_;
   LessThan less_than_;
 };
 

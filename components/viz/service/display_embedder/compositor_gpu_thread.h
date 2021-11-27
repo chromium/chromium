@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -68,7 +69,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   bool Initialize();
 
-  gpu::GpuChannelManager* gpu_channel_manager_;
+  raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;
   bool init_succeded_ = false;
 

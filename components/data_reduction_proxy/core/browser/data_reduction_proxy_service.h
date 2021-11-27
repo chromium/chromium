@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -126,10 +127,10 @@ class DataReductionProxyService
   // Tracks compression statistics to be displayed to the user.
   std::unique_ptr<DataReductionProxyCompressionStats> compression_stats_;
 
-  DataReductionProxySettings* settings_;
+  raw_ptr<DataReductionProxySettings> settings_;
 
   // A prefs service for storing data.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   std::unique_ptr<DBDataOwner> db_data_owner_;
 
@@ -138,7 +139,7 @@ class DataReductionProxyService
 
   // Must be accessed on UI thread. Guaranteed to be non-null during the
   // lifetime of |this|.
-  data_use_measurement::DataUseMeasurement* data_use_measurement_;
+  raw_ptr<data_use_measurement::DataUseMeasurement> data_use_measurement_;
 
   // Dictionary of save-data savings estimates by origin.
   const absl::optional<base::Value> save_data_savings_estimate_dict_;

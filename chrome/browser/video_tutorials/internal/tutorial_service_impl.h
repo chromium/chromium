@@ -7,6 +7,7 @@
 
 #include <deque>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_fetcher.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
@@ -51,7 +52,7 @@ class TutorialServiceImpl : public VideoTutorialService {
   std::unique_ptr<TutorialFetcher> tutorial_fetcher_;
 
   // PrefService.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Listens to accept languages changes.
   PrefChangeRegistrar pref_change_registrar_;

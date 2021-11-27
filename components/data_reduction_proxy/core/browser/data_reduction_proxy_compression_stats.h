@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -271,8 +272,8 @@ class DataReductionProxyCompressionStats {
   // Example: "http://www.finance.google.com" -> "www.finance.google.com"
   static std::string NormalizeHostname(const std::string& host);
 
-  DataReductionProxyService* service_;
-  PrefService* pref_service_;
+  raw_ptr<DataReductionProxyService> service_;
+  raw_ptr<PrefService> pref_service_;
   const base::TimeDelta delay_;
   DataReductionProxyPrefMap pref_map_;
   DataReductionProxyListPrefMap list_pref_map_;

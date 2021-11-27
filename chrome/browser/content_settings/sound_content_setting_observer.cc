@@ -34,7 +34,7 @@ SoundContentSettingObserver::SoundContentSettingObserver(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  observation_.Observe(host_content_settings_map_);
+  observation_.Observe(host_content_settings_map_.get());
 
 #if !defined(OS_ANDROID)
   // Listen to changes of the block autoplay pref.

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/switches.h"
 #include "cc/paint/draw_image.h"
@@ -112,7 +113,7 @@ class FakeDiscardableManager {
   std::map<GLuint, int32_t> textures_;
   size_t live_textures_count_ = 0;
   size_t cached_textures_limit_ = std::numeric_limits<size_t>::max();
-  viz::TestGLES2Interface* gl_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
 };
 
 class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
@@ -252,8 +253,8 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
 
  private:
   const std::string extension_string_;
-  FakeDiscardableManager* discardable_manager_;
-  TransferCacheTestHelper* transfer_cache_helper_;
+  raw_ptr<FakeDiscardableManager> discardable_manager_;
+  raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
   std::unique_ptr<uint8_t[]> mapped_entry_;

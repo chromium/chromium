@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -243,10 +244,10 @@ class MojoAudioDecoderTest : public ::testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> service_task_runner_;
 
   // Owned by the connection on the service thread.
-  MojoAudioDecoderService* mojo_audio_decoder_service_ = nullptr;
+  raw_ptr<MojoAudioDecoderService> mojo_audio_decoder_service_ = nullptr;
 
   // Service side mock.
-  StrictMock<MockAudioDecoder>* mock_audio_decoder_ = nullptr;
+  raw_ptr<StrictMock<MockAudioDecoder>> mock_audio_decoder_ = nullptr;
 
   int num_of_decodes_ = 0;
   int decode_count_ = 0;

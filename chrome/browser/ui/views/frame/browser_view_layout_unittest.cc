@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -225,19 +226,19 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<BrowserViewLayout> layout_;
-  MockBrowserViewLayoutDelegate* delegate_;  // Owned by |layout_|.
+  raw_ptr<MockBrowserViewLayoutDelegate> delegate_;  // Owned by |layout_|.
   std::unique_ptr<views::View> root_view_;
 
   // Views owned by |root_view_|.
-  views::View* top_container_;
-  TabStrip* tab_strip_;
-  views::View* webui_tab_strip_;
-  views::View* toolbar_;
-  views::Separator* separator_;
-  InfoBarContainerView* infobar_container_;
-  views::View* contents_container_;
-  views::View* contents_web_view_;
-  views::View* devtools_web_view_;
+  raw_ptr<views::View> top_container_;
+  raw_ptr<TabStrip> tab_strip_;
+  raw_ptr<views::View> webui_tab_strip_;
+  raw_ptr<views::View> toolbar_;
+  raw_ptr<views::Separator> separator_;
+  raw_ptr<InfoBarContainerView> infobar_container_;
+  raw_ptr<views::View> contents_container_;
+  raw_ptr<views::View> contents_web_view_;
+  raw_ptr<views::View> devtools_web_view_;
 
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
 };

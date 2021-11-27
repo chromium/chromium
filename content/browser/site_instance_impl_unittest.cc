@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
@@ -199,7 +200,7 @@ class SiteInstanceTest : public testing::Test {
   TestBrowserContext context_;
 
   SiteInstanceTestBrowserClient browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
   MockRenderProcessHostFactory rph_factory_;
 
   url::ScopedSchemeRegistryForTests scoped_registry_;

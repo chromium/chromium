@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/host_status_observer.h"
@@ -42,7 +43,7 @@ class HostStatusLogger : public HostStatusObserver {
                            const protocol::TransportRoute& route) override;
 
  private:
-  LogToServer* log_to_server_;
+  raw_ptr<LogToServer> log_to_server_;
 
   scoped_refptr<HostStatusMonitor> monitor_;
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -141,7 +142,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
   bool is_in_picture_in_picture() const { return is_in_picture_in_picture_; }
 
  private:
-  Shell* const shell_;
+  const raw_ptr<Shell> shell_;
   bool is_in_picture_in_picture_ = false;
 };
 
@@ -209,7 +210,7 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
-  ContentBrowserClient* old_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
   TestContentBrowserClient content_browser_client_;
 };
 

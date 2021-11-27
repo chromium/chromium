@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -59,7 +60,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
 
  private:
   bool download_manager_created_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // ChromeDownloadManagerDelegate may be the target of callbacks from
   // the history service/DB thread and must be kept alive for those

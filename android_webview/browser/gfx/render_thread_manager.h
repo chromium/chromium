@@ -12,6 +12,7 @@
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,7 +80,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
     ~InsideHardwareReleaseReset();
 
    private:
-    RenderThreadManager* render_thread_manager_;
+    raw_ptr<RenderThreadManager> render_thread_manager_;
   };
 
  private:
@@ -115,7 +116,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   // Accessed by RT thread.
   std::unique_ptr<HardwareRenderer> hardware_renderer_;
   bool view_tree_force_dark_state_ = false;
-  AwVulkanContextProvider* vulkan_context_provider_ = nullptr;
+  raw_ptr<AwVulkanContextProvider> vulkan_context_provider_ = nullptr;
 
   // Accessed by both UI and RT thread.
   mutable base::Lock lock_;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -358,7 +359,7 @@ class PageInfo {
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
-  PageInfoUI* ui_;
+  raw_ptr<PageInfoUI> ui_;
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;

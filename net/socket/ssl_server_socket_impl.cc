@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
@@ -168,7 +169,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int Init();
   void ExtractClientCert();
 
-  SSLServerContextImpl* context_;
+  raw_ptr<SSLServerContextImpl> context_;
 
   NetLogWithSource net_log_;
 

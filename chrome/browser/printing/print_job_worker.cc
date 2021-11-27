@@ -503,7 +503,7 @@ void PrintJobWorker::OnDocumentDone() {
 
   print_job_->PostTask(
       FROM_HERE,
-      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_),
+      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_.get()),
                      JobEventDetails::DOC_DONE, job_id,
                      base::RetainedRef(document_)));
 
@@ -535,7 +535,8 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   DCHECK(print_job_);
   print_job_->PostTask(
       FROM_HERE,
-      base::BindOnce(&PageNotificationCallback, base::RetainedRef(print_job_),
+      base::BindOnce(&PageNotificationCallback,
+                     base::RetainedRef(print_job_.get()),
                      JobEventDetails::PAGE_DONE, printing_context_->job_id(),
                      base::RetainedRef(document_), base::RetainedRef(page)));
 }
@@ -552,11 +553,11 @@ void PrintJobWorker::OnFailure() {
   DCHECK(print_job_);
 
   // We may loose our last reference by broadcasting the FAILED event.
-  scoped_refptr<PrintJob> handle(print_job_);
+  scoped_refptr<PrintJob> handle(print_job_.get());
 
   print_job_->PostTask(
       FROM_HERE,
-      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_),
+      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_.get()),
                      JobEventDetails::FAILED, 0, base::RetainedRef(document_)));
   Cancel();
 

@@ -14,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
@@ -89,7 +90,7 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
   static TabAndroid* FromWebContents(const WebContents* contents) {
     TabAndroidHelper* helper =
         static_cast<TabAndroidHelper*>(contents->GetUserData(UserDataKey()));
-    return helper ? helper->tab_android_ : nullptr;
+    return helper ? helper->tab_android_.get() : nullptr;
   }
 
   explicit TabAndroidHelper(content::WebContents* web_contents)
@@ -98,7 +99,7 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
  private:
   friend class content::WebContentsUserData<TabAndroidHelper>;
 
-  TabAndroid* tab_android_;
+  raw_ptr<TabAndroid> tab_android_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

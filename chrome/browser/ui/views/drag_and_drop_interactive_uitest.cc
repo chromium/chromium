@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -287,8 +288,8 @@ class DragAndDropSimulator {
 
   // WebContents for where the drag and drop occurs. These can be the same if
   // the drag and drop happens within the same WebContents.
-  content::WebContents* drag_contents_;
-  content::WebContents* drop_contents_;
+  raw_ptr<content::WebContents> drag_contents_;
+  raw_ptr<content::WebContents> drop_contents_;
 
   std::unique_ptr<ui::DropTargetEvent> active_drag_event_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
@@ -423,9 +424,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-  aura::client::DragDropClient* old_client_;
+  raw_ptr<aura::client::DragDropClient> old_client_;
   base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
   bool suppress_passing_of_start_drag_further_;
 

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -99,7 +100,7 @@ class BookmarkContextMenuTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   views::ScopedViewsTestHelper views_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
   TestingPageNavigator navigator_;
 
  private:

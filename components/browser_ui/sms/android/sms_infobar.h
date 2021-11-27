@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 namespace content {
@@ -47,7 +48,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace sms

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -55,8 +56,8 @@ class CompactTitleMessageView : public views::View {
   void set_message(const std::u16string& message);
 
  private:
-  views::Label* title_ = nullptr;
-  views::Label* message_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> message_ = nullptr;
 };
 
 class LargeImageView : public views::View {
@@ -348,7 +349,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Container views directly attached to this view.
   NotificationHeaderView* header_row_ = nullptr;
   views::View* content_row_ = nullptr;
-  views::View* actions_row_ = nullptr;
+  raw_ptr<views::View> actions_row_ = nullptr;
   views::View* settings_row_ = nullptr;
 
   // Containers for left and right side on |content_row_|
@@ -356,16 +357,16 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
-  views::Label* message_view_ = nullptr;
-  views::Label* status_view_ = nullptr;
-  ProportionalImageView* icon_view_ = nullptr;
+  raw_ptr<views::Label> message_view_ = nullptr;
+  raw_ptr<views::Label> status_view_ = nullptr;
+  raw_ptr<ProportionalImageView> icon_view_ = nullptr;
   views::View* image_container_view_ = nullptr;
   std::vector<views::LabelButton*> action_buttons_;
   std::vector<views::View*> item_views_;
-  views::ProgressBar* progress_bar_view_ = nullptr;
-  CompactTitleMessageView* compact_title_message_view_ = nullptr;
-  views::View* action_buttons_row_ = nullptr;
-  NotificationInputContainer* inline_reply_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_view_ = nullptr;
+  raw_ptr<CompactTitleMessageView> compact_title_message_view_ = nullptr;
+  raw_ptr<views::View> action_buttons_row_ = nullptr;
+  raw_ptr<NotificationInputContainer> inline_reply_ = nullptr;
 
   // A map from views::LabelButton's in `action_buttons_` to their associated
   // placeholder strings.

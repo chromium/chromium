@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/upload_data_stream.h"
@@ -102,7 +103,7 @@ class CronetUploadDataStream : public net::UploadDataStream {
   // Set to false when a read starts, true when a rewind completes.
   bool at_front_of_stream_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Vends pointers on the network thread, though created on a client thread.
   base::WeakPtrFactory<CronetUploadDataStream> weak_factory_{this};

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/host_event_logger.h"
@@ -46,7 +47,7 @@ class IpcHostEventLogger : public HostEventLogger, public HostStatusObserver {
 
  private:
   // Used to report host status events to the daemon.
-  IPC::Sender* daemon_channel_;
+  raw_ptr<IPC::Sender> daemon_channel_;
 
   scoped_refptr<HostStatusMonitor> monitor_;
 

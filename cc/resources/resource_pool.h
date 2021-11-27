@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
@@ -392,8 +393,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   base::TimeTicks GetUsageTimeForLRUResource() const;
   void FlushEvictedResources();
 
-  viz::ClientResourceProvider* const resource_provider_;
-  viz::ContextProvider* const context_provider_;
+  const raw_ptr<viz::ClientResourceProvider> resource_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const base::TimeDelta resource_expiration_delay_;
   const bool disallow_non_exact_reuse_ = false;
@@ -419,7 +420,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   base::TimeTicks flush_evicted_resources_deadline_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<ResourcePool> weak_ptr_factory_{this};
 };

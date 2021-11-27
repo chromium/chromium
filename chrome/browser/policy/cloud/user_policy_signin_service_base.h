@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -161,16 +162,16 @@ class UserPolicySigninServiceBase : public KeyedService,
 
  private:
   // Parent profile for this service.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
-  UserCloudPolicyManager* policy_manager_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<UserCloudPolicyManager> policy_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   content::NotificationRegistrar registrar_;
 
-  PrefService* local_state_;
-  DeviceManagementService* device_management_service_;
+  raw_ptr<PrefService> local_state_;
+  raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
   signin::ConsentLevel consent_level_;

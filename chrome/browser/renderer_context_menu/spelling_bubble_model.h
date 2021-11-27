@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
@@ -38,7 +39,7 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
   void SetPref(bool enabled);
 
   // Unowned.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/table/table_view.h"
@@ -99,7 +100,7 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   const gfx::FontList font_list_;
 
-  TableView* table_;
+  raw_ptr<TableView> table_;
 
   // If non-null a resize is in progress.
   std::unique_ptr<ColumnResizeDetails> resize_details_;

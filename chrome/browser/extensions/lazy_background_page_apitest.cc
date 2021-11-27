@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -102,7 +103,7 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
         mojom::ViewType::kExtensionBackgroundPage);
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   std::unique_ptr<ExtensionHostTestHelper> original_complete_;

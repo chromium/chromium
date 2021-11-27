@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -463,7 +464,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   url::Origin origin_;
   bool focus_;
   bool background_;
-  MockVideoCaptureProvider* mock_video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_;
 };
 
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithVideoOnly) {

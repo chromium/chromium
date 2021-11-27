@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -82,7 +83,7 @@ class ScopedLocalSurfaceIdValidator {
   }
 
  private:
-  Window* const window_;
+  const raw_ptr<Window> window_;
   const viz::LocalSurfaceId local_surface_id_;
 };
 #else
@@ -185,7 +186,7 @@ class WindowTreeHost::HideHelper {
     // WARNING: this has been deleted.
   }
 
-  WindowTreeHost* host_;
+  raw_ptr<WindowTreeHost> host_;
   scoped_refptr<cc::Layer> compositor_root_layer_;
   std::unique_ptr<ui::Layer> layer_for_transition_;
   base::WeakPtrFactory<HideHelper> weak_ptr_factory_{this};

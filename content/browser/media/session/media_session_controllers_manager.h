@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"  // For MediaPlayerId.
 
@@ -96,7 +97,7 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // one and placing it in |controllers_map_| if necessary.
   MediaSessionController* FindOrCreateController(const MediaPlayerId& id);
 
-  WebContentsImpl* const web_contents_;
+  const raw_ptr<WebContentsImpl> web_contents_;
 
   ControllersMap controllers_map_;
 };

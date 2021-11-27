@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -330,16 +331,16 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // IMPORTANT: Because NavigationSimulator is used outside content/ where we
   // sometimes use WebContentsImpl and not TestWebContents, this cannot be
   // assumed to cast properly to TestWebContents.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   // The renderer associated with this navigation.
   // Note: this can initially be null for browser-initiated navigations.
-  TestRenderFrameHost* render_frame_host_;
+  raw_ptr<TestRenderFrameHost> render_frame_host_;
 
-  FrameTreeNode* frame_tree_node_;
+  raw_ptr<FrameTreeNode> frame_tree_node_;
 
   // The NavigationRequest associated with this navigation.
-  NavigationRequest* request_;
+  raw_ptr<NavigationRequest> request_;
 
   // Note: additional parameters to modify the navigation should be properly
   // initialized (if needed) in InitializeFromStartedRequest.
@@ -354,7 +355,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   TestRenderFrameHost::LoadingScenario loading_scenario_ =
       TestRenderFrameHost::LoadingScenario::kOther;
   blink::mojom::ReferrerPtr referrer_;
-  RenderFrameHost* initiator_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost> initiator_frame_host_ = nullptr;
   ui::PageTransition transition_;
   ReloadType reload_type_ = ReloadType::NONE;
   int session_history_offset_ = 0;
@@ -405,7 +406,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Generic params structure used for fully customized browser initiated
   // navigation requests. Only valid if explicitely provided.
-  NavigationController::LoadURLParams* load_url_params_;
+  raw_ptr<NavigationController::LoadURLParams> load_url_params_;
 
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;

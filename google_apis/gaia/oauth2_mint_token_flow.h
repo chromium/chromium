@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
@@ -198,7 +199,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
                                      std::set<std::string>* granted_scopes,
                                      int* time_to_live);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   Parameters parameters_;
   base::WeakPtrFactory<OAuth2MintTokenFlow> weak_factory_{this};
 };

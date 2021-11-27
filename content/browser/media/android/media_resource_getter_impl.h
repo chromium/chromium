@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -66,10 +67,10 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
                                const std::string& platform_path);
 
   // BrowserContext to retrieve URLRequestContext and ResourceContext.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // FileSystemContext to be used on FILE thread.
-  storage::FileSystemContext* file_system_context_;
+  raw_ptr<storage::FileSystemContext> file_system_context_;
 
   // Render process id, used to check whether the process can access cookies.
   int render_process_id_;

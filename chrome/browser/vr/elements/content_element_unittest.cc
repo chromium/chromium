@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/content_element.h"
@@ -253,8 +254,8 @@ class ContentElementInputEditingTest : public UiTest {
 
   std::unique_ptr<StrictMock<MockTextInputDelegate>> text_input_delegate_;
   std::unique_ptr<TestPlatformInputHandler> input_forwarder_;
-  ContentInputDelegate* content_delegate_;
-  ContentElement* content_;
+  raw_ptr<ContentInputDelegate> content_delegate_;
+  raw_ptr<ContentElement> content_;
 };
 
 TEST_F(ContentElementInputEditingTest, IndicesUpdated) {

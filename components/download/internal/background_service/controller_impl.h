@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/download/internal/background_service/controller.h"
@@ -263,12 +264,12 @@ class ControllerImpl : public Controller,
   std::unique_ptr<Configuration> config_;
   ServiceConfigImpl service_config_;
   std::unique_ptr<Logger> logger_;
-  LogSink* log_sink_;
+  raw_ptr<LogSink> log_sink_;
   std::unique_ptr<ClientSet> clients_;
   std::unique_ptr<DownloadDriver> driver_;
   std::unique_ptr<Model> model_;
   std::unique_ptr<DeviceStatusListener> device_status_listener_;
-  NavigationMonitor* navigation_monitor_;
+  raw_ptr<NavigationMonitor> navigation_monitor_;
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TaskScheduler> task_scheduler_;
   std::unique_ptr<FileMonitor> file_monitor_;

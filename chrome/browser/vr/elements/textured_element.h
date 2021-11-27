@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
@@ -61,7 +62,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool initialized_ = false;
 
   sk_sp<SkSurface> surface_;
-  SkiaSurfaceProvider* provider_ = nullptr;
+  raw_ptr<SkiaSurfaceProvider> provider_ = nullptr;
 };
 
 }  // namespace vr

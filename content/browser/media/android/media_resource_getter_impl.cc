@@ -213,7 +213,7 @@ void MediaResourceGetterImpl::GetPlatformPathFromURL(
       base::BindOnce(&MediaResourceGetterImpl::GetPlatformPathCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback));
 
-  scoped_refptr<storage::FileSystemContext> context(file_system_context_);
+  scoped_refptr<storage::FileSystemContext> context(file_system_context_.get());
   context->default_file_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&RequestPlatformPathFromFileSystemURL, url,
                                 render_process_id_, context, std::move(cb)));

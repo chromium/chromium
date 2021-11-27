@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -360,10 +361,10 @@ class AccountReconcilor : public KeyedService,
   AccountReconcilorThrottler throttler_;
 
   // The IdentityManager associated with this reconcilor.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The SigninClient associated with this reconcilor.
-  SigninClient* client_;
+  raw_ptr<SigninClient> client_;
 
   bool registered_with_identity_manager_ = false;
   bool registered_with_content_settings_ = false;

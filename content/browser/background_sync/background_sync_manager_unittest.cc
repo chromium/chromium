@@ -15,6 +15,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -745,7 +746,7 @@ class BackgroundSyncManagerTest
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  StoragePartitionImpl* storage_partition_impl_;
+  raw_ptr<StoragePartitionImpl> storage_partition_impl_;
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;
   base::SimpleTestClock test_clock_;
   std::unique_ptr<TestBackgroundSyncProxy> test_proxy_;

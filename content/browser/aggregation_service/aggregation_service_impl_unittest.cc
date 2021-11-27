@@ -13,6 +13,7 @@
 
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -104,7 +105,7 @@ class AggregationServiceImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AggregationServiceImpl> service_impl_;
-  TestAggregatableReportAssembler* test_assembler_ = nullptr;
+  raw_ptr<TestAggregatableReportAssembler> test_assembler_ = nullptr;
 
   int num_assembly_callbacks_run_ = 0;
   absl::optional<AggregatableReport> last_assembled_report_;

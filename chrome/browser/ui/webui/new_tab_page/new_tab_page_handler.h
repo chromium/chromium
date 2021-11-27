@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -172,11 +173,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   bool IsShortcutsVisible() const;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
-  NtpBackgroundService* ntp_background_service_;
-  NtpCustomBackgroundService* ntp_custom_background_service_;
-  search_provider_logos::LogoService* logo_service_;
-  const ui::ThemeProvider* theme_provider_;
-  ThemeService* theme_service_;
+  raw_ptr<NtpBackgroundService> ntp_background_service_;
+  raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
+  raw_ptr<search_provider_logos::LogoService> logo_service_;
+  raw_ptr<const ui::ThemeProvider> theme_provider_;
+  raw_ptr<ThemeService> theme_service_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
@@ -184,16 +185,16 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
   absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   base::Time ntp_navigation_start_time_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
-  PromoService* promo_service_;
+  raw_ptr<PromoService> promo_service_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>

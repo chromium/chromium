@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -139,7 +140,7 @@ class PasswordStore : public PasswordStoreInterface {
   // This member is called to perform the actual interaction with the storage.
   // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
   // backend is passed into the store instead of it being the store(_impl).
-  PasswordStoreBackend* backend_ = nullptr;
+  raw_ptr<PasswordStoreBackend> backend_ = nullptr;
 
  private:
   using InsecureCredentialsTask =
@@ -184,7 +185,7 @@ class PasswordStore : public PasswordStoreInterface {
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
 };

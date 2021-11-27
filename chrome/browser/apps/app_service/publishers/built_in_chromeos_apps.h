@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
@@ -71,7 +72,7 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace apps

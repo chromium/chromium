@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -88,7 +89,7 @@ class AudioInputDevice::AudioThreadCallback
   size_t current_segment_id_;
   uint32_t last_buffer_id_;
   std::vector<std::unique_ptr<const media::AudioBus>> audio_buses_;
-  CaptureCallback* capture_callback_;
+  raw_ptr<CaptureCallback> capture_callback_;
 
   // Used for informing AudioInputDevice that we have gotten data, i.e. the
   // stream is alive. |got_data_callback_| is run every

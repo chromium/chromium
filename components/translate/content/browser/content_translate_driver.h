@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/translate/content/common/translate.mojom.h"
@@ -149,7 +150,7 @@ class ContentTranslateDriver : public TranslateDriver,
       GetLanguageDetectionModelCallback callback,
       bool is_available);
 
-  TranslateManager* translate_manager_;
+  raw_ptr<TranslateManager> translate_manager_;
 
   base::ObserverList<TranslationObserver, true> translation_observers_;
 
@@ -165,7 +166,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // Histogram to be notified about detected language of every page visited. Not
   // owned here.
-  language::UrlLanguageHistogram* const language_histogram_;
+  const raw_ptr<language::UrlLanguageHistogram> language_histogram_;
 
   // ContentTranslateDriver is a singleton per web contents but multiple render
   // frames may be contained in a single web contents. TranslateAgents get the
@@ -179,7 +180,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // The service that provides the model files needed for translate. Not owned
   // but guaranteed to outlive |this|.
-  TranslateModelService* const translate_model_service_;
+  const raw_ptr<TranslateModelService> translate_model_service_;
 
   base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
 };

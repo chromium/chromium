@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -447,16 +448,16 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
 
   // Owned as |desktop_environment_factory_|.
-  DesktopSessionConnector* desktop_session_connector_ = nullptr;
+  raw_ptr<DesktopSessionConnector> desktop_session_connector_ = nullptr;
 #endif  // defined(REMOTING_MULTI_PROCESS)
 
-  int* exit_code_out_;
+  raw_ptr<int> exit_code_out_;
   bool signal_parent_ = false;
   std::string report_offline_reason_;
 
   scoped_refptr<PairingRegistry> pairing_registry_;
 
-  ShutdownWatchdog* shutdown_watchdog_;
+  raw_ptr<ShutdownWatchdog> shutdown_watchdog_;
 
   mojo::AssociatedReceiver<mojom::RemotingHostControl> remoting_host_control_{
       this};
@@ -823,12 +824,11 @@ bool HostProcess::OnMessageReceived(const IPC::Message& message) {
 #if defined(REMOTING_MULTI_PROCESS)
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(HostProcess, message)
-    IPC_MESSAGE_FORWARD(
-        ChromotingDaemonNetworkMsg_DesktopAttached,
-        desktop_session_connector_,
-        DesktopSessionConnector::OnDesktopSessionAgentAttached)
+    IPC_MESSAGE_FORWARD(ChromotingDaemonNetworkMsg_DesktopAttached,
+                        desktop_session_connector_.get(),
+                        DesktopSessionConnector::OnDesktopSessionAgentAttached)
     IPC_MESSAGE_FORWARD(ChromotingDaemonNetworkMsg_TerminalDisconnected,
-                        desktop_session_connector_,
+                        desktop_session_connector_.get(),
                         DesktopSessionConnector::OnTerminalDisconnected)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()

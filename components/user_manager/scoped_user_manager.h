@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/user_manager/user_manager_export.h"
 
 namespace user_manager {
@@ -28,7 +29,7 @@ class USER_MANAGER_EXPORT ScopedUserManager {
 
  private:
   const std::unique_ptr<UserManager> user_manager_;
-  UserManager* previous_user_manager_ = nullptr;
+  raw_ptr<UserManager> previous_user_manager_ = nullptr;
 };
 
 }  // namespace user_manager

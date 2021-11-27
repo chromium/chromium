@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
@@ -177,13 +178,13 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   }
 
   std::unique_ptr<Widget> widget_;
-  View* contents_ = nullptr;
-  Widget* bubble_widget_ = nullptr;
-  View* bubble_view_ = nullptr;
-  View* no_id_view_ = nullptr;
+  raw_ptr<View> contents_ = nullptr;
+  raw_ptr<Widget> bubble_widget_ = nullptr;
+  raw_ptr<View> bubble_view_ = nullptr;
+  raw_ptr<View> no_id_view_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
-  MenuItemView* menu_item_ = nullptr;
+  raw_ptr<MenuItemView> menu_item_ = nullptr;
 };
 
 TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewAborts) {

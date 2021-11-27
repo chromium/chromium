@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
@@ -44,7 +45,7 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  content::WebUI* webui_ = nullptr;
+  raw_ptr<content::WebUI> webui_ = nullptr;
   media_router::MediaCastMode cast_mode_;
 };
 

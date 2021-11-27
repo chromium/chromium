@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -67,7 +68,7 @@ class ElementFinder : public WebControllerWorker {
     DomObjectFrameStack dom_object;
 
     // The render frame host contains the element.
-    content::RenderFrameHost* container_frame_host = nullptr;
+    raw_ptr<content::RenderFrameHost> container_frame_host = nullptr;
 
     const std::string& object_id() const {
       return dom_object.object_data.object_id;
@@ -322,10 +323,10 @@ class ElementFinder : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
-  content::WebContents* const web_contents_;
-  DevtoolsClient* const devtools_client_;
-  const UserData* const user_data_;
-  ProcessedActionStatusDetailsProto* const log_info_;
+  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<DevtoolsClient> devtools_client_;
+  const raw_ptr<const UserData> user_data_;
+  const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
@@ -344,7 +345,7 @@ class ElementFinder : public WebControllerWorker {
   int current_filter_index_range_start_ = -1;
 
   // Pointer to the current frame
-  content::RenderFrameHost* current_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> current_frame_ = nullptr;
 
   // The frame id to use to execute devtools Javascript calls within the
   // context of the frame. Might be empty if no frame id needs to be

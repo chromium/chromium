@@ -14,6 +14,7 @@
 #define JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {
@@ -51,7 +52,7 @@ class PushNotificationsListenTask : public jingle_xmpp::XmppTask {
  private:
   bool IsValidNotification(const jingle_xmpp::XmlElement* stanza);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 typedef PushNotificationsListenTask::Delegate

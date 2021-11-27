@@ -243,7 +243,7 @@ uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
 TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   DCHECK_EQ(this, tls_ipc_hash->Get());
-  tls_ipc_hash->Set(old_scoped_ipc_hash_);
+  tls_ipc_hash->Set(old_scoped_ipc_hash_.get());
   TRACE_EVENT_END("base");
 }
 

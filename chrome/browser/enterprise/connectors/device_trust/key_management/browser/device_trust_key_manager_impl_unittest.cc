@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -85,7 +86,7 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  StrictMock<MockKeyRotationLauncher>* mock_launcher_;
+  raw_ptr<StrictMock<MockKeyRotationLauncher>> mock_launcher_;
 
   std::unique_ptr<DeviceTrustKeyManagerImpl> key_manager_;
 };

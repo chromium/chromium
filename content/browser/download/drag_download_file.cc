@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -176,7 +177,7 @@ class DragDownloadFile::DragDownloadFileUI
   std::string referrer_encoding_;
   int render_process_id_;
   int render_frame_id_;
-  download::DownloadItem* download_item_ = nullptr;
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
 
   // Only used in the callback from DownloadManager::DownloadUrl().
   base::WeakPtrFactory<DragDownloadFileUI> weak_ptr_factory_{this};

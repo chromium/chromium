@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -107,18 +108,18 @@ class DownloadShelfView : public DownloadShelf,
   std::vector<DownloadItemView*> download_views_;
 
   // Button for showing all downloads (chrome://downloads).
-  views::MdTextButton* show_all_view_;
+  raw_ptr<views::MdTextButton> show_all_view_;
 
   // Button for closing the downloads. This is contained as a child, and
   // deleted by View.
-  views::ImageButton* close_button_;
+  raw_ptr<views::ImageButton> close_button_;
 
   // Hidden view that will contain status text for immediate output by
   // screen readers.
-  views::View* accessible_alert_;
+  raw_ptr<views::View> accessible_alert_;
 
   // The window this shelf belongs to.
-  BrowserView* parent_;
+  raw_ptr<BrowserView> parent_;
 
   // Time since the last time the download shelf was opened.
   base::Time last_opened_;

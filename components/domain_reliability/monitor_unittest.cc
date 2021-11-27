@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,7 +122,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::TestURLRequestContext url_request_context_;
-  MockTime* time_;
+  raw_ptr<MockTime> time_;
   DomainReliabilityMonitor monitor_;
   DomainReliabilityMonitor::RequestInfo request_;
 };

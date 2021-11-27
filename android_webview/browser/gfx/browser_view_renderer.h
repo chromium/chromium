@@ -17,6 +17,7 @@
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -214,13 +215,13 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // view renderer's state.
   std::string ToString() const;
 
-  BrowserViewRendererClient* const client_;
+  const raw_ptr<BrowserViewRendererClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  CompositorFrameConsumer* current_compositor_frame_consumer_;
+  raw_ptr<CompositorFrameConsumer> current_compositor_frame_consumer_;
   std::unique_ptr<RootFrameSinkProxy> root_frame_sink_proxy_;
 
   // The current compositor that's owned by the current RVH.
-  content::SynchronousCompositor* compositor_;
+  raw_ptr<content::SynchronousCompositor> compositor_;
   // The id of the most recent RVH according to RVHChanged.
   viz::FrameSinkId frame_sink_id_;
   // A map from compositor's per-WebView unique ID to the compositor's raw

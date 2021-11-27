@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -58,8 +59,8 @@ class ReopenTabInProductHelp : public BrowserListObserver, public KeyedService {
   // Callback passed to |ReopenTabInProductHelpTrigger|.
   void OnShowHelp();
 
-  Profile* const profile_;
-  const base::TickClock* const clock_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<const base::TickClock> clock_;
 
   // Tracks active tab durations and notifies us when an active tab is closed.
   ActiveTabTracker active_tab_tracker_;

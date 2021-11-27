@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -96,7 +97,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
 
    private:
     const std::unique_ptr<media::VideoCaptureDevice> device_;
-    WrappedDeviceFactory* const factory_;
+    const raw_ptr<WrappedDeviceFactory> factory_;
   };
 
   static const media::VideoFacingMode DEFAULT_FACING =
@@ -354,13 +355,13 @@ class VideoCaptureManagerTest : public testing::Test {
 #endif
 
   BrowserTaskEnvironment task_environment_;
-  ScreenlockMonitorTestSource* screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;
   std::unique_ptr<MockFrameObserver> frame_observer_;
-  WrappedDeviceFactory* video_capture_device_factory_;
+  raw_ptr<WrappedDeviceFactory> video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
 };
 

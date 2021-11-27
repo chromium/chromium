@@ -13,6 +13,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -151,7 +152,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
   void SaveNodeMapping();
 
   std::unique_ptr<bookmarks::BookmarkNode> partner_bookmarks_root_;
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   NodeRenamingMap node_rename_remove_map_;
 
   // The observers.

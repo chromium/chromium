@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -277,7 +278,7 @@ class PopupSeparator : public views::Separator {
   void OnThemeChanged() override;
 
  private:
-  AutofillPopupBaseView* popup_;
+  raw_ptr<AutofillPopupBaseView> popup_;
 };
 
 PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
@@ -303,7 +304,7 @@ class SuggestionLabel : public views::Label {
   void OnThemeChanged() override;
 
  private:
-  AutofillPopupBaseView* popup_;
+  raw_ptr<AutofillPopupBaseView> popup_;
 };
 
 SuggestionLabel::SuggestionLabel(const std::u16string& text,
@@ -1403,7 +1404,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     padding_wrapper->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
     padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
-    padding_wrapper->AddChildView(scroll_view_);
+    padding_wrapper->AddChildView(scroll_view_.get());
     AddChildView(padding_wrapper);
     layout_->SetFlexForView(padding_wrapper, 1);
   }

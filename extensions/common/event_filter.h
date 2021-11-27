@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/common/event_matcher.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
@@ -88,7 +89,7 @@ class EventFilter {
     std::unique_ptr<EventMatcher> event_matcher_;
     // The id sets in |url_matcher_| that this EventMatcher owns.
     std::vector<url_matcher::URLMatcherConditionSet::ID> condition_set_ids_;
-    url_matcher::URLMatcher* url_matcher_;
+    raw_ptr<url_matcher::URLMatcher> url_matcher_;
   };
 
   // Maps from a matcher id to an event matcher entry.

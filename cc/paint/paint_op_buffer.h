@@ -20,6 +20,7 @@
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/base/math_util.h"
@@ -184,10 +185,10 @@ class CC_PAINT_EXPORT PaintOp {
     ~SerializeOptions();
 
     // Required.
-    ImageProvider* image_provider = nullptr;
-    TransferCacheSerializeHelper* transfer_cache = nullptr;
-    ClientPaintCache* paint_cache = nullptr;
-    SkStrikeServer* strike_server = nullptr;
+    raw_ptr<ImageProvider> image_provider = nullptr;
+    raw_ptr<TransferCacheSerializeHelper> transfer_cache = nullptr;
+    raw_ptr<ClientPaintCache> paint_cache = nullptr;
+    raw_ptr<SkStrikeServer> strike_server = nullptr;
     sk_sp<SkColorSpace> color_space = nullptr;
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;

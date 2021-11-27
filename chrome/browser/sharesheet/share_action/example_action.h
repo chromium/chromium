@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_EXAMPLE_ACTION_H_
 #define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_EXAMPLE_ACTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 
 namespace sharesheet {
@@ -25,7 +26,7 @@ class ExampleAction : public ShareAction {
   void OnClosing(SharesheetController* controller) override;
 
  private:
-  SharesheetController* controller_ = nullptr;
+  raw_ptr<SharesheetController> controller_ = nullptr;
   std::string name_;
 };
 

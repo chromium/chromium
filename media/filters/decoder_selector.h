@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -143,11 +144,11 @@ class MEDIA_EXPORT DecoderSelector {
 
   CreateDecodersCB create_decoders_cb_;
   DecoderPriorityCB decoder_priority_cb_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
-  StreamTraits* traits_ = nullptr;
-  DemuxerStream* stream_ = nullptr;
-  CdmContext* cdm_context_ = nullptr;
+  raw_ptr<StreamTraits> traits_ = nullptr;
+  raw_ptr<DemuxerStream> stream_ = nullptr;
+  raw_ptr<CdmContext> cdm_context_ = nullptr;
   WaitingCB waiting_cb_;
 
   // Overall decoder selection state.

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   // `file_system_context_` owns this. We could break the cycle in
   // FileSystemContext::Shutdown(), but then we would have to ensure that
   // Shutdown() is called by all FileSystemContext users.
-  FileSystemContext* const file_system_context_
+  const raw_ptr<FileSystemContext> file_system_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

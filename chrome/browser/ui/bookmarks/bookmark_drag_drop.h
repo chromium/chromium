@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
@@ -55,7 +56,7 @@ struct BookmarkDragParams {
   int drag_node_index;
 
   // The web contents that initiated the drag.
-  content::WebContents* web_contents;
+  raw_ptr<content::WebContents> web_contents;
 
   // The source of the drag.
   ui::mojom::DragEventSource source;

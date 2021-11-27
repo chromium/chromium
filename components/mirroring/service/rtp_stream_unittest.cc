@@ -5,6 +5,7 @@
 #include "components/mirroring/service/rtp_stream.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -75,9 +76,9 @@ class StreamClient final : public RtpStreamClient {
   }
 
  private:
-  VideoRtpStream* video_stream_ = nullptr;
+  raw_ptr<VideoRtpStream> video_stream_ = nullptr;
   base::TimeTicks first_frame_time_;
-  base::SimpleTestTickClock* clock_;
+  raw_ptr<base::SimpleTestTickClock> clock_;
   base::WeakPtrFactory<StreamClient> weak_factory_{this};
 };
 

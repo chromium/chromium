@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -149,11 +150,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   // The dialog is owned by the controller, but this pointer should only be
   // valid while the dialog is live within the controller.
-  MockMediaGalleriesDialog* dialog_;
+  raw_ptr<MockMediaGalleriesDialog> dialog_;
   int dialog_update_count_at_destruction_;
 
   // The controller owns itself.
-  MediaGalleriesPermissionController* controller_;
+  raw_ptr<MediaGalleriesPermissionController> controller_;
 
   scoped_refptr<extensions::Extension> extension_;
 

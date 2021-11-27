@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -4736,9 +4737,9 @@ class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
   scoped_refptr<Layer> container_;
   scoped_refptr<Layer> scroller_;
   scoped_refptr<Layer> sticky_pos_;
-  LayerImpl* root_impl_;
-  LayerImpl* scroller_impl_;
-  LayerImpl* sticky_pos_impl_;
+  raw_ptr<LayerImpl> root_impl_;
+  raw_ptr<LayerImpl> scroller_impl_;
+  raw_ptr<LayerImpl> sticky_pos_impl_;
 };
 
 TEST_F(DrawPropertiesStickyPositionTest, StickyPositionTop) {

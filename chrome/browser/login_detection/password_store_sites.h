@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -45,7 +46,7 @@ class PasswordStoreSites
       override;
 
   // The password store |this| is observing site entries from.
-  password_manager::PasswordStoreInterface* password_store_;
+  raw_ptr<password_manager::PasswordStoreInterface> password_store_;
 
   // Set of sites saved in the password store. Will be absl::nullopt until the
   // sites are retrieved the fist time.

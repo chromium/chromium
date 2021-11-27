@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATES_GETTER_H_
 #define CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATES_GETTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
 
@@ -30,7 +31,7 @@ class BrowserSyncedWindowDelegatesGetter
   const sync_sessions::SyncedWindowDelegate* FindById(SessionID id) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace browser_sync

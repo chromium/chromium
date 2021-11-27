@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -505,11 +506,11 @@ class WebController {
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
   // Must not be |nullptr| and outlive this web controller.
-  const UserData* const user_data_;
-  ProcessedActionStatusDetailsProto* const log_info_;
+  const raw_ptr<const UserData> user_data_;
+  const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;

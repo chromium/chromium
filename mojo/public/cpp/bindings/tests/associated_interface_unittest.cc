@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -256,7 +257,7 @@ class TestSender {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  TestSender* next_sender_;
+  raw_ptr<TestSender> next_sender_;
   int32_t max_value_to_send_;
 
   AssociatedRemote<IntegerSender> remote_;

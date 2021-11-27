@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
@@ -299,9 +300,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
       const AppId& app_id,
       base::OnceClosure update_finished_callback);
 
-  Profile* const profile_;
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
 namespace gcm {
@@ -55,7 +56,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   bool reconnect_pending_;
   bool delay_reconnect_;
 
-  ConnectionListener* connection_listener_;
+  raw_ptr<ConnectionListener> connection_listener_;
 };
 
 }  // namespace gcm

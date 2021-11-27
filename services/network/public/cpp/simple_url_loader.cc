@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -563,7 +564,7 @@ class BodyReader {
   mojo::ScopedDataPipeConsumerHandle body_data_pipe_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   const int64_t max_body_size_;
   int64_t total_bytes_read_ = 0;
@@ -628,7 +629,7 @@ class BodyHandler {
   }
 
  private:
-  SimpleURLLoaderImpl* const simple_url_loader_;
+  const raw_ptr<SimpleURLLoaderImpl> simple_url_loader_;
   bool const want_download_progress_;
 };
 
@@ -1161,7 +1162,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     body_reader_->Resume();
   }
 
-  SimpleURLLoaderStreamConsumer* stream_consumer_;
+  raw_ptr<SimpleURLLoaderStreamConsumer> stream_consumer_;
 
   std::unique_ptr<BodyReader> body_reader_;
 

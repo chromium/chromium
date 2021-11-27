@@ -16,6 +16,7 @@
 
 #include "base/callback.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/pending_task.h"
@@ -305,7 +306,7 @@ class BASE_EXPORT TaskQueueImpl {
 
     base::internal::OperationsController operations_controller_;
     // Pointer might be stale, access guarded by |operations_controller_|
-    TaskQueueImpl* const outer_;
+    const raw_ptr<TaskQueueImpl> outer_;
   };
 
   class TaskRunner final : public SingleThreadTaskRunner {
@@ -378,9 +379,9 @@ class BASE_EXPORT TaskQueueImpl {
     MainThreadOnly(TaskQueueImpl* task_queue, WakeUpQueue* wake_up_queue);
     ~MainThreadOnly();
 
-    WakeUpQueue* wake_up_queue;
+    raw_ptr<WakeUpQueue> wake_up_queue;
 
-    TaskQueue::Throttler* throttler = nullptr;
+    raw_ptr<TaskQueue::Throttler> throttler = nullptr;
 
     std::unique_ptr<WorkQueue> delayed_work_queue;
     std::unique_ptr<WorkQueue> immediate_work_queue;
@@ -388,7 +389,7 @@ class BASE_EXPORT TaskQueueImpl {
     ObserverList<TaskObserver>::Unchecked task_observers;
     HeapHandle heap_handle;
     bool is_enabled = true;
-    trace_event::BlameContext* blame_context = nullptr;  // Not owned.
+    raw_ptr<trace_event::BlameContext> blame_context = nullptr;  // Not owned.
     EnqueueOrder current_fence;
     absl::optional<TimeTicks> delayed_fence;
     // Snapshots the next sequence number when the queue is unblocked, otherwise
@@ -495,7 +496,7 @@ class BASE_EXPORT TaskQueueImpl {
   void OnQueueUnblocked();
 
   const char* name_;
-  SequenceManagerImpl* const sequence_manager_;
+  const raw_ptr<SequenceManagerImpl> sequence_manager_;
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
 

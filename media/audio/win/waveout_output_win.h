@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/audio_io.h"
@@ -95,10 +96,10 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
 
   // The audio manager that created this output stream. We notify it when
   // we close so it can release its own resources.
-  AudioManagerWin* manager_;
+  raw_ptr<AudioManagerWin> manager_;
 
   // We use the callback mostly to periodically request more audio data.
-  AudioSourceCallback* callback_;
+  raw_ptr<AudioSourceCallback> callback_;
 
   // The number of buffers of size |buffer_size_| each to use.
   const int num_buffers_;

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -141,7 +142,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // The handler for AXEvents (e.g. the extensions subsystem in production, or
   // a fake for tests).
-  extensions::AutomationEventRouterInterface*
+  raw_ptr<extensions::AutomationEventRouterInterface>
       automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;

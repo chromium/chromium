@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -49,7 +50,7 @@ class WindowReordererTest : public ViewsTestBase {
   }
 
  private:
-  aura::Window* parent_ = nullptr;
+  raw_ptr<aura::Window> parent_ = nullptr;
 };
 
 // Test that views with layers and views with associated windows are reordered

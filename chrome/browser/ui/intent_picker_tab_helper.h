@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -65,7 +66,7 @@ class IntentPickerTabHelper
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
-  web_app::WebAppRegistrar* const registrar_;
+  const raw_ptr<web_app::WebAppRegistrar> registrar_;
 
   bool should_show_icon_ = false;
 

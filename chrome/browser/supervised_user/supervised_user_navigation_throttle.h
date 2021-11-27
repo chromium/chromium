@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
@@ -59,7 +60,7 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
                             bool already_requested_permission,
                             bool is_main_frame);
 
-  const SupervisedUserURLFilter* url_filter_;
+  raw_ptr<const SupervisedUserURLFilter> url_filter_;
   bool deferred_;
   supervised_user_error_page::FilteringBehaviorReason reason_;
   SupervisedUserURLFilter::FilteringBehavior behavior_;

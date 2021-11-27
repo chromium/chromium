@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
 #include "content/browser/media/media_devices_util.h"
@@ -303,7 +304,7 @@ class CONTENT_EXPORT MediaDevicesManager
 #endif
 
   bool use_fake_devices_;
-  media::AudioSystem* const audio_system_;  // not owned
+  const raw_ptr<media::AudioSystem> audio_system_;  // not owned
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
   StopRemovedInputDeviceCallback stop_removed_input_device_cb_;
   UIInputDeviceChangeCallback ui_input_device_change_cb_;

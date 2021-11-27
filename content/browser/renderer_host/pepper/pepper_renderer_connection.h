@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/pepper_plugin.mojom.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "ppapi/c/pp_instance.h"
@@ -95,7 +96,7 @@ class PepperRendererConnection : public BrowserMessageFilter {
   // information (like the plugin name) won't be available.
   std::unique_ptr<BrowserPpapiHostImpl> in_process_host_;
 
-  PluginServiceImpl* const plugin_service_;
+  const raw_ptr<PluginServiceImpl> plugin_service_;
   const base::FilePath profile_data_directory_;
 };
 

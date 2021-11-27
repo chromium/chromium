@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 class Profile;
@@ -45,7 +46,7 @@ class HostedAppsCounter : public browsing_data::BrowsingDataCounter {
   // BrowsingDataCounter:
   void Count() override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_HOSTED_APPS_COUNTER_H_

@@ -198,7 +198,7 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
       TemplateURLServiceFactory::GetForProfile(profile_);
 
   content::StoragePartition* storage_partition =
-      storage_partition_for_testing_ ? storage_partition_for_testing_
+      storage_partition_for_testing_ ? storage_partition_for_testing_.get()
                                      : profile_->GetDefaultStoragePartition();
 
   if (deletion_info.time_range().IsValid()) {

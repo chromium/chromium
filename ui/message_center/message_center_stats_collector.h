@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -85,7 +86,7 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
   // Weak, global.
-  MessageCenter* message_center_;
+  raw_ptr<MessageCenter> message_center_;
 
   typedef std::map<std::string, NotificationStats> StatsCollection;
   StatsCollection stats_;

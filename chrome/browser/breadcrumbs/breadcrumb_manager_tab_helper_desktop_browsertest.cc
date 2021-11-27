@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -53,7 +54,7 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
             browser()->profile());
   }
 
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
+  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
 };
 
 // Tests download navigation.
@@ -112,7 +113,7 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
     mock_cert_verifier()->AddResultForCert(cert, verify_result, net_result);
   }
 
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
+  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };

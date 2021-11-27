@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -96,7 +97,7 @@ class NotificationEventDispatcherImplTest : public ::testing::Test {
 
   // Using a raw pointer because NotificationEventDispatcherImpl is a singleton
   // with private constructor and destructor, so unique_ptr is not an option.
-  NotificationEventDispatcherImpl* dispatcher_;
+  raw_ptr<NotificationEventDispatcherImpl> dispatcher_;
 };
 
 TEST_F(NotificationEventDispatcherImplTest,

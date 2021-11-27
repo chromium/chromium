@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
@@ -381,7 +382,7 @@ class TabStatsTracker::WebContentsUsageObserver
   }
 
  private:
-  TabStatsTracker* tab_stats_tracker_;
+  raw_ptr<TabStatsTracker> tab_stats_tracker_;
   // The last navigation time associated with this tab.
   base::TimeTicks navigation_time_ = base::TimeTicks::Now();
   // Updated when a navigation is finished.

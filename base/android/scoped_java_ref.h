@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace android {
@@ -33,7 +34,7 @@ class BASE_EXPORT ScopedJavaLocalFrame {
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
 };
 
 // Forward declare the generic java reference template class.
@@ -281,7 +282,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  JNIEnv* env_ = nullptr;
+  raw_ptr<JNIEnv> env_ = nullptr;
 
   // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
   // ownership of a JavaParamRef's underlying object - parameters are not
@@ -494,7 +495,7 @@ class JavaObjectArrayReader {
    private:
     iterator(const JavaObjectArrayReader* reader, jsize i)
         : reader_(reader), i_(i) {}
-    const JavaObjectArrayReader* reader_;
+    raw_ptr<const JavaObjectArrayReader<T>> reader_;
     jsize i_;
 
     friend JavaObjectArrayReader;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -27,7 +28,7 @@ struct SharingApp {
 
   ~SharingApp();
 
-  const gfx::VectorIcon* vector_icon = nullptr;
+  raw_ptr<const gfx::VectorIcon> vector_icon = nullptr;
   gfx::Image image;
   std::u16string name;
   std::string identifier;

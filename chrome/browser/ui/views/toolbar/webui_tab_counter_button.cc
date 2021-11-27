@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -227,15 +228,15 @@ class TabCounterAnimator : public gfx::AnimationDelegate {
   TabCounterAnimationType current_animation_ = TabCounterAnimationType::kNone;
 
   // The label that will be animated into view, showing the new value.
-  views::Label* const appearing_label_;
+  const raw_ptr<views::Label> appearing_label_;
   // The label that will be animated out of view, showing the old value.
-  views::Label* const disappearing_label_;
+  const raw_ptr<views::Label> disappearing_label_;
   gfx::MultiAnimation label_animation_;
 
-  views::View* const border_view_;
+  const raw_ptr<views::View> border_view_;
   gfx::MultiAnimation border_animation_;
 
-  views::Throbber* const throbber_;
+  const raw_ptr<views::Throbber> throbber_;
   base::OneShotTimer throbber_timer_;
 
   std::unique_ptr<FlyingIndicator> flying_link_;
@@ -290,7 +291,7 @@ void TabCounterAnimator::MaybeStartPendingAnimation() {
     // of the throbber is just to indicate to the user that some activity has
     // happened in the background, which may not otherwise have been obvious
     // because the tab strip is hidden in this mode.
-    throbber_timer_.Start(FROM_HERE, base::Milliseconds(1000), throbber_,
+    throbber_timer_.Start(FROM_HERE, base::Milliseconds(1000), throbber_.get(),
                           &views::Throbber::Stop);
 
     pending_throbber_ = false;
@@ -475,19 +476,19 @@ class WebUITabCounterButton : public views::Button,
 
   void MaybeStartFlyingLink(WindowOpenDisposition disposition);
 
-  views::InkDropContainerView* ink_drop_container_;
-  views::Label* appearing_label_;
-  views::Label* disappearing_label_;
-  views::View* border_view_;
+  raw_ptr<views::InkDropContainerView> ink_drop_container_;
+  raw_ptr<views::Label> appearing_label_;
+  raw_ptr<views::Label> disappearing_label_;
+  raw_ptr<views::View> border_view_;
   std::unique_ptr<TabCounterAnimator> animator_;
-  views::Throbber* throbber_;
+  raw_ptr<views::Throbber> throbber_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<InteractionTracker> interaction_tracker_;
 
-  TabStripModel* const tab_strip_model_;
-  BrowserView* const browser_view_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ptr<BrowserView> browser_view_;
   base::CallbackListSubscription link_opened_from_gesture_subscription_;
 };
 

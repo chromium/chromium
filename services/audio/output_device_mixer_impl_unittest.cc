@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +71,7 @@ class MockAudioOutputStream : public AudioOutputStream {
   }
 
  private:
-  AudioOutputStream::AudioSourceCallback* provided_callback_ = nullptr;
+  raw_ptr<AudioOutputStream::AudioSourceCallback> provided_callback_ = nullptr;
   double volume_ = 0;
 };
 
@@ -126,7 +127,7 @@ class FakeMixingGraphInput : public MixingGraph::Input {
 
  private:
   const media::AudioParameters params_;
-  MockMixingGraphInput* const mock_input_;
+  const raw_ptr<MockMixingGraphInput> mock_input_;
 };
 
 // Created and owned by OutputMixerManagerImpl; it's essentially a factory
@@ -278,7 +279,7 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
     EXPECT_CALL(mock_mixing_graph_output_stream_, Open())
         .WillOnce(Return(true));
     EXPECT_CALL(mock_mixing_graph_output_stream_,
-                StartCalled(mock_mixing_graph_));
+                StartCalled(mock_mixing_graph_.get()));
     mixing_graph_output_stream_not_running_ = false;
   }
 
@@ -355,7 +356,7 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
   void ExpectNoPlaybackModeChange(const std::set<MixTrackMock*>& mocks) {
     EXPECT_CALL(mock_mixing_graph_output_stream_, Stop).Times(0);
     EXPECT_CALL(mock_mixing_graph_output_stream_,
-                StartCalled(mock_mixing_graph_))
+                StartCalled(mock_mixing_graph_.get()))
         .Times(0);
 
     for (MixTrackMock* mock : mocks) {
@@ -388,7 +389,7 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
         OutputDeviceMixerImpl::kSwitchToUnmixedPlaybackDelay * 2);
   }
 
-  MockMixingGraph* mock_mixing_graph_ = nullptr;
+  raw_ptr<MockMixingGraph> mock_mixing_graph_ = nullptr;
   StrictMock<MockAudioOutputStream> mock_mixing_graph_output_stream_;
 
   const media::AudioParameters mixer_output_params_{

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -92,7 +93,7 @@ class IconImage::Source : public gfx::ImageSkiaSource {
 
   // Used to load images, possibly asynchronously. nullptr'ed out when the
   // IconImage is destroyed.
-  IconImage* host_;
+  raw_ptr<IconImage> host_;
 
   // Image whose representations will be used until |host_| loads the real
   // representations for the image.
@@ -142,7 +143,7 @@ IconImage::IconImage(content::BrowserContext* context,
     AddObserver(observer);
   gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
   source_ = new Source(this, resource_size);
-  image_skia_ = gfx::ImageSkia(base::WrapUnique(source_), resource_size);
+  image_skia_ = gfx::ImageSkia(base::WrapUnique(source_.get()), resource_size);
   image_ = gfx::Image(image_skia_);
 
   registry_observation_.Observe(ExtensionRegistry::Get(context));

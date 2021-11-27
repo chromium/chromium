@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
@@ -314,7 +315,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   // Enlarge WebContentsView by this size insets in
   // DidStartNavigation.
   gfx::Size wcv_resize_insets_;
-  BrowserWindow* browser_window_;  // Weak ptr.
+  raw_ptr<BrowserWindow> browser_window_;  // Weak ptr.
 };
 
 }  // namespace

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1903,8 +1904,8 @@ class ScopedInterfaceRequestMonitor
     return rfhi_->browser_interface_broker_receiver_for_testing();
   }
 
-  RenderFrameHostImpl* rfhi_;
-  blink::mojom::BrowserInterfaceBroker* impl_;
+  raw_ptr<RenderFrameHostImpl> rfhi_;
+  raw_ptr<blink::mojom::BrowserInterfaceBroker> impl_;
 
   std::string interface_name_;
   base::RepeatingClosure request_callback_;

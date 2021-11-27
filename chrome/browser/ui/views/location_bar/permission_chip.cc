@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -44,7 +45,7 @@ class BubbleButtonController : public views::ButtonController {
   }
 
  private:
-  BubbleOwnerDelegate* bubble_owner_ = nullptr;
+  raw_ptr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
 };
 
 PermissionChip::PermissionChip(

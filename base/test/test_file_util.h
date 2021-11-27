@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)
@@ -74,7 +75,7 @@ class FilePermissionRestorer {
 
  private:
   const FilePath path_;
-  void* info_;  // The opaque stored permission information.
+  raw_ptr<void> info_;  // The opaque stored permission information.
   size_t length_;  // The length of the stored permission information.
 };
 

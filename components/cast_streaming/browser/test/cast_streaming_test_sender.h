@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
@@ -104,8 +105,8 @@ class CastStreamingTestSender final
   std::unique_ptr<CastMessagePortSenderImpl> message_port_;
   std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
 
-  openscreen::cast::Sender* audio_sender_ = nullptr;
-  openscreen::cast::Sender* video_sender_ = nullptr;
+  raw_ptr<openscreen::cast::Sender> audio_sender_ = nullptr;
+  raw_ptr<openscreen::cast::Sender> video_sender_ = nullptr;
   openscreen::cast::FrameId last_audio_reference_frame_id_;
   openscreen::cast::FrameId last_video_reference_frame_id_;
 

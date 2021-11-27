@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -64,7 +65,7 @@ class VideoSourceImpl : public mojom::VideoSource {
   void StopDeviceAsynchronously();
   void OnStopDeviceComplete();
 
-  mojom::DeviceFactory* const device_factory_;
+  const raw_ptr<mojom::DeviceFactory> device_factory_;
   const std::string device_id_;
   mojo::ReceiverSet<mojom::VideoSource> receivers_;
   base::RepeatingClosure on_last_binding_closed_cb_;

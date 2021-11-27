@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -48,7 +49,7 @@ class CaptivePortalDetectorTestBase {
   const GURL& get_probe_url() { return detector_->probe_url_; }
 
  protected:
-  CaptivePortalDetector* detector_;
+  raw_ptr<CaptivePortalDetector> detector_;
   network::TestURLLoaderFactory test_loader_factory_;
 };
 

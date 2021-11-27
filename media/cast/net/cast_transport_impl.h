@@ -32,6 +32,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -145,7 +146,7 @@ class CastTransportImpl final : public CastTransport {
   void OnReceivedCastMessage(uint32_t ssrc,
                              const RtcpCastMessage& cast_message);
 
-  const base::TickClock* const clock_;  // Not owned by this class.
+  const raw_ptr<const base::TickClock> clock_;  // Not owned by this class.
   const base::TimeDelta logging_flush_interval_;
   const std::unique_ptr<Client> transport_client_;
   const std::unique_ptr<PacketTransport> transport_;

@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -269,9 +270,9 @@ class JavaScriptDialogDismissalCauseTester {
   void SetLastDismissalCause(DismissalCause cause) { dismissal_cause_ = cause; }
 
  private:
-  content::WebContents* tab_;
-  content::RenderFrameHost* frame_;
-  javascript_dialogs::TabModalDialogManager* js_helper_;
+  raw_ptr<content::WebContents> tab_;
+  raw_ptr<content::RenderFrameHost> frame_;
+  raw_ptr<javascript_dialogs::TabModalDialogManager> js_helper_;
 
   absl::optional<DismissalCause> dismissal_cause_;
 
@@ -454,7 +455,7 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  protected:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -319,7 +320,7 @@ class AddToHomescreenDataFetcherTest
     }
   };
 
-  TestInstallableManager* installable_manager_;
+  raw_ptr<TestInstallableManager> installable_manager_;
   NullLargeFaviconProvider null_large_favicon_provider_;
 };
 

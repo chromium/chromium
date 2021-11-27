@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -127,7 +128,7 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
 };

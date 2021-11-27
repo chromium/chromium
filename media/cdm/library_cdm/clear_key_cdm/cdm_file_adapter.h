@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -61,7 +62,7 @@ class CdmFileAdapter : public cdm::FileIOClient {
   FileOpenedCB open_cb_;
   ReadCB read_cb_;
   WriteCB write_cb_;
-  cdm::FileIO* file_io_ = nullptr;
+  raw_ptr<cdm::FileIO> file_io_ = nullptr;
 };
 
 }  // namespace media

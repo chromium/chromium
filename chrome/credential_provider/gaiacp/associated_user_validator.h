@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -70,7 +71,7 @@ class AssociatedUserValidator {
     ~ScopedBlockDenyAccessUpdate();
 
    private:
-    AssociatedUserValidator* validator_;
+    raw_ptr<AssociatedUserValidator> validator_;
   };
   // Default timeout when querying token info for token handles. If a timeout
   // occurs the token handle is assumed to be valid.

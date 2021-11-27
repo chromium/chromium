@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/font_pref_change_notifier.h"
@@ -58,7 +59,7 @@ class PrefsTabHelper : public ThemeServiceObserver,
 
   void NotifyWebkitPreferencesChanged(const std::string& pref_name);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #if !defined(OS_ANDROID)
   base::CallbackListSubscription default_zoom_level_subscription_;
   FontPrefChangeNotifier::Registrar font_change_registrar_;

@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
@@ -270,7 +271,7 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
  protected:
   // Reference to the MockDaemonControllerDelegate, which is owned by
   // |channel_|.
-  MockDaemonControllerDelegate* daemon_controller_delegate_;
+  raw_ptr<MockDaemonControllerDelegate> daemon_controller_delegate_;
 
  private:
   void StartHost();
@@ -340,8 +341,8 @@ void Me2MeNativeMessagingHostTest::StartHost() {
   ASSERT_TRUE(MakePipe(&output_read_file_, &output_write_file));
 
   daemon_controller_delegate_ = new MockDaemonControllerDelegate();
-  scoped_refptr<DaemonController> daemon_controller(
-      new DaemonController(base::WrapUnique(daemon_controller_delegate_)));
+  scoped_refptr<DaemonController> daemon_controller(new DaemonController(
+      base::WrapUnique(daemon_controller_delegate_.get())));
 
   scoped_refptr<PairingRegistry> pairing_registry =
       new SynchronousPairingRegistry(

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "services/network/public/cpp/origin_policy.h"
@@ -45,7 +46,7 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
   void PopulateInterstitialStrings(base::Value*) override;
 
  private:
-  content::StoragePartition* storage_partition_;
+  raw_ptr<content::StoragePartition> storage_partition_;
   network::OriginPolicyState error_reason_;
 
   void Proceed();

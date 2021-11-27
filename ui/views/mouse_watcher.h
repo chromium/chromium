@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/native_widget_types.h"
@@ -85,7 +86,7 @@ class VIEWS_EXPORT MouseWatcher {
   std::unique_ptr<MouseWatcherHost> host_;
 
   // Our listener.
-  MouseWatcherListener* listener_;
+  raw_ptr<MouseWatcherListener> listener_;
 
   // Does the actual work of listening for mouse events.
   std::unique_ptr<Observer> observer_;

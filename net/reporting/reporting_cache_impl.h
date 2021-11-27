@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -344,7 +345,7 @@ class ReportingCacheImpl : public ReportingCache {
   const base::TickClock& tick_clock() const { return context_->tick_clock(); }
   PersistentReportingStore* store() { return context_->store(); }
 
-  ReportingContext* context_;
+  raw_ptr<ReportingContext> context_;
 
   // Reports that have not yet been successfully uploaded.
   ReportSet reports_;

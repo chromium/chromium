@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_host.h"
 
 #include "base/bind.h"
@@ -752,8 +753,8 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   gfx::PointF final_scroll_offset_;
 
   scoped_refptr<Layer> child_layer_;
-  Layer* expected_scroll_layer_;
-  Layer* expected_no_scroll_layer_;
+  raw_ptr<Layer> expected_scroll_layer_;
+  raw_ptr<Layer> expected_no_scroll_layer_;
 };
 
 TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
@@ -1781,8 +1782,8 @@ class ThreadCheckingInputHandlerClient : public InputHandlerClient {
   }
 
  private:
-  base::SingleThreadTaskRunner* task_runner_;
-  bool* received_stop_flinging_;
+  raw_ptr<base::SingleThreadTaskRunner> task_runner_;
+  raw_ptr<bool> received_stop_flinging_;
 };
 
 class LayerTreeHostScrollTestLayerStructureChange
@@ -2381,7 +2382,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   // These values should be used on the impl thread only.
   int num_begin_main_frames_impl_thread_;
   MockInputHandlerClient input_handler_client_;
-  ScrollElasticityHelper* scroll_elasticity_helper_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
 
   // These values should be used on the main thread only.
   int num_begin_main_frames_main_thread_;
@@ -2621,7 +2622,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
   int num_of_activations_ = 0;
   int num_of_main_frames_ = 0;
   bool invalidated_on_impl_thread_ = false;
-  CompletionEvent* impl_side_invalidation_event_ = nullptr;
+  raw_ptr<CompletionEvent> impl_side_invalidation_event_ = nullptr;
 
   // Main thread.
   int num_of_deltas_ = 0;

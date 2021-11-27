@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -863,7 +864,7 @@ class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
   OmniboxMockInputMethod* GetInputMethod() const { return input_method_; }
 
  private:
-  OmniboxMockInputMethod* input_method_ = nullptr;
+  raw_ptr<OmniboxMockInputMethod> input_method_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeChangedTest) {

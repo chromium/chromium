@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -41,7 +42,7 @@ class MetricRateController {
   void Run();
 
   const base::RepeatingClosure task_;
-  ReportingSettings* const reporting_settings_;
+  const raw_ptr<ReportingSettings> reporting_settings_;
   const std::string rate_setting_path_;
   base::TimeDelta rate_;
   const base::TimeDelta default_rate_;

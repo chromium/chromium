@@ -4,6 +4,7 @@
 
 #include "components/blocked_content/android/popup_blocked_message_delegate.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -51,12 +52,12 @@ class PopupBlockedMessageDelegateTest
   }
 
  private:
-  PopupBlockerTabHelper* helper_ = nullptr;
+  raw_ptr<PopupBlockerTabHelper> helper_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
-  PopupBlockedMessageDelegate* popup_blocked_message_delegate_;
+  raw_ptr<PopupBlockedMessageDelegate> popup_blocked_message_delegate_;
 };
 
 PopupBlockedMessageDelegateTest::~PopupBlockedMessageDelegateTest() {

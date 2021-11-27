@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
 namespace base {
@@ -210,11 +211,11 @@ class WebViewImpl : public WebView {
 
   std::string id_;
   bool w3c_compliant_;
-  const BrowserInfo* browser_info_;
+  raw_ptr<const BrowserInfo> browser_info_;
   // Data for WebViewImplHolder to support delayed destruction of WebViewImpl.
   bool is_locked_;
   bool is_detached_;
-  const WebViewImpl* parent_;
+  raw_ptr<const WebViewImpl> parent_;
   // Many trackers hold pointers to DevToolsClient, so client_ must be declared
   // before the trackers, to ensured trackers are destructed before client_.
   std::unique_ptr<DevToolsClient> client_;

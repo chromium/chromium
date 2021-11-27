@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -240,7 +241,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   absl::optional<content::DOMMessageQueue> queue_;
   uint32_t total_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
-  content::WebContents* preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 };
 
@@ -301,19 +302,19 @@ class TestPrintRenderFrame
       return;
 
     // Prints its children.
-    content::RenderFrameHost* child = ChildFrameAt(frame_host_, 0);
+    content::RenderFrameHost* child = ChildFrameAt(frame_host_.get(), 0);
     for (size_t i = 1; child; i++) {
       if (child->GetSiteInstance() != frame_host_->GetSiteInstance()) {
         client->PrintCrossProcessSubframe(gfx::Rect(), params->document_cookie,
                                           child);
       }
-      child = ChildFrameAt(frame_host_, i);
+      child = ChildFrameAt(frame_host_.get(), i);
     }
   }
 
  private:
-  content::RenderFrameHost* frame_host_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::RenderFrameHost> frame_host_;
+  raw_ptr<content::WebContents> web_contents_;
   const int document_cookie_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::RepeatingClosure msg_callback_;
@@ -366,7 +367,7 @@ class KillPrintRenderFrame
   }
 
  private:
-  content::RenderProcessHost* const rph_;
+  const raw_ptr<content::RenderProcessHost> rph_;
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
 };
 
@@ -1557,7 +1558,7 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
     callbacks_->did_start_printing_callback.Run(result);
   }
 
-  TestPrintCallbacks* callbacks_;
+  raw_ptr<TestPrintCallbacks> callbacks_;
 };
 
 class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {

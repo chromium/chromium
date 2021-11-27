@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
@@ -132,9 +133,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  WebSocketStream::ConnectDelegate* const connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
-  HttpResponseInfo* http_response_info_;
+  raw_ptr<HttpResponseInfo> http_response_info_;
 
   spdy::Http2HeaderBlock http2_request_headers_;
 
@@ -144,9 +145,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // The extensions we requested.
   std::vector<std::string> requested_extensions_;
 
-  WebSocketStreamRequestAPI* const stream_request_;
+  const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
 
-  const HttpRequestInfo* request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_;
 
   RequestPriority priority_;
 

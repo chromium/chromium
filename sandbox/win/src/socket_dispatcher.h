@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <winsock2.h>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
@@ -36,7 +37,7 @@ class SocketDispatcher : public Dispatcher {
                  uint32_t type,
                  uint32_t protocol,
                  InOutCountedBuffer* buffer);
-  PolicyBase* policy_base_;
+  raw_ptr<PolicyBase> policy_base_;
 };
 
 }  // namespace sandbox

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -101,7 +102,7 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
   // Will be signaled once ThreadMain has run.
   WaitableEvent run_event_;
 
-  base::WaitableEvent* const unblock_thread_;
+  const raw_ptr<base::WaitableEvent> unblock_thread_;
 
   base::TimeDelta timeout_;
 };

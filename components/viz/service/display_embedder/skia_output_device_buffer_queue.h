@@ -12,6 +12,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"
@@ -91,7 +92,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   std::unique_ptr<OutputPresenter> presenter_;
 
   scoped_refptr<gpu::SharedContextState> context_state_;
-  gpu::SharedImageRepresentationFactory* const representation_factory_;
+  const raw_ptr<gpu::SharedImageRepresentationFactory> representation_factory_;
   // Format of images
   gfx::ColorSpace color_space_;
   gfx::Size image_size_;
@@ -101,11 +102,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   std::vector<std::unique_ptr<OutputPresenter::Image>> images_;
   // This image is currently used by Skia as RenderTarget. This may be nullptr
   // if there is no drawing for the current frame or if allocation failed.
-  OutputPresenter::Image* current_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image> current_image_ = nullptr;
   // The last image submitted for presenting.
-  OutputPresenter::Image* submitted_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image> submitted_image_ = nullptr;
   // The image currently on the screen, if any.
-  OutputPresenter::Image* displayed_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image> displayed_image_ = nullptr;
   // These are free for use, and are not nullptr.
   base::circular_deque<OutputPresenter::Image*> available_images_;
   // These cancelable callbacks bind images that have been scheduled to display

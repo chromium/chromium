@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "components/sessions/core/session_id.h"
@@ -119,7 +120,7 @@ class SessionServiceTestHelper {
   }
 
  private:
-  SessionService* service_;
+  raw_ptr<SessionService> service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_TEST_HELPER_H_

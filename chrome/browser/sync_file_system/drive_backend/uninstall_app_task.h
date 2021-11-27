@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
@@ -49,7 +50,7 @@ class UninstallAppTask : public ExclusiveTask {
   MetadataDatabase* metadata_database();
   drive::DriveServiceInterface* drive_service();
 
-  SyncEngineContext* sync_context_;  // Not owned.
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
 
   std::string app_id_;
   UninstallFlag uninstall_flag_;

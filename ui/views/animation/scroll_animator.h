@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/views_export.h"
 
@@ -52,7 +53,7 @@ class VIEWS_EXPORT ScrollAnimator : public gfx::AnimationDelegate {
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  ScrollDelegate* delegate_;
+  raw_ptr<ScrollDelegate> delegate_;
 
   float velocity_x_;
   float velocity_y_;

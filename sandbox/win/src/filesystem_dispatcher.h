@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -70,7 +71,7 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t length,
                             uint32_t info_class);
 
-  PolicyBase* policy_base_;
+  raw_ptr<PolicyBase> policy_base_;
 };
 
 }  // namespace sandbox

@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/public/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
@@ -68,7 +69,8 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
  private:
   std::string CombineScopes(const std::vector<std::string>& scopes);
 
-  ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate_;
+  raw_ptr<ProfileOAuth2TokenServiceDelegateAndroid>
+      oauth2_token_service_delegate_;
   std::string account_id_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;

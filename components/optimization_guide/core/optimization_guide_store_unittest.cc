@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -499,7 +500,7 @@ class OptimizationGuideStoreTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeDB<proto::StoreEntry>* db_;
+  raw_ptr<FakeDB<proto::StoreEntry>> db_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
   base::ScopedTempDir temp_dir_;

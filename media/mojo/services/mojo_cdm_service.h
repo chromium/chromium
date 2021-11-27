@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
@@ -107,7 +108,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // Callback for when |decryptor_| loses connectivity.
   void OnDecryptorConnectionError();
 
-  MojoCdmServiceContext* const context_;
+  const raw_ptr<MojoCdmServiceContext> context_;
   scoped_refptr<::media::ContentDecryptionModule> cdm_;
 
   // MojoDecryptorService is passed the Decryptor from |cdm_|, so

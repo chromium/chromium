@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_manager.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
   void OnMojoDisconnect();
 
   // |background_sync_context_| owns |this|.
-  BackgroundSyncContextImpl* background_sync_context_;
+  raw_ptr<BackgroundSyncContextImpl> background_sync_context_;
 
   url::Origin origin_;
 

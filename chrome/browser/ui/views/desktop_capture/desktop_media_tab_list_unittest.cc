@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
@@ -99,13 +100,13 @@ class DesktopMediaTabListTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   views::ScopedViewsTestHelper test_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
-  FakeDesktopMediaList* media_list_;
+  raw_ptr<FakeDesktopMediaList> media_list_;
   std::unique_ptr<DesktopMediaPickerViews> picker_views_;
   DesktopMediaPickerViewsTestApi test_api_;
-  DesktopMediaTabList* tab_list_;
-  views::ImageView* preview_;
-  views::TableView* list_;
-  views::Label* preview_label_;
+  raw_ptr<DesktopMediaTabList> tab_list_;
+  raw_ptr<views::ImageView> preview_;
+  raw_ptr<views::TableView> list_;
+  raw_ptr<views::Label> preview_label_;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
 
   gfx::ImageSkia preview_0_;

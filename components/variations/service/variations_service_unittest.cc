@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -358,7 +359,7 @@ class VariationsServiceTest : public ::testing::Test {
 
  protected:
   TestingPrefServiceSimple prefs_;
-  network::TestNetworkConnectionTracker* network_tracker_;
+  raw_ptr<network::TestNetworkConnectionTracker> network_tracker_;
 
  private:
   base::test::TaskEnvironment task_environment_;

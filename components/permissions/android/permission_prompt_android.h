@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -71,13 +72,13 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   // PermissionPromptAndroid is owned by PermissionRequestManager, so it should
   // be safe to hold a raw WebContents pointer here because this class is
   // destroyed before the WebContents.
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   // |delegate_| is the PermissionRequestManager, which owns this object.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The infobar used to display the permission request, if displayed in that
   // format. Never assume that this pointer is currently alive.
-  infobars::InfoBar* permission_infobar_;
+  raw_ptr<infobars::InfoBar> permission_infobar_;
 
   // Message UI is alternative to infobars. So it should be impossible that
   // both |message_delegate_| and |permission_infobar_| are non-null at the

@@ -13,6 +13,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -124,7 +125,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // Maps account_id to the last error for that account.
   std::map<CoreAccountId, GoogleServiceAuthError> errors_;
 
-  AccountTrackerService* account_tracker_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
   RefreshTokenLoadStatus fire_refresh_token_loaded_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -85,7 +86,7 @@ class BubbleWidgetObserver : public views::WidgetObserver {
   }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

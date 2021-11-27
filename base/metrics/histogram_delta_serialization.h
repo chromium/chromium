@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/threading/thread_checker.h"
@@ -55,7 +56,7 @@ class BASE_EXPORT HistogramDeltaSerialization : public HistogramFlattener {
   HistogramSnapshotManager histogram_snapshot_manager_;
 
   // Output buffer for serialized deltas.
-  std::vector<std::string>* serialized_deltas_;
+  raw_ptr<std::vector<std::string>> serialized_deltas_;
 };
 
 }  // namespace base

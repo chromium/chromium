@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 #define CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
@@ -64,7 +65,7 @@ class VR_UI_EXPORT Keyboard : public UiElement {
 
   void UpdateDelegateVisibility();
 
-  KeyboardDelegate* delegate_ = nullptr;
+  raw_ptr<KeyboardDelegate> delegate_ = nullptr;
 };
 
 }  // namespace vr

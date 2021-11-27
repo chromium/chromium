@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -189,7 +190,7 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  MockHttpCache* cache_;
+  raw_ptr<MockHttpCache> cache_;
 };
 
 //-----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -165,7 +166,7 @@ class InstructionStoreReceptor : public InstructionReceptor {
 
  private:
   ExecutableType exe_type_;
-  EncodedProgram* encoded_;
+  raw_ptr<EncodedProgram> encoded_;
 };
 
 }  // namespace

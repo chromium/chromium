@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_CONTEXT_MENU_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -89,15 +90,15 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   std::unique_ptr<BookmarkContextMenuController> controller_;
 
   // The parent of dialog boxes opened from the context menu.
-  views::Widget* parent_widget_;
+  raw_ptr<views::Widget> parent_widget_;
 
   // The menu itself. This is owned by |menu_runner_|.
-  views::MenuItemView* menu_;
+  raw_ptr<views::MenuItemView> menu_;
 
   // Responsible for running the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  BookmarkContextMenuObserver* observer_;
+  raw_ptr<BookmarkContextMenuObserver> observer_;
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,7 +59,7 @@ class TabGroupViews {
   SkColor GetGroupBackgroundColor() const;
 
  private:
-  TabStrip* const tab_strip_;
+  const raw_ptr<TabStrip> tab_strip_;
   const tab_groups::TabGroupId group_;
   TabGroupHeader* header_;
   TabGroupHighlight* highlight_;

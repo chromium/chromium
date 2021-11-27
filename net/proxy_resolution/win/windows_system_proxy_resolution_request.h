@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -75,9 +76,9 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // WindowsSystemProxyResolutionService. Outstanding requests are cancelled
   // during ~WindowsSystemProxyResolutionService, so this is guaranteed to be
   // valid throughout the lifetime of this object.
-  WindowsSystemProxyResolutionService* service_;
+  raw_ptr<WindowsSystemProxyResolutionService> service_;
   CompletionOnceCallback user_callback_;
-  ProxyInfo* results_;
+  raw_ptr<ProxyInfo> results_;
   const GURL url_;
   const std::string method_;
   NetLogWithSource net_log_;

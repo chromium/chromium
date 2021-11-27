@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -82,7 +83,7 @@ class PrefProvider : public UserModifiableProvider {
   }
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   const bool off_the_record_;
 
@@ -95,7 +96,7 @@ class PrefProvider : public UserModifiableProvider {
 
   base::ThreadChecker thread_checker_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace content_settings

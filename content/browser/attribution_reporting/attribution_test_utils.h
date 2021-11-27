@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -97,7 +98,7 @@ class ScopedContentBrowserClientSetting final {
       ScopedContentBrowserClientSetting&&) = delete;
 
  private:
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
 };
 
 base::GUID DefaultExternalReportID();
@@ -183,7 +184,7 @@ class TestManagerProvider : public AttributionManager::Provider {
   AttributionManager* GetManager(WebContents* web_contents) const override;
 
  private:
-  AttributionManager* manager_ = nullptr;
+  raw_ptr<AttributionManager> manager_ = nullptr;
 };
 
 // Test AttributionManager which can be injected into tests to monitor calls to

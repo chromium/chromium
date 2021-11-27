@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
@@ -83,7 +84,7 @@ class PredictionModelFetcherImpl : public PredictionModelFetcher {
 
   // Listens to changes around the network connection. Not owned. Guaranteed to
   // outlive |this|.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

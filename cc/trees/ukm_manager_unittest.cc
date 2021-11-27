@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
@@ -229,7 +230,7 @@ class UkmManagerTest : public testing::Test {
     return breakdown;
   }
 
-  ukm::TestUkmRecorder* test_ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<UkmManager> manager_;
   base::SimpleTestTickClock test_tick_clock_;
 };

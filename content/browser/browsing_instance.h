@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_instance_group_manager.h"
@@ -235,7 +236,7 @@ class CONTENT_EXPORT BrowsingInstance final
   // should only be set if kProcessSharingWithStrictSiteInstances is not
   // enabled. This is a raw pointer to avoid a reference cycle between the
   // BrowsingInstance and the SiteInstanceImpl.
-  SiteInstanceImpl* default_site_instance_;
+  raw_ptr<SiteInstanceImpl> default_site_instance_;
 
   // The cross-origin isolation status of the BrowsingInstance. This indicates
   // whether this BrowsingInstance is hosting only cross-origin isolated pages

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -177,10 +178,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // Parameters passed in the constructor.
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   CreateRendererCB create_renderer_cb_;
-  MediaLog* const media_log_;
+  const raw_ptr<MediaLog> media_log_;
 
   // Pipeline client. Valid only while the pipeline is running.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // RendererWrapper instance that runs on the media thread.
   std::unique_ptr<RendererWrapper> renderer_wrapper_;

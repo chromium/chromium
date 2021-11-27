@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -97,7 +98,7 @@ class CacheClearer : public content::BrowsingDataRemover::Observer {
     delete this;  // Matches the new in FreeCacheAsync()
   }
 
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
 
   base::OnceClosure install_callback_;
 };

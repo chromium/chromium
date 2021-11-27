@@ -4,6 +4,7 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
@@ -60,7 +61,7 @@ class ScreenlockMonitorTest : public testing::Test {
   ~ScreenlockMonitorTest() override = default;
 
  protected:
-  ScreenlockMonitorTestSource* screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
 
  private:

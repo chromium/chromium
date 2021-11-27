@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -110,7 +111,7 @@ class AbstractPreferenceMergeTest : public testing::Test {
   TestPrefModelAssociatorClient client_;
   scoped_refptr<TestingPrefStore> user_prefs_;
   std::unique_ptr<PrefServiceSyncable> pref_service_;
-  PrefModelAssociator* pref_sync_service_;
+  raw_ptr<PrefModelAssociator> pref_sync_service_;
 };
 
 using CustomPreferenceMergeTest = AbstractPreferenceMergeTest;

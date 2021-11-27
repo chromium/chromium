@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -401,7 +402,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       delegate_->RevokeAllCredentials();
     }
 
-    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    raw_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
     bool revoke_all_credentials_called_ = false;
   };
 
@@ -1264,7 +1265,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
                 delegate_->GetAuthError(account_id));
     }
 
-    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    raw_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
     bool error_changed_ = false;
   };
 
@@ -1355,7 +1356,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                 delegate_->GetAuthError(account_id));
     }
 
-    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    raw_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
     bool error_changed_ = false;
     bool token_available_ = false;
   };

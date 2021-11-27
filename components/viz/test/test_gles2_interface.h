@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -223,7 +224,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   int width_ = 0;
   int height_ = 0;
   float scale_factor_ = -1.f;
-  TestContextSupport* test_support_ = nullptr;
+  raw_ptr<TestContextSupport> test_support_ = nullptr;
   gfx::Rect update_rect_;
   UpdateType last_update_type_ = NO_UPDATE;
   GLuint64 next_insert_fence_sync_ = 1;

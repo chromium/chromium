@@ -19,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -232,7 +233,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     absl::optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
-    const RenderSurfaceList* render_surface_list = nullptr;
+    raw_ptr<const RenderSurfaceList> render_surface_list = nullptr;
     LayerImplList will_draw_layers;
     bool has_no_damage = false;
     bool may_contain_video = false;
@@ -908,9 +909,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Removes empty or orphan RenderPasses from the frame.
   static void RemoveRenderPasses(FrameData* frame);
 
-  LayerTreeHostImplClient* const client_;
-  LayerTreeHostSchedulingClient* const scheduling_client_;
-  TaskRunnerProvider* const task_runner_provider_;
+  const raw_ptr<LayerTreeHostImplClient> client_;
+  const raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
+  const raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   BeginFrameTracker current_begin_frame_tracker_;
 
@@ -1050,7 +1051,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   //
   // A pointer used for communicating with and submitting output to the display
   // compositor.
-  LayerTreeFrameSink* layer_tree_frame_sink_ = nullptr;
+  raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
   // The maximum size (either width or height) that any texture can be. Also
   // holds a reasonable value for software compositing bitmaps.
   int max_texture_size_ = 0;
@@ -1137,7 +1138,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;
   std::set<VideoFrameController*> video_frame_controllers_;
-  RasterDarkModeFilter* const dark_mode_filter_;
+  const raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
   // Map from scroll element ID to scrollbar animation controller.
   // There is one animation controller per pair of overlay scrollbars.
@@ -1146,7 +1147,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                      ElementIdHash>
       scrollbar_animation_controllers_;
 
-  RenderingStatsInstrumentation* rendering_stats_instrumentation_;
+  raw_ptr<RenderingStatsInstrumentation> rendering_stats_instrumentation_;
   MicroBenchmarkControllerImpl micro_benchmark_controller_;
   std::unique_ptr<SynchronousTaskGraphRunner>
       single_thread_synchronous_task_graph_runner_;
@@ -1154,7 +1155,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Optional callback to notify of new tree activations.
   base::RepeatingClosure tree_activation_callback_;
 
-  TaskGraphRunner* task_graph_runner_;
+  raw_ptr<TaskGraphRunner> task_graph_runner_;
   int id_;
 
   std::set<LatencyInfoSwapPromiseMonitor*> latency_info_swap_promise_monitor_;

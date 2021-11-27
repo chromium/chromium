@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/display/software_output_device_client.h"
 #include "components/viz/service/viz_service_export.h"
@@ -84,7 +85,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
 
  protected:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SoftwareOutputDeviceClient* client_ = nullptr;
+  raw_ptr<SoftwareOutputDeviceClient> client_ = nullptr;
   gfx::Size viewport_pixel_size_;
   gfx::Rect damage_rect_;
   sk_sp<SkSurface> surface_;

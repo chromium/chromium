@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/browsing_data/local_data_container.h"
@@ -123,17 +124,17 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
 
     NodeType node_type;
     url::Origin origin;
-    const net::CanonicalCookie* cookie = nullptr;
+    raw_ptr<const net::CanonicalCookie> cookie = nullptr;
     // Used for Database (WebSQL), IndexedDB, Service Worker, and
     // Cache Storage node types.
-    const content::StorageUsageInfo* usage_info = nullptr;
-    const browsing_data::FileSystemHelper::FileSystemInfo* file_system_info =
-        nullptr;
-    const BrowsingDataQuotaHelper::QuotaInfo* quota_info = nullptr;
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
+    raw_ptr<const content::StorageUsageInfo> usage_info = nullptr;
+    raw_ptr<const browsing_data::FileSystemHelper::FileSystemInfo>
+        file_system_info = nullptr;
+    raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
+    raw_ptr<const browsing_data::SharedWorkerHelper::SharedWorkerInfo>
         shared_worker_info = nullptr;
-    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license_info =
-        nullptr;
+    raw_ptr<const BrowsingDataMediaLicenseHelper::MediaLicenseInfo>
+        media_license_info = nullptr;
   };
 
   CookieTreeNode() {}
@@ -192,7 +193,7 @@ class CookieTreeRootNode : public CookieTreeNode {
   DetailedInfo GetDetailedInfo() const override;
 
  private:
-  CookiesTreeModel* model_;
+  raw_ptr<CookiesTreeModel> model_;
 };
 
 // CookieTreeHostNode -------------------------------------------------------
@@ -246,17 +247,17 @@ class CookieTreeHostNode : public CookieTreeNode {
   // the COOKIES node to add children. Checking each child and interrogating
   // them to see if they are a COOKIES, DATABASES, etc node seems
   // less preferable than storing an extra pointer per origin.
-  CookieTreeCookiesNode* cookies_child_ = nullptr;
-  CookieTreeDatabasesNode* databases_child_ = nullptr;
-  CookieTreeLocalStoragesNode* local_storages_child_ = nullptr;
-  CookieTreeSessionStoragesNode* session_storages_child_ = nullptr;
-  CookieTreeIndexedDBsNode* indexed_dbs_child_ = nullptr;
-  CookieTreeFileSystemsNode* file_systems_child_ = nullptr;
-  CookieTreeQuotaNode* quota_child_ = nullptr;
-  CookieTreeServiceWorkersNode* service_workers_child_ = nullptr;
-  CookieTreeSharedWorkersNode* shared_workers_child_ = nullptr;
-  CookieTreeCacheStoragesNode* cache_storages_child_ = nullptr;
-  CookieTreeMediaLicensesNode* media_licenses_child_ = nullptr;
+  raw_ptr<CookieTreeCookiesNode> cookies_child_ = nullptr;
+  raw_ptr<CookieTreeDatabasesNode> databases_child_ = nullptr;
+  raw_ptr<CookieTreeLocalStoragesNode> local_storages_child_ = nullptr;
+  raw_ptr<CookieTreeSessionStoragesNode> session_storages_child_ = nullptr;
+  raw_ptr<CookieTreeIndexedDBsNode> indexed_dbs_child_ = nullptr;
+  raw_ptr<CookieTreeFileSystemsNode> file_systems_child_ = nullptr;
+  raw_ptr<CookieTreeQuotaNode> quota_child_ = nullptr;
+  raw_ptr<CookieTreeServiceWorkersNode> service_workers_child_ = nullptr;
+  raw_ptr<CookieTreeSharedWorkersNode> shared_workers_child_ = nullptr;
+  raw_ptr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
+  raw_ptr<CookieTreeMediaLicensesNode> media_licenses_child_ = nullptr;
 
   // The URL for which this node was initially created.
   GURL url_;
@@ -308,8 +309,8 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
     void StartBatchUpdate();
 
    private:
-    CookiesTreeModel* model_;
-    CookieTreeNode* node_;
+    raw_ptr<CookiesTreeModel> model_;
+    raw_ptr<CookieTreeNode> node_;
     bool batch_in_progress_ = false;
   };
 
@@ -452,7 +453,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // specifically of the type CookiesTreeModel::Observer.
   base::ObserverList<Observer>::Unchecked cookies_observer_list_;
 
-  AccessContextAuditService* access_context_audit_service_ = nullptr;
+  raw_ptr<AccessContextAuditService> access_context_audit_service_ = nullptr;
 
   // Keeps track of how many batches the consumer of this class says it is going
   // to send.

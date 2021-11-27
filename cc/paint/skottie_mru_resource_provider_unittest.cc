@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -76,7 +77,7 @@ class SkottieMRUResourceProviderTest : public ::testing::Test {
 
   FrameDataStub frame_data_stub_;
   const sk_sp<SkottieMRUResourceProvider> provider_;
-  skresources::ResourceProvider* const provider_base_;
+  const raw_ptr<skresources::ResourceProvider> provider_base_;
 };
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {

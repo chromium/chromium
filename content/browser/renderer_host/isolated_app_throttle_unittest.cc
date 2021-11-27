@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/isolated_app_throttle.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"
@@ -165,7 +166,7 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
 
   base::test::ScopedFeatureList feature_list_;
   IsolatedAppContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers_;
 };

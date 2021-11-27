@@ -307,7 +307,7 @@ IndexedDBTombstoneSweeper::Status IndexedDBTombstoneSweeper::DoSweep(
     size_t start_database_idx = static_cast<size_t>(
         sweep_state_.start_database_seed % database_metadata_->size());
     sweep_state_.database_it = WrappingIterator<DatabaseMetadataVector>(
-        database_metadata_, start_database_idx);
+        database_metadata_.get(), start_database_idx);
   }
   // Loop conditions facilitate starting at random index.
   for (; sweep_state_.database_it.value().IsValid();

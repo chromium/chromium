@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -61,7 +62,7 @@ class ConditionalCacheDeletionHelper {
 
   void IterateOverEntries(disk_cache::EntryResult result);
 
-  disk_cache::Backend* cache_;
+  raw_ptr<disk_cache::Backend> cache_;
   const base::RepeatingCallback<bool(const disk_cache::Entry*)> condition_;
 
   net::CompletionOnceCallback completion_callback_;
@@ -69,7 +70,7 @@ class ConditionalCacheDeletionHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
-  disk_cache::Entry* previous_entry_;
+  raw_ptr<disk_cache::Entry> previous_entry_;
 };
 
 }  // namespace content

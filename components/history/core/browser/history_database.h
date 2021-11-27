@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"
 #include "components/history/core/browser/history_types.h"
@@ -60,7 +61,7 @@ class HistoryDatabase : public DownloadDatabase,
     ~TransactionScoper() { db_->CommitTransaction(); }
 
    private:
-    HistoryDatabase* db_;
+    raw_ptr<HistoryDatabase> db_;
   };
 
   // Must call Init() to complete construction. Although it can be created on

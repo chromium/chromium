@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -222,7 +223,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   int AvailableBuffersLowerBound() const;
   bool ShouldCreateNewBufferForNextSwap() const;
 
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
   bool needs_swap_size_notifications_ = false;
 
   // Images for current frame or render pass.
@@ -234,7 +235,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
   uint64_t sync_fence_release_ = 0;
-  SkiaOutputSurfaceDependency* dependency_;
+  raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   GpuVSyncCallback gpu_vsync_callback_;
   bool is_displayed_as_overlay_ = false;
@@ -323,21 +324,22 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   const RendererSettings renderer_settings_;
 
   // Points to the viz-global singleton.
-  const DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
   // For testing cases we would need to setup a SkiaOutputSurface without
   // OverlayProcessor and Display. For those cases, we hold the gpu task
   // scheduler inside this class by having a unique_ptr.
   // TODO(weiliangc): After changing to proper initialization order for Android
   // WebView, remove this holder.
-  DisplayCompositorMemoryAndTaskController* display_compositor_controller_;
+  raw_ptr<DisplayCompositorMemoryAndTaskController>
+      display_compositor_controller_;
 
   // |gpu_task_scheduler_| holds a gpu::SingleTaskSequence, and helps schedule
   // tasks on GPU as a single sequence. It is shared with OverlayProcessor so
   // compositing and overlay processing are in order. A gpu::SingleTaskSequence
   // in regular Viz is implemented by SchedulerSequence. In Android WebView
   // gpu::SingleTaskSequence is implemented on top of WebView's task queue.
-  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_;
+  raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
 
   // The display transform relative to the hardware natural orientation,
   // applied to the frame content. The transform can be rotations in 90 degree

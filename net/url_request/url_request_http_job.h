@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
@@ -208,7 +209,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;
-  const HttpResponseInfo* response_info_;
+  raw_ptr<const HttpResponseInfo> response_info_;
 
   // Used for any logic, e.g. DNS-based scheme upgrade, that needs to synthesize
   // response info to override the real response info. Transaction should be
@@ -261,7 +262,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // to inform the NetworkDelegate that it may not call back.
   bool awaiting_callback_;
 
-  const HttpUserAgentSettings* http_user_agent_settings_;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
 
   // Keeps track of total received bytes over the network from transactions used
   // by this job that have already been destroyed.

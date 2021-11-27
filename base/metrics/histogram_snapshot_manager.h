@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -72,7 +73,7 @@ class BASE_EXPORT HistogramSnapshotManager final {
 
   // |histogram_flattener_| handles the logistics of recording the histogram
   // deltas.
-  HistogramFlattener* const histogram_flattener_;  // Weak.
+  const raw_ptr<HistogramFlattener> histogram_flattener_;  // Weak.
 
   // For histograms, track what has been previously seen, indexed
   // by the hash of the histogram name.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTENT_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTENT_LAYER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,7 +51,7 @@ class ContentLayer : public Layer {
   // both the static and content layers (or either, or none, depending on which
   // is available).
   scoped_refptr<cc::Layer> layer_;
-  TabContentManager* tab_content_manager_;
+  raw_ptr<TabContentManager> tab_content_manager_;
 };
 
 }  //  namespace android

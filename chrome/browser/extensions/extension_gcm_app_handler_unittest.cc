@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -216,7 +217,7 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
   }
 
  private:
-  Waiter* waiter_;
+  raw_ptr<Waiter> waiter_;
   gcm::GCMClient::Result unregistration_result_;
   instance_id::InstanceID::Result delete_id_result_;
   bool app_handler_count_drop_to_zero_;
@@ -420,7 +421,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;  // Not owned.
+  raw_ptr<ExtensionService> extension_service_;  // Not owned.
   base::ScopedTempDir temp_dir_;
 
   // This is needed to create extension service under CrOS.

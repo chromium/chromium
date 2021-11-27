@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
@@ -32,7 +33,7 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
 
   bool IsAXFragmentRootAControlElement() override { return true; }
 
-  BrowserAccessibilityManager* browser_accessibility_manager_;
+  raw_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
 };
 
 class BrowserAccessibilityManagerWinTest : public testing::Test {

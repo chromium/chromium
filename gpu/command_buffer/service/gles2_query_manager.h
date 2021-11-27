@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/query_manager.h"
@@ -52,7 +53,7 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
 
    private:
     // |this| is owned by |gles2_query_manager_|.
-    GLES2QueryManager* gles2_query_manager_;
+    raw_ptr<GLES2QueryManager> gles2_query_manager_;
   };
 
   GLES2QueryManager(GLES2Decoder* decoder, FeatureInfo* feature_info);
@@ -88,7 +89,7 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
   // Safely resets the disjoint value if no queries are active.
   void SafelyResetDisjointValue();
 
-  GLES2Decoder* decoder_;
+  raw_ptr<GLES2Decoder> decoder_;
 
   bool use_arb_occlusion_query2_for_occlusion_query_boolean_;
   bool use_arb_occlusion_query_for_occlusion_query_boolean_;

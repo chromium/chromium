@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -122,9 +123,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // Set of peer for which we have received STUN binding request or
   // response or relay allocation request or response.
   ConnectedPeerSet connected_peers_;
-  P2PMessageThrottler* throttler_;
+  raw_ptr<P2PMessageThrottler> throttler_;
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;

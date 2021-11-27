@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/ranges/algorithm.h"
@@ -276,7 +277,7 @@ class DownloadItemView::ContextMenuButton : public views::ImageButton {
   }
 
  private:
-  DownloadItemView* const owner_;
+  const raw_ptr<DownloadItemView> owner_;
   bool suppress_button_release_ = false;
 };
 
@@ -410,8 +411,8 @@ void DownloadItemView::Layout() {
                              status_label_->GetPreferredSize().height());
   } else {
     auto* const label = (mode_ == download::DownloadItemMode::kDeepScanning)
-                            ? deep_scanning_label_
-                            : warning_label_;
+                            ? deep_scanning_label_.get()
+                            : warning_label_.get();
     label->SetPosition(gfx::Point(kStartPadding * 2 + GetIcon().Size().width(),
                                   CenterY(label->height())));
 
@@ -521,7 +522,7 @@ void DownloadItemView::OnDownloadOpened() {
     if (!view)
       return;
     view->SetEnabled(true);
-    auto* label = view->file_name_label_;
+    auto* label = view->file_name_label_.get();
     label->SetTextStyle(views::style::STYLE_PRIMARY);
     const std::u16string filename = view->ElidedFilename(*label);
     label->SetText(filename);
@@ -572,8 +573,8 @@ gfx::Size DownloadItemView::CalculatePreferredSize() const {
     height = file_name_label_->GetLineHeight() + status_label_->GetLineHeight();
   } else {
     auto* const label = (mode_ == download::DownloadItemMode::kDeepScanning)
-                            ? deep_scanning_label_
-                            : warning_label_;
+                            ? deep_scanning_label_.get()
+                            : warning_label_.get();
     height = label->GetLineHeight() * 2;
     const gfx::Size icon_size = GetIcon().Size();
     width +=

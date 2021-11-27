@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "ui/views/view.h"
@@ -27,8 +28,8 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
       const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
   void SourceLinkClicked(const ui::Event& event);
 
-  PageInfo* presenter_;
-  ChromePageInfoUiDelegate* ui_delegate_;
+  raw_ptr<PageInfo> presenter_;
+  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
   page_info::proto::SiteInfo info_;
 };
 

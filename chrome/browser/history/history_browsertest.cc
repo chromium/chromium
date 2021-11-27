@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -486,7 +487,7 @@ class RenderFrameHostGrabber : public content::WebContentsObserver {
 
  private:
   GURL url_;
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   base::RunLoop run_loop_;
 };
 

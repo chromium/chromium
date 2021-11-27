@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_loop.h"
@@ -200,7 +201,7 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   // CDM related stuff.
 
   // Owned by CDM which is external to this decoder.
-  MediaCryptoContext* media_crypto_context_;
+  raw_ptr<MediaCryptoContext> media_crypto_context_;
 
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> event_cb_registration_;

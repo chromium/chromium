@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -607,8 +608,8 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  MockContextSupport* mock_main_context_support_;
-  MockContextSupport* mock_worker_context_support_;
+  raw_ptr<MockContextSupport> mock_main_context_support_;
+  raw_ptr<MockContextSupport> mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -1445,7 +1446,7 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
   }
 
  private:
-  Layer* root_;
+  raw_ptr<Layer> root_;
   scoped_refptr<Layer> child_a_;
   scoped_refptr<Layer> child_b_;
   scoped_refptr<Layer> child_c_;
@@ -4374,7 +4375,7 @@ class LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor
     }
   }
 
-  OnDrawLayerTreeFrameSink* layer_tree_frame_sink_ = nullptr;
+  raw_ptr<OnDrawLayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
 };
 
 // TODO(crbug.com/1121690): Test is flaky.
@@ -6014,8 +6015,8 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
  private:
   FakeContentLayerClient client_;
-  Layer* root_layer_;
-  ScrollElasticityHelper* scroll_elasticity_helper_;
+  raw_ptr<Layer> root_layer_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;
 };
@@ -6083,7 +6084,7 @@ class TestSwapPromise : public SwapPromise {
 
  private:
   // Not owned.
-  TestSwapPromiseResult* result_;
+  raw_ptr<TestSwapPromiseResult> result_;
   DidNotSwapAction action_ = DidNotSwapAction::BREAK_PROMISE;
 };
 
@@ -6690,8 +6691,8 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  raw_ptr<FakePictureLayer> layer_;
+  raw_ptr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationDisabled);
@@ -6742,8 +6743,8 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  raw_ptr<FakePictureLayer> layer_;
+  raw_ptr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationSupportedButDisabled);
@@ -6791,8 +6792,8 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  raw_ptr<FakePictureLayer> layer_;
+  raw_ptr<FakeRecordingSource> recording_source_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabled);
@@ -6859,8 +6860,8 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  raw_ptr<FakePictureLayer> layer_;
+  raw_ptr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabledWithMSAA);
@@ -8387,7 +8388,7 @@ class LayerTreeHostTestBeginFrameAcks : public LayerTreeHostTest {
   bool compositor_frame_submitted_ = false;
   bool layers_drawn_ = false;
   viz::BeginFrameArgs current_begin_frame_args_;
-  LayerTreeHostImpl::FrameData* frame_data_;
+  raw_ptr<LayerTreeHostImpl::FrameData> frame_data_;
 };
 
 MULTI_THREAD_BLOCKNOTIFY_TEST_F(LayerTreeHostTestBeginFrameAcks);
@@ -9051,7 +9052,7 @@ class LayerTreeHostTestRequestForceSendMetadata
     }
 
    private:
-    RenderFrameMetadataObserver* target_ = nullptr;
+    raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
   };
 
   LayerTreeHostTestRequestForceSendMetadata() = default;
@@ -9289,7 +9290,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     }
 
    private:
-    RenderFrameMetadataObserver* target_ = nullptr;
+    raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
   };
 
   void BeginTest() override {

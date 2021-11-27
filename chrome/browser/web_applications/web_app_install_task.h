@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
@@ -298,10 +299,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   std::unique_ptr<WebApplicationInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-  OsIntegrationManager* os_integration_manager_;
-  WebAppInstallFinalizer* install_finalizer_;
-  Profile* const profile_;
-  WebAppRegistrar* registrar_;
+  raw_ptr<OsIntegrationManager> os_integration_manager_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_;
 
   std::unique_ptr<base::Value> error_dict_;
 

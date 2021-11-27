@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/logging/logging_defines.h"
@@ -242,10 +243,10 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   const EventMediaType event_media_type_;
 
   // Not owned by this class.
-  const base::TickClock* const clock_;
+  const raw_ptr<const base::TickClock> clock_;
 
   // Not owned by this class.
-  ReceiverTimeOffsetEstimator* const offset_estimator_;
+  const raw_ptr<ReceiverTimeOffsetEstimator> offset_estimator_;
 
   FrameStatsMap frame_stats_;
   PacketStatsMap packet_stats_;

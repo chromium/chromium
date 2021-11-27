@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 
 class PrefService;
@@ -104,10 +105,10 @@ class TriggerThrottler {
 
   // Pref service for accessing local state prefs (ie: unsynced, tied to the
   // browser not to a profile). Used to persist quota.
-  PrefService* local_state_prefs_;
+  raw_ptr<PrefService> local_state_prefs_;
 
   // Can be set for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Stores each trigger type that fired along with the timestamps of when it
   // fired.

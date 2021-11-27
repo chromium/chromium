@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -371,7 +372,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
         base::BindOnce(std::move(callback), DM_STATUS_SUCCESS, commands));
   }
 
-  TestingRemoteCommandsServer* server_;
+  raw_ptr<TestingRemoteCommandsServer> server_;
 };
 
 }  // namespace

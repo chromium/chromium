@@ -237,7 +237,7 @@ void SaveUpdatePasswordMessageDelegate::DisplayUsernameConfirmDialog(
   // won't be called after the SaveUpdatePasswordMessageDelegate object is
   // destroyed.
   password_edit_dialog_ = password_edit_dialog_factory_.Run(
-      web_contents_,
+      web_contents_.get(),
       base::BindOnce(
           &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
           base::Unretained(this)),

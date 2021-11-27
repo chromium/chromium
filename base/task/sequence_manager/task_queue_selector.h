@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
@@ -256,7 +257,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   WorkQueueSets immediate_work_queue_sets_;
   size_t immediate_starvation_count_ = 0;
 
-  Observer* task_queue_selector_observer_ = nullptr;  // Not owned.
+  raw_ptr<Observer> task_queue_selector_observer_ = nullptr;  // Not owned.
 };
 
 }  // namespace internal

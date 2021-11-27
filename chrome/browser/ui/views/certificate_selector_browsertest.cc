@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -67,8 +68,8 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   }
 
  private:
-  bool* accepted_ = nullptr;
-  bool* canceled_ = nullptr;
+  raw_ptr<bool> accepted_ = nullptr;
+  raw_ptr<bool> canceled_ = nullptr;
   base::OnceClosure on_destroy_;
 };
 
@@ -102,7 +103,7 @@ class CertificateSelectorTest : public InProcessBrowserTest {
 
   // The selector will be owned by the Views hierarchy and will at latest be
   // deleted during the browser shutdown.
-  TestCertificateSelector* selector_ = nullptr;
+  raw_ptr<TestCertificateSelector> selector_ = nullptr;
 };
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/platform_thread.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
@@ -506,7 +507,7 @@ class DecoderPerfTest : public testing::Test {
 
  protected:
   std::unique_ptr<RecordReplayContext> context_;
-  gles2::GLES2Implementation* gl_;
+  raw_ptr<gles2::GLES2Implementation> gl_;
   GLuint renderbuffer_ = 0;
   GLuint framebuffer_ = 0;
 };

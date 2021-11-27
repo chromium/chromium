@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -318,7 +319,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // The optimization guide store that contains prediction models and host
   // model features from the remote Optimization Guide Service. Not owned and
   // guaranteed to outlive |this|.
-  OptimizationGuideStore* model_and_features_store_ = nullptr;
+  raw_ptr<OptimizationGuideStore> model_and_features_store_ = nullptr;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
@@ -329,10 +330,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // A reference to the PrefService for this profile. Not owned.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // A reference to the profile. Not owned.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The timer used to schedule fetching prediction models and host model
   // features from the remote Optimization Guide Service.
@@ -340,7 +341,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Whether the |model_and_features_store_| is initialized and ready for use.
   bool store_is_ready_ = false;

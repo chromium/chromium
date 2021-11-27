@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,7 +38,7 @@ class LazyDimension {
   int get() const;
 
  private:
-  const LazySize* const size_;
+  const raw_ptr<const LazySize> size_;
   LayoutOrientation dimension_;
 };
 
@@ -69,7 +70,7 @@ class LazySize {
   }
 
  private:
-  const View* const view_;
+  const raw_ptr<const View> view_;
   SizeFunc size_func_;
   mutable absl::optional<gfx::Size> size_;
 };

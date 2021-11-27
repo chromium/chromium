@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_NETWORK_MONITOR_HOST_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_interfaces.h"
 #include "ppapi/host/host_message_context.h"
@@ -43,7 +44,7 @@ class PepperNetworkMonitorHost
 
   ppapi::host::ReplyMessageContext reply_context_;
 
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_{this};
 };

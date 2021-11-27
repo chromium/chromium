@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -266,7 +267,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
 #endif
 
  private:
-  ResourceBundle* rb_;
+  raw_ptr<ResourceBundle> rb_;
   const int resource_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lottie_;

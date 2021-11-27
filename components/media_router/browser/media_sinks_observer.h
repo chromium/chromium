@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,7 +68,7 @@ class MediaSinksObserver {
  private:
   const absl::optional<const MediaSource> source_;
   const url::Origin origin_;
-  MediaRouter* const router_;
+  const raw_ptr<MediaRouter> router_;
   bool initialized_;
 
 #if DCHECK_IS_ON()

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -338,7 +339,8 @@ class StorageQueueTest
             .InSequence(uploader_->test_upload_sequence_,
                         uploader_->test_encounter_sequence_)
             .WillOnce(DoAll(
-                WithoutArgs(Invoke(waiter_, &test::TestCallbackWaiter::Signal)),
+                WithoutArgs(
+                    Invoke(waiter_.get(), &test::TestCallbackWaiter::Signal)),
                 WithoutArgs(
                     Invoke([]() { LOG(ERROR) << "Completion signaled"; }))));
         return std::move(uploader_);
@@ -412,7 +414,7 @@ class StorageQueueTest
      private:
       std::unique_ptr<TestUploader> uploader_;
       const int64_t uploader_id_;
-      test::TestCallbackWaiter* const waiter_;
+      const raw_ptr<test::TestCallbackWaiter> waiter_;
     };
 
    private:
@@ -502,7 +504,7 @@ class StorageQueueTest
     const int64_t uploader_id_;
 
     absl::optional<int64_t> generation_id_;
-    LastRecordDigestMap* const last_record_digest_map_;
+    const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
     // Single task runner where all EXPECTs will happen.
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

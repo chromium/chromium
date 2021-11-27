@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -57,8 +58,8 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
     HangUp(right_tab_);
   }
 
-  content::WebContents* left_tab_;
-  content::WebContents* right_tab_;
+  raw_ptr<content::WebContents> left_tab_;
+  raw_ptr<content::WebContents> right_tab_;
 };
 
 // TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.

@@ -105,7 +105,7 @@ void PaintOpWriter::WriteSimple(const T& val) {
   if (!valid_)
     return;
 
-  reinterpret_cast<T*>(memory_)[0] = val;
+  reinterpret_cast<T*>(memory_.get())[0] = val;
 
   memory_ += size;
   remaining_bytes_ -= size;
@@ -133,7 +133,7 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
 
 uint64_t* PaintOpWriter::WriteSize(size_t size) {
   AlignMemory(8);
-  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_);
+  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
   WriteSimple<uint64_t>(size);
   return memory;
 }
@@ -581,7 +581,7 @@ void PaintOpWriter::AlignMemory(size_t alignment) {
   DCHECK_GT(alignment, 0u);
   DCHECK_EQ(alignment & (alignment - 1), 0u);
 
-  uintptr_t memory = reinterpret_cast<uintptr_t>(memory_);
+  uintptr_t memory = reinterpret_cast<uintptr_t>(memory_.get());
   // The following is equivalent to:
   //   padding = (alignment - memory % alignment) % alignment;
   // because alignment is a power of two. This doesn't use modulo operator

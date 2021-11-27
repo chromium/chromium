@@ -7,6 +7,7 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -76,7 +77,7 @@ class RootFrameSink::ChildCompositorFrameSink
   }
 
  private:
-  RootFrameSink* const owner_;
+  const raw_ptr<RootFrameSink> owner_;
   const uint32_t layer_tree_frame_sink_id_;
   const viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<viz::CompositorFrameSinkSupport> support_;

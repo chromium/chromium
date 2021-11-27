@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
@@ -73,7 +74,7 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
-    View* custom_view = nullptr;
+    raw_ptr<View> custom_view = nullptr;
   };
 
   // Sizing information for laying out the label based on a particular width.

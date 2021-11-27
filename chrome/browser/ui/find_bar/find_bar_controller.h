@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -98,7 +99,7 @@ class FindBarController : public content::NotificationObserver,
   std::unique_ptr<FindBar> find_bar_;
 
   // The WebContents we are currently associated with.  Can be NULL.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   std::unique_ptr<FindBarPlatformHelper> find_bar_platform_helper_;
 

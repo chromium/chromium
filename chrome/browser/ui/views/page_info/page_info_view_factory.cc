@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -59,7 +60,7 @@ class PageInfoSubpageView : public views::View {
     PreferredSizeChanged();
   }
 
-  views::View* content_ = nullptr;
+  raw_ptr<views::View> content_ = nullptr;
 };
 
 int GetIconSize() {

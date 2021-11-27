@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -253,7 +254,7 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   const GURL cloud_print_server_url_;
   const std::string print_data_url_;
   JobDetails job_details_;
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Once the job has been spooled to the local spooler, this specifies the
   // job id of the job on the local spooler.

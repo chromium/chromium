@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -467,8 +468,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
 
  private:
   views::Widget widget_;
-  views::Widget* top_level_widget_ = nullptr;
-  aura::Window* owned_window_ = nullptr;
+  raw_ptr<views::Widget> top_level_widget_ = nullptr;
+  raw_ptr<aura::Window> owned_window_ = nullptr;
   bool owner_destroyed_ = false;
   bool owned_window_destroyed_ = false;
   aura::test::TestWindowDelegate child_window_delegate_;

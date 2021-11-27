@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
@@ -63,7 +64,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
  private:
   void UpdateActiveURL(content::WebContents* contents);
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   base::RepeatingClosure close_cb_;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

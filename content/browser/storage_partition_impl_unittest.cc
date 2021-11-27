@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -208,7 +209,7 @@ class RemoveCookieTester {
 
   bool get_cookie_success_;
   AwaitCompletionHelper await_completion_;
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
 };
 
 class RemoveInterestGroupTester {
@@ -251,7 +252,7 @@ class RemoveInterestGroupTester {
 
   bool get_interest_group_success_ = false;
   AwaitCompletionHelper await_completion_;
-  StoragePartitionImpl* storage_partition_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
 class RemoveLocalStorageTester {
@@ -392,9 +393,9 @@ class RemoveLocalStorageTester {
   }
 
   // We don't own these pointers.
-  BrowserTaskEnvironment* const task_environment_;
-  StoragePartition* const storage_partition_;
-  DOMStorageContext* dom_storage_context_;
+  const raw_ptr<BrowserTaskEnvironment> task_environment_;
+  const raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<DOMStorageContext> dom_storage_context_;
 
   std::vector<content::StorageUsageInfo> infos_;
 
@@ -415,7 +416,7 @@ class RemoveCodeCacheTester {
     entry_exists_ = false;
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::ContainsEntryOnThread,
                        base::Unretained(this), cache, url, origin_lock,
                        loop.QuitClosure()));
@@ -440,7 +441,7 @@ class RemoveCodeCacheTester {
                 const std::string& data) {
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::AddEntryOnThread,
                        base::Unretained(this), cache, url, origin_lock, data,
                        loop.QuitClosure()));
@@ -464,7 +465,7 @@ class RemoveCodeCacheTester {
                       base::Time time) {
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::SetLastUseTimeOnThread,
                        base::Unretained(this), cache, url, origin_lock, time,
                        loop.QuitClosure()));
@@ -506,7 +507,7 @@ class RemoveCodeCacheTester {
 
   bool entry_exists_;
   AwaitCompletionHelper await_completion_;
-  GeneratedCodeCacheContext* code_cache_context_;
+  raw_ptr<GeneratedCodeCacheContext> code_cache_context_;
   std::string received_data_;
 };
 
@@ -697,7 +698,7 @@ class RemovePluginPrivateDataTester {
   }
 
   // We don't own this pointer.
-  storage::FileSystemContext* filesystem_context_;
+  raw_ptr<storage::FileSystemContext> filesystem_context_;
 
   // Keep track of the URL for the ClearKey file so that it can be written to
   // or deleted.

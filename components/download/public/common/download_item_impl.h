@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -784,7 +785,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Our delegate.
-  DownloadItemImplDelegate* delegate_ = nullptr;
+  raw_ptr<DownloadItemImplDelegate> delegate_ = nullptr;
 
   // A flag for indicating if the download should be opened at completion.
   bool open_when_complete_ = false;

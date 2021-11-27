@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -151,7 +152,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint index);
 
  private:
-  NavigationControllerImpl* navigation_controller_;
+  raw_ptr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 

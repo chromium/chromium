@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/owned_objects.h"
@@ -215,8 +216,8 @@ class GraphImpl : public Graph {
   NodeSet nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
   ProcessByPidMap processes_by_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
   FrameById frames_by_id_ GUARDED_BY_CONTEXT(sequence_checker_);
-  ukm::UkmRecorder* ukm_recorder_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Typed observers.
   // TODO(chrisha): We should wrap these containers in something that catches
@@ -264,7 +265,7 @@ class GraphImpl : public Graph {
 
   // The identity of the node currently being added to or removed from the
   // graph, if any. This is used to prevent re-entrant notifications.
-  const NodeBase* node_in_transition_ = nullptr;
+  raw_ptr<const NodeBase> node_in_transition_ = nullptr;
 
   // The state of the node being added or removed. Any node in the graph not
   // explicitly in transition is automatically in the kActiveInGraph state.

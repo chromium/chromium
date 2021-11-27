@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -223,7 +224,7 @@ class MockTestCastSocket : public TestCastSocketBase {
 
   void SetupMockTransport() {
     mock_transport_ = new MockCastTransport;
-    SetTransportForTesting(base::WrapUnique(mock_transport_));
+    SetTransportForTesting(base::WrapUnique(mock_transport_.get()));
   }
 
   bool TestVerifyChannelPolicyAudioOnly() {
@@ -238,7 +239,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   }
 
  private:
-  MockCastTransport* mock_transport_ = nullptr;
+  raw_ptr<MockCastTransport> mock_transport_ = nullptr;
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
@@ -418,7 +419,7 @@ class CastSocketTestBase : public testing::Test {
   net::TestURLRequestContext url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
-  Logger* logger_;
+  raw_ptr<Logger> logger_;
   CompleteHandler handler_;
   std::unique_ptr<MockCastSocketObserver> observer_;
   CastSocketOpenParams socket_open_params_;

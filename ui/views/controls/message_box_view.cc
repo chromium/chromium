@@ -142,7 +142,8 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
 MessageBoxView::~MessageBoxView() = default;
 
 views::Textfield* MessageBoxView::GetVisiblePromptField() {
-  return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_ : nullptr;
+  return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_.get()
+                                                      : nullptr;
 }
 
 std::u16string MessageBoxView::GetInputText() {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -40,8 +41,8 @@ class TestProxySocketDataPump {
   void Write();
   void HandleWriteResult(int result);
 
-  net::StreamSocket* from_socket_;
-  net::StreamSocket* to_socket_;
+  raw_ptr<net::StreamSocket> from_socket_;
+  raw_ptr<net::StreamSocket> to_socket_;
 
   scoped_refptr<net::IOBuffer> read_buffer_;
   scoped_refptr<net::DrainableIOBuffer> write_buffer_;

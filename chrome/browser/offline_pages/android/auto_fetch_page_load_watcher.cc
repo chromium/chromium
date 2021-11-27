@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
@@ -104,7 +105,7 @@ class AutoFetchPageLoadWatcher::NavigationObserver
  private:
   friend class content::WebContentsUserData<
       AutoFetchPageLoadWatcher::NavigationObserver>;
-  AutoFetchPageLoadWatcher* page_load_watcher_;
+  raw_ptr<AutoFetchPageLoadWatcher> page_load_watcher_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
@@ -396,9 +397,9 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  InternalImpl* impl_;
+  raw_ptr<InternalImpl> impl_;
   // The observed tab model. May be null if not yet observing.
-  TabModel* observed_tab_model_ = nullptr;
+  raw_ptr<TabModel> observed_tab_model_ = nullptr;
   base::WeakPtrFactory<TabWatcher> weak_ptr_factory_{this};
 };
 

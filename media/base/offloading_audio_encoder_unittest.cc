@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -46,7 +47,7 @@ class OffloadingAudioEncoderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> work_runner_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  MockAudioEncoder* mock_audio_encoder_;
+  raw_ptr<MockAudioEncoder> mock_audio_encoder_;
   std::unique_ptr<OffloadingAudioEncoder> offloading_encoder_;
 };
 

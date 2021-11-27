@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -48,7 +49,7 @@ class BucketHost : public blink::mojom::BucketHost {
 
   // Raw pointer use is safe here because BucketManagerHost owns this
   // BucketHost.
-  BucketManagerHost* bucket_manager_host_;
+  raw_ptr<BucketManagerHost> bucket_manager_host_;
 
   const storage::BucketInfo bucket_info_;
 

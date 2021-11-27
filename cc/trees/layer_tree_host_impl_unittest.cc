@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -5441,8 +5442,8 @@ class LayerTreeHostImplTestMultiScrollable
   }
 
   void ResetScrollbars() {
-    GetEffectNode(scrollbar_1_)->opacity = 0;
-    GetEffectNode(scrollbar_2_)->opacity = 0;
+    GetEffectNode(scrollbar_1_.get())->opacity = 0;
+    GetEffectNode(scrollbar_2_.get())->opacity = 0;
     UpdateDrawProperties(host_impl_->active_tree());
 
     if (is_aura_scrollbar_)
@@ -5450,8 +5451,8 @@ class LayerTreeHostImplTestMultiScrollable
   }
 
   bool is_aura_scrollbar_;
-  SolidColorScrollbarLayerImpl* scrollbar_1_;
-  SolidColorScrollbarLayerImpl* scrollbar_2_;
+  raw_ptr<SolidColorScrollbarLayerImpl> scrollbar_1_;
+  raw_ptr<SolidColorScrollbarLayerImpl> scrollbar_2_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -10357,10 +10358,10 @@ class BlendStateCheckLayer : public LayerImpl {
   }
 
  private:
-  viz::ClientResourceProvider* resource_provider_;
+  raw_ptr<viz::ClientResourceProvider> resource_provider_;
   bool blend_;
   bool has_render_surface_;
-  LayerImpl* comparison_layer_;
+  raw_ptr<LayerImpl> comparison_layer_;
   bool quads_appended_;
   gfx::Rect quad_rect_;
   gfx::Rect opaque_content_rect_;
@@ -10810,7 +10811,7 @@ class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
   viz::DrawQuad::Material gutter_quad_material_;
   gfx::Size gutter_texture_size_;
   gfx::Size viewport_size_;
-  BlendStateCheckLayer* child_;
+  raw_ptr<BlendStateCheckLayer> child_;
   bool did_activate_pending_tree_;
 };
 
@@ -11489,7 +11490,7 @@ class LayerTreeHostImplTestPrepareTiles : public LayerTreeHostImplTest {
     host_impl_->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
   }
 
-  FakeLayerTreeHostImpl* fake_host_impl_;
+  raw_ptr<FakeLayerTreeHostImpl> fake_host_impl_;
 };
 
 TEST_F(LayerTreeHostImplTestPrepareTiles, PrepareTilesWhenInvisible) {
@@ -17668,7 +17669,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   void TestUncompositedScrollingState(bool mutates_transform_tree);
 
  private:
-  LayerImpl* scroller_layer_ = nullptr;
+  raw_ptr<LayerImpl> scroller_layer_ = nullptr;
 
   base::TimeTicks cur_time_;
   viz::BeginFrameArgs begin_frame_args_;

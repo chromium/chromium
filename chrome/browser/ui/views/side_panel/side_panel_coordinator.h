@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
 class BrowserView;
@@ -34,7 +35,7 @@ class SidePanelCoordinator final {
   views::View* GetContentView();
   std::unique_ptr<views::View> CreateHeader();
 
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
   SidePanelRegistry window_registry_;
 
   // TODO(pbos): Add awareness of tab registries here. This probably needs to

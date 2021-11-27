@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -152,7 +153,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
   }
 
   Delegate delegate_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<DeclarativeContentIsBookmarkedConditionTracker> tracker_;
   scoped_refptr<const Extension> extension_;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>

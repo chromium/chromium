@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
@@ -218,7 +219,7 @@ class DataReductionProxyTestContext {
   std::unique_ptr<TestingPrefServiceSimple> simple_pref_service_;
 
   std::unique_ptr<DataReductionProxySettings> settings_;
-  DataReductionProxyService* data_reduction_proxy_service_;
+  raw_ptr<DataReductionProxyService> data_reduction_proxy_service_;
   std::unique_ptr<DataReductionProxyService> service_;
 };
 

@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace permissions {
 
 // Subclass ChooserController to implement a chooser, which has some
@@ -175,7 +177,7 @@ class ChooserController {
 
  private:
   std::u16string title_;
-  View* view_ = nullptr;
+  raw_ptr<View> view_ = nullptr;
 };
 
 }  // namespace permissions

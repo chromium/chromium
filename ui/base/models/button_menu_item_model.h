@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   struct Item;
   std::vector<Item> items_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ui

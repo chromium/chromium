@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -45,7 +46,7 @@ class BrowserActivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };
@@ -70,7 +71,7 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserNoLongerActive(Browser* browser) override;
 
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };

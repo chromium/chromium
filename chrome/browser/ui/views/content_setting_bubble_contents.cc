@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -220,7 +221,7 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   Row AddNewRowToLayout(NewRow row);
   void UpdateScrollHeight(const Row& row);
 
-  ContentSettingBubbleContents* parent_;
+  raw_ptr<ContentSettingBubbleContents> parent_;
 
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.

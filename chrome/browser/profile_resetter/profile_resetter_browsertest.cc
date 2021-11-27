@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -57,7 +58,7 @@ class RemoveCookieTester {
 
   std::vector<net::CanonicalCookie> last_cookies_;
   bool waiting_callback_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   scoped_refptr<content::MessageLoopRunner> runner_;
 };

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/content_index/content_index_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -101,10 +102,10 @@ class ContentIndexProviderImpl
   offline_items_collection::OfflineItem EntryToOfflineItem(
       const content::ContentIndexEntry& entry);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   ContentIndexMetrics metrics_;
-  offline_items_collection::OfflineContentAggregator* aggregator_;
-  site_engagement::SiteEngagementService* site_engagement_service_;
+  raw_ptr<offline_items_collection::OfflineContentAggregator> aggregator_;
+  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   absl::optional<std::vector<gfx::Size>> icon_sizes_for_testing_;
   base::WeakPtrFactory<ContentIndexProviderImpl> weak_ptr_factory_{this};
 };

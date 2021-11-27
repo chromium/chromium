@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -98,24 +99,24 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   // Sets the text and style of the dialog footer.
   void SetDialogFooter(bool enabled);
 
-  CardUnmaskOtpInputDialogController* controller_ = nullptr;
+  raw_ptr<CardUnmaskOtpInputDialogController> controller_ = nullptr;
 
   // Elements related to the otp part of the view.
-  views::BoxLayoutView* otp_input_view_ = nullptr;
-  views::Textfield* otp_input_textfield_ = nullptr;
-  views::Label* otp_input_textfield_invalid_label_ = nullptr;
-  views::StyledLabel* footer_label_ = nullptr;
+  raw_ptr<views::BoxLayoutView> otp_input_view_ = nullptr;
+  raw_ptr<views::Textfield> otp_input_textfield_ = nullptr;
+  raw_ptr<views::Label> otp_input_textfield_invalid_label_ = nullptr;
+  raw_ptr<views::StyledLabel> footer_label_ = nullptr;
 
   // Adds padding to the view's layout so that the layout allows room for
   // |otp_input_textfield_invalid_label_| to appear if necessary. This padding's
   // visibility will always be the opposite of
   // |otp_input_textfield_invalid_label_|'s visibility.
-  views::View* otp_input_textfield_invalid_label_padding_ = nullptr;
+  raw_ptr<views::View> otp_input_textfield_invalid_label_padding_ = nullptr;
 
   // Elements related to progress or error when the request is being made.
-  views::BoxLayoutView* progress_view_ = nullptr;
-  views::Label* progress_label_ = nullptr;
-  views::Throbber* progress_throbber_ = nullptr;
+  raw_ptr<views::BoxLayoutView> progress_view_ = nullptr;
+  raw_ptr<views::Label> progress_label_ = nullptr;
+  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
 
   base::RepeatingClosure
       closure_to_run_after_new_code_link_is_enabled_for_testing_;

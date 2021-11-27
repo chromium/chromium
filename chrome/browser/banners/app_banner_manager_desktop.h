@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -96,7 +97,7 @@ class AppBannerManagerDesktop
 
   void CreateWebApp(WebappInstallSource install_source);
 
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   web_app::AppId uninstalling_app_id_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,

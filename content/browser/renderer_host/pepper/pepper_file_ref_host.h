@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "ppapi/c/pp_file_info.h"
@@ -103,7 +104,7 @@ class PepperFileRefHost : public ppapi::host::ResourceHost,
   int32_t OnReadDirectoryEntries(ppapi::host::HostMessageContext* context);
   int32_t OnGetAbsolutePath(ppapi::host::HostMessageContext* context);
 
-  BrowserPpapiHost* host_;
+  raw_ptr<BrowserPpapiHost> host_;
   std::unique_ptr<PepperFileRefBackend> backend_;
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
   PP_FileSystemType fs_type_;

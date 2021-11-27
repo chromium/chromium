@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -94,7 +95,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   void SetNeedsAnimate();
 
-  ui::WindowAndroidCompositor* const compositor_;
+  const raw_ptr<ui::WindowAndroidCompositor> compositor_;
   const float dpi_scale_;
 
   bool enabled_;

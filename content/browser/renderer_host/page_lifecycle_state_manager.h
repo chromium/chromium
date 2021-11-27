@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_LIFECYCLE_STATE_MANAGER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -121,7 +122,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   blink::mojom::PagehideDispatch pagehide_dispatch_ =
       blink::mojom::PagehideDispatch::kNotDispatched;
 
-  RenderViewHostImpl* render_view_host_impl_;
+  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 
   // This is the per-page state computed based on web contents / tab lifecycle
   // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
@@ -133,7 +134,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   base::OneShotTimer back_forward_cache_timeout_monitor_;
 
-  TestDelegate* test_delegate_{nullptr};
+  raw_ptr<TestDelegate> test_delegate_{nullptr};
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include <utility>
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -45,7 +46,7 @@ class CONTENT_EXPORT SignedExchangePrefetchMetricRecorder final
   void OnFlushTimer();
 
   bool disabled_ = false;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   using PrefetchEntries =
       base::flat_map<std::pair<GURL, base::Time /* response_time */>,

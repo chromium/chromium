@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/prefs/default_pref_store.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Value;
@@ -27,7 +28,7 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   void OnInitializationCompleted(bool succeeded) override {}
 
  private:
-  DefaultPrefStore* pref_store_;
+  raw_ptr<DefaultPrefStore> pref_store_;
 
   int change_count_;
 };

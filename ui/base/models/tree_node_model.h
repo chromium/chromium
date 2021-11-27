@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/tree_model.h"
 
@@ -168,7 +169,7 @@ class TreeNode : public TreeModelNode {
   std::u16string title_;
 
   // This node's parent.
-  NodeType* parent_;
+  raw_ptr<NodeType> parent_;
 
   // This node's children.
   TreeNodes children_;

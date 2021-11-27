@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,7 +111,7 @@ class WebContentsImplTestBrowserClient : public TestContentBrowserClient {
 
  private:
   std::map<GURL, bool> site_assignment_for_url_;
-  ContentBrowserClient* original_browser_client_;
+  raw_ptr<ContentBrowserClient> original_browser_client_;
 };
 
 class WebContentsImplTest : public RenderViewHostImplTestHarness {
@@ -279,7 +280,7 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
   }
 
  private:
-  WebContents* fullscreened_contents_;
+  raw_ptr<WebContents> fullscreened_contents_;
 };
 
 class FakeWebContentsDelegate : public WebContentsDelegate {

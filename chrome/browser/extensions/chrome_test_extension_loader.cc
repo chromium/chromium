@@ -155,7 +155,7 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
 
   content::BrowserContext* context_to_use =
       IncognitoInfo::IsSplitMode(&extension)
-          ? browser_context_
+          ? browser_context_.get()
           : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
 
   // If possible, wait for the extension's background context to be loaded.

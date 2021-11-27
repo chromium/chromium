@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -40,7 +41,7 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   FixedPassData& operator=(FixedPassData&& other);
   ~FixedPassData();
 
-  CompositorRenderPass* render_pass = nullptr;
+  raw_ptr<CompositorRenderPass> render_pass = nullptr;
   // DrawQuads in |render_pass| that can contribute additional damage (eg.
   // surface and render passes) that need to be visited during the prewalk phase
   // of aggregation. Stored in front-to-back order like in |render_pass|.
@@ -193,7 +194,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   const SurfaceId surface_id_;
-  Surface* const surface_;
+  const raw_ptr<Surface> surface_;
 
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;

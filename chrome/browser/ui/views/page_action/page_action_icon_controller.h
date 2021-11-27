@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -57,9 +58,9 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   // Updates the view for the zoom icon when default zoom levels change.
   void OnDefaultZoomLevelChanged() override;
 
-  PageActionIconContainer* icon_container_ = nullptr;
+  raw_ptr<PageActionIconContainer> icon_container_ = nullptr;
 
-  ZoomView* zoom_icon_ = nullptr;
+  raw_ptr<ZoomView> zoom_icon_ = nullptr;
 
   base::flat_map<PageActionIconType, PageActionIconView*>
       page_action_icon_views_;

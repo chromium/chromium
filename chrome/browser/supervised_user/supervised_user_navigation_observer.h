@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
@@ -152,10 +153,10 @@ class SupervisedUserNavigationObserver
   void MaybeUpdateRequestedHosts();
 
   // Owned by SupervisedUserService.
-  const SupervisedUserURLFilter* url_filter_;
+  raw_ptr<const SupervisedUserURLFilter> url_filter_;
 
   // Owned by SupervisedUserServiceFactory (lifetime of Profile).
-  SupervisedUserService* supervised_user_service_;
+  raw_ptr<SupervisedUserService> supervised_user_service_;
 
   // Keeps track of the blocked frames. It maps the frame's globally unique
   // id to its corresponding |SupervisedUserInterstitial| instance.

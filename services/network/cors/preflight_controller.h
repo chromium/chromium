@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_cache.h"
@@ -114,7 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   std::set<std::unique_ptr<PreflightLoader>, base::UniquePtrComparator>
       loaders_;
 
-  NetworkService* const network_service_;
+  const raw_ptr<NetworkService> network_service_;
 };
 
 }  // namespace cors

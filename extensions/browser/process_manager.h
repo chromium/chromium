@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -260,7 +261,7 @@ class ProcessManager : public KeyedService,
                  ExtensionRegistry* registry);
 
   // Not owned. Also used by IncognitoProcessManager.
-  ExtensionRegistry* extension_registry_;
+  raw_ptr<ExtensionRegistry> extension_registry_;
 
  private:
   friend class ProcessManagerFactory;
@@ -353,7 +354,7 @@ class ProcessManager : public KeyedService,
   scoped_refptr<content::SiteInstance> site_instance_;
 
   // The browser context associated with the |site_instance_|.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Contains all active extension-related RenderFrameHost instances for all
   // extensions. We also keep a cache of the host's view type, because that

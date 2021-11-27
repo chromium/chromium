@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_VIEW_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_VIEW_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -76,14 +77,14 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
 
   // A raw pointer is safe since our controller will outlive us (the bubble is
   // lazily created with the controller).
-  SharingHubBubbleController* controller_;
+  raw_ptr<SharingHubBubbleController> controller_;
 
   // ScrollView containing the list of share/save actions.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // The "Share link to" annotation text, which indicates to the user what
   // the 3P target options do.
-  views::Label* share_link_label_ = nullptr;
+  raw_ptr<views::Label> share_link_label_ = nullptr;
 
   base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };

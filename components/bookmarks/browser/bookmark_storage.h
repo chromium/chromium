@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -77,7 +78,7 @@ class BookmarkStorage
   bool SaveNow();
 
   // The model. The model is NULL once BookmarkModelDeleted has been invoked.
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
 
   // Sequenced task runner where disk writes will be performed at.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

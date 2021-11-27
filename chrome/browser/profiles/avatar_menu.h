@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -194,10 +195,10 @@ class AvatarMenu :
   base::WeakPtr<ProfileAttributesStorage> profile_storage_;
 
   // The observer of this model, which is notified of changes. Weak.
-  AvatarMenuObserver* observer_;
+  raw_ptr<AvatarMenuObserver> observer_;
 
   // Browser in which this avatar menu resides. Weak.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_H_

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
@@ -258,7 +259,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   absl::optional<AppId> waiting_for_update_id_;
   std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
 
-  TestDelegate* delegate_;
+  raw_ptr<TestDelegate> delegate_;
   // State snapshots, captured before and after "state change" actions are
   // executed, and inspected by "state check" actions to verify behavior.
   std::unique_ptr<StateSnapshot> before_state_change_action_state_;
@@ -271,10 +272,10 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // can often call another action).
   int executing_action_level_ = 0;
 
-  Browser* active_browser_ = nullptr;
-  Profile* active_profile_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<Profile> active_profile_ = nullptr;
   AppId active_app_id_;
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

@@ -7,6 +7,7 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -86,7 +87,7 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   int observed_changes() const { return observed_changes_; }
 
  private:
-  net::SSLConfigService* const ssl_config_service_;
+  const raw_ptr<net::SSLConfigService> ssl_config_service_;
   int observed_changes_ = 0;
   int changes_to_wait_for_ = 0;
   net::SSLContextConfig ssl_context_config_during_change_;

@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -194,10 +195,10 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   void BoundRequestsSize();
 
   // Guaranteed to be non-null during the duration of |this|.
-  const NetworkQualityEstimator* const network_quality_estimator_;
+  const raw_ptr<const NetworkQualityEstimator> network_quality_estimator_;
 
   // Guaranteed to be non-null during the duration of |this|.
-  const NetworkQualityEstimatorParams* const params_;
+  const raw_ptr<const NetworkQualityEstimatorParams> params_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -206,7 +207,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   // Guaranteed to be non-null during the lifetime of |this|.
   // This isn't a const pointer since SetTickClockForTesting() modifies it.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Time when last connection change was observed.
   base::TimeTicks last_connection_change_;

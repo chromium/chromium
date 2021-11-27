@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
@@ -94,7 +95,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   bool will_initialization_succeed_;
   bool resize_supported_ = false;
 
-  VideoEncodeAccelerator::Client* client_;
+  raw_ptr<VideoEncodeAccelerator::Client> client_;
 
   // Keeps track of if the current frame is the first encoded frame. This
   // is used to force a fake key frame for the first encoded frame.

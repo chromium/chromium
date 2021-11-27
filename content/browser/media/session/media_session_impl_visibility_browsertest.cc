@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -173,8 +174,8 @@ class MediaSessionImplVisibilityBrowserTest
   base::test::ScopedFeatureList ms_feature_list_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  WebContents* web_contents_;
-  MediaSessionImpl* media_session_;
+  raw_ptr<WebContents> web_contents_;
+  raw_ptr<MediaSessionImpl> media_session_;
 };
 
 namespace {

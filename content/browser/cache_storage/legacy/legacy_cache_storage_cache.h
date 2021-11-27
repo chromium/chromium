@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
@@ -522,7 +523,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   // Raw pointer is safe because the CacheStorage instance owns this
   // CacheStorageCache object.
-  LegacyCacheStorage* cache_storage_;
+  raw_ptr<LegacyCacheStorage> cache_storage_;
 
   // A handle that is used to keep the owning CacheStorage instance referenced
   // as long this cache object is also referenced.
@@ -540,7 +541,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   size_t max_query_size_bytes_;
   size_t handle_ref_count_ = 0;
   int query_cache_recursive_depth_ = 0;
-  CacheStorageCacheObserver* cache_observer_;
+  raw_ptr<CacheStorageCacheObserver> cache_observer_;
   std::unique_ptr<CacheStorageCacheEntryHandler> cache_entry_handler_;
 
   // Owns the elements of the list

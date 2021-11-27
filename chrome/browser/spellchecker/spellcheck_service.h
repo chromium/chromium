@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -302,7 +303,7 @@ class SpellcheckService : public KeyedService,
   content::NotificationRegistrar registrar_;
 
   // A pointer to the BrowserContext which this service refers to.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<SpellCheckHostMetrics> metrics_;
 

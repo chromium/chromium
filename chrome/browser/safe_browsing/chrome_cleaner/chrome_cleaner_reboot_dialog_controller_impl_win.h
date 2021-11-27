@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_REBOOT_DIALOG_CONTROLLER_IMPL_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_REBOOT_DIALOG_CONTROLLER_IMPL_WIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_reboot_dialog_controller_win.h"
@@ -66,7 +67,7 @@ class ChromeCleanerRebootDialogControllerImpl
 
   void OnInteractionDone();
 
-  ChromeCleanerController* cleaner_controller_ = nullptr;
+  raw_ptr<ChromeCleanerController> cleaner_controller_ = nullptr;
 
   std::unique_ptr<PromptDelegate> prompt_delegate_;
 

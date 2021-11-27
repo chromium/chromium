@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -85,10 +86,10 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
   std::map<RenderFrameHost*, std::vector<mojo::ReceiverId>>
       frame_to_receivers_map_;
 
-  RenderFrameHost* current_target_frame_for_testing_ = nullptr;
+  raw_ptr<RenderFrameHost> current_target_frame_for_testing_ = nullptr;
 
   // Must outlive this class.
-  Interface* const impl_;
+  const raw_ptr<Interface> impl_;
 };
 
 }  // namespace content

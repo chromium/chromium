@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_address.h"
@@ -192,7 +193,7 @@ class DialServiceImpl : public DialService {
     bool is_reading_;
 
     // Pointer to the DialServiceImpl that owns this socket.
-    DialServiceImpl* const dial_service_;
+    const raw_ptr<DialServiceImpl> dial_service_;
   };
 
   // Starts the control flow for one discovery cycle.
@@ -239,7 +240,7 @@ class DialServiceImpl : public DialService {
   std::vector<std::unique_ptr<DialSocket>> dial_sockets_;
 
   // The NetLog for this service.
-  net::NetLog* const net_log_;
+  const raw_ptr<net::NetLog> net_log_;
 
   // The multicast address:port for search requests.
   net::IPEndPoint send_address_;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/notification_registrar.h"
@@ -56,7 +57,7 @@ class SignedInDevicesChangeObserver
 
  private:
   std::string extension_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   content::NotificationRegistrar registrar_;
 };
 
@@ -98,7 +99,7 @@ class SignedInDevicesManager : public BrowserContextKeyedAPI,
 
   void RemoveChangeObserverForExtension(const std::string& extension_id);
 
-  Profile* const profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
   std::vector<std::unique_ptr<SignedInDevicesChangeObserver>> change_observers_;
 
   // Listen to extension unloaded notification.

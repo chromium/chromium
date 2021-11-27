@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 // Used to access private state of BookmarkBarView for testing.
@@ -37,7 +38,7 @@ class BookmarkBarViewTestHelper {
   }
 
  private:
-  BookmarkBarView* bbv_;
+  raw_ptr<BookmarkBarView> bbv_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_

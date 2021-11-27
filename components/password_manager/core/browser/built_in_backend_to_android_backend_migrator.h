@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BUILT_IN_BACKEND_TO_ANDROID_BACKEND_MIGRATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BUILT_IN_BACKEND_TO_ANDROID_BACKEND_MIGRATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 class PrefService;
@@ -51,10 +52,10 @@ class BuiltInBackendToAndroidBackendMigrator {
   void StartBuiltInToAndroidBackendMigration(
       std::vector<BackendAndLoginsResults> result);
 
-  PasswordStoreBackend* const built_in_backend_;
-  PasswordStoreBackend* const android_backend_;
+  const raw_ptr<PasswordStoreBackend> built_in_backend_;
+  const raw_ptr<PasswordStoreBackend> android_backend_;
 
-  PrefService* const prefs_ = nullptr;
+  const raw_ptr<PrefService> prefs_ = nullptr;
 
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
 

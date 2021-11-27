@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -308,7 +309,7 @@ class AuctionV8Helper
     ~ScopedConsoleTarget();
 
    private:
-    AuctionV8Helper* owner_;
+    raw_ptr<AuctionV8Helper> owner_;
   };
 
   explicit AuctionV8Helper(
@@ -343,12 +344,12 @@ class AuctionV8Helper
       kScriptTimeout;
 
   // See corresponding getters for description.
-  std::vector<std::string>* console_buffer_
+  raw_ptr<std::vector<std::string>> console_buffer_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   std::string console_script_name_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  ScriptTimeoutHelper* timeout_helper_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<ScriptTimeoutHelper> timeout_helper_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   base::Lock context_groups_lock_;
   int last_context_group_id_ GUARDED_BY(context_groups_lock_) = 0;

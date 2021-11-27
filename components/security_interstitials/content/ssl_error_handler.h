@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/content/captive_portal_service.h"
@@ -250,12 +251,12 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   const int cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
-  network_time::NetworkTimeTracker* network_time_tracker_;
+  raw_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The below field is unused if captive portal detection is not enabled,
   // which causes a compiler error.
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  captive_portal::CaptivePortalService* captive_portal_service_;
+  raw_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
 #endif
 
   base::CallbackListSubscription subscription_;

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
@@ -365,7 +366,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
-  ContentBrowserClient* old_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
 };
 
 // Tests that the scanning prompt is not shown in the prerendering. It also

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -146,8 +147,8 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<MockTableViewObserver> table_observer_;
-  FakeBluetoothChooserController* controller_ = nullptr;
-  DeviceChooserContentView* content_view_ = nullptr;
+  raw_ptr<FakeBluetoothChooserController> controller_ = nullptr;
+  raw_ptr<DeviceChooserContentView> content_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

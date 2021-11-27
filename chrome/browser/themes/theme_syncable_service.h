@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -120,8 +121,8 @@ class ThemeSyncableService : public syncer::SyncableService,
 
   void NotifyOnSyncStarted(ThemeSyncState startup_state);
 
-  Profile* const profile_;
-  ThemeService* const theme_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ThemeService> theme_service_;
 
   base::ObserverList<Observer> observer_list_;
 

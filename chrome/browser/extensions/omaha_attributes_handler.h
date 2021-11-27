@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_OMAHA_ATTRIBUTES_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_OMAHA_ATTRIBUTES_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/common/extension_id.h"
@@ -66,8 +67,8 @@ class OmahaAttributesHandler {
                                     BitMapBlocklistState greylist_state,
                                     ExtensionUpdateCheckDataKey reason);
 
-  ExtensionPrefs* extension_prefs_ = nullptr;
-  ExtensionService* extension_service_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
+  raw_ptr<ExtensionService> extension_service_ = nullptr;
 };
 
 }  // namespace extensions

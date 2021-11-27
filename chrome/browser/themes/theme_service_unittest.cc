@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -149,8 +150,8 @@ class ThemeScoper {
   }
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   std::string extension_id_;
   base::ScopedTempDir temp_dir_;
 };
@@ -262,8 +263,8 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
  protected:
   ui::TestNativeTheme native_theme_;
-  extensions::ExtensionRegistry* registry_ = nullptr;
-  ThemeService* theme_service_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ThemeService> theme_service_ = nullptr;
 };
 
 class IncognitoThemeServiceTest : public ThemeServiceTest,

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
@@ -223,7 +224,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void RecordCompositingMode();
 
-  GpuDataManagerImpl* const owner_;
+  const raw_ptr<GpuDataManagerImpl> owner_;
 
   gpu::GpuFeatureInfo gpu_feature_info_;
   gpu::GPUInfo gpu_info_;

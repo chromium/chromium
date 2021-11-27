@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
@@ -192,7 +193,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
   mojo::Remote<mojom::MediaRouter> media_router_;
 
   // Non-owned pointer to the DialMediaSinkServiceImpl instance.
-  DialMediaSinkServiceImpl* const media_sink_service_;
+  const raw_ptr<DialMediaSinkServiceImpl> media_sink_service_;
 
   // Map of media sink queries, keyed by app name.
   base::flat_map<std::string, std::unique_ptr<MediaSinkQuery>>

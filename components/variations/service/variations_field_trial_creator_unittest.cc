@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -332,7 +333,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestVariationsSeedStore seed_store_;
-  SafeSeedManager* const safe_seed_manager_;
+  const raw_ptr<SafeSeedManager> safe_seed_manager_;
   base::Time build_time_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   bool was_maybe_extend_variations_safe_mode_called_ = false;

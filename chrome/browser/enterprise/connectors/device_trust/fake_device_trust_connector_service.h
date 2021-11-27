@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
@@ -25,7 +26,7 @@ class FakeDeviceTrustConnectorService : public DeviceTrustConnectorService {
   void update_policy(std::unique_ptr<base::ListValue> new_urls);
 
  private:
-  sync_preferences::TestingPrefServiceSyncable* test_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> test_prefs_;
 };
 
 }  // namespace enterprise_connectors

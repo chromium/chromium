@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +62,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   base::SimpleTestClock test_clock;
 
  protected:
-  MediaEngagementScore* score_;
+  raw_ptr<MediaEngagementScore> score_;
 
   void VerifyScore(MediaEngagementScore* score,
                    int expected_visits,

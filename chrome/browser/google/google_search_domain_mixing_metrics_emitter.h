@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -69,8 +70,8 @@ class GoogleSearchDomainMixingMetricsEmitter : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  PrefService* const prefs_;                        // Not owned.
-  history::HistoryService* const history_service_;  // Not owned.
+  const raw_ptr<PrefService> prefs_;                        // Not owned.
+  const raw_ptr<history::HistoryService> history_service_;  // Not owned.
   std::unique_ptr<base::Clock> clock_ = std::make_unique<base::DefaultClock>();
   // Timer used to compute domain mixing metrics daily if the emitter is
   // long-lived.

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
@@ -230,7 +231,7 @@ class ObservingAutofillClient
       : content::WebContentsUserData<ObservingAutofillClient>(*web_contents) {}
   friend class content::WebContentsUserData<ObservingAutofillClient>;
 
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
   bool popup_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -4416,7 +4417,7 @@ class MockPrerenderPasswordManagerDriver
   }
   base::OnceClosure quit_closure_;
   uint32_t wait_type_ = WAIT_FOR_NOTHING;
-  autofill::mojom::PasswordManagerDriver* impl_ = nullptr;
+  raw_ptr<autofill::mojom::PasswordManagerDriver> impl_ = nullptr;
 };
 
 class MockPrerenderPasswordManagerDriverInjector

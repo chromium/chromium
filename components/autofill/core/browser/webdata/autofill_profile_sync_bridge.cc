@@ -82,7 +82,7 @@ AutofillProfileSyncBridge::AutofillProfileSyncBridge(
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
 
-  scoped_observation_.Observe(web_data_backend_);
+  scoped_observation_.Observe(web_data_backend_.get());
 
   LoadMetadata();
 }

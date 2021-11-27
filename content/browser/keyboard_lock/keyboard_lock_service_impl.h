@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,7 @@ class KeyboardLockServiceImpl final
   // |this| can only be destroyed by DocumentService.
   ~KeyboardLockServiceImpl() override;
 
-  RenderFrameHostImpl* const render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
   RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle feature_handle_;
 };
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -63,7 +64,7 @@ class DeviceTrustService : public KeyedService {
 
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;
-  DeviceTrustConnectorService* const connector_{nullptr};
+  const raw_ptr<DeviceTrustConnectorService> connector_{nullptr};
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };

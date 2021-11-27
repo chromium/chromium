@@ -7,6 +7,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
@@ -105,8 +106,8 @@ class IncrementThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* const start_event_;
-  CounterType* const counter_;
+  const raw_ptr<WaitableEvent> start_event_;
+  const raw_ptr<CounterType> counter_;
   OnceClosure done_closure_;
 };
 

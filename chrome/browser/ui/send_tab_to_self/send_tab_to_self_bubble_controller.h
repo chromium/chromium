@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Profile;
@@ -104,9 +105,9 @@ class SendTabToSelfBubbleController
   Profile* GetProfile() const;
 
   // The web_contents associated with this controller.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  SendTabToSelfBubbleView* send_tab_to_self_bubble_view_ = nullptr;
+  raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.
   bool show_back_button_ = false;
   // True if a confirmation message should be shown in the omnibox.

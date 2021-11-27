@@ -19,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -693,7 +694,7 @@ class MFVideoCallback final
 
   // Protects access to |observer_|.
   base::Lock lock_;
-  VideoCaptureDeviceMFWin* observer_ GUARDED_BY(lock_);
+  raw_ptr<VideoCaptureDeviceMFWin> observer_ GUARDED_BY(lock_);
 };
 
 // static

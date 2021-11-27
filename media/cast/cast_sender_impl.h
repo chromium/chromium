@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/cast_sender.h"
@@ -56,7 +57,7 @@ class CastSenderImpl final : public CastSender {
   scoped_refptr<CastEnvironment> cast_environment_;
   // The transport sender is owned by the owner of the CastSender, and should be
   // valid throughout the lifetime of the CastSender.
-  CastTransport* const transport_sender_;
+  const raw_ptr<CastTransport> transport_sender_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CastSenderImpl> weak_factory_{this};

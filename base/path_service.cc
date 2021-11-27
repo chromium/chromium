@@ -6,6 +6,8 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #include <shellapi.h>
@@ -120,7 +122,7 @@ struct PathData {
   Lock lock;
   PathMap cache;        // Cache mappings from path key to path value.
   PathMap overrides;    // Track path overrides.
-  Provider* providers;  // Linked list of path service providers.
+  raw_ptr<Provider> providers;  // Linked list of path service providers.
   bool cache_disabled;  // Don't use cache if true;
 
   PathData() : cache_disabled(false) {

@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -100,7 +101,7 @@ class ResolverThunk {
   // Holds the resolved interception target.
   void* target_;
   // Holds the resolved interception interceptor.
-  const void* interceptor_;
+  raw_ptr<const void> interceptor_;
 };
 
 }  // namespace sandbox

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -126,7 +127,7 @@ class SearchTabHelper : public content::WebContentsObserver,
 
   SearchIPCRouter ipc_router_;
 
-  InstantService* instant_service_;
+  raw_ptr<InstantService> instant_service_;
 
   bool is_setting_title_ = false;
 

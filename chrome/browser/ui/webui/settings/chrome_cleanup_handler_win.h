@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROME_CLEANUP_HANDLER_WIN_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROME_CLEANUP_HANDLER_WIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -85,9 +86,9 @@ class ChromeCleanupHandler
   void GetPluralString(int id, const base::ListValue* args);
 
   // Raw pointer to a singleton. Must outlive this object.
-  safe_browsing::ChromeCleanerController* controller_;
+  raw_ptr<safe_browsing::ChromeCleanerController> controller_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace settings

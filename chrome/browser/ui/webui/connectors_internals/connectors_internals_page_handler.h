@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CONNECTORS_INTERNALS_CONNECTORS_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CONNECTORS_INTERNALS_CONNECTORS_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
@@ -39,7 +40,7 @@ class ConnectorsInternalsPageHandler
                           std::unique_ptr<SignalsType> signals);
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ConnectorsInternalsPageHandler> weak_ptr_factory_{this};
 };

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -161,8 +162,8 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   base::TimeDelta resolution_;
   base::TimeDelta latency_;
   base::TimeDelta adjustment_;
-  base::SimpleTestClock* clock_;
-  base::SimpleTestTickClock* tick_clock_;
+  raw_ptr<base::SimpleTestClock> clock_;
+  raw_ptr<base::SimpleTestTickClock> tick_clock_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NetworkTimeTracker> tracker_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;

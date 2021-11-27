@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
@@ -84,7 +85,7 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
   // TODO(gbillock): Get rid of this mock; make something specialized.
   NiceMock<MediaGalleriesDialogControllerMock> controller_;
 
-  views::Checkbox* checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> checkbox_ = nullptr;
 };
 
 // Tests that checkboxes are initialized according to the contents of

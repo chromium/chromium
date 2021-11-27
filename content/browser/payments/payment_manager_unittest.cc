@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,7 +122,7 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
 
  private:
   // Owned by payment_app_context_.
-  PaymentManager* manager_;
+  raw_ptr<PaymentManager> manager_;
 };
 
 TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {

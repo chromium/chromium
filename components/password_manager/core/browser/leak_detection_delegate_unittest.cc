@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -150,7 +151,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockPasswordManagerClient> client_;
-  MockLeakDetectionCheckFactory* mock_factory_ = nullptr;
+  raw_ptr<MockLeakDetectionCheckFactory> mock_factory_ = nullptr;
   scoped_refptr<MockPasswordStoreInterface> mock_store_ =
       base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
   LeakDetectionDelegate delegate_{&client_};

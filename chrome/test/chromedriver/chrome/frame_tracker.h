@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
@@ -47,7 +48,7 @@ class FrameTracker : public DevToolsEventListener {
   std::map<std::string, int> frame_to_context_map_;
   std::map<std::string, std::unique_ptr<WebView>> frame_to_target_map_;
   std::unordered_set<std::string> attached_frames_;
-  WebView* web_view_;
+  raw_ptr<WebView> web_view_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_FRAME_TRACKER_H_

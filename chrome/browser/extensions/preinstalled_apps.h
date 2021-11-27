@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 #define CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
@@ -68,7 +69,7 @@ class Provider : public extensions::ExternalProviderImpl {
   void InitProfileState();
 
   // The associated profile.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   // Whether default apps are enabled for the profile.
   bool preinstalled_apps_enabled_ = false;
   // Whether this is the first run since a migration from Chrome 22-ish.

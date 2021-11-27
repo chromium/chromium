@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
@@ -47,7 +48,7 @@ class TestFileSelectListener : public content::FileSelectListener {
   }
   void FileSelectionCanceled() override {}
 
-  std::vector<blink::mojom::FileChooserFileInfoPtr>* files_;
+  raw_ptr<std::vector<blink::mojom::FileChooserFileInfoPtr>> files_;
 };
 
 // Fill in the arguments to be passed to the ContentAnalysisCompletionCallback()

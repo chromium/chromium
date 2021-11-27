@@ -326,7 +326,7 @@ void TestingProfile::Init() {
     SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
     supervised_user_pref_store_ = new TestingPrefStore();
-    settings_service->Init(supervised_user_pref_store_);
+    settings_service->Init(supervised_user_pref_store_.get());
     settings_service->MergeDataAndStartSyncing(
         syncer::SUPERVISED_USER_SETTINGS, syncer::SyncDataList(),
         std::unique_ptr<syncer::SyncChangeProcessor>(
@@ -544,7 +544,7 @@ TestingProfile::~TestingProfile() {
   // failure.
   if (resource_context_) {
     CHECK(BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE,
-                                    resource_context_));
+                                    resource_context_.get()));
     resource_context_ = nullptr;
     content::RunAllPendingInMessageLoop(BrowserThread::IO);
   }

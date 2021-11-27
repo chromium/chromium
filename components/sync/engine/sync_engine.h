@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -56,7 +57,7 @@ class SyncEngine : public ModelTypeConfigurer {
 
     ~InitParams();
 
-    SyncEngineHost* host = nullptr;
+    raw_ptr<SyncEngineHost> host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
     GURL service_url;

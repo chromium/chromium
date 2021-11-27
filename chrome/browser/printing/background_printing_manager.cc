@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -33,7 +34,7 @@ class BackgroundPrintingManager::Observer
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  BackgroundPrintingManager* manager_;
+  raw_ptr<BackgroundPrintingManager> manager_;
 };
 
 BackgroundPrintingManager::Observer::Observer(

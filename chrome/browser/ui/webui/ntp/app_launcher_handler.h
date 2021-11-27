@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -226,11 +227,11 @@ class AppLauncherHandler
 
   // The apps are represented in the extensions model, which
   // outlives us since it's owned by our containing profile.
-  extensions::ExtensionService* const extension_service_;
+  const raw_ptr<extensions::ExtensionService> extension_service_;
 
   // The apps are represented in the web apps model, which outlives us since
   // it's owned by our containing profile.
-  web_app::WebAppProvider* const web_app_provider_;
+  const raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

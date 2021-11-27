@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -451,7 +452,7 @@ class ScopedSimulateModifierKeyPress {
                            ui::KeyboardCode key_code);
 
  private:
-  WebContents* const web_contents_;
+  const raw_ptr<WebContents> web_contents_;
   int modifiers_;
   const bool control_;
   const bool shift_;
@@ -1295,7 +1296,7 @@ class WebContentsAddedObserver {
   // Callback to WebContentCreated(). Cached so that we can unregister it.
   base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
 
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
   base::OnceClosure quit_closure_;
 };
 
@@ -1381,7 +1382,8 @@ class RenderFrameSubmissionObserver
   // OnRenderFrameMetadataChangedAfterActivation.
   bool break_on_any_frame_ = false;
 
-  RenderFrameMetadataProviderImpl* render_frame_metadata_provider_ = nullptr;
+  raw_ptr<RenderFrameMetadataProviderImpl> render_frame_metadata_provider_ =
+      nullptr;
   base::OnceClosure quit_closure_;
   // If non-null, run when metadata changes.
   base::OnceClosure metadata_change_closure_;
@@ -1414,7 +1416,7 @@ class MainThreadFrameObserver {
  private:
   void Quit(bool);
 
-  RenderWidgetHost* render_widget_host_;
+  raw_ptr<RenderWidgetHost> render_widget_host_;
   base::OnceClosure quit_closure_;
   int routing_id_;
 };
@@ -1450,7 +1452,7 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
 
-  RenderWidgetHost* render_widget_host_;
+  raw_ptr<RenderWidgetHost> render_widget_host_;
   blink::WebInputEvent::Type wait_for_type_;
   blink::mojom::InputEventResultState ack_result_;
   blink::mojom::InputEventResultSource ack_source_;
@@ -1488,7 +1490,7 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent& event) override;
 
  private:
-  RenderWidgetHost* render_widget_host_;
+  raw_ptr<RenderWidgetHost> render_widget_host_;
   InputEventAckPredicate predicate_;
   bool event_received_;
   base::OnceClosure quit_closure_;
@@ -1733,7 +1735,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    RenderFrameHost* source_frame;
+    raw_ptr<RenderFrameHost> source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;
@@ -1851,8 +1853,8 @@ class ContextMenuInterceptor
   blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  content::RenderFrameHostImpl* render_frame_host_impl_;
-  blink::mojom::LocalFrameHost* impl_;
+  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
+  raw_ptr<blink::mojom::LocalFrameHost> impl_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
   blink::UntrustworthyContextMenuParams last_params_;
@@ -1879,8 +1881,8 @@ class UpdateUserActivationStateInterceptor
       blink::mojom::UserActivationNotificationType notification_type) override;
 
  private:
-  content::RenderFrameHostImpl* render_frame_host_impl_;
-  blink::mojom::LocalFrameHost* impl_;
+  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
+  raw_ptr<blink::mojom::LocalFrameHost> impl_;
   base::OnceClosure quit_handler_;
   bool update_user_activation_state_ = false;
 };
@@ -1955,7 +1957,7 @@ class SynchronizeVisualPropertiesInterceptor
 
   base::RunLoop run_loop_;
 
-  RenderFrameProxyHost* render_frame_proxy_host_;
+  raw_ptr<RenderFrameProxyHost> render_frame_proxy_host_;
 
   std::unique_ptr<base::RunLoop> screen_space_rect_run_loop_;
   bool screen_space_rect_received_ = false;
@@ -1969,7 +1971,7 @@ class SynchronizeVisualPropertiesInterceptor
   bool last_pinch_gesture_active_ = false;
   std::unique_ptr<base::RunLoop> pinch_end_run_loop_;
 
-  blink::mojom::RemoteFrameHost* impl_;
+  raw_ptr<blink::mojom::RemoteFrameHost> impl_;
 
   base::WeakPtrFactory<SynchronizeVisualPropertiesInterceptor> weak_factory_{
       this};
@@ -1998,7 +2000,7 @@ class RenderWidgetHostMouseEventMonitor {
     return false;
   }
   RenderWidgetHost::MouseEventCallback mouse_callback_;
-  RenderWidgetHost* host_;
+  raw_ptr<RenderWidgetHost> host_;
   bool event_received_;
   blink::WebMouseEvent event_;
 };
@@ -2028,7 +2030,7 @@ class DidStartNavigationObserver : public WebContentsObserver {
  private:
   bool observed_ = false;
   base::RunLoop run_loop_;
-  NavigationHandle* navigation_handle_ = nullptr;
+  raw_ptr<NavigationHandle> navigation_handle_ = nullptr;
 };
 
 // Tracks the creation of RenderFrameProxyHosts that have

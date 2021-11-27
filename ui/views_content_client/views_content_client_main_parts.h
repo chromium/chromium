@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -67,7 +68,7 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
-  ViewsContentClient* views_content_client_;
+  raw_ptr<ViewsContentClient> views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };

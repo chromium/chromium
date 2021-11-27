@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_member.h"
@@ -62,7 +63,7 @@ class SyncTransportDataPrefs {
 
  private:
   // Never null.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

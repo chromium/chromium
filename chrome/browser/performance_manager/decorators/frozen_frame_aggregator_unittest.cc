@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -54,7 +55,7 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   void SetUp() override {
     Super::SetUp();
     ffa_ = new FrozenFrameAggregator();
-    graph()->PassToGraph(base::WrapUnique(ffa_));
+    graph()->PassToGraph(base::WrapUnique(ffa_.get()));
     process_node_ = CreateNode<ProcessNodeImpl>();
     page_node_ = CreateNode<PageNodeImpl>();
   }
@@ -97,7 +98,7 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
                                  parent_frame_node);
   }
 
-  FrozenFrameAggregator* ffa_;
+  raw_ptr<FrozenFrameAggregator> ffa_;
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;
 };

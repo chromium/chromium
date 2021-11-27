@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -165,7 +166,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
  protected:
   base::HistogramTester histograms_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  SharingService* sharing_service_;
+  raw_ptr<SharingService> sharing_service_;
   std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 

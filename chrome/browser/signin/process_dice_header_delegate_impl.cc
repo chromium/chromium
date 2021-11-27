@@ -104,7 +104,7 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
   content::WebContents* web_contents = web_contents_.get();
   VLOG(1) << "Start sync after web sign-in.";
   std::move(enable_sync_callback_)
-      .Run(profile_, access_point_, promo_action_, reason_, web_contents,
+      .Run(profile_.get(), access_point_, promo_action_, reason_, web_contents,
            account_id);
 
   if (!web_contents)
@@ -141,6 +141,6 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
   // Show the error even if the WebContents was closed, because the user may be
   // signed out of the web.
   std::move(show_signin_error_callback_)
-      .Run(profile_, web_contents,
+      .Run(profile_.get(), web_contents,
            SigninUIError::FromGoogleServiceAuthError(email, error));
 }

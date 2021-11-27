@@ -11,6 +11,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
@@ -130,7 +131,7 @@ class MediaWebContentsObserver::PlayerInfo {
   }
 
   const MediaPlayerId id_;
-  MediaWebContentsObserver* const observer_;
+  const raw_ptr<MediaWebContentsObserver> observer_;
 
   bool has_audio_ = false;
   bool has_video_ = false;

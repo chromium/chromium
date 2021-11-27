@@ -14,6 +14,8 @@
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace content {
 
 class BrowserPluginGuest;
@@ -62,7 +64,7 @@ class BrowserPluginEmbedder {
   static bool GuestCurrentlyAudibleCallback(WebContents* guest);
 
   // Pointer to the WebContentsImpl that owns this object.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 };
 
 }  // namespace content

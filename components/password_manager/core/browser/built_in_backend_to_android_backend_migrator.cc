@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/barrier_callback.h"
 #include "base/bind.h"
@@ -37,7 +38,7 @@ IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
 }  // namespace
 
 struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
-  PasswordStoreBackend* backend;
+  raw_ptr<PasswordStoreBackend> backend;
   LoginsResultOrError logins_result;
 
   bool HasError() {

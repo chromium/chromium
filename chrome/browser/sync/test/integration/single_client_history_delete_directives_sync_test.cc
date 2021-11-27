@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -65,7 +66,7 @@ class HistoryDeleteDirectivesEqualityChecker
   }
 
  private:
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const size_t num_expected_directives_;
 };
 

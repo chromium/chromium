@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
@@ -58,8 +59,8 @@ class SigninManager : public KeyedService,
 
   void OnSigninAllowedPrefChanged();
 
-  PrefService* prefs_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Helper object to listen for changes to the signin allowed preference.
   BooleanPrefMember signin_allowed_;

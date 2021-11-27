@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
@@ -247,13 +248,13 @@ class DedicatedWorkerHost final
   //  - RenderProcessHostImpl outlives DedicatedWorkerHost.
   // As the conclusion of the above, DedicatedWorkerServiceImpl outlives
   // DedicatedWorkerHost.
-  DedicatedWorkerServiceImpl* const service_;
+  const raw_ptr<DedicatedWorkerServiceImpl> service_;
 
   // The renderer generated ID of this worker, unique across all processes.
   const blink::DedicatedWorkerToken token_;
 
   // The RenderProcessHost that hosts this worker. This outlives `this`.
-  RenderProcessHost* const worker_process_host_;
+  const raw_ptr<RenderProcessHost> worker_process_host_;
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       scoped_process_host_observation_{this};

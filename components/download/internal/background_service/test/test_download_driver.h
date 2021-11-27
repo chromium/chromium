@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/internal/background_service/download_driver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -56,7 +57,7 @@ class TestDownloadDriver : public DownloadDriver {
 
  private:
   bool is_ready_;
-  DownloadDriver::Client* client_;
+  raw_ptr<DownloadDriver::Client> client_;
 
   // Map of guid --> DriverEntry.
   std::map<std::string, DriverEntry> entries_;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_OBJECT_HOST_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_OBJECT_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -103,7 +104,7 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   base::WeakPtr<ServiceWorkerContextCore> context_;
   // |container_host_| is valid throughout lifetime of |this| because it owns
   // |this|.
-  ServiceWorkerContainerHost* const container_host_;
+  const raw_ptr<ServiceWorkerContainerHost> container_host_;
   // The origin of the |container_host_|. Note that this is const because once a
   // JavaScript ServiceWorker object is created for an execution context, we
   // don't expect that context to change origins and still hold on to the

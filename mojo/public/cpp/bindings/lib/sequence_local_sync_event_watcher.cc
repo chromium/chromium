@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -190,8 +191,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   WatcherStateMap registered_watchers_;
 
   // Tracks state of the top-most |SyncWatch()| invocation on the stack.
-  const SequenceLocalSyncEventWatcher* top_watcher_ = nullptr;
-  WatcherState* top_watcher_state_ = nullptr;
+  raw_ptr<const SequenceLocalSyncEventWatcher> top_watcher_ = nullptr;
+  raw_ptr<WatcherState> top_watcher_state_ = nullptr;
 
   // Set of all SequenceLocalSyncEventWatchers in a signaled state, guarded by
   // a lock for sequence-safe signaling.
@@ -258,7 +259,7 @@ class SequenceLocalSyncEventWatcher::Registration {
 
  private:
   const base::WeakPtr<SequenceLocalState> weak_shared_state_;
-  SequenceLocalState* const shared_state_;
+  const raw_ptr<SequenceLocalState> shared_state_;
   WatcherStateMap::iterator watcher_state_iterator_;
   const scoped_refptr<WatcherState> watcher_state_;
 };

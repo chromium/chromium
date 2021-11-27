@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -249,7 +250,7 @@ class WebsiteLoginManagerImpl::PendingDeletePasswordRequest
  private:
   Login login_;
   base::OnceCallback<void(bool)> callback_;
-  password_manager::PasswordStoreInterface* store_;
+  raw_ptr<password_manager::PasswordStoreInterface> store_;
 };
 
 // A pending request to edit the password for the specified |login|.
@@ -358,7 +359,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
  private:
   const password_manager::PasswordForm password_form_;
   const autofill::FormData form_data_;
-  password_manager::PasswordManagerClient* const client_ = nullptr;
+  const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   // This callback will execute when presaving is completed.
   base::OnceCallback<void()> presaving_completed_callback_;
   const std::unique_ptr<password_manager::PasswordSaveManager>

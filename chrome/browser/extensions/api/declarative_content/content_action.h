@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -36,9 +37,9 @@ class ExtensionUserScriptLoader;
 class ContentAction {
  public:
   struct ApplyInfo {
-    const Extension* extension;
-    content::BrowserContext* browser_context;
-    content::WebContents* tab;
+    raw_ptr<const Extension> extension;
+    raw_ptr<content::BrowserContext> browser_context;
+    raw_ptr<content::WebContents> tab;
     int priority;
   };
 
@@ -114,7 +115,7 @@ class RequestContentScript : public ContentAction,
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
   UserScript script_;
-  ExtensionUserScriptLoader* script_loader_ = nullptr;
+  raw_ptr<ExtensionUserScriptLoader> script_loader_ = nullptr;
   base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
       scoped_observation_{this};
 };

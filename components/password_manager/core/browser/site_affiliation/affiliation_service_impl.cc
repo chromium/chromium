@@ -127,7 +127,7 @@ void AffiliationServiceImpl::Init(
 void AffiliationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, backend_);
+    backend_task_runner_->DeleteSoon(FROM_HERE, backend_.get());
     backend_ = nullptr;
   }
 }

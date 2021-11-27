@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -122,7 +123,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
 
  protected:
  private:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   TestLocalSessionEventHandler handler;
   TestTranslateDriverObserver observer_;

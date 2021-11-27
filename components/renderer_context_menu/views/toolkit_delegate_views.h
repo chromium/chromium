@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "ui/base/ui_base_types.h"
 
@@ -52,7 +53,7 @@ class ToolkitDelegateViews : public RenderViewContextMenuBase::ToolkitDelegate {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // Weak. Owned by menu_runner_;
-  views::MenuItemView* menu_view_;
+  raw_ptr<views::MenuItemView> menu_view_;
 };
 
 #endif  // COMPONENTS_RENDERER_CONTEXT_MENU_VIEWS_TOOLKIT_DELEGATE_VIEWS_H_

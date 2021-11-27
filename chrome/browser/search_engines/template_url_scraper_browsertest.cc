@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,7 +56,7 @@ class TemplateURLServiceLoader {
   TemplateURLServiceLoader& operator=(const TemplateURLServiceLoader&) = delete;
 
  private:
-  TemplateURLService* model_;
+  raw_ptr<TemplateURLService> model_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SendResponse(

@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -99,7 +100,7 @@ class TestMediaFileSystemContext : public MediaFileSystemContext {
                   const base::FilePath& path,
                   const std::string& fs_name);
 
-  MediaFileSystemRegistry* registry_;
+  raw_ptr<MediaFileSystemRegistry> registry_;
 
   // The currently allocated mock file systems.
   std::map<std::string /*fs_name*/, FSInfo> file_systems_by_name_;
@@ -399,7 +400,7 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   base::FilePath dcim_dir_;
 
   // MediaFileSystemRegistry owns this.
-  TestMediaFileSystemContext* test_file_system_context_;
+  raw_ptr<TestMediaFileSystemContext> test_file_system_context_;
 
   // Needed for extension service & friends to work.
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_CLIENT_IMPL_H_
 #define CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/sync_device_info/device_info_sync_client.h"
@@ -46,7 +47,7 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   bool IsUmaEnabledOnCrOSDevice() const override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace browser_sync

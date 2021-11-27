@@ -633,7 +633,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition() {
   DCHECK(!browser_context_->ShutdownStarted());
   return storage_partition_for_testing_
-             ? storage_partition_for_testing_
+             ? storage_partition_for_testing_.get()
              : browser_context_->GetDefaultStoragePartition();
 }
 

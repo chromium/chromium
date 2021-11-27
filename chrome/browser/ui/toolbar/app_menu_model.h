@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -240,10 +241,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Other submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> sub_menus_;
 
-  ui::AcceleratorProvider* provider_;  // weak
+  raw_ptr<ui::AcceleratorProvider> provider_;  // weak
 
-  Browser* const browser_;  // weak
-  AppMenuIconController* const app_menu_icon_controller_;
+  const raw_ptr<Browser> browser_;  // weak
+  const raw_ptr<AppMenuIconController> app_menu_icon_controller_;
 
   base::CallbackListSubscription browser_zoom_subscription_;
 

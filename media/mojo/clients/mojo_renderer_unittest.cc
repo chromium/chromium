@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_message_loop.h"
@@ -219,7 +220,7 @@ class MojoRendererTest : public ::testing::Test {
   std::unique_ptr<MojoCdmService> mojo_cdm_service_;
 
   // Service side mocks and helpers.
-  StrictMock<MockRenderer>* mock_renderer_;
+  raw_ptr<StrictMock<MockRenderer>> mock_renderer_;
   RendererClient* remote_renderer_client_;
 
   mojo::SelfOwnedReceiverRef<mojom::Renderer> renderer_receiver_;

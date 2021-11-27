@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -2230,7 +2231,7 @@ class MockURLLoader : public network::mojom::URLLoader {
     read_run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment* task_environment_;
+  raw_ptr<base::test::TaskEnvironment> task_environment_;
 
   std::unique_ptr<net::URLRequest> url_request_;
   mojo::Receiver<network::mojom::URLLoader> receiver_;
@@ -2328,7 +2329,7 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
   const std::list<GURL>& requested_urls() const { return requested_urls_; }
 
  private:
-  base::test::TaskEnvironment* task_environment_;
+  raw_ptr<base::test::TaskEnvironment> task_environment_;
   std::list<std::unique_ptr<MockURLLoader>> url_loaders_;
   std::list<std::vector<TestLoaderEvent>> test_events_;
 

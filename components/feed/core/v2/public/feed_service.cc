@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -44,7 +45,7 @@ class EulaObserver : public web_resource::EulaAcceptedNotifier::Observer {
   void OnEulaAccepted() override { feed_stream_->OnEulaAccepted(); }
 
  private:
-  FeedStream* feed_stream_;
+  raw_ptr<FeedStream> feed_stream_;
 };
 
 }  // namespace
@@ -83,8 +84,8 @@ class FeedService::HistoryObserverImpl
   }
 
  private:
-  FeedStream* feed_stream_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<FeedStream> feed_stream_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       scoped_history_service_observer_{this};
@@ -110,8 +111,8 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
   }
 
  private:
-  FeedService::Delegate* service_delegate_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<FeedService::Delegate> service_delegate_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
@@ -167,11 +168,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   }
 
  private:
-  FeedService::Delegate* service_delegate_;
+  raw_ptr<FeedService::Delegate> service_delegate_;
   web_resource::EulaAcceptedNotifier eula_notifier_;
   std::unique_ptr<EulaObserver> eula_observer_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 class FeedService::IdentityManagerObserverImpl
@@ -201,8 +202,8 @@ class FeedService::IdentityManagerObserverImpl
   }
 
  private:
-  signin::IdentityManager* identity_manager_;
-  FeedStream* feed_stream_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<FeedStream> feed_stream_;
 };
 
 FeedService::FeedService(std::unique_ptr<FeedStream> stream)

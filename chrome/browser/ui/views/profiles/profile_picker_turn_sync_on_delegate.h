@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TURN_SYNC_ON_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TURN_SYNC_ON_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -74,7 +75,7 @@ class ProfilePickerTurnSyncOnDelegate : public DiceTurnSyncOnHelper::Delegate,
   // destroyed when the flow window closes).
   base::WeakPtr<ProfilePickerSignedInFlowController> controller_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool enterprise_account_ = false;
   bool sync_disabled_ = false;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 
 class RecentTabsPagePrefs {
@@ -43,7 +44,7 @@ class RecentTabsPagePrefs {
  private:
   virtual ~RecentTabsPagePrefs();
 
-  Profile* profile_;  // weak
+  raw_ptr<Profile> profile_;  // weak
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_

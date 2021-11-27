@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/host/desktop_display_info.h"
@@ -70,7 +71,7 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  webrtc::DesktopCapturer::Callback* callback_;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 
   // Used to disconnect the client session.
   // Note: This cannot be used on Windows because the ClientSession is not in

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -208,9 +209,9 @@ class BookmarkModelMerger {
       size_t index,
       const std::string& suffix) const;
 
-  bookmarks::BookmarkModel* const bookmark_model_;
-  favicon::FaviconService* const favicon_service_;
-  SyncedBookmarkTracker* const bookmark_tracker_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<favicon::FaviconService> favicon_service_;
+  const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
   // Preprocessed remote nodes in the form a forest where each tree's root is a
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;

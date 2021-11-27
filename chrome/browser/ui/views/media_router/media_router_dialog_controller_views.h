@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -80,7 +81,7 @@ class MediaRouterDialogControllerViews
       scoped_widget_observations_{this};
 
   // Service that provides MediaRouterActionController. It outlives |this|.
-  MediaRouterUIService* const media_router_ui_service_;
+  const raw_ptr<MediaRouterUIService> media_router_ui_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

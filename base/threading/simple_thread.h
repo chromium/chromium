@@ -48,6 +48,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
@@ -178,7 +179,7 @@ class BASE_EXPORT DelegateSimpleThread : public SimpleThread {
   void Run() override;
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 // DelegateSimpleThreadPool allows you to start up a fixed number of threads,

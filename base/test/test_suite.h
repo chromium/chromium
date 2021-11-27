@@ -13,6 +13,7 @@
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 
@@ -98,7 +99,7 @@ class TestSuite {
 
   bool initialized_command_line_ = false;
 
-  XmlUnitTestResultPrinter* printer_ = nullptr;
+  raw_ptr<XmlUnitTestResultPrinter> printer_ = nullptr;
 
   std::unique_ptr<logging::ScopedLogAssertHandler> assert_handler_;
 

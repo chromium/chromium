@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
@@ -76,7 +77,7 @@ class ModelValidatorModelObserverTracker
  private:
   // The observer that is registered to receive model validation optimzation
   // target events.
-  OptimizationTargetModelObserver* model_validation_observer_;
+  raw_ptr<OptimizationTargetModelObserver> model_validation_observer_;
 };
 
 class ModelValidatorExecutorTest : public testing::Test {

@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -175,7 +176,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // verify functionality without mocking out any implementations.
   const bool debug_mode_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Timer which administers calls to `GetAndQueueReportsForNextInterval()`.
   base::RepeatingTimer get_and_queue_reports_timer_;

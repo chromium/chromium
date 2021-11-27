@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -38,7 +39,7 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
       content::DevToolsAgentHostClientChannel* channel) override;
 
  private:
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   base::flat_set<content::DevToolsAgentHostClient*> clients_;
 };
 

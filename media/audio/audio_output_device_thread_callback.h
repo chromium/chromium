@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_renderer_sink.h"
@@ -49,7 +50,7 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
  private:
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-  media::AudioRendererSink::RenderCallback* render_callback_;
+  raw_ptr<media::AudioRendererSink::RenderCallback> render_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
   uint64_t callback_num_ = 0;
 

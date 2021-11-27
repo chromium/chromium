@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
@@ -68,7 +69,7 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
         std::move(mock_description_service));
 
     mock_timer_ = new base::MockOneShotTimer();
-    media_sink_service_->SetTimerForTest(base::WrapUnique(mock_timer_));
+    media_sink_service_->SetTimerForTest(base::WrapUnique(mock_timer_.get()));
 
     auto mock_app_discovery_service =
         std::make_unique<MockDialAppDiscoveryService>();
@@ -114,9 +115,9 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
       mock_error_cb_;
 
   TestDialRegistry test_dial_registry_;
-  MockDeviceDescriptionService* mock_description_service_;
-  MockDialAppDiscoveryService* mock_app_discovery_service_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<MockDeviceDescriptionService> mock_description_service_;
+  raw_ptr<MockDialAppDiscoveryService> mock_app_discovery_service_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
 
   std::unique_ptr<DialMediaSinkServiceImpl> media_sink_service_;
 

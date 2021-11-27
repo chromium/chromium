@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -46,8 +47,8 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
  private:
   Status ApplyOverrideIfNeeded();
 
-  DevToolsClient* client_;
-  const DeviceMetrics* overridden_device_metrics_;
+  raw_ptr<DevToolsClient> client_;
+  raw_ptr<const DeviceMetrics> overridden_device_metrics_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_EMULATION_OVERRIDE_MANAGER_H_

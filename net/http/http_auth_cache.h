@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -257,8 +258,9 @@ class NET_EXPORT HttpAuthCache {
 
   using EntryMap = std::multimap<EntryMapKey, Entry>;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
-  const base::Clock* clock_ = base::DefaultClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   EntryMap::iterator LookupEntryIt(
       const url::SchemeHostPort& scheme_host_port,

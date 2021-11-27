@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -199,16 +200,16 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  SyncEngineHost* host_ = nullptr;
+  raw_ptr<SyncEngineHost> host_ = nullptr;
 
-  invalidation::InvalidationService* invalidator_ = nullptr;
+  raw_ptr<invalidation::InvalidationService> invalidator_ = nullptr;
   bool invalidation_handler_registered_ = false;
 
   // Sync invalidation service, it may be nullptr if sync invalidations are
   // disabled or not supported. It doesn't need to have the same as
   // |invalidation_handler_registered_| flag as the service doesn't have topics
   // to unsibscribe.
-  SyncInvalidationsService* sync_invalidations_service_ = nullptr;
+  raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 
   ModelTypeSet last_enabled_types_;
   bool sessions_invalidation_enabled_;

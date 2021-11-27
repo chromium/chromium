@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -146,7 +147,7 @@ class TestRequest : public TailoredSecurityService::Request {
   }
 
  private:
-  TestingTailoredSecurityService* tailored_security_service_;
+  raw_ptr<TestingTailoredSecurityService> tailored_security_service_;
   GURL url_;
   TailoredSecurityService::CompletionCallback callback_;
   int response_code_;

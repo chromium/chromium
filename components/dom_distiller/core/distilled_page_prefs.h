@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
@@ -62,7 +63,7 @@ class DistilledPagePrefs {
   // Notifies all Observers of new font scaling.
   void NotifyOnChangeFontScaling(float scaling);
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};

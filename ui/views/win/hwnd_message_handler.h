@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -615,7 +616,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Get the cursor position, which may be mocked if running a test
   POINT GetCursorPos() const;
 
-  HWNDMessageHandlerDelegate* delegate_;
+  raw_ptr<HWNDMessageHandlerDelegate> delegate_;
 
   std::unique_ptr<FullscreenHandler> fullscreen_handler_;
 

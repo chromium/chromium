@@ -72,7 +72,7 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
 std::unique_ptr<SequenceManagerForTest>
 SequenceManagerForTest::CreateOnCurrentThread(
     SequenceManager::Settings settings) {
-  const auto* clock = settings.clock;
+  const auto* clock = settings.clock.get();
   return Create(CreateThreadControllerImplForCurrentThread(clock),
                 std::move(settings));
 }

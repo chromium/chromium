@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/android/window_android.h"
 
@@ -48,7 +49,7 @@ class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
 
  private:
   void ShowConfirmationAndDismissDialog(std::u16string confirmation_message);
-  CardUnmaskOtpInputDialogController* controller_;
+  raw_ptr<CardUnmaskOtpInputDialogController> controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

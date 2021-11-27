@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
@@ -53,7 +54,7 @@ class ContentAutofillAssistantDriver
   void OnModelAvailabilityChanged(GetAnnotateDomModelCallback callback,
                                   bool is_available);
 
-  AnnotateDomModelService* annotate_dom_model_service_ = nullptr;
+  raw_ptr<AnnotateDomModelService> annotate_dom_model_service_ = nullptr;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantDriver> receiver_{this};
 

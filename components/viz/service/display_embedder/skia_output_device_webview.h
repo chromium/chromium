@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
@@ -49,7 +50,7 @@ class SkiaOutputDeviceWebView : public SkiaOutputDevice {
  private:
   void InitSkiaSurface(unsigned int fbo);
 
-  gpu::SharedContextState* const context_state_;
+  const raw_ptr<gpu::SharedContextState> context_state_;
   scoped_refptr<gl::GLSurface> gl_surface_;
 
   sk_sp<SkSurface> sk_surface_;

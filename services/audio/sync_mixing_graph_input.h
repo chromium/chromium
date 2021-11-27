@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_converter.h"
@@ -50,7 +51,7 @@ class SyncMixingGraphInput final : public MixingGraph::Input {
   void Render(int fifo_frame_delay, media::AudioBus* audio_bus);
 
   // Pointer to the mixing graph to which the input belongs.
-  MixingGraph* const graph_;
+  const raw_ptr<MixingGraph> graph_;
 
   // Channel layout, sample rate and number of frames of the input.
   const media::AudioParameters params_;
@@ -59,7 +60,8 @@ class SyncMixingGraphInput final : public MixingGraph::Input {
   std::atomic<double> volume_{kDefaultVolume};
 
   // Callback providing audio to the mixing graph when requested.
-  media::AudioOutputStream::AudioSourceCallback* source_callback_ = nullptr;
+  raw_ptr<media::AudioOutputStream::AudioSourceCallback> source_callback_ =
+      nullptr;
 
   // Handles buffering when there is a mismatch in number of frames between the
   // input and the output of the mixing graph. Created on-demand.

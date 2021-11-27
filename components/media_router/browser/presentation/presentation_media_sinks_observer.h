@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
@@ -52,7 +53,7 @@ class PresentationMediaSinksObserver : public MediaSinksObserver {
   }
 
  private:
-  content::PresentationScreenAvailabilityListener* listener_;
+  raw_ptr<content::PresentationScreenAvailabilityListener> listener_;
   blink::mojom::ScreenAvailability previous_availability_;
 };
 

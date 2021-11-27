@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -81,7 +82,7 @@ class ReentrancyCheck {
   ~ReentrancyCheck() { *guard_flag_ = false; }
 
  private:
-  bool* const guard_flag_;
+  const raw_ptr<bool> guard_flag_;
 };
 
 // Returns true if the specified transition is one of the types that cause the
@@ -218,7 +219,7 @@ class TabStripModel::WebContentsData {
   // The relationship is discarded easily, e.g. when the user switches to a tab
   // not part of the set. This property is used to determine what tab to
   // activate next when one is closed.
-  WebContents* opener_ = nullptr;
+  raw_ptr<WebContents> opener_ = nullptr;
 
   // True if |opener_| should be reset when any active tab change occurs (rather
   // than just one outside the current tree of openers).
@@ -279,7 +280,7 @@ struct TabStripModel::DetachNotifications {
   //
   // Once the notification for change of active web contents has been sent,
   // this field is set to nullptr.
-  WebContents* initially_active_web_contents = nullptr;
+  raw_ptr<WebContents> initially_active_web_contents = nullptr;
 
   // The WebContents that were recently detached. Observers need to be notified
   // about these. These must be updated after construction.

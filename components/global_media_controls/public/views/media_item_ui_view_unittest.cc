@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
@@ -229,9 +230,9 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  test::MockMediaItemUIFooter* footer_ = nullptr;
-  test::MockMediaItemUIDeviceSelector* device_selector_ = nullptr;
-  MediaItemUIView* item_ui_ = nullptr;
+  raw_ptr<test::MockMediaItemUIFooter> footer_ = nullptr;
+  raw_ptr<test::MockMediaItemUIDeviceSelector> device_selector_ = nullptr;
+  raw_ptr<MediaItemUIView> item_ui_ = nullptr;
   std::unique_ptr<global_media_controls::test::MockMediaItemUIObserver>
       observer_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;

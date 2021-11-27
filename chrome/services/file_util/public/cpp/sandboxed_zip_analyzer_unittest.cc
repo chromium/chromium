@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -69,7 +70,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     }
 
     base::OnceClosure quit_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    raw_ptr<safe_browsing::ArchiveAnalyzerResults> results_;
   };
 
   SandboxedZipAnalyzerTest()

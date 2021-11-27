@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -1527,7 +1528,7 @@ class LocalMainFrameInterceptorBadPortalActivateResult
   }
 
  private:
-  RenderFrameHostImpl* frame_host_;
+  raw_ptr<RenderFrameHostImpl> frame_host_;
   mojo::AssociatedRemote<blink::mojom::LocalMainFrame> local_main_frame_;
 };
 
@@ -2421,7 +2422,7 @@ class DownloadObserver : public DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
   bool dropped_download_ = false;
   GURL download_url_;
   base::OnceClosure quit_closure_;

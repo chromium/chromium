@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -47,7 +48,7 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
-  AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
 };
 
 }  // namespace apps

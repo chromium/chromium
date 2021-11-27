@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -33,8 +34,8 @@ class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  ui::AcceleratorProvider* const provider_;  // weak
-  Browser* const browser_;                   // weak
+  const raw_ptr<ui::AcceleratorProvider> provider_;  // weak
+  const raw_ptr<Browser> browser_;                   // weak
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_

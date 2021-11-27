@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
@@ -103,7 +104,7 @@ class TestUpgradeNotificationListener : public UpgradeObserver {
   // The number of upgrade recommended notifications received.
   int notifications_count_;
 
-  UpgradeDetector* detector_;
+  raw_ptr<UpgradeDetector> detector_;
 };
 
 class MockUpgradeObserver : public UpgradeObserver {
@@ -125,7 +126,7 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD0(OnOutdatedInstallNoAutoUpdate, void());
 
  private:
-  UpgradeDetector* const upgrade_detector_;
+  const raw_ptr<UpgradeDetector> upgrade_detector_;
 };
 
 }  // namespace

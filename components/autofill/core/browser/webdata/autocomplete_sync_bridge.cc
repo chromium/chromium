@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -255,7 +256,7 @@ class SyncDifferenceTracker {
     return true;
   }
 
-  AutofillTable* table_;
+  raw_ptr<AutofillTable> table_;
 
   // This class attempts to lazily load data from |table_|. This field tracks
   // if that has happened or not yet. To facilitate this, the first usage of
@@ -307,7 +308,7 @@ AutocompleteSyncBridge::AutocompleteSyncBridge(
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
 
-  scoped_observation_.Observe(web_data_backend_);
+  scoped_observation_.Observe(web_data_backend_.get());
 
   LoadMetadata();
 }

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/data_use_measurement/core/data_use_measurement.h"
 
@@ -46,7 +47,7 @@ class ChromeDataUseMeasurement : public DataUseMeasurement {
                                bool is_cellular,
                                bool is_metrics_service_usage);
 
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

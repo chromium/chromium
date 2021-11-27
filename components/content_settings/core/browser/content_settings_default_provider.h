@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -79,7 +80,7 @@ class DefaultProvider : public ObservableProvider {
   // Copies of the pref data, so that we can read it on the IO thread.
   std::map<ContentSettingsType, std::unique_ptr<base::Value>> default_settings_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Whether this settings map is for an off-the-record session.
   const bool is_off_the_record_;

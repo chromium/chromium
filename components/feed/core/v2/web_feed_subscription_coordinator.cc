@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -188,11 +189,11 @@ class WebFeedSubscriptionModel {
  private:
   // Each of these are non-null and guaranteed to remain valid for the lifetime
   // of WebFeedSubscriptionModel.
-  FeedStore* store_;
-  WebFeedIndex* index_;
+  raw_ptr<FeedStore> store_;
+  raw_ptr<WebFeedIndex> index_;
   // Owned by WebFeedSubscriptionCoordinator so that memory of recent
   // subscriptions is retained when the model is deleted.
-  std::vector<feedstore::WebFeedInfo>* recent_unsubscribed_;
+  raw_ptr<std::vector<feedstore::WebFeedInfo>> recent_unsubscribed_;
 
   // The current known state of subscriptions.
   std::vector<feedstore::WebFeedInfo> subscriptions_;

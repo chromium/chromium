@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -60,7 +61,7 @@ class EditAddressProfileDialogControllerImpl
   void HideDialog();
 
   // nullptr if no dialog is currently shown.
-  AutofillBubbleBase* dialog_view_ = nullptr;
+  raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
 
   // Callback to run once the user makes a decision with respect to saving the
   // address profile currently being edited.

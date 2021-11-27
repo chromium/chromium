@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -58,7 +59,7 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
   std::unique_ptr<TabModalConfirmDialogDelegate> delegate_;
 
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_ = nullptr;
+  raw_ptr<views::MessageBoxView> message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_MODAL_CONFIRM_DIALOG_VIEWS_H_

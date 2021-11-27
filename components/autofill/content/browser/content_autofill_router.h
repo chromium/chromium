@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -273,10 +274,10 @@ class ContentAutofillRouter {
 
   // The driver that triggered the last AskForValuesToFill() call.
   // Update with SetLastQueriedSource().
-  ContentAutofillDriver* last_queried_source_ = nullptr;
+  raw_ptr<ContentAutofillDriver> last_queried_source_ = nullptr;
   // The driver to which the last AskForValuesToFill() call was routed.
   // Update with SetLastQueriedTarget().
-  ContentAutofillDriver* last_queried_target_ = nullptr;
+  raw_ptr<ContentAutofillDriver> last_queried_target_ = nullptr;
 
   // When the focus moves to a different frame, the order of the events
   // FocusNoLongerOnForm() and FocusOnFormField() may be reversed due to race

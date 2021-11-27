@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace logging {
@@ -55,7 +56,7 @@ class BASE_EXPORT VlogInfo {
   // from |vmodule_switch|.
   struct VmodulePattern;
   std::vector<VmodulePattern> vmodule_levels_;
-  int* min_log_level_;
+  raw_ptr<int> min_log_level_;
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The

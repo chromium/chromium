@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {
@@ -45,7 +46,7 @@ class SendPingTask : public jingle_xmpp::XmppTask {
   FRIEND_TEST_ALL_PREFIXES(SendPingTaskTest, MakePingStanza);
 
   std::string ping_task_id_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 typedef SendPingTask::Delegate SendPingTaskDelegate;

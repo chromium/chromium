@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -120,7 +121,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     std::vector<GURL> url_chain;
     url_chain.push_back(url);
 
-    content::DownloadManager* manager = incognito ? otr_manager_ : manager_;
+    content::DownloadManager* manager =
+        incognito ? otr_manager_.get() : manager_.get();
     manager->CreateDownloadItem(
         guid, download::DownloadItem::kInvalidId + (++items_count_),
         base::FilePath(FILE_PATH_LITERAL("current/path")),
@@ -223,9 +225,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   // a set of IDs.
   std::set<uint32_t> ids_to_remove_;
 
-  content::DownloadManager* manager_;
-  content::DownloadManager* otr_manager_;
-  DownloadHistory* history_;
+  raw_ptr<content::DownloadManager> manager_;
+  raw_ptr<content::DownloadManager> otr_manager_;
+  raw_ptr<DownloadHistory> history_;
   base::Time time_;
 
   int items_count_;

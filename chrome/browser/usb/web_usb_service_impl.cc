@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
@@ -71,7 +72,7 @@ class WebUsbServiceImpl::UsbDeviceClient
   }
 
  private:
-  WebUsbServiceImpl* const service_;
+  const raw_ptr<WebUsbServiceImpl> service_;
   const std::string device_guid_;
   bool opened_ = false;
   mojo::Receiver<device::mojom::UsbDeviceClient> receiver_;
@@ -109,9 +110,9 @@ void WebUsbServiceImpl::BindReceiver(
   // to UsbChooserContext, meaning that all ephemeral permission checks in
   // OnDeviceRemoved() will fail.
   if (!device_observation_.IsObserving())
-    device_observation_.Observe(chooser_context_);
+    device_observation_.Observe(chooser_context_.get());
   if (!permission_observation_.IsObserving())
-    permission_observation_.Observe(chooser_context_);
+    permission_observation_.Observe(chooser_context_.get());
 }
 
 bool WebUsbServiceImpl::HasDevicePermission(

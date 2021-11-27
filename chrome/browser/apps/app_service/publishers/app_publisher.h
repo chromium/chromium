@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -90,7 +91,7 @@ class AppPublisher {
   AppServiceProxy* proxy() { return proxy_; }
 
  private:
-  AppServiceProxy* proxy_ = nullptr;
+  raw_ptr<AppServiceProxy> proxy_ = nullptr;
 };
 
 }  // namespace apps

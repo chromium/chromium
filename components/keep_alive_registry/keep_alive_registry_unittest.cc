@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -50,7 +51,7 @@ class KeepAliveRegistryTest : public testing::Test,
   int on_restart_forbidden_call_count_;
   int start_keep_alive_call_count_;
   int stop_keep_alive_call_count_;
-  KeepAliveRegistry* registry_;
+  raw_ptr<KeepAliveRegistry> registry_;
 };
 
 // Test the IsKeepingAlive state and when we interact with the browser with

@@ -344,7 +344,7 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
   // prevents side effect.
   ScopedClearLastError save_last_error;
   DCHECK_EQ(this, tls_last_scoped_blocking_call.Get().Get());
-  tls_last_scoped_blocking_call.Get().Set(previous_scoped_blocking_call_);
+  tls_last_scoped_blocking_call.Get().Set(previous_scoped_blocking_call_.get());
   if (blocking_observer_ && !previous_scoped_blocking_call_)
     blocking_observer_->BlockingEnded();
 }

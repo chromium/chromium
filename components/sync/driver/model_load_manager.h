@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 #define COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
@@ -86,10 +87,10 @@ class ModelLoadManager {
   void NotifyDelegateIfReadyForConfigure();
 
   // Set of all registered controllers.
-  const DataTypeController::TypeMap* const controllers_;
+  const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
   // The delegate in charge of handling model load results.
-  ModelLoadManagerDelegate* const delegate_;
+  const raw_ptr<ModelLoadManagerDelegate> delegate_;
 
   ConfigureContext configure_context_;
 

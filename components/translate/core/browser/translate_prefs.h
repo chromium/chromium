@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -392,7 +393,7 @@ class TranslatePrefs {
   // accepted for a language, creating it if necessary.
   base::DictionaryValue* GetTranslationAcceptedCountDictionary() const;
 
-  PrefService* prefs_;  // Weak.
+  raw_ptr<PrefService> prefs_;  // Weak.
 
   std::string country_;  // The country the app runs in.
 

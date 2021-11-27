@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_export.h"
@@ -339,7 +340,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
           ancestor_ignored_changed_map);
   void PostprocessEvents();
 
-  AXTree* tree_ = nullptr;  // Not owned.
+  raw_ptr<AXTree> tree_ = nullptr;  // Not owned.
   std::map<AXNodeID, std::set<EventParams>> tree_events_;
 
   // Valid between the call to OnIntAttributeChanged and the call to

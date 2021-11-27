@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -176,7 +177,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   std::string script_;
   bool has_user_gesture_ = false;
   bool script_was_executed_ = false;
-  content::RenderFrameHost* rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> rfh_ = nullptr;
 };
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so

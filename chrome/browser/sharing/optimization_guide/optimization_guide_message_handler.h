@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class Profile;
@@ -38,7 +39,8 @@ class OptimizationGuideMessageHandler : public SharingMessageHandler {
  private:
   // Owned by OptimizationGuideKeyedService, must outlive this class. Can be
   // nullptr.
-  optimization_guide::PushNotificationManager* push_notification_manager_;
+  raw_ptr<optimization_guide::PushNotificationManager>
+      push_notification_manager_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_MESSAGE_HANDLER_H_

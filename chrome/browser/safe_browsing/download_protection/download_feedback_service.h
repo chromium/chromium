@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -87,7 +88,7 @@ class DownloadFeedbackService {
   void FeedbackComplete();
 
   // Safe because the DownloadProtectionService owns this.
-  DownloadProtectionService* download_protection_service_;
+  raw_ptr<DownloadProtectionService> download_protection_service_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
 
   // Currently active & pending uploads. The first item is active, remaining

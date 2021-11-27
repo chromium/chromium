@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -103,7 +104,7 @@ class PermissionAuditingService
   // Lives on the |backend_task_runner_|, and must only be accessed on that
   // sequence. It is safe to assume the database is alive as long as |db_| is
   // non-null.
-  PermissionAuditingDatabase* db_ = nullptr;
+  raw_ptr<PermissionAuditingDatabase> db_ = nullptr;
 
   base::RepeatingTimer timer_;
 };

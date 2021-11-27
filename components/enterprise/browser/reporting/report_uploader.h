@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
 #include "net/base/backoff_entry.h"
@@ -78,7 +79,7 @@ class ReportUploader {
   // Moves to the next request if exist, or notifies the accomplishments.
   void NextRequest();
 
-  policy::CloudPolicyClient* client_;
+  raw_ptr<policy::CloudPolicyClient> client_;
   ReportCallback callback_;
   ReportRequests requests_;
 

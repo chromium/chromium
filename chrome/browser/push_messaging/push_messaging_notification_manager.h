@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/push_messaging/budget_database.h"
@@ -103,7 +104,7 @@ class PushMessagingNotificationManager {
 #endif
 
   // Weak. This manager is owned by a keyed service on this profile.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   BudgetDatabase budget_database_;
 

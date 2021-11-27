@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -540,7 +541,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   int request_id_ = -1;
 
   // The id of the profile of this function's extension.
-  void* profile_id_ = nullptr;
+  raw_ptr<void> profile_id_ = nullptr;
 
   // The name of this function.
   const char* name_ = nullptr;
@@ -613,15 +614,15 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // Obtained via |dispatcher_| when it is set. It automatically resets to
   // nullptr when the BrowserContext is shutdown (much like a WeakPtr).
-  content::BrowserContext* browser_context_ = nullptr;
-  content::BrowserContext* browser_context_for_testing_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_for_testing_ = nullptr;
 
   // Subscription for a callback that runs when the BrowserContext* is
   // destroyed.
   base::CallbackListSubscription shutdown_subscription_;
 
   // The RenderFrameHost we will send responses to.
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
 
   std::unique_ptr<RenderFrameHostTracker> tracker_;
 

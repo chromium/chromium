@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,8 +147,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   }
 
   std::unique_ptr<CredentialsFilter> filter_;
-  PasswordStoreInterface* profile_store_ = nullptr;
-  PasswordStoreInterface* account_store_ = nullptr;
+  raw_ptr<PasswordStoreInterface> profile_store_ = nullptr;
+  raw_ptr<PasswordStoreInterface> account_store_ = nullptr;
   mutable FakeNetworkContext network_context_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
@@ -153,13 +154,13 @@ class ExtensionUninstallDialog
   virtual void Close() = 0;
 
   // Resets to nullptr when the Profile is deleted.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The dialog's parent window.
   gfx::NativeWindow parent_;
 
   // The delegate we will call Accepted/Canceled on after confirmation dialog.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The extension we are showing the dialog for.
   scoped_refptr<const Extension> extension_;

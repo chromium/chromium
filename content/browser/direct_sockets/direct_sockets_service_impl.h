@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
@@ -125,7 +126,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       const std::string& address,
       const std::string& port);
 
-  RenderFrameHost* frame_host_;
+  raw_ptr<RenderFrameHost> frame_host_;
   mojo::UniqueReceiverSet<blink::mojom::DirectUDPSocket>
       direct_udp_socket_receivers_;
 

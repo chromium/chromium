@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -117,7 +118,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       window->GetHost()->SetCursor(cursor);
   }
 
-  ShellDesktopControllerAura* desktop_controller_;  // Not owned.
+  raw_ptr<ShellDesktopControllerAura> desktop_controller_;  // Not owned.
 
   ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };

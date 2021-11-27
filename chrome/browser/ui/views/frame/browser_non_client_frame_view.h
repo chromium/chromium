@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -194,13 +195,13 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   const ui::ThemeProvider* GetFrameThemeProvider() const;
 
   // The frame that hosts this view.
-  BrowserFrame* const frame_;
+  const raw_ptr<BrowserFrame> frame_;
 
   // The BrowserView hosted within this View.
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 
   // Menu button and page status icons. Only used by web-app windows.
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(

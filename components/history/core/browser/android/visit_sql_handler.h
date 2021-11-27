@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_VISIT_SQL_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_VISIT_SQL_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace base {
@@ -45,8 +46,8 @@ class VisitSQLHandler : public SQLHandler {
   // Delete the visits of the given `url_id`.
   bool DeleteVisitsForURL(URLID url_id);
 
-  URLDatabase* url_db_;
-  VisitDatabase* visit_db_;
+  raw_ptr<URLDatabase> url_db_;
+  raw_ptr<VisitDatabase> visit_db_;
 };
 
 }  // namespace history.

@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
@@ -379,12 +380,12 @@ class AutofillMetricsTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   MockAutofillClient autofill_client_;
-  ukm::TestUkmRecorder* test_ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_;
-  AutofillExternalDelegate* external_delegate_;
+  raw_ptr<AutofillExternalDelegate> external_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/free_deleter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,7 +72,7 @@ class StorageMonitorWinTest : public testing::Test {
   std::unique_ptr<TestStorageMonitorWin> monitor_;
 
   // Weak pointer; owned by the device notifications class.
-  TestVolumeMountWatcherWin* volume_mount_watcher_;
+  raw_ptr<TestVolumeMountWatcherWin> volume_mount_watcher_;
 
   MockRemovableStorageObserver observer_;
 

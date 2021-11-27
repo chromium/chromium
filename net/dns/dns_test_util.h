@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -319,7 +320,7 @@ struct MockDnsClientRule {
   uint16_t qtype;
   bool secure;
   bool delay;
-  URLRequestContext* context;
+  raw_ptr<URLRequestContext> context;
 };
 
 typedef std::vector<MockDnsClientRule> MockDnsClientRuleList;

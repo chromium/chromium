@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -65,7 +66,7 @@ class UsbTestGadgetImpl : public UsbTestGadget {
  private:
   std::string device_address_;
   scoped_refptr<UsbDevice> device_;
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
 };
 
 namespace {
@@ -210,7 +211,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     session_id_ =
         base::StringPrintf("%" CrPRIdPid "-%d", process_id, next_session_id++);
 
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   ~UsbGadgetFactory() override = default;
@@ -402,7 +403,7 @@ class UsbGadgetFactory : public UsbService::Observer {
         base::Milliseconds(kReenumeratePeriod));
   }
 
-  UsbService* usb_service_ = nullptr;
+  raw_ptr<UsbService> usb_service_ = nullptr;
   net::TestDelegate delegate_;
   net::TestURLRequestContext request_context_;
   std::string session_id_;
@@ -423,7 +424,7 @@ class DeviceAddListener : public UsbService::Observer {
       : usb_service_(usb_service),
         serial_number_(serial_number),
         product_id_(product_id) {
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   DeviceAddListener(const DeviceAddListener&) = delete;
@@ -475,7 +476,7 @@ class DeviceAddListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
   const std::string serial_number_;
   const int product_id_;
   base::RunLoop run_loop_;
@@ -488,7 +489,7 @@ class DeviceRemoveListener : public UsbService::Observer {
  public:
   DeviceRemoveListener(UsbService* usb_service, scoped_refptr<UsbDevice> device)
       : usb_service_(usb_service), device_(device) {
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   DeviceRemoveListener(const DeviceRemoveListener&) = delete;
@@ -523,7 +524,7 @@ class DeviceRemoveListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
   base::RunLoop run_loop_;
   scoped_refptr<UsbDevice> device_;
   base::ScopedObservation<UsbService, UsbService::Observer> observation_{this};

@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
@@ -142,7 +143,7 @@ class ActivityLogPolicy {
   // Support for a mock clock for testing purposes.  This is used by ReadData
   // to determine the date for "today" when when interpreting date ranges to
   // fetch.  This has no effect on batching of writes to the database.
-  base::Clock* testing_clock_ = nullptr;
+  raw_ptr<base::Clock> testing_clock_ = nullptr;
 };
 
 // A subclass of ActivityLogPolicy which is designed for policies that use
@@ -222,7 +223,7 @@ class ActivityLogDatabasePolicy : public ActivityLogPolicy,
  private:
   // See the comments for the ActivityDatabase class for a discussion of how
   // database cleanup runs.
-  ActivityDatabase* db_;
+  raw_ptr<ActivityDatabase> db_;
   base::FilePath database_path_;
 };
 

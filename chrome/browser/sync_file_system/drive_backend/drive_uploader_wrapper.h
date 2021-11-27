@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_DRIVE_UPLOADER_WRAPPER_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_DRIVE_UPLOADER_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/drive_uploader.h"
@@ -38,7 +39,7 @@ class DriveUploaderWrapper
                      drive::UploadCompletionCallback callback);
 
  private:
-  drive::DriveUploaderInterface* drive_uploader_;
+  raw_ptr<drive::DriveUploaderInterface> drive_uploader_;
   base::SequenceChecker sequence_checker_;
 };
 

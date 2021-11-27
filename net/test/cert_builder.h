@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/signature_algorithm.h"
@@ -231,7 +232,7 @@ class CertBuilder {
   bssl::UniquePtr<CRYPTO_BUFFER> cert_;
   bssl::UniquePtr<EVP_PKEY> key_;
 
-  CertBuilder* issuer_ = nullptr;
+  raw_ptr<CertBuilder> issuer_ = nullptr;
 };
 
 }  // namespace net

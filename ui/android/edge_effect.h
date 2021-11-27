@@ -5,6 +5,7 @@
 #ifndef UI_ANDROID_EDGE_EFFECT_H_
 #define UI_ANDROID_EDGE_EFFECT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -59,7 +60,7 @@ class UI_ANDROID_EXPORT EdgeEffect {
   void SetParent(cc::Layer* parent);
 
  private:
-  ui::ResourceManager* const resource_manager_;
+  const raw_ptr<ui::ResourceManager> resource_manager_;
 
   scoped_refptr<cc::UIResourceLayer> glow_;
 

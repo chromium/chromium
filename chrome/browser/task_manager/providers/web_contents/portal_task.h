@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_PORTAL_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_PORTAL_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace task_manager {
@@ -30,7 +31,7 @@ class PortalTask : public RendererTask {
   const Task* GetParentTask() const override;
 
  private:
-  WebContentsTaskProvider* task_provider_;
+  raw_ptr<WebContentsTaskProvider> task_provider_;
 };
 
 }  // namespace task_manager

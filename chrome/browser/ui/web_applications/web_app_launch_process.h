@@ -55,7 +55,7 @@ class WebAppLaunchProcess {
   Browser* CreateBrowserForLaunch();
 
   struct NavigateResult {
-    content::WebContents* web_contents = nullptr;
+    raw_ptr<content::WebContents> web_contents = nullptr;
     bool did_navigate;
   };
   NavigateResult MaybeNavigateBrowser(Browser* browser,

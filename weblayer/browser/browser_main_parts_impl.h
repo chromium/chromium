@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
@@ -45,7 +46,7 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   void PostMainMessageLoopRun() override;
 
  private:
-  MainParams* params_;
+  raw_ptr<MainParams> params_;
 
   std::unique_ptr<BrowserProcess> browser_process_;
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>

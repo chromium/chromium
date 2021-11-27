@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
@@ -94,7 +95,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
 
  private:
   // A reference to the sync service for this profile.
-  syncer::SyncServiceImpl* const native_sync_service_;
+  const raw_ptr<syncer::SyncServiceImpl> native_sync_service_;
 
   // Java-side SyncServiceImpl object.
   const JavaObjectWeakGlobalRef java_sync_service_;

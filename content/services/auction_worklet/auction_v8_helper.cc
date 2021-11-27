@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -106,9 +107,9 @@ class DebugContextScope {
   DebugContextScope& operator=(const DebugContextScope&) = delete;
 
  private:
-  v8_inspector::V8Inspector* const inspector_;
+  const raw_ptr<v8_inspector::V8Inspector> inspector_;
   const v8::Local<v8::Context> context_;
-  const AuctionV8Helper::DebugId* const debug_id_;
+  const raw_ptr<const AuctionV8Helper::DebugId> debug_id_;
 };
 
 }  // namespace
@@ -222,7 +223,7 @@ class AuctionV8Helper::ScriptTimeoutHelper {
     // Isolate to terminate execution of when time expires. Set to nullptr on
     // the Isolate thread before destruction, to avoid any teardown races with
     // script execution ending.
-    v8::Isolate* isolate_ GUARDED_BY(lock_);
+    raw_ptr<v8::Isolate> isolate_ GUARDED_BY(lock_);
 
     bool terminate_execution_called_ GUARDED_BY(lock_) = false;
     SEQUENCE_CHECKER(v8_sequence_checker_);
@@ -246,7 +247,7 @@ class AuctionV8Helper::ScriptTimeoutHelper {
   }
 
   // `this` exists a local in `v8_helper_`'s method.
-  AuctionV8Helper* const v8_helper_;
+  const raw_ptr<AuctionV8Helper> v8_helper_;
   v8::Isolate::SafeForTerminationScope termination_scope_;
   base::TimeDelta remaining_delay_;
   base::TimeTicks last_start_;

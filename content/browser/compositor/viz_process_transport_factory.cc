@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -119,7 +120,7 @@ class HostDisplayClient : public viz::HostDisplayClient {
 #endif
 
  private:
-  ui::Compositor* const compositor_;
+  const raw_ptr<ui::Compositor> compositor_;
 };
 
 }  // namespace

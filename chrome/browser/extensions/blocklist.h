@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,7 +44,7 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
     virtual ~Observer();
 
    private:
-    Blocklist* blocklist_;
+    raw_ptr<Blocklist> blocklist_;
   };
 
   class ScopedDatabaseManagerForTest {

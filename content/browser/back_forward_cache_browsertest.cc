@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
@@ -104,7 +105,7 @@ class DOMContentLoadedObserver : public WebContentsObserver {
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   base::RunLoop run_loop_;
 };
 

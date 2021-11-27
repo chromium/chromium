@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
@@ -359,26 +360,27 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   base::WeakPtr<RenderWidgetHostViewBase> touchscreen_gesture_target_;
   bool touchscreen_gesture_target_moved_recently_ = false;
   RenderWidgetHostViewBase* touchpad_gesture_target_ = nullptr;
-  RenderWidgetHostViewBase* bubbling_gesture_scroll_target_ = nullptr;
-  RenderWidgetHostViewChildFrame* bubbling_gesture_scroll_origin_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> bubbling_gesture_scroll_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewChildFrame> bubbling_gesture_scroll_origin_ =
+      nullptr;
   // Used to target wheel events for the duration of a scroll.
   RenderWidgetHostViewBase* wheel_target_ = nullptr;
   // Maintains the same target between mouse down and mouse up.
-  RenderWidgetHostViewBase* mouse_capture_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> mouse_capture_target_ = nullptr;
 
   // Tracked for the purpose of generating MouseEnter and MouseLeave events.
-  RenderWidgetHostViewBase* last_mouse_move_target_;
-  RenderWidgetHostViewBase* last_mouse_move_root_view_;
+  raw_ptr<RenderWidgetHostViewBase> last_mouse_move_target_;
+  raw_ptr<RenderWidgetHostViewBase> last_mouse_move_root_view_;
 
   // Tracked for the purpose of targeting subsequent fling cancel events.
-  RenderWidgetHostViewBase* last_fling_start_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> last_fling_start_target_ = nullptr;
 
   // True when the router calls |last_fling_start_target_->StopFling()|.
   bool forced_last_fling_start_target_to_stop_flinging_for_test_ = false;
 
   // Tracked for the purpose of providing a root_view when dispatching emulated
   // touch/gesture events.
-  RenderWidgetHostViewBase* last_emulated_event_root_view_;
+  raw_ptr<RenderWidgetHostViewBase> last_emulated_event_root_view_;
 
   // Used to send a GSE with proper source device to terminate scroll bubbling
   // whenever needed.
@@ -444,7 +446,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   // between the two coordinate transforms.
   mutable gfx::PointF mouse_down_pre_transformed_coordinate_;
   mutable gfx::PointF mouse_down_post_transformed_coordinate_;
-  RenderWidgetHostViewBase* last_mouse_down_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> last_mouse_down_target_ = nullptr;
 
   // Set to true when we first DwoC on an invalid RWHVB* in DispatchTouchEvent.
   // Used to prevent multiple dumps.

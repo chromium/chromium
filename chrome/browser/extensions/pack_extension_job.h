@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_creator.h"
 
@@ -63,7 +64,7 @@ class PackExtensionJob {
   void ReportFailureOnClientSequence(const std::string& error,
                                      ExtensionCreator::ErrorType error_type);
 
-  Client* const client_;  // Owns us.
+  const raw_ptr<Client> client_;  // Owns us.
   base::FilePath root_directory_;
   base::FilePath key_file_;
   RunMode run_mode_ = RunMode::ASYNCHRONOUS;

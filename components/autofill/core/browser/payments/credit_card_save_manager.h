@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -298,11 +299,11 @@ class CreditCardSaveManager {
     observer_for_testing_ = observer;
   }
 
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // Handles Payments service requests.
   // Owned by BrowserAutofillManager.
-  payments::PaymentsClient* payments_client_;
+  raw_ptr<payments::PaymentsClient> payments_client_;
 
   std::string app_locale_;
 
@@ -310,7 +311,7 @@ class CreditCardSaveManager {
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The credit card to be saved if local credit card save is accepted.
   CreditCard local_card_save_candidate_;
@@ -381,7 +382,7 @@ class CreditCardSaveManager {
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
   // May be null.
-  ObserverForTest* observer_for_testing_ = nullptr;
+  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<CreditCardSaveManager> weak_ptr_factory_{this};
 

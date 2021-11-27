@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -48,8 +49,8 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   void CredentialsItemPressed(const password_manager::PasswordForm* form);
 
   // A weak pointer to the controller.
-  CredentialManagerDialogController* controller_;
-  content::WebContents* web_contents_;
+  raw_ptr<CredentialManagerDialogController> controller_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_

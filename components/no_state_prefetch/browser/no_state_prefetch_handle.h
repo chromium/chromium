@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HANDLE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HANDLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
@@ -83,7 +84,7 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
   void OnPrefetchNetworkBytesChanged(
       NoStatePrefetchContents* no_state_prefetch_contents) override;
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   base::WeakPtr<NoStatePrefetchManager::NoStatePrefetchData> prefetch_data_;
   base::WeakPtrFactory<NoStatePrefetchHandle> weak_ptr_factory_{this};

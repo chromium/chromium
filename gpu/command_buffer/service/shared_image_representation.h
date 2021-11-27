@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -128,13 +129,13 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
     }
 
    private:
-    RepresentationClass* const representation_;
+    const raw_ptr<RepresentationClass> representation_;
   };
 
  private:
-  SharedImageManager* const manager_;
-  SharedImageBacking* const backing_;
-  MemoryTypeTracker* const tracker_;
+  const raw_ptr<SharedImageManager> manager_;
+  const raw_ptr<SharedImageBacking> backing_;
+  const raw_ptr<MemoryTypeTracker> tracker_;
   bool has_context_ = true;
   bool has_scoped_access_ = false;
 };
@@ -449,7 +450,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     }
 
    private:
-    gl::GLImage* const gl_image_;
+    const raw_ptr<gl::GLImage> gl_image_;
     std::vector<gfx::GpuFence> acquire_fences_;
     gfx::GpuFenceHandle release_fence_;
   };
@@ -572,7 +573,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
   std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
 
  private:
-  VaapiDependencies* vaapi_deps_;
+  raw_ptr<VaapiDependencies> vaapi_deps_;
   virtual void EndAccess() = 0;
   virtual void BeginAccess() = 0;
 };
@@ -600,7 +601,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationRaster
     const absl::optional<SkColor>& clear_color() const { return clear_color_; }
 
    private:
-    const cc::PaintOpBuffer* const paint_op_buffer_;
+    const raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_;
     absl::optional<SkColor> clear_color_;
   };
 
@@ -622,7 +623,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationRaster
     }
 
    private:
-    cc::PaintOpBuffer* const paint_op_buffer_;
+    const raw_ptr<cc::PaintOpBuffer> paint_op_buffer_;
     base::OnceClosure callback_;
   };
 

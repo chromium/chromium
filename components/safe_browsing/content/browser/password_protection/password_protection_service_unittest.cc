@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -261,7 +262,7 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
   }
 
  private:
-  PasswordProtectionRequest* latest_request_;
+  raw_ptr<PasswordProtectionRequest> latest_request_;
   base::RunLoop run_loop_;
   std::unique_ptr<LoginReputationClientResponse> latest_response_;
   TestPhishingDetector test_phishing_detector_;
@@ -536,7 +537,8 @@ class PasswordProtectionServiceBaseTest
   base::HistogramTester histograms_;
   content::TestBrowserContext browser_context_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
+  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
+      nullptr;
   base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
 };

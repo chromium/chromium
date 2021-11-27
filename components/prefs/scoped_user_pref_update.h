@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -50,11 +51,11 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
   void Notify();
 
   // Weak pointer.
-  PrefService* service_;
+  raw_ptr<PrefService> service_;
   // Path of the preference being updated.
   std::string path_;
   // Cache of value from user pref store (set between Get() and Notify() calls).
-  base::Value* value_;
+  raw_ptr<base::Value> value_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

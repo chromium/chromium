@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -627,7 +628,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   void SetTooltipText(const std::u16string& tooltip_text);
 
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
   // NOTE: this may be null during destruction.
@@ -646,10 +647,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool in_bounds_changed_;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
-  RenderWidgetHostViewAura* popup_parent_host_view_;
+  raw_ptr<RenderWidgetHostViewAura> popup_parent_host_view_;
 
   // Our child popup host. NULL if we do not have a child popup.
-  RenderWidgetHostViewAura* popup_child_host_view_;
+  raw_ptr<RenderWidgetHostViewAura> popup_child_host_view_;
 
   class EventObserverForPopupExit;
   std::unique_ptr<EventObserverForPopupExit> event_observer_for_popup_exit_;
@@ -686,7 +687,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // The LegacyRenderWidgetHostHWND instance is created during the first call
   // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
   // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  content::LegacyRenderWidgetHostHWND* legacy_render_widget_host_HWND_;
+  raw_ptr<content::LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
 
   // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
   // by Windows. This could happen if the browser window was destroyed by

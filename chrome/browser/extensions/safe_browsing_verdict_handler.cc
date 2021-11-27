@@ -39,7 +39,7 @@ SafeBrowsingVerdictHandler::SafeBrowsingVerdictHandler(
     : extension_prefs_(extension_prefs),
       registry_(registry),
       extension_service_(extension_service) {
-  extension_registry_observation_.Observe(registry_);
+  extension_registry_observation_.Observe(registry_.get());
 }
 
 SafeBrowsingVerdictHandler::~SafeBrowsingVerdictHandler() = default;

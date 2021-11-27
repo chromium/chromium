@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
 
@@ -38,8 +39,8 @@ class SessionModelTypeController : public syncer::ModelTypeController {
  private:
   void OnSavingBrowserHistoryPrefChanged();
 
-  syncer::SyncService* const sync_service_;
-  PrefService* const pref_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   PrefChangeRegistrar pref_registrar_;
 };

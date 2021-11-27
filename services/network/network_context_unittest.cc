@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
@@ -3308,7 +3309,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
   int top_level_result_error_;
   int result_error_;
   absl::optional<net::AddressList> result_addresses_;
-  base::RunLoop* const run_loop_;
+  const raw_ptr<base::RunLoop> run_loop_;
 };
 
 TEST_F(NetworkContextTest, ResolveHost_Sync) {

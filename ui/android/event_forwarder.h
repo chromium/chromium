@@ -6,6 +6,7 @@
 #define UI_ANDROID_EVENT_FORWARDER_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -137,7 +138,7 @@ class EventForwarder {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  ViewAndroid* const view_;
+  const raw_ptr<ViewAndroid> view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 

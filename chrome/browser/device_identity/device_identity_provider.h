@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/invalidation/public/identity_provider.h"
 
 class DeviceOAuth2TokenService;
@@ -33,7 +34,7 @@ class DeviceIdentityProvider : public invalidation::IdentityProvider {
  private:
   void OnRefreshTokenAvailable();
 
-  DeviceOAuth2TokenService* token_service_;
+  raw_ptr<DeviceOAuth2TokenService> token_service_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_

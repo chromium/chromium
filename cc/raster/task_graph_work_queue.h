@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/raster/task_graph_runner.h"
 
@@ -43,7 +44,7 @@ class CC_EXPORT TaskGraphWorkQueue {
     PrioritizedTask& operator=(PrioritizedTask&& other) = default;
 
     scoped_refptr<Task> task;
-    TaskNamespace* task_namespace;
+    raw_ptr<TaskNamespace> task_namespace;
     uint16_t category;
     uint16_t priority;
   };

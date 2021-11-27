@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -180,7 +181,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
     bool RouteMessage(const IPC::Message& msg) override;
 
    private:
-    IPC::Sender* const sender_;
+    const raw_ptr<IPC::Sender> sender_;
   };
 
   void Init(const Options& options);
@@ -224,7 +225,8 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner_;
 
   // Pointer to a global object which is never deleted.
-  variations::ChildProcessFieldTrialSyncer* field_trial_syncer_ = nullptr;
+  raw_ptr<variations::ChildProcessFieldTrialSyncer> field_trial_syncer_ =
+      nullptr;
 
   std::unique_ptr<base::WeakPtrFactory<ChildThreadImpl>>
       channel_connected_factory_;
@@ -251,7 +253,7 @@ struct ChildThreadImpl::Options {
   bool connect_to_browser = false;
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner;
   std::vector<IPC::MessageFilter*> startup_filters;
-  mojo::OutgoingInvitation* mojo_invitation = nullptr;
+  raw_ptr<mojo::OutgoingInvitation> mojo_invitation = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner;
 
   // Indicates that this child process exposes one or more Mojo interfaces to

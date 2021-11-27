@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -397,8 +398,8 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
         false /* is_source_touch_event_set_blocking */);
   }
 
-  Window* window_;
-  WindowEventDispatcher* dispatcher_;
+  raw_ptr<Window> window_;
+  raw_ptr<WindowEventDispatcher> dispatcher_;
   AckState synchronous_ack_for_next_event_;
   std::list<uint32_t> sent_events_ids_;
 };
@@ -4276,7 +4277,7 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
   }
 
  private:
-  aura::Window** window_;
+  raw_ptr<aura::Window*> window_;
 };
 
 // Check that deleting the window in response to a long press gesture doesn't

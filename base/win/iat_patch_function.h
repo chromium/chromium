@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace win {
@@ -68,7 +69,7 @@ class BASE_EXPORT IATPatchFunction {
 
  private:
   HMODULE module_handle_ = nullptr;
-  void* intercept_function_ = nullptr;
+  raw_ptr<void> intercept_function_ = nullptr;
   void* original_function_ = nullptr;
   IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
 };

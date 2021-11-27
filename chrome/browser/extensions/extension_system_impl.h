@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -129,7 +130,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
     ContentVerifier* content_verifier();
 
    private:
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
 
     // The services that are shared between normal and incognito profiles.
 
@@ -169,9 +170,9 @@ class ExtensionSystemImpl : public ExtensionSystem {
     base::OneShotEvent ready_;
   };
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  Shared* shared_;
+  raw_ptr<Shared> shared_;
 };
 
 }  // namespace extensions

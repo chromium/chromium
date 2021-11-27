@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_stream_create_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -87,7 +88,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
   }
 
  private:
-  WebSocketStreamCreateTestBase* owner_;
+  raw_ptr<WebSocketStreamCreateTestBase> owner_;
   base::OnceClosure done_callback_;
 };
 

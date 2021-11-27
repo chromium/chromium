@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -99,7 +100,7 @@ class XmppConnection : public sigslot::has_slots<> {
   std::unique_ptr<jingle_glue::TaskPump> task_pump_;
   base::WeakPtr<WeakXmppClient> weak_xmpp_client_;
   bool on_connect_called_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

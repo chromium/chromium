@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -93,7 +94,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                           ContainerHostPredicate predicate);
     void ForwardUntilMatchingContainerHost();
 
-    ContainerHostByClientUUIDMap* const map_;
+    const raw_ptr<ContainerHostByClientUUIDMap> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
   };
@@ -426,7 +427,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // It's safe to store a raw pointer instead of a scoped_refptr to |wrapper_|
   // because the Wrapper::Shutdown call that hops threads to destroy |this| uses
   // Bind() to hold a reference to |wrapper_| until |this| is fully destroyed.
-  ServiceWorkerContextWrapper* wrapper_;
+  raw_ptr<ServiceWorkerContextWrapper> wrapper_;
 
   // |container_host_by_uuid_| owns container hosts for service worker clients.
   // Container hosts for service worker execution contexts are owned by

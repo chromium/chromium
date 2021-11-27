@@ -21,6 +21,7 @@
 #include "base/containers/stack_container.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -247,7 +248,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   // Interface to GPU related operations.
-  GpuVideoAcceleratorFactories* const gpu_factories_;
+  const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Pool of resources.
   std::list<FrameResources*> resources_pool_;
@@ -255,7 +256,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   GpuVideoAcceleratorFactories::OutputFormat output_format_;
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Queued up video frames for copies. The front is the currently
   // in-flight copy, new copies are added at the end.

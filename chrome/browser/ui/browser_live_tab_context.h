@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -113,7 +114,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       Profile* profile);
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIVE_TAB_CONTEXT_H_

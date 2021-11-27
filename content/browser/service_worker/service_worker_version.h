@@ -19,6 +19,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1096,10 +1097,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
       blink::ServiceWorkerStatusCode::kOk;
 
   // The clock used to vend tick time.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The clock used for actual (wall clock) time
-  base::Clock* const clock_;
+  const raw_ptr<base::Clock> clock_;
 
   ServiceWorkerPingController ping_controller_;
 

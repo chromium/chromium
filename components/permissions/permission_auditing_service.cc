@@ -28,7 +28,7 @@ PermissionAuditingService::PermissionAuditingService(
 
 PermissionAuditingService::~PermissionAuditingService() {
   if (db_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, db_);
+    backend_task_runner_->DeleteSoon(FROM_HERE, db_.get());
     db_ = nullptr;
   }
 }

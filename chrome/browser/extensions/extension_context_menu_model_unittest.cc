@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -177,8 +178,8 @@ class MenuBuilder {
 
  private:
   scoped_refptr<const Extension> extension_;
-  Browser* browser_;
-  MenuManager* menu_manager_;
+  raw_ptr<Browser> browser_;
+  raw_ptr<MenuManager> menu_manager_;
   int cur_id_;
 };
 

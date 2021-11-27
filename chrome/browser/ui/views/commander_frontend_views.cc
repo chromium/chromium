@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -72,7 +73,7 @@ class CommanderFocusLossWatcher : public views::WidgetObserver {
   }
 
  private:
-  commander::CommanderFrontend* frontend_;  // weak, owns us
+  raw_ptr<commander::CommanderFrontend> frontend_;  // weak, owns us
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 };
@@ -207,7 +208,7 @@ void CommanderFrontendViews::Hide() {
   show_requested_ = false;
   browser_ = nullptr;
 
-  web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_);
+  web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_.get());
   web_view_->SetOwner(nullptr);
 
   focus_loss_watcher_.reset();

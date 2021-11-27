@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -496,7 +497,7 @@ class MdnsResponderManager::SocketHandler {
   // handler should be destroyed before |responder_manager_| becomes invalid or
   // a weak reference should be used to access the manager when there is no such
   // guarantee in an operation.
-  MdnsResponderManager* const responder_manager_;
+  const raw_ptr<MdnsResponderManager> responder_manager_;
   scoped_refptr<net::IOBufferWithSize> io_buffer_;
   net::IPEndPoint recv_addr_;
   net::IPEndPoint multicast_addr_;
@@ -631,8 +632,8 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
   // scheduler should be destroyed before |handler_| becomes invalid or a weak
   // reference should be used to access the handler when there is no such
   // guarantee in an operation.
-  MdnsResponderManager::SocketHandler* const handler_;
-  const base::TickClock* tick_clock_;
+  const raw_ptr<MdnsResponderManager::SocketHandler> handler_;
+  raw_ptr<const base::TickClock> tick_clock_;
   std::unique_ptr<base::OneShotTimer> dispatch_timer_;
   std::map<std::string, base::TimeTicks> next_available_time_for_name_;
   base::TimeTicks next_available_time_per_resp_sched_;

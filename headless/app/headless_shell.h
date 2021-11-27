@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_proxy.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "headless/public/devtools/domains/emulation.h"
@@ -101,10 +102,10 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   bool RemoteDebuggingEnabled() const;
 
   GURL url_;
-  HeadlessBrowser* browser_ = nullptr;  // Not owned.
+  raw_ptr<HeadlessBrowser> browser_ = nullptr;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
-  HeadlessWebContents* web_contents_ = nullptr;
-  HeadlessBrowserContext* browser_context_ = nullptr;
+  raw_ptr<HeadlessWebContents> web_contents_ = nullptr;
+  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
   bool processed_page_ready_ = false;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<base::FileProxy> file_proxy_;

@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -178,7 +179,7 @@ class ComponentUpdaterTest : public testing::Test {
 
   scoped_refptr<TestConfigurator> config_ =
       base::MakeRefCounted<TestConfigurator>();
-  MockUpdateScheduler* scheduler_;
+  raw_ptr<MockUpdateScheduler> scheduler_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ComponentUpdateService> component_updater_;

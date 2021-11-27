@@ -302,7 +302,7 @@ void CastDialogView::MaybeShowAccessCodeCastButton() {
 
   access_code_cast_button_ =
       new CastDialogAccessCodeCastButton(callback, profile_->GetPrefs());
-  AddChildView(access_code_cast_button_);
+  AddChildView(access_code_cast_button_.get());
 }
 
 void CastDialogView::ShowNoSinksView() {
@@ -315,7 +315,7 @@ void CastDialogView::ShowNoSinksView() {
     sink_buttons_.clear();
   }
   no_sinks_view_ = new CastDialogNoSinksView(profile_);
-  AddChildView(no_sinks_view_);
+  AddChildView(no_sinks_view_.get());
 }
 
 void CastDialogView::ShowScrollView() {
@@ -327,7 +327,7 @@ void CastDialogView::ShowScrollView() {
     no_sinks_view_ = nullptr;
   }
   scroll_view_ = new views::ScrollView();
-  AddChildView(scroll_view_);
+  AddChildView(scroll_view_.get());
   constexpr int kSinkButtonHeight = 56;
   scroll_view_->ClipHeightTo(0, kSinkButtonHeight * 6.5);
 }

@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -710,7 +711,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
-  base::ProcessMetrics* process_metrics_;
+  raw_ptr<base::ProcessMetrics> process_metrics_;
   ProcessTypeForUma process_type_;
   uint32_t current_cycle_ = 0;
   base::PlatformThreadId main_thread_id_;

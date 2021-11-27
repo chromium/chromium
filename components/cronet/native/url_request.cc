@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -173,7 +174,7 @@ class VerifyDestructionRunnable : public Cronet_Runnable {
 
  private:
   // Event indicating destructor is called.
-  base::WaitableEvent* const destroyed_;
+  const raw_ptr<base::WaitableEvent> destroyed_;
 };
 #endif  // DCHECK_IS_ON()
 
@@ -301,7 +302,7 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
       LOCKS_EXCLUDED(url_request_->lock_) override;
 
   // The UrlRequest which owns context that owns the callback.
-  Cronet_UrlRequestImpl* const url_request_ = nullptr;
+  const raw_ptr<Cronet_UrlRequestImpl> url_request_ = nullptr;
 
   // URL chain contains the URL currently being requested, and
   // all URLs previously requested. New URLs are added before

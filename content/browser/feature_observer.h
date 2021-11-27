@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FEATURE_OBSERVER_H_
 
 #include "base/containers/stack_container.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
@@ -43,7 +44,7 @@ class FeatureObserver : public blink::mojom::FeatureObserver {
   mojo::ReceiverSet<blink::mojom::ObservedFeature> features_by_type_
       [static_cast<int>(blink::mojom::ObservedFeatureType::kMaxValue) + 1];
 
-  FeatureObserverClient* const client_;
+  const raw_ptr<FeatureObserverClient> client_;
   const GlobalRenderFrameHostId id_;
 };
 

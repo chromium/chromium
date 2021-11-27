@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -108,7 +109,7 @@ class DeleteProfileDialogManager : public BrowserListObserver {
 
  private:
   std::string primary_account_email_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   base::FilePath profile_path_;
 };
 #endif  // defined(CAN_DELETE_PROFILE)

@@ -10,6 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
+
 namespace content {
 
 class PepperPlayerDelegate;
@@ -58,7 +60,7 @@ class PepperPlaybackObserver {
   PlayersPlayedSoundMap players_played_sound_map_;
 
   // Weak reference to WebContents.
-  WebContents* contents_;
+  raw_ptr<WebContents> contents_;
 };
 
 }  // namespace content

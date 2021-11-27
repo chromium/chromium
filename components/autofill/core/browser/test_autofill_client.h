@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
@@ -261,7 +262,7 @@ class TestAutofillClient : public AutofillClient {
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
-  syncer::SyncService* test_sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   TestAddressNormalizer test_address_normalizer_;
   TestPersonalDataManager test_personal_data_manager_;
   ::testing::NiceMock<MockAutocompleteHistoryManager>

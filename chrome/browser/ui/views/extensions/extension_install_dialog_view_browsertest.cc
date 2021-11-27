@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -90,8 +91,8 @@ class ExtensionInstallDialogViewTestBase
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  const extensions::Extension* extension_;
-  content::WebContents* web_contents_;
+  raw_ptr<const extensions::Extension> extension_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 ExtensionInstallDialogViewTestBase::ExtensionInstallDialogViewTestBase()

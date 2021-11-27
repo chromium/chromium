@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -56,7 +57,7 @@ class LoginUIServiceTest : public testing::Test {
 
   TestingProfileManager profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 class TestLoginUI : public LoginUIService::LoginUI {

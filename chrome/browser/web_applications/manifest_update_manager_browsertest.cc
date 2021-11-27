@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -198,7 +199,7 @@ class UpdateCheckResultAwaiter {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   const GURL& url_;
   base::RunLoop run_loop_;
   absl::optional<ManifestUpdateResult> result_;

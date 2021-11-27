@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -100,7 +101,7 @@ class BitmapFetcherRequest {
  private:
   const BitmapFetcherService::RequestId request_id_;
   BitmapFetcherService::BitmapFetchedCallback callback_;
-  const BitmapFetcher* fetcher_;
+  raw_ptr<const BitmapFetcher> fetcher_;
 };
 
 BitmapFetcherRequest::BitmapFetcherRequest(

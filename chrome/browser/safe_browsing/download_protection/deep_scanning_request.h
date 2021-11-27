@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -176,7 +177,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.
-  download::DownloadItem* item_;
+  raw_ptr<download::DownloadItem> item_;
 
   // The reason for deep scanning.
   DeepScanTrigger trigger_;
@@ -186,7 +187,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // The download protection service that initiated this upload. The
   // |download_service_| owns this class.
-  DownloadProtectionService* download_service_;
+  raw_ptr<DownloadProtectionService> download_service_;
 
   // The time when uploading starts. Keyed with the file's current path.
   base::flat_map<base::FilePath, base::TimeTicks> upload_start_times_;

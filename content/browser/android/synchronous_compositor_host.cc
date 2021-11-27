@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/threading/thread_restrictions.h"
@@ -356,7 +357,7 @@ class SynchronousCompositorHost::ScopedSendZeroMemory {
   ~ScopedSendZeroMemory() { host_->SendZeroMemory(); }
 
  private:
-  SynchronousCompositorHost* const host_;
+  const raw_ptr<SynchronousCompositorHost> host_;
 };
 
 struct SynchronousCompositorHost::SharedMemoryWithSize {

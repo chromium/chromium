@@ -52,7 +52,7 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
   unique_id_ = next_unique_id++;
 
   infobar_manager_ = infobar_manager;
-  infobar_observation_.Observe(infobar_manager_);
+  infobar_observation_.Observe(infobar_manager_.get());
 }
 
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;

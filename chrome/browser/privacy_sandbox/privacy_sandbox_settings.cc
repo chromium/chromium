@@ -534,9 +534,9 @@ void PrivacySandboxSettings::MaybeReconcilePrivacySandboxPref() {
   DCHECK(sync_service_);
   DCHECK(identity_manager_);
   if (!sync_service_observer_.IsObserving())
-    sync_service_observer_.Observe(sync_service_);
+    sync_service_observer_.Observe(sync_service_.get());
   if (!identity_manager_observer_.IsObserving())
-    identity_manager_observer_.Observe(identity_manager_);
+    identity_manager_observer_.Observe(identity_manager_.get());
 }
 
 void PrivacySandboxSettings::ReconcilePrivacySandboxPref() {

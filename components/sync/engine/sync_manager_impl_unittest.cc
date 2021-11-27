@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -214,8 +215,9 @@ class SyncManagerImplTest : public testing::Test {
   CancelationSignal cancelation_signal_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
-  StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_ = nullptr;
-  MockSyncScheduler* scheduler_ = nullptr;
+  raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
+      nullptr;
+  raw_ptr<MockSyncScheduler> scheduler_ = nullptr;
 };
 
 // Test that the configuration params are properly created and sent to

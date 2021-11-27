@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_ASSISTANT_COLLECT_USER_DATA_DELEGATE_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 namespace autofill_assistant {
 class UiControllerAndroid;
@@ -102,7 +103,7 @@ class AssistantCollectUserDataDelegate {
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 
  private:
-  UiControllerAndroid* ui_controller_;
+  raw_ptr<UiControllerAndroid> ui_controller_;
 
   // Java-side AssistantCollectUserDataDelegate object.
   base::android::ScopedJavaGlobalRef<jobject>

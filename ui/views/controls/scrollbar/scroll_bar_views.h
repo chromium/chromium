@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_SCROLL_BAR_VIEWS_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -45,8 +46,8 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
 
  private:
   // The scroll bar buttons (Up/Down, Left/Right).
-  Button* prev_button_;
-  Button* next_button_;
+  raw_ptr<Button> prev_button_;
+  raw_ptr<Button> next_button_;
 
   ui::NativeTheme::ExtraParams params_;
   ui::NativeTheme::Part part_;

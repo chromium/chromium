@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -41,7 +42,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     bool valid() const { return !!sk_image_; }
 
    private:
-    DisplayResourceProviderSoftware* const resource_provider_;
+    const raw_ptr<DisplayResourceProviderSoftware> resource_provider_;
     const ResourceId resource_id_;
     sk_sp<SkImage> sk_image_;
   };
@@ -62,7 +63,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
                                     const ChildResource* resource,
                                     SkAlphaType alpha_type);
 
-  SharedBitmapManager* const shared_bitmap_manager_;
+  const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
 };
 

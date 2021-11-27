@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -32,7 +33,7 @@ class WebAppProviderUnitTest : public WebAppTest {
   WebAppProvider* provider() { return provider_; }
 
  private:
-  WebAppProvider* provider_;
+  raw_ptr<WebAppProvider> provider_;
 };
 
 TEST_F(WebAppProviderUnitTest, Registrar) {

@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -356,20 +357,20 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   void DestroyJavaObject();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   JavaObjectWeakGlobalRef weak_java_ref_;
-  bookmarks::BookmarkModel* bookmark_model_;  // weak
-  bookmarks::ManagedBookmarkService* managed_bookmark_service_;  // weak
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;                     // weak
+  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;  // weak
   std::unique_ptr<bookmarks::ScopedGroupBookmarkActions>
       grouped_bookmark_actions_;
   PrefChangeRegistrar pref_change_registrar_;
 
   // Information about the Partner bookmarks (must check for IsLoaded()).
   // This is owned by profile.
-  PartnerBookmarksShim* partner_bookmarks_shim_;
+  raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
 
   // Holds reading list data. A keyed service owned by the profile.
-  ReadingListManager* reading_list_manager_;
+  raw_ptr<ReadingListManager> reading_list_manager_;
 
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

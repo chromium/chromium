@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 
 class AccountChooserPrompt;
@@ -56,10 +57,10 @@ class CredentialManagerDialogControllerImpl
   // Release |current_dialog_| and close the open dialog.
   void ResetDialog();
 
-  Profile* const profile_;
-  PasswordsModelDelegate* const delegate_;
-  AccountChooserPrompt* account_chooser_dialog_;
-  AutoSigninFirstRunPrompt* autosignin_dialog_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<PasswordsModelDelegate> delegate_;
+  raw_ptr<AccountChooserPrompt> account_chooser_dialog_;
+  raw_ptr<AutoSigninFirstRunPrompt> autosignin_dialog_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_;
 };

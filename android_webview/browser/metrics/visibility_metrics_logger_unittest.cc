@@ -5,6 +5,7 @@
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
 #include "android_webview/common/aw_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -50,7 +51,7 @@ class TestClient : public VisibilityMetricsLogger::Client {
   }
 
  private:
-  VisibilityMetricsLogger* logger_;
+  raw_ptr<VisibilityMetricsLogger> logger_;
   VisibilityMetricsLogger::VisibilityInfo visibility_info_;
 };
 

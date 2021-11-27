@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 
@@ -35,7 +36,7 @@ class AutofillSnackbarViewAndroid : public AutofillSnackbarView {
   void OnDismissed(JNIEnv* env);
 
  private:
-  AutofillSnackbarController* controller_;
+  raw_ptr<AutofillSnackbarController> controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_uploader.h"
@@ -80,9 +81,9 @@ class FeedbackUploaderChrome : public FeedbackUploader {
 
   std::string access_token_;
 
-  Delegate* delegate_ = nullptr;  // Not owned.
+  raw_ptr<Delegate> delegate_ = nullptr;  // Not owned.
 
-  content::BrowserContext* context_ = nullptr;
+  raw_ptr<content::BrowserContext> context_ = nullptr;
 };
 
 }  // namespace feedback

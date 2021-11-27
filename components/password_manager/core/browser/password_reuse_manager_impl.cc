@@ -90,7 +90,7 @@ void PasswordReuseManagerImpl::Shutdown() {
     notifier_->UnsubscribeFromSigninEvents();
 
   if (reuse_detector_) {
-    background_task_runner_->DeleteSoon(FROM_HERE, reuse_detector_);
+    background_task_runner_->DeleteSoon(FROM_HERE, reuse_detector_.get());
     reuse_detector_ = nullptr;
   }
 }

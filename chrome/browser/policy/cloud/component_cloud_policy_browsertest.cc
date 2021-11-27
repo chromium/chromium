@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -241,7 +242,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   LocalPolicyTestServer test_server_;
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<ExtensionTestMessageListener> event_listener_;
-  CloudPolicyClient* client_ = nullptr;
+  raw_ptr<CloudPolicyClient> client_ = nullptr;
 };
 
 // crbug.com/1230268 not working on Lacros.

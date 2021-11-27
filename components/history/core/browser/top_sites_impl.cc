@@ -396,7 +396,7 @@ void TopSitesImpl::MoveStateToLoaded() {
     std::move(callback).Run(urls);
 
   if (history_service_)
-    history_service_observation_.Observe(history_service_);
+    history_service_observation_.Observe(history_service_.get());
 
   NotifyTopSitesLoaded();
 }

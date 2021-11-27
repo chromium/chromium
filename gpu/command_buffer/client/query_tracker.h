@@ -19,6 +19,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +42,7 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
     void FreePendingSyncs();
 
-    QuerySync* syncs;
+    raw_ptr<QuerySync> syncs;
     int32_t shm_id;
     uint32_t base_shm_offset;
     std::bitset<kSyncsPerBucket> in_use_query_syncs;
@@ -79,7 +80,7 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
  private:
   FRIEND_TEST_ALL_PREFIXES(QuerySyncManagerTest, Shrink);
 
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   base::circular_deque<std::unique_ptr<Bucket>> buckets_;
 };
 
@@ -239,10 +240,10 @@ class GLES2_IMPL_EXPORT QueryTracker {
   QuerySyncManager query_sync_manager_;
 
   // The shared memory used for synchronizing timer disjoint values.
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   int32_t disjoint_count_sync_shm_id_;
   uint32_t disjoint_count_sync_shm_offset_;
-  DisjointValueSync* disjoint_count_sync_;
+  raw_ptr<DisjointValueSync> disjoint_count_sync_;
   uint32_t local_disjoint_count_;
 };
 

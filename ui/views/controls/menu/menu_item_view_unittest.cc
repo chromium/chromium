@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -234,7 +235,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 
   // Owned by MenuRunner.
-  TestMenuItemView* menu_item_view_ = nullptr;
+  raw_ptr<TestMenuItemView> menu_item_view_ = nullptr;
 };
 
 // Test that touchable menu items are sized to fit the menu item titles within
@@ -289,7 +290,7 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestMenuItemView> root_menu_;
-  MenuItemView* test_item_ = nullptr;
+  raw_ptr<MenuItemView> test_item_ = nullptr;
   std::unique_ptr<View> submenu_parent_;
 };
 
@@ -406,7 +407,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  MenuItemView* menu_item_view_;
+  raw_ptr<MenuItemView> menu_item_view_;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;

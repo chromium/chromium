@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -79,7 +80,7 @@ class LifecycleUnitBase : public LifecycleUnit {
   const int32_t id_ = ++next_id_;
 
   // The source that owns this lifecycle unit. This can be nullptr.
-  LifecycleUnitSourceBase* source_;
+  raw_ptr<LifecycleUnitSourceBase> source_;
 
   // Current state of this LifecycleUnit.
   LifecycleUnitState state_ = LifecycleUnitState::ACTIVE;
@@ -92,7 +93,7 @@ class LifecycleUnitBase : public LifecycleUnit {
   base::TimeTicks wall_time_when_hidden_;
 
   // A clock that measures Chrome usage time.
-  UsageClock* const usage_clock_;
+  const raw_ptr<UsageClock> usage_clock_;
 
   // The Chrome usage time measured by |usage_clock_| when this LifecycleUnit
   // was last hidden, or TimeDelta::Max() if this LifecycleUnit is currently

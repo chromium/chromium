@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
@@ -129,7 +130,7 @@ class TestOnGpu : public ::testing::Test {
   virtual void TearDownOnGpu() {}
   virtual void TestBodyOnGpu() {}
 
-  TestGpuServiceHolder* gpu_service_holder_;
+  raw_ptr<TestGpuServiceHolder> gpu_service_holder_;
   base::WaitableEvent wait_;
 };
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -69,7 +70,7 @@ class RedactionTool {
 
   // Null-terminated list of first party extension IDs. We need to have this
   // passed into us because we can't refer to the code where these are defined.
-  const char* const* first_party_extension_ids_;  // Not owned.
+  raw_ptr<const char* const> first_party_extension_ids_;  // Not owned.
 
   // Map of MAC addresses discovered in redacted strings to redacted
   // representations. 11:22:33:44:55:66 gets redacted to

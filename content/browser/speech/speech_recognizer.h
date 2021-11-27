@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
@@ -39,7 +40,7 @@ class CONTENT_EXPORT SpeechRecognizer
   int session_id() const { return session_id_; }
 
  private:
-  SpeechRecognitionEventListener* listener_;
+  raw_ptr<SpeechRecognitionEventListener> listener_;
   int session_id_;
 };
 

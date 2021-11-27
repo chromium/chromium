@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -412,10 +413,10 @@ class PaymentsClient {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Provided in constructor; not owned by PaymentsClient.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Provided in constructor; not owned by PaymentsClient.
-  AccountInfoGetter* const account_info_getter_;
+  const raw_ptr<AccountInfoGetter> account_info_getter_;
 
   // The current request.
   std::unique_ptr<PaymentsRequest> request_;

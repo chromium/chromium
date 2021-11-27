@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/offline_pages/core/offline_page_archiver.h"
@@ -78,7 +79,7 @@ class OfflinePageTestArchiver : public OfflinePageArchiver {
 
  private:
   // Not owned. Outlives OfflinePageTestArchiver.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
   GURL url_;
   base::FilePath archives_dir_;
   CreateArchiveParams create_archive_params_;

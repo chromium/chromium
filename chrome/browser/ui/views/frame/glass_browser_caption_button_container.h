@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -66,12 +67,12 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // hwnd which prevent tooltips being shown for the caption buttons.
   void UpdateButtonToolTipsForWindowControlsOverlay();
 
-  GlassBrowserFrameView* const frame_view_;
-  Windows10TabSearchCaptionButton* tab_search_button_ = nullptr;
-  Windows10CaptionButton* const minimize_button_;
-  Windows10CaptionButton* const maximize_button_;
-  Windows10CaptionButton* const restore_button_;
-  Windows10CaptionButton* const close_button_;
+  const raw_ptr<GlassBrowserFrameView> frame_view_;
+  raw_ptr<Windows10TabSearchCaptionButton> tab_search_button_ = nullptr;
+  const raw_ptr<Windows10CaptionButton> minimize_button_;
+  const raw_ptr<Windows10CaptionButton> maximize_button_;
+  const raw_ptr<Windows10CaptionButton> restore_button_;
+  const raw_ptr<Windows10CaptionButton> close_button_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

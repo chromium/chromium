@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -102,7 +103,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
  private:
   std::unique_ptr<AttributionStorage> storage_;
-  ConfigurableStorageDelegate* delegate_ = nullptr;
+  raw_ptr<ConfigurableStorageDelegate> delegate_ = nullptr;
   base::SimpleTestClock clock_;
 };
 

@@ -14,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/cronet/cronet_url_request.h"
@@ -155,7 +156,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   friend class TestUtil;
 
   // Native Cronet URL Request that owns |this|.
-  CronetURLRequest* request_;
+  raw_ptr<CronetURLRequest> request_;
 
   // Java object that owns this CronetURLRequestContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

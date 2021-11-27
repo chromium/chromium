@@ -203,7 +203,7 @@ AXEventGenerator::AXEventGenerator() = default;
 
 AXEventGenerator::AXEventGenerator(AXTree* tree) : tree_(tree) {
   if (tree_) {
-    tree_event_observation_.Observe(tree_);
+    tree_event_observation_.Observe(tree_.get());
     live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
   }
 }
@@ -212,13 +212,13 @@ AXEventGenerator::~AXEventGenerator() = default;
 
 void AXEventGenerator::SetTree(AXTree* new_tree) {
   if (tree_) {
-    DCHECK(tree_event_observation_.IsObservingSource(tree_));
+    DCHECK(tree_event_observation_.IsObservingSource(tree_.get()));
     tree_event_observation_.Reset();
     live_region_tracker_.reset();
   }
   tree_ = new_tree;
   if (tree_) {
-    tree_event_observation_.Observe(tree_);
+    tree_event_observation_.Observe(tree_.get());
     live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
   }
 }

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_info.h"
@@ -567,8 +568,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // well) will only change once the RenderProcessHost is destructed. They will
   // still remain the same even if the process crashes, since in that scenario
   // the RenderProcessHost remains the same.
-  RenderProcessHost* process_;
-  AgentSchedulingGroupHost* agent_scheduling_group_;
+  raw_ptr<RenderProcessHost> process_;
+  raw_ptr<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // Describes the desired behavior when GetProcess() method needs to find a new
   // process to associate with the current SiteInstanceImpl.  If |false|, then

@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -58,7 +59,7 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
   }
 
  private:
-  CollectedCookiesViews* cookies_dialog_ = nullptr;
+  raw_ptr<CollectedCookiesViews> cookies_dialog_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialog) {

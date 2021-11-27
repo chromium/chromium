@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #include <memory>
@@ -136,7 +137,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     url_loader_.reset();
   }
 
-  absl::optional<network::ResourceRequest>*
+  raw_ptr<absl::optional<network::ResourceRequest>>
       most_recent_resource_request_;  // NOT OWNED.
   network::ResourceScheduler resource_scheduler_;
   std::unique_ptr<net::URLRequestContext> context_;

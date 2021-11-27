@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
@@ -174,7 +175,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   mojo::ReceiverSet<storage::mojom::BlobDataItemReader> receivers_;
 
   // |this| is owned by |host|, so this raw "client pointer" is safe.
-  IndexedDBDispatcherHost* host_;
+  raw_ptr<IndexedDBDispatcherHost> host_;
 
   base::FilePath file_path_;
   base::Time expected_modification_time_;

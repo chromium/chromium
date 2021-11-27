@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 
 namespace base {
@@ -57,7 +58,7 @@ class DiagnosticsController {
   ~DiagnosticsController();
 
   std::unique_ptr<DiagnosticsModel> model_;
-  DiagnosticsWriter* writer_;
+  raw_ptr<DiagnosticsWriter> writer_;
 };
 
 }  // namespace diagnostics

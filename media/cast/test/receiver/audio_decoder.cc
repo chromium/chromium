@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "third_party/opus/src/include/opus.h"
@@ -163,7 +164,7 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
   }
 
   const std::unique_ptr<uint8_t[]> decoder_memory_;
-  OpusDecoder* const opus_decoder_;
+  const raw_ptr<OpusDecoder> opus_decoder_;
   const int max_samples_per_frame_;
   const std::unique_ptr<float[]> buffer_;
 

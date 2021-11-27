@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/component_updater/android/component_loader_policy.h"
 
 #include <fcntl.h>
@@ -141,7 +142,7 @@ class AndroidComponentLoaderPolicyTest : public testing::Test {
     return OpenFileFds(temp_dir_.GetPath(), files_);
   }
 
-  JNIEnv* env_ = nullptr;
+  raw_ptr<JNIEnv> env_ = nullptr;
   std::vector<std::string> files_;
   base::HistogramTester histogram_tester_;
 

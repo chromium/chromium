@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -46,7 +47,7 @@ class ChooserDialogView : public views::DialogDelegateView,
   }
 
  private:
-  DeviceChooserContentView* device_chooser_content_view_;
+  raw_ptr<DeviceChooserContentView> device_chooser_content_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_CHOOSER_DIALOG_VIEW_H_

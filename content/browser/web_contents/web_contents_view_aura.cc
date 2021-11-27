@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -155,7 +156,7 @@ class WebDragSourceAura : public content::WebContentsObserver {
   aura::Window* window() const { return window_; }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
@@ -646,11 +647,11 @@ class WebContentsViewAura::WindowObserver
 
   void SendScreenRects() { view_->web_contents_->SendScreenRects(); }
 
-  WebContentsViewAura* view_;
+  raw_ptr<WebContentsViewAura> view_;
 
   // The parent window that hosts the constrained windows. We cache the old host
   // view so that we can unregister when it's not the parent anymore.
-  aura::Window* host_window_ = nullptr;
+  raw_ptr<aura::Window> host_window_ = nullptr;
 
   std::unique_ptr<PendingWindowChanges> pending_window_changes_;
 };

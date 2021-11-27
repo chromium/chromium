@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -1451,7 +1452,7 @@ class CONTENT_EXPORT NavigationRequest
   const bool is_synchronous_renderer_commit_;
 
   // Invariant: At least one of |loader_| or |render_frame_host_| is null.
-  RenderFrameHostImpl* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
 
   // Initialized on creation of the NavigationRequest. Sent to the renderer when
   // the navigation is ready to commit.

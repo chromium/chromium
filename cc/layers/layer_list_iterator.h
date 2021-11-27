@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 
 namespace cc {
@@ -91,7 +92,7 @@ class CC_EXPORT LayerListReverseIterator {
  private:
   void DescendToRightmostInSubtree();
 
-  Layer* current_layer_;
+  raw_ptr<Layer> current_layer_;
   std::vector<size_t> list_indices_;
 };
 

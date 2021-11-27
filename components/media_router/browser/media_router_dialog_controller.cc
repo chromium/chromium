@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -65,7 +66,7 @@ class MediaRouterDialogController::InitiatorWebContentsObserver
     dialog_controller_->CloseMediaRouterDialog();
   }
 
-  MediaRouterDialogController* const dialog_controller_;
+  const raw_ptr<MediaRouterDialogController> dialog_controller_;
 };
 
 MediaRouterDialogController::MediaRouterDialogController(

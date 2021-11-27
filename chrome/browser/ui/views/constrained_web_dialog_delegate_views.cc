@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -167,7 +168,7 @@ class WebDialogWebContentsDelegateViews
 
  private:
   base::WeakPtr<content::WebContents> initiator_web_contents_;
-  ConstrainedDialogWebView* web_view_;
+  raw_ptr<ConstrainedDialogWebView> web_view_;
 };
 
 // Views implementation of ConstrainedWebDialogDelegate.
@@ -241,7 +242,7 @@ class ConstrainedWebDialogDelegateViews
   bool closed_via_webui_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-  views::WebView* view_;
+  raw_ptr<views::WebView> view_;
 
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
 };

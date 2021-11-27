@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
@@ -175,9 +176,9 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
       extension_allowlist_observer_{this};
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  EventRouter* event_router_;
+  raw_ptr<EventRouter> event_router_;
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
@@ -292,7 +293,7 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   WebContentsData* GetOrCreateWebContentsData(
       content::WebContents* web_contents);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used to start the load |load_extension_dialog_| in the last directory that
   // was loaded.

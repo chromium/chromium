@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
@@ -108,7 +109,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
 
   bool needs_begin_frames_ = false;
   bool needs_draw_ = false;
-  RootFrameSinkClient* client_;
+  raw_ptr<RootFrameSinkClient> client_;
 
   THREAD_CHECKER(thread_checker_);
 };

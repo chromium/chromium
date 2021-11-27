@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
@@ -80,10 +81,10 @@ class TouchSelectionControllerClientManagerAndroid
  private:
   // Neither of the following pointers are owned, and both are assumed to
   // outlive this object.
-  RenderWidgetHostViewAndroid* rwhv_;
-  viz::HostFrameSinkManager* host_frame_sink_manager_;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhv_;
+  raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
-  TouchSelectionControllerClient* active_client_;
+  raw_ptr<TouchSelectionControllerClient> active_client_;
   gfx::SelectionBound manager_selection_start_;
   gfx::SelectionBound manager_selection_end_;
   base::ObserverList<TouchSelectionControllerClientManager::Observer>

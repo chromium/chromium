@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "media/base/video_transformation.h"
@@ -42,7 +43,7 @@ class CC_EXPORT VideoLayer : public Layer {
 
   // This pointer is only for passing to VideoLayerImpl's constructor. It should
   // never be dereferenced by this class.
-  VideoFrameProvider* provider_;
+  raw_ptr<VideoFrameProvider> provider_;
 
   media::VideoTransformation transform_;
 };

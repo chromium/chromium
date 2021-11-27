@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -77,7 +78,7 @@ class IqSender : public SignalStrategy::Listener {
   // Removes |request| from the list of pending requests. Called by IqRequest.
   void RemoveRequest(IqRequest* request);
 
-  SignalStrategy* signal_strategy_;
+  raw_ptr<SignalStrategy> signal_strategy_;
   IqRequestMap requests_;
 };
 
@@ -108,7 +109,7 @@ class IqRequest {
 
   void DeliverResponse(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
 
-  IqSender* sender_;
+  raw_ptr<IqSender> sender_;
   IqSender::ReplyCallback callback_;
   std::string addressee_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
@@ -163,8 +164,8 @@ class LoadingPredictorTabHelper
   base::WeakPtr<LoadingPredictor> predictor_;
 
   // The optimization guide decider to consult for remote predictions.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
-      nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<LoadingPredictorTabHelper> weak_ptr_factory_{this};

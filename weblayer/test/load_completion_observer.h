@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 #define WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -32,7 +33,7 @@ class LoadCompletionObserver : public NavigationObserver {
   // NavigationObserver implementation:
   void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
 
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   base::RunLoop run_loop_;
 };
 

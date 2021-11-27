@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -272,7 +273,7 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
   }
 
  private:
-  EventRouter* const event_router_;
+  const raw_ptr<EventRouter> event_router_;
   base::RunLoop loop_runner_;
 };
 

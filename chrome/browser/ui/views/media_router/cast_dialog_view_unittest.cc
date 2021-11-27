@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -153,7 +154,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<views::Widget> anchor_widget_;
   NiceMock<MockCastDialogController> controller_;
-  CastDialogView* dialog_ = nullptr;
+  raw_ptr<CastDialogView> dialog_ = nullptr;
   TestingProfile profile_;
 };
 

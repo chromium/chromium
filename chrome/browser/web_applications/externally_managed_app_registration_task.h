@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_REGISTRATION_TASK_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
@@ -67,10 +68,10 @@ class ExternallyManagedAppRegistrationTask
 
   void OnRegistrationTimeout();
 
-  WebAppUrlLoader* const url_loader_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<content::WebContents> web_contents_;
   RegistrationCallback callback_;
-  content::ServiceWorkerContext* service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
 
   base::OneShotTimer registration_timer_;
 

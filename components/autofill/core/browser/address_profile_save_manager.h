@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -78,11 +79,11 @@ class AddressProfileSaveManager {
 
   // A pointer to the autofill client. It is assumed that the client outlives
   // the instance of this class
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
-  PersonalDataManager* const personal_data_manager_{nullptr};
+  const raw_ptr<PersonalDataManager> personal_data_manager_{nullptr};
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };

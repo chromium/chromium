@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_
 #define CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/management/management_service.h"
 
@@ -50,7 +51,7 @@ class ProfileCloudManagementStatusProvider final
   EnterpriseManagementAuthority GetAuthority() final;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

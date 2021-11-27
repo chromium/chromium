@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -85,7 +86,7 @@ class ServiceWorkerInstalledScriptReader
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader_;
   // |client_| must outlive this.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // For meta data.
   std::unique_ptr<MetaDataSender> meta_data_sender_;

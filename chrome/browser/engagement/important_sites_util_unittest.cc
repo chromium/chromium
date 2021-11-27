@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sample_vector.h"
 #include "base/strings/utf_string_conversions.h"
@@ -125,7 +126,7 @@ class ImportantSitesUtilTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  BookmarkModel* model_ = nullptr;
+  raw_ptr<BookmarkModel> model_ = nullptr;
 };
 
 TEST_F(ImportantSitesUtilTest, TestNoImportantSites) {

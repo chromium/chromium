@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -60,7 +61,7 @@ class Transaction {
 
   ~Transaction();
  private:
-  volatile disk_cache::LruData* data_;
+  raw_ptr<volatile disk_cache::LruData> data_;
 };
 
 Transaction::Transaction(volatile disk_cache::LruData* data,

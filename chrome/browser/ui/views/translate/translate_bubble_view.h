@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/source_language_combobox_model.h"
@@ -292,25 +293,25 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   static TranslateBubbleView* translate_bubble_view_;
 
-  views::View* translate_view_ = nullptr;
-  views::View* error_view_ = nullptr;
-  views::View* advanced_view_source_ = nullptr;
-  views::View* advanced_view_target_ = nullptr;
+  raw_ptr<views::View> translate_view_ = nullptr;
+  raw_ptr<views::View> error_view_ = nullptr;
+  raw_ptr<views::View> advanced_view_source_ = nullptr;
+  raw_ptr<views::View> advanced_view_target_ = nullptr;
 
   std::unique_ptr<SourceLanguageComboboxModel> source_language_combobox_model_;
   std::unique_ptr<TargetLanguageComboboxModel> target_language_combobox_model_;
 
-  views::Combobox* source_language_combobox_ = nullptr;
-  views::Combobox* target_language_combobox_ = nullptr;
+  raw_ptr<views::Combobox> source_language_combobox_ = nullptr;
+  raw_ptr<views::Combobox> target_language_combobox_ = nullptr;
 
-  views::Checkbox* always_translate_checkbox_ = nullptr;
-  views::Checkbox* advanced_always_translate_checkbox_ = nullptr;
-  views::TabbedPane* tabbed_pane_ = nullptr;
+  raw_ptr<views::Checkbox> always_translate_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> advanced_always_translate_checkbox_ = nullptr;
+  raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
 
-  views::LabelButton* advanced_reset_button_source_ = nullptr;
-  views::LabelButton* advanced_reset_button_target_ = nullptr;
-  views::LabelButton* advanced_done_button_source_ = nullptr;
-  views::LabelButton* advanced_done_button_target_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_reset_button_source_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_reset_button_target_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_done_button_source_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_done_button_target_ = nullptr;
 
   // Default source/target language without user interaction.
   int previous_source_language_index_;

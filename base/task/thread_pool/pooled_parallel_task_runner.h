@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -43,7 +44,7 @@ class BASE_EXPORT PooledParallelTaskRunner : public TaskRunner {
   ~PooledParallelTaskRunner() override;
 
   const TaskTraits traits_;
-  PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
+  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
 
   CheckedLock lock_;
 

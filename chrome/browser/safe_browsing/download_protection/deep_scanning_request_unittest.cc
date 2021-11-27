@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -311,7 +312,7 @@ class DeepScanningRequestTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   FakeDownloadProtectionService download_protection_service_;
   download::MockDownloadItem item_;

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_details.h"
@@ -133,7 +134,7 @@ class CONTENT_EXPORT PresentationServiceImpl
 
    private:
     const GURL availability_url_;
-    PresentationServiceImpl* const service_;
+    const raw_ptr<PresentationServiceImpl> service_;
   };
 
   // Ensures the provided NewPresentationCallback is invoked exactly once
@@ -251,17 +252,17 @@ class CONTENT_EXPORT PresentationServiceImpl
   PresentationServiceDelegate* GetPresentationServiceDelegate();
 
   // The RenderFrameHost associated with this object.
-  RenderFrameHost* const render_frame_host_;
+  const raw_ptr<RenderFrameHost> render_frame_host_;
 
   // Embedder-specific delegate for controller to forward Presentation requests
   // to. Must be nullptr if current page is receiver page or
   // embedder does not support Presentation API .
-  ControllerPresentationServiceDelegate* controller_delegate_;
+  raw_ptr<ControllerPresentationServiceDelegate> controller_delegate_;
 
   // Embedder-specific delegate for receiver to forward Presentation requests
   // to. Must be nullptr if current page is receiver page or
   // embedder does not support Presentation API.
-  ReceiverPresentationServiceDelegate* receiver_delegate_;
+  raw_ptr<ReceiverPresentationServiceDelegate> receiver_delegate_;
 
   // Pointer to the PresentationController implementation in the renderer.
   mojo::Remote<blink::mojom::PresentationController>

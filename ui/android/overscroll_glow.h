@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/android/edge_effect.h"
@@ -98,7 +99,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
 
   EdgeEffect* GetOppositeEdge(int edge_index);
 
-  OverscrollGlowClient* client_;
+  raw_ptr<OverscrollGlowClient> client_;
   std::unique_ptr<EdgeEffect> edge_effects_[EDGE_COUNT];
 
   gfx::SizeF viewport_size_;

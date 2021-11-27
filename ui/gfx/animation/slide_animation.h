@@ -5,6 +5,7 @@
 #ifndef UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 #define UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -107,7 +108,7 @@ class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
   // Overridden from Animation.
   void AnimateToState(double state) override;
 
-  AnimationDelegate* target_;
+  raw_ptr<AnimationDelegate> target_;
 
   Tween::Type tween_type_ = Tween::EASE_OUT;
 

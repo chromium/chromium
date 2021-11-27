@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_UNCONSENTED_MESSAGE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_UNCONSENTED_MESSAGE_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "ui/gfx/image/image_skia.h"
@@ -29,7 +30,7 @@ class TailoredSecurityUnconsentedModalAndroid {
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<messages::MessageWrapper> message_;
   gfx::ImageSkia icon_;
 };

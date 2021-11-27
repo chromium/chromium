@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 
 namespace global_media_controls {
@@ -43,8 +44,8 @@ class MediaToolbarButtonController
 
   void UpdateToolbarButtonState();
 
-  MediaToolbarButtonControllerDelegate* const delegate_;
-  global_media_controls::MediaItemManager* const item_manager_;
+  const raw_ptr<MediaToolbarButtonControllerDelegate> delegate_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // The delegate starts hidden and isn't shown until media playback starts.
   DisplayState delegate_display_state_ = DisplayState::kHidden;

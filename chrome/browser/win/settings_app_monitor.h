@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
@@ -68,7 +69,7 @@ class SettingsAppMonitor {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Allows the use of the UI Automation API.
   std::unique_ptr<AutomationController> automation_controller_;

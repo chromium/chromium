@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -301,9 +302,9 @@ class ThreadWatcherTest : public ::testing::Test {
   static constexpr char kCrashOnHangThreadNames[] = "UI,IO";
   static constexpr char kCrashOnHangThreadData[] = "UI:12,IO:12";
 
-  CustomThreadWatcher* io_watcher_;
-  CustomThreadWatcher* ui_watcher_;
-  ThreadWatcherList* thread_watcher_list_;
+  raw_ptr<CustomThreadWatcher> io_watcher_;
+  raw_ptr<CustomThreadWatcher> ui_watcher_;
+  raw_ptr<ThreadWatcherList> thread_watcher_list_;
 
   template <typename... TaskEnvironmentTraits>
   ThreadWatcherTest(base::test::TaskEnvironment::TimeSource time_source =

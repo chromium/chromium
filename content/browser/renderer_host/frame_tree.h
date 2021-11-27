@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -116,7 +117,7 @@ class CONTENT_EXPORT FrameTree {
               bool should_descend_into_inner_trees);
 
     const std::vector<FrameTreeNode*> starting_nodes_;
-    const FrameTreeNode* const root_of_subtree_to_skip_;
+    const raw_ptr<const FrameTreeNode> root_of_subtree_to_skip_;
     const bool should_descend_into_inner_trees_;
   };
 
@@ -459,15 +460,15 @@ class CONTENT_EXPORT FrameTree {
   // |node|, but including |node| itself.
   NodeRange NodesExceptSubtree(FrameTreeNode* node);
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // These delegates are installed into all the RenderViewHosts and
   // RenderFrameHosts that we create.
-  RenderFrameHostDelegate* render_frame_delegate_;
-  RenderViewHostDelegate* render_view_delegate_;
-  RenderWidgetHostDelegate* render_widget_delegate_;
-  RenderFrameHostManager::Delegate* manager_delegate_;
-  PageDelegate* page_delegate_;
+  raw_ptr<RenderFrameHostDelegate> render_frame_delegate_;
+  raw_ptr<RenderViewHostDelegate> render_view_delegate_;
+  raw_ptr<RenderWidgetHostDelegate> render_widget_delegate_;
+  raw_ptr<RenderFrameHostManager::Delegate> manager_delegate_;
+  raw_ptr<PageDelegate> page_delegate_;
 
   // The Navigator object responsible for managing navigations on this frame
   // tree. Each FrameTreeNode will default to using it for navigation tasks in
@@ -484,7 +485,7 @@ class CONTENT_EXPORT FrameTree {
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
   // pointer to remain valid even while the FrameTreeNode is being destroyed,
   // since it's common for a node to test whether it's the root node.
-  FrameTreeNode* root_;
+  raw_ptr<FrameTreeNode> root_;
 
   int focused_frame_tree_node_id_;
 

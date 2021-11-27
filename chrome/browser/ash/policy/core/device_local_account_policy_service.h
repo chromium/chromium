@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -135,7 +136,8 @@ class DeviceLocalAccountPolicyBroker
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);
 
-  AffiliatedInvalidationServiceProvider* const invalidation_service_provider_;
+  const raw_ptr<AffiliatedInvalidationServiceProvider>
+      invalidation_service_provider_;
   const std::string account_id_;
   const std::string user_id_;
   const base::FilePath component_policy_cache_path_;
@@ -248,12 +250,12 @@ class DeviceLocalAccountPolicyService {
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  chromeos::SessionManagerClient* session_manager_client_;
-  ash::DeviceSettingsService* device_settings_service_;
-  ash::CrosSettings* cros_settings_;
-  AffiliatedInvalidationServiceProvider* invalidation_service_provider_;
+  raw_ptr<chromeos::SessionManagerClient> session_manager_client_;
+  raw_ptr<ash::DeviceSettingsService> device_settings_service_;
+  raw_ptr<ash::CrosSettings> cros_settings_;
+  raw_ptr<AffiliatedInvalidationServiceProvider> invalidation_service_provider_;
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService> device_management_service_;
 
   // The device-local account policy brokers, keyed by user ID.
   PolicyBrokerMap policy_brokers_;

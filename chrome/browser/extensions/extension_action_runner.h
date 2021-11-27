@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
@@ -229,7 +230,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   int num_page_requests_;
 
   // The associated browser context.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Whether or not the feature was used for any extensions. This may not be the
   // case if the user never enabled the scripts-require-action flag.
@@ -255,7 +256,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::CloseAction>
       default_bubble_close_action_for_testing_;
 
-  TestObserver* test_observer_;
+  raw_ptr<TestObserver> test_observer_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

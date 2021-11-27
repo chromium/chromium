@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -455,7 +456,7 @@ class DistilledPageImageLoadWaiter {
     // If they aren't loaded or the size is wrong, stay in the loop until the
     // load completes.
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        contents_,
+        contents_.get(),
         content::JsReplace("var ok = document.getElementById('main-content')"
                            "    .getElementsByTagName('img')[$1];"
                            "var bad = document.getElementById('main-content')"
@@ -469,7 +470,7 @@ class DistilledPageImageLoadWaiter {
       runner_.Quit();
   }
 
-  content::WebContents* contents_;
+  raw_ptr<content::WebContents> contents_;
   int ok_elem_;
   int ok_width_;
   int bad_elem_;

@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
@@ -145,7 +146,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
  private:
   void FetchThumbnail(const base::android::JavaRef<jobject>& j_profile);
 
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   base::android::ScopedJavaGlobalRef<jobject> object_;
   std::string thumbnail_url_;
   std::unique_ptr<BitmapFetcher> fetcher_;

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -399,7 +400,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   //
   // Delegate.  This is a weak reference which owns |this|.
   //
-  AXPlatformNodeDelegate* delegate_ = nullptr;
+  raw_ptr<AXPlatformNodeDelegate> delegate_ = nullptr;
 
   // Uses the delegate to calculate this node's PosInSet.
   absl::optional<int> GetPosInSet() const;

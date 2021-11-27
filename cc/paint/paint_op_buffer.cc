@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
@@ -903,7 +904,7 @@ class PaintOpDeserializer {
       return nullptr;
     }
 
-    UpdateTypeAndSkip(op_);
+    UpdateTypeAndSkip(op_.get());
     T* op_snapshot = op_;
     op_ = nullptr;
     return op_snapshot;
@@ -926,7 +927,7 @@ class PaintOpDeserializer {
 
  private:
   PaintOpReader reader_;
-  T* op_;
+  raw_ptr<T> op_;
 };
 
 PaintOp* AnnotateOp::Deserialize(const volatile void* input,

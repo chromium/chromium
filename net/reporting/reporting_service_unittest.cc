@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
@@ -106,7 +107,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<MockPersistentReportingStore> store_;
-  TestReportingContext* context_;
+  raw_ptr<TestReportingContext> context_;
   std::unique_ptr<ReportingService> service_;
 };
 

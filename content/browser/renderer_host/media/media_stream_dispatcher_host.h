@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -128,7 +129,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   const int render_process_id_;
   const int render_frame_id_;
   const int requester_id_;
-  MediaStreamManager* media_stream_manager_;
+  raw_ptr<MediaStreamManager> media_stream_manager_;
   mojo::Remote<blink::mojom::MediaStreamDeviceObserver>
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;

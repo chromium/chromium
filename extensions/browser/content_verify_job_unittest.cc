@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/version.h"
@@ -252,7 +253,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
   scoped_refptr<InfoMap> extension_info_map_;
   scoped_refptr<ContentVerifier> content_verifier_;
-  MockContentVerifierDelegate* content_verifier_delegate_ =
+  raw_ptr<MockContentVerifierDelegate> content_verifier_delegate_ =
       nullptr;  // Owned by |content_verifier_|.
   content::TestBrowserContext testing_context_;
 };

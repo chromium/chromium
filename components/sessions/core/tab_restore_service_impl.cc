@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -549,11 +550,11 @@ class TabRestoreServiceImpl::PersistenceDelegate
 
  private:
   // The associated client.
-  TabRestoreServiceClient* client_;
+  raw_ptr<TabRestoreServiceClient> client_;
 
   std::unique_ptr<CommandStorageManager> command_storage_manager_;
 
-  TabRestoreServiceHelper* tab_restore_service_helper_;
+  raw_ptr<TabRestoreServiceHelper> tab_restore_service_helper_;
 
   // The number of entries to write.
   int entries_to_write_;

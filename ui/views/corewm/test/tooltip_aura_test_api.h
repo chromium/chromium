@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace gfx {
 class Rect;
 class RenderText;
@@ -40,7 +42,7 @@ class TooltipAuraTestApi {
                              const TooltipPosition& position);
 
  private:
-  TooltipAura* tooltip_aura_;
+  raw_ptr<TooltipAura> tooltip_aura_;
 };
 
 }  // namespace test

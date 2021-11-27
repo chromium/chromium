@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
 #include "media/formats/common/offset_byte_queue.h"
@@ -113,7 +114,7 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   OffsetByteQueue queue_;
 

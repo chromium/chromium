@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_METADATA_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_METADATA_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -101,7 +102,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Not owned.
-  FrameTokenMessageQueue* const frame_token_message_queue_;
+  const raw_ptr<FrameTokenMessageQueue> frame_token_message_queue_;
 
   mojo::Receiver<cc::mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_receiver_{this};

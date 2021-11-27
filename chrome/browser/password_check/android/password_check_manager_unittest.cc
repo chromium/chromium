@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -225,14 +226,15 @@ class PasswordCheckManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   TestingProfile profile_;
-  BulkLeakCheckService* service_ =
+  raw_ptr<BulkLeakCheckService> service_ =
       CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
-  syncer::TestSyncService* sync_service_ = CreateAndUseSyncService(&profile_);
+  raw_ptr<syncer::TestSyncService> sync_service_ =
+      CreateAndUseSyncService(&profile_);
   NiceMock<MockPasswordCheckManagerObserver> mock_observer_;
-  MockPasswordScriptsFetcher* fetcher_ =
+  raw_ptr<MockPasswordScriptsFetcher> fetcher_ =
       CreateAndUseMockPasswordScriptsFetcher(&profile_);
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PasswordCheckManager> manager_;

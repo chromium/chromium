@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -269,7 +270,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
-  SurfaceManager* surface_manager_;
+  raw_ptr<SurfaceManager> surface_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
 

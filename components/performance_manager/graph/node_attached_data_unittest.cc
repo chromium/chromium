@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -117,7 +118,7 @@ class BarData : public ExternalNodeAttachedDataImpl<BarData> {
 
   ~BarData() override = default;
 
-  const PageNode* page_node_ = nullptr;
+  raw_ptr<const PageNode> page_node_ = nullptr;
 };
 
 }  // namespace

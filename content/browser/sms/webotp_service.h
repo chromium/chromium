@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -86,7 +87,7 @@ class CONTENT_EXPORT WebOTPService
   // |fetcher_| is safe because all instances of SmsFetcher are owned
   // by the browser context, which transitively (through RenderFrameHost) owns
   // and outlives this class.
-  SmsFetcher* fetcher_;
+  raw_ptr<SmsFetcher> fetcher_;
 
   const OriginList origin_list_;
   ReceiveCallback callback_;
@@ -102,7 +103,7 @@ class CONTENT_EXPORT WebOTPService
   std::unique_ptr<UserConsentHandler> consent_handler_;
   // This is used to inject a mock consent handler for testing and it is owned
   // by test code.
-  UserConsentHandler* consent_handler_for_test_{nullptr};
+  raw_ptr<UserConsentHandler> consent_handler_for_test_{nullptr};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequence_bound.h"
@@ -487,7 +488,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_;
-  FileSystemAccessPermissionContext* permission_context_;
+  raw_ptr<FileSystemAccessPermissionContext> permission_context_;
 
   // All the mojo receivers for this FileSystemAccessManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on

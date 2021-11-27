@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
 #include "services/device/public/cpp/hid/hid_report_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -83,7 +84,7 @@ class HidCollection {
       HidItemStateTable& state);
 
   // The parent collection, or nullptr if this is a top level collection.
-  HidCollection* const parent_;
+  const raw_ptr<HidCollection> parent_;
 
   // The children of this collection in the order they were encountered in the
   // report descriptor.

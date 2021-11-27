@@ -300,5 +300,5 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   // Stop the sign-in: hide and clear the toolbar.
   toolbar_->ClearToolbar();
   toolbar_->SetVisible(false);
-  std::move(callback_).Run(profile_, std::move(contents_), is_saml);
+  std::move(callback_).Run(profile_.get(), std::move(contents_), is_saml);
 }

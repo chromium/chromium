@@ -9,6 +9,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
@@ -99,8 +100,8 @@ class InProcessContextFactory : public ContextFactory {
   bool use_test_surface_;
   bool disable_vsync_ = false;
   double refresh_rate_ = 60.0;
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
-  viz::FrameSinkManagerImpl* const frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
+  const raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
 
   viz::RendererSettings renderer_settings_;
   viz::DebugRendererSettings debug_settings_;

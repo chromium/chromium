@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -107,7 +108,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   // Used when constructed by NetworkContext.
   // The NetworkContext owns `this`.
-  NetworkContext* const context_ = nullptr;
+  const raw_ptr<NetworkContext> context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
   // If false, ResourceRequests cannot have their `trusted_params` fields set.
@@ -138,7 +139,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   // Accessed by instances in `loaders_` too. Since the factory outlives them,
   // it's safe.
-  const OriginAccessList* const origin_access_list_;
+  const raw_ptr<const OriginAccessList> origin_access_list_;
 
   static bool allow_external_preflights_for_testing_;
 };

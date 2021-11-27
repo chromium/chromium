@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -367,20 +368,21 @@ class TabImpl : public Tab,
 
   void EnterFullscreenImpl();
 
-  BrowserImpl* browser_ = nullptr;
-  ErrorPageDelegate* error_page_delegate_ = nullptr;
-  FullscreenDelegate* fullscreen_delegate_ = nullptr;
-  NewTabDelegate* new_tab_delegate_ = nullptr;
-  GoogleAccountsDelegate* google_accounts_delegate_ = nullptr;
-  ProfileImpl* profile_;
+  raw_ptr<BrowserImpl> browser_ = nullptr;
+  raw_ptr<ErrorPageDelegate> error_page_delegate_ = nullptr;
+  raw_ptr<FullscreenDelegate> fullscreen_delegate_ = nullptr;
+  raw_ptr<NewTabDelegate> new_tab_delegate_ = nullptr;
+  raw_ptr<GoogleAccountsDelegate> google_accounts_delegate_ = nullptr;
+  raw_ptr<ProfileImpl> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NavigationControllerImpl> navigation_controller_;
   base::ObserverList<TabObserver>::Unchecked observers_;
   base::CallbackListSubscription locale_change_subscription_;
 
 #if defined(OS_ANDROID)
-  BrowserControlsContainerView* top_controls_container_view_ = nullptr;
-  BrowserControlsContainerView* bottom_controls_container_view_ = nullptr;
+  raw_ptr<BrowserControlsContainerView> top_controls_container_view_ = nullptr;
+  raw_ptr<BrowserControlsContainerView> bottom_controls_container_view_ =
+      nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
   std::unique_ptr<BrowserControlsNavigationStateHandler>
       browser_controls_navigation_state_handler_;

@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
@@ -253,7 +254,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
       const TrustTokenRedemptionRecord& record,
       const std::vector<std::string>& headers_to_sign);
 
-  TrustTokenStore* token_store_;
+  raw_ptr<TrustTokenStore> token_store_;
 
   Params params_;
 

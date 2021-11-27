@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -210,7 +211,7 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
 
     scoped_refptr<ReceivedSyncMsgQueue> received_sync_msgs_;
 
-    base::WaitableEvent* shutdown_event_;
+    raw_ptr<base::WaitableEvent> shutdown_event_;
     base::WaitableEventWatcher shutdown_watcher_;
     base::WaitableEventWatcher::EventCallback shutdown_watcher_callback_;
     int restrict_dispatch_group_;

@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
@@ -101,11 +102,11 @@ class ClassPropertyMoveSetter : public PropertySetterBase {
   ~ClassPropertyMoveSetter() override = default;
 
   void SetProperty(View* obj) override {
-    static_cast<TClass*>(obj)->SetProperty(property_, std::move(value_));
+    static_cast<TClass*>(obj)->SetProperty(property_.get(), std::move(value_));
   }
 
  private:
-  const ui::ClassProperty<TValue*>* property_;
+  raw_ptr<const ui::ClassProperty<TValue*>> property_;
   TValue value_;
 };
 
@@ -125,7 +126,7 @@ class ClassPropertyUniquePtrSetter : public PropertySetterBase {
   }
 
  private:
-  const ui::ClassProperty<TValue*>* property_;
+  raw_ptr<const ui::ClassProperty<TValue*>> property_;
   std::unique_ptr<TValue> value_;
 };
 

@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -89,7 +90,7 @@ class AppLoadService : public KeyedService,
   // Map of extension id to reload action. Absence from the map implies
   // no action.
   std::map<std::string, PostReloadAction> post_reload_actions_;
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   base::ScopedObservation<extensions::ExtensionHostRegistry,
                           extensions::ExtensionHostRegistry::Observer>

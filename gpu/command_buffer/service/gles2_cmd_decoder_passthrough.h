@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -560,7 +561,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   static const CommandInfo command_info[kNumCommands - kFirstGLES2Command];
 
   // The GLApi to make the gl calls on.
-  gl::GLApi* api_ = nullptr;
+  raw_ptr<gl::GLApi> api_ = nullptr;
 
   // The GL context this decoder renders to on behalf of the client.
   scoped_refptr<gl::GLSurface> surface_;
@@ -581,7 +582,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool bind_generates_resource_;
 
   // Mappings from client side IDs to service side IDs for shared objects
-  PassthroughResources* resources_ = nullptr;
+  raw_ptr<PassthroughResources> resources_ = nullptr;
 
   // Mappings from client side IDs to service side IDs for per-context objects
   ClientServiceMap<GLuint, GLuint> framebuffer_id_map_;
@@ -590,7 +591,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   ClientServiceMap<GLuint, GLuint> vertex_array_id_map_;
 
   // Mailboxes
-  MailboxManager* mailbox_manager_ = nullptr;
+  raw_ptr<MailboxManager> mailbox_manager_ = nullptr;
 
   std::unique_ptr<GpuFenceManager> gpu_fence_manager_;
 
@@ -682,7 +683,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     GLuint service_id = 0;
 
     scoped_refptr<gpu::Buffer> shm;
-    QuerySync* sync = nullptr;
+    raw_ptr<QuerySync> sync = nullptr;
     base::subtle::Atomic32 submit_count = 0;
 
     std::unique_ptr<gl::GLFence> commands_completed_fence;
@@ -707,7 +708,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     GLuint service_id = 0;
     scoped_refptr<gpu::Buffer> shm;
-    QuerySync* sync = nullptr;
+    raw_ptr<QuerySync> sync = nullptr;
 
     // Time at which the commands for this query started processing. This is
     // used to ensure we only include the time when the decoder is scheduled in
@@ -793,7 +794,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     void Resize(const gfx::Size& new_size);
     void Destroy(bool have_context);
 
-    gl::GLApi* api;
+    raw_ptr<gl::GLApi> api;
 
     scoped_refptr<TexturePassthrough> texture;
 
@@ -824,7 +825,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     bool Resize(const gfx::Size& new_size, const FeatureInfo* feature_info);
     void Destroy(bool have_context);
 
-    gl::GLApi* api;
+    raw_ptr<gl::GLApi> api;
     bool supports_separate_fbo_bindings = false;
 
     // Service ID of the framebuffer

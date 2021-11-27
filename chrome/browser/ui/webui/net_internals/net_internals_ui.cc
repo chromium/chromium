@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,7 +95,7 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnCloseIdleSockets(const base::ListValue* list);
   void OnFlushSocketPools(const base::ListValue* list);
 
-  content::WebUI* web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
   base::WeakPtrFactory<NetInternalsMessageHandler> weak_factory_{this};
 };
 

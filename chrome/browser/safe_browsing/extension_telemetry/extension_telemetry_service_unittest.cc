@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,9 +76,9 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_;
-  extensions::ExtensionService* extension_service_;
-  extensions::ExtensionPrefs* extension_prefs_;
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
+  raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 };
 
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()

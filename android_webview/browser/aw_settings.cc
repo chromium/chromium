@@ -15,6 +15,7 @@
 #include "android_webview/common/aw_content_client.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"
@@ -61,11 +62,11 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwSettingsUserData* data = static_cast<AwSettingsUserData*>(
         web_contents->GetUserData(kAwSettingsUserDataKey));
-    return data ? data->settings_ : NULL;
+    return data ? data->settings_.get() : NULL;
   }
 
  private:
-  AwSettings* settings_;
+  raw_ptr<AwSettings> settings_;
 };
 
 AwSettings::AwSettings(JNIEnv* env,

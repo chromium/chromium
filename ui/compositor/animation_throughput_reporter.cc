@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/animation/animation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -132,7 +133,7 @@ class AnimationThroughputReporter::AnimationTracker
   // Whether this class should delete itself on animation ended.
   bool should_delete_ = false;
 
-  LayerAnimator* const animator_;
+  const raw_ptr<LayerAnimator> animator_;
 
   absl::optional<ThroughputTracker> throughput_tracker_;
 

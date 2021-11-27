@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -107,7 +108,7 @@ class BulkLeakCheckTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   ::testing::StrictMock<MockBulkLeakCheckDelegateInterface> delegate_;
-  MockLeakDetectionRequestFactory* request_factory_;
+  raw_ptr<MockLeakDetectionRequestFactory> request_factory_;
   BulkLeakCheckImpl bulk_check_;
 };
 

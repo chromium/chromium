@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -73,8 +74,8 @@ class WebAuthenticationProxyService
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  EventRouter* event_router_ = nullptr;
-  ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<EventRouter> event_router_ = nullptr;
+  raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
 
   // The extension that is currently acting as the WebAuthn request proxy, if
   // any. An extension becomes the active proxy by calling `attach()`. It

@@ -6,6 +6,7 @@
 #define CC_BASE_UNIQUE_NOTIFIER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/base_export.h"
 
@@ -41,7 +42,7 @@ class CC_BASE_EXPORT UniqueNotifier {
   void Notify();
 
   // TODO(dcheng): How come this doesn't need to hold a ref to the task runner?
-  base::SequencedTaskRunner* const task_runner_;
+  const raw_ptr<base::SequencedTaskRunner> task_runner_;
   const base::RepeatingClosure closure_;
 
   // Lock should be held before modifying |notification_pending_|.

@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,7 +40,7 @@ class ViewVisibilityWaiter : public views::ViewObserver {
   explicit ViewVisibilityWaiter(views::View* observed_view,
                                 bool expected_visible)
       : view_(observed_view), expected_visible_(expected_visible) {
-    observation_.Observe(view_);
+    observation_.Observe(view_.get());
   }
   ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
   ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
@@ -61,7 +62,7 @@ class ViewVisibilityWaiter : public views::ViewObserver {
       run_loop_.Quit();
   }
 
-  views::View* view_;
+  raw_ptr<views::View> view_;
   const bool expected_visible_;
   base::RunLoop run_loop_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_action.h"
 #include "chrome/browser/extensions/api/declarative_content/content_condition.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -107,7 +108,7 @@ class ChromeContentRulesRegistry
 
     ~ContentRule();
 
-    const Extension* extension;
+    raw_ptr<const Extension> extension;
     std::vector<std::unique_ptr<const ContentCondition>> conditions;
     std::vector<std::unique_ptr<const ContentAction>> actions;
     int priority;

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
@@ -148,7 +149,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
   // Not owned. Guaranteed to outlive |this|.
-  OptimizationGuideModelProvider* model_provider_
+  raw_ptr<OptimizationGuideModelProvider> model_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   const proto::OptimizationTarget optimization_target_;

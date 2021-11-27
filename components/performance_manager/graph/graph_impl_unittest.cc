@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -155,7 +156,7 @@ class Foo : public GraphOwned {
  private:
   bool passed_to_called_ = false;
   bool taken_from_called_ = false;
-  int* destructor_count_ = nullptr;
+  raw_ptr<int> destructor_count_ = nullptr;
 };
 
 }  // namespace

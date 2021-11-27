@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -78,7 +79,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   void Close();
 
  private:
-  DeviceChooserContentView* device_chooser_content_view_ = nullptr;
+  raw_ptr<DeviceChooserContentView> device_chooser_content_view_ = nullptr;
 
   base::WeakPtrFactory<ChooserBubbleUiViewDelegate> weak_ptr_factory_{this};
 };
@@ -112,7 +113,7 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
-  AddChildView(device_chooser_content_view_);
+  AddChildView(device_chooser_content_view_.get());
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
 

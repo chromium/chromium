@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -152,7 +153,7 @@ class TabsUpdateFunction : public ExtensionFunction {
                  std::string* error);
   ResponseValue GetResult();
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
  private:
   ResponseAction Run() override;

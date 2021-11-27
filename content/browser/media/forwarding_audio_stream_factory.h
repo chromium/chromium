@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/audio_muting_session.h"
@@ -126,7 +127,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
 
-    media::UserInputMonitorBase* const user_input_monitor_;
+    const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
 
     // Used for posting tasks the UI thread to communicate when a loopback
     // stream is started/stopped. Weak since |this| on the IO thread outlives

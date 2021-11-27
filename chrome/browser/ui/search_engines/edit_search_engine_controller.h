@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -79,14 +80,14 @@ class EditSearchEngineController {
   // The TemplateURL we're displaying information for. It may be nullptr. If we
   // have a keyword_editor_view, we assume that this TemplateURL is already in
   // the TemplateURLService; if not, we assume it isn't.
-  TemplateURL* template_url_;
+  raw_ptr<TemplateURL> template_url_;
 
   // We may have been created by this, in which case we will call back to it on
   // success to add/modify the entry.  May be nullptr.
-  EditSearchEngineControllerDelegate* edit_keyword_delegate_;
+  raw_ptr<EditSearchEngineControllerDelegate> edit_keyword_delegate_;
 
   // Profile whose TemplateURLService we're modifying.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_EDIT_SEARCH_ENGINE_CONTROLLER_H_

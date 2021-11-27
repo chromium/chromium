@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
@@ -55,11 +56,11 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     void OnFileCanWriteWithoutBlocking(int fd, MessagePumpLibevent* pump);
 
     std::unique_ptr<event> event_;
-    MessagePumpLibevent* pump_ = nullptr;
-    FdWatcher* watcher_ = nullptr;
+    raw_ptr<MessagePumpLibevent> pump_ = nullptr;
+    raw_ptr<FdWatcher> watcher_ = nullptr;
     // If this pointer is non-NULL, the pointee is set to true in the
     // destructor.
-    bool* was_destroyed_ = nullptr;
+    raw_ptr<bool> was_destroyed_ = nullptr;
   };
 
   MessagePumpLibevent();
@@ -113,14 +114,14 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   // Libevent dispatcher.  Watches all sockets registered with it, and sends
   // readiness callbacks when a socket is ready for I/O.
-  event_base* const event_base_;
+  const raw_ptr<event_base> event_base_;
 
   // ... write end; ScheduleWork() writes a single byte to it
   int wakeup_pipe_in_ = -1;
   // ... read end; OnWakeup reads it and then breaks Run() out of its sleep
   int wakeup_pipe_out_ = -1;
   // ... libevent wrapper for read end
-  event* wakeup_event_ = nullptr;
+  raw_ptr<event> wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
 };

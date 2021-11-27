@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -825,7 +826,7 @@ TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
   ConfigurableAttributionTestBrowserClient allowed_browser_client;
 
   const struct {
-    TestContentBrowserClient* browser_client;
+    raw_ptr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
       {&allowed_browser_client, true},
@@ -851,7 +852,7 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
   ConfigurableAttributionTestBrowserClient allowed_browser_client;
 
   const struct {
-    TestContentBrowserClient* browser_client;
+    raw_ptr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
       {&allowed_browser_client, true},

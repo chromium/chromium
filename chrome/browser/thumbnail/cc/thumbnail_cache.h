@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -187,7 +188,7 @@ class ThumbnailCache : ThumbnailDelegate {
   TabIdList visible_ids_;
   TabId primary_tab_id_ = -1;
 
-  ui::UIResourceProvider* ui_resource_provider_;
+  raw_ptr<ui::UIResourceProvider> ui_resource_provider_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_;

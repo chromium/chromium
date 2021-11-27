@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 
@@ -57,7 +58,7 @@ class ContactInfoEditorViewController : public EditorViewController {
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
                                  autofill::ServerFieldType type);
 
-  autofill::AutofillProfile* profile_to_edit_;
+  raw_ptr<autofill::AutofillProfile> profile_to_edit_;
 
   // Called when |profile_to_edit_| was successfully edited.
   base::OnceClosure on_edited_;
@@ -90,7 +91,7 @@ class ContactInfoEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class. Never null.
-    ContactInfoEditorViewController* controller_;
+    raw_ptr<ContactInfoEditorViewController> controller_;
     const std::string& locale_;
   };
 };

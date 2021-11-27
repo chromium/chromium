@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 
@@ -49,7 +50,7 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
       system_profile_providers_;
 #if defined(OS_WIN)
   // owned by |system_profile_providers_|.
-  MetricsProvider* av_metrics_provider_ = nullptr;
+  raw_ptr<MetricsProvider> av_metrics_provider_ = nullptr;
 #endif
 };
 

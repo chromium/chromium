@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -133,7 +134,7 @@ class ProfilePickerWidget : public views::Widget {
   }
 
  private:
-  ProfilePickerView* const profile_picker_view_;
+  const raw_ptr<ProfilePickerView> profile_picker_view_;
 };
 
 }  // namespace

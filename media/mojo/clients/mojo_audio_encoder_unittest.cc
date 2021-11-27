@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -139,7 +140,7 @@ class MojoAudioEncoderTest : public ::testing::Test {
   // Mojo server-side
   std::unique_ptr<mojo::Receiver<mojom::AudioEncoder>> receiver_;
   std::unique_ptr<MojoAudioEncoderService> audio_encoder_service_;
-  StrictMock<MockAudioEncoder>* mock_audio_encoder_ = nullptr;
+  raw_ptr<StrictMock<MockAudioEncoder>> mock_audio_encoder_ = nullptr;
 };
 
 TEST_F(MojoAudioEncoderTest, Initialize_Success) {

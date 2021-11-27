@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -190,7 +191,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // compositor.
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
 
-  TextureLayerClient* client_;
+  raw_ptr<TextureLayerClient> client_;
 
   bool flipped_ = true;
   bool nearest_neighbor_ = false;

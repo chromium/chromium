@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -133,7 +134,7 @@ class MockBindings {
     }
 
    private:
-    MockBindings* bindings_;
+    raw_ptr<MockBindings> bindings_;
     base::ThreadChecker thread_checker_;
   };
 
@@ -143,7 +144,7 @@ class MockBindings {
 
   std::vector<std::string> alerts_;
   std::vector<std::pair<int, std::string>> errors_;
-  ProxyHostResolver* const host_resolver_;
+  const raw_ptr<ProxyHostResolver> host_resolver_;
   base::OnceClosure error_callback_;
   net::EventWaiter<Event> waiter_;
 };

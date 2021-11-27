@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/remoting/end2end_test_renderer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -241,7 +242,7 @@ class End2EndTestRenderer::TestRemotee : public mojom::Remotee {
   void OnVideoNaturalSizeChange(const gfx::Size& size) override {}
 
  private:
-  RendererController* controller_;
+  raw_ptr<RendererController> controller_;
 
   std::unique_ptr<MojoDecoderBufferWriter> audio_buffer_writer_;
   std::unique_ptr<MojoDecoderBufferWriter> video_buffer_writer_;

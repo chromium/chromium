@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -47,7 +48,7 @@ class AccessibilityUIObserver : public content::WebContentsObserver {
       const content::AXEventNotificationDetails& details) override;
 
  private:
-  std::vector<std::string>* event_logs_;
+  raw_ptr<std::vector<std::string>> event_logs_;
 };
 
 // Manages messages sent from accessibility.js via json.

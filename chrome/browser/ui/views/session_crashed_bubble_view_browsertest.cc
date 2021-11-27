@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -36,7 +37,7 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   }
 
  protected:
-  views::BubbleDialogDelegate* crash_bubble_;
+  raw_ptr<views::BubbleDialogDelegate> crash_bubble_;
 };
 
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,

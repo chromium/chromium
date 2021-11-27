@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_INSTALLER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_INSTALLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -38,7 +39,7 @@ class SyncedExtensionInstaller : public content::NotificationObserver {
  private:
   void DoInstallSyncedExtensions();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<SyncedExtensionInstaller> weak_ptr_factory_{this};

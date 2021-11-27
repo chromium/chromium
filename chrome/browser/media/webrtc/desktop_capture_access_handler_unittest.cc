@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -150,7 +151,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 #endif
 
  protected:
-  FakeDesktopMediaPickerFactory* picker_factory_;
+  raw_ptr<FakeDesktopMediaPickerFactory> picker_factory_;
   std::unique_ptr<DesktopCaptureAccessHandler> access_handler_;
 };
 

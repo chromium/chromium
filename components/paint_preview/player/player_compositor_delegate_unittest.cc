@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -234,7 +235,7 @@ class PlayerCompositorDelegateImpl : public PlayerCompositorDelegate {
   }
 
  private:
-  base::MemoryPressureMonitor* memory_pressure_monitor_{nullptr};
+  raw_ptr<base::MemoryPressureMonitor> memory_pressure_monitor_{nullptr};
   CompositorStatus expected_status_{CompositorStatus::OK};
   bool status_checked_{false};
   float expected_scale_factor_{0.0};

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -108,7 +109,7 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   DetectionCallback detection_callback_;
 
-  network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   // Test time used by unit tests.

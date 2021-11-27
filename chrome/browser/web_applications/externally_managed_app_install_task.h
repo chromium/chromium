@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
@@ -104,13 +105,13 @@ class ExternallyManagedAppInstallTask {
                         base::ScopedClosureRunner scoped_closure,
                         const OsHooksErrors os_hooks_errors);
 
-  Profile* const profile_;
-  WebAppUrlLoader* const url_loader_;
-  WebAppRegistrar* const registrar_;
-  OsIntegrationManager* const os_integration_manager_;
-  WebAppInstallFinalizer* const install_finalizer_;
-  WebAppInstallManager* const install_manager_;
-  WebAppUiManager* const ui_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<WebAppRegistrar> registrar_;
+  const raw_ptr<OsIntegrationManager> os_integration_manager_;
+  const raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  const raw_ptr<WebAppInstallManager> install_manager_;
+  const raw_ptr<WebAppUiManager> ui_manager_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 

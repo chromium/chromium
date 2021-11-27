@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/service_worker_client.h"
@@ -217,11 +218,11 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       service_worker_context_observation_{this};
 
   // Used to retrieve an existing process node from its render process ID.
-  ProcessNodeSource* const process_node_source_;
+  const raw_ptr<ProcessNodeSource> process_node_source_;
 
   // Used to retrieve an existing frame node from its render process ID and
   // frame ID. Also allows to subscribe to a frame's deletion notification.
-  FrameNodeSource* const frame_node_source_;
+  const raw_ptr<FrameNodeSource> frame_node_source_;
 
   // Maps each dedicated worker ID to its worker node.
   base::flat_map<blink::DedicatedWorkerToken, std::unique_ptr<WorkerNodeImpl>>

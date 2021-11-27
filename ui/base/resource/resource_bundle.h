@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
@@ -515,7 +516,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // This pointer is guaranteed to outlive the ResourceBundle instance and may
   // be null.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Protects |locale_resources_data_|.
   std::unique_ptr<base::Lock> locale_resources_data_lock_;

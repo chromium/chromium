@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -90,7 +91,7 @@ class TreeNodeIterator {
   struct Position {
     Position(PositionNodeType* node, size_t index) : node(node), index(index) {}
 
-    PositionNodeType* node;
+    raw_ptr<PositionNodeType> node;
     size_t index;
   };
 

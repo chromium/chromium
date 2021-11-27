@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -69,8 +70,8 @@ class ContentPasswordManagerDriverFactory
   std::map<content::RenderFrameHost*, ContentPasswordManagerDriver>
       frame_driver_map_;
 
-  PasswordManagerClient* password_client_;
-  autofill::AutofillClient* autofill_client_;
+  raw_ptr<PasswordManagerClient> password_client_;
+  raw_ptr<autofill::AutofillClient> autofill_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

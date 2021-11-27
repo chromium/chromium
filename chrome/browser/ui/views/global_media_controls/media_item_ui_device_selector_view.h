@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
@@ -141,7 +142,7 @@ class MediaItemUIDeviceSelectorView
   bool is_audio_device_switching_enabled_ = false;
   bool has_cast_device_ = false;
   const std::string item_id_;
-  MediaItemUIDeviceSelectorDelegate* const delegate_;
+  const raw_ptr<MediaItemUIDeviceSelectorDelegate> delegate_;
   std::string current_device_id_ =
       media::AudioDeviceDescription::kDefaultDeviceId;
   SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;
@@ -149,16 +150,16 @@ class MediaItemUIDeviceSelectorView
   global_media_controls::GlobalMediaControlsEntryPoint const entry_point_;
 
   // Child views
-  AudioDeviceEntryView* current_audio_device_entry_view_ = nullptr;
-  views::View* expand_button_strip_ = nullptr;
-  ExpandDeviceSelectorLabel* expand_label_ = nullptr;
-  ExpandDeviceSelectorButton* dropdown_button_ = nullptr;
-  views::View* device_entry_views_container_ = nullptr;
+  raw_ptr<AudioDeviceEntryView> current_audio_device_entry_view_ = nullptr;
+  raw_ptr<views::View> expand_button_strip_ = nullptr;
+  raw_ptr<ExpandDeviceSelectorLabel> expand_label_ = nullptr;
+  raw_ptr<ExpandDeviceSelectorButton> dropdown_button_ = nullptr;
+  raw_ptr<views::View> device_entry_views_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
-  global_media_controls::MediaItemUIView* media_item_ui_ = nullptr;
+  raw_ptr<global_media_controls::MediaItemUIView> media_item_ui_ = nullptr;
 
   std::unique_ptr<media_router::CastDialogController> cast_controller_;
 

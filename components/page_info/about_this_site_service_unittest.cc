@@ -4,6 +4,7 @@
 
 #include "components/page_info/about_this_site_service.h"
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/about_this_site_validation.h"
@@ -90,7 +91,7 @@ class AboutThisSiteServiceTest : public testing::Test {
   AboutThisSiteService* service() { return service_.get(); }
 
  private:
-  MockAboutThisSiteServiceClient* client_;
+  raw_ptr<MockAboutThisSiteServiceClient> client_;
   std::unique_ptr<AboutThisSiteService> service_;
 };
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -61,12 +62,12 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
 
   void CheckStoresForReuse(const std::u16string& input);
 
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
   std::u16string input_characters_;
   GURL main_frame_url_;
   base::Time last_keystroke_time_;
   // Used to retrieve the current time, in base::Time units.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   bool reuse_on_this_page_was_found_ = false;
 };
 

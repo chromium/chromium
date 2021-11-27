@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_BROWSER_BROWSER_DEVICE_TRUST_CONNECTOR_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_BROWSER_BROWSER_DEVICE_TRUST_CONNECTOR_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
 class PrefService;
@@ -34,7 +35,7 @@ class BrowserDeviceTrustConnectorService : public DeviceTrustConnectorService {
   void OnConnectorEnabled() override;
 
  private:
-  DeviceTrustKeyManager* key_manager_;
+  raw_ptr<DeviceTrustKeyManager> key_manager_;
 };
 
 }  // namespace enterprise_connectors

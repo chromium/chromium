@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -245,7 +246,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // Holds information about a queued synchronous message or reply.
   struct QueuedMessage {
     QueuedMessage(Message* m, SyncContext* c) : message(m), context(c) { }
-    Message* message;
+    raw_ptr<Message> message;
     scoped_refptr<SyncChannel::SyncContext> context;
   };
 
@@ -270,7 +271,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // in lieu of actually dispatching messages. This is used by
   // SyncChannel::WaitForReply to restrict the scope of queued messages we're
   // allowed to process while it's waiting.
-  bool* dispatch_flag_ = nullptr;
+  raw_ptr<bool> dispatch_flag_ = nullptr;
 
   // Watches |dispatch_event_| during all sync handle watches on this thread.
   std::unique_ptr<mojo::SyncEventWatcher> sync_dispatch_watcher_;

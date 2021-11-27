@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
@@ -142,7 +143,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   }
 
   void Initialize() {
-    EXPECT_CALL(*vda_, Initialize(_, client_)).WillOnce(Return(true));
+    EXPECT_CALL(*vda_, Initialize(_, client_.get())).WillOnce(Return(true));
     EXPECT_CALL(*vda_, TryToSetupDecodeOnSeparateThread(_, _))
         .WillOnce(Return(GetParam()));
     EXPECT_CALL(init_cb_, Run(IsOkStatus()));
@@ -306,12 +307,12 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> reset_cb_;
 
   scoped_refptr<FakeCommandBufferHelper> cbh_;
-  testing::StrictMock<MockVideoDecodeAccelerator>* vda_;
+  raw_ptr<testing::StrictMock<MockVideoDecodeAccelerator>> vda_;
   std::unique_ptr<VideoDecodeAccelerator> owned_vda_;
   scoped_refptr<PictureBufferManager> pbm_;
   std::unique_ptr<AsyncDestroyVideoDecoder<VdaVideoDecoder>> vdavd_;
 
-  VideoDecodeAccelerator::Client* client_;
+  raw_ptr<VideoDecodeAccelerator::Client> client_;
   uint64_t next_release_count_ = 1;
 };
 
@@ -344,7 +345,7 @@ TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedCodec) {
 }
 
 TEST_P(VdaVideoDecoderTest, Initialize_RejectedByVda) {
-  EXPECT_CALL(*vda_, Initialize(_, client_)).WillOnce(Return(false));
+  EXPECT_CALL(*vda_, Initialize(_, client_.get())).WillOnce(Return(false));
   InitializeWithConfig(VideoDecoderConfig(
       VideoCodec::kVP9, VP9PROFILE_PROFILE0,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
@@ -426,7 +427,7 @@ TEST_P(VdaVideoDecoderTest, Decode_OutputAndDismiss) {
 
 TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
   // Initialize with a config that has a 2:1 pixel aspect ratio.
-  EXPECT_CALL(*vda_, Initialize(_, client_)).WillOnce(Return(true));
+  EXPECT_CALL(*vda_, Initialize(_, client_.get())).WillOnce(Return(true));
   EXPECT_CALL(*vda_, TryToSetupDecodeOnSeparateThread(_, _))
       .WillOnce(Return(GetParam()));
   InitializeWithConfig(VideoDecoderConfig(

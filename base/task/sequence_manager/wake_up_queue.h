@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/time/time.h"
@@ -124,7 +125,7 @@ class BASE_EXPORT DefaultWakeUpQueue : public WakeUpQueue {
   const char* GetName() const override;
   void UnregisterQueue(internal::TaskQueueImpl* queue) override;
 
-  internal::SequenceManagerImpl* sequence_manager_;  // Not owned.
+  raw_ptr<internal::SequenceManagerImpl> sequence_manager_;  // Not owned.
 };
 
 // WakeUpQueue implementation that doesn't sends wake-ups to

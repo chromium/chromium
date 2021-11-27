@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -136,7 +137,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       worker_hosts_;
 
   // |storage_partition_| owns |this|.
-  StoragePartitionImpl* const storage_partition_;
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override_;
 

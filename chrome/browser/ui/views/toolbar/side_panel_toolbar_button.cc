@@ -45,7 +45,7 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
   SetProperty(views::kElementIdentifierKey, kReadLaterButtonElementId);
 
   if (reading_list_model_)
-    reading_list_model_scoped_observation_.Observe(reading_list_model_);
+    reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
 }
 
 SidePanelToolbarButton::~SidePanelToolbarButton() = default;
@@ -81,7 +81,7 @@ void SidePanelToolbarButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_));
+      reading_list_model_.get()));
   reading_list_model_scoped_observation_.Reset();
 }
 
@@ -138,7 +138,7 @@ void SidePanelToolbarButton::HideSidePanel() {
   DCHECK(browser_view->right_aligned_side_panel());
   if (side_panel_webview_) {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
-        side_panel_webview_);
+        side_panel_webview_.get());
     side_panel_webview_ = nullptr;
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }

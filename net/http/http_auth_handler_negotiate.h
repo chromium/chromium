@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -127,7 +128,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   HttpAuth::DelegationType GetDelegationType() const;
 
   std::unique_ptr<HttpAuthMechanism> auth_system_;
-  HostResolver* const resolver_;
+  const raw_ptr<HostResolver> resolver_;
 
   NetworkIsolationKey network_isolation_key_;
 
@@ -143,11 +144,11 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
 
   // Things which vary each round.
   CompletionOnceCallback callback_;
-  std::string* auth_token_;
+  raw_ptr<std::string> auth_token_;
 
   State next_state_;
 
-  const HttpAuthPreferences* http_auth_preferences_;
+  raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
 };
 
 }  // namespace net

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
@@ -451,8 +452,8 @@ class Controller : public ScriptExecutorDelegate,
       const std::vector<ScriptHandle>& direct_action_scripts);
 
   ClientSettings settings_;
-  Client* const client_;
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<Client> client_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
 
   // Lazily instantiate in GetWebController().
@@ -547,7 +548,7 @@ class Controller : public ScriptExecutorDelegate,
   // A copy of the most recently set user data options. Can be used to determine
   // which information was requested.
   std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
-  CollectUserDataOptions* collect_user_data_options_ = nullptr;
+  raw_ptr<CollectUserDataOptions> collect_user_data_options_ = nullptr;
   UserData user_data_;
 
   std::unique_ptr<FormProto> form_;
@@ -642,11 +643,11 @@ class Controller : public ScriptExecutorDelegate,
   // action and attached to the action result on completion.
   ProcessedActionStatusDetailsProto log_info_;
 
-  ukm::UkmRecorder* ukm_recorder_;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
   // If instantiated, will start delivering the required model for annotating
   // DOM nodes. May be nullptr.
-  AnnotateDomModelService* const annotate_dom_model_service_;
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

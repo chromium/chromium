@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_observer.h"
@@ -235,7 +236,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to.
-  HistoryBackend* const history_backend_;
+  const raw_ptr<HistoryBackend> history_backend_;
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.
@@ -243,7 +244,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the database, which is for storing typed urls sync
   // metadata and state.
-  TypedURLSyncMetadataDatabase* sync_metadata_database_;
+  raw_ptr<TypedURLSyncMetadataDatabase> sync_metadata_database_;
 
   // Since HistoryBackend use SequencedTaskRunner, so should use SequenceChecker
   // here.

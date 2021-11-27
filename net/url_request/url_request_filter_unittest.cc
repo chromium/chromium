@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -36,7 +37,7 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
   std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
       URLRequest* request) const override {
     job_ = new URLRequestTestJob(request);
-    return base::WrapUnique<URLRequestJob>(job_);
+    return base::WrapUnique<URLRequestJob>(job_.get());
   }
 
   // Is |job| the URLRequestJob generated during interception?
@@ -45,7 +46,7 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
   }
 
  private:
-  mutable URLRequestTestJob* job_;
+  mutable raw_ptr<URLRequestTestJob> job_;
 };
 
 TEST(URLRequestFilter, BasicMatching) {

@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -110,7 +111,7 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   bool got_changes() const { return got_changes_; }
 
  private:
-  ui::MenuModel* model_;
+  raw_ptr<ui::MenuModel> model_;
   bool got_changes_;
 };
 
@@ -178,7 +179,7 @@ class RecentTabsSubMenuModelTest
   }
 
  private:
-  sync_sessions::SessionSyncService* session_sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
 };
 

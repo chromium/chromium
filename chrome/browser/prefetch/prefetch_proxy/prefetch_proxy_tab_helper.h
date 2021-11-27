@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -261,7 +262,7 @@ class PrefetchProxyTabHelper
     explicit CurrentPageLoad(content::NavigationHandle* handle);
     ~CurrentPageLoad();
 
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
 
     // The set of URLs that can potentially be prefetched, and the state
     // associated the individual prefetches.
@@ -459,7 +460,7 @@ class PrefetchProxyTabHelper
   // |PrefetchProxySubresourceManager| associated with |url|.
   void PrepareToServe(const GURL& url);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Owns all members which need to be reset on a new page load.
   std::unique_ptr<CurrentPageLoad> page_;

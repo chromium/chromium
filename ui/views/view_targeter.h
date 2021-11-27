@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_VIEW_TARGETER_H_
 #define UI_VIEWS_VIEW_TARGETER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_targeter.h"
 #include "ui/views/views_export.h"
 
@@ -59,7 +60,7 @@ class VIEWS_EXPORT ViewTargeter : public ui::EventTargeter {
 
   // ViewTargeter does not own the |delegate_|, but |delegate_| must
   // outlive the targeter.
-  ViewTargeterDelegate* delegate_;
+  raw_ptr<ViewTargeterDelegate> delegate_;
 };
 
 }  // namespace views

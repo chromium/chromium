@@ -6,6 +6,8 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ui {
 
 // Maints the actual view, key and data.
@@ -70,7 +72,7 @@ class ViewProp::Data : public base::RefCounted<ViewProp::Data> {
 
   const gfx::AcceleratedWidget view_;
   const char* key_;
-  void* data_;
+  raw_ptr<void> data_;
 };
 
 // static

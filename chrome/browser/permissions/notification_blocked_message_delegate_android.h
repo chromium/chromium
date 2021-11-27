@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -60,7 +61,7 @@ class NotificationBlockedMessageDelegate
   void DismissInternal();
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<Delegate> delegate_;
 };
 

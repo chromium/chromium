@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -141,7 +142,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     return result;
   }
 
-  password_manager::PasswordStoreInterface* store_;
+  raw_ptr<password_manager::PasswordStoreInterface> store_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::Time time_;

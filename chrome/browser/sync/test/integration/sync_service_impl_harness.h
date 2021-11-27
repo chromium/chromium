@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -202,10 +203,10 @@ class SyncServiceImplHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
-  syncer::SyncServiceImpl* const service_;
+  const raw_ptr<syncer::SyncServiceImpl> service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

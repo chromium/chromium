@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -53,7 +54,7 @@ class BubbleContentsWrapperService : public KeyedService {
       base::flat_map<std::string, std::unique_ptr<BubbleContentsWrapper>>;
 
   // Profile associated with this service.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Associates BubbleContentsWrapper instances with their WebUI URL hostname.
   WebContentsMap web_contents_map_;

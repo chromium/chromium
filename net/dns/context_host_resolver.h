@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
@@ -90,7 +91,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   class WrappedResolveHostRequest;
   class WrappedProbeRequest;
 
-  HostResolverManager* const manager_;
+  const raw_ptr<HostResolverManager> manager_;
   std::unique_ptr<HostResolverManager> owned_manager_;
 
   // Requests are expected to clear themselves from this set on destruction or

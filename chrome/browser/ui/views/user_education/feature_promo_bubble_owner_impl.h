@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
@@ -51,7 +52,7 @@ class FeaturePromoBubbleOwnerImpl : public FeaturePromoBubbleOwner,
   void HandleBubbleClosed();
 
   // The currently showing bubble, or `nullptr`.
-  FeaturePromoBubbleView* bubble_ = nullptr;
+  raw_ptr<FeaturePromoBubbleView> bubble_ = nullptr;
 
   // ID of the currently showing bubble. Must be nullopt if `bubble_` is null.
   absl::optional<base::Token> bubble_id_;

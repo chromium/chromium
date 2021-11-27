@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
@@ -156,8 +157,8 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   }
 
  private:
-  views::View* const anchor_view_;
-  Profile* const profile_;
+  const raw_ptr<views::View> anchor_view_;
+  const raw_ptr<Profile> profile_;
   const GURL webui_url_;
   const int task_manager_string_id_;
 };

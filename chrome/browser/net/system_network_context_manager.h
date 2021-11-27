@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -194,7 +195,7 @@ class SystemNetworkContextManager {
   void UpdateExplicitlyAllowedNetworkPorts();
 
   // The PrefService to retrieve all the pref values.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // This is an instance of the default SSLConfigServiceManager for the current
   // platform and it gets SSL preferences from the BrowserProcess's local_state

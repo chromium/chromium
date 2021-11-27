@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"
 #include "content/common/content_export.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -97,7 +98,7 @@ class CONTENT_EXPORT DirectManipulationHelper
   Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport_;
   Microsoft::WRL::ComPtr<DirectManipulationEventHandler> event_handler_;
   HWND window_;
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
   DWORD view_port_handler_cookie_;
   bool has_animation_observer_ = false;
 };

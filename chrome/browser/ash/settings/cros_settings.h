@@ -14,6 +14,7 @@
 #include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/user_manager/user_type.h"
@@ -140,7 +141,8 @@ class CrosSettings {
   std::vector<std::unique_ptr<CrosSettingsProvider>> providers_;
 
   // Owner unique pointer in |providers_|.
-  SupervisedUserCrosSettingsProvider* supervised_user_cros_settings_provider_;
+  raw_ptr<SupervisedUserCrosSettingsProvider>
+      supervised_user_cros_settings_provider_;
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.

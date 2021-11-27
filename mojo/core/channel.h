@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -423,7 +424,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   class ReadBuffer;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;
 

@@ -47,7 +47,7 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
   auto view = std::make_unique<DesktopMediaListView>(
       this, generic_style, single_style, accessible_name);
   view_ = view.get();
-  view_observations_.AddObservation(view_);
+  view_observations_.AddObservation(view_.get());
   return view;
 }
 
@@ -57,7 +57,7 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateTabListView(
 
   auto view = std::make_unique<DesktopMediaTabList>(this, accessible_name);
   view_ = view.get();
-  view_observations_.AddObservation(view_);
+  view_observations_.AddObservation(view_.get());
   return view;
 }
 

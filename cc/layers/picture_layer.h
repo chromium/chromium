@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
@@ -64,7 +65,7 @@ class CC_EXPORT PictureLayer : public Layer {
     PictureLayerInputs();
     ~PictureLayerInputs();
 
-    ContentLayerClient* client = nullptr;
+    raw_ptr<ContentLayerClient> client = nullptr;
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;

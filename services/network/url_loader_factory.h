@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -102,13 +103,13 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   void UpdateLoadInfo();
 
   // The NetworkContext that indirectly owns |this|.
-  NetworkContext* const context_;
+  const raw_ptr<NetworkContext> context_;
   mojom::URLLoaderFactoryParamsPtr params_;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
   mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
 
   // |cors_url_loader_factory_| owns this.
-  cors::CorsURLLoaderFactory* cors_url_loader_factory_;
+  raw_ptr<cors::CorsURLLoaderFactory> cors_url_loader_factory_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>

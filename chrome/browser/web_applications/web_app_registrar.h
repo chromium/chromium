@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -337,7 +338,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
     const_iterator end() const;
 
    private:
-    const WebAppRegistrar* const registrar_;
+    const raw_ptr<const WebAppRegistrar> registrar_;
     const Filter filter_;
     const bool empty_;
 #if DCHECK_IS_ON()
@@ -371,7 +372,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool registry_profile_being_deleted_ = false;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
 

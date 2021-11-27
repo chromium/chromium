@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -149,33 +150,33 @@ class BrowserViewLayout : public views::LayoutManager {
   gfx::NativeView const host_view_;
 
   // The owning browser view.
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
-  views::View* const top_container_;
-  TabStripRegionView* const tab_strip_region_view_;
-  views::View* const toolbar_;
-  InfoBarContainerView* const infobar_container_;
-  views::View* const contents_container_;
-  views::View* const left_aligned_side_panel_;
-  views::View* const left_aligned_side_panel_separator_;
-  views::View* const right_aligned_side_panel_;
-  views::View* const right_aligned_side_panel_separator_;
-  views::View* const lens_side_panel_;
-  ImmersiveModeController* const immersive_mode_controller_;
-  views::View* const contents_separator_;
+  const raw_ptr<views::View> top_container_;
+  const raw_ptr<TabStripRegionView> tab_strip_region_view_;
+  const raw_ptr<views::View> toolbar_;
+  const raw_ptr<InfoBarContainerView> infobar_container_;
+  const raw_ptr<views::View> contents_container_;
+  const raw_ptr<views::View> left_aligned_side_panel_;
+  const raw_ptr<views::View> left_aligned_side_panel_separator_;
+  const raw_ptr<views::View> right_aligned_side_panel_;
+  const raw_ptr<views::View> right_aligned_side_panel_separator_;
+  const raw_ptr<views::View> lens_side_panel_;
+  const raw_ptr<ImmersiveModeController> immersive_mode_controller_;
+  const raw_ptr<views::View> contents_separator_;
 
-  views::View* webui_tab_strip_ = nullptr;
-  views::View* loading_bar_ = nullptr;
-  TabStrip* tab_strip_ = nullptr;
-  BookmarkBarView* bookmark_bar_ = nullptr;
-  views::View* download_shelf_ = nullptr;
+  raw_ptr<views::View> webui_tab_strip_ = nullptr;
+  raw_ptr<views::View> loading_bar_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
+  raw_ptr<views::View> download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
-  views::Widget* contents_border_widget_ = nullptr;
+  raw_ptr<views::Widget> contents_border_widget_ = nullptr;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

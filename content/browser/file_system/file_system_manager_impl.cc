@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -136,7 +137,7 @@ class FileSystemManagerImpl::FileSystemCancellableOperationImpl
 
   const OperationID id_;
   // |file_system_manager_impl| owns |this| through a UniqueReceiverSet.
-  FileSystemManagerImpl* const file_system_manager_impl_;
+  const raw_ptr<FileSystemManagerImpl> file_system_manager_impl_;
 };
 
 class FileSystemManagerImpl::ReceivedSnapshotListenerImpl
@@ -155,7 +156,7 @@ class FileSystemManagerImpl::ReceivedSnapshotListenerImpl
 
   const int snapshot_id_;
   // |file_system_manager_impl| owns |this| through a UniqueReceiverSet.
-  FileSystemManagerImpl* const file_system_manager_impl_;
+  const raw_ptr<FileSystemManagerImpl> file_system_manager_impl_;
 };
 
 struct FileSystemManagerImpl::WriteSyncCallbackEntry {

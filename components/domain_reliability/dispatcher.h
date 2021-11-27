@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 
@@ -62,7 +63,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityDispatcher {
   // Runs |task|'s callback, removes it from both sets, and deletes it.
   void RunAndDeleteTask(Task* task);
 
-  MockableTime* time_;
+  raw_ptr<MockableTime> time_;
   std::set<std::unique_ptr<Task>, base::UniquePtrComparator> tasks_;
   std::set<Task*> eligible_tasks_;
 };

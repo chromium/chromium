@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/clock.h"
@@ -442,12 +443,12 @@ class WebRtcEventLogManager final
   // Observer which will be informed whenever a local log file is started or
   // stopped. Its callbacks are called synchronously from |task_runner_|,
   // so the observer needs to be able to either run from any (sequenced) runner.
-  WebRtcLocalEventLogsObserver* local_logs_observer_;
+  raw_ptr<WebRtcLocalEventLogsObserver> local_logs_observer_;
 
   // Observer which will be informed whenever a remote log file is started or
   // stopped. Its callbacks are called synchronously from |task_runner_|,
   // so the observer needs to be able to either run from any (sequenced) runner.
-  WebRtcRemoteEventLogsObserver* remote_logs_observer_;
+  raw_ptr<WebRtcRemoteEventLogsObserver> remote_logs_observer_;
 
   // Manages local-bound logs - logs stored on the local filesystem when
   // logging has been explicitly enabled by the user.

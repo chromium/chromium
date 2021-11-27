@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,8 +44,7 @@ class DiceSigninButtonView : public views::View {
   absl::optional<AccountInfo> account() const { return account_; }
 
  private:
-
-  views::LabelButton* signin_button_ = nullptr;
+  raw_ptr<views::LabelButton> signin_button_ = nullptr;
 
   const absl::optional<AccountInfo> account_;
 };

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -144,7 +145,7 @@ class OptimizationGuideKeyedService
   // KeyedService implementation:
   void Shutdown() override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;

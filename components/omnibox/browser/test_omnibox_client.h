@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -47,8 +48,8 @@ class TestOmniboxClient : public OmniboxClient {
 
  private:
   SessionID session_id_;
-  bookmarks::BookmarkModel* bookmark_model_;
-  TemplateURLService* template_url_service_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<TemplateURLService> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   GURL page_url_for_last_favicon_request_;

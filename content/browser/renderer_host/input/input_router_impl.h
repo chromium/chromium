@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
 #include "content/browser/renderer_host/input/gesture_event_queue.h"
@@ -234,8 +235,8 @@ class CONTENT_EXPORT InputRouterImpl
   void ProcessDeferredGestureEventQueue();
   void OnSetCompositorAllowedTouchAction(cc::TouchAction touch_action);
 
-  InputRouterImplClient* client_;
-  InputDispositionHandler* disposition_handler_;
+  raw_ptr<InputRouterImplClient> client_;
+  raw_ptr<InputDispositionHandler> disposition_handler_;
 
   // Whether the TouchScrollStarted event has been sent for the current
   // gesture scroll yet.

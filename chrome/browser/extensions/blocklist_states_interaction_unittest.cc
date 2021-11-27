@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
@@ -68,7 +69,7 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
 
  private:
   TestBlocklist test_blocklist_;
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 // 1. The extension is added to the Safe Browsing blocklist with

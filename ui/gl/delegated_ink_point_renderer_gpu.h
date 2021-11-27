@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -647,8 +648,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // Remember the dcomp device and swap chain used to create
   // |delegated_ink_trail_| and |ink_visual_| so that we can avoid recreating
   // them when it isn't necessary.
-  IDCompositionDevice2* dcomp_device_ = nullptr;
-  IDXGISwapChain1* swap_chain_ = nullptr;
+  raw_ptr<IDCompositionDevice2> dcomp_device_ = nullptr;
+  raw_ptr<IDXGISwapChain1> swap_chain_ = nullptr;
 
   // The most recent metadata received. The metadata marks the last point of
   // the app rendered stroke, which corresponds to the first point of the

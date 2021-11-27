@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
@@ -128,7 +129,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   std::string body_string_;
 
   // This is owned by SignedExchangeHandler which is the owner of |this|.
-  SignedExchangeDevToolsProxy* devtools_proxy_;
+  raw_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
   bool has_notified_completion_to_devtools_ = false;
   absl::optional<base::UnguessableToken> cert_request_id_;
 

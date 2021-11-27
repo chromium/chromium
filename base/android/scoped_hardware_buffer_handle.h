@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
@@ -82,7 +83,7 @@ class BASE_EXPORT ScopedHardwareBufferHandle {
   // acquire a new reference.
   explicit ScopedHardwareBufferHandle(AHardwareBuffer* buffer);
 
-  AHardwareBuffer* buffer_ = nullptr;
+  raw_ptr<AHardwareBuffer> buffer_ = nullptr;
 };
 
 }  // namespace android

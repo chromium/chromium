@@ -6,6 +6,7 @@
 #define MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
@@ -32,7 +33,7 @@ class MEDIA_GPU_EXPORT PromotionHintAggregatorImpl
 
  private:
   // Clock, which we might not own, that we'll use.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // When did we receive the most recent "not promotable" frame?
   base::TimeTicks most_recent_unpromotable_;

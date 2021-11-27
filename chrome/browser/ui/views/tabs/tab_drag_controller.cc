@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -253,8 +254,8 @@ class TabDragController::SourceTabStripEmptinessTracker
     parent_->OnSourceTabStripEmpty();
   }
 
-  TabStripModel* const tab_strip_;
-  TabDragController* const parent_;
+  const raw_ptr<TabStripModel> tab_strip_;
+  const raw_ptr<TabDragController> parent_;
 };
 
 class TabDragController::DraggedTabsClosedTracker
@@ -285,7 +286,7 @@ class TabDragController::DraggedTabsClosedTracker
   }
 
  private:
-  TabDragController* const parent_;
+  const raw_ptr<TabDragController> parent_;
 };
 
 TabDragController::TabDragData::TabDragData()
@@ -420,7 +421,7 @@ TabDragController::~TabDragController() {
 
   if (event_source_ == EVENT_SOURCE_TOUCH) {
     TabDragContext* capture_context =
-        attached_context_ ? attached_context_ : source_context_;
+        attached_context_ ? attached_context_.get() : source_context_.get();
     capture_context->AsView()->GetWidget()->ReleaseCapture();
   }
   CHECK(!IsInObserverList());
@@ -516,7 +517,7 @@ bool TabDragController::IsActive() {
 
 // static
 TabDragContext* TabDragController::GetSourceContext() {
-  return g_tab_drag_controller ? g_tab_drag_controller->source_context_
+  return g_tab_drag_controller ? g_tab_drag_controller->source_context_.get()
                                : nullptr;
 }
 
@@ -819,7 +820,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   if (ShouldAttachOnEnd(target_context)) {
     SetDeferredTargetTabstrip(target_context);
     target_context = current_state_ == DragState::kDraggingWindow
-                         ? attached_context_
+                         ? attached_context_.get()
                          : nullptr;
   } else {
     SetDeferredTargetTabstrip(nullptr);
@@ -1091,8 +1092,9 @@ TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
     }
   }
 
-  *context = current_state_ == DragState::kDraggingWindow ? attached_context_
-                                                          : nullptr;
+  *context = current_state_ == DragState::kDraggingWindow
+                 ? attached_context_.get()
+                 : nullptr;
   return Liveness::ALIVE;
 }
 
@@ -1357,7 +1359,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // RunMoveLoop can be called reentrantly from within another RunMoveLoop,
   // in which case the observation is already established.
   widget_observation_.Reset();
-  widget_observation_.Observe(move_loop_widget_);
+  widget_observation_.Observe(move_loop_widget_.get());
   current_state_ = DragState::kDraggingWindow;
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   if (can_release_capture_) {
@@ -1521,7 +1523,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
   drag_data_.clear();
 
   TabDragContext* owning_context =
-      attached_context_ ? attached_context_ : source_context_;
+      attached_context_ ? attached_context_.get() : source_context_.get();
   owning_context->DestroyDragController();
 }
 
@@ -2081,7 +2083,7 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
 gfx::Vector2d TabDragController::GetWindowOffset(
     const gfx::Point& point_in_screen) {
   TabDragContext* owning_context =
-      attached_context_ ? attached_context_ : source_context_;
+      attached_context_ ? attached_context_.get() : source_context_.get();
   views::View* toplevel_view =
       owning_context->AsView()->GetWidget()->GetContentsView();
 

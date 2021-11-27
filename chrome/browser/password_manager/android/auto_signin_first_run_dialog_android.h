@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -48,7 +49,7 @@ class AutoSigninFirstRunDialogAndroid : public content::WebContentsObserver {
  private:
   ~AutoSigninFirstRunDialogAndroid() override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
 };

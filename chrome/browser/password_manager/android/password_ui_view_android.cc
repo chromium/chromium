@@ -275,7 +275,7 @@ PasswordUIViewAndroid::ObtainAndSerializePasswords(
   // except for |credential_provider_for_testing_| and
   // |password_manager_presenter_|.
   password_manager::CredentialProviderInterface* const provider =
-      credential_provider_for_testing_ ? credential_provider_for_testing_
+      credential_provider_for_testing_ ? credential_provider_for_testing_.get()
                                        : &password_manager_presenter_;
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords =

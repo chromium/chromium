@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -358,7 +359,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   // together.
   CompositorDelegateForInput& compositor_delegate_;
 
-  InputHandlerClient* input_handler_client_ = nullptr;
+  raw_ptr<InputHandlerClient> input_handler_client_ = nullptr;
 
   // An object to implement the ScrollElasticityHelper interface and
   // hold all state related to elasticity. May be nullptr if never requested.

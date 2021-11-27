@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -50,7 +51,7 @@ class SyncEncryptionKeysTabHelper
   SyncEncryptionKeysTabHelper(content::WebContents* web_contents,
                               syncer::SyncService* sync_service);
 
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   // EncryptionKeyApi represent the actual exposure of the Mojo API (i.e.
   // chrome::mojom::SyncEncryptionKeysExtension) to the renderer. Instantiated

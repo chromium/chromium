@@ -195,7 +195,7 @@ void ViewsAXTreeManager::FireGeneratedEvent(
     const ui::AXEventGenerator::Event& event,
     const ui::AXNode& node) const {
   if (!generated_event_callback_for_testing_.is_null())
-    generated_event_callback_for_testing_.Run(widget_, event, node.id());
+    generated_event_callback_for_testing_.Run(widget_.get(), event, node.id());
   // TODO(nektar): Implement this other than "for testing".
 }
 

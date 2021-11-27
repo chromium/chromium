@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_ELEMENT_RECT_GETTER_H_
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/rectf.h"
@@ -60,7 +61,7 @@ class ElementRectGetter : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
-  DevtoolsClient* devtools_client_ = nullptr;
+  raw_ptr<DevtoolsClient> devtools_client_ = nullptr;
   base::WeakPtrFactory<ElementRectGetter> weak_ptr_factory_;
 };
 

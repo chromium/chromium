@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -57,9 +58,9 @@ class ClientHints : public KeyedService,
   void ClearAdditionalClientHints() override;
 
  private:
-  content::BrowserContext* context_ = nullptr;
-  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-  HostContentSettingsMap* settings_map_ = nullptr;
+  raw_ptr<content::BrowserContext> context_ = nullptr;
+  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;

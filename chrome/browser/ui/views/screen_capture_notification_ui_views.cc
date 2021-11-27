@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include <memory>
@@ -124,10 +125,10 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   content::MediaStreamUI::SourceCallback source_callback_;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       bounds_observations_{this};
-  NotificationBarClientView* client_view_ = nullptr;
-  views::View* source_button_ = nullptr;
-  views::View* stop_button_ = nullptr;
-  views::View* hide_link_ = nullptr;
+  raw_ptr<NotificationBarClientView> client_view_ = nullptr;
+  raw_ptr<views::View> source_button_ = nullptr;
+  raw_ptr<views::View> stop_button_ = nullptr;
+  raw_ptr<views::View> hide_link_ = nullptr;
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
@@ -185,9 +186,9 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   // The client rect for NotificationBarClientView uses the bounds for the
   // following views.
-  bounds_observations_.AddObservation(source_button_);
-  bounds_observations_.AddObservation(stop_button_);
-  bounds_observations_.AddObservation(hide_link_);
+  bounds_observations_.AddObservation(source_button_.get());
+  bounds_observations_.AddObservation(stop_button_.get());
+  bounds_observations_.AddObservation(hide_link_.get());
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {

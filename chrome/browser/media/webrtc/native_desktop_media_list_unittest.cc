@@ -13,6 +13,7 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -105,7 +106,7 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
   }
 
  protected:
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
 };
 
 class FakeWindowCapturer : public webrtc::DesktopCapturer {
@@ -160,7 +161,7 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
   bool FocusOnSelectedSource() override { return true; }
 
  private:
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
   SourceList window_list_;
   base::Lock window_list_lock_;
 
@@ -273,7 +274,8 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   void AddWindowsAndVerify(bool has_view_dialog) {
     window_capturer_ = new FakeWindowCapturer();
     model_ = std::make_unique<NativeDesktopMediaList>(
-        DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
+        DesktopMediaList::Type::kWindow,
+        base::WrapUnique(window_capturer_.get()));
 
     // Set update period to reduce the time it takes to run tests.
     model_->SetUpdatePeriod(base::Milliseconds(20));
@@ -342,7 +344,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   MockObserver observer_;
 
   // Owned by |model_|;
-  FakeWindowCapturer* window_capturer_;
+  raw_ptr<FakeWindowCapturer> window_capturer_;
 
   webrtc::DesktopCapturer::SourceList window_list_;
   std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
@@ -543,7 +545,8 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
 TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   window_capturer_ = new FakeWindowCapturer();
   model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
+      DesktopMediaList::Type::kWindow,
+      base::WrapUnique(window_capturer_.get()));
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.

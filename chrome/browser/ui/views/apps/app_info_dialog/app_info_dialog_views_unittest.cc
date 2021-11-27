@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -71,7 +72,7 @@ class AppInfoDialogTestApi {
   }
 
  private:
-  AppInfoDialog* dialog_;
+  raw_ptr<AppInfoDialog> dialog_;
 };
 
 }  // namespace test
@@ -186,8 +187,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
  protected:
-  views::Widget* widget_ = nullptr;
-  AppInfoDialog* dialog_ = nullptr;  // Owned by |widget_|'s views hierarchy.
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<AppInfoDialog> dialog_ =
+      nullptr;  // Owned by |widget_|'s views hierarchy.
   scoped_refptr<const extensions::Extension> extension_;
   scoped_refptr<const extensions::Extension> chrome_app_;
   extensions::TestExtensionEnvironment extension_environment_{

@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
 #include "base/scoped_native_library.h"
@@ -335,7 +336,7 @@ class AppContainerTest : public ::testing::Test {
   }
 
   std::wstring package_name_;
-  BrokerServices* broker_services_;
+  raw_ptr<BrokerServices> broker_services_;
   scoped_refptr<AppContainerBase> container_;
   scoped_refptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;

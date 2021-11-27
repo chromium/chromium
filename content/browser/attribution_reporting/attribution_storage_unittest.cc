@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
@@ -108,7 +109,7 @@ class AttributionStorageTest : public testing::Test {
   base::ScopedTempDir dir_;
 
  private:
-  ConfigurableStorageDelegate* delegate_;
+  raw_ptr<ConfigurableStorageDelegate> delegate_;
   base::SimpleTestClock clock_;
   std::unique_ptr<AttributionStorage> storage_;
 };

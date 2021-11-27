@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_promotion_hint_aggregator.h"
@@ -56,9 +57,9 @@ class SurfaceChooserHelperTest : public testing::Test {
 
   base::SimpleTestTickClock tick_clock_;
 
-  MockPromotionHintAggregator* aggregator_ = nullptr;
+  raw_ptr<MockPromotionHintAggregator> aggregator_ = nullptr;
 
-  MockAndroidVideoSurfaceChooser* chooser_ = nullptr;
+  raw_ptr<MockAndroidVideoSurfaceChooser> chooser_ = nullptr;
 
   std::unique_ptr<SurfaceChooserHelper> helper_;
 };

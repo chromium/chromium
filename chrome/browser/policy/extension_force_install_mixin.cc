@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -100,7 +101,7 @@ class ForceInstallPrefObserver final {
   void OnPrefChanged();
   bool IsForceInstallPrefSet() const;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   const std::string pref_name_;
   const extensions::ExtensionId extension_id_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -169,7 +170,7 @@ class ForceInstallWaiter final {
 
   const ExtensionForceInstallMixin::WaitMode wait_mode_;
   const extensions::ExtensionId extension_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<ForceInstallPrefObserver> force_install_pref_observer_;
   std::unique_ptr<extensions::TestExtensionRegistryObserver> registry_observer_;
   std::unique_ptr<extensions::ExtensionHostTestHelper>

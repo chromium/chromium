@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -51,7 +52,7 @@ class UpdateRequestTask : public Task {
 
  private:
   // Store that this task updates. Not owned.
-  RequestQueueStore* store_;
+  raw_ptr<RequestQueueStore> store_;
   // Request ID of the request to be started.
   int64_t request_id_;
   // Callback to complete the task.

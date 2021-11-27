@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -221,7 +222,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   }
 
  private:
-  password_manager::BulkLeakCheckService* leak_service_ = nullptr;
+  raw_ptr<password_manager::BulkLeakCheckService> leak_service_ = nullptr;
   int compromised_password_count_ = 0;
   int weak_password_count_ = 0;
   int done_ = 0;
@@ -309,11 +310,11 @@ class SafetyCheckHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  safety_check::TestUpdateCheckHelper* update_helper_ = nullptr;
-  TestVersionUpdater* version_updater_ = nullptr;
+  raw_ptr<safety_check::TestUpdateCheckHelper> update_helper_ = nullptr;
+  raw_ptr<TestVersionUpdater> version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
   TestPasswordsDelegate test_passwords_delegate_;
-  extensions::ExtensionPrefs* test_extension_prefs_ = nullptr;
+  raw_ptr<extensions::ExtensionPrefs> test_extension_prefs_ = nullptr;
   TestSafetyCheckExtensionService test_extension_service_;
   content::TestWebUI test_web_ui_;
   std::unique_ptr<TestingSafetyCheckHandler> safety_check_;

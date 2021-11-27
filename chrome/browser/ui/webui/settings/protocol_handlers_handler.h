@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -130,8 +131,8 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
   // |args| is a list of [protocol, url, app_id].
   void HandleRemoveDisallowedAppHandler(base::Value::ConstListView args);
 
-  Profile* const profile_;
-  web_app::WebAppProvider* const web_app_provider_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

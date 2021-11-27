@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -268,7 +269,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::map<blink::StorageKey, int64_t> storage_key_size_map_;
   // The set of storage_keys whose storage should be cleared on shutdown.
   std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
-  base::Clock* const clock_;
+  const raw_ptr<base::Clock> clock_;
 
   const std::unique_ptr<IndexedDBQuotaClient> quota_client_;
   const std::unique_ptr<storage::QuotaClientCallbackWrapper>

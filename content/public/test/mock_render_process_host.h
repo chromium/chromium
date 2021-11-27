@@ -17,6 +17,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/observer_list.h"
@@ -293,7 +294,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   int bad_msg_count_;
   int id_;
   bool has_connection_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   base::ObserverList<RenderProcessHostObserver> observers_;
 
   StoragePartitionConfig storage_partition_config_;

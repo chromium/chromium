@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
@@ -63,7 +64,7 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
 
   // Should only be accessed on the UI thread.
   // May become null if this filter outlives the BrowserContext.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
  private:
   friend class content::BrowserThread;

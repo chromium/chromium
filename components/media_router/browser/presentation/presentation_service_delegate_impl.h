@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -231,7 +232,7 @@ class PresentationServiceDelegateImpl
       const content::PresentationConnectionStateChangeInfo& info);
 
   // Reference to the associated browser profile's MediaRouter instance.
-  MediaRouter* router_;
+  raw_ptr<MediaRouter> router_;
 
   // References to the observers listening for changes to the default
   // presentation and presentation MediaRoutes associated with the

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -131,7 +132,7 @@ class UdpTransportImpl final : public PacketTransport, public UdpTransport {
   int bytes_sent_;
 
   // TODO(xjz): Replace this with a mojo ptr.
-  UdpTransportReceiver* mojo_packet_receiver_ = nullptr;
+  raw_ptr<UdpTransportReceiver> mojo_packet_receiver_ = nullptr;
 
   // Used to read packets from the data pipe. Created when StartSending() is
   // called.

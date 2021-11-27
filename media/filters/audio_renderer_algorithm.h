@@ -26,6 +26,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_buffer_queue.h"
@@ -202,7 +203,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // Called by |resampler_| to get more audio data.
   void OnResamplerRead(int frame_delay, AudioBus* audio_bus);
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Parameters.
   AudioRendererAlgorithmParameters audio_renderer_algorithm_params_;

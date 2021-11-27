@@ -20,6 +20,7 @@
 #include "base/hash/hash.h"
 #include "base/ignore_result.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1745,8 +1746,8 @@ class PrintObserver : public printing::PrintViewManagerBase::Observer {
 #else
   using PrintViewManagerImpl = printing::PrintViewManagerBasic;
 #endif
-  PrintViewManagerImpl* const print_view_manager_;
-  const content::RenderFrameHost* const rfh_;
+  const raw_ptr<PrintViewManagerImpl> print_view_manager_;
+  const raw_ptr<const content::RenderFrameHost> rfh_;
   base::RunLoop run_loop_;
 };
 
@@ -2337,7 +2338,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  WebContents* guest_contents_;
+  raw_ptr<WebContents> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
@@ -2567,7 +2568,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  WebContents* guest_contents_;
+  raw_ptr<WebContents> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
@@ -2740,7 +2741,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  WebContents* guest_contents_ = nullptr;
+  raw_ptr<WebContents> guest_contents_ = nullptr;
 };
 
 class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {

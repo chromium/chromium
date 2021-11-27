@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_dataavail.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -42,7 +43,7 @@ class PDFiumDocument {
   void InitializeForm(FPDF_FORMFILLINFO* form_info);
 
  private:
-  DocumentLoader* const doc_loader_;
+  const raw_ptr<DocumentLoader> doc_loader_;
 
   // Interface structure to provide access to document stream.
   std::unique_ptr<FPDF_FILEACCESS> file_access_;

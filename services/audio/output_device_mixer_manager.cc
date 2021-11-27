@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -28,7 +29,7 @@ class AudioManagerPowerUser {
   }
 
  private:
-  AudioManager* const audio_manager_;
+  const raw_ptr<AudioManager> audio_manager_;
 };
 
 }  // namespace media

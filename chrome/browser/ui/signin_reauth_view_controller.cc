@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/task_runner.h"
@@ -43,7 +44,7 @@ class ReauthWebContentsObserver : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  SigninReauthViewController* const delegate_;
+  const raw_ptr<SigninReauthViewController> delegate_;
 };
 
 ReauthWebContentsObserver::ReauthWebContentsObserver(
@@ -121,7 +122,8 @@ void SigninReauthViewController::SetWebContents(
 }
 
 void SigninReauthViewController::OnModalSigninClosed() {
-  DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+  DCHECK(
+      dialog_delegate_observation_.IsObservingSource(dialog_delegate_.get()));
   dialog_delegate_observation_.Reset();
   dialog_delegate_ = nullptr;
 
@@ -219,7 +221,8 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
   }
 
   if (dialog_delegate_) {
-    DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+    DCHECK(
+        dialog_delegate_observation_.IsObservingSource(dialog_delegate_.get()));
     dialog_delegate_observation_.Reset();
     dialog_delegate_->CloseModalSignin();
     dialog_delegate_ = nullptr;
@@ -288,7 +291,7 @@ void SigninReauthViewController::RecordClickOnce(UserAction click_action) {
 signin::ReauthTabHelper* SigninReauthViewController::GetReauthTabHelper() {
   content::WebContents* web_contents = reauth_web_contents_
                                            ? reauth_web_contents_.get()
-                                           : raw_reauth_web_contents_;
+                                           : raw_reauth_web_contents_.get();
   if (!web_contents)
     return nullptr;
 
@@ -301,7 +304,7 @@ void SigninReauthViewController::ShowReauthConfirmationDialog() {
   dialog_delegate_ =
       SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
           browser_, account_id_, access_point_);
-  dialog_delegate_observation_.Observe(dialog_delegate_);
+  dialog_delegate_observation_.Observe(dialog_delegate_.get());
 
   SigninReauthUI* web_dialog_ui = dialog_delegate_->GetWebContents()
                                       ->GetWebUI()
@@ -334,7 +337,8 @@ void SigninReauthViewController::ShowGaiaReauthPageInNewTab() {
   ui_state_ = UIState::kGaiaReauthTab;
   // Remove the observer to not trigger OnModalSigninClosed() that will abort
   // the reauth flow.
-  DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+  DCHECK(
+      dialog_delegate_observation_.IsObservingSource(dialog_delegate_.get()));
   dialog_delegate_observation_.Reset();
   dialog_delegate_->CloseModalSignin();
   dialog_delegate_ = nullptr;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 #define CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -86,8 +87,8 @@ class Thumbnail : public cc::UIResourceClient {
 
   bool retrieved_;
 
-  ui::UIResourceProvider* ui_resource_provider_;
-  ThumbnailDelegate* thumbnail_delegate_;
+  raw_ptr<ui::UIResourceProvider> ui_resource_provider_;
+  raw_ptr<ThumbnailDelegate> thumbnail_delegate_;
 
   base::WeakPtrFactory<Thumbnail> weak_factory_{this};
 };

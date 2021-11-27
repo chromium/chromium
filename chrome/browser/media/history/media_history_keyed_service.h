@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -105,7 +106,7 @@ class MediaHistoryKeyedService : public KeyedService,
 
   std::unique_ptr<StoreHolder> store_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

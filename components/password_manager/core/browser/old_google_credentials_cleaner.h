@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OLD_GOOGLE_CREDENTIALS_CLEANER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OLD_GOOGLE_CREDENTIALS_CLEANER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
@@ -46,11 +47,11 @@ class OldGoogleCredentialCleaner : public PasswordStoreConsumer,
 
   // |prefs_| is not an owning pointer. It is used to record he last time (in
   // seconds) when the cleaning was performed.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Used to signal completion of the clean-up. It is null until
   // StartCleaning is called.
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   base::WeakPtrFactory<OldGoogleCredentialCleaner> weak_ptr_factory_{this};
 };

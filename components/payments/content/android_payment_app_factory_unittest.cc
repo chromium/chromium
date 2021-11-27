@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
@@ -97,7 +98,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
 
  private:
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL top_origin_;
   GURL frame_origin_;
   std::unique_ptr<PaymentRequestSpec> spec_;

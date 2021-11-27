@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/domain_reliability/beacon.h"
@@ -94,18 +95,18 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
 
   // |time_| is owned by the Monitor and a copy of this pointer is given to
   // every Context.
-  const MockableTime* const time_;
+  const raw_ptr<const MockableTime> time_;
   const std::string upload_reporter_string_;
   base::TimeTicks last_network_change_time_;
   DomainReliabilityContext::UploadAllowedCallback upload_allowed_callback_;
   // |dispatcher_| is owned by the Monitor and a copy of this pointer is given
   // to every Context.
-  DomainReliabilityDispatcher* const dispatcher_;
+  const raw_ptr<DomainReliabilityDispatcher> dispatcher_;
   // |uploader_| is owned by the Monitor. Expected to be non-null after
   // initialization because it should be set by the Monitor, as long as the
   // Monitor has been fully initialized. A copy of this pointer is given to
   // every Context.
-  DomainReliabilityUploader* uploader_ = nullptr;
+  raw_ptr<DomainReliabilityUploader> uploader_ = nullptr;
 
   ContextMap contexts_;
 };

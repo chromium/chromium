@@ -5,6 +5,7 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_SIMPLE_H_
 #define REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_SIMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/webrtc_frame_scheduler.h"
 
 #include <memory>
@@ -57,7 +58,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
 
   // A TimeTicks provider which defaults to using a real system clock, but can
   // be replaced for unittests.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::RepeatingClosure capture_callback_;
   bool paused_ = false;

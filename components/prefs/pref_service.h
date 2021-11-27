@@ -21,6 +21,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -167,7 +168,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     const uint32_t registration_flags_;
 
     // Reference to the PrefService in which this pref was created.
-    const PrefService* const pref_service_;
+    const raw_ptr<const PrefService> pref_service_;
   };
 
   // You may wish to use PrefServiceFactory or one of its subclasses

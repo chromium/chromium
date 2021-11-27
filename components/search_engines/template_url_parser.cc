@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -157,7 +158,7 @@ class SafeTemplateURLParser {
   // at least one element, if only the empty string.
   std::vector<std::string> namespaces_;
 
-  const SearchTermsData* search_terms_data_;
+  raw_ptr<const SearchTermsData> search_terms_data_;
   TemplateURLParser::ParameterFilter parameter_filter_;
   TemplateURLParser::ParseCallback callback_;
 };

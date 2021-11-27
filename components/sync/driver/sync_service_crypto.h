@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -144,10 +145,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // TrustedVaultClient::GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegradedCompleted(bool is_recoverability_degraded);
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Never null and guaranteed to outlive us.
-  TrustedVaultClient* const trusted_vault_client_;
+  const raw_ptr<TrustedVaultClient> trusted_vault_client_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.
@@ -158,7 +159,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     State& operator=(State&& other) = default;
 
     // Not-null when the engine is initialized.
-    SyncEngine* engine = nullptr;
+    raw_ptr<SyncEngine> engine = nullptr;
 
     // Populated when the engine is initialized.
     CoreAccountInfo account_info;

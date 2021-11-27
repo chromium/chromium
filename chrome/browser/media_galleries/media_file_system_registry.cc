@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
@@ -125,7 +126,7 @@ class RPHReferenceManager {
     void NavigationEntryCommitted(
         const content::LoadCommittedDetails& load_details) override;
 
-    RPHReferenceManager* manager_;
+    raw_ptr<RPHReferenceManager> manager_;
   };
 
   class RPHObserver : public content::RenderProcessHostObserver {
@@ -140,8 +141,8 @@ class RPHReferenceManager {
    private:
     void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-    RPHReferenceManager* manager_;
-    RenderProcessHost* host_;
+    raw_ptr<RPHReferenceManager> manager_;
+    raw_ptr<RenderProcessHost> host_;
     std::map<WebContents*, std::unique_ptr<RPHWebContentsObserver>>
         observed_web_contentses_;
   };
@@ -495,7 +496,7 @@ class ExtensionGalleriesHost
 
   // MediaFileSystemRegistry owns |this| and |file_system_context_|, so it's
   // safe to store a raw pointer.
-  MediaFileSystemContext* file_system_context_;
+  raw_ptr<MediaFileSystemContext> file_system_context_;
 
   // Path for the active profile.
   const base::FilePath profile_path_;

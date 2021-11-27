@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 
 class SharingService;
 
@@ -36,7 +37,7 @@ class SharingServiceProxyAndroid {
       const base::android::JavaParamRef<jobject>& j_runnable);
 
  private:
-  SharingService* sharing_service_ = nullptr;
+  raw_ptr<SharingService> sharing_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_

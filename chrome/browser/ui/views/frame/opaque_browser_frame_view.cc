@@ -221,7 +221,7 @@ void OpaqueBrowserFrameView::InitViews() {
   window_title_->SetSubpixelRenderingEnabled(false);
   window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-  AddChildView(window_title_);
+  AddChildView(window_title_.get());
 
 #if defined(OS_WIN)
   if (browser_view()->AppUsesWindowControlsOverlay())
@@ -259,7 +259,7 @@ void OpaqueBrowserFrameView::WindowControlsOverlayEnabledChanged() {
         AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     UpdateCaptionButtonPlaceholderContainerBackground();
   } else {
-    RemoveChildViewT(caption_button_placeholder_container_);
+    RemoveChildViewT(caption_button_placeholder_container_.get());
     caption_button_placeholder_container_ = nullptr;
   }
 

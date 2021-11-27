@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -79,7 +80,7 @@ class BASE_EXPORT ObserverListThreadSafeBase
     NotificationDataBase(void* observer_list_in, const Location& from_here_in)
         : observer_list(observer_list_in), from_here(from_here_in) {}
 
-    void* observer_list;
+    raw_ptr<void> observer_list;
     Location from_here;
   };
 

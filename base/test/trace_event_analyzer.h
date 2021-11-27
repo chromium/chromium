@@ -98,6 +98,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -195,11 +196,11 @@ struct TraceEvent {
   std::map<std::string, base::Value> arg_values;
 
   // The other event associated with this event (or NULL).
-  const TraceEvent* other_event = nullptr;
+  raw_ptr<const TraceEvent> other_event = nullptr;
 
   // A back-link for |other_event|. That is, if other_event is not null, then
   // |event->other_event->prev_event == event| is always true.
-  const TraceEvent* prev_event;
+  raw_ptr<const TraceEvent> prev_event;
 };
 
 typedef std::vector<const TraceEvent*> TraceEventVector;

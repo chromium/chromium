@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -162,7 +163,7 @@ class ManagePasswordsState {
   password_manager::ui::State state_;
 
   // The client used for logging.
-  password_manager::PasswordManagerClient* client_;
+  raw_ptr<password_manager::PasswordManagerClient> client_;
 
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.

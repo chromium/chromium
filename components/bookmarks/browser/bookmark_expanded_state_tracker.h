@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class PrefService;
@@ -53,8 +54,8 @@ class BookmarkExpandedStateTracker : public BaseBookmarkModelObserver {
   // GetExpandedNodes().
   void UpdatePrefs(const Nodes& nodes);
 
-  BookmarkModel* bookmark_model_;
-  PrefService* pref_service_;
+  raw_ptr<BookmarkModel> bookmark_model_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace bookmarks

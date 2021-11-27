@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/selection.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
@@ -69,8 +70,8 @@ class TouchSelectionControllerClientChildFrame
   gfx::Point ConvertFromRoot(const gfx::PointF& point) const;
 
   // Not owned, non-null for the lifetime of this object.
-  RenderWidgetHostViewChildFrame* rwhv_;
-  TouchSelectionControllerClientManager* manager_;
+  raw_ptr<RenderWidgetHostViewChildFrame> rwhv_;
+  raw_ptr<TouchSelectionControllerClientManager> manager_;
 
   // The last selection bounds reported by the view, in view coordinates.
   gfx::SelectionBound selection_start_;

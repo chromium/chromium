@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,7 +115,7 @@ class FramebustBlockBrowserTest
   absl::optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
-  Browser* current_browser_;
+  raw_ptr<Browser> current_browser_;
 };
 
 // Tests that clicking an item in the list of blocked URLs trigger a navigation

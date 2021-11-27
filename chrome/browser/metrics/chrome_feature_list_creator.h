@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -111,7 +112,7 @@ class ChromeFeatureListCreator {
   std::string actual_locale_;
 
   // This is owned by |metrics_services_manager_| but we need to expose it.
-  ChromeMetricsServicesManagerClient* metrics_services_manager_client_;
+  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_;
 
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
@@ -48,7 +49,7 @@ class MetricEventObserverManager {
 
   const std::unique_ptr<MetricEventObserver> event_observer_;
 
-  MetricReportQueue* const metric_report_queue_;
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   const std::unique_ptr<AdditionalSamplersCollector>
       additional_samplers_collector_;

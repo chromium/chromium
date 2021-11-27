@@ -12,6 +12,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -75,7 +76,7 @@ class AuctionV8DevToolsSession::BreakpointHandler
     return crdtp::DispatchResponse::Success();
   }
 
-  v8_inspector::V8InspectorSession* const v8_session_;
+  const raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::set<std::string> instrumentation_breakpoints_;
   SEQUENCE_CHECKER(v8_sequence_checker_);
 };
@@ -144,7 +145,7 @@ class AuctionV8DevToolsSession::IOSession
                                 std::move(io_session_receiver));
   }
 
-  DebugCommandQueue* const debug_command_queue_;
+  const raw_ptr<DebugCommandQueue> debug_command_queue_;
   RunDispatch v8_thread_dispatch_;
 
   SEQUENCE_CHECKER(io_session_receiver_sequence_checker_);

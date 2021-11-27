@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -453,7 +454,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
   const HostPortPair host_port_pair_;
   std::unique_ptr<SequencedSocketData> sequenced_data_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  MockTaggingClientSocketFactory* socket_factory_;
+  raw_ptr<MockTaggingClientSocketFactory> socket_factory_;
 
  private:
   SSLSocketDataProvider ssl_data_;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 
 namespace offline_pages {
@@ -37,7 +38,7 @@ class PrefetchBackgroundTask {
       PrefetchBackgroundTaskRescheduleType::NO_RESCHEDULE;
 
   // The PrefetchService owns |this|, so a raw pointer is OK.
-  PrefetchService* service_;
+  raw_ptr<PrefetchService> service_;
 };
 
 }  // namespace offline_pages

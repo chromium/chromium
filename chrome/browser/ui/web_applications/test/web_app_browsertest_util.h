@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -100,13 +101,13 @@ class BrowserWaiter : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  Browser* const filter_ = nullptr;
+  const raw_ptr<Browser> filter_ = nullptr;
 
   base::RunLoop added_run_loop_;
-  Browser* added_browser_ = nullptr;
+  raw_ptr<Browser> added_browser_ = nullptr;
 
   base::RunLoop removed_run_loop_;
-  Browser* removed_browser_ = nullptr;
+  raw_ptr<Browser> removed_browser_ = nullptr;
 };
 
 }  // namespace web_app

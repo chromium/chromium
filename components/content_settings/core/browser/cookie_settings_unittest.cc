@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,7 +61,7 @@ class CookieSettingsObserver : public CookieSettings::Observer {
   bool last_value() { return last_value_; }
 
  private:
-  CookieSettings* settings_;
+  raw_ptr<CookieSettings> settings_;
   bool last_value_ = false;
   base::ScopedObservation<CookieSettings, CookieSettings::Observer>
       scoped_observation_{this};

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -153,7 +154,7 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
     }
 
    private:
-    NonThreadSafeQueue* queue_;
+    raw_ptr<NonThreadSafeQueue> queue_;
   };
 
   AssertReporter* local_reporter = new AssertReporter();
@@ -211,7 +212,7 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
     }
 
    private:
-    NonThreadSafeQueue* queue_;
+    raw_ptr<NonThreadSafeQueue> queue_;
   };
 
   AssertReporter* local_reporter = new AssertReporter();
@@ -277,8 +278,8 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
       }
     }
    private:
-    NonThreadSafeQueue* queue_;
-    base::Lock* lock_;
+    raw_ptr<NonThreadSafeQueue> queue_;
+    raw_ptr<base::Lock> lock_;
   };
 
   AssertReporter* local_reporter = new AssertReporter();
@@ -355,8 +356,8 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
       }
     }
    private:
-    NonThreadSafeQueue* queue_;
-    base::Lock* lock_;
+    raw_ptr<NonThreadSafeQueue> queue_;
+    raw_ptr<base::Lock> lock_;
   };
 
   AssertReporter* local_reporter = new AssertReporter();

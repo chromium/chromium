@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/process_manager_observer.h"
 
 namespace extensions {
@@ -49,7 +50,7 @@ class BackgroundPageWatcher : public ProcessManagerObserver {
       const std::string& extension_id,
       content::RenderFrameHost* render_frame_host) override;
 
-  ProcessManager* process_manager_;
+  raw_ptr<ProcessManager> process_manager_;
   const std::string extension_id_;
   base::OnceClosure quit_run_loop_;
   bool is_waiting_for_open_;

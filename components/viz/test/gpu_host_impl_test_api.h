@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_TEST_GPU_HOST_IMPL_TEST_API_H_
 #define COMPONENTS_VIZ_TEST_GPU_HOST_IMPL_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 
@@ -26,7 +27,7 @@ class GpuHostImplTestApi {
   void SetGpuService(mojo::Remote<mojom::GpuService> gpu_service);
 
  private:
-  GpuHostImpl* gpu_host_;
+  raw_ptr<GpuHostImpl> gpu_host_;
 };
 
 }  // namespace viz

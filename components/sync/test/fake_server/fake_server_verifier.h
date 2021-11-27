@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +54,7 @@ class FakeServerVerifier {
       const SessionsHierarchy& expected_sessions);
 
  private:
-  FakeServer* const fake_server_;
+  const raw_ptr<FakeServer> fake_server_;
 };
 
 }  // namespace fake_server

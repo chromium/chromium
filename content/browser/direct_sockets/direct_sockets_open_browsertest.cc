@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -191,7 +192,7 @@ class MockHostResolver : public network::mojom::HostResolver {
   std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;
   mojo::Remote<network::mojom::ResolveHostClient> response_client_;
   mojo::Receiver<network::mojom::HostResolver> receiver_;
-  net::HostResolver* const internal_resolver_;
+  const raw_ptr<net::HostResolver> internal_resolver_;
 };
 
 class MockNetworkContext;
@@ -366,7 +367,7 @@ class MockUDPSocket : public network::mojom::UDPSocket {
 
   void Close() override { NOTIMPLEMENTED(); }
 
-  MockNetworkContext* const network_context_;
+  const raw_ptr<MockNetworkContext> network_context_;
   mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
 };

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -124,7 +125,7 @@ class PulsingInkDropMask : public views::AnimationDelegateViews,
 
   // The View that contains the InkDrop layer we're masking. This must outlive
   // our instance.
-  views::View* const layer_container_;
+  const raw_ptr<views::View> layer_container_;
 
   // Margins between the layer bounds and the visible ink drop. We use this
   // because sometimes the View we're masking is larger than the ink drop we

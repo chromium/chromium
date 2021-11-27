@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -79,7 +80,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   void SetUp() override;
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -143,7 +144,7 @@ class SyncPrefs {
   void OnSyncRequestedPrefChange();
 
   // Never null.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 

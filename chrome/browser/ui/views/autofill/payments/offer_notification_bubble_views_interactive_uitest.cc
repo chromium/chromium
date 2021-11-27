@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED);
   auto* promo_code_label_button =
-      GetOfferNotificationBubbleViews()->promo_code_label_button_;
+      GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
   EXPECT_EQ(normal_button_tooltip, promo_code_label_button->GetTooltipText());
   EXPECT_EQ(promo_code_label_button->GetText() + u" " + normal_button_tooltip,
             promo_code_label_button->GetAccessibleName());

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -126,7 +127,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
     observer_list_.RemoveObserver(observer);
   }
 
-  BrowserViewLayout* const browser_view_layout_;
+  const raw_ptr<BrowserViewLayout> browser_view_layout_;
 
   base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
 };
@@ -596,9 +597,9 @@ void BrowserViewLayout::LayoutSidePanelView(
          side_panel == lens_side_panel_);
   const bool is_right_aligned =
       side_panel == right_aligned_side_panel_ || side_panel == lens_side_panel_;
-  views::View* side_panel_separator = is_right_aligned
-                                          ? right_aligned_side_panel_separator_
-                                          : left_aligned_side_panel_separator_;
+  views::View* side_panel_separator =
+      is_right_aligned ? right_aligned_side_panel_separator_.get()
+                       : left_aligned_side_panel_separator_.get();
 
   DCHECK(side_panel_separator);
   // Shrink container bounds to fit the side panel.

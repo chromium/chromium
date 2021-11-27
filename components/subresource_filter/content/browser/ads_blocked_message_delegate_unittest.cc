@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
@@ -81,7 +82,7 @@ class AdsBlockedMessageDelegateTest
   }
 
  private:
-  AdsBlockedMessageDelegate* ads_blocked_message_delegate_;
+  raw_ptr<AdsBlockedMessageDelegate> ads_blocked_message_delegate_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockAdsBlockedDialog> mock_ads_blocked_dialog_;
   base::OnceClosure allow_ads_clicked_callback_;

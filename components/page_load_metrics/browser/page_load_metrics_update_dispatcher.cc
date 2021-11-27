@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 
 #include <ostream>
@@ -427,7 +428,7 @@ class PageLoadTimingMerger {
   }
 
   // The target PageLoadTiming we are merging values into.
-  mojom::PageLoadTiming* const target_;
+  const raw_ptr<mojom::PageLoadTiming> target_;
 
   // Whether we merged a new value into |target_|.
   bool should_buffer_timing_update_callback_ = false;

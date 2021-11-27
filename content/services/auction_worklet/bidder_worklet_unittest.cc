@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -1335,7 +1336,7 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
     // String used in JS to access the parameter.
     const char* name;
     // Pointer to location at which the integer can be modified.
-    int* value_ptr;
+    raw_ptr<int> value_ptr;
   } kIntegerTestCases[] = {
       {"browserSignals.joinCount", &browser_signal_join_count_},
       {"browserSignals.bidCount", &browser_signal_bid_count_}};

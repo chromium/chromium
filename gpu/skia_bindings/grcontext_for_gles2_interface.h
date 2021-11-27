@@ -5,6 +5,7 @@
 #ifndef GPU_SKIA_BINDINGS_GRCONTEXT_FOR_GLES2_INTERFACE_H_
 #define GPU_SKIA_BINDINGS_GRCONTEXT_FOR_GLES2_INTERFACE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
@@ -45,7 +46,7 @@ class GrContextForGLES2Interface : public GrContextOptions::ShaderErrorHandler {
 
  private:
   sk_sp<class GrDirectContext> gr_context_;
-  gpu::ContextSupport* context_support_;
+  raw_ptr<gpu::ContextSupport> context_support_;
 };
 
 }  // namespace skia_bindings

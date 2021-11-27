@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -31,7 +32,7 @@ class ClientContextImpl : public ClientContext {
   ClientContextProto AsProto() const override;
 
  private:
-  const Client* client_;
+  raw_ptr<const Client> client_;
   ClientContextProto proto_;
 };
 

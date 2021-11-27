@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
@@ -34,7 +35,7 @@ class DecryptedBlockImpl final : public cdm::DecryptedBlock {
   int64_t Timestamp() const final;
 
  private:
-  cdm::Buffer* buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   int64_t timestamp_;
 };
 
@@ -90,7 +91,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   cdm::Size size_;
 
   // The video frame buffer.
-  cdm::Buffer* frame_buffer_;
+  raw_ptr<cdm::Buffer> frame_buffer_;
 
   // Array of data pointers to each plane in the video frame buffer.
   uint32_t plane_offsets_[cdm::kMaxPlanes];
@@ -122,7 +123,7 @@ class AudioFramesImpl final : public cdm::AudioFrames {
   cdm::Buffer* PassFrameBuffer();
 
  private:
-  cdm::Buffer* buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   cdm::AudioFormat format_;
 };
 

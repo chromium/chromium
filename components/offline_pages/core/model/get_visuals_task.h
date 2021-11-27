@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_GET_VISUALS_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_GET_VISUALS_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
 #include "components/offline_pages/task/task.h"
@@ -36,7 +37,7 @@ class GetVisualsTask : public Task {
 
   void Complete(Result result);
 
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   int64_t offline_id_;
   base::OnceCallback<void(std::unique_ptr<OfflinePageVisuals>)>
       complete_callback_;

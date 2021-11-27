@@ -15,6 +15,7 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
 
@@ -221,7 +222,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
    private:
     // Weak-pointer to memory allocator being iterated over.
-    const PersistentMemoryAllocator* allocator_;
+    raw_ptr<const PersistentMemoryAllocator> allocator_;
 
     // The last record that was returned.
     std::atomic<Reference> last_record_;
@@ -683,9 +684,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const bool readonly_;                // Indicates access to read-only memory.
   mutable std::atomic<bool> corrupt_;  // Local version of "corrupted" flag.
 
-  HistogramBase* allocs_histogram_;  // Histogram recording allocs.
-  HistogramBase* used_histogram_;    // Histogram recording used space.
-  HistogramBase* errors_histogram_;  // Histogram recording errors.
+  raw_ptr<HistogramBase> allocs_histogram_;  // Histogram recording allocs.
+  raw_ptr<HistogramBase> used_histogram_;    // Histogram recording used space.
+  raw_ptr<HistogramBase> errors_histogram_;  // Histogram recording errors.
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);

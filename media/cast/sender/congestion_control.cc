@@ -20,6 +20,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/cast/constants.h"
@@ -83,7 +84,7 @@ class AdaptiveCongestionControl final : public CongestionControl {
   base::TimeTicks EstimatedSendingTime(FrameId frame_id,
                                        double estimated_bitrate);
 
-  const base::TickClock* const clock_;  // Not owned by this class.
+  const raw_ptr<const base::TickClock> clock_;  // Not owned by this class.
   const int max_bitrate_configured_;
   const int min_bitrate_configured_;
   const double max_frame_rate_;

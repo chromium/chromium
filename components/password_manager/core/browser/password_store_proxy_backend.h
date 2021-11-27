@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
@@ -68,8 +69,8 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
 
-  PasswordStoreBackend* const main_backend_;
-  PasswordStoreBackend* const shadow_backend_;
+  const raw_ptr<PasswordStoreBackend> main_backend_;
+  const raw_ptr<PasswordStoreBackend> shadow_backend_;
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };

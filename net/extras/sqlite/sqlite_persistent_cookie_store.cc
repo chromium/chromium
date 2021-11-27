@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -434,7 +435,7 @@ class SQLitePersistentCookieStore::Backend
   // cookies stored persistently).
   //
   // Not owned.
-  CookieCryptoDelegate* crypto_;
+  raw_ptr<CookieCryptoDelegate> crypto_;
 };
 
 namespace {
@@ -548,7 +549,7 @@ class IncrementTimeDelta {
   }
 
  private:
-  base::TimeDelta* delta_;
+  raw_ptr<base::TimeDelta> delta_;
   base::TimeDelta original_value_;
   base::Time start_;
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -57,7 +58,7 @@ class DeviceTrustConnectorService : public KeyedService {
 
   PrefChangeRegistrar pref_observer_;
 
-  PrefService* profile_prefs_;
+  raw_ptr<PrefService> profile_prefs_;
 
   // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;

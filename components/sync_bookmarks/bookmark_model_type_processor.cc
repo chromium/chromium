@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -75,12 +76,12 @@ class ScopedRemoteUpdateBookmarks {
   }
 
  private:
-  bookmarks::BookmarkModel* const bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Changes made to the bookmark model due to sync should not be undoable.
   ScopedSuspendBookmarkUndo suspend_undo_;
 
-  bookmarks::BookmarkModelObserver* const observer_;
+  const raw_ptr<bookmarks::BookmarkModelObserver> observer_;
 };
 
 std::string ComputeServerDefinedUniqueTagForDebugging(

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_observers.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -68,7 +69,7 @@ class ReceiverPresentationServiceDelegateImpl
   const std::string presentation_id_;
 
   // This is an unowned pointer to the LocalPresentationManager.
-  LocalPresentationManager* const local_presentation_manager_;
+  const raw_ptr<LocalPresentationManager> local_presentation_manager_;
 
   PresentationServiceDelegateObservers observers_;
 

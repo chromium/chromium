@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -200,11 +201,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Gets the current time. This uses the time_factory_ if there is one.
   base::Time TimeNow() const;
 
-  TabRestoreService* const tab_restore_service_;
+  const raw_ptr<TabRestoreService> tab_restore_service_;
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
-  TabRestoreServiceClient* client_;
+  raw_ptr<TabRestoreServiceClient> client_;
 
   // Set of entries. They are ordered from most to least recent.
   Entries entries_;
@@ -225,7 +226,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // creating historical tabs for them.
   std::set<tab_groups::TabGroupId> closing_groups_;
 
-  TimeFactory* const time_factory_;
+  const raw_ptr<TimeFactory> time_factory_;
 };
 
 }  // namespace sessions

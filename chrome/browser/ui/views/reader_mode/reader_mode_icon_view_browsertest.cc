@@ -5,6 +5,7 @@
 #include <memory>
 #include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -63,7 +64,7 @@ class ReaderModeIconViewBrowserTest : public InProcessBrowserTest {
     return https_server_secure_.get();
   }
 
-  PageActionIconView* reader_mode_icon_;
+  raw_ptr<PageActionIconView> reader_mode_icon_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_secure_;
 
  private:

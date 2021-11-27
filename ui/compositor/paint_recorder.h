@@ -5,6 +5,7 @@
 #ifndef UI_COMPOSITOR_PAINT_RECORDER_H_
 #define UI_COMPOSITOR_PAINT_RECORDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "ui/compositor/compositor_export.h"
@@ -47,7 +48,7 @@ class COMPOSITOR_EXPORT PaintRecorder {
   scoped_refptr<cc::DisplayItemList> local_list_;
   cc::RecordPaintCanvas record_canvas_;
   gfx::Canvas canvas_;
-  PaintCache* cache_;
+  raw_ptr<PaintCache> cache_;
   gfx::Size recording_size_;
 };
 

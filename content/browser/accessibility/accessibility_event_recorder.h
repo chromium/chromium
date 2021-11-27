@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
@@ -50,7 +51,7 @@ class CONTENT_EXPORT AccessibilityEventRecorder : public ui::AXEventRecorder {
       delete;
 
  protected:
-  BrowserAccessibilityManager* const manager_;
+  const raw_ptr<BrowserAccessibilityManager> manager_;
 };
 
 }  // namespace content

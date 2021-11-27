@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -301,7 +302,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   bool initialized_ = false;
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   std::unique_ptr<NetLogProxySink> net_log_proxy_sink_;
 

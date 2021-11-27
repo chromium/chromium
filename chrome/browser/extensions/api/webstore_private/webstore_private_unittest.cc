@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
@@ -412,7 +413,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
   ExtensionService* extension_service() { return service_; }
 
  private:
-  ExtensionService* service_ = nullptr;
+  raw_ptr<ExtensionService> service_ = nullptr;
 };
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,

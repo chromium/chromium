@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -120,16 +121,16 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   GURL url_;
 
   // Pointers to view widgets; weak.
-  views::ImageView* qr_code_image_ = nullptr;
-  views::Textfield* textfield_url_ = nullptr;
-  views::LabelButton* download_button_ = nullptr;
-  views::TooltipIcon* tooltip_icon_ = nullptr;
-  views::Label* center_error_label_ = nullptr;
-  views::Label* bottom_error_label_ = nullptr;
+  raw_ptr<views::ImageView> qr_code_image_ = nullptr;
+  raw_ptr<views::Textfield> textfield_url_ = nullptr;
+  raw_ptr<views::LabelButton> download_button_ = nullptr;
+  raw_ptr<views::TooltipIcon> tooltip_icon_ = nullptr;
+  raw_ptr<views::Label> center_error_label_ = nullptr;
+  raw_ptr<views::Label> bottom_error_label_ = nullptr;
 
   base::OnceClosure on_closing_;
   base::OnceClosure on_back_button_pressed_;
-  content::WebContents* web_contents_;           // weak.
+  raw_ptr<content::WebContents> web_contents_;  // weak.
 };
 
 }  // namespace qrcode_generator

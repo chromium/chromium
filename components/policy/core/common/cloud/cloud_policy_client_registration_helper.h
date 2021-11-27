@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -93,7 +94,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   std::string oauth_access_token_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CloudPolicyClient* client_;
+  raw_ptr<CloudPolicyClient> client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
   base::OnceClosure callback_;
 };

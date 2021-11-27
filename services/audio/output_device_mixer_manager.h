@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_parameters.h"
@@ -97,7 +98,7 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
 
   SEQUENCE_CHECKER(owning_sequence_);
   absl::optional<std::string> current_default_device_id_ = absl::nullopt;
-  media::AudioManager* const audio_manager_;
+  const raw_ptr<media::AudioManager> audio_manager_;
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
   DeviceToListenersMap device_id_to_listeners_;

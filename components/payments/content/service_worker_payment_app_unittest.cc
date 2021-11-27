@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/stored_payment_app.h"
@@ -141,11 +142,11 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   content::TestWebContentsFactory test_web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::unique_ptr<ServiceWorkerPaymentApp> app_;
-  const SkBitmap* icon_bitmap_;
+  raw_ptr<const SkBitmap> icon_bitmap_;
   base::WeakPtrFactory<ServiceWorkerPaymentAppTest> weak_ptr_factory_{this};
 };
 

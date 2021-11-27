@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
@@ -102,7 +103,7 @@ class ClickActivator : public ui::EventHandler {
     }
   }
 
-  NotificationViewBase* const owner_;
+  const raw_ptr<NotificationViewBase> owner_;
 };
 
 // Creates a view responsible for drawing each list notification item's title
@@ -710,7 +711,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
 
   if (!icon_view_) {
     icon_view_ = new ProportionalImageView(GetIconViewSize());
-    right_content_->AddChildView(icon_view_);
+    right_content_->AddChildView(icon_view_.get());
   }
 
   bool apply_rounded_corners = false;

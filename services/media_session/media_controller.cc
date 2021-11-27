@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
@@ -82,7 +83,7 @@ class MediaController::ImageObserverHolder {
 
   media_session::MediaImageManager manager_;
 
-  MediaController* const owner_;
+  const raw_ptr<MediaController> owner_;
 
   mojom::MediaSessionImageType const type_;
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 #include <memory>
@@ -399,7 +400,7 @@ class TrustTokensTester {
   }
 
  private:
-  network::mojom::NetworkContext* network_context_;
+  raw_ptr<network::mojom::NetworkContext> network_context_;
 };
 
 }  // namespace

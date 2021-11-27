@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -198,7 +199,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
   }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 // OverlayWindow implementation of WidgetDelegate.

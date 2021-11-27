@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/cdm/api/content_decryption_module.h"
@@ -64,7 +65,7 @@ class FFmpegCdmAudioDecoder {
 
   bool is_initialized_ = false;
 
-  CdmHostProxy* const cdm_host_proxy_ = nullptr;
+  const raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 
   // FFmpeg structures owned by this object.
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;

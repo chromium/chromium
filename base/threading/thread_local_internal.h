@@ -5,6 +5,8 @@
 #ifndef BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
 #define BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
+
 #if DCHECK_IS_ON()
 
 #include <atomic>
@@ -74,7 +76,7 @@ class CheckedThreadLocalOwnedPointer {
       outer_->num_assigned_threads_.fetch_sub(1, std::memory_order_relaxed);
     }
 
-    CheckedThreadLocalOwnedPointer<T>* const outer_;
+    const raw_ptr<CheckedThreadLocalOwnedPointer<T>> outer_;
     std::unique_ptr<T> ptr_;
   };
 

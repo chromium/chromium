@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,7 +41,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  HistoryClustersHandler* handler_;
+  raw_ptr<HistoryClustersHandler> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

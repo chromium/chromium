@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -32,7 +33,7 @@ class SidePanel : public views::View, public views::ViewObserver {
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
 
-  View* const border_view_;
+  const raw_ptr<View> border_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

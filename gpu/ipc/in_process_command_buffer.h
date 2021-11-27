@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -240,7 +241,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     bool EnableWrappedSkImage() const;
 
    private:
-    InProcessCommandBuffer* command_buffer_;
+    raw_ptr<InProcessCommandBuffer> command_buffer_;
   };
 
   // Provides a callback that can be used to preserve the back buffer for the
@@ -371,11 +372,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Members accessed on the gpu thread (possibly with the exception of
   // creation):
-  DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency_;
+  raw_ptr<DisplayCompositorMemoryAndTaskControllerOnGpu> gpu_dependency_;
   std::unique_ptr<DisplayCompositorMemoryAndTaskControllerOnGpu>
       gpu_dependency_holder_;
   bool use_virtualized_gl_context_ = false;
-  raster::GrShaderCache* gr_shader_cache_ = nullptr;
+  raw_ptr<raster::GrShaderCache> gr_shader_cache_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
   std::unique_ptr<CommandBufferService> command_buffer_;
   std::unique_ptr<DecoderContext> decoder_;
@@ -385,13 +386,13 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Used to throttle PerformDelayedWorkOnGpuThread.
   bool delayed_work_pending_ = false;
-  ImageFactory* image_factory_ = nullptr;
-  GpuChannelManagerDelegate* gpu_channel_manager_delegate_ = nullptr;
+  raw_ptr<ImageFactory> image_factory_ = nullptr;
+  raw_ptr<GpuChannelManagerDelegate> gpu_channel_manager_delegate_ = nullptr;
   // Sequence checker for tasks that run on the gpu "thread".
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 
   // Members accessed on the client thread:
-  GpuControlClient* gpu_control_client_ = nullptr;
+  raw_ptr<GpuControlClient> gpu_control_client_ = nullptr;
 #if DCHECK_IS_ON()
   bool context_lost_ = false;
 #endif
@@ -399,7 +400,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   base::Lock last_state_lock_;
   int32_t last_put_offset_ = -1;
   Capabilities capabilities_;
-  GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
+  raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_ = nullptr;
   uint64_t next_fence_sync_release_ = 1;
   std::vector<SyncToken> next_flush_sync_token_fences_;
   // Sequence checker for client sequence used for initialization, destruction,
@@ -409,13 +410,13 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Accessed on both threads:
   base::WaitableEvent flush_event_;
-  CommandBufferTaskExecutor* const task_executor_;
+  const raw_ptr<CommandBufferTaskExecutor> task_executor_;
 
   // If no SingleTaskSequence is passed in, create our own.
   std::unique_ptr<GpuTaskSchedulerHelper> task_scheduler_holder_;
 
   // Pointer to the SingleTaskSequence that actually does the scheduling.
-  SingleTaskSequence* task_sequence_;
+  raw_ptr<SingleTaskSequence> task_sequence_;
   std::unique_ptr<SharedImageInterfaceInProcess> shared_image_interface_;
 
   // The group of contexts that share namespaces with this context.

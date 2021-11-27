@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
@@ -71,7 +72,7 @@ class AppManagementPageHandler
 
   mojo::Remote<app_management::mojom::Page> page_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AppManagementShelfDelegate shelf_delegate_;

@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -108,9 +109,9 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
-  BrowserView* browser_view_ = nullptr;
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   // Disable animations.
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
@@ -354,8 +355,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     ignore_result(title_watcher.WaitAndGetTitle());
   }
 
-  BrowserView* browser_view_ = nullptr;
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:

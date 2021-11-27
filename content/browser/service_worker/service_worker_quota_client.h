@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_QUOTA_CLIENT_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -62,7 +63,8 @@ class ServiceWorkerQuotaClient : public storage::StorageKeyQuotaClient {
   //
   // The pointer is guaranteed to be non-null. It is not a reference because
   // ResetContext() changes the object it points to.
-  ServiceWorkerContextCore* context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<ServiceWorkerContextCore> context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

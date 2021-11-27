@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -45,7 +46,7 @@ class PacketPipe {
   std::unique_ptr<PacketPipe> pipe_;
   // Allows injection of fake task runner for testing.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 // Implements a Interrupted Poisson Process for packet delivery.
@@ -87,7 +88,7 @@ class InterruptedPoissonProcess {
   void SendPacket();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   const std::vector<double> average_rates_;
   const double coef_burstiness_;
   const double coef_variance_;

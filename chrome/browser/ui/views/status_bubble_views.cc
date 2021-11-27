@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +116,7 @@ class StatusBubbleViews::StatusViewAnimation
   // gfx::AnimationDelegate:
   void AnimationEnded(const Animation* animation) override;
 
-  StatusView* status_view_;
+  raw_ptr<StatusView> status_view_;
 
   // Start and end opacities for the current transition - note that as a
   // fade-in can easily turn into a fade out, opacity_start_ is sometimes
@@ -218,7 +219,7 @@ class StatusBubbleViews::StatusView : public views::View {
   std::unique_ptr<StatusViewAnimation> animation_;
 
   // The status bubble that manages the popup widget and this view.
-  StatusBubbleViews* status_bubble_;
+  raw_ptr<StatusBubbleViews> status_bubble_;
 
   // The currently-displayed text.
   views::Label* text_;
@@ -306,8 +307,9 @@ void StatusView::HideInstantly() {
   destroy_popup_timer_.Stop();
   // This isn't done in the constructor as tests may change the task runner
   // after the fact.
-  destroy_popup_timer_.SetTaskRunner(status_bubble_->task_runner_);
-  destroy_popup_timer_.Start(FROM_HERE, kDestroyPopupDelay, status_bubble_,
+  destroy_popup_timer_.SetTaskRunner(status_bubble_->task_runner_.get());
+  destroy_popup_timer_.Start(FROM_HERE, kDestroyPopupDelay,
+                             status_bubble_.get(),
                              &StatusBubbleViews::DestroyPopup);
 }
 
@@ -619,10 +621,10 @@ class StatusBubbleViews::StatusViewExpander
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // The status bubble that manages the popup widget and this object.
-  StatusBubbleViews* status_bubble_;
+  raw_ptr<StatusBubbleViews> status_bubble_;
 
   // Change the bounds and text of this view.
-  StatusView* status_view_;
+  raw_ptr<StatusView> status_view_;
 
   // Text elided (if needed) to fit maximum status bar width.
   std::u16string expanded_text_;

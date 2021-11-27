@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATE_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -40,7 +41,7 @@ class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
   bool ShouldSync() const override;
 
  private:
-  TabModel* tab_model_;
+  raw_ptr<TabModel> tab_model_;
   const bool is_tabbed_activity_ = false;
 };
 

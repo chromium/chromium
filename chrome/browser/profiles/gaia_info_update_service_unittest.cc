@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -125,7 +126,7 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
 };

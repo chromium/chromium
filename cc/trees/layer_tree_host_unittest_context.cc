@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/layer_impl.h"
@@ -164,8 +165,8 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   // Protects use of gl_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
-  viz::TestGLES2Interface* gl_ = nullptr;
-  viz::TestSharedImageInterface* sii_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  raw_ptr<viz::TestSharedImageInterface> sii_ = nullptr;
 
   int times_to_fail_create_;
   int times_to_lose_during_commit_;
@@ -695,7 +696,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
  protected:
   bool lose_after_evict_;
   FakeContentLayerClient client_;
-  LayerTreeHostImpl* impl_host_;
+  raw_ptr<LayerTreeHostImpl> impl_host_;
   int num_commits_;
   bool lost_context_;
 };

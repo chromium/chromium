@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -66,11 +67,11 @@ class BrowserViewRendererUserData : public base::SupportsUserData::Data {
     BrowserViewRendererUserData* data =
         static_cast<BrowserViewRendererUserData*>(
             web_contents->GetUserData(kBrowserViewRendererUserDataKey));
-    return data ? data->bvr_ : NULL;
+    return data ? data->bvr_.get() : NULL;
   }
 
  private:
-  BrowserViewRenderer* bvr_;
+  raw_ptr<BrowserViewRenderer> bvr_;
 };
 
 }  // namespace

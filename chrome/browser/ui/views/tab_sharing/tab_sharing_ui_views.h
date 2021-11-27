@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
@@ -122,10 +123,10 @@ class TabSharingUIViews : public TabSharingUI,
   const bool capturer_restricted_to_same_origin_ = false;
   content::DesktopMediaID shared_tab_media_id_;
   const std::u16string app_name_;
-  content::WebContents* shared_tab_;
+  raw_ptr<content::WebContents> shared_tab_;
   std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   std::u16string shared_tab_name_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 
   // FaviconPeriodicUpdate() runs on a delayed task which re-posts itself.

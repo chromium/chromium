@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/benchmarks/micro_benchmark.h"
 
 namespace base {
@@ -44,7 +45,7 @@ class CC_EXPORT MicroBenchmarkController {
   void CleanUpFinishedBenchmarks();
   int GetNextIdAndIncrement();
 
-  LayerTreeHost* host_;
+  raw_ptr<LayerTreeHost> host_;
   std::vector<std::unique_ptr<MicroBenchmark>> benchmarks_;
   static int next_id_;
   scoped_refptr<base::SingleThreadTaskRunner> main_controller_task_runner_;

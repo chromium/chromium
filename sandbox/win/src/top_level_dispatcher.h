@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -37,7 +38,7 @@ class TopLevelDispatcher : public Dispatcher {
   // Returns a dispatcher from ipc_targets_.
   Dispatcher* GetDispatcher(IpcTag ipc_tag);
 
-  PolicyBase* policy_;
+  raw_ptr<PolicyBase> policy_;
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
   std::unique_ptr<Dispatcher> named_pipe_dispatcher_;
   std::unique_ptr<Dispatcher> thread_process_dispatcher_;
