@@ -320,7 +320,7 @@ void Layer::SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer) {
     return;
 
   scoped_refptr<cc::MirrorLayer> new_layer =
-      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
+      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_);
   if (!SwitchToLayer(new_layer))
     return;
 
@@ -356,7 +356,7 @@ void Layer::SetCompositor(Compositor* compositor,
   compositor_ = compositor;
   OnDeviceScaleFactorChanged(compositor->device_scale_factor());
 
-  root_layer->AddChild(cc_layer_.get());
+  root_layer->AddChild(cc_layer_);
   SetCompositorForAnimatorsInTree(compositor);
 }
 
@@ -382,7 +382,7 @@ void Layer::Add(Layer* child) {
     child->parent_->Remove(child);
   child->parent_ = this;
   children_.push_back(child);
-  cc_layer_->AddChild(child->cc_layer_.get());
+  cc_layer_->AddChild(child->cc_layer_);
   child->OnDeviceScaleFactorChanged(device_scale_factor_);
   Compositor* compositor = GetCompositor();
   if (compositor)
@@ -816,7 +816,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   for (auto* child : children_) {
     DCHECK(child->cc_layer_);
-    cc_layer_->AddChild(child->cc_layer_.get());
+    cc_layer_->AddChild(child->cc_layer_);
   }
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetContentsOpaque(fills_bounds_opaquely_);
@@ -1193,7 +1193,7 @@ void Layer::StackChildrenAtBottom(
     DCHECK_EQ(leading_child->parent(), this);
     new_children_order.emplace_back(leading_child);
     new_cc_children_order.emplace_back(
-        scoped_refptr<cc::Layer>(leading_child->cc_layer_.get()));
+        scoped_refptr<cc::Layer>(leading_child->cc_layer_));
   }
 
   base::flat_set<Layer*> reordered_children(new_children_order);
@@ -1379,7 +1379,7 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   children_.insert(children_.begin() + dest_i, child);
 
   child->cc_layer_->RemoveFromParent();
-  cc_layer_->InsertChild(child->cc_layer_.get(), dest_i);
+  cc_layer_->InsertChild(child->cc_layer_, dest_i);
 }
 
 bool Layer::ConvertPointForAncestor(const Layer* ancestor,

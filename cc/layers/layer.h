@@ -15,7 +15,6 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
@@ -230,12 +229,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // for each matching pixel.
   void SetMaskLayer(scoped_refptr<PictureLayer> mask_layer);
   const PictureLayer* mask_layer() const {
-    return layer_tree_inputs() ? layer_tree_inputs()->mask_layer.get()
-                               : nullptr;
+    return layer_tree_inputs() ? layer_tree_inputs()->mask_layer : nullptr;
   }
   PictureLayer* mask_layer() {
-    return layer_tree_inputs() ? layer_tree_inputs()->mask_layer.get()
-                               : nullptr;
+    return layer_tree_inputs() ? layer_tree_inputs()->mask_layer : nullptr;
   }
 
   // Marks the |dirty_rect| as being changed, which will cause a commit and
@@ -904,7 +901,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     // If not null, points to one of child layers which is set as mask layer
     // by SetMaskLayer().
-    raw_ptr<PictureLayer> mask_layer = nullptr;
+    PictureLayer* mask_layer = nullptr;
 
     float opacity = 1.0f;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
@@ -959,12 +956,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests;
   };
 
-  raw_ptr<Layer> parent_;
+  Layer* parent_;
 
   // Layer instances have a weak pointer to their LayerTreeHost.
   // This pointer value is nil when a Layer is not in a tree and is
   // updated via SetLayerTreeHost() if a layer moves between trees.
-  raw_ptr<LayerTreeHost> layer_tree_host_;
+  LayerTreeHost* layer_tree_host_;
 
   Inputs inputs_;
   std::unique_ptr<LayerTreeInputs> layer_tree_inputs_;

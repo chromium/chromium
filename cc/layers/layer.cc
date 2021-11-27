@@ -614,7 +614,7 @@ gfx::RectF Layer::EffectiveClipRect() {
 void Layer::SetMaskLayer(scoped_refptr<PictureLayer> mask_layer) {
   DCHECK(IsPropertyChangeAllowed());
   auto& inputs = EnsureLayerTreeInputs();
-  if (inputs.mask_layer.get() == mask_layer)
+  if (inputs.mask_layer == mask_layer)
     return;
   if (inputs.mask_layer) {
     DCHECK_EQ(this, inputs.mask_layer->parent());
