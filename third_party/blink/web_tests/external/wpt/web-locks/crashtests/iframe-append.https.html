@@ -15,8 +15,7 @@
   const iframe = document.getElementById("id_0");
   iframe.contentWindow.navigator.locks.request("weblock_0", async () => {
     await waitForLoad(iframe);
-    document.body.append(iframe);
-    await waitForLoad(iframe);
+    document.body.append(iframe); // discards the document and destroys locks
     document.documentElement.classList.remove("test-wait");
   });
 </script>
