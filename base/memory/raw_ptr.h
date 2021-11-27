@@ -589,8 +589,8 @@ class raw_ptr {
   template <typename U>
   friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
     // Add |const volatile| when casting, in case |U| has any. Even if |T|
-    // doesn't, comparison between |T*| and |const volatile T*| is fine.
-    return lhs.GetForComparison() == static_cast<std::add_cv_t<T>*>(rhs);
+    // doesn't, comparison between |T*| and |const volatile U*| is fine.
+    return lhs.GetForComparison() == static_cast<std::add_cv_t<U>*>(rhs);
   }
   template <typename U>
   friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, U* rhs) {
@@ -655,9 +655,9 @@ template <typename U, typename V, typename I>
 ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
                               const raw_ptr<V, I>& rhs) {
   // Add |const volatile| when casting, in case |V| has any. Even if |U|
-  // doesn't, comparison between |U*| and |const volatile U*| is fine.
+  // doesn't, comparison between |U*| and |const volatile V*| is fine.
   return lhs.GetForComparison() ==
-         static_cast<std::add_cv_t<U>*>(rhs.GetForComparison());
+         static_cast<std::add_cv_t<V>*>(rhs.GetForComparison());
 }
 
 }  // namespace base

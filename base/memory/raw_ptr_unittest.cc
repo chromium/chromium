@@ -715,6 +715,35 @@ TEST_F(RawPtrTest, AssignmentFromNullptr) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
+struct BaseStruct {
+  explicit BaseStruct(int a) : a(a) {}
+  virtual ~BaseStruct() = default;
+
+  int a;
+};
+
+struct DerivedType1 : public BaseStruct {
+  explicit DerivedType1(int a, int b) : BaseStruct(a), b(b) {}
+  int b;
+};
+
+struct DerivedType2 : public BaseStruct {
+  explicit DerivedType2(int a, int c) : BaseStruct(a), c(c) {}
+  int c;
+};
+
+TEST_F(RawPtrTest, DerivedStructsComparison) {
+  DerivedType1 derived_1(42, 84);
+  raw_ptr<DerivedType1> checked_derived1_ptr = &derived_1;
+  DerivedType2 derived_2(21, 10);
+  raw_ptr<DerivedType2> checked_derived2_ptr = &derived_2;
+
+  // Make sure that comparing a |DerivedType2*| to a |DerivedType1*| casted
+  // as a |BaseStruct*| doesn't cause CFI errors.
+  EXPECT_NE(checked_derived1_ptr,
+            static_cast<BaseStruct*>(checked_derived2_ptr.get()));
+}
+
 }  // namespace
 
 namespace base {
