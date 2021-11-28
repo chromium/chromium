@@ -176,7 +176,7 @@ namespace printing {
   interface Properties {
     // The maximum number of times that $(ref:submitJob) can be called per
     // minute.
-    [value=20] static long MAX_SUBMIT_JOB_CALLS_PER_MINUTE();
+    [value=40] static long MAX_SUBMIT_JOB_CALLS_PER_MINUTE();
 
     // The maximum number of times that $(ref:getPrinterInfo) can be called per
     // minute.
