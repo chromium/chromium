@@ -21,19 +21,13 @@
 
 namespace blink {
 
-class ReadableStreamBytesConsumer::OnFulfilled final : public ScriptFunction {
+class ReadableStreamBytesConsumer::Fulfilled final
+    : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ReadableStreamBytesConsumer* consumer) {
-    return (MakeGarbageCollected<OnFulfilled>(script_state, consumer))
-        ->BindToV8Function();
-  }
+  explicit Fulfilled(ReadableStreamBytesConsumer* consumer)
+      : consumer_(consumer) {}
 
-  OnFulfilled(ScriptState* script_state, ReadableStreamBytesConsumer* consumer)
-      : ScriptFunction(script_state), consumer_(consumer) {}
-
-  ScriptValue Call(ScriptValue v) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue v) override {
     bool done;
     v8::Local<v8::Value> item = v.V8Value();
     if (!item->IsObject()) {
@@ -41,7 +35,7 @@ class ReadableStreamBytesConsumer::OnFulfilled final : public ScriptFunction {
       return ScriptValue();
     }
     v8::Local<v8::Value> value;
-    if (!V8UnpackIteratorResult(GetScriptState(), item.As<v8::Object>(), &done)
+    if (!V8UnpackIteratorResult(script_state, item.As<v8::Object>(), &done)
              .ToLocal(&value)) {
       consumer_->OnRejected();
       return ScriptValue();
@@ -57,40 +51,34 @@ class ReadableStreamBytesConsumer::OnFulfilled final : public ScriptFunction {
     NonThrowableExceptionState exception_state;
     consumer_->OnRead(
         NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
-            GetScriptState()->GetIsolate(), value, exception_state)
+            script_state->GetIsolate(), value, exception_state)
             .Get());
     return v;
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
  private:
   Member<ReadableStreamBytesConsumer> consumer_;
 };
 
-class ReadableStreamBytesConsumer::OnRejected final : public ScriptFunction {
+class ReadableStreamBytesConsumer::Rejected final
+    : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ReadableStreamBytesConsumer* consumer) {
-    return (MakeGarbageCollected<OnRejected>(script_state, consumer))
-        ->BindToV8Function();
-  }
+  explicit Rejected(ReadableStreamBytesConsumer* consumer)
+      : consumer_(consumer) {}
 
-  OnRejected(ScriptState* script_state, ReadableStreamBytesConsumer* consumer)
-      : ScriptFunction(script_state), consumer_(consumer) {}
-
-  ScriptValue Call(ScriptValue v) override {
+  ScriptValue Call(ScriptState*, ScriptValue v) override {
     consumer_->OnRejected();
     return v;
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -144,8 +132,10 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
       script_promise = ScriptPromise::Reject(script_state_, exception_state);
 
     script_promise
-        .Then(OnFulfilled::CreateFunction(script_state_, this),
-              OnRejected::CreateFunction(script_state_, this))
+        .Then(MakeGarbageCollected<NewScriptFunction>(
+                  script_state_, MakeGarbageCollected<Fulfilled>(this)),
+              MakeGarbageCollected<NewScriptFunction>(
+                  script_state_, MakeGarbageCollected<Rejected>(this)))
         .MarkAsHandled();
   }
   return Result::kShouldWait;
