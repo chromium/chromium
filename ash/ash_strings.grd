@@ -655,7 +655,7 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ROLLBACK_REQUIRED_TITLE_SECONDS" desc="The title of a dialog that tells users the device must be restarted to roll back to an earlier version within seconds. The device will be wiped on restart.">
         {0, plural,
-          =0 {Change device to previous version within now}
+          =0 {Change device to previous version now}
           =1 {Change device to previous version within 1 second}
           other {Change device to previous version within # seconds}}
       </message>
