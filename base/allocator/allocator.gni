@@ -101,7 +101,7 @@ declare_args() {
   #   are too expensive to have on by default.
   put_ref_count_in_previous_slot = false
   never_remove_from_brp_pool_blocklist = _is_brp_supported
-  enable_backup_ref_ptr_slow_checks = _is_brp_supported
+  enable_backup_ref_ptr_slow_checks = false
 
   # Registers the binary for a fake binary A/B experiment. The binaries built
   # with this flag have no behavior difference, except for setting a synthetic
