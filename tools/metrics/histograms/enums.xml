@@ -4055,6 +4055,7 @@ Unknown properties are collapsed to zero. -->
   <int value="21" label="Stop tethering error (netd)"/>
   <int value="23" label="SNAT start error (netd)"/>
   <int value="24" label="SNAT stop error (netd)"/>
+  <int value="25" label="Invalid PasspointConfiguration (wifi)"/>
 </enum>
 
 <enum name="ArcNetworkEvent">
@@ -4062,7 +4063,7 @@ Unknown properties are collapsed to zero. -->
 
   <int value="0" label="Unknown"/>
   <int value="1" label="Legacy Android VPN connection"/>
-  <int value="2" label="3p Android VPN connection"/>
+  <int value="2" label="3p Android VPN connection (VpnService)"/>
   <int value="3" label="Configure Android VPN (mojo)"/>
   <int value="4" label="Disconnect Android VPN (mojo)"/>
   <int value="5" label="DNS test (mojo)"/>
@@ -4096,6 +4097,7 @@ Unknown properties are collapsed to zero. -->
   <int value="33" label="Enable TDLS offload to local peer (WifiManager)"/>
   <int value="34" label="Start local hotspot (WifiManager)"/>
   <int value="35" label="Add Passpoint configuration (WifiManager)"/>
+  <int value="36" label="IPsec IKE2 Android VPN connection (VpnManager)"/>
 </enum>
 
 <enum name="ArcNoWindowReason">
