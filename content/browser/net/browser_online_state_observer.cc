@@ -5,15 +5,11 @@
 #include "content/browser/net/browser_online_state_observer.h"
 
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 
 namespace content {
 
 BrowserOnlineStateObserver::BrowserOnlineStateObserver() {
   net::NetworkChangeNotifier::AddMaxBandwidthObserver(this);
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllSources());
 }
 
 BrowserOnlineStateObserver::~BrowserOnlineStateObserver() {
@@ -34,14 +30,8 @@ void BrowserOnlineStateObserver::OnMaxBandwidthChanged(
   }
 }
 
-void BrowserOnlineStateObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(NOTIFICATION_RENDERER_PROCESS_CREATED, type);
-
-  content::RenderProcessHost* rph =
-      content::Source<content::RenderProcessHost>(source).ptr();
+void BrowserOnlineStateObserver::OnRenderProcessHostCreated(
+    content::RenderProcessHost* rph) {
   double max_bandwidth_mbps;
   net::NetworkChangeNotifier::ConnectionType connection_type;
   net::NetworkChangeNotifier::GetMaxBandwidthAndConnectionType(
