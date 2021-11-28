@@ -48,6 +48,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -467,8 +468,8 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
   std::transform(file_names.begin(), file_names.end(),
                  std::back_inserter(file_urls),
                  [&file_manager_url](const std::string& name) {
-                   return base::StrCat(
-                       {"filesystem:", file_manager_url.Resolve(name).spec()});
+                   return base::StrCat({url::kFileSystemScheme, ":",
+                                        file_manager_url.Resolve(name).spec()});
                  });
   std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
   base::Pickle pickle;
