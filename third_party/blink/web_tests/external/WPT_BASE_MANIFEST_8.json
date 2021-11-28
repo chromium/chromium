@@ -135324,6 +135324,19 @@
        {}
       ]
      ],
+     "position-absolute-under-non-containing-stacking-context.html": [
+      "444f125767858827f220669a7088fe228626072e",
+      [
+       null,
+       [
+        [
+         "/css/css-position/position-absolute-under-non-containing-stacking-context-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-change.html": [
       "c5b5069eb91596772c3ae403fc512aeca081d457",
       [
@@ -251366,6 +251379,10 @@
       "d4649f2d5abc240f09551cc9efebfa2029406101",
       []
      ],
+     "position-absolute-under-non-containing-stacking-context-ref.html": [
+      "ceade7bafe9cc0510a2080b4a9ec5e7514469dcf",
+      []
+     ],
      "position-change-ref.html": [
       "de797dec14b60191d7a4a8ca8554b38ba051791e",
       []
@@ -305379,7 +305396,7 @@
       []
      ],
      "toascii.json": [
-      "11b0586307ee6d2f80f6f4ab8fe572514a03eb13",
+      "b9ceea310676d770db6fbade1d6adae703694fee",
       []
      ],
      "urltestdata.json": [
@@ -305388,7 +305405,7 @@
      ]
     },
     "toascii.window-expected.txt": [
-     "8db3f9bc29b4a258b8bdf3a774d51da7c8ca677e",
+     "9229523f31bdbc3d0cbabffb1356063584e591b6",
      []
     ],
     "url-setters-stripping.any-expected.txt": [
