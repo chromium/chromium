@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -67,8 +67,7 @@ class FileUtilsTest : public ::testing::Test {
 
   // FileUtils explicitly relies on ChromeOS Files.app for files manipulation.
   const url::Origin GetFileManagerOrigin() {
-    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-        file_manager::kFileManagerAppId));
+    return url::Origin::Create(file_manager::util::GetFileManagerURL());
   }
 
   // Converts the given virtual |path| to a file system URL. Uses test file
