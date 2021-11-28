@@ -92,6 +92,8 @@ class BASE_EXPORT PartitionRefCount {
     CheckCookie();
 #endif
 
+    // TODO(bartekn): Make the double-free check more effective. Once freed, the
+    // ref-count is overwritten by an encoded freelist-next pointer.
     int32_t old_count = count_.fetch_sub(1, std::memory_order_release);
     if (UNLIKELY(!(old_count & 1)))
       DoubleFreeOrCorruptionDetected();

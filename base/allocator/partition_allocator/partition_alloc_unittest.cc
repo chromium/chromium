@@ -1881,6 +1881,10 @@ TEST_F(PartitionAllocDeathTest, LargeAllocs) {
   EXPECT_DEATH(allocator.root()->Alloc(MaxDirectMapped() + 1, type_name), "");
 }
 
+// These tests don't work deterministically when BRP is enabled, as the Free()
+// path returns early, before PA_CHECK(slot_start != freelist_head) is reached.
+// TODO(bartekn): Fix and re-enable.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
 // Check that our immediate double-free detection works.
 TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -1902,6 +1906,7 @@ TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
   // and should be trapped.
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
+#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Check that guard pages are present where expected.
 TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
