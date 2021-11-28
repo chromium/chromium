@@ -82,12 +82,19 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   UpdateForDescendants(starting_layer_, force_update_children);
 }
 
+// See UpdateForDescendants for how |force_update_self| is propagated.
 void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
                                         bool force_update_self) {
   bool should_proactively_update = ShouldProactivelyUpdate(layer);
   bool force_update_children =
-      should_proactively_update || layer.ForcesChildrenCullRectUpdate();
+      should_proactively_update || layer.ForcesChildrenCullRectUpdate() ||
+      // |force_update_self| is true if the contents cull rect of the containing
+      // block of |layer| changed, so we need to propagate the flag to
+      // non-contained absolute-position descendants whose cull rects are also
+      // affected by the containing block.
+      (force_update_self && layer.HasNonContainedAbsolutePositionDescendant() &&
+       layer.GetLayoutObject().IsStackingContext());
 
   // This defines the scope of force_proactive_update_ (which may be set by
   // ComputeFragmentCullRect() and ComputeFragmentContentsCullRect()) to the
@@ -119,6 +126,9 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
   layer.ClearNeedsCullRectUpdate();
 }
 
+// "Children" in |force_update_children| means children in the containing block
+// tree. The flag is set by the containing block whose contents cull rect
+// changed.
 void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
                                            bool force_update_children) {
   const auto& object = layer.GetLayoutObject();
