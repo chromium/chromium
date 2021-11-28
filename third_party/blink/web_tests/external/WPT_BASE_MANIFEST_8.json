@@ -1787,6 +1787,13 @@
        {}
       ]
      ],
+     "crash-test.html": [
+      "a7baba30ec87a5f8bfdf5a5a67d5345f06ec3cde",
+      [
+       null,
+       {}
+      ]
+     ],
      "execCommand-at-load-with-changing-editing-host.html": [
       "ec1dd30dc023205ce479df1038d08279c315ae62",
       [
@@ -2109,6 +2116,15 @@
     },
     "rendering": {
      "non-replaced-elements": {
+      "form-controls": {
+       "select-fixedpos-crash.html": [
+        "47046f6c2533aef9e8fb9d078eb160b9aac1b6ec",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "the-fieldset-and-legend-elements": {
        "fieldset-crash.html": [
         "111dcbe5338a1df74c69a05cccd618f37a761c91",
@@ -2858,8 +2874,15 @@
        {}
       ]
      ],
+     "iframe-append-2.https.html": [
+      "06aee518fecea461c6629725d8e6a25797ead701",
+      [
+       null,
+       {}
+      ]
+     ],
      "iframe-append.https.html": [
-      "be5d1b365c5ce29ad52a15fe97f80cc693e516f5",
+      "507a40d272724d3a2ff5728e815c6f5fa245c8ca",
       [
        null,
        {}
@@ -116635,6 +116658,19 @@
         {}
        ]
       ],
+      "custom-highlight-painting-017.html": [
+       "c3184a986ad2d184f3a7cb388de8e57a73299fcc",
+       [
+        null,
+        [
+         [
+          "/css/reference/pass_if_pass_below.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "custom-highlight-painting-below-grammar.html": [
        "93d2560040b791a0685151cc29587c771fad8c03",
        [
@@ -138744,6 +138780,19 @@
        [
         [
          "/css/css-pseudo/target-text-two-words-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-007.html": [
+      "17d4236e390159d90aa6b5be99fa4dbd357e2eed",
+      [
+       null,
+       [
+        [
+         "/css/reference/pass_if_pass_below.html",
          "=="
         ]
        ],
@@ -168732,6 +168781,19 @@
        [
         [
          "/css/css-transforms/perspective-split-by-zero-w-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-svg-001.html": [
+      "d22b1156f916e9ab0567e55b2f2310fd384bdc1f",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/perspective-svg-001-ref.html",
          "=="
         ]
        ],
@@ -204219,6 +204281,19 @@
          ],
          {}
         ]
+       ],
+       "toggle-display.html": [
+        "127679b2ad9b4c0cebe202c35ec99a5c5d3f7aaf",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/form-controls/toggle-display-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "lists": {
@@ -219996,6 +220071,10 @@
      "ebf84dd43fe17d345f7db7cd736470d403ff6c99",
      []
     ],
+    "enumerateDevices-permissions-policy.https-expected.txt": [
+     "e5e73f8d286e989578b2c05de3679556ec47db03",
+     []
+    ],
     "enumerateDevices-with-selectAudioOutput.https-expected.txt": [
      "c46f9ed094ed5fa0d39008486fcf57f08e96b3c9",
      []
@@ -220008,8 +220087,16 @@
      "7619133d2d6796301347b12488577f42eb6c43ab",
      []
     ],
+    "selectAudioOutput-permissions-policy.https.sub-expected.txt": [
+     "88afdfef4cb8da660b94d6996d379298d9928b7e",
+     []
+    ],
     "selectAudioOutput-sans-user-activation.https-expected.txt": [
      "5f2c09b8c2eb5a002d045d2903aa764467ed7f14",
+     []
+    ],
+    "setSinkId-permissions-policy.https.sub-expected.txt": [
+     "53d56d53c1eb8488e5e0d95500d81c9da5332105",
      []
     ],
     "setSinkId-with-selectAudioOutput.https-expected.txt": [
@@ -220901,7 +220988,7 @@
      []
     ],
     "media.js": [
-     "e9b1e6b0fbe6ae9a45b8bfc4d920841bb74813c3",
+     "f2dc86126604954f4602ffcb9efbb17ab2587e4a",
      []
     ],
     "media.js.headers": [
@@ -223907,6 +223994,14 @@
      ],
      "echoing-nester.html": [
       "d4f5899da7894749a51039f9d5bf3b8bfd680570",
+      []
+     ],
+     "fedcm-helper.js": [
+      "fa292e527e6d4ea953014170b64d8a05b6ed587d",
+      []
+     ],
+     "fedcm-mock.js": [
+      "318419792c2986c16d805bb8ed68c68192c19d1c",
       []
      ],
      "federatedcredential-get.html": [
@@ -258503,6 +258598,10 @@
       "4021be83dcd97fd1169304e75245f1aaf96f15e2",
       []
      ],
+     "perspective-svg-001-ref.html": [
+      "0319294322a60653905bcc5bad8e074c8e6a1311",
+      []
+     ],
      "perspective-transforms-equivalence-ref.html": [
       "a4fc022382c957fe130905f5935cd33736117b03",
       []
@@ -274862,6 +274961,12 @@
         ]
        }
       },
+      "read-media": {
+       "pageload-video-expected.txt": [
+        "9306dce1ec5252b577f80e2d10e4bf55997c4403",
+        []
+       ]
+      },
       "scroll-to-fragid": {
        "navigate-helpers.js": [
         "7a9adeb3d2e6a0f6c75a37624579a594c6286cf6",
@@ -277296,12 +277401,36 @@
          "9dbb09f6ee99e29bdc1998bf2c103ef920f2846e",
          []
         ],
+        "layers-globalcompositeoperation-expected.html": [
+         "234c1f9e2de25c38e22319b8d19201613490b0bf",
+         []
+        ],
+        "layers-globalcompositeoperation.html": [
+         "20ce0ca2c27edc282a30bb9175d44a0fc49d5f03",
+         []
+        ],
         "layers-loneendlayer-expected.html": [
          "d6e06cda1aed040d3b20f395074c7c87ae21dbcb",
          []
         ],
         "layers-loneendlayer.html": [
          "e762c5f1fb76fcb264b503a242e97753f6f39ae4",
+         []
+        ],
+        "layers-nested-expected.html": [
+         "c74f1e64956874f2ddde6ba3bd0e2156615c0e35",
+         []
+        ],
+        "layers-nested.html": [
+         "b1bbdbeba5fa95310112db411f95fc2ba5624624",
+         []
+        ],
+        "layers-restorestyle-expected.html": [
+         "6372dfe62e97ed25ab92c8762372f6572fe9e028",
+         []
+        ],
+        "layers-restorestyle.html": [
+         "9a20aa07710744a5a7a28e58734026de63fb07af",
          []
         ],
         "layers-shadow-expected.html": [
@@ -278101,7 +278230,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "5d472506b1ecd6f19d0a04c8d5fa31a6cb174b53",
+         "685946dce591c42dc79c84eddd8bcd5548559918",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -278211,7 +278340,7 @@
          []
         ],
         "text.yaml": [
-         "2fe6c2a88bc2bcbbc63e7f1b6e888aeaf966e3fc",
+         "32a45ff14e95a826300c8d777d7e67d45cc66d23",
          []
         ],
         "the-canvas-state.yaml": [
@@ -283216,6 +283345,10 @@
        "text-transform-ref.html": [
         "5dc26a78dbb0133964bf248eef2d698f32ffa329",
         []
+       ],
+       "toggle-display-ref.html": [
+        "8093efe5e8df5609b29ceb438f00bd4b4c877b2a",
+        []
        ]
       },
       "hidden-elements-expected.txt": [
@@ -286120,11 +286253,11 @@
         []
        ],
        "dialog-focusing-steps-disconnected-expected.txt": [
-        "5270b6237ecbb824eb78fd402ed3b24d073d1cc7",
+        "52d8cbc0d759b527c7fd4ce6095e53013a1f5d35",
         []
        ],
        "dialog-focusing-steps-inert-expected.txt": [
-        "085a9b59d2aeea11b84cd8cdf27c086ecd007e68",
+        "64ea5844df5ab957cb8c06489bcd385076a2fee3",
         []
        ],
        "dialogs-with-no-backdrop-ref.html": [
@@ -288130,6 +288263,18 @@
        "DOMContentLoaded-defer.js": [
         "35ce9327bfc3bea185a0717e2acbd82a4967680d",
         []
+       ],
+       "no-doctype-name-eof.html": [
+        "b7717521bb73c6ac3b6c10682e7e1b015103b412",
+        []
+       ],
+       "no-doctype-name-line.html": [
+        "ba9071187291307224d7a70829e7cb1f4ada257a",
+        []
+       ],
+       "no-doctype-name-space.html": [
+        "f8391aa102e706f1afa4adfb32b09ebd0c06e04d",
+        []
        ]
       },
       "template.js": [
@@ -289290,7 +289435,7 @@
         []
        ],
        "contentType.window-expected.txt": [
-        "f117c708b912899355f7542c0a1dcdba459d84f1",
+        "4c8d6a662b8402cdfc5166413d619a28880d2ac6",
         []
        ],
        "empty.html": [
@@ -292212,7 +292357,7 @@
     ]
    },
    "lint.ignore": [
-    "9a3cd82f188af3f6287d2d54b98665f1f623973d",
+    "35421abf71848958c89c063152292a32cd014979",
     []
    ],
    "loading": {
@@ -295577,7 +295722,7 @@
      []
     ],
     "payment-extension-allowed-by-permissions-policy-attribute.https.sub-expected.txt": [
-     "bfb4d6f19cfaf3ca72053d6f756f11febc033c88",
+     "cb391380f97758b67ad77fdea005479e6f6e6cd9",
      []
     ],
     "permissions-policy-frame-policy-allowed-for-all.https.sub.html.sub.headers": [
@@ -295888,7 +296033,7 @@
       []
      ],
      "permissions-policy.js": [
-      "3c995c9bd602d5dfddf4dea20e4be417a04a7258",
+      "00c0bf23265ad20b21952a4a0d71361e7fce64ed",
       []
      ],
      "picture-in-picture.js": [
@@ -307222,6 +307367,12 @@
       ]
      },
      "bidi": {
+      "log_entry_added": {
+       "__init__.py": [
+        "551d815c653b44a3466ea9bb3dde1d9a7611032e",
+        []
+       ]
+      },
       "new_session": {
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -327905,6 +328056,13 @@
     }
    },
    "audio-output": {
+    "enumerateDevices-permissions-policy.https.html": [
+     "4e5652e68f5e0e72ae892df46195090206f62185",
+     [
+      null,
+      {}
+     ]
+    ],
     "enumerateDevices-with-selectAudioOutput.https.html": [
      "51da44286a760b1f6df84d7cfdb24f6dbdf6f6a9",
      [
@@ -327939,8 +328097,24 @@
       {}
      ]
     ],
+    "selectAudioOutput-permissions-policy.https.sub.html": [
+     "41917bb1a64aed532a27a6cdc0a460b4c7f67938",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "selectAudioOutput-sans-user-activation.https.html": [
      "9f014476d2717e08178668c712f8ceffd2f9a0aa",
+     [
+      null,
+      {}
+     ]
+    ],
+    "setSinkId-permissions-policy.https.sub.html": [
+     "8e26fc44a857dce13ce7e24cb1b3e656af7f827c",
      [
       null,
       {}
@@ -343054,6 +343228,20 @@
       {}
      ]
     ],
+    "fedcm-revoke.https.html": [
+     "c014724b8173e47e9d9ffb00a08537055c3f8003",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fedcm.https.html": [
+     "6933e58b7081bb16abac03fce718612c43a89e94",
+     [
+      null,
+      {}
+     ]
+    ],
     "federatedcredential-framed-get.sub.https.html": [
      "7883c8ebf23ea3c4214db585aba32d391d824a52",
      [
@@ -343107,13 +343295,6 @@
     ],
     "require_securecontext.html": [
      "b1f3103da06e2ba2243f8e2107666abb42ccfdce",
-     [
-      null,
-      {}
-     ]
-    ],
-    "webid.https.html": [
-     "caee05958e2751b81d2acf89207b360ffbcd3ae4",
      [
       null,
       {}
@@ -357455,7 +357636,7 @@
      ],
      "input": {
       "keyboard.html": [
-       "ffb6ef6f308bc75ea0104dbf76d90a82145549a7",
+       "b8ad3e001d881832e00fe8152c00cc9813acc8bb",
        [
         null,
         {
@@ -371858,7 +372039,7 @@
        ]
       ],
       "attribute-or-elemental-selectors-in-has.html": [
-       "42552464c7cbf1e88725f6c2b24d7ff847b8365a",
+       "d0edb1e5e47a8dd0831e26ccf03d40bfd8137dd9",
        [
         null,
         {}
@@ -410114,21 +410295,21 @@
         ]
        ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
-        "f3929607faa3f2e0cac73a01d3aee4b9667020b2",
+        "f197d22afa45d02307b9a0324c64f5013eb3439e",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.html": [
-        "200d711b4421c687161792211aff7fb23b1f7895",
+        "35f25875e0ea23543d204b288626e159c33832f3",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.measure.html": [
-        "315f284777aae5082be0cfea1dfc9abd2306006e",
+        "9240a0835cdcdd779a75447d0d113e5cca298b11",
         [
          null,
          {}
@@ -426460,42 +426641,42 @@
         ]
        ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
-        "688eee2a0259eb9a5d3e680e10a1e0a1b6e23659",
+        "1191e2d8ee775eff3466100871da1b2fcef3c5ea",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.nonfinite.spacing.worker.js": [
-        "ecf9224e9e2ea7ed1eb40e65d74a3d2de4c71410",
+        "b01a27eada9d993104d46768319674e19e6a1ffc",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.nonfinite.spacing.worker.html",
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.html": [
-        "bc688b7ee24b1ee8b319903b47f79b9ae8f06468",
+        "23d39fcd678e0264620018e49b5e3628c8de5144",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.measure.html": [
-        "5aac96856eda518d96c47bd58239b5284f09098e",
+        "070c93633ab22d649d0ec194b3ccdd68c44d5d47",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.measure.worker.js": [
-        "df8343951483ab668e388425370f86cd421da0eb",
+        "ef03ff52ea6dfeb0e99a771c409afe90f9cea1c0",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.spacing.measure.worker.html",
          {}
         ]
        ],
        "2d.text.drawing.style.spacing.worker.js": [
-        "7904f3f97d74eedca51febbbbfc6e1eb332d1487",
+        "5b5a417f52f7aa9a3cbd6297268988032680b8c0",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.spacing.worker.html",
          {}
@@ -440523,6 +440704,15 @@
          {}
         ]
        ],
+       "backdrop-receives-element-events.html": [
+        "31c3c6ce3c088ab779da6bca466496d7943caeda",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "centering.html": [
         "2dc6ce3edfe43fa247ce8f7a12f211821da28297",
         [
@@ -440616,14 +440806,14 @@
         ]
        ],
        "dialog-focusing-steps-disconnected.html": [
-        "abcfef569bfaf3d28ac73d7011fdc1d071570dcc",
+        "0171ee287fad27c9ee3ffe83a5bac7d2c9ba4a47",
         [
          null,
          {}
         ]
        ],
        "dialog-focusing-steps-inert.html": [
-        "9abedcd18e6fd1252da3ec3850289aa70ec0ae51",
+        "003c4561791600765297804ef4a09e12aba775ef",
         [
          null,
          {}
@@ -446266,6 +446456,13 @@
         {}
        ]
       ],
+      "no-doctype-name.html": [
+       "cfd57e41d964cb8e1d3c98cbe4fa33f46ae73064",
+       [
+        null,
+        {}
+       ]
+      ],
       "quotes-in-meta.html": [
        "3d1eaf02a20c7dad80656f69adb26e24e1b1647f",
        [
@@ -450319,6 +450516,20 @@
     ],
     "inert-on-slots.tentative.html": [
      "dd0d7ec6d46d1ef34417dcf099ce5156bb149bea",
+     [
+      null,
+      {}
+     ]
+    ],
+    "inert-with-modal-dialog-001.tentative.html": [
+     "a31fa150147f5c86de5969225e978936bc80daca",
+     [
+      null,
+      {}
+     ]
+    ],
+    "inert-with-modal-dialog-002.tentative.html": [
+     "499ac80d09e2c0a5080493e33cc2bd87a4c217f5",
      [
       null,
       {}
@@ -481033,7 +481244,7 @@
      ]
     ],
     "permissions-policy-audio+video.https.sub.html": [
-     "faeaa71af14f831a29880c6a734a8f81c8901f0e",
+     "2e7df39125640aafa548ece4b3b245c26bd6bf9f",
      [
       null,
       {
@@ -481042,7 +481253,7 @@
      ]
     ],
     "permissions-policy-audio.https.sub.html": [
-     "c3bfcef4fd69a8d378a55b0ee5dd76b47fbcef8d",
+     "7bfc33f861dd55878be0960b72c339d701c7d27f",
      [
       null,
       {
@@ -481051,7 +481262,7 @@
      ]
     ],
     "permissions-policy-video.https.sub.html": [
-     "4ec6e640c64704dc3b9a6240a95c374ba6a47751",
+     "6740466ef2a0632f8068a3273d9c16876b0f9ba8",
      [
       null,
       {
@@ -482324,6 +482535,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "drag-disabled-textarea-shadow-dom.html": [
+     "9270cfc5c6beaf428970ae5dec20bbc8e5ddb0c7",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "extend-00.html": [
@@ -549000,6 +549220,24 @@
         }
        ]
       ]
+     },
+     "bidi": {
+      "log_entry_added": {
+       "console_args.py": [
+        "3af11df86a8b64dd6175dbc654abbc3dbfe522ed",
+        [
+         null,
+         {}
+        ]
+       ],
+       "javascript.py": [
+        "820856712dc3a6b5ddb8dbdfc557972a5433843b",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
      },
      "close_window": {
       "close.py": [
