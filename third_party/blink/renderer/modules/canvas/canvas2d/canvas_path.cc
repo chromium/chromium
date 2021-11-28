@@ -514,6 +514,7 @@ void CanvasPath::roundRect(
     exception_state.ThrowRangeError(
         String::Number(num_radii) +
         " radii provided. Between one and four radii are necessary.");
+    return;
   }
 
   float x = base::saturated_cast<float>(double_x);
@@ -542,10 +543,12 @@ void CanvasPath::roundRect(
         if (UNLIKELY(r_x < 0.0f)) {
           exception_state.ThrowRangeError(
               "X-radius value " + String::Number(r_x) + " is negative.");
+          return;
         }
         if (UNLIKELY(r_y < 0.0f)) {
           exception_state.ThrowRangeError(
               "Y-radius value " + String::Number(r_y) + " is negative.");
+          return;
         }
         r[i] = FloatSize(base::saturated_cast<float>(p->x()),
                          base::saturated_cast<float>(p->y()));
@@ -560,6 +563,7 @@ void CanvasPath::roundRect(
         if (UNLIKELY(a < 0.0f)) {
           exception_state.ThrowRangeError("Radius value " + String::Number(a) +
                                           " is negative.");
+          return;
         }
         r[i] = FloatSize(a, a);
         break;

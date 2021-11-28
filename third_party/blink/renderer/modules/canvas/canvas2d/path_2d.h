@@ -87,22 +87,21 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   void Trace(Visitor*) const override;
 
-  ExecutionContext* GetTopExecutionContext() const override {
-    NOTREACHED();
-    return nullptr;
-  }
+  ExecutionContext* GetTopExecutionContext() const override { return context_; }
 
-  explicit Path2D(ExecutionContext* context) {
+  explicit Path2D(ExecutionContext* context) : context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
   }
-  Path2D(ExecutionContext* context, const Path& path) : CanvasPath(path) {
+  Path2D(ExecutionContext* context, const Path& path)
+      : CanvasPath(path), context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
   }
   Path2D(ExecutionContext* context, Path2D* path)
-      : CanvasPath(path->GetPath()) {
+      : CanvasPath(path->GetPath()), context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
   }
-  Path2D(ExecutionContext* context, const String& path_data) {
+  Path2D(ExecutionContext* context, const String& path_data)
+      : context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
     BuildPathFromString(path_data, path_);
   }
@@ -111,6 +110,9 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
   Path2D& operator=(const Path2D&) = delete;
 
   ~Path2D() override = default;
+
+ private:
+  Member<ExecutionContext> context_;
 };
 
 }  // namespace blink
