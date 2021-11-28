@@ -96,6 +96,11 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     shell_surface->controller_surface()->Commit();
   }
 
+  // Reset the same bounds, to make sure white background can be located in
+  // correct place. Without this operation, the white background will not
+  // at the same location with window bounds.
+  shell_surface->SetBounds(display_id_value, bounds);
+
   return shell_surface;
 }
 
