@@ -579,7 +579,20 @@ config("compiler") {
     }
 
     cflags_c += [ "-std=${standard_prefix}11" ]
-    cflags_cc += [ "-std=${standard_prefix}++14" ]
+
+    # TODO(https://crbug.com/1273966): Use C++17 with is_cfi once
+    # https://chromium-review.googlesource.com/c/v8/v8/+/3304143/ is rolled in.
+    if ((is_nacl && !is_nacl_saigo) || is_cfi) {
+      # This is for the pnacl_newlib toolchain. It's only used to build
+      # a few independent ppapi test files that don't pull in any other
+      # dependencies.
+      cflags_cc += [
+        "-std=${standard_prefix}++14",
+        "-fno-trigraphs",
+      ]
+    } else {
+      cflags_cc += [ "-std=${standard_prefix}++17" ]
+    }
   } else if (is_win) {
     cflags_cc += [ "/std:c++17" ]
   } else if (!is_nacl) {
@@ -588,23 +601,21 @@ config("compiler") {
     # are still a few buildbots using it, so until those are turned off
     # we need the !is_nacl clause and the (is_nacl && is_clang) clause, above.
     cflags_c += [ "-std=c11" ]
-    cflags_cc += [ "-std=c++14" ]
+
+    if (is_apple) {
+      # TODO(thakis): Use C++17 on macOS and iOS once it works.
+      cflags_cc += [
+        "-std=c++14",
+        "-fno-trigraphs",
+      ]
+    } else {
+      cflags_cc += [ "-std=c++17" ]
+    }
   }
 
-  # C++17 removes trigraph support, so preemptively disable trigraphs. This is
-  # especially useful given the collision with ecmascript's logical assignment
-  # operators: https://github.com/tc39/proposal-logical-assignment
   if (is_clang && current_os != "zos") {
-    # clang-cl disables trigraphs by default
-    if (!is_win) {
-      # The gnu variants of C++11 and C++14 already disable trigraph support,
-      # but when building with clang, we use -std=c++11 / -std=c++14, which
-      # enables trigraph support: override that here.
-      cflags_cc += [ "-fno-trigraphs" ]
-    }
-
-    # Don't warn that trigraphs are ignored, since trigraphs are disabled
-    # anyway.
+    # C++17 removes trigraph support, but clang still warns that it ignores
+    # them when seeing them.  Don't.
     cflags_cc += [ "-Wno-trigraphs" ]
   }
 

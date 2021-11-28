@@ -21,6 +21,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/cfi_buildflags.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
@@ -35,7 +36,7 @@ namespace base {
 bool IsWprintfFormatPortable(const wchar_t* format) {
   // This snippet of code checks that we can build C++17 code.
   // TODO(thakis): Enable this on all platforms, and then remove it again.
-#if defined(OS_WIN)
+#if !defined(OS_IOS) && !defined(OS_MAC) && !BUILDFLAG(CFI_ICALL_CHECK)
   if constexpr (constexpr int i = 0; i > 0) {
   }
 #endif
