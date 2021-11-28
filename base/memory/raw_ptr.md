@@ -228,6 +228,7 @@ You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
   latter if the collection is a class field (note that some of the perf
   optimizations above might still apply and argue for using a raw C++ pointer).
 
+
 ## Extra pointer rules
 
 `raw_ptr<T>` requires following some extra rules compared to a raw C++ pointer:
