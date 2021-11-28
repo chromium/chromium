@@ -84,7 +84,7 @@ if (is_win && use_allocator_shim) {
          "The allocator shim doesn't work for the component build on Windows.")
 }
 
-_is_brp_supported = false
+_is_brp_supported = (is_win || is_android) && use_allocator == "partition"
 
 declare_args() {
   # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
