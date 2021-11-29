@@ -874,12 +874,17 @@ StyleContentAlignmentData StyleBuilderConverter::ConvertContentAlignmentData(
 
 GridAutoFlow StyleBuilderConverter::ConvertGridAutoFlow(StyleResolverState&,
                                                         const CSSValue& value) {
-  const auto& list = To<CSSValueList>(value);
+  const auto* list = DynamicTo<CSSValueList>(&value);
+  if (list)
+    DCHECK_GE(list->length(), 1u);
+  else
+    DCHECK(value.IsIdentifierValue());
 
-  DCHECK_GE(list.length(), 1u);
-  const CSSIdentifierValue& first = To<CSSIdentifierValue>(list.Item(0));
+  const CSSIdentifierValue& first =
+      To<CSSIdentifierValue>(list ? list->Item(0) : value);
   const CSSIdentifierValue* second =
-      list.length() == 2 ? &To<CSSIdentifierValue>(list.Item(1)) : nullptr;
+      list && list->length() == 2 ? &To<CSSIdentifierValue>(list->Item(1))
+                                  : nullptr;
 
   switch (first.GetValueID()) {
     case CSSValueID::kRow:
@@ -1006,6 +1011,13 @@ static void ConvertGridLineNamesList(
 GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
     StyleResolverState& state,
     const CSSValue& value) {
+  const CSSValueList* list = DynamicTo<CSSValueList>(value);
+  if (!list) {
+    const auto& ident = To<CSSIdentifierValue>(value);
+    DCHECK_EQ(ident.GetValueID(), CSSValueID::kAuto);
+    return GridTrackList(GridTrackSize(Length::Auto()));
+  }
+
   Vector<GridTrackSize, 1> track_sizes;
   for (auto& curr_value : To<CSSValueList>(value)) {
     DCHECK(!curr_value->IsGridLineNamesValue());

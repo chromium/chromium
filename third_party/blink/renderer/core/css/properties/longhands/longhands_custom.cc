@@ -3257,6 +3257,10 @@ const CSSValue* GridAutoColumns::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForGridTrackSizeList(kForColumns, style);
 }
 
+const CSSValue* GridAutoColumns::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kAuto);
+}
+
 const CSSValue* GridAutoFlow::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3317,6 +3321,10 @@ const CSSValue* GridAutoFlow::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* GridAutoFlow::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kRow);
+}
+
 const CSSValue* GridAutoRows::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3330,6 +3338,10 @@ const CSSValue* GridAutoRows::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForGridTrackSizeList(kForRows, style);
+}
+
+const CSSValue* GridAutoRows::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
 const CSSValue* GridColumnEnd::ParseSingleValue(
@@ -3484,6 +3496,10 @@ void GridTemplateAreas::ApplyValue(StyleResolverState& state,
       grid_template_areas_value.ColumnCount());
 }
 
+const CSSValue* GridTemplateAreas::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
+}
+
 const CSSValue* GridTemplateColumns::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3504,6 +3520,10 @@ const CSSValue* GridTemplateColumns::CSSValueFromComputedStyleInternal(
                                                    style);
 }
 
+const CSSValue* GridTemplateColumns::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
+}
+
 const CSSValue* GridTemplateRows::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3522,6 +3542,10 @@ const CSSValue* GridTemplateRows::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForGridTrackList(kForRows, layout_object,
                                                    style);
+}
+
+const CSSValue* GridTemplateRows::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 const CSSValue* Height::ParseSingleValue(CSSParserTokenRange& range,

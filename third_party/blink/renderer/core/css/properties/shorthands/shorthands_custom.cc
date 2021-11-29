@@ -1562,8 +1562,9 @@ const CSSValue* GridColumnGap::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-CSSValueList* ConsumeImplicitAutoFlow(CSSParserTokenRange& range,
-                                      const CSSValue& flow_direction) {
+CSSValueList* ConsumeImplicitAutoFlow(
+    CSSParserTokenRange& range,
+    const CSSIdentifierValue& flow_direction) {
   // [ auto-flow && dense? ]
   CSSValue* dense_algorithm = nullptr;
   if ((css_parsing_utils::ConsumeIdent<CSSValueID::kAutoFlow>(range))) {
@@ -1578,7 +1579,8 @@ CSSValueList* ConsumeImplicitAutoFlow(CSSParserTokenRange& range,
       return nullptr;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(flow_direction);
+  if (flow_direction.GetValueID() == CSSValueID::kColumn || !dense_algorithm)
+    list->Append(flow_direction);
   if (dense_algorithm)
     list->Append(*dense_algorithm);
   return list;
@@ -1595,9 +1597,9 @@ bool Grid::ParseShorthand(bool important,
 
   CSSParserTokenRange range_copy = range;
 
-  CSSValue* template_rows = nullptr;
-  CSSValue* template_columns = nullptr;
-  CSSValue* template_areas = nullptr;
+  const CSSValue* template_rows = nullptr;
+  const CSSValue* template_columns = nullptr;
+  const CSSValue* template_areas = nullptr;
 
   if (css_parsing_utils::ConsumeGridTemplateShorthand(
           important, range, context, template_rows, template_columns,
@@ -1624,24 +1626,25 @@ bool Grid::ParseShorthand(bool important,
     // their initial value, as normal for shorthands.
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid,
-        *CSSInitialValue::Create(), important,
+        *(To<Longhand>(GetCSSPropertyGridAutoFlow()).InitialValue()), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoColumns, CSSPropertyID::kGrid,
-        *CSSInitialValue::Create(), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+        *(To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue()),
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoRows, CSSPropertyID::kGrid,
-        *CSSInitialValue::Create(), important,
+        *(To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue()), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     return true;
   }
 
   range = range_copy;
 
-  CSSValue* auto_columns_value = nullptr;
-  CSSValue* auto_rows_value = nullptr;
-  CSSValueList* grid_auto_flow = nullptr;
+  const CSSValue* auto_columns_value = nullptr;
+  const CSSValue* auto_rows_value = nullptr;
+  const CSSValueList* grid_auto_flow = nullptr;
   template_rows = nullptr;
   template_columns = nullptr;
 
@@ -1654,7 +1657,8 @@ bool Grid::ParseShorthand(bool important,
     if (!grid_auto_flow)
       return false;
     if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-      auto_rows_value = CSSInitialValue::Create();
+      auto_rows_value =
+          To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
     } else {
       auto_rows_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
@@ -1667,8 +1671,10 @@ bool Grid::ParseShorthand(bool important,
               css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(range,
                                                                    context)))
       return false;
-    template_rows = CSSInitialValue::Create();
-    auto_columns_value = CSSInitialValue::Create();
+    template_rows =
+        To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue();
+    auto_columns_value =
+        To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue();
   } else {
     // 3- <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?
     template_rows =
@@ -1682,15 +1688,17 @@ bool Grid::ParseShorthand(bool important,
     if (!grid_auto_flow)
       return false;
     if (range.AtEnd()) {
-      auto_columns_value = CSSInitialValue::Create();
+      auto_columns_value =
+          To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue();
     } else {
       auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
       if (!auto_columns_value)
         return false;
     }
-    template_columns = CSSInitialValue::Create();
-    auto_rows_value = CSSInitialValue::Create();
+    template_columns =
+        To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue();
+    auto_rows_value = To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
   }
 
   if (!range.AtEnd())
@@ -1709,8 +1717,9 @@ bool Grid::ParseShorthand(bool important,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridTemplateAreas, CSSPropertyID::kGrid,
-      *CSSInitialValue::Create(), important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+      *(To<Longhand>(GetCSSPropertyGridTemplateAreas()).InitialValue()),
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid, *grid_auto_flow,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
@@ -1837,9 +1846,9 @@ bool GridTemplate::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 256>& properties) const {
-  CSSValue* template_rows = nullptr;
-  CSSValue* template_columns = nullptr;
-  CSSValue* template_areas = nullptr;
+  const CSSValue* template_rows = nullptr;
+  const CSSValue* template_columns = nullptr;
+  const CSSValue* template_areas = nullptr;
   if (!css_parsing_utils::ConsumeGridTemplateShorthand(
           important, range, context, template_rows, template_columns,
           template_areas))

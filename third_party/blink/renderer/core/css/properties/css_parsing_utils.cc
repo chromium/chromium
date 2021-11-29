@@ -4249,12 +4249,13 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
   return true;
 }
 
-bool ConsumeGridTemplateRowsAndAreasAndColumns(bool important,
-                                               CSSParserTokenRange& range,
-                                               const CSSParserContext& context,
-                                               CSSValue*& template_rows,
-                                               CSSValue*& template_columns,
-                                               CSSValue*& template_areas) {
+bool ConsumeGridTemplateRowsAndAreasAndColumns(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSValue*& template_rows,
+    const CSSValue*& template_columns,
+    const CSSValue*& template_areas) {
   DCHECK(!template_rows);
   DCHECK(!template_columns);
   DCHECK(!template_areas);
@@ -4552,9 +4553,9 @@ bool ConsumeGridItemPositionShorthand(bool important,
 bool ConsumeGridTemplateShorthand(bool important,
                                   CSSParserTokenRange& range,
                                   const CSSParserContext& context,
-                                  CSSValue*& template_rows,
-                                  CSSValue*& template_columns,
-                                  CSSValue*& template_areas) {
+                                  const CSSValue*& template_rows,
+                                  const CSSValue*& template_columns,
+                                  const CSSValue*& template_areas) {
   DCHECK(!template_rows);
   DCHECK(!template_columns);
   DCHECK(!template_areas);
