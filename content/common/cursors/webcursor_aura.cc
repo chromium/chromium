@@ -39,7 +39,8 @@ void WebCursor::CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
   *bitmap = cursor_.custom_bitmap();
   *hotspot = cursor_.custom_hotspot();
   *scale = GetCursorScaleFactor(bitmap);
-  ui::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
+  aura::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap,
+                                              hotspot);
 }
 
 #if !defined(USE_OZONE)

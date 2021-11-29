@@ -15,13 +15,16 @@ class Point;
 
 namespace ui {
 class Cursor;
+}
+
+namespace aura {
 
 COMPONENT_EXPORT(UI_AURA_CURSOR)
-SkBitmap GetCursorBitmap(const Cursor& cursor);
+SkBitmap GetCursorBitmap(const ui::Cursor& cursor);
 
 COMPONENT_EXPORT(UI_AURA_CURSOR)
-gfx::Point GetCursorHotspot(const Cursor& cursor);
+gfx::Point GetCursorHotspot(const ui::Cursor& cursor);
 
-}  // namespace ui
+}  // namespace aura
 
 #endif  // UI_AURA_CURSOR_CURSOR_LOOKUP_H_

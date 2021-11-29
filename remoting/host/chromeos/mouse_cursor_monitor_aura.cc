@@ -73,8 +73,8 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
   }
 
   std::unique_ptr<SkBitmap> cursor_bitmap =
-      std::make_unique<SkBitmap>(GetCursorBitmap(cursor));
-  gfx::Point cursor_hotspot = GetCursorHotspot(cursor);
+      std::make_unique<SkBitmap>(aura::GetCursorBitmap(cursor));
+  gfx::Point cursor_hotspot = aura::GetCursorHotspot(cursor);
 
   if (cursor_bitmap->isNull()) {
     LOG(ERROR) << "Failed to load bitmap for cursor type:"

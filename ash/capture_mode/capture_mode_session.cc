@@ -258,7 +258,7 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
       SK_ColorBLACK);
   SkBitmap bitmap = *icon.bitmap();
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-  ui::ScaleAndRotateCursorBitmapAndHotpoint(
+  aura::ScaleAndRotateCursorBitmapAndHotpoint(
       device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
   auto* cursor_factory = ui::CursorFactory::GetInstance();
   cursor.SetPlatformCursor(

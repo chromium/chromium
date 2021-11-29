@@ -171,7 +171,7 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     const gfx::Size window_size = window->bounds().size();
     if (!window_size.IsEmpty()) {
       if (auto* root_window = window->GetRootWindow()) {
-        const SkBitmap& bitmap = GetCursorBitmap(cursor);
+        const SkBitmap& bitmap = aura::GetCursorBitmap(cursor);
         const float scale_factor = cursor.image_scale_factor();
         DCHECK_GT(scale_factor, 0.0f);
 
@@ -181,7 +181,7 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
 
         // Compute the hotspot in terms of DIP coordinates.
         const gfx::PointF hotspot = gfx::ScalePoint(
-            gfx::PointF(GetCursorHotspot(cursor)), 1.0f / scale_factor);
+            gfx::PointF(aura::GetCursorHotspot(cursor)), 1.0f / scale_factor);
 
         // Finally, put it all together: Scale the absolute bounds of the
         // overlay by the window size to produce relative coordinates.
@@ -208,7 +208,7 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  return GetCursorBitmap(cursor);
+  return aura::GetCursorBitmap(cursor);
 }
 
 }  // namespace content

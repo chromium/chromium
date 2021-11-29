@@ -23,9 +23,11 @@
 #include "ui/gfx/icon_util.h"
 #endif
 
-namespace ui {
+namespace aura {
 
 namespace {
+
+namespace mojom = ::ui::mojom;
 
 struct HotPoint {
   int x;
@@ -40,7 +42,7 @@ struct CursorData {
 };
 
 struct CursorSizeData {
-  const CursorSize id;
+  const ui::CursorSize id;
   const CursorData* cursors;
   const int length;
 };
@@ -270,11 +272,11 @@ const CursorData kLargeCursors[] = {
 };
 
 const CursorSizeData kCursorSizes[] = {
-    {CursorSize::kNormal, kNormalCursors, base::size(kNormalCursors)},
-    {CursorSize::kLarge, kLargeCursors, base::size(kLargeCursors)},
+    {ui::CursorSize::kNormal, kNormalCursors, base::size(kNormalCursors)},
+    {ui::CursorSize::kLarge, kLargeCursors, base::size(kLargeCursors)},
 };
 
-const CursorSizeData* GetCursorSizeByType(CursorSize cursor_size) {
+const CursorSizeData* GetCursorSizeByType(ui::CursorSize cursor_size) {
   for (size_t i = 0; i < base::size(kCursorSizes); ++i) {
     if (kCursorSizes[i].id == cursor_size)
       return &kCursorSizes[i];
@@ -292,8 +294,8 @@ bool SearchTable(const CursorData* table,
   DCHECK_NE(scale_factor, 0);
 
   bool resource_2x_available =
-      ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
-      k200Percent;
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
+      ui::k200Percent;
   for (size_t i = 0; i < table_length; ++i) {
     if (table[i].id == id) {
       *resource_id = table[i].resource_id;
@@ -309,7 +311,7 @@ bool SearchTable(const CursorData* table,
 
 }  // namespace
 
-bool GetCursorDataFor(CursorSize cursor_size,
+bool GetCursorDataFor(ui::CursorSize cursor_size,
                       mojom::CursorType id,
                       float scale_factor,
                       int* resource_id,
@@ -327,13 +329,13 @@ bool GetCursorDataFor(CursorSize cursor_size,
                      resource_id, point);
 }
 
-SkBitmap GetDefaultBitmap(const Cursor& cursor) {
+SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
 #if defined(OS_WIN)
-  Cursor cursor_copy = cursor;
-  CursorLoader cursor_loader;
+  ui::Cursor cursor_copy = cursor;
+  aura::CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::CreateSkBitmapFromHICON(
-      WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
+      ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;
@@ -341,20 +343,20 @@ SkBitmap GetDefaultBitmap(const Cursor& cursor) {
                         cursor.image_scale_factor(), &resource_id, &hotspot)) {
     return SkBitmap();
   }
-  return ResourceBundle::GetSharedInstance()
+  return ui::ResourceBundle::GetSharedInstance()
       .GetImageSkiaNamed(resource_id)
       ->GetRepresentation(cursor.image_scale_factor())
       .GetBitmap();
 #endif
 }
 
-gfx::Point GetDefaultHotspot(const Cursor& cursor) {
+gfx::Point GetDefaultHotspot(const ui::Cursor& cursor) {
 #if defined(OS_WIN)
-  Cursor cursor_copy = cursor;
-  CursorLoader cursor_loader;
+  ui::Cursor cursor_copy = cursor;
+  aura::CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::GetHotSpotFromHICON(
-      WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
+      ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;
@@ -366,4 +368,4 @@ gfx::Point GetDefaultHotspot(const Cursor& cursor) {
 #endif
 }
 
-}  // namespace ui
+}  // namespace aura

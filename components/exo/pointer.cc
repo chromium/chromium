@@ -770,8 +770,8 @@ void Pointer::UpdateCursor() {
 
     // Use panel_rotation() rather than "natural" rotation, as it actually
     // relates to the hardware you're about to draw the cursor bitmap on.
-    ui::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),
-                                              &bitmap, &hotspot);
+    aura::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),
+                                                &bitmap, &hotspot);
 
     // TODO(reveman): Add interface for creating cursors from GpuMemoryBuffers
     // and use that here instead of the current bitmap API.

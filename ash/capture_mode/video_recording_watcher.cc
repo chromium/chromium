@@ -680,9 +680,9 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
   const float cursor_image_scale_factor = cursor.image_scale_factor();
-  const SkBitmap cursor_image = ui::GetCursorBitmap(cursor);
+  const SkBitmap cursor_image = aura::GetCursorBitmap(cursor);
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
-      window_being_recorded_, location, ui::GetCursorHotspot(cursor),
+      window_being_recorded_, location, aura::GetCursorHotspot(cursor),
       cursor_image_scale_factor, cursor_image);
 
   if (cursor != last_cursor_) {

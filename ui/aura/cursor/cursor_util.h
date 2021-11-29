@@ -16,7 +16,7 @@ namespace gfx {
 class Point;
 }
 
-namespace ui {
+namespace aura {
 
 // Scale and rotate the cursor's bitmap and hotpoint.
 // |bitmap_in_out| and |hotpoint_in_out| are used as
@@ -39,6 +39,6 @@ void GetAnimatedCursorBitmaps(int resource_id,
                               gfx::Point* hotspot,
                               std::vector<SkBitmap>* bitmaps);
 
-}  // namespace ui
+}  // namespace aura
 
 #endif  // UI_AURA_CURSOR_CURSOR_UTIL_H_

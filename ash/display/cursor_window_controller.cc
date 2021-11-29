@@ -343,8 +343,8 @@ void CursorWindowController::UpdateCursorImage() {
     hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
-    if (!ui::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
-                              &resource_id, &hot_point_in_physical_pixels)) {
+    if (!aura::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
+                                &resource_id, &hot_point_in_physical_pixels)) {
       return;
     }
     image =

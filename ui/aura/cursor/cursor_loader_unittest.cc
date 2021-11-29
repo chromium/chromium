@@ -12,21 +12,23 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
 
-namespace ui {
+namespace aura {
+
 namespace {
 
-using mojom::CursorType;
 using CursorLoaderTest = ::aura::test::AuraTestBase;
+using ::ui::mojom::CursorType;
 
 }  // namespace
 
 TEST_F(CursorLoaderTest, InvisibleCursor) {
   CursorLoader cursor_loader;
-  Cursor invisible_cursor(CursorType::kNone);
+  ui::Cursor invisible_cursor(CursorType::kNone);
   cursor_loader.SetPlatformCursor(&invisible_cursor);
 
-  ASSERT_EQ(invisible_cursor.platform(),
-            CursorFactory::GetInstance()->GetDefaultCursor(CursorType::kNone));
+  ASSERT_EQ(
+      invisible_cursor.platform(),
+      ui::CursorFactory::GetInstance()->GetDefaultCursor(CursorType::kNone));
 }
 
-}  // namespace ui
+}  // namespace aura

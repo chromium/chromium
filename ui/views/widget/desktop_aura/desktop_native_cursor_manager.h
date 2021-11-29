@@ -60,7 +60,7 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
   using Hosts = std::set<aura::WindowTreeHost*>;
   Hosts hosts_;
 
-  ui::CursorLoader cursor_loader_;
+  aura::CursorLoader cursor_loader_;
 };
 
 }  // namespace views

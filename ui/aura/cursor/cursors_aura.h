@@ -17,22 +17,25 @@ class Point;
 namespace ui {
 class Cursor;
 enum class CursorSize;
+}  // namespace ui
+
+namespace aura {
 
 // Returns data about |id|, where id is a cursor constant like
 // ui::mojom::CursorType::kHelp. The IDR will be placed in |resource_id| and
 // the hotspots for the different DPIs will be placed in |hot_1x| and
 // |hot_2x|.  Returns false if |id| is invalid.
 COMPONENT_EXPORT(UI_AURA_CURSOR)
-bool GetCursorDataFor(CursorSize cursor_size,
-                      mojom::CursorType id,
+bool GetCursorDataFor(ui::CursorSize cursor_size,
+                      ui::mojom::CursorType id,
                       float scale_factor,
                       int* resource_id,
                       gfx::Point* point);
 
-SkBitmap GetDefaultBitmap(const Cursor& cursor);
+SkBitmap GetDefaultBitmap(const ui::Cursor& cursor);
 
-gfx::Point GetDefaultHotspot(const Cursor& cursor);
+gfx::Point GetDefaultHotspot(const ui::Cursor& cursor);
 
-}  // namespace ui
+}  // namespace aura
 
 #endif  // UI_AURA_CURSOR_CURSORS_AURA_H_

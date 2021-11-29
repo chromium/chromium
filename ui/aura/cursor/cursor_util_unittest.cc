@@ -8,7 +8,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace ui {
+namespace aura {
 namespace {
 
 // Parameterized test for cursor bitmaps with premultiplied and unpremultiplied
@@ -67,4 +67,4 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
 
 }  // namespace
-}  // namespace ui
+}  // namespace aura

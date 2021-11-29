@@ -16,7 +16,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skbitmap_operations.h"
 
-namespace ui {
+namespace aura {
 
 namespace {
 
@@ -114,7 +114,7 @@ void GetImageCursorBitmap(int resource_id,
                           gfx::Point* hotspot,
                           SkBitmap* bitmap) {
   const gfx::ImageSkia* image =
-      ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
   // TODO(oshima): The cursor should use resource scale factor when
   // fractional scale factor is enabled. crbug.com/372212
@@ -131,7 +131,7 @@ void GetAnimatedCursorBitmaps(int resource_id,
                               std::vector<SkBitmap>* bitmaps) {
   // TODO(oshima|tdanderson): Support rotation and fractional scale factor.
   const gfx::ImageSkia* image =
-      ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
   SkBitmap bitmap = image_rep.GetBitmap();
 
@@ -159,4 +159,4 @@ void GetAnimatedCursorBitmaps(int resource_id,
   }
 }
 
-}  // namespace ui
+}  // namespace aura

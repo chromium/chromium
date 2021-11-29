@@ -120,7 +120,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   raw_ptr<ShellDesktopControllerAura> desktop_controller_;  // Not owned.
 
-  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+  aura::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 class AppsFocusRules : public wm::BaseFocusRules {

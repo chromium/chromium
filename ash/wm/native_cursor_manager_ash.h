@@ -55,7 +55,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   bool native_cursor_enabled_;
 
-  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+  aura::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 }  // namespace ash

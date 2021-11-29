@@ -23,16 +23,19 @@ class Point;
 
 namespace ui {
 class PlatformCursor;
+}
+
+namespace aura {
 
 class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
-    : public CursorFactoryObserver {
+    : public ui::CursorFactoryObserver {
  public:
   explicit CursorLoader(bool use_platform_cursors = true);
   CursorLoader(const CursorLoader&) = delete;
   CursorLoader& operator=(const CursorLoader&) = delete;
   ~CursorLoader() override;
 
-  // CursorFactoryObserver:
+  // ui::CursorFactoryObserver:
   void OnThemeLoaded() override;
 
   // Returns the rotation and scale of the currently loaded cursor.
@@ -44,30 +47,32 @@ class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
   bool SetDisplayData(display::Display::Rotation rotation, float scale);
 
   // Returns the size of the currently loaded cursor.
-  CursorSize size() const { return size_; }
+  ui::CursorSize size() const { return size_; }
 
   // Sets the size of the mouse cursor icon.
-  void SetSize(CursorSize size);
+  void SetSize(ui::CursorSize size);
 
   // Sets the platform cursor based on the type of |cursor|.
-  void SetPlatformCursor(Cursor* cursor);
+  void SetPlatformCursor(ui::Cursor* cursor);
 
  private:
   // Resets the cursor cache.
   void UnloadCursors();
-  void LoadImageCursor(mojom::CursorType id,
+  void LoadImageCursor(ui::mojom::CursorType id,
                        int resource_id,
                        const gfx::Point& hot);
-  scoped_refptr<PlatformCursor> CursorFromType(mojom::CursorType type);
-  scoped_refptr<PlatformCursor> LoadCursorFromAsset(mojom::CursorType type);
+  scoped_refptr<ui::PlatformCursor> CursorFromType(ui::mojom::CursorType type);
+  scoped_refptr<ui::PlatformCursor> LoadCursorFromAsset(
+      ui::mojom::CursorType type);
 
   // Whether to use cursors provided by the underlying platform (e.g. X11
   // cursors). If false or in the case of a failure, Chromium assets will be
   // used instead.
   const bool use_platform_cursors_;
 
-  std::map<mojom::CursorType, scoped_refptr<PlatformCursor>> image_cursors_;
-  raw_ptr<CursorFactory> factory_ = nullptr;
+  std::map<ui::mojom::CursorType, scoped_refptr<ui::PlatformCursor>>
+      image_cursors_;
+  raw_ptr<ui::CursorFactory> factory_ = nullptr;
 
   // The current scale of the mouse cursor icon.
   float scale_ = 1.0f;
@@ -76,9 +81,9 @@ class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
 
   // The preferred size of the mouse cursor icon.
-  CursorSize size_ = CursorSize::kNormal;
+  ui::CursorSize size_ = ui::CursorSize::kNormal;
 };
 
-}  // namespace ui
+}  // namespace aura
 
 #endif  // UI_AURA_CURSOR_CURSOR_LOADER_H_

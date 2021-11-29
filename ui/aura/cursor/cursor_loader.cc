@@ -19,12 +19,14 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace ui {
+namespace aura {
 
 namespace {
 
-constexpr mojom::CursorType kAnimatedCursorTypes[] = {
-    mojom::CursorType::kWait, mojom::CursorType::kProgress};
+using ::ui::mojom::CursorType;
+
+constexpr CursorType kAnimatedCursorTypes[] = {CursorType::kWait,
+                                               CursorType::kProgress};
 
 constexpr base::TimeDelta kAnimatedCursorFrameDelay = base::Milliseconds(25);
 
@@ -32,7 +34,7 @@ constexpr base::TimeDelta kAnimatedCursorFrameDelay = base::Milliseconds(25);
 
 CursorLoader::CursorLoader(bool use_platform_cursors)
     : use_platform_cursors_(use_platform_cursors),
-      factory_(CursorFactory::GetInstance()) {
+      factory_(ui::CursorFactory::GetInstance()) {
   factory_->AddObserver(this);
 }
 
@@ -62,7 +64,7 @@ bool CursorLoader::SetDisplayData(display::Display::Rotation rotation,
   return true;
 }
 
-void CursorLoader::SetSize(CursorSize size) {
+void CursorLoader::SetSize(ui::CursorSize size) {
   if (size_ == size)
     return;
 
@@ -70,17 +72,17 @@ void CursorLoader::SetSize(CursorSize size) {
   UnloadCursors();
 }
 
-void CursorLoader::SetPlatformCursor(Cursor* cursor) {
+void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
   DCHECK(cursor);
 
   // The platform cursor was already set via WebCursor::GetNativeCursor.
-  if (cursor->type() == mojom::CursorType::kCustom)
+  if (cursor->type() == CursorType::kCustom)
     return;
   cursor->set_image_scale_factor(scale());
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
 }
 
-void CursorLoader::LoadImageCursor(mojom::CursorType type,
+void CursorLoader::LoadImageCursor(CursorType type,
                                    int resource_id,
                                    const gfx::Point& hot) {
   gfx::Point hotspot = hot;
@@ -97,8 +99,8 @@ void CursorLoader::LoadImageCursor(mojom::CursorType type,
   }
 }
 
-scoped_refptr<PlatformCursor> CursorLoader::CursorFromType(
-    mojom::CursorType type) {
+scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
+    CursorType type) {
   // An image cursor is loaded for this type.
   if (image_cursors_.count(type))
     return image_cursors_[type];
@@ -106,8 +108,8 @@ scoped_refptr<PlatformCursor> CursorLoader::CursorFromType(
   // Check if there's a default platform cursor available.
   // For the none cursor, we also need to use the platform factory to take
   // into account the different ways of creating an invisible cursor.
-  scoped_refptr<PlatformCursor> cursor;
-  if (use_platform_cursors_ || type == mojom::CursorType::kNone) {
+  scoped_refptr<ui::PlatformCursor> cursor;
+  if (use_platform_cursors_ || type == CursorType::kNone) {
     cursor = factory_->GetDefaultCursor(type);
     if (cursor)
       return cursor;
@@ -117,16 +119,16 @@ scoped_refptr<PlatformCursor> CursorLoader::CursorFromType(
   // Loads the default Aura cursor bitmap for the cursor type. Falls back on
   // pointer cursor if this fails.
   cursor = LoadCursorFromAsset(type);
-  if (!cursor && type != mojom::CursorType::kPointer) {
-    cursor = CursorFromType(mojom::CursorType::kPointer);
+  if (!cursor && type != CursorType::kPointer) {
+    cursor = CursorFromType(CursorType::kPointer);
     image_cursors_[type] = cursor;
   }
   DCHECK(cursor) << "Failed to load a bitmap for the pointer cursor.";
   return cursor;
 }
 
-scoped_refptr<PlatformCursor> CursorLoader::LoadCursorFromAsset(
-    mojom::CursorType type) {
+scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
+    CursorType type) {
   int resource_id;
   gfx::Point hotspot;
   if (GetCursorDataFor(size(), type, scale(), &resource_id, &hotspot)) {
@@ -136,4 +138,4 @@ scoped_refptr<PlatformCursor> CursorLoader::LoadCursorFromAsset(
   return nullptr;
 }
 
-}  // namespace ui
+}  // namespace aura

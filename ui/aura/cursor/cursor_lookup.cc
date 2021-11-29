@@ -10,18 +10,18 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace ui {
+namespace aura {
 
-SkBitmap GetCursorBitmap(const Cursor& cursor) {
-  if (cursor.type() == mojom::CursorType::kCustom)
+SkBitmap GetCursorBitmap(const ui::Cursor& cursor) {
+  if (cursor.type() == ui::mojom::CursorType::kCustom)
     return cursor.custom_bitmap();
   return GetDefaultBitmap(cursor);
 }
 
-gfx::Point GetCursorHotspot(const Cursor& cursor) {
-  if (cursor.type() == mojom::CursorType::kCustom)
+gfx::Point GetCursorHotspot(const ui::Cursor& cursor) {
+  if (cursor.type() == ui::mojom::CursorType::kCustom)
     return cursor.custom_hotspot();
   return GetDefaultHotspot(cursor);
 }
 
-}  // namespace ui
+}  // namespace aura
