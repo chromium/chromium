@@ -12,10 +12,10 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/stream_provider.h"
 
@@ -308,7 +308,8 @@ void Receiver::OnBufferingStateChange(BufferingState state,
   rpc->set_handle(remote_handle_);
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE);
   auto* message = rpc->mutable_rendererclient_onbufferingstatechange_rpc();
-  message->set_state(ToProtoMediaBufferingState(state).value());
+  message->set_state(
+      cast_streaming::remoting::ToProtoMediaBufferingState(state).value());
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
@@ -324,7 +325,8 @@ void Receiver::OnAudioConfigChange(const AudioDecoderConfig& config) {
   auto* message = rpc->mutable_rendererclient_onaudioconfigchange_rpc();
   openscreen::cast::AudioDecoderConfig* proto_audio_config =
       message->mutable_audio_decoder_config();
-  ConvertAudioDecoderConfigToProto(config, proto_audio_config);
+  cast_streaming::remoting::ConvertAudioDecoderConfigToProto(
+      config, proto_audio_config);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
@@ -335,7 +337,8 @@ void Receiver::OnVideoConfigChange(const VideoDecoderConfig& config) {
   auto* message = rpc->mutable_rendererclient_onvideoconfigchange_rpc();
   openscreen::cast::VideoDecoderConfig* proto_video_config =
       message->mutable_video_decoder_config();
-  ConvertVideoDecoderConfigToProto(config, proto_video_config);
+  cast_streaming::remoting::ConvertVideoDecoderConfigToProto(
+      config, proto_video_config);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 

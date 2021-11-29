@@ -13,12 +13,12 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/courier_renderer.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/receiver.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/renderer_controller.h"
@@ -408,7 +408,8 @@ void End2EndTestRenderer::SendFrameToSink(uint32_t frame_count,
                                           const std::vector<uint8_t>& frame,
                                           DemuxerStream::Type type) {
   scoped_refptr<DecoderBuffer> decoder_buffer =
-      ByteArrayToDecoderBuffer(frame.data(), frame.size());
+      cast_streaming::remoting::ByteArrayToDecoderBuffer(frame.data(),
+                                                         frame.size());
   if (type == DemuxerStream::Type::AUDIO) {
     media_remotee_->OnAudioFrame(frame_count, decoder_buffer);
   } else if (type == DemuxerStream::Type::VIDEO) {

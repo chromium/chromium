@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/remoting/proto_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@ using testing::_;
 using testing::Invoke;
 using testing::Return;
 
-namespace media {
+namespace cast_streaming {
 namespace remoting {
 
 class ProtoUtilsTest : public testing::Test {
@@ -34,13 +34,14 @@ class ProtoUtilsTest : public testing::Test {
 
 TEST_F(ProtoUtilsTest, PassEOSDecoderBuffer) {
   // 1. To DecoderBuffer
-  scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CreateEOSBuffer();
+  scoped_refptr<media::DecoderBuffer> input_buffer =
+      media::DecoderBuffer::CreateEOSBuffer();
 
   // 2. To Byte Array
   std::vector<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
 
   // 3. To DecoderBuffer
-  scoped_refptr<DecoderBuffer> output_buffer =
+  scoped_refptr<media::DecoderBuffer> output_buffer =
       ByteArrayToDecoderBuffer(data.data(), data.size());
   DCHECK(output_buffer);
 
@@ -67,8 +68,9 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   base::TimeDelta pts = base::Milliseconds(5);
 
   // 1. To DecoderBuffer
-  scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CopyFrom(
-      buffer, buffer_size, side_buffer, side_buffer_size);
+  scoped_refptr<media::DecoderBuffer> input_buffer =
+      media::DecoderBuffer::CopyFrom(buffer, buffer_size, side_buffer,
+                                     side_buffer_size);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(true);
 
@@ -76,7 +78,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   std::vector<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
 
   // 3. To DecoderBuffer
-  scoped_refptr<DecoderBuffer> output_buffer =
+  scoped_refptr<media::DecoderBuffer> output_buffer =
       ByteArrayToDecoderBuffer(data.data(), data.size());
   DCHECK(output_buffer);
 
@@ -97,16 +99,17 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
 
 TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
   const char extra_data[4] = {'A', 'C', 'E', 'G'};
-  AudioDecoderConfig audio_config(
-      AudioCodec::kAAC, kSampleFormatF32, CHANNEL_LAYOUT_MONO, 48000,
+  media::AudioDecoderConfig audio_config(
+      media::AudioCodec::kAAC, media::kSampleFormatF32,
+      media::CHANNEL_LAYOUT_MONO, 48000,
       std::vector<uint8_t>(std::begin(extra_data), std::end(extra_data)),
-      EncryptionScheme::kUnencrypted);
+      media::EncryptionScheme::kUnencrypted);
   ASSERT_TRUE(audio_config.IsValidConfig());
 
   openscreen::cast::AudioDecoderConfig audio_message;
   ConvertAudioDecoderConfigToProto(audio_config, &audio_message);
 
-  AudioDecoderConfig audio_output_config;
+  media::AudioDecoderConfig audio_output_config;
   ASSERT_TRUE(
       ConvertProtoToAudioDecoderConfig(audio_message, &audio_output_config));
 
@@ -114,7 +117,7 @@ TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
 }
 
 TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
-  PipelineStatistics original;
+  media::PipelineStatistics original;
   // NOTE: all fields should be initialised here.
   original.audio_bytes_decoded = 123;
   original.video_bytes_decoded = 456;
@@ -157,16 +160,18 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   pb_audio_info->set_is_platform_decoder(
       original.audio_pipeline_info.is_platform_decoder);
 
-  PipelineStatistics converted;
+  media::PipelineStatistics converted;
 
   // NOTE: fields will all be initialized with 0xcd. Forcing the conversion to
   // properly assigned them. Since nested structs have strings, memsetting must
   // be done infividually for them.
   memset(&converted, 0xcd,
-         sizeof(converted) - sizeof(AudioPipelineInfo) -
-             sizeof(VideoPipelineInfo));
-  memset(&converted.audio_pipeline_info, 0xcd, sizeof(AudioPipelineInfo));
-  memset(&converted.video_pipeline_info, 0xcd, sizeof(VideoPipelineInfo));
+         sizeof(converted) - sizeof(media::AudioPipelineInfo) -
+             sizeof(media::VideoPipelineInfo));
+  memset(&converted.audio_pipeline_info, 0xcd,
+         sizeof(media::AudioPipelineInfo));
+  memset(&converted.video_pipeline_info, 0xcd,
+         sizeof(media::VideoPipelineInfo));
 
   ConvertProtoToPipelineStatistics(pb_stats, &converted);
 
@@ -176,14 +181,15 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
 }
 
 TEST_F(ProtoUtilsTest, VideoDecoderConfigConversionTest) {
-  const VideoDecoderConfig video_config = TestVideoConfig::Normal();
+  const media::VideoDecoderConfig video_config =
+      media::TestVideoConfig::Normal();
   ASSERT_TRUE(video_config.IsValidConfig());
   openscreen::cast::VideoDecoderConfig message;
   ConvertVideoDecoderConfigToProto(video_config, &message);
-  VideoDecoderConfig converted;
+  media::VideoDecoderConfig converted;
   ASSERT_TRUE(ConvertProtoToVideoDecoderConfig(message, &converted));
   ASSERT_TRUE(converted.Matches(video_config));
 }
 
 }  // namespace remoting
-}  // namespace media
+}  // namespace cast_streaming

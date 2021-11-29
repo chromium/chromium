@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_REMOTING_PROTO_UTILS_H_
-#define MEDIA_REMOTING_PROTO_UTILS_H_
+#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_
+#define COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_
 
 #include <cstdint>
 #include <vector>
@@ -16,7 +16,7 @@
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
-namespace media {
+namespace cast_streaming {
 namespace remoting {
 
 // Utility class to convert data between media::DecoderBuffer and byte array.
@@ -47,34 +47,35 @@ namespace remoting {
 
 // Converts DecoderBufferSegment into byte array.
 std::vector<uint8_t> DecoderBufferToByteArray(
-    const DecoderBuffer& decoder_buffer);
+    const media::DecoderBuffer& decoder_buffer);
 
 // Converts byte array into DecoderBufferSegment.
-scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
-                                                      uint32_t size);
+scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
+    const uint8_t* data,
+    uint32_t size);
 
 // Data type conversion between media::AudioDecoderConfig and proto buffer.
 void ConvertAudioDecoderConfigToProto(
-    const AudioDecoderConfig& audio_config,
+    const media::AudioDecoderConfig& audio_config,
     openscreen::cast::AudioDecoderConfig* audio_message);
 bool ConvertProtoToAudioDecoderConfig(
     const openscreen::cast::AudioDecoderConfig& audio_message,
-    AudioDecoderConfig* audio_config);
+    media::AudioDecoderConfig* audio_config);
 
 // Data type conversion between media::VideoDecoderConfig and proto buffer.
 void ConvertVideoDecoderConfigToProto(
-    const VideoDecoderConfig& video_config,
+    const media::VideoDecoderConfig& video_config,
     openscreen::cast::VideoDecoderConfig* video_message);
 bool ConvertProtoToVideoDecoderConfig(
     const openscreen::cast::VideoDecoderConfig& video_message,
-    VideoDecoderConfig* video_config);
+    media::VideoDecoderConfig* video_config);
 
 // Data type conversion between media::VideoDecoderConfig and proto buffer.
 void ConvertProtoToPipelineStatistics(
     const openscreen::cast::PipelineStatistics& stats_message,
-    PipelineStatistics* stats);
+    media::PipelineStatistics* stats);
 
 }  // namespace remoting
-}  // namespace media
+}  // namespace cast_streaming
 
-#endif  // MEDIA_REMOTING_PROTO_UTILS_H_
+#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_

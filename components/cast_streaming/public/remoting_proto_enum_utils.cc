@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/remoting/proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 
-namespace media {
+namespace cast_streaming {
 namespace remoting {
 
 #define CASE_RETURN_OTHER(x) \
@@ -15,10 +15,10 @@ namespace remoting {
   case OriginType::x:                     \
     return OtherType::y
 
-absl::optional<AudioCodec> ToMediaAudioCodec(
+absl::optional<media::AudioCodec> ToMediaAudioCodec(
     openscreen::cast::AudioDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
-  using OtherType = AudioCodec;
+  using OtherType = media::AudioCodec;
   switch (value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kUnknownAudioCodec, kUnknown);
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecAAC, kAAC);
@@ -44,8 +44,8 @@ absl::optional<AudioCodec> ToMediaAudioCodec(
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::Codec>
-ToProtoAudioDecoderConfigCodec(AudioCodec value) {
-  using OriginType = AudioCodec;
+ToProtoAudioDecoderConfigCodec(media::AudioCodec value) {
+  using OriginType = media::AudioCodec;
   using OtherType = openscreen::cast::AudioDecoderConfig;
   switch (value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kUnknown, kUnknownAudioCodec);
@@ -71,10 +71,10 @@ ToProtoAudioDecoderConfigCodec(AudioCodec value) {
   }
 }
 
-absl::optional<SampleFormat> ToMediaSampleFormat(
+absl::optional<media::SampleFormat> ToMediaSampleFormat(
     openscreen::cast::AudioDecoderConfig::SampleFormat value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
-  using OtherType = SampleFormat;
+  using OtherType = media::SampleFormat;
   switch (value) {
     CASE_RETURN_OTHER(kUnknownSampleFormat);
     CASE_RETURN_OTHER(kSampleFormatU8);
@@ -95,8 +95,8 @@ absl::optional<SampleFormat> ToMediaSampleFormat(
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
-ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
-  using OriginType = SampleFormat;
+ToProtoAudioDecoderConfigSampleFormat(media::SampleFormat value) {
+  using OriginType = media::SampleFormat;
   using OtherType = openscreen::cast::AudioDecoderConfig;
   switch (value) {
     CASE_RETURN_OTHER(kUnknownSampleFormat);
@@ -117,10 +117,10 @@ ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
   }
 }
 
-absl::optional<ChannelLayout> ToMediaChannelLayout(
+absl::optional<media::ChannelLayout> ToMediaChannelLayout(
     openscreen::cast::AudioDecoderConfig::ChannelLayout value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
-  using OtherType = ChannelLayout;
+  using OtherType = media::ChannelLayout;
   switch (value) {
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_NONE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_UNSUPPORTED);
@@ -161,8 +161,8 @@ absl::optional<ChannelLayout> ToMediaChannelLayout(
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
-ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value) {
-  using OriginType = ChannelLayout;
+ToProtoAudioDecoderConfigChannelLayout(media::ChannelLayout value) {
+  using OriginType = media::ChannelLayout;
   using OtherType = openscreen::cast::AudioDecoderConfig;
   switch (value) {
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_NONE);
@@ -203,10 +203,10 @@ ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value) {
   }
 }
 
-absl::optional<VideoCodec> ToMediaVideoCodec(
+absl::optional<media::VideoCodec> ToMediaVideoCodec(
     openscreen::cast::VideoDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
-  using OtherType = VideoCodec;
+  using OtherType = media::VideoCodec;
   switch (value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kUnknownVideoCodec, kUnknown);
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecH264, kH264);
@@ -225,8 +225,8 @@ absl::optional<VideoCodec> ToMediaVideoCodec(
 }
 
 absl::optional<openscreen::cast::VideoDecoderConfig::Codec>
-ToProtoVideoDecoderConfigCodec(VideoCodec value) {
-  using OriginType = VideoCodec;
+ToProtoVideoDecoderConfigCodec(media::VideoCodec value) {
+  using OriginType = media::VideoCodec;
   using OtherType = openscreen::cast::VideoDecoderConfig;
   switch (value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kUnknown, kUnknownVideoCodec);
@@ -245,10 +245,10 @@ ToProtoVideoDecoderConfigCodec(VideoCodec value) {
   }
 }
 
-absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
+absl::optional<media::VideoCodecProfile> ToMediaVideoCodecProfile(
     openscreen::cast::VideoDecoderConfig::Profile value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
-  using OtherType = VideoCodecProfile;
+  using OtherType = media::VideoCodecProfile;
   switch (value) {
     CASE_RETURN_OTHER(VIDEO_CODEC_PROFILE_UNKNOWN);
     CASE_RETURN_OTHER(H264PROFILE_BASELINE);
@@ -286,8 +286,8 @@ absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
 }
 
 absl::optional<openscreen::cast::VideoDecoderConfig::Profile>
-ToProtoVideoDecoderConfigProfile(VideoCodecProfile value) {
-  using OriginType = VideoCodecProfile;
+ToProtoVideoDecoderConfigProfile(media::VideoCodecProfile value) {
+  using OriginType = media::VideoCodecProfile;
   using OtherType = openscreen::cast::VideoDecoderConfig;
   switch (value) {
     CASE_RETURN_OTHER(VIDEO_CODEC_PROFILE_UNKNOWN);
@@ -325,10 +325,10 @@ ToProtoVideoDecoderConfigProfile(VideoCodecProfile value) {
   }
 }
 
-absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
+absl::optional<media::VideoPixelFormat> ToMediaVideoPixelFormat(
     openscreen::cast::VideoDecoderConfig::Format value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
-  using OtherType = VideoPixelFormat;
+  using OtherType = media::VideoPixelFormat;
   switch (value) {
     CASE_RETURN_OTHER(PIXEL_FORMAT_UNKNOWN);
     CASE_RETURN_OTHER(PIXEL_FORMAT_I420);
@@ -366,10 +366,10 @@ absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
   }
 }
 
-absl::optional<BufferingState> ToMediaBufferingState(
+absl::optional<media::BufferingState> ToMediaBufferingState(
     openscreen::cast::RendererClientOnBufferingStateChange::State value) {
   using OriginType = openscreen::cast::RendererClientOnBufferingStateChange;
-  using OtherType = BufferingState;
+  using OtherType = media::BufferingState;
   switch (value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
@@ -379,8 +379,8 @@ absl::optional<BufferingState> ToMediaBufferingState(
 }
 
 absl::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
-ToProtoMediaBufferingState(BufferingState value) {
-  using OriginType = BufferingState;
+ToProtoMediaBufferingState(media::BufferingState value) {
+  using OriginType = media::BufferingState;
   using OtherType = openscreen::cast::RendererClientOnBufferingStateChange;
   switch (value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
@@ -390,10 +390,10 @@ ToProtoMediaBufferingState(BufferingState value) {
   }
 }
 
-absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
+absl::optional<media::DemuxerStream::Status> ToDemuxerStreamStatus(
     openscreen::cast::DemuxerStreamReadUntilCallback::Status value) {
   using OriginType = openscreen::cast::DemuxerStreamReadUntilCallback;
-  using OtherType = DemuxerStream;
+  using OtherType = media::DemuxerStream;
   switch (value) {
     CASE_RETURN_OTHER(kOk);
     CASE_RETURN_OTHER(kAborted);
@@ -405,8 +405,8 @@ absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
 }
 
 absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
-ToProtoDemuxerStreamStatus(DemuxerStream::Status value) {
-  using OriginType = DemuxerStream;
+ToProtoDemuxerStreamStatus(media::DemuxerStream::Status value) {
+  using OriginType = media::DemuxerStream;
   using OtherType = openscreen::cast::DemuxerStreamReadUntilCallback;
   switch (value) {
     CASE_RETURN_OTHER(kOk);
@@ -419,4 +419,4 @@ ToProtoDemuxerStreamStatus(DemuxerStream::Status value) {
 }
 
 }  // namespace remoting
-}  // namespace media
+}  // namespace cast_streaming

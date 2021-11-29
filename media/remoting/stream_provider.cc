@@ -13,12 +13,12 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_transformation.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/receiver_controller.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
@@ -205,7 +205,8 @@ void StreamProvider::MediaStream::OnInitializeCallback(
       callback_message.has_audio_decoder_config()) {
     const openscreen::cast::AudioDecoderConfig audio_message =
         callback_message.audio_decoder_config();
-    ConvertProtoToAudioDecoderConfig(audio_message, &audio_decoder_config_);
+    cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(
+        audio_message, &audio_decoder_config_);
     if (!audio_decoder_config_.IsValidConfig()) {
       OnError("Invalid audio config");
       return;
@@ -214,7 +215,8 @@ void StreamProvider::MediaStream::OnInitializeCallback(
              callback_message.has_video_decoder_config()) {
     const openscreen::cast::VideoDecoderConfig video_message =
         callback_message.video_decoder_config();
-    ConvertProtoToVideoDecoderConfig(video_message, &video_decoder_config_);
+    cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(
+        video_message, &video_decoder_config_);
     if (!video_decoder_config_.IsValidConfig()) {
       OnError("Invalid video config");
       return;
@@ -257,7 +259,8 @@ void StreamProvider::MediaStream::OnReadUntilCallback(
       message->demuxerstream_readuntilcb_rpc();
   total_received_frame_count_ = callback_message.count();
 
-  if (ToDemuxerStreamStatus(callback_message.status()) == kConfigChanged) {
+  if (cast_streaming::remoting::ToDemuxerStreamStatus(
+          callback_message.status()) == kConfigChanged) {
     if (callback_message.has_audio_decoder_config()) {
       const openscreen::cast::AudioDecoderConfig audio_message =
           callback_message.audio_decoder_config();
@@ -284,7 +287,8 @@ void StreamProvider::MediaStream::UpdateAudioConfig(
     const openscreen::cast::AudioDecoderConfig& audio_message) {
   DCHECK(type_ == AUDIO);
   AudioDecoderConfig audio_config;
-  ConvertProtoToAudioDecoderConfig(audio_message, &audio_config);
+  cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(audio_message,
+                                                             &audio_config);
   if (!audio_config.IsValidConfig()) {
     OnError("Invalid audio config");
     return;
@@ -296,7 +300,8 @@ void StreamProvider::MediaStream::UpdateVideoConfig(
     const openscreen::cast::VideoDecoderConfig& video_message) {
   DCHECK(type_ == VIDEO);
   VideoDecoderConfig video_config;
-  ConvertProtoToVideoDecoderConfig(video_message, &video_config);
+  cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(video_message,
+                                                             &video_config);
   if (!video_config.IsValidConfig()) {
     OnError("Invalid video config");
     return;

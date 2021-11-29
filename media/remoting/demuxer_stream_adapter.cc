@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 
 // Convenience logging macro used throughout this file.
 #define DEMUXER_VLOG(level) VLOG(level) << __func__ << "[" << name_ << "]: "
@@ -170,14 +170,16 @@ void DemuxerStreamAdapter::Initialize(int remote_callback_handle) {
       audio_config_ = demuxer_stream_->audio_decoder_config();
       openscreen::cast::AudioDecoderConfig* audio_message =
           init_cb_message->mutable_audio_decoder_config();
-      ConvertAudioDecoderConfigToProto(audio_config_, audio_message);
+      cast_streaming::remoting::ConvertAudioDecoderConfigToProto(audio_config_,
+                                                                 audio_message);
       break;
     }
     case DemuxerStream::Type::VIDEO: {
       video_config_ = demuxer_stream_->video_decoder_config();
       openscreen::cast::VideoDecoderConfig* video_message =
           init_cb_message->mutable_video_decoder_config();
-      ConvertVideoDecoderConfigToProto(video_config_, video_message);
+      cast_streaming::remoting::ConvertVideoDecoderConfigToProto(video_config_,
+                                                                 video_message);
       break;
     }
     default:
@@ -291,7 +293,8 @@ void DemuxerStreamAdapter::OnNewBuffer(DemuxerStream::Status status,
       DCHECK(pending_frame_.empty());
       if (!data_pipe_writer_.IsPipeValid())
         return;  // Do not start sending (due to previous fatal error).
-      pending_frame_ = DecoderBufferToByteArray(*input);
+      pending_frame_ =
+          cast_streaming::remoting::DecoderBufferToByteArray(*input);
       pending_frame_is_eos_ = input->end_of_stream();
       WriteFrame();
     } break;
@@ -353,16 +356,20 @@ void DemuxerStreamAdapter::SendReadAck() {
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
   auto* message = rpc->mutable_demuxerstream_readuntilcb_rpc();
   message->set_count(last_count_);
-  message->set_status(ToProtoDemuxerStreamStatus(media_status_).value());
+  message->set_status(
+      cast_streaming::remoting::ToProtoDemuxerStreamStatus(media_status_)
+          .value());
   if (media_status_ == DemuxerStream::kConfigChanged) {
     if (audio_config_.IsValidConfig()) {
       openscreen::cast::AudioDecoderConfig* audio_message =
           message->mutable_audio_decoder_config();
-      ConvertAudioDecoderConfigToProto(audio_config_, audio_message);
+      cast_streaming::remoting::ConvertAudioDecoderConfigToProto(audio_config_,
+                                                                 audio_message);
     } else if (video_config_.IsValidConfig()) {
       openscreen::cast::VideoDecoderConfig* video_message =
           message->mutable_video_decoder_config();
-      ConvertVideoDecoderConfigToProto(video_config_, video_message);
+      cast_streaming::remoting::ConvertVideoDecoderConfigToProto(video_config_,
+                                                                 video_message);
     } else {
       NOTREACHED();
     }

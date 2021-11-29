@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/remoting/proto_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 
 #include <algorithm>
 
@@ -10,11 +10,11 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/timestamp_constants.h"
-#include "media/remoting/proto_enum_utils.h"
 
-namespace media {
+namespace cast_streaming {
 namespace remoting {
 
 namespace {
@@ -23,12 +23,12 @@ constexpr size_t kPayloadVersionFieldSize = sizeof(uint8_t);
 constexpr size_t kProtoBufferHeaderSize = sizeof(uint16_t);
 constexpr size_t kDataBufferHeaderSize = sizeof(uint32_t);
 
-scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
+scoped_refptr<media::DecoderBuffer> ConvertProtoToDecoderBuffer(
     const openscreen::cast::DecoderBuffer& buffer_message,
-    scoped_refptr<DecoderBuffer> buffer) {
+    scoped_refptr<media::DecoderBuffer> buffer) {
   if (buffer_message.is_eos()) {
     VLOG(1) << "EOS data";
-    return DecoderBuffer::CreateEOSBuffer();
+    return media::DecoderBuffer::CreateEOSBuffer();
   }
 
   if (buffer_message.has_timestamp_usec()) {
@@ -58,7 +58,7 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
 
   if (has_discard) {
     buffer->set_discard_padding(
-        DecoderBuffer::DiscardPadding(front_discard, back_discard));
+        media::DecoderBuffer::DiscardPadding(front_discard, back_discard));
   }
 
   if (buffer_message.has_side_data()) {
@@ -71,7 +71,7 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
 }
 
 void ConvertDecoderBufferToProto(
-    const DecoderBuffer& decoder_buffer,
+    const media::DecoderBuffer& decoder_buffer,
     openscreen::cast::DecoderBuffer* buffer_message) {
   if (decoder_buffer.end_of_stream()) {
     buffer_message->set_is_eos(true);
@@ -98,8 +98,9 @@ void ConvertDecoderBufferToProto(
 
 }  // namespace
 
-scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
-                                                      uint32_t size) {
+scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
+    const uint8_t* data,
+    uint32_t size) {
   base::BigEndianReader reader(data, size);
   uint8_t payload_version = 0;
   uint16_t proto_size = 0;
@@ -113,10 +114,11 @@ scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
     // Deserialize proto buffer. It passes the pre allocated DecoderBuffer into
     // the function because the proto buffer may overwrite DecoderBuffer since
     // it may be EOS buffer.
-    scoped_refptr<DecoderBuffer> decoder_buffer = ConvertProtoToDecoderBuffer(
-        segment,
-        DecoderBuffer::CopyFrom(reinterpret_cast<const uint8_t*>(reader.ptr()),
-                                buffer_size));
+    scoped_refptr<media::DecoderBuffer> decoder_buffer =
+        ConvertProtoToDecoderBuffer(
+            segment,
+            media::DecoderBuffer::CopyFrom(
+                reinterpret_cast<const uint8_t*>(reader.ptr()), buffer_size));
     return decoder_buffer;
   }
 
@@ -124,7 +126,7 @@ scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
 }
 
 std::vector<uint8_t> DecoderBufferToByteArray(
-    const DecoderBuffer& decoder_buffer) {
+    const media::DecoderBuffer& decoder_buffer) {
   openscreen::cast::DecoderBuffer decoder_buffer_message;
   ConvertDecoderBufferToProto(decoder_buffer, &decoder_buffer_message);
 
@@ -158,7 +160,7 @@ std::vector<uint8_t> DecoderBufferToByteArray(
 }
 
 void ConvertAudioDecoderConfigToProto(
-    const AudioDecoderConfig& audio_config,
+    const media::AudioDecoderConfig& audio_config,
     openscreen::cast::AudioDecoderConfig* audio_message) {
   DCHECK(audio_config.IsValidConfig());
   DCHECK(audio_message);
@@ -184,7 +186,7 @@ void ConvertAudioDecoderConfigToProto(
 
 bool ConvertProtoToAudioDecoderConfig(
     const openscreen::cast::AudioDecoderConfig& audio_message,
-    AudioDecoderConfig* audio_config) {
+    media::AudioDecoderConfig* audio_config) {
   DCHECK(audio_config);
   audio_config->Initialize(
       ToMediaAudioCodec(audio_message.codec()).value(),
@@ -193,14 +195,14 @@ bool ConvertProtoToAudioDecoderConfig(
       audio_message.samples_per_second(),
       std::vector<uint8_t>(audio_message.extra_data().begin(),
                            audio_message.extra_data().end()),
-      EncryptionScheme::kUnencrypted,
+      media::EncryptionScheme::kUnencrypted,
       base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
   return audio_config->IsValidConfig();
 }
 
 void ConvertVideoDecoderConfigToProto(
-    const VideoDecoderConfig& video_config,
+    const media::VideoDecoderConfig& video_config,
     openscreen::cast::VideoDecoderConfig* video_message) {
   DCHECK(video_config.IsValidConfig());
   DCHECK(video_message);
@@ -211,18 +213,21 @@ void ConvertVideoDecoderConfigToProto(
       ToProtoVideoDecoderConfigProfile(video_config.profile()).value());
   // TODO(dalecurtis): Remove |format| it's now unused.
   video_message->set_format(
-      video_config.alpha_mode() == VideoDecoderConfig::AlphaMode::kHasAlpha
+      video_config.alpha_mode() ==
+              media::VideoDecoderConfig::AlphaMode::kHasAlpha
           ? openscreen::cast::VideoDecoderConfig::PIXEL_FORMAT_I420A
           : openscreen::cast::VideoDecoderConfig::PIXEL_FORMAT_I420);
 
   // TODO(hubbe): Update proto to use color_space_info()
-  if (video_config.color_space_info() == VideoColorSpace::JPEG()) {
+  if (video_config.color_space_info() == media::VideoColorSpace::JPEG()) {
     video_message->set_color_space(
         openscreen::cast::VideoDecoderConfig::COLOR_SPACE_JPEG);
-  } else if (video_config.color_space_info() == VideoColorSpace::REC709()) {
+  } else if (video_config.color_space_info() ==
+             media::VideoColorSpace::REC709()) {
     video_message->set_color_space(
         openscreen::cast::VideoDecoderConfig::COLOR_SPACE_HD_REC709);
-  } else if (video_config.color_space_info() == VideoColorSpace::REC601()) {
+  } else if (video_config.color_space_info() ==
+             media::VideoColorSpace::REC601()) {
     video_message->set_color_space(
         openscreen::cast::VideoDecoderConfig::COLOR_SPACE_SD_REC601);
   } else {
@@ -255,31 +260,31 @@ void ConvertVideoDecoderConfigToProto(
 
 bool ConvertProtoToVideoDecoderConfig(
     const openscreen::cast::VideoDecoderConfig& video_message,
-    VideoDecoderConfig* video_config) {
+    media::VideoDecoderConfig* video_config) {
   DCHECK(video_config);
 
   // TODO(hubbe): Update pb to use VideoColorSpace
-  VideoColorSpace color_space;
+  media::VideoColorSpace color_space;
   switch (video_message.color_space()) {
     case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_UNSPECIFIED:
       break;
     case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_JPEG:
-      color_space = VideoColorSpace::JPEG();
+      color_space = media::VideoColorSpace::JPEG();
       break;
     case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_HD_REC709:
-      color_space = VideoColorSpace::REC709();
+      color_space = media::VideoColorSpace::REC709();
       break;
     case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_SD_REC601:
-      color_space = VideoColorSpace::REC601();
+      color_space = media::VideoColorSpace::REC601();
       break;
   }
   video_config->Initialize(
       ToMediaVideoCodec(video_message.codec()).value(),
       ToMediaVideoCodecProfile(video_message.profile()).value(),
       IsOpaque(ToMediaVideoPixelFormat(video_message.format()).value())
-          ? VideoDecoderConfig::AlphaMode::kIsOpaque
-          : VideoDecoderConfig::AlphaMode::kHasAlpha,
-      color_space, kNoTransformation,
+          ? media::VideoDecoderConfig::AlphaMode::kIsOpaque
+          : media::VideoDecoderConfig::AlphaMode::kHasAlpha,
+      color_space, media::kNoTransformation,
       gfx::Size(video_message.coded_size().width(),
                 video_message.coded_size().height()),
       gfx::Rect(video_message.visible_rect().x(),
@@ -290,13 +295,13 @@ bool ConvertProtoToVideoDecoderConfig(
                 video_message.natural_size().height()),
       std::vector<uint8_t>(video_message.extra_data().begin(),
                            video_message.extra_data().end()),
-      EncryptionScheme::kUnencrypted);
+      media::EncryptionScheme::kUnencrypted);
   return video_config->IsValidConfig();
 }
 
 void ConvertProtoToPipelineStatistics(
     const openscreen::cast::PipelineStatistics& stats_message,
-    PipelineStatistics* stats) {
+    media::PipelineStatistics* stats) {
   stats->audio_bytes_decoded = stats_message.audio_bytes_decoded();
   stats->video_bytes_decoded = stats_message.video_bytes_decoded();
   stats->video_frames_decoded = stats_message.video_frames_decoded();
@@ -315,20 +320,20 @@ void ConvertProtoToPipelineStatistics(
   if (stats_message.has_audio_decoder_info()) {
     auto audio_info = stats_message.audio_decoder_info();
     stats->audio_pipeline_info.decoder_type =
-        static_cast<AudioDecoderType>(audio_info.decoder_type());
+        static_cast<media::AudioDecoderType>(audio_info.decoder_type());
     stats->audio_pipeline_info.is_platform_decoder =
         audio_info.is_platform_decoder();
     stats->audio_pipeline_info.has_decrypting_demuxer_stream = false;
-    stats->audio_pipeline_info.encryption_type = EncryptionType::kClear;
+    stats->audio_pipeline_info.encryption_type = media::EncryptionType::kClear;
   }
   if (stats_message.has_video_decoder_info()) {
     auto video_info = stats_message.video_decoder_info();
     stats->video_pipeline_info.decoder_type =
-        static_cast<VideoDecoderType>(video_info.decoder_type());
+        static_cast<media::VideoDecoderType>(video_info.decoder_type());
     stats->video_pipeline_info.is_platform_decoder =
         video_info.is_platform_decoder();
     stats->video_pipeline_info.has_decrypting_demuxer_stream = false;
-    stats->video_pipeline_info.encryption_type = EncryptionType::kClear;
+    stats->video_pipeline_info.encryption_type = media::EncryptionType::kClear;
   }
   if (stats_message.has_video_frame_duration_average_usec()) {
     stats->video_frame_duration_average =
@@ -337,4 +342,4 @@ void ConvertProtoToPipelineStatistics(
 }
 
 }  // namespace remoting
-}  // namespace media
+}  // namespace cast_streaming

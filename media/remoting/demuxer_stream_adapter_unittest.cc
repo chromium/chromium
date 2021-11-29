@@ -12,11 +12,11 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/remoting/fake_media_resource.h"
 #include "media/remoting/fake_remoter.h"
-#include "media/remoting/proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
