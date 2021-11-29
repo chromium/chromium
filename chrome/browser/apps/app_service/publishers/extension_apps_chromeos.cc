@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -619,8 +620,19 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   if (extension->id() == extension_misc::kQuickOfficeComponentExtensionId) {
     return true;
   }
-  if (!extension->is_app() || IsBlocklisted(extension->id())) {
+  if (!extension->is_app() && !extension->is_extension()) {
     return false;
+  }
+  if (IsBlocklisted(extension->id())) {
+    return false;
+  }
+  // Only accept extensions with file_browser_handlers.
+  if (extension->is_extension()) {
+    FileBrowserHandler::List* handler_list =
+        FileBrowserHandler::GetHandlers(extension);
+    if (!handler_list) {
+      return false;
+    }
   }
 
   return !extension->from_bookmark();
@@ -651,6 +663,12 @@ void ExtensionAppsChromeOs::SetShowInFields(
   // are otherwise hidden from the user.
   if (extension->id() == file_manager::kAudioPlayerAppId ||
       extension->id() == extension_misc::kQuickOfficeComponentExtensionId) {
+    app->handles_intents = apps::mojom::OptionalBool::kTrue;
+  }
+
+  // Extensions are only published if they have file_browser_handlers, which
+  // means they need to handle intents.
+  if (extension->is_extension()) {
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
   }
 }
@@ -714,9 +732,16 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
   if (disable_for_lacros)
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
 
-  // Add file_handlers.
-  base::Extend(app->intent_filters,
-               apps_util::CreateChromeAppIntentFilters(extension));
+  bool is_quickoffice =
+      extension->is_extension() &&
+      extension->id() == extension_misc::kQuickOfficeComponentExtensionId;
+  if (extension->is_app() || is_quickoffice) {
+    base::Extend(app->intent_filters,
+                 apps_util::CreateChromeAppIntentFilters(extension));
+  } else if (extension->is_extension()) {
+    base::Extend(app->intent_filters,
+                 apps_util::CreateExtensionIntentFilters(extension));
+  }
 
   return app;
 }

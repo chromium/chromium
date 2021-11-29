@@ -285,9 +285,10 @@ bool FileMatchesConditionValue(
     case apps::mojom::PatternMatchType::kNone:
     case apps::mojom::PatternMatchType::kLiteral:
     case apps::mojom::PatternMatchType::kPrefix:
-    case apps::mojom::PatternMatchType::kGlob:
       NOTREACHED();
       return false;
+    case apps::mojom::PatternMatchType::kGlob:
+      return MatchGlob(file->url.spec(), condition_value->value);
     case apps::mojom::PatternMatchType::kMimeType:
       return file->mime_type.has_value() &&
              MimeTypeMatched(file->mime_type.value(), condition_value->value);

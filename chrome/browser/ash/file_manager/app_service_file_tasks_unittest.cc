@@ -33,6 +33,7 @@ const char kAppIdImage[] = "gfedcba";
 const char kAppIdAny[] = "hijklmn";
 const char kChromeAppId[] = "chromeappid";
 const char kChromeAppWithVerbsId[] = "chromeappwithverbsid";
+const char kExtensionId[] = "extensionid";
 const char kAppIdTextWild[] = "zxcvbn";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeImage[] = "image/jpeg";
@@ -48,7 +49,8 @@ const char kActivityLabelAny[] = "some_any_file";
 const char kActivityLabelTextWild[] = "some_text_wild_file";
 
 GURL test_url(const std::string& file_name) {
-  GURL url = GURL("filesystem:https://site.com/isolated/" + file_name);
+  GURL url =
+      GURL("filesystem:chrome-extension://extensionid/external/" + file_name);
   EXPECT_TRUE(url.is_valid());
   return url;
 }
@@ -259,6 +261,36 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateChromeAppIntentFilters(foo_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppWithVerbsId, std::move(filters),
+                                apps::mojom::AppType::kExtension,
+                                apps::mojom::OptionalBool::kTrue);
+  }
+
+  // Adds file_browser_handler to handle .txt files.
+  void AddExtension() {
+    extensions::ExtensionBuilder fbh_app;
+    fbh_app.SetManifest(
+        extensions::DictionaryBuilder()
+            .Set("name", "Fbh")
+            .Set("version", "1.0.0")
+            .Set("manifest_version", 2)
+            .Set("permissions",
+                 extensions::ListBuilder().Append("fileBrowserHandler").Build())
+            .Set("file_browser_handlers",
+                 extensions::ListBuilder()
+                     .Append(extensions::DictionaryBuilder()
+                                 .Set("id", "open")
+                                 .Set("default_title", "open title")
+                                 .Set("file_filters",
+                                      extensions::ListBuilder()
+                                          .Append("filesystem:*.txt")
+                                          .Build())
+                                 .Build())
+                     .Build())
+            .Build());
+    fbh_app.SetID(kExtensionId);
+    auto filters =
+        apps_util::CreateExtensionIntentFilters(fbh_app.Build().get());
+    AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
                                 apps::mojom::AppType::kExtension,
                                 apps::mojom::OptionalBool::kTrue);
   }
@@ -545,6 +577,19 @@ TEST_F(AppServiceFileTasksTestEnabled,
   EXPECT_TRUE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
   EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
+  AddExtension();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kExtensionId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("open title", tasks[0].task_title);
+  EXPECT_EQ("open", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
 }
 
 }  // namespace file_tasks

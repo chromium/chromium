@@ -40,6 +40,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -213,11 +214,27 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
+    TaskType task_type = GetTaskType(app_type);
+    if (app_type == apps::mojom::AppType::kExtension) {
+      const extensions::Extension* extension =
+          extensions::ExtensionRegistry::Get(profile)
+              ->enabled_extensions()
+              .GetByID(launch_entry.app_id);
+      // TODO(petermarshall): For now we need to distinguish file_handler
+      // (chrome app) and file_browser_handler (extension) tasks. This is
+      // because we need to launch them differently. Once launching is handled
+      // by App Service, this can be removed.
+      // Extension may be null in tests, ignore that.
+      if (extension && extension->is_extension()) {
+        task_type = TASK_TYPE_FILE_BROWSER_HANDLER;
+      }
+    }
+
     constexpr int kIconSize = 32;
     GURL icon_url =
         apps::AppIconSource::GetIconURL(launch_entry.app_id, kIconSize);
     result_list->push_back(FullTaskDescriptor(
-        TaskDescriptor(launch_entry.app_id, GetTaskType(app_type),
+        TaskDescriptor(launch_entry.app_id, task_type,
                        launch_entry.activity_name),
         launch_entry.activity_label, Verb::VERB_OPEN_WITH, icon_url,
         /* is_default=*/false,

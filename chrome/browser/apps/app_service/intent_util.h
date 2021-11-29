@@ -55,6 +55,11 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
 std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
     const extensions::Extension* extension);
 
+// Create intent filters for an Extension (is_extension() == true) e.g. for
+// file_browser_handlers.
+std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
+    const extensions::Extension* extension);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// or file:// type URLs from the
 // file paths and mime types of a list of files.

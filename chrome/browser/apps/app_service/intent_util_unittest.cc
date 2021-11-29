@@ -444,6 +444,88 @@ TEST_F(IntentUtilsTest, CreateChromeAppIntentFilters_FileHandlers) {
   EXPECT_EQ(file_cond2.condition_values[1]->value, "txt");
 }
 
+TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
+  // Foo extension provides file_browser_handlers for html and anything.
+  extensions::ExtensionBuilder foo_ext;
+  foo_ext.SetManifest(
+      extensions::DictionaryBuilder()
+          .Set("name", "Foo")
+          .Set("version", "1.0.0")
+          .Set("manifest_version", 2)
+          .Set(
+              "background",
+              extensions::DictionaryBuilder()
+                  .Set(
+                      "scripts",
+                      extensions::ListBuilder().Append("background.js").Build())
+                  .Set("persistent", false)
+                  .Build())
+          .Set(
+              "file_browser_handlers",
+              extensions::ListBuilder()
+                  .Append(
+                      extensions::DictionaryBuilder()
+                          .Set("id", "open")
+                          .Set("default_title", "Open me!")
+                          .Set("file_filters", extensions::ListBuilder()
+                                                   .Append("filesystem:*.html")
+                                                   .Build())
+                          .Build())
+                  .Append(extensions::DictionaryBuilder()
+                              .Set("id", "open_all")
+                              .Set("default_title", "Open anything!")
+                              .Set("file_filters", extensions::ListBuilder()
+                                                       .Append("filesystem:*.*")
+                                                       .Build())
+                              .Build())
+                  .Build())
+          .Set("permissions",
+               extensions::ListBuilder().Append("fileBrowserHandler").Build())
+          .Build());
+
+  foo_ext.SetID("abcdzxcv");
+  scoped_refptr<const extensions::Extension> foo = foo_ext.Build();
+
+  std::vector<IntentFilterPtr> filters =
+      apps_util::CreateExtensionIntentFilters(foo.get());
+
+  ASSERT_EQ(filters.size(), 2);
+
+  // "html" filter - View action
+  const IntentFilterPtr& mime_filter = filters[0];
+  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  const Condition& view_cond = *mime_filter->conditions[0];
+  EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
+  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
+
+  // "html" filter - glob match
+  const Condition& file_cond = *mime_filter->conditions[1];
+  EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  EXPECT_EQ(file_cond.condition_values[0]->match_type, PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond.condition_values[0]->value,
+            R"(filesystem:chrome-extension://.*/.*\.html)");
+
+  // "any" filter - View action
+  const IntentFilterPtr& mime_filter2 = filters[1];
+  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  const Condition& view_cond2 = *mime_filter2->conditions[0];
+  EXPECT_EQ(view_cond2.condition_type, ConditionType::kAction);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  EXPECT_EQ(view_cond2.condition_values[0]->value,
+            apps_util::kIntentActionView);
+
+  // "any" filter - glob match
+  const Condition& file_cond2 = *mime_filter2->conditions[1];
+  EXPECT_EQ(file_cond2.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond2.condition_values.size(), 1);
+  EXPECT_EQ(file_cond2.condition_values[0]->match_type,
+            PatternMatchType::kGlob);
+  EXPECT_EQ(file_cond2.condition_values[0]->value,
+            R"(filesystem:chrome-extension://.*/.*\..*)");
+}
+
 // Converting an Arc Intent filter for a URL view intent filter should add a
 // condition covering every possible path.
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
