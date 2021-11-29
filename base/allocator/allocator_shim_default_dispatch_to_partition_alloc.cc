@@ -629,7 +629,7 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
 
 extern "C" {
 
-#if !defined(OS_APPLE)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID)
 
 SHIM_ALWAYS_EXPORT void malloc_stats(void) __THROW {}
 
@@ -637,7 +637,7 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
   return 0;
 }
 
-#endif  // !defined(OS_APPLE)
+#endif  // !defined(OS_APPLE) && !defined(OS_ANDROID)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
