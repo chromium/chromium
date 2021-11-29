@@ -377,6 +377,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   // item.
   bool IsTraversableByKeyboard() const;
 
+  bool last_paint_as_selected_for_testing() const {
+    return last_paint_as_selected_;
+  }
+
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
   MenuItemView(MenuItemView* parent, int command, Type type);
@@ -538,6 +542,15 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns true if the MenuItemView should be painted as selected.
   bool ShouldPaintAsSelected(PaintMode mode) const;
+
+  // Returns true if this item or any anscestor menu items have been removed and
+  // are currently scheduled for deletion. Items can exist in this state after
+  // they have been removed from the menu but before ChildrenChanged() has been
+  // called.
+  // Menu items scheduled for deletion may not accurately reflect the state of
+  // the menu model and this should be checked when performing actions that
+  // could interact with model state.
+  bool IsScheduledForDeletion() const;
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
