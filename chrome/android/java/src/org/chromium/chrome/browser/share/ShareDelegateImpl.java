@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -145,11 +147,15 @@ public class ShareDelegateImpl implements ShareDelegate {
                     WebContents webContents = currentTab.getWebContents();
                     String title = currentTab.getTitle();
                     GURL visibleUrl = currentTab.getUrl();
+                    String fragment = getTextFragment(currentTab.getUrl());
                     webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
                         @Override
                         public void onResult(GURL result) {
-                            logCanonicalUrlResult(visibleUrl, result);
+                            if (fragment != null) {
+                                result = appendTextFragment(result, fragment);
+                            }
 
+                            logCanonicalUrlResult(visibleUrl, result);
                             triggerShareWithCanonicalUrlResolved(window, webContents, title,
                                     visibleUrl, result, shareOrigin, shareDirectly, isIncognito);
                         }
@@ -161,6 +167,22 @@ public class ShareDelegateImpl implements ShareDelegate {
                 }
             }
         });
+    }
+
+    private String getTextFragment(GURL visibleUrl) {
+        Uri uri = Uri.parse(visibleUrl.getSpec());
+        String fragment = uri.getEncodedFragment();
+        if (fragment == null || !fragment.contains(LinkToTextCoordinator.TEXT_FRAGMENT_PREFIX)) {
+            return null;
+        }
+
+        return fragment;
+    }
+
+    private GURL appendTextFragment(GURL canonicalUrl, String fragment) {
+        Uri uri = Uri.parse(canonicalUrl.getSpec());
+        String url = uri.buildUpon().encodedFragment(fragment).toString();
+        return new GURL(url);
     }
 
     private void triggerShareWithCanonicalUrlResolved(final WindowAndroid window,
