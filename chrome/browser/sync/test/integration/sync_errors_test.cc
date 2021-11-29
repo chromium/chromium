@@ -20,6 +20,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -389,10 +390,12 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(preferences_helper::GetPreferenceInFakeServer(
-                  prefs::kHomePageIsNewTabPage, GetFakeServer())
+                  syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                  GetFakeServer())
                   .has_value());
   ASSERT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                GetFakeServer())
                 ->value(),
             "false");
 
@@ -414,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // The preference should remain unsynced (still set to the previous value).
   EXPECT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                GetFakeServer())
                 ->value(),
             "false");
 
@@ -427,9 +431,10 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // Eventually (depending on throttling delay, which is short in tests) the
   // preference should be committed.
-  EXPECT_TRUE(
-      FakeServerPrefMatchesValueChecker(prefs::kHomePageIsNewTabPage, "true")
-          .Wait());
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(syncer::ModelType::PREFERENCES,
+                                                prefs::kHomePageIsNewTabPage,
+                                                "true")
+                  .Wait());
   EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::ModelTypeSet());
 }
 
