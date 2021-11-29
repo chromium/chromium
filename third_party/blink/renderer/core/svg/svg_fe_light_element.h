@@ -27,11 +27,14 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace gfx {
+class Point3F;
+}
+
 namespace blink {
 
 class Filter;
 class FELighting;
-class FloatPoint3D;
 class LightSource;
 class SVGAnimatedNumber;
 
@@ -73,8 +76,8 @@ class SVGFELightElement : public SVGElement {
  protected:
   SVGFELightElement(const QualifiedName&, Document&);
 
-  FloatPoint3D GetPosition() const;
-  FloatPoint3D PointsAt() const;
+  gfx::Point3F GetPosition() const;
+  gfx::Point3F PointsAt() const;
 
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) final;

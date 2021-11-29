@@ -67,7 +67,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   bool FindCycleFromSelf() const override;
   std::unique_ptr<PatternData> BuildPatternData(
       const gfx::RectF& object_bounding_box);
-  sk_sp<PaintRecord> AsPaintRecord(const FloatSize&,
+  sk_sp<PaintRecord> AsPaintRecord(const gfx::SizeF&,
                                    const AffineTransform&) const;
 
   mutable bool should_collect_pattern_attributes_ : 1;

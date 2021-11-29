@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 namespace paint_filter_builder {
@@ -115,7 +116,8 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     // raster the mask to a bitmap, then encode it in an SkImageSource, which
     // can be serialized.
     SkBitmap bitmap;
-    const SkRect mask_record_bounds = reflection.MaskBounds();
+    const SkRect mask_record_bounds =
+        gfx::RectFToSkRect(reflection.MaskBounds());
     SkRect mask_bounds_rounded;
     mask_record_bounds.roundOut(&mask_bounds_rounded);
     SkScalar mask_buffer_size =

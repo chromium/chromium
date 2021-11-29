@@ -44,7 +44,7 @@ bool BasicShapeCircle::operator==(const BasicShape& o) const {
          radius_ == other.radius_;
 }
 
-float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
+float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
   if (radius_.GetType() == BasicShapeRadius::kValue) {
     return FloatValueForLength(
         radius_.Value(),
@@ -66,7 +66,7 @@ float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
 }
 
 void BasicShapeCircle::GetPath(Path& path,
-                               const FloatRect& bounding_box,
+                               const gfx::RectF& bounding_box,
                                float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
@@ -99,7 +99,7 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 }
 
 void BasicShapeEllipse::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
@@ -112,7 +112,7 @@ void BasicShapeEllipse::GetPath(Path& path,
 }
 
 void BasicShapePolygon::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
@@ -144,7 +144,7 @@ bool BasicShapePolygon::operator==(const BasicShape& o) const {
 }
 
 void BasicShapeInset::GetPath(Path& path,
-                              const FloatRect& bounding_box,
+                              const gfx::RectF& bounding_box,
                               float) {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
@@ -157,7 +157,7 @@ void BasicShapeInset::GetPath(Path& path,
       std::max<float>(bounding_box.height() - top -
                           FloatValueForLength(bottom_, bounding_box.height()),
                       0));
-  const FloatSize& box_size = bounding_box.size();
+  FloatSize box_size(bounding_box.size());
   auto radii = FloatRoundedRect::Radii(
       FloatSizeForLengthSize(top_left_radius_, box_size),
       FloatSizeForLengthSize(top_right_radius_, box_size),

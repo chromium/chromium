@@ -7190,8 +7190,10 @@ PhysicalRect LayoutBox::PhysicalVisualOverflowRectIncludingFilters() const {
   PhysicalRect bounds_rect = PhysicalVisualOverflowRect();
   if (!StyleRef().HasFilter())
     return bounds_rect;
-  FloatRect float_rect(bounds_rect);
-  float_rect.UnionIfNonZero(Layer()->FilterReferenceBox());
+  gfx::RectF float_rect(bounds_rect);
+  gfx::RectF filter_reference_box = Layer()->FilterReferenceBox();
+  if (!filter_reference_box.size().IsZero())
+    float_rect.UnionEvenIfEmpty(filter_reference_box);
   float_rect = Layer()->MapRectForFilter(float_rect);
   return PhysicalRect::EnclosingRect(float_rect);
 }

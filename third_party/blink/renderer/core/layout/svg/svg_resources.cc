@@ -305,7 +305,7 @@ void SVGElementResourceClient::UpdateFilterData(
     CompositorFilterOperations& operations) {
   DCHECK(element_->GetLayoutObject());
   const LayoutObject& object = *element_->GetLayoutObject();
-  FloatRect reference_box(SVGResources::ReferenceBoxForEffects(object));
+  gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(object);
   if (!operations.IsEmpty() && !filter_data_dirty_ &&
       reference_box == operations.ReferenceBox())
     return;

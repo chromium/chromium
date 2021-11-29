@@ -2709,31 +2709,31 @@ void PaintLayer::UpdateFilterReferenceBox() {
   PhysicalRect result = LocalBoundingBox();
   ExpandRectForSelfPaintingDescendants(
       *this, result, kIncludeTransforms | kIncludeCompositedChildLayers);
-  FloatRect reference_box = FloatRect(result);
+  gfx::RectF reference_box(result);
   if (!ResourceInfo() || ResourceInfo()->FilterReferenceBox() != reference_box)
     GetLayoutObject().SetNeedsPaintPropertyUpdate();
   EnsureResourceInfo().SetFilterReferenceBox(reference_box);
 }
 
-FloatRect PaintLayer::FilterReferenceBox() const {
+gfx::RectF PaintLayer::FilterReferenceBox() const {
 #if DCHECK_IS_ON()
   DCHECK_GE(GetLayoutObject().GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kInPrePaint);
 #endif
   if (ResourceInfo())
     return ResourceInfo()->FilterReferenceBox();
-  return FloatRect();
+  return gfx::RectF();
 }
 
-FloatRect PaintLayer::BackdropFilterReferenceBox() const {
-  return FloatRect(GetLayoutObject().BorderBoundingBox());
+gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
+  return gfx::RectF(ToGfxRect(GetLayoutObject().BorderBoundingBox()));
 }
 
 gfx::RRectF PaintLayer::BackdropFilterBounds() const {
-  gfx::RRectF backdrop_filter_bounds =
-      gfx::RRectF(RoundedBorderGeometry::PixelSnappedRoundedBorder(
+  gfx::RRectF backdrop_filter_bounds(
+      SkRRect(RoundedBorderGeometry::PixelSnappedRoundedBorder(
           GetLayoutObject().StyleRef(),
-          PhysicalRect::EnclosingRect(BackdropFilterReferenceBox())));
+          PhysicalRect::EnclosingRect(BackdropFilterReferenceBox()))));
   return backdrop_filter_bounds;
 }
 
@@ -2761,7 +2761,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
     ShapeClipPathOperation* clip_path =
         To<ShapeClipPathOperation>(clip_path_operation);
     return !clip_path
-                ->GetPath(FloatRect(reference_box),
+                ->GetPath(reference_box,
                           GetLayoutObject().StyleRef().EffectiveZoom())
                 .Contains(point);
   }
@@ -2872,7 +2872,7 @@ PhysicalRect PaintLayer::LocalBoundingBoxForCompositingOverlapTest() const {
   if (style.HasBackdropFilter() &&
       style.BackdropFilter().HasFilterThatMovesPixels()) {
     bounding_box = PhysicalRect::EnclosingRect(
-        style.BackdropFilter().MapRect(FloatRect(bounding_box)));
+        style.BackdropFilter().MapRect(gfx::RectF(bounding_box)));
   }
 
   return bounding_box;
@@ -3656,7 +3656,7 @@ FilterOperations PaintLayer::FilterOperationsIncludingReflection() const {
 void PaintLayer::UpdateCompositorFilterOperationsForFilter(
     CompositorFilterOperations& operations) {
   auto filter = FilterOperationsIncludingReflection();
-  FloatRect reference_box = FilterReferenceBox();
+  gfx::RectF reference_box = FilterReferenceBox();
 
   // CompositorFilter needs the reference box to be unzoomed.
   float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
@@ -3683,7 +3683,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
     return;
   }
 
-  FloatRect reference_box = BackdropFilterReferenceBox();
+  gfx::RectF reference_box = BackdropFilterReferenceBox();
   backdrop_filter_bounds = BackdropFilterBounds();
   // CompositorFilter needs the reference box to be unzoomed.
   float zoom = style.EffectiveZoom();
@@ -3764,7 +3764,7 @@ void PaintLayer::RemoveAncestorScrollContainerLayer(
   }
 }
 
-FloatRect PaintLayer::MapRectForFilter(const FloatRect& rect) const {
+gfx::RectF PaintLayer::MapRectForFilter(const gfx::RectF& rect) const {
   if (!HasFilterThatMovesPixels())
     return rect;
   return FilterOperationsIncludingReflection().MapRect(rect);
@@ -3773,7 +3773,7 @@ FloatRect PaintLayer::MapRectForFilter(const FloatRect& rect) const {
 PhysicalRect PaintLayer::MapRectForFilter(const PhysicalRect& rect) const {
   if (!HasFilterThatMovesPixels())
     return rect;
-  return PhysicalRect::EnclosingRect(MapRectForFilter(FloatRect(rect)));
+  return PhysicalRect::EnclosingRect(MapRectForFilter(gfx::RectF(rect)));
 }
 
 bool PaintLayer::ComputeHasFilterThatMovesPixels() const {

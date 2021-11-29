@@ -123,7 +123,7 @@ Vector<float> SepiaMatrix(double amount) {
 
 }  // namespace
 
-FilterEffectBuilder::FilterEffectBuilder(const FloatRect& reference_box,
+FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
                                          float zoom,
                                          const PaintFlags* fill_flags,
                                          const PaintFlags* stroke_flags,
@@ -484,7 +484,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     return nullptr;
   if (auto* resource_container = resource->ResourceContainerNoCycleCheck())
     resource_container->ClearInvalidationMask();
-  FloatRect filter_region =
+  gfx::RectF filter_region =
       SVGLengthContext::ResolveRectangle<SVGFilterElement>(
           filter_element, filter_element->filterUnits()->CurrentEnumValue(),
           reference_box_);

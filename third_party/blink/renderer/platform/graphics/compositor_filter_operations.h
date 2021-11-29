@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITOR_FILTER_OPERATIONS_H_
 
 #include "cc/paint/filter_operations.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -54,8 +54,8 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   bool HasFilterThatMovesPixels() const;
   bool HasReferenceFilter() const;
 
-  void SetReferenceBox(const FloatRect& r) { reference_box_ = r; }
-  const FloatRect& ReferenceBox() const { return reference_box_; }
+  void SetReferenceBox(const gfx::RectF& r) { reference_box_ = r; }
+  const gfx::RectF& ReferenceBox() const { return reference_box_; }
 
   // For reference filters, this equality operator compares pointers of the
   // image_filter fields instead of their values.
@@ -68,7 +68,7 @@ class PLATFORM_EXPORT CompositorFilterOperations {
 
  private:
   cc::FilterOperations filter_operations_;
-  FloatRect reference_box_;
+  gfx::RectF reference_box_;
 };
 
 }  // namespace blink

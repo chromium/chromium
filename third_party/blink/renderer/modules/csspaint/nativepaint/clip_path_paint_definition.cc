@@ -269,8 +269,8 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   scoped_refptr<ShapeClipPathOperation> current_shape =
       ShapeClipPathOperation::Create(result_shape);
 
-  Path path = current_shape->GetPath(
-      FloatRect(gfx::PointF(0.0, 0.0), container_size), input->Zoom());
+  Path path = current_shape->GetPath(gfx::RectF(ToGfxSizeF(container_size)),
+                                     input->Zoom());
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(

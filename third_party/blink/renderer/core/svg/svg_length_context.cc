@@ -167,16 +167,16 @@ static inline float DimensionForViewportUnit(const SVGElement* context,
 SVGLengthContext::SVGLengthContext(const SVGElement* context)
     : context_(context) {}
 
-FloatRect SVGLengthContext::ResolveRectangle(const SVGElement* context,
-                                             SVGUnitTypes::SVGUnitType type,
-                                             const FloatRect& viewport,
-                                             const SVGLength& x,
-                                             const SVGLength& y,
-                                             const SVGLength& width,
-                                             const SVGLength& height) {
+gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
+                                              SVGUnitTypes::SVGUnitType type,
+                                              const gfx::RectF& viewport,
+                                              const SVGLength& x,
+                                              const SVGLength& y,
+                                              const SVGLength& width,
+                                              const SVGLength& height) {
   DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
   if (type != SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    return FloatRect(
+    return gfx::RectF(
         ConvertValueFromPercentageToUserUnits(x, viewport.width()) +
             viewport.x(),
         ConvertValueFromPercentageToUserUnits(y, viewport.height()) +
@@ -186,8 +186,8 @@ FloatRect SVGLengthContext::ResolveRectangle(const SVGElement* context,
   }
 
   SVGLengthContext length_context(context);
-  return FloatRect(x.Value(length_context), y.Value(length_context),
-                   width.Value(length_context), height.Value(length_context));
+  return gfx::RectF(x.Value(length_context), y.Value(length_context),
+                    width.Value(length_context), height.Value(length_context));
 }
 
 gfx::PointF SVGLengthContext::ResolvePoint(const SVGElement* context,

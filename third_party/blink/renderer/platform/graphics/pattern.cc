@@ -45,7 +45,7 @@ scoped_refptr<Pattern> Pattern::CreateImagePattern(
 
 scoped_refptr<Pattern> Pattern::CreatePaintRecordPattern(
     sk_sp<PaintRecord> record,
-    const FloatRect& record_bounds,
+    const gfx::RectF& record_bounds,
     RepeatMode repeat_mode) {
   return PaintRecordPattern::Create(std::move(record), record_bounds,
                                     repeat_mode);

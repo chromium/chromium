@@ -27,11 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILTER_EFFECT_BUILDER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkTileMode.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -39,7 +39,6 @@ class CompositorFilterOperations;
 class Filter;
 class FilterEffect;
 class FilterOperations;
-class FloatRect;
 class ReferenceFilterOperation;
 class SVGFilterGraphNodeMap;
 
@@ -47,7 +46,7 @@ class CORE_EXPORT FilterEffectBuilder final {
   STACK_ALLOCATED();
 
  public:
-  FilterEffectBuilder(const FloatRect& reference_box,
+  FilterEffectBuilder(const gfx::RectF& reference_box,
                       float zoom,
                       const PaintFlags* fill_flags = nullptr,
                       const PaintFlags* stroke_flags = nullptr,
@@ -67,7 +66,7 @@ class CORE_EXPORT FilterEffectBuilder final {
   }
 
  private:
-  const FloatRect reference_box_;
+  const gfx::RectF reference_box_;
   const float zoom_;
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const PaintFlags* fill_flags_;

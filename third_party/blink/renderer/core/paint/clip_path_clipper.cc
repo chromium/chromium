@@ -131,8 +131,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     auto zoom =
         UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
     auto& shape = To<ShapeClipPathOperation>(clip_path);
-    gfx::RectF bounding_box =
-        shape.GetPath(FloatRect(reference_box), zoom).BoundingRect();
+    gfx::RectF bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
     bounding_box.Intersect(
         gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())));
     return bounding_box;
@@ -200,7 +199,7 @@ static absl::optional<Path> PathBasedClipInternal(
   float zoom = uses_zoomed_reference_box
                    ? clip_path_owner.StyleRef().EffectiveZoom()
                    : 1;
-  return shape.GetPath(FloatRect(reference_box), zoom);
+  return shape.GetPath(reference_box, zoom);
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(

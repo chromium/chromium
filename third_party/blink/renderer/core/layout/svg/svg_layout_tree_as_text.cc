@@ -558,7 +558,7 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     WriteNameValuePair(ts, "primitiveUnits", filter->PrimitiveUnits());
     ts << "\n";
     // Creating a placeholder filter which is passed to the builder.
-    FloatRect dummy_rect;
+    gfx::RectF dummy_rect;
     auto* dummy_filter = MakeGarbageCollected<Filter>(dummy_rect, dummy_rect, 1,
                                                       Filter::kBoundingBox);
     SVGFilterBuilder builder(dummy_filter->GetSourceGraphic());

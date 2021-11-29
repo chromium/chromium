@@ -75,10 +75,10 @@ bool FEMorphology::SetRadiusY(float radius_y) {
   return true;
 }
 
-FloatRect FEMorphology::MapEffect(const FloatRect& rect) const {
-  FloatRect result = rect;
-  result.OutsetX(GetFilter()->ApplyHorizontalScale(radius_x_));
-  result.OutsetY(GetFilter()->ApplyVerticalScale(radius_y_));
+gfx::RectF FEMorphology::MapEffect(const gfx::RectF& rect) const {
+  gfx::RectF result = rect;
+  result.Outset(GetFilter()->ApplyHorizontalScale(radius_x_),
+                GetFilter()->ApplyVerticalScale(radius_y_));
   return result;
 }
 

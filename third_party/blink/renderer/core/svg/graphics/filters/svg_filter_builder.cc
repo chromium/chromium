@@ -163,7 +163,7 @@ InterpolationSpace SVGFilterBuilder::ResolveInterpolationSpace(
 
 void SVGFilterBuilder::BuildGraph(Filter* filter,
                                   SVGFilterElement& filter_element,
-                                  const FloatRect& reference_box) {
+                                  const gfx::RectF& reference_box) {
   EColorInterpolation filter_color_interpolation =
       ColorInterpolationForElement(filter_element, EColorInterpolation::kAuto);
   SVGUnitTypes::SVGUnitType primitive_units =

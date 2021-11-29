@@ -44,7 +44,7 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   }
 
   const BasicShape* GetBasicShape() const { return shape_.get(); }
-  Path GetPath(const FloatRect& bounding_rect, float zoom) const {
+  Path GetPath(const gfx::RectF& bounding_rect, float zoom) const {
     Path path;
     shape_->GetPath(path, bounding_rect, zoom);
     path.SetWindRule(shape_->GetWindRule());

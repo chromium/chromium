@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -115,7 +115,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
   // See also FilterEffect::MapRect.
-  virtual FloatRect MapRect(const FloatRect& rect) const { return rect; }
+  virtual gfx::RectF MapRect(const gfx::RectF& rect) const { return rect; }
 
  protected:
   FilterOperation(OperationType type) : type_(type) {}
@@ -133,7 +133,7 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
-  FloatRect MapRect(const FloatRect&) const override;
+  gfx::RectF MapRect(const gfx::RectF&) const override;
 
   const AtomicString& Url() const { return url_; }
 
@@ -277,7 +277,7 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
-  FloatRect MapRect(const FloatRect&) const override;
+  gfx::RectF MapRect(const gfx::RectF&) const override;
 
  private:
   bool operator==(const FilterOperation& o) const override {
@@ -307,7 +307,7 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
-  FloatRect MapRect(const FloatRect&) const override;
+  gfx::RectF MapRect(const gfx::RectF&) const override;
 
  private:
   bool operator==(const FilterOperation& o) const override {
@@ -337,7 +337,7 @@ class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
-  FloatRect MapRect(const FloatRect&) const override;
+  gfx::RectF MapRect(const gfx::RectF&) const override;
 
  private:
   bool operator==(const FilterOperation&) const override;
@@ -354,7 +354,7 @@ struct DowncastTraits<BoxReflectFilterOperation> {
 
 class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
  public:
-  ConvolveMatrixFilterOperation(const IntSize& kernel_size,
+  ConvolveMatrixFilterOperation(const gfx::Size& kernel_size,
                                 float divisor,
                                 float bias,
                                 const gfx::Point& target_offset,
@@ -370,7 +370,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
         preserve_alpha_(preserve_alpha),
         kernel_matrix_(kernel_matrix) {}
 
-  const IntSize& KernelSize() const { return kernel_size_; }
+  const gfx::Size& KernelSize() const { return kernel_size_; }
   float Divisor() const { return divisor_; }
   float Bias() const { return bias_; }
   const gfx::Point& TargetOffset() const { return target_offset_; }
@@ -392,7 +392,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
             kernel_matrix_ == other->kernel_matrix_);
   }
 
-  IntSize kernel_size_;
+  gfx::Size kernel_size_;
   float divisor_;
   float bias_;
   gfx::Point target_offset_;

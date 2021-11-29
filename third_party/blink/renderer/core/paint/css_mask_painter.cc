@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -27,8 +28,8 @@ absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
             SVGResources::ReferenceBoxForEffects(object);
         const float reference_box_zoom =
             object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
-        return EnclosingIntRect(
-            masker->ResourceBoundingBox(reference_box, reference_box_zoom));
+        return IntRect(gfx::ToEnclosingRect(
+            masker->ResourceBoundingBox(reference_box, reference_box_zoom)));
       }
     }
   }

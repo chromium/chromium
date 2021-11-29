@@ -93,7 +93,7 @@ ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
   if (!kernel_matrix)
     return nullptr;
 
-  IntSize kernel_size(kernel_matrix->width, kernel_matrix->height);
+  gfx::Size kernel_size(kernel_matrix->width, kernel_matrix->height);
   double divisor = dict.Get<IDLDouble>("divisor", exception_state).value_or(1);
   double bias = dict.Get<IDLDouble>("bias", exception_state).value_or(0);
   gfx::Point target_offset =

@@ -15,7 +15,7 @@ FEBoxReflect::FEBoxReflect(Filter* filter, const BoxReflection& reflection)
 
 FEBoxReflect::~FEBoxReflect() = default;
 
-FloatRect FEBoxReflect::MapEffect(const FloatRect& rect) const {
+gfx::RectF FEBoxReflect::MapEffect(const gfx::RectF& rect) const {
   return reflection_.MapRect(rect);
 }
 

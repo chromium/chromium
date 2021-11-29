@@ -32,7 +32,7 @@ class StylePath final : public BasicShape {
 
   CSSValue* ComputedCSSValue() const;
 
-  void GetPath(Path&, const FloatRect&, float zoom) override;
+  void GetPath(Path&, const gfx::RectF&, float zoom) override;
   WindRule GetWindRule() const override { return wind_rule_; }
 
   bool operator==(const BasicShape&) const override;

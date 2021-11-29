@@ -1269,7 +1269,7 @@ static sk_sp<cc::PaintFilter> MakeFilter(FloatRect bounds) {
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
   CompositorFilterOperations filter;
   filter.AppendReferenceFilter(MakeFilter(FloatRect(12, 26, 93, 84)));
-  filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
+  filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
   TestChunks chunks;
@@ -1300,7 +1300,7 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   CompositorFilterOperations filter;
   filter.AppendReferenceFilter(MakeFilter(FloatRect(7, 16, 93, 84)));
-  filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
+  filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
   TestChunks chunks;

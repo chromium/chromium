@@ -434,7 +434,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
   FilterEffectBuilder filter_effect_builder(
-      FloatRect((gfx::PointF()), FloatSize(canvas_size)),
+      gfx::RectF(gfx::SizeF(ToGfxSize(canvas_size))),
       1.0f,  // Deliberately ignore zoom on the canvas element.
       &fill_flags_for_filter, &stroke_flags_for_filter);
 
@@ -506,7 +506,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
   FilterEffectBuilder filter_effect_builder(
-      FloatRect((gfx::PointF()), FloatSize(canvas_size)),
+      gfx::RectF(gfx::SizeF(ToGfxSize(canvas_size))),
       1.0f,  // Deliberately ignore zoom on the canvas element.
       &fill_flags_for_filter, &stroke_flags_for_filter);
 

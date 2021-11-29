@@ -681,7 +681,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
   // See also FilterEffect::mapRect.
-  FloatRect MapRectForFilter(const FloatRect&) const;
+  gfx::RectF MapRectForFilter(const gfx::RectF&) const;
 
   // Calls the above, rounding outwards.
   PhysicalRect MapRectForFilter(const PhysicalRect&) const;
@@ -697,8 +697,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Filter reference box is the area over which the filter is computed, in the
   // local coordinate system of the effect node containing the filter.
-  FloatRect FilterReferenceBox() const;
-  FloatRect BackdropFilterReferenceBox() const;
+  gfx::RectF FilterReferenceBox() const;
+  gfx::RectF BackdropFilterReferenceBox() const;
   gfx::RRectF BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();

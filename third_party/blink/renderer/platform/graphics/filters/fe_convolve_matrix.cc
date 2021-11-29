@@ -34,7 +34,7 @@
 namespace blink {
 
 FEConvolveMatrix::FEConvolveMatrix(Filter* filter,
-                                   const IntSize& kernel_size,
+                                   const gfx::Size& kernel_size,
                                    float divisor,
                                    float bias,
                                    const gfx::Vector2d& target_offset,
@@ -50,12 +50,12 @@ FEConvolveMatrix::FEConvolveMatrix(Filter* filter,
       preserve_alpha_(preserve_alpha),
       kernel_matrix_(kernel_matrix) {}
 
-FloatRect FEConvolveMatrix::MapEffect(const FloatRect& rect) const {
+gfx::RectF FEConvolveMatrix::MapEffect(const gfx::RectF& rect) const {
   if (!ParametersValid())
     return rect;
-  FloatRect result = rect;
-  result.Offset(FloatSize(-target_offset_));
-  result.Expand(FloatSize(kernel_size_));
+  gfx::RectF result = rect;
+  result.Offset(gfx::Vector2dF(-target_offset_));
+  result.Outset(0, 0, kernel_size_.width(), kernel_size_.height());
   return result;
 }
 
@@ -110,7 +110,7 @@ static SkTileMode ToSkiaTileMode(FEConvolveMatrix::EdgeModeType edge_mode) {
 bool FEConvolveMatrix::ParametersValid() const {
   if (kernel_size_.IsEmpty())
     return false;
-  uint64_t kernel_area = kernel_size_.Area();
+  uint64_t kernel_area = kernel_size_.Area64();
   if (!base::CheckedNumeric<int>(kernel_area).IsValid())
     return false;
   if (SafeCast<size_t>(kernel_area) != kernel_matrix_.size())
@@ -133,7 +133,7 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   SkISize kernel_size(
       SkISize::Make(kernel_size_.width(), kernel_size_.height()));
   // parametersValid() above checks that the kernel area fits in int.
-  int num_elements = SafeCast<int>(kernel_size_.Area());
+  int num_elements = SafeCast<int>(kernel_size_.Area64());
   SkScalar gain = SkFloatToScalar(1.0f / divisor_);
   SkScalar bias = SkFloatToScalar(bias_ * 255);
   SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
@@ -172,7 +172,7 @@ WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
   WriteIndent(ts, indent);
   ts << "[feConvolveMatrix";
   FilterEffect::ExternalRepresentation(ts);
-  ts << " order=\"" << FloatSize(kernel_size_) << "\" "
+  ts << " order=\"" << kernel_size_.ToString() << "\" "
      << "kernelMatrix=\"" << kernel_matrix_ << "\" "
      << "divisor=\"" << divisor_ << "\" "
      << "bias=\"" << bias_ << "\" "

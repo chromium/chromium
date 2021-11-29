@@ -32,11 +32,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class Filter;
 class FilterEffect;
-class FloatRect;
 class SVGFilterElement;
 class SVGFilterPrimitiveStandardAttributes;
 
@@ -89,7 +92,7 @@ class SVGFilterBuilder {
                    const PaintFlags* fill_flags = nullptr,
                    const PaintFlags* stroke_flags = nullptr);
 
-  void BuildGraph(Filter*, SVGFilterElement&, const FloatRect&);
+  void BuildGraph(Filter*, SVGFilterElement&, const gfx::RectF&);
 
   FilterEffect* GetEffectById(const AtomicString& id) const;
   FilterEffect* LastEffect() const { return last_effect_; }

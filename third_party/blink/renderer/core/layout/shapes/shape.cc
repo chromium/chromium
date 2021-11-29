@@ -112,9 +112,9 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       const BasicShapeCircle* circle = To<BasicShapeCircle>(basic_shape);
       gfx::PointF center =
           PointForCenterCoordinate(circle->CenterX(), circle->CenterY(),
-                                   FloatSize(box_width, box_height));
+                                   gfx::SizeF(box_width, box_height));
       float radius =
-          circle->FloatValueForRadiusInBox(FloatSize(box_width, box_height));
+          circle->FloatValueForRadiusInBox(gfx::SizeF(box_width, box_height));
       gfx::PointF logical_center = PhysicalPointToLogical(
           center, logical_box_size.Height().ToFloat(), writing_mode);
 
@@ -126,7 +126,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       const BasicShapeEllipse* ellipse = To<BasicShapeEllipse>(basic_shape);
       gfx::PointF center =
           PointForCenterCoordinate(ellipse->CenterX(), ellipse->CenterY(),
-                                   FloatSize(box_width, box_height));
+                                   gfx::SizeF(box_width, box_height));
       float radius_x = ellipse->FloatValueForRadiusInBox(ellipse->RadiusX(),
                                                          center.x(), box_width);
       float radius_y = ellipse->FloatValueForRadiusInBox(

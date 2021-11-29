@@ -93,7 +93,7 @@ static gfx::RectF MapToSVGRootIncludingFilter(
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     const ComputedStyle& style = parent->StyleRef();
     if (style.HasFilter())
-      visual_rect = ToGfxRectF(style.Filter().MapRect(FloatRect(visual_rect)));
+      visual_rect = style.Filter().MapRect(visual_rect);
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
@@ -252,8 +252,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
           *client, style.MaskerResource())) {
-    visual_rect.Intersect(
-        ToGfxRectF(masker->ResourceBoundingBox(object_bounding_box, 1)));
+    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
   }
 }
 
@@ -294,7 +293,7 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(FloatRect(reference_box), 1)
+    return clip_path.GetPath(reference_box, 1)
         .Contains(location.TransformedPoint());
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
