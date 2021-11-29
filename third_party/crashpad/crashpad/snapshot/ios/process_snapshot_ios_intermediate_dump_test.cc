@@ -664,6 +664,14 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
   auto map = process_snapshot.AnnotationsSimpleMap();
   ASSERT_TRUE(map.find("crashpad_intermediate_dump_incomplete") != map.end());
   EXPECT_EQ(map["crashpad_intermediate_dump_incomplete"], "yes");
+
+  fuzz_path = TestPaths::TestDataRoot().Append(
+      FILE_PATH_LITERAL("snapshot/ios/testdata/crash-5726011582644224"));
+  crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot2;
+  EXPECT_TRUE(process_snapshot2.InitializeWithFilePath(fuzz_path, {}));
+  map = process_snapshot2.AnnotationsSimpleMap();
+  ASSERT_TRUE(map.find("crashpad_intermediate_dump_incomplete") != map.end());
+  EXPECT_EQ(map["crashpad_intermediate_dump_incomplete"], "yes");
 }
 
 }  // namespace

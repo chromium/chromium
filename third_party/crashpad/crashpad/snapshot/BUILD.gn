@@ -493,7 +493,10 @@ source_set("snapshot_test") {
 bundle_data("snapshot_test_ios_data") {
   testonly = true
 
-  sources = [ "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa" ]
+  sources = [
+    "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa",
+    "ios/testdata/crash-5726011582644224",
+  ]
 
   outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

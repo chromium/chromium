@@ -22,6 +22,10 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 
+#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#include <sys/syscall.h>
+#endif
+
 namespace crashpad {
 
 namespace {
@@ -279,6 +283,31 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
       sigaction(sig, &default_action, nullptr) != 0) {
     _exit(kFailureExitCode);
   }
+
+  // If we can raise a signal with siginfo on this platform, do so. This ensures
+  // that we preserve the siginfo information for asynchronous signals (i.e.
+  // signals that do not re-raise autonomously), such as signals delivered via
+  // kill() and asynchronous hardware faults such as SEGV_MTEAERR, which would
+  // otherwise be lost when re-raising the signal via raise().
+#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+  int retval = syscall(SYS_rt_tgsigqueueinfo,
+                       getpid(),
+                       syscall(SYS_gettid),
+                       siginfo->si_signo,
+                       siginfo);
+  if (retval == 0) {
+    return;
+  }
+
+  // Kernels without commit 66dd34ad31e5 ("signal: allow to send any siginfo to
+  // itself"), which was first released in kernel version 3.9, did not permit a
+  // process to send arbitrary signals to itself, and will reject the
+  // rt_tgsigqueueinfo syscall with EPERM. If that happens, follow the non-Linux
+  // code path. Any other errno is unexpected and will cause us to exit.
+  if (errno != EPERM) {
+    _exit(kFailureExitCode);
+  }
+#endif  // defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
 
   // Explicitly re-raise the signal if it will not re-raise itself. Because
   // signal handlers normally execute with their signal blocked, this raise()
