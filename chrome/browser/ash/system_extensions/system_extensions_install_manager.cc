@@ -48,6 +48,12 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
   return &it->second;
 }
 
+void SystemExtensionsInstallManager::InstallUnpackedExtensionFromDir(
+    const base::FilePath& unpacked_system_extension_dir,
+    OnceInstallCallback final_callback) {
+  StartInstallation(std::move(final_callback), unpacked_system_extension_dir);
+}
+
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(chromeos::switches::kInstallSystemExtension)) {
@@ -56,20 +62,40 @@ void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
   base::FilePath system_extension_dir = command_line->GetSwitchValuePath(
       chromeos::switches::kInstallSystemExtension);
 
-  sandboxed_unpacker_.GetSystemExtensionFromDir(
-      system_extension_dir,
+  StartInstallation(
       base::BindOnce(
-          &SystemExtensionsInstallManager::OnGetSystemExtensionFromDir,
-          weak_ptr_factory_.GetWeakPtr(), system_extension_dir));
+          &SystemExtensionsInstallManager::OnInstallFromCommandLineFinished,
+          weak_ptr_factory_.GetWeakPtr()),
+      system_extension_dir);
 }
 
-void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
-    const base::FilePath& source_system_extension_dir,
-    StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status> result) {
+void SystemExtensionsInstallManager::OnInstallFromCommandLineFinished(
+    InstallStatusOrSystemExtensionId result) {
   if (!result.ok()) {
     LOG(ERROR) << "Failed to install extension from command line: "
                << static_cast<int32_t>(result.status());
-    on_command_line_install_finished_.Signal();
+  }
+
+  on_command_line_install_finished_.Signal();
+}
+
+void SystemExtensionsInstallManager::StartInstallation(
+    OnceInstallCallback final_callback,
+    const base::FilePath& unpacked_system_extension_dir) {
+  sandboxed_unpacker_.GetSystemExtensionFromDir(
+      unpacked_system_extension_dir,
+      base::BindOnce(
+          &SystemExtensionsInstallManager::OnGetSystemExtensionFromDir,
+          weak_ptr_factory_.GetWeakPtr(), std::move(final_callback),
+          unpacked_system_extension_dir));
+}
+
+void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
+    OnceInstallCallback final_callback,
+    const base::FilePath& unpacked_system_extension_dir,
+    InstallStatusOrSystemExtension result) {
+  if (!result.ok()) {
+    std::move(final_callback).Run(result.status());
     return;
   }
 
@@ -80,26 +106,28 @@ void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
       GetSystemExtensionsProfileDir(*profile_);
 
   io_helper_.AsyncCall(&IOHelper::CopyExtensionAssets)
-      .WithArgs(source_system_extension_dir, dest_dir, system_extensions_dir)
+      .WithArgs(unpacked_system_extension_dir, dest_dir, system_extensions_dir)
       .Then(base::BindOnce(
           &SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir,
-          weak_ptr_factory_.GetWeakPtr(), std::move(result).value()));
+          weak_ptr_factory_.GetWeakPtr(), std::move(final_callback),
+          std::move(result).value()));
 }
 
 void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
+    OnceInstallCallback final_callback,
     SystemExtension system_extension,
     bool did_succeed) {
   if (!did_succeed) {
-    LOG(ERROR) << "Failed to install extension: "
-               << "Failed to copy assets.";
-    on_command_line_install_finished_.Signal();
+    std::move(final_callback)
+        .Run(SystemExtensionsInstallStatus::kFailedToCopyAssetsToProfileDir);
     return;
   }
 
+  SystemExtensionId id = system_extension.id;
   SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
       system_extension);
   system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
-  on_command_line_install_finished_.Signal();
+  std::move(final_callback).Run(std::move(id));
 }
 
 bool SystemExtensionsInstallManager::IOHelper::CopyExtensionAssets(

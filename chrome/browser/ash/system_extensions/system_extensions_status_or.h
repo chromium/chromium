@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_
 
-#include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 // SystemExtensionsStatusOr is a union of an status enum class and an object.
@@ -19,7 +18,7 @@
 //
 // There is nothing SystemExtensions specific about this class so if needed
 // this can be moved to //base.
-template <typename T, typename S>
+template <typename S, typename T>
 class SystemExtensionsStatusOr {
  public:
   // Constructs a new `SystemExtensionsStatusOr` with an `S::kUnknown` status.
@@ -62,8 +61,5 @@ class SystemExtensionsStatusOr {
  private:
   absl::variant<S, T> status_or_value_;
 };
-
-template <typename S>
-using StatusOrSystemExtension = SystemExtensionsStatusOr<SystemExtension, S>;
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_

@@ -12,7 +12,7 @@
 #include "base/one_shot_event.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
-#include "chrome/browser/ash/system_extensions/system_extension.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_install_status.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_sandboxed_unpacker.h"
 
 class Profile;
@@ -25,6 +25,12 @@ class SystemExtensionsInstallManager {
   SystemExtensionsInstallManager& operator=(
       const SystemExtensionsInstallManager&) = delete;
   ~SystemExtensionsInstallManager();
+
+  using OnceInstallCallback =
+      base::OnceCallback<void(InstallStatusOrSystemExtensionId)>;
+  void InstallUnpackedExtensionFromDir(
+      const base::FilePath& unpacked_system_extension_dir,
+      OnceInstallCallback final_callback);
 
   const base::OneShotEvent& on_command_line_install_finished() {
     return on_command_line_install_finished_;
@@ -44,11 +50,17 @@ class SystemExtensionsInstallManager {
   };
 
   void InstallFromCommandLineIfNecessary();
+  void OnInstallFromCommandLineFinished(
+      InstallStatusOrSystemExtensionId result);
+
+  void StartInstallation(OnceInstallCallback final_callback,
+                         const base::FilePath& unpacked_system_extension_dir);
   void OnGetSystemExtensionFromDir(
-      const base::FilePath& source_system_extension_dir,
-      StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status>
-          result);
-  void OnAssetsCopiedToProfileDir(SystemExtension system_extension,
+      OnceInstallCallback final_callback,
+      const base::FilePath& unpacked_system_extension_dir,
+      InstallStatusOrSystemExtension result);
+  void OnAssetsCopiedToProfileDir(OnceInstallCallback final_callback,
+                                  SystemExtension system_extension,
                                   bool did_succeed);
 
   Profile* profile_;

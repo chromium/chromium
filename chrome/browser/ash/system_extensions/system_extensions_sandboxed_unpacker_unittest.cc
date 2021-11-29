@@ -10,11 +10,12 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_install_status.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_status_or.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using Status = SystemExtensionsSandboxedUnpacker::Status;
+using Status = SystemExtensionsInstallStatus;
 
 namespace {
 
@@ -36,15 +37,15 @@ std::string TestMethodToString(
 class SystemExtensionsSandboxedUnpackerTest
     : public testing::TestWithParam<TestMethod> {
  protected:
-  StatusOrSystemExtension<Status> GetSystemExtensionFromDirAndWait(
+  InstallStatusOrSystemExtension GetSystemExtensionFromDirAndWait(
       base::FilePath system_extension_dir) {
     base::RunLoop run_loop;
-    StatusOrSystemExtension<Status> status;
+    InstallStatusOrSystemExtension status;
 
     SystemExtensionsSandboxedUnpacker unpacker;
     unpacker.GetSystemExtensionFromDir(
         system_extension_dir,
-        base::BindLambdaForTesting([&](StatusOrSystemExtension<Status> s) {
+        base::BindLambdaForTesting([&](InstallStatusOrSystemExtension s) {
           status = std::move(s);
           run_loop.Quit();
         }));
@@ -52,16 +53,16 @@ class SystemExtensionsSandboxedUnpackerTest
     return status;
   }
 
-  StatusOrSystemExtension<Status> GetSystemExtensionFromStringAndWait(
+  InstallStatusOrSystemExtension GetSystemExtensionFromStringAndWait(
       base::StringPiece manifest) {
     base::RunLoop run_loop;
-    StatusOrSystemExtension<Status> status;
+    InstallStatusOrSystemExtension status;
 
     // Create SystemExtension.
     SystemExtensionsSandboxedUnpacker unpacker;
     unpacker.GetSystemExtensionFromString(
         manifest,
-        base::BindLambdaForTesting([&](StatusOrSystemExtension<Status> s) {
+        base::BindLambdaForTesting([&](InstallStatusOrSystemExtension s) {
           status = std::move(s);
           run_loop.Quit();
         }));
@@ -70,7 +71,7 @@ class SystemExtensionsSandboxedUnpackerTest
   }
 
   // Runs the necessary setup and calls the method being tested.
-  StatusOrSystemExtension<Status> CallGetSystemExtensionFrom(
+  InstallStatusOrSystemExtension CallGetSystemExtensionFrom(
       base::StringPiece manifest_str) {
     TestMethod method = GetParam();
     if (method == TestMethod::kFromDir) {

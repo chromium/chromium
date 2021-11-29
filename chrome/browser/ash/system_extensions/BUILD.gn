@@ -20,6 +20,7 @@ source_set("system_extensions") {
     "system_extensions_data_source.h",
     "system_extensions_install_manager.cc",
     "system_extensions_install_manager.h",
+    "system_extensions_install_status.h",
     "system_extensions_profile_utils.cc",
     "system_extensions_profile_utils.h",
     "system_extensions_provider.cc",
