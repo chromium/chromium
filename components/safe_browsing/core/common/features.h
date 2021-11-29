@@ -70,10 +70,6 @@ extern const base::Feature kExtensionTelemetry;
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
 
-// This gates mime type sniffing for DLP file support until the mime type list
-// and implementation are validated experimentally.
-extern const base::Feature kFileAnalysisMimeTypeSniff;
-
 // Determines the tag to pass to Omaha to get a file type policy.
 extern const base::Feature kFileTypePoliciesTag;
 

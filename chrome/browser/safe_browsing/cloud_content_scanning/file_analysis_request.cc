@@ -196,13 +196,8 @@ bool FileAnalysisRequest::FileSupportedByDlp(
     const std::string& mime_type) const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "dlp") {
-      if (FileTypeSupportedForDlp(file_name_)) {
-        return true;
-      } else if (base::FeatureList::IsEnabled(
-                     safe_browsing::kFileAnalysisMimeTypeSniff)) {
-        return MimeTypeSupportedForDlp(mime_type);
-      }
-      return false;
+      return FileTypeSupportedForDlp(file_name_) ||
+             MimeTypeSupportedForDlp(mime_type);
     }
   }
 
