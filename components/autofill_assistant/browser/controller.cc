@@ -934,6 +934,10 @@ bool Controller::EnterState(AutofillAssistantState state) {
   return true;
 }
 
+AutofillAssistantState Controller::GetState() {
+  return state_;
+}
+
 void Controller::SetOverlayBehavior(
     ConfigureUiStateProto::OverlayBehavior overlay_behavior) {
   overlay_behavior_ = overlay_behavior;

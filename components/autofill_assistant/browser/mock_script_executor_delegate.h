@@ -52,6 +52,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               (override));
   MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
   MOCK_METHOD(bool, EnterState, (AutofillAssistantState state), (override));
+  MOCK_METHOD(AutofillAssistantState, GetState, (), (override));
   MOCK_METHOD(void,
               SetOverlayBehavior,
               (ConfigureUiStateProto::OverlayBehavior overlay_behavior),

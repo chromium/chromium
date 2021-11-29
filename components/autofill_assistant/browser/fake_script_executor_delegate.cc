@@ -70,6 +70,11 @@ bool FakeScriptExecutorDelegate::EnterState(AutofillAssistantState state) {
   return true;
 }
 
+AutofillAssistantState FakeScriptExecutorDelegate::GetState() {
+  return state_history_.empty() ? AutofillAssistantState::INACTIVE
+                                : state_history_.back();
+}
+
 void FakeScriptExecutorDelegate::SetTouchableElementArea(
     const ElementAreaProto& element) {}
 

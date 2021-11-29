@@ -71,6 +71,9 @@ class ScriptExecutorDelegate {
   // Enters the given state. Returns true if the state was changed.
   virtual bool EnterState(AutofillAssistantState state) = 0;
 
+  // Returns the current state.
+  virtual AutofillAssistantState GetState() = 0;
+
   virtual void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
 

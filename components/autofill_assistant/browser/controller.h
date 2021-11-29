@@ -193,6 +193,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
 
   bool EnterState(AutofillAssistantState state) override;
+  AutofillAssistantState GetState() override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetCollectUserDataOptions(CollectUserDataOptions* options) override;

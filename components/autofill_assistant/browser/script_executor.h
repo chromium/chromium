@@ -296,6 +296,13 @@ class ScriptExecutor : public ActionDelegate,
     void SetTimeoutWarningCallback(WarningCallback timeout_warning);
 
    private:
+    struct ExecutorState {
+      // The status message that was displayed when the interrupt started.
+      std::string status_message;
+      // The state the controller was in when the interrupt triggered.
+      AutofillAssistantState controller_state;
+    };
+
     void Start();
     void Pause();
     void Continue();
@@ -326,8 +333,8 @@ class ScriptExecutor : public ActionDelegate,
     // Saves the current state and sets save_pre_interrupt_state_.
     void SavePreInterruptState();
 
-    // Restores the UI states as found by SavePreInterruptState.
-    void RestoreStatusMessage();
+    // Restores the state as found by SavePreInterruptState.
+    void RestorePreInterruptState();
 
     // if save_pre_interrupt_state_ is set, attempt to scroll the page back to
     // the original area.
@@ -367,12 +374,9 @@ class ScriptExecutor : public ActionDelegate,
     // The interrupt that's currently running.
     std::unique_ptr<ScriptExecutor> interrupt_executor_;
 
-    // If true, pre-interrupt state was saved already. This happens just before
-    // the first interrupt.
-    bool saved_pre_interrupt_state_ = false;
-
-    // The status message that was displayed when the interrupt started.
-    std::string pre_interrupt_status_;
+    // The state of the ScriptExecutor, as registered before the first interrupt
+    // is run.
+    absl::optional<ExecutorState> saved_pre_interrupt_state_;
 
     // Paths of the interrupts that were just run. These interrupts are
     // prevented from firing for one round.
