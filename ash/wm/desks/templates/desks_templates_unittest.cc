@@ -773,8 +773,6 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
 }
 
 // Tests that the order of DesksTemplatesItemView is in order.
-// TODO(chinsenj): Once ordering is finalized, update this comment to reflect
-// final ordering. Also this test case should use Browsers as well.
 TEST_F(DesksTemplatesTest, IconsOrder) {
   // Create a `DeskTemplate` using which has 5 apps and each app has 1 window.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
@@ -802,6 +800,66 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
 
     EXPECT_TRUE(current_id < next_id);
   }
+}
+
+// Tests that icons are ordered such that active tabs and windows are ordered
+// before inactive tabs.
+TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
+  const std::string kAppId1 = "app_1";
+  constexpr int kWindowId1 = 1;
+  constexpr int kActiveTabIndex1 = 1;
+  const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com"),
+                                 GURL("http://c.com")};
+
+  const std::string kAppId2 = "app_2";
+  constexpr int kWindowId2 = 2;
+  constexpr int kActiveTabIndex2 = 2;
+  const std::vector<GURL> kTabs2{GURL("http://d.com"), GURL("http://e.com"),
+                                 GURL("http://f.com")};
+
+  // Create `restore_data` for the template.
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+
+  // Add app launch info for the first browser instance.
+  auto app_launch_info_1 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId1, kWindowId1);
+  app_launch_info_1->active_tab_index = kActiveTabIndex1;
+  app_launch_info_1->urls = absl::make_optional(kTabs1);
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
+  app_restore::WindowInfo window_info_1;
+  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
+
+  // Add app launch info for the second browser instance.
+  auto app_launch_info_2 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
+  app_launch_info_2->active_tab_index = kActiveTabIndex2;
+  app_launch_info_2->urls = absl::make_optional(kTabs2);
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
+  app_restore::WindowInfo window_info_2;
+  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           std::move(restore_data));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Get the icon views.
+  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+      /*grid_item_index=*/0);
+  const std::vector<DesksTemplatesIconView*>& icon_views =
+      DesksTemplatesItemViewTestApi(item_view).icon_views();
+
+  // Check the icon views. The first two items should be the active tabs,
+  // ordered by activation index. The next two items should be the inactive tabs
+  // with the lowest activation indices, i.e. the rest of the tabs from the
+  // first browser instance.
+  ASSERT_EQ(5u, icon_views.size());
+  EXPECT_EQ(kTabs1[kActiveTabIndex1].spec(), icon_views[0]->icon_identifier());
+  EXPECT_EQ(kTabs2[kActiveTabIndex2].spec(), icon_views[1]->icon_identifier());
+  EXPECT_EQ(kTabs1[0].spec(), icon_views[2]->icon_identifier());
+  EXPECT_EQ(kTabs1[2].spec(), icon_views[3]->icon_identifier());
 }
 
 // Tests that the overflow count view is visible, in bounds, displays the right

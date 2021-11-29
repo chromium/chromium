@@ -33,7 +33,6 @@ struct IconInfo {
   int count;
 };
 
-// TODO(chinsenj): Revisit how we determine the sorting order.
 // Given a map from unique icon identifiers to their count, returns an ordered
 // vector of the unique icon identifiers (app ids/urls) and their number of
 // occurrences.
@@ -55,6 +54,54 @@ std::vector<std::pair<std::string, int>> SortIconIdentifiers(
             });
 
   return identifiers_with_count;
+}
+
+// Inserts an `IconInfo` struct into `out_identifier_info` if no entry exists
+// for `identifier`. If an entry exists for `identifier`, updates its values.
+void InsertIdentifierInfo(
+    const std::string& identifier,
+    int activation_index,
+    std::map<std::string, IconInfo>* out_identifier_info) {
+  // A single app/site can have multiple windows so count their occurrences and
+  // use the smallest activation index for sorting purposes.
+  if (!base::Contains(*out_identifier_info, identifier)) {
+    (*out_identifier_info)[identifier] = {activation_index, /*count=*/1};
+  } else {
+    ++(*out_identifier_info)[identifier].count;
+    (*out_identifier_info)[identifier].activation_index = std::min(
+        (*out_identifier_info)[identifier].activation_index, activation_index);
+  }
+}
+
+// Iterates through `launch_list`, inserting `IconInfo` structs into
+// `out_identifier_info` for each tab and app.
+void InsertIdentifierInfoFromLaunchList(
+    const std::string& app_id,
+    const app_restore::RestoreData::LaunchList& launch_list,
+    std::map<std::string, IconInfo>* out_identifier_info) {
+  // We want to group active tabs and apps ahead of inactive tabs so offsets
+  // inactive tabs activation index by `kInactiveTabOffset`. In almost every use
+  // case, there should be no more than `kInactiveTabOffset` number of tabs +
+  // apps on a desk.
+  constexpr int kInactiveTabOffset = 10000;
+
+  for (auto& restore_data : launch_list) {
+    const int activation_index = restore_data.second->activation_index.value();
+    if (restore_data.second->urls.has_value()) {
+      const int active_tab_index =
+          restore_data.second->active_tab_index.value();
+      const auto& urls = restore_data.second->urls.value();
+      for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
+        InsertIdentifierInfo(urls[i].spec(),
+                             active_tab_index == i
+                                 ? activation_index
+                                 : kInactiveTabOffset + activation_index,
+                             out_identifier_info);
+      }
+    } else {
+      InsertIdentifierInfo(app_id, activation_index, out_identifier_info);
+    }
+  }
 }
 
 }  // namespace
@@ -80,27 +127,9 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
   std::map<std::string, IconInfo> identifier_info;
   for (auto& app_id_to_launch_list_entry :
        restore_data->app_id_to_launch_list()) {
-    for (auto& restore_data : app_id_to_launch_list_entry.second) {
-      const std::string& identifier =
-          restore_data.second->urls.has_value()
-              ? restore_data.second->urls
-                    .value()[restore_data.second->active_tab_index.value()]
-                    .spec()
-              : app_id_to_launch_list_entry.first;
-      const int activation_index =
-          restore_data.second->activation_index.value();
-
-      // A single app can have multiple windows so count their occurrences and
-      // use the smallest activation index for sorting purposes.
-      if (!base::Contains(identifier_info, identifier)) {
-        identifier_info[identifier] = {activation_index,
-                                       /*count=*/1};
-      } else {
-        ++identifier_info[identifier].count;
-        identifier_info[identifier].activation_index = std::min(
-            identifier_info[identifier].activation_index, activation_index);
-      }
-    }
+    InsertIdentifierInfoFromLaunchList(app_id_to_launch_list_entry.first,
+                                       app_id_to_launch_list_entry.second,
+                                       &identifier_info);
   }
 
   CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
@@ -130,14 +159,7 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
           views::Widget::GetWidgetForNativeWindow(window)->GetColorProvider();
     }
 
-    // A single app can have multiple windows so count their occurrences and
-    // use their index in `windows` as their activation index.
-    if (!base::Contains(identifier_info, app_id)) {
-      identifier_info[app_id] = {/*activation_index=*/static_cast<int>(i),
-                                 /*count=*/1};
-    } else {
-      ++identifier_info[app_id].count;
-    }
+    InsertIdentifierInfo(app_id, i, &identifier_info);
   }
 
   CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
