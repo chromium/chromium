@@ -30,19 +30,34 @@ directory for Chrome exists and that Chrome is built with the gn arg
 
 Supported architectures for heap profiling:
 
-*   Local builds: arm32, arm64, x86-64
+*   **Local builds**: arm32, arm64, x86-64
 
-    *   Even if arm32 is not used, ensure `symbol_level=1` is included in gn
-        args so that function names are included in symbol files.
-    *   If an emulator is used, use x86-64 architecture. x86 architecture is not
-        supported for this.
-    *   Prefer to use arm64/x86-64 builds since arm32 support is less stable.
-    *   For arm32, set these gn args: `enable_profiling=true`,
-        `arm_use_thumb=false`, `is_component_build=false` and `symbol_level=1`.
-    *   Alternatively for arm32 you can use `is_official_build=true`,
-        `symbol_level=1`.
+    *   Set 'symbol_level' to 1 or 2 in gn args. Symbols are used to add
+        function names to CPU and heap profiles. Level 1 only includes public
+        functions. Level 2 includes all function names but takes longer to
+        build.
 
-*   Official builds: arm32, arm64, x86-64.
+    *   **Emulator**: Use x86-64 architecture. x86 architecture is not
+        supported.
+
+    *   **Arm64**: If you are building for arm64 and using the primary apk
+        (chrome.apk or monochrome.apk), then profiling works with all the
+        builds.
+
+    *   **Arm64-secondary**: If you are using builds from secondary arch folder
+        (clang_arm32), then make sure the arm32 gn args defined below are
+        included.
+
+    *   Prefer to use arm64/x86-64 primary since arm32 support is less stable.
+
+    *   For **arm32**, set these gn args:
+
+        *   Unofficial: `enable_profiling=true`, `arm_use_thumb=false`,
+            `is_component_build=false` and `symbol_level=1`.
+        *   Official: for arm32 you can use `is_official_build=true`,
+            `symbol_level=1`.
+
+*   **Official builds**: arm32, arm64, x86-64.
 
     *   Official builds need to be installed from the play store.
     *   For arm32, only canary and dev channels are supported.
