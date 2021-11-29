@@ -171,7 +171,12 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         int firstPartyIndex = layout.indexOfChild(firstPartyRow);
         int thirdPartyIndex = layout.indexOfChild(thirdPartyRow);
 
-        assert thirdPartyIndex < firstPartyIndex;
+        if (thirdPartyIndex > firstPartyIndex) {
+            // If the rows are already swapped, we're updating an existing sheet;
+            // don't swap them again.
+            return;
+        }
+
         layout.removeViewAt(firstPartyIndex);
         layout.removeViewAt(thirdPartyIndex);
         layout.addView(firstPartyRow, thirdPartyIndex);
