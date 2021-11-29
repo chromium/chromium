@@ -400,12 +400,16 @@ POLICY_EXPORT void AddFilters(URLMatcher* matcher,
                               std::map<url_matcher::URLMatcherConditionSet::ID,
                                        url_util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersPerPolicy, patterns->GetList().size());
-  std::string pattern;
+  base::Value::ConstListView patterns_list = patterns->GetList();
+  size_t size = std::min(kMaxFiltersPerPolicy, patterns_list.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < size; ++i) {
-    bool success = patterns->GetString(i, &pattern);
-    DCHECK(success);
+    std::string pattern;
+    if (patterns_list[i].is_string()) {
+      pattern = patterns_list[i].GetString();
+    } else {
+      DCHECK(false);
+    }
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(pattern, &components.scheme, &components.host,
