@@ -17,7 +17,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -83,8 +82,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
     : public CertVerifierBrowserTest {
  public:
   BreadcrumbManagerTabHelperSecurityStateBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kMixedContentAutoupgrade);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
@@ -114,47 +111,8 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   }
 
   raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
-
-// Mixed content.
-IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,
-                       MixedContent) {
-  ASSERT_EQ(0ul,
-            breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size());
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
-
-  // Normal HTTPS navigation; no change in security state should be logged.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/title1.html")));
-  auto events = breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
-  EXPECT_EQ(std::string::npos,
-            events.back().find(
-                breadcrumbs::kBreadcrumbDidChangeVisibleSecurityState));
-
-  // Append insecure content to the HTTPS navigation.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStyleTestObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "var i = document.createElement('img');"
-                                     "i.src = 'http://example.test';"
-                                     "document.body.appendChild(i);"));
-  observer.WaitForDidChangeVisibleSecurityState();
-
-  // The breadcrumb event for mixed content should have been logged.
-  events = breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
-  EXPECT_NE(std::string::npos,
-            events.back().find(
-                breadcrumbs::kBreadcrumbDidChangeVisibleSecurityState));
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbMixedContent))
-      << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbAuthenticationBroken))
-      << events.back();
-}
 
 // Broken authentication.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,

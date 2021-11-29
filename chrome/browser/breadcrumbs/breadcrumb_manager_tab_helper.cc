@@ -79,6 +79,10 @@ void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
   const auto visible_security_state =
       security_state::GetVisibleSecurityState(&GetWebContents());
   DCHECK(visible_security_state);
+
+  // Note that mixed content is auto-upgraded to HTTPS in almost all cases on
+  // desktop (the user has to specifically allow it on a per-site basis in
+  // settings), so this is unlikely.
   const bool displayed_mixed_content =
       visible_security_state->displayed_mixed_content;
 
