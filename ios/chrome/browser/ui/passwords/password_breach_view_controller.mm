@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -13,15 +15,47 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Picture width of the branding.
+constexpr CGFloat kLogoWidth = 180;
+
+}  // namespace
+
 @implementation PasswordBreachViewController
 
 #pragma mark - Public
 
 - (void)loadView {
-  self.image = [UIImage imageNamed:@"password_breach_illustration"];
   self.helpButtonAvailable = YES;
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
+
+  if (base::FeatureList::IsEnabled(kIOSEnablePasswordManagerBrandingUpdate)) {
+    self.image = [UIImage imageNamed:@"password_breach_illustration"];
+    self.secondaryActionString = l10n_util::GetNSString(IDS_NOT_NOW);
+    self.showDismissBarButton = NO;
+    self.pinSpecificContentAboveButton = YES;
+
+    UIImageView* imageView = [[UIImageView alloc]
+        initWithImage:[UIImage imageNamed:@"passwords_logo"]];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.specificContentView addSubview:imageView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [imageView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.specificContentView
+                                                   .topAnchor],
+      [imageView.centerXAnchor
+          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+      [imageView.widthAnchor constraintLessThanOrEqualToConstant:kLogoWidth],
+      [imageView.bottomAnchor
+          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+    ]];
+  } else {
+    self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
+  }
 
   [super loadView];
 }

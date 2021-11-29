@@ -69,6 +69,8 @@ constexpr CGFloat kContentMaxWidth = 500;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
+    _specificContentView = [[UIView alloc] init];
+    _specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return self;
 }
@@ -93,6 +95,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 
   UIScrollView* scrollView = [self createScrollView];
   [scrollView addSubview:stackView];
+  [scrollView addSubview:self.specificContentView];
   [self.view addSubview:scrollView];
 
   self.view.preservesSuperviewLayoutMargins = YES;
@@ -110,8 +113,16 @@ constexpr CGFloat kContentMaxWidth = 500;
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
     [stackView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
-    [stackView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor
-                                           constant:-kScrollViewBottomInsets]
+    [stackView.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor
+                       constant:-kScrollViewBottomInsets],
+
+    [self.specificContentView.bottomAnchor
+        constraintEqualToAnchor:scrollView.bottomAnchor],
+    [self.specificContentView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [self.specificContentView.widthAnchor
+        constraintLessThanOrEqualToAnchor:scrollView.widthAnchor],
   ]];
 
   // Scroll View constraints to the height of its content. This allows to center
@@ -174,10 +185,19 @@ constexpr CGFloat kContentMaxWidth = 500;
     scrollViewBottomAnchor = actionStackView.topAnchor;
   }
 
-  [NSLayoutConstraint activateConstraints:@[
+  if (self.pinSpecificContentAboveButton &&
+      ([self.specificContentView.subviews count] > 0)) {
+    [scrollView.bottomAnchor constraintEqualToAnchor:scrollViewBottomAnchor
+                                            constant:-kScrollViewBottomInsets]
+        .active = YES;
+  } else {
     [scrollView.bottomAnchor
         constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor
-                                 constant:-kScrollViewBottomInsets],
+                                 constant:-kScrollViewBottomInsets]
+        .active = YES;
+  }
+
+  [NSLayoutConstraint activateConstraints:@[
     [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],

@@ -85,6 +85,10 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
   [self.presenter startPasswordCheck];
 }
 
+- (void)confirmationAlertSecondaryAction {
+  [self confirmationAlertDismissAction];
+}
+
 - (void)confirmationAlertLearnMoreAction {
   [self.presenter presentLearnMore];
 }
