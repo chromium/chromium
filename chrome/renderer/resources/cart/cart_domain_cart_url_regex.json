@@ -49,6 +49,7 @@
 "hmhco.com": "^https://www.hmhco.com/hmhstorefront/cart/?$",
 "homedepot.com": "^https://[^/]+.homedepot.com/mycart/home$",
 "hottopic.com": "^https://www.hottopic.com/cart/?$",
+"houseofbeautyworld.com": "^https://secure.houseofbeautyworld.com/([\\w|-]+/)?cgi-bin",
 "hsn.com": "^https://www.hsn.com/checkout/bag/?$",
 "ikea.com": "^https://[^/]+.ikea.com/(([^/]+/)+)(shoppingcart|checkout/shoppinglist)(/?)",
 "jcpenney.com": "^https://www.jcpenney.com/cart/?$",

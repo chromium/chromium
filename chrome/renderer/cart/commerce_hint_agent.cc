@@ -75,7 +75,7 @@ constexpr base::FeatureParam<std::string> kCartPattern{
     "(^https?://cart\\.)"
     "|"
     "(/("
-      "(((my|co|shopping)[-_]?)?(cart|bag)(view|display)?)"
+      "(((my|co|shopping|view)[-_]?)?(cart|bag)(view|display)?)"
       "|"
       "(checkout/([^/]+/)?(basket|bag))"
       "|"

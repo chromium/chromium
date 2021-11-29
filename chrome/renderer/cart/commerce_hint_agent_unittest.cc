@@ -214,6 +214,7 @@ const char* kVisitCart[] = {
     "https://www.wayfair.com/session/public/basket.php",
     "https://www.wayfair.com/v/checkout/basket/add_and_show",
     "https://www.wayfair.com/v/checkout/basket/show",
+    "https://www.webstaurantstore.com/viewcart.cfm",
     "https://www.weightwatchers.com/us/shop/checkout/cart",
     "https://www.westelm.com/shoppingcart/",
     "https://www.wiley.com/en-us/cart",
