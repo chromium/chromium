@@ -238,6 +238,14 @@ bool HasInfoBar(infobars::ContentInfoBarManager* infobar_manager,
   return false;
 }
 
+struct StartupBrowserCreatorFlagTypeValue {
+  std::string flag;
+  infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier;
+  // True if the infobar is supposed to be shown in every tab, false if it is
+  // only supposed to be shown once.
+  bool is_global_infobar;
+};
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 typedef absl::optional<policy::PolicyLevel> PolicyVariant;
@@ -3298,11 +3306,6 @@ enum class CommandLineFlagSecurityWarningsPolicy {
   kDisabled,
 };
 
-struct StartupBrowserCreatorFlagTypeValue {
-  std::string flag;
-  infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier;
-};
-
 // Verifies that infobars are displayed (or not) depending on enterprise policy.
 class StartupBrowserCreatorInfobarsTest
     : public InProcessBrowserTest,
@@ -3427,6 +3430,88 @@ INSTANTIATE_TEST_SUITE_P(
       }
 
       std::string name = std::get<0>(info.param).flag + " " + policyState;
+      std::replace_if(
+          name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
+          '_');
+      return name;
+    });
+
+// Verifies that infobars are displayed in the first browser window, even when
+// the browser is started without an initial browser window by passing the
+// `switches::kNoStartupWindow` command line switch.
+class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<StartupBrowserCreatorFlagTypeValue> {
+ public:
+  StartupBrowserCreatorInfobarsWithoutStartupWindowTest()
+      : flag_type_(GetParam()) {}
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+    command_line->AppendSwitch(switches::kKeepAliveForTest);
+  }
+
+  infobars::ContentInfoBarManager* LaunchBrowserAndGetCreatedInfoBarManager() {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+
+    StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
+                                     chrome::startup::IsFirstRun::kNo);
+    EXPECT_TRUE(launch.Launch(profile, chrome::startup::IsProcessStartup::kNo,
+                              nullptr));
+    Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+
+    return infobars::ContentInfoBarManager::FromWebContents(
+        new_browser->tab_strip_model()->GetWebContentsAt(0));
+  }
+
+  const StartupBrowserCreatorFlagTypeValue flag_type_;
+};
+
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
+                       CheckInfobar) {
+  // We deliberately set the flag on the process command line instead of on the
+  // command_line passed to the StartupBrowserCreator, because these flags are
+  // all read from `CommandLine::ForCurrentProcess` and ignore the command line
+  // passed to `StartupBrowserCreator`. In browser tests, this references the
+  // browser test's instead of the new process.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
+
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchBrowserAndGetCreatedInfoBarManager();
+  ASSERT_TRUE(infobar_manager);
+  EXPECT_TRUE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
+
+  // Now close and reopen the browser again - and re-check if the infobar is
+  // there.
+  CloseBrowserSynchronously(BrowserList::GetInstance()->GetLastActive());
+
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  infobar_manager = LaunchBrowserAndGetCreatedInfoBarManager();
+  ASSERT_TRUE(infobar_manager);
+  EXPECT_EQ(flag_type_.is_global_infobar,
+            HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
+    ::testing::Values(
+        StartupBrowserCreatorFlagTypeValue{
+            switches::kEnableAutomation,
+            infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE, true},
+        // Test one of the flags from |bad_flags_prompt.cc|. Any of the
+        // flags should have the same behavior.
+        StartupBrowserCreatorFlagTypeValue{
+            switches::kDisableWebSecurity,
+            infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, false}),
+    [](const testing::TestParamInfo<
+        StartupBrowserCreatorInfobarsWithoutStartupWindowTest::ParamType>&
+           info) {
+      std::string name = info.param.flag;
       std::replace_if(
           name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
           '_');
@@ -3796,9 +3881,10 @@ IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class StartupBrowserCreatorPickerInfobarTest
-    : public StartupBrowserCreatorPickerTestBase {
+    : public StartupBrowserCreatorPickerTestBase,
+      public ::testing::WithParamInterface<StartupBrowserCreatorFlagTypeValue> {
  public:
-  StartupBrowserCreatorPickerInfobarTest() = default;
+  StartupBrowserCreatorPickerInfobarTest() : flag_type_(GetParam()) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {}
 
@@ -3829,11 +3915,13 @@ class StartupBrowserCreatorPickerInfobarTest
         ->GetAs<ProfilePickerUI>()
         ->GetProfilePickerHandlerForTesting();
   }
+
+  const StartupBrowserCreatorFlagTypeValue flag_type_;
 };
 
 // Create a secondary profile in a separate PRE run because the existence of
 // profiles is checked during startup in the actual test.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerInfobarTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerInfobarTest,
                        PRE_ShowsEnableAutomationInfobar) {
   CreateMultipleProfiles();
   // Need to close the browser window manually so that the real test does not
@@ -3841,16 +3929,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerInfobarTest,
   CloseAllBrowsers();
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerInfobarTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerInfobarTest,
                        ShowsEnableAutomationInfobar) {
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // We deliberately set the flag on the process command line instead of on the
-  // command_line passed to the StartupBrowserCreator, because this flag is
+  // command_line passed to the StartupBrowserCreator, because these flags are
   // always read from the command line of the current process
-  // (see content::IsControlledByAutomation()).
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableAutomation);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = nullptr;
@@ -3866,8 +3952,28 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerInfobarTest,
       infobars::ContentInfoBarManager::FromWebContents(
           new_browser->tab_strip_model()->GetWebContentsAt(0));
 
-  EXPECT_TRUE(HasInfoBar(
-      infobar_manager, infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE));
+  EXPECT_TRUE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StartupBrowserCreatorPickerInfobarTest,
+    ::testing::Values(
+        StartupBrowserCreatorFlagTypeValue{
+            switches::kEnableAutomation,
+            infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE},
+        // Test one of the flags from |bad_flags_prompt.cc|. Any of the
+        // flags should have the same behavior.
+        StartupBrowserCreatorFlagTypeValue{
+            switches::kDisableWebSecurity,
+            infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE}),
+    [](const testing::TestParamInfo<
+        StartupBrowserCreatorPickerInfobarTest::ParamType>& info) {
+      std::string name = info.param.flag;
+      std::replace_if(
+          name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
+          '_');
+      return name;
+    });
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

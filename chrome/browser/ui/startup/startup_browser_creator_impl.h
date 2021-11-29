@@ -189,9 +189,7 @@ class StartupBrowserCreatorImpl {
       bool is_post_crash_launch);
 
   // Adds any startup infobars to the selected tab of the given browser.
-  void AddInfoBarsIfNecessary(
-      Browser* browser,
-      chrome::startup::IsProcessStartup process_startup);
+  void AddInfoBarsIfNecessary(Browser* browser);
 
   // Determines how the launch flow should obtain a Browser.
   static BrowserOpenBehavior DetermineBrowserOpenBehavior(

@@ -428,7 +428,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
 
   // Finally, add info bars.
-  AddInfoBarsIfNecessary(browser, process_startup);
+  AddInfoBarsIfNecessary(browser);
   return result.launch_result;
 }
 
@@ -632,9 +632,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   return browser;
 }
 
-void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
-    Browser* browser,
-    chrome::startup::IsProcessStartup process_startup) {
+void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(Browser* browser) {
   if (!browser || !profile_ || browser->tab_strip_model()->count() == 0)
     return;
 
@@ -653,15 +651,24 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
     SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
         browser, /*skip_tab_checking=*/false);
 
-  // The below info bars are only added to the first profile which is launched.
-  // Other profiles might be restoring the browsing sessions asynchronously,
-  // so we cannot add the info bars to the focused tabs here.
-  //
   // These info bars are not shown when the browser is being controlled by
   // automated tests, so that they don't interfere with tests that assume no
   // info bars.
-  if (process_startup == chrome::startup::IsProcessStartup::kYes &&
-      !command_line_.HasSwitch(switches::kTestType) && !IsAutomationEnabled()) {
+  if (!command_line_.HasSwitch(switches::kTestType) && !IsAutomationEnabled()) {
+    // The below info bars are only added to the first profile which is
+    // launched. Other profiles might be restoring the browsing sessions
+    // asynchronously, so we cannot add the info bars to the focused tabs here.
+    //
+    // We cannot use `chrome::startup::IsProcessStartup` to determine whether
+    // this is the first profile that launched: The browser may be started
+    // without a startup window (`kNoStartupWindow`), or open the profile
+    // picker, which means that `chrome::startup::IsProcessStartup` will already
+    // be `kNo` when the first browser window is opened.
+    static bool infobars_shown = false;
+    if (infobars_shown)
+      return;
+    infobars_shown = true;
+
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     DCHECK(web_contents);
