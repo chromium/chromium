@@ -82,7 +82,7 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
 
   last_query_ = query;
   results_.clear();
-  categories_.clear();
+  categories_ = CreateAllCategories();
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
@@ -174,7 +174,8 @@ void SearchControllerImplNew::SetResults(
   results_[provider_type] = std::move(results);
 
   // Update ranking of all results and categories.
-  ranker_->Rank(results_, categories_, provider_type);
+  ranker_->RankResults(results_, categories_, provider_type);
+  ranker_->RankCategories(results_, categories_, provider_type);
 
   // Compile a single list of results and sort by their relevance.
   std::vector<ChromeSearchResult*> all_results;
@@ -207,13 +208,11 @@ void SearchControllerImplNew::SetResults(
             });
 
   // Create a vector of categories in display order.
-  std::vector<std::pair<Category, double>> sorted_category_pairs(
-      categories_.begin(), categories_.end());
-  std::sort(sorted_category_pairs.begin(), sorted_category_pairs.end(),
-            [](const auto& a, const auto& b) { return a.second > b.second; });
-  std::vector<Category> sorted_categories;
-  for (const auto& pair : sorted_category_pairs)
-    sorted_categories.push_back(pair.first);
+  std::sort(categories_.begin(), categories_.end(),
+            [](const auto& a, const auto& b) { return a.score > b.score; });
+  std::vector<Category> category_enums;
+  for (const auto& category : categories_)
+    category_enums.push_back(category.category);
 
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;
@@ -223,7 +222,7 @@ void SearchControllerImplNew::SetResults(
       observer.OnResultsAdded(last_query_, observer_results);
   }
 
-  model_updater_->PublishSearchResults(all_results, sorted_categories);
+  model_updater_->PublishSearchResults(all_results, category_enums);
 }
 
 ChromeSearchResult* SearchControllerImplNew::FindSearchResult(

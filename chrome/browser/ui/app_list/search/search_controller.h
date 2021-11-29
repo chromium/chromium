@@ -33,15 +33,8 @@ enum class RankingItemType;
 
 // Common types used throughout result ranking.
 
-// The type of a particular result.
-using ResultType = ash::AppListSearchResultType;
-// The type of a search provider as a whole. This is currently just the 'main'
-// ResultType returned by the provider.
-using ProviderType = ash::AppListSearchResultType;
-
 using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 using ResultsMap = base::flat_map<ProviderType, Results>;
-using CategoriesMap = base::flat_map<Category, double>;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
 // to all search providers, then invokes the mixer to mix and to publish the

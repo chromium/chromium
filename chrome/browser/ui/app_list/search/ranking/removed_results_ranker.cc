@@ -17,11 +17,12 @@ RemovedResultsRanker::RemovedResultsRanker(const base::FilePath& path,
 
 RemovedResultsRanker::~RemovedResultsRanker() = default;
 
-void RemovedResultsRanker::Rank(ResultsMap& results,
-                                CategoriesMap& categories,
-                                ProviderType provider) {
+absl::optional<std::vector<double>> RemovedResultsRanker::RankResults(
+    ResultsMap& results,
+    CategoriesList& categories,
+    ProviderType provider) {
   if (!initialized())
-    return;
+    return absl::nullopt;
 
   const auto it = results.find(provider);
   DCHECK(it != results.end());
@@ -32,6 +33,8 @@ void RemovedResultsRanker::Rank(ResultsMap& results,
       result->scoring().filter = true;
     }
   }
+
+  return absl::nullopt;
 }
 
 void RemovedResultsRanker::Remove(ChromeSearchResult* result) {

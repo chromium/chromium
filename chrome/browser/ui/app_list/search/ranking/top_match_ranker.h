@@ -27,9 +27,10 @@ class TopMatchRanker : public Ranker {
   TopMatchRanker& operator=(const TopMatchRanker&) = delete;
 
   // Ranker:
-  void Rank(ResultsMap& results,
-            CategoriesMap& categories,
-            ProviderType provider) override;
+  absl::optional<std::vector<double>> RankResults(
+      ResultsMap& results,
+      CategoriesList& categories,
+      ProviderType provider) override;
 };
 
 }  // namespace app_list

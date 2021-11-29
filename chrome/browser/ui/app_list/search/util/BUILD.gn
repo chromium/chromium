@@ -5,5 +5,9 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "removed_results.proto" ]
+  sources = [
+    "mrfu_cache.proto",
+    "persistent_proto_test.proto",
+    "score_normalizer.proto",
+  ]
 }

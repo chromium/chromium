@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
 
@@ -28,9 +28,10 @@ class RemovedResultsRanker : public Ranker {
   RemovedResultsRanker& operator=(const RemovedResultsRanker&) = delete;
 
   // Ranker:
-  void Rank(ResultsMap& results,
-            CategoriesMap& categories,
-            ProviderType provider) override;
+  absl::optional<std::vector<double>> RankResults(
+      ResultsMap& results,
+      CategoriesList& categories,
+      ProviderType provider) override;
 
   void Remove(ChromeSearchResult* result) override;
 

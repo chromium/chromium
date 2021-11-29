@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -11,32 +12,30 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
+#include "chrome/browser/ui/app_list/search/util/mrfu_cache.h"
 
 namespace app_list {
 namespace {
 
-// This array sets default category scores for each search session. On each call
+// This map sets default category scores for each search session. On each call
 // to Start:
-// - the CategoriesMap is populated with these scores,
+// - the CategoriesList is populated with these scores,
 // - which are then overridden by any scores in the MRFU cache tracking usage.
 //
-// This ensures the CategoriesMap always contains a score for all categories.
-// The ordering in the array isn't important, but the scores are:
-// - they define the OOBE category ranking in the launcher.
-// - they are set intentionally low, so that any launcher usage puts a category
-//   above the defaults.
-constexpr std::array<std::pair<Category, float>, 8> kDefaultScores = {
-    std::make_pair(Category::kHelp, 8e-5f),
-    std::make_pair(Category::kApps, 7e-5f),
-    std::make_pair(Category::kAppShortcuts, 6e-5f),
-    std::make_pair(Category::kWeb, 5e-5f),
-    std::make_pair(Category::kFiles, 4e-5f),
-    std::make_pair(Category::kSettings, 3e-5f),
-    std::make_pair(Category::kPlayStore, 2e-5f),
-    std::make_pair(Category::kSearchAndAssistant, 1e-5f),
-};
+// This ensures the CategoriesList always contains a non-zero score for all
+// categories. This defines the OOBE  category ranking in the launcher. Scores
+// are set intentionally low, so that any launcher usage puts a category above
+// the defaults.
+constexpr auto kDefaultScores = base::MakeFixedFlatMap<Category, double>(
+    {{Category::kHelp, 8e-5},
+     {Category::kApps, 7e-5},
+     {Category::kAppShortcuts, 6e-5},
+     {Category::kWeb, 5e-5},
+     {Category::kFiles, 4e-5},
+     {Category::kSettings, 3e-5},
+     {Category::kPlayStore, 2e-5},
+     {Category::kSearchAndAssistant, 1e-5}});
 
 constexpr double kEps = 1.0e-5;
 
@@ -50,13 +49,13 @@ Category StringToCategory(const std::string& value) {
   return static_cast<Category>(number);
 }
 
-void AddDefaultCategoryScores(CategoriesMap& categories) {
-  for (const auto& category_score : kDefaultScores) {
-    categories.emplace(category_score.first, category_score.second);
+void SetDefaultCategoryScores(CategoriesList& categories) {
+  for (auto& category : categories) {
+    auto* it = kDefaultScores.find(category.category);
+    // Insert the default score if no other score exists.
+    if (it == kDefaultScores.end())
+      category.score = it->second;
   }
-
-  // Ensure we've recorded every category except unknown.
-  DCHECK_EQ(categories.size(), static_cast<size_t>(Category::kMaxValue));
 }
 
 }  // namespace
@@ -80,12 +79,13 @@ CategoryUsageRanker::~CategoryUsageRanker() {}
 
 void CategoryUsageRanker::Start(const std::u16string& query,
                                 ResultsMap& results,
-                                CategoriesMap& categories) {
-  AddDefaultCategoryScores(categories);
+                                CategoriesList& categories) {
+  // Ensure all categories are accounted for in the input.
+  DCHECK_EQ(categories.size(), static_cast<size_t>(Category::kMaxValue));
+  SetDefaultCategoryScores(categories);
 
-  if (!ranker_->initialized()) {
+  if (!ranker_->initialized())
     return;
-  }
 
   // Retrieve all category scores, sorted high-to-low, and set category ranks
   // based on their ordering.
@@ -94,14 +94,18 @@ void CategoryUsageRanker::Start(const std::u16string& query,
   auto category_scores = ranker_->GetAll();
   MrfuCache::Sort(category_scores);
   for (int i = 0; i < category_scores.size(); ++i) {
-    const auto category = StringToCategory(category_scores[i].first);
-    categories[category] = category_scores.size() - i * kEps;
+    const auto category_value = StringToCategory(category_scores[i].first);
+    for (auto& category : categories) {
+      if (category.category == category_value)
+        category.score = category_scores[i].second - i * kEps;
+    }
   }
 }
 
-void CategoryUsageRanker::Rank(ResultsMap& results,
-                               CategoriesMap& categories,
-                               ProviderType provider) {
+absl::optional<std::vector<double>> CategoryUsageRanker::RankCategories(
+    ResultsMap& results,
+    CategoriesList& categories,
+    ProviderType provider) {
   // TODO(crbug.com/1199206): This adds some debug information to the result
   // details. Remove once we have explicit categories in the UI.
   const auto it = results.find(provider);
@@ -111,6 +115,8 @@ void CategoryUsageRanker::Rank(ResultsMap& results,
     const auto details = RemoveDebugPrefix(result->details());
     result->SetDetails(base::StrCat({CategoryDebugString(category), details}));
   }
+
+  return absl::nullopt;
 }
 
 void CategoryUsageRanker::Train(const LaunchData& launch) {

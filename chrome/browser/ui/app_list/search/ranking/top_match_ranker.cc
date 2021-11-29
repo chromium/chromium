@@ -46,9 +46,10 @@ TopMatchRanker::TopMatchRanker() {}
 
 TopMatchRanker::~TopMatchRanker() {}
 
-void TopMatchRanker::Rank(ResultsMap& results,
-                          CategoriesMap& categories,
-                          ProviderType provider) {
+absl::optional<std::vector<double>> TopMatchRanker::RankResults(
+    ResultsMap& results,
+    CategoriesList& categories,
+    ProviderType provider) {
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 
@@ -93,6 +94,8 @@ void TopMatchRanker::Rank(ResultsMap& results,
     result->SetDetails(
         base::StrCat({kTopMatchDetailsUTF16, result->details()}));
   }
+
+  return absl::nullopt;
 }
 
 }  // namespace app_list

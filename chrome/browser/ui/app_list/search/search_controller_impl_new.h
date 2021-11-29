@@ -101,7 +101,7 @@ class SearchControllerImplNew : public SearchController {
   ResultsMap results_;
 
   // Storage for category scores for the current query.
-  CategoriesMap categories_;
+  CategoriesList categories_;
 
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;

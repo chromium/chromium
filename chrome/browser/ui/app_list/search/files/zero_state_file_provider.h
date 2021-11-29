@@ -18,8 +18,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
-#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

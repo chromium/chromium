@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto_test.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto_test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {

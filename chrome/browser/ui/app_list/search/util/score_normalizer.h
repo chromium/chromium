@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_SCORE_NORMALIZER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_SCORE_NORMALIZER_H_
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
-#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
 
@@ -67,4 +67,4 @@ class ScoreNormalizer {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_SCORE_NORMALIZER_H_

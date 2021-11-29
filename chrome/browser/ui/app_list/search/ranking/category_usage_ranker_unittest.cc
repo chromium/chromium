@@ -58,7 +58,8 @@ class CategoryUsageRankerTest : public testing::Test {
 
 TEST_F(CategoryUsageRankerTest, DefaultScoresForEmptyRanker) {
   CategoryUsageRanker ranker(profile_.get());
-  CategoriesMap categories;
+  CategoriesList categories = CreateAllCategories();
+  EXPECT_EQ(categories.size(), static_cast<size_t>(Category::kMaxValue));
   ResultsMap results;
 
   Wait();
@@ -73,16 +74,16 @@ TEST_F(CategoryUsageRankerTest, TrainIncreasesScore) {
   CategoryUsageRanker ranker(profile_.get());
   Wait();
 
-  // Train a little on web results.
+  // Train on web results.
   {
     LaunchData launch;
     launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
     launch.result_type = ResultType::kOmnibox;
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 10; ++i)
       ranker.Train(launch);
   }
 
-  // Train a lot on apps.
+  // Train on apps.
   {
     LaunchData launch;
     launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
@@ -94,11 +95,16 @@ TEST_F(CategoryUsageRankerTest, TrainIncreasesScore) {
 
   // The apps category should rank higher than the web category, but both should
   // be ranked highly.
-  CategoriesMap categories;
+  CategoriesList categories = CreateAllCategories();
   ResultsMap results;
   ranker.Start(u"", results, categories);
-  EXPECT_GT(categories[Category::kApps], categories[Category::kWeb]);
-  EXPECT_GT(categories[Category::kWeb], 0.5);
+
+  std::sort(categories.begin(), categories.end(),
+            [](const auto& a, const auto& b) { return a.score > b.score; });
+  ASSERT_GT(categories.size(), 2u);
+  EXPECT_EQ(categories[0].category, Category::kApps);
+  EXPECT_EQ(categories[1].category, Category::kWeb);
+  EXPECT_GT(categories[1].score, 0.1);
 }
 
 }  // namespace app_list

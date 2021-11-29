@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

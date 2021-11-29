@@ -10,7 +10,14 @@
 
 namespace app_list {
 
-using Category = ash::AppListSearchResultCategory;
+// The type of a particular result.
+using ResultType = ash::AppListSearchResultType;
+// The type of a search provider as a whole. This is currently just the 'main'
+// ResultType returned by the provider.
+using ProviderType = ash::AppListSearchResultType;
+
+// Note: Results and ResultsMap should be defined here, but are defined in
+// SearchController to avoid an include loop.
 
 // All score information for a single result. This is stored with a result, and
 // incrementally updated by rankers as needed. Generally, each ranker should
@@ -35,6 +42,19 @@ struct Scoring {
 };
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& result);
+
+// All possible categories.
+using Category = ash::AppListSearchResultCategory;
+
+// A wrapper struct around a category to hold scoring information.
+struct CategoryMetadata {
+  Category category = Category::kUnknown;
+  double score = 0.0;
+};
+
+using CategoriesList = std::vector<CategoryMetadata>;
+
+CategoriesList CreateAllCategories();
 
 }  // namespace app_list
 

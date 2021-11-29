@@ -132,19 +132,19 @@ TEST_F(RemovedResultsRankerTest, RankResults) {
   ranker.Remove(make_result("E").get());
   Wait();
 
-  CategoriesMap categories;
+  CategoriesList categories;
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] = make_results({"A", "B"});
   results_map[ResultType::kInternalApp] = make_results({"C", "D"});
   results_map[ResultType::kOmnibox] = make_results({"E"});
 
   // Installed apps: The 0th result ("A") is marked to be filtered.
-  ranker.Rank(results_map, categories, ResultType::kInstalledApp);
+  ranker.RankResults(results_map, categories, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInstalledApp][1]->scoring().filter);
 
   // Internal apps: The 0th result ("C") is marked to be filtered.
-  ranker.Rank(results_map, categories, ResultType::kInternalApp);
+  ranker.RankResults(results_map, categories, ResultType::kInternalApp);
   EXPECT_TRUE(results_map[ResultType::kInternalApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
 
@@ -153,7 +153,7 @@ TEST_F(RemovedResultsRankerTest, RankResults) {
   // TODO(crbug.com/1272361): Ranking here should not affect Omnibox results,
   // after support is added to the autocomplete controller for removal of
   // non-zero state Omnibox results.
-  ranker.Rank(results_map, categories, ResultType::kOmnibox);
+  ranker.RankResults(results_map, categories, ResultType::kOmnibox);
   EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filter);
 
   // Check proto for record of removed results.
@@ -170,12 +170,12 @@ TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
   RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
   Wait();
 
-  CategoriesMap categories;
+  CategoriesList categories;
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] =
       make_results(std::vector<std::string>());
 
-  ranker.Rank(results_map, categories, ResultType::kInstalledApp);
+  ranker.RankResults(results_map, categories, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp].empty());
 }
 
@@ -188,20 +188,20 @@ TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
   ranker.Remove(make_result("C").get());
   Wait();
 
-  CategoriesMap categories;
+  CategoriesList categories;
   ResultsMap results_map;
   // Include some duplicated results.
   results_map[ResultType::kInstalledApp] = make_results({"A", "A", "B"});
   results_map[ResultType::kInternalApp] = make_results({"C", "D"});
 
   // Installed apps: The 0th and 1st results ("A") are marked to be filtered.
-  ranker.Rank(results_map, categories, ResultType::kInstalledApp);
+  ranker.RankResults(results_map, categories, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][0]->scoring().filter);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][1]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInstalledApp][2]->scoring().filter);
 
   // Internal apps: The 0th result ("C") is marked to be filtered.
-  ranker.Rank(results_map, categories, ResultType::kInternalApp);
+  ranker.RankResults(results_map, categories, ResultType::kInternalApp);
   EXPECT_TRUE(results_map[ResultType::kInternalApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
 

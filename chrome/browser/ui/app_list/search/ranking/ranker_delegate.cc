@@ -13,16 +13,27 @@ RankerDelegate::~RankerDelegate() {}
 
 void RankerDelegate::Start(const std::u16string& query,
                            ResultsMap& results,
-                           CategoriesMap& categories) {
+                           CategoriesList& categories) {
   for (auto& ranker : rankers_)
     ranker->Start(query, results, categories);
 }
 
-void RankerDelegate::Rank(ResultsMap& results,
-                          CategoriesMap& categories,
-                          ProviderType provider) {
+absl::optional<std::vector<double>> RankerDelegate::RankResults(
+    ResultsMap& results,
+    CategoriesList& categories,
+    ProviderType provider) {
   for (auto& ranker : rankers_)
-    ranker->Rank(results, categories, provider);
+    ranker->RankResults(results, categories, provider);
+  return absl::nullopt;
+}
+
+absl::optional<std::vector<double>> RankerDelegate::RankCategories(
+    ResultsMap& results,
+    CategoriesList& categories,
+    ProviderType provider) {
+  for (auto& ranker : rankers_)
+    ranker->RankCategories(results, categories, provider);
+  return absl::nullopt;
 }
 
 void RankerDelegate::Train(const LaunchData& launch) {

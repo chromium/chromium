@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"

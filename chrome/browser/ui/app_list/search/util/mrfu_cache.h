@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_MRFU_CACHE_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_MRFU_CACHE_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_MRFU_CACHE_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_MRFU_CACHE_H_
 
 #include <map>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.pb.h"
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
+#include "chrome/browser/ui/app_list/search/util/mrfu_cache.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
 
@@ -151,4 +151,4 @@ class MrfuCache {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_MRFU_CACHE_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_MRFU_CACHE_H_

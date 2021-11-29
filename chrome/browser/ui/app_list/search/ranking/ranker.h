@@ -6,50 +6,52 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 
 #include <string>
 
 namespace app_list {
 
-// Interface for a ranker.
-//
-// It's recommended to keep as much Finch experiment logic out of subclasses as
-// possible. Instead, favor creating new rankers and conditionally adding them
-// in SearchController::InitializeRankers.
+// Interface for all kinds of rankers. These are ultiamtely owned and called by
+// SearchController.
 class Ranker {
  public:
-  Ranker() {}
-  virtual ~Ranker() {}
+  Ranker() = default;
+  virtual ~Ranker() = default;
 
   Ranker(const Ranker&) = delete;
   Ranker& operator=(const Ranker&) = delete;
 
-  // Called each time a new search session begins, eg. when the user types a
-  // character.
+  // Called each time a new search 'session' begins, eg. when the user opens the
+  // launcher or changes the query.
   virtual void Start(const std::u16string& query,
                      ResultsMap& results,
-                     CategoriesMap& categories) {}
+                     CategoriesList& categories);
 
-  // Called each time a search provider sets new results. Passed the |provider|
-  // type that triggered this call, and all |results| received so far for this
-  // search session.
-  //
-  // The results for a provider can be updated more than once in a search
-  // session, which will invalidate pointers to previous results. It is
-  // recommended that rankers don't explicitly store any result pointers.
-  //
-  // The goal of a ranker should be to update scores in the Scoring structs
-  // within |results|. Generally, one ranker should map to one score member.
-  virtual void Rank(ResultsMap& results,
-                    CategoriesMap& categories,
-                    ProviderType provider) {}
+  // Ranks search results. It may:
+  // - return a vector of scores the same length as results[provider].
+  // - return nullopt, and directly modify the Scoring struct on search results.
+  // Implementations must not modify the input vectors themselves.
+  virtual absl::optional<std::vector<double>> RankResults(
+      ResultsMap& results,
+      CategoriesList& categories,
+      ProviderType provider);
+
+  // Ranks categories. It may:
+  // - return a vector of scores the same length as |categories|.
+  // - return nullopt, and directly modify scores on categories.
+  // Implementations must not modify the input vectors themselves.
+  virtual absl::optional<std::vector<double>> RankCategories(
+      ResultsMap& results,
+      CategoriesList& categories,
+      ProviderType provider);
 
   // Called each time a user launches a result.
-  virtual void Train(const LaunchData& launch) {}
+  virtual void Train(const LaunchData& launch);
 
-  // Called each time a user removes a result from the search results list.
-  virtual void Remove(ChromeSearchResult* result) {}
+  // Called each time a user removes a result.
+  virtual void Remove(ChromeSearchResult* result);
 };
 
 }  // namespace app_list

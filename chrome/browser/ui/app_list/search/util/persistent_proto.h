@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_PERSISTENT_PROTO_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_PERSISTENT_PROTO_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -496,4 +496,4 @@ class EmbeddedMessageStorage : public MessageStorage<T> {
 }  // namespace
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_PERSISTENT_PROTO_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
