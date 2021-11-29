@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -28,6 +30,91 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#endif  // defined(OS_CHROMEOS)
+
+#if defined(OS_CHROMEOS)
+namespace {
+// Use manual mapping for launch container and window open disposition because
+// we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
+// mapping when the AppService Intent struct is converted to use FilePaths.
+crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
+    apps::mojom::LaunchContainer input) {
+  switch (input) {
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerTab;
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+      NOTREACHED();
+      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+  }
+  NOTREACHED();
+}
+
+apps::mojom::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
+    crosapi::mojom::LaunchContainer input) {
+  switch (input) {
+    case crosapi::mojom::LaunchContainer::kLaunchContainerWindow:
+      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    case crosapi::mojom::LaunchContainer::kLaunchContainerTab:
+      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+    case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
+      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
+    WindowOpenDisposition input) {
+  switch (input) {
+    case WindowOpenDisposition::UNKNOWN:
+      return crosapi::mojom::WindowOpenDisposition::kUnknown;
+    case WindowOpenDisposition::CURRENT_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kCurrentTab;
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return crosapi::mojom::WindowOpenDisposition::kNewWindow;
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      NOTREACHED();
+      return crosapi::mojom::WindowOpenDisposition::kUnknown;
+  }
+
+  NOTREACHED();
+}
+
+WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
+    crosapi::mojom::WindowOpenDisposition input) {
+  switch (input) {
+    case crosapi::mojom::WindowOpenDisposition::kUnknown:
+      return WindowOpenDisposition::UNKNOWN;
+    case crosapi::mojom::WindowOpenDisposition::kCurrentTab:
+      return WindowOpenDisposition::CURRENT_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewForegroundTab:
+      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewWindow:
+      return WindowOpenDisposition::NEW_WINDOW;
+  }
+
+  NOTREACHED();
+}
+
+}  // namespace
+#endif  // defined(OS_CHROMEOS)
 
 namespace apps {
 
@@ -251,5 +338,65 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
   return arc_window_info;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
+    const apps::AppLaunchParams& params,
+    Profile* profile) {
+  auto crosapi_params = crosapi::mojom::LaunchParams::New();
+  crosapi_params->app_id = params.app_id;
+  crosapi_params->launch_source = params.launch_source;
+
+  // Both launch_files and override_url will be represent by intent in crosapi
+  // launch params. These info will normally represent in the intent field in
+  // the launch params, if not, then generate the intent from these fields
+  if (params.intent) {
+    crosapi_params->intent =
+        apps_util::ConvertAppServiceToCrosapiIntent(params.intent, profile);
+  } else if (!params.override_url.is_empty()) {
+    crosapi_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
+        apps_util::CreateIntentFromUrl(params.override_url), profile);
+  } else if (!params.launch_files.empty()) {
+    auto files = apps::mojom::FilePaths::New();
+    for (const auto& file : params.launch_files) {
+      files->file_paths.push_back(file);
+    }
+    crosapi_params->intent = apps_util::CreateCrosapiIntentForViewFiles(files);
+  }
+  crosapi_params->container =
+      ConvertAppServiceToCrosapiLaunchContainer(params.container);
+  crosapi_params->disposition =
+      ConvertWindowOpenDispositionToCrosapi(params.disposition);
+  return crosapi_params;
+}
+
+apps::AppLaunchParams ConvertCrosapiToLaunchParams(
+    const crosapi::mojom::LaunchParamsPtr& crosapi_params,
+    Profile* profile) {
+  apps::AppLaunchParams params(
+      crosapi_params->app_id,
+      ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
+      ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
+      crosapi_params->launch_source);
+  if (!crosapi_params->intent) {
+    return params;
+  }
+
+  if (crosapi_params->intent->url.has_value()) {
+    params.launch_source = apps::mojom::LaunchSource::kFromIntentUrl;
+    params.override_url = crosapi_params->intent->url.value();
+  }
+
+  if (crosapi_params->intent->files.has_value()) {
+    for (const auto& file : crosapi_params->intent->files.value()) {
+      params.launch_files.push_back(std::move(file->file_path));
+    }
+  }
+
+  params.intent = apps_util::ConvertCrosapiToAppServiceIntent(
+      crosapi_params->intent, profile);
+  return params;
+}
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace apps

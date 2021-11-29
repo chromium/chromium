@@ -244,32 +244,18 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
       ReturnLaunchResult(profile_, web_contents, std::move(callback));
       return;
     }
-    auto params = apps::CreateAppLaunchParamsForIntent(
-        launch_params->app_id, ui::EF_NONE, launch_params->launch_source,
-        display::kDefaultDisplayId,
-        ConvertDisplayModeToAppLaunchContainer(
-            registrar().GetAppEffectiveDisplayMode(launch_params->app_id)),
-        apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
-                                                    profile_),
-        profile_);
-    if (launch_params->intent->files.has_value()) {
-      if (base::FeatureList::IsEnabled(
-              features::kDesktopPWAsFileHandlingSettingsGated)) {
-        // File handling may create the WebContents asynchronously.
-        // TODO(crbug/1261263): implement.
-        NOTIMPLEMENTED();
-      } else {
-        for (const auto& file : launch_params->intent->files.value()) {
-          params.launch_files.push_back(file->file_path);
-        }
-      }
-    }
-    web_contents = publisher_helper().LaunchAppWithParams(std::move(params));
-  } else {
-    web_contents =
-        publisher_helper().Launch(launch_params->app_id, ui::EF_NONE,
-                                  launch_params->launch_source, nullptr);
   }
+
+  auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    // File handling may create the WebContents asynchronously.
+    // TODO(crbug/1261263): implement.
+    NOTIMPLEMENTED_LOG_ONCE();
+    params.launch_files.clear();
+  }
+
+  web_contents = publisher_helper().LaunchAppWithParams(std::move(params));
 
   ReturnLaunchResult(profile_, web_contents, std::move(callback));
 }

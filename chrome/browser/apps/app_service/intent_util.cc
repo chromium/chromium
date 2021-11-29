@@ -757,7 +757,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 #if defined(OS_CHROMEOS)
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::mojom::IntentPtr& app_service_intent,
-    absl::optional<Profile*> profile) {
+    Profile* profile) {
   auto crosapi_intent = crosapi::mojom::Intent::New();
   crosapi_intent->action = app_service_intent->action;
   if (app_service_intent->url.has_value()) {
@@ -773,10 +773,10 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     crosapi_intent->share_title = app_service_intent->share_title.value();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_service_intent->files.has_value() && profile.has_value()) {
+  if (app_service_intent->files.has_value() && profile) {
     std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
     for (const auto& file : app_service_intent->files.value()) {
-      auto file_system_url = apps::GetFileSystemURL(profile.value(), file->url);
+      auto file_system_url = apps::GetFileSystemURL(profile, file->url);
       if (file_system_url.is_valid()) {
         auto crosapi_file = crosapi::mojom::IntentFile::New();
         crosapi_file->file_path = file_system_url.path();
@@ -794,7 +794,7 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
 
 apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
     const crosapi::mojom::IntentPtr& crosapi_intent,
-    absl::optional<Profile*> profile) {
+    Profile* profile) {
   auto app_service_intent = apps::mojom::Intent::New();
   app_service_intent->action = crosapi_intent->action;
   if (crosapi_intent->url.has_value()) {
@@ -810,10 +810,10 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
     app_service_intent->share_title = crosapi_intent->share_title.value();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi_intent->files.has_value() && profile.has_value()) {
+  if (crosapi_intent->files.has_value() && profile) {
     std::vector<apps::mojom::IntentFilePtr> intent_files;
     for (const auto& file : crosapi_intent->files.value()) {
-      auto file_url = apps::GetFileSystemUrl(profile.value(), file->file_path);
+      auto file_url = apps::GetFileSystemUrl(profile, file->file_path);
       if (file_url.is_empty()) {
         continue;
       }

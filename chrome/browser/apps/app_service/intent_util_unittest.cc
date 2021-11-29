@@ -636,17 +636,17 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
 TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
   apps::mojom::IntentPtr original_intent =
       apps_util::CreateIntentFromUrl(GURL("www.google.com"));
-  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
-      original_intent, absl::nullopt);
-  auto converted_intent = apps_util::ConvertCrosapiToAppServiceIntent(
-      crosapi_intent, absl::nullopt);
+  auto crosapi_intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
+  auto converted_intent =
+      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, nullptr);
   EXPECT_EQ(original_intent, converted_intent);
 
   original_intent = apps_util::CreateShareIntentFromText("text", "title");
-  crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(original_intent,
-                                                               absl::nullopt);
-  converted_intent = apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent,
-                                                                 absl::nullopt);
+  crosapi_intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
+  converted_intent =
+      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, nullptr);
   EXPECT_EQ(original_intent, converted_intent);
 }
 #endif

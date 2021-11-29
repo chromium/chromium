@@ -12,6 +12,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#endif  // defined(OS_CHROMEOS)
+
 class LaunchUtilsTest : public testing::Test {
  protected:
   apps::AppLaunchParams CreateLaunchParams(
@@ -196,3 +200,74 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
       apps::GetLaunchFilesFromCommandLine(command_line);
   EXPECT_EQ(0U, launch_files.size());
 }
+
+#if defined(OS_CHROMEOS)
+// Verifies that convert params (with no override url, intent, files) to crosapi
+// and back works.
+TEST_F(LaunchUtilsTest, ConvertToCrosapi) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  auto params = CreateLaunchParams(container, disposition, false);
+
+  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
+  auto converted_params =
+      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
+  EXPECT_EQ(params.app_id, converted_params.app_id);
+  EXPECT_EQ(params.container, converted_params.container);
+  EXPECT_EQ(params.disposition, converted_params.disposition);
+  EXPECT_EQ(params.launch_source, converted_params.launch_source);
+}
+
+// Verifies that convert params with override url to crosapi and back works.
+TEST_F(LaunchUtilsTest, ConvertToCrosapiUrl) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  auto params = CreateLaunchParams(container, disposition, false);
+  params.override_url = GURL("abc.example.com");
+
+  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
+  auto converted_params =
+      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
+  EXPECT_EQ(params.app_id, converted_params.app_id);
+  EXPECT_EQ(params.container, converted_params.container);
+  EXPECT_EQ(params.disposition, converted_params.disposition);
+  EXPECT_EQ(params.launch_source, converted_params.launch_source);
+  EXPECT_EQ(params.override_url, converted_params.override_url);
+}
+
+// Verifies that convert params with files to crosapi and back works.
+TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  auto params = CreateLaunchParams(container, disposition, false);
+  params.launch_files.push_back(base::FilePath("root"));
+
+  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
+  auto converted_params =
+      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
+  EXPECT_EQ(params.app_id, converted_params.app_id);
+  EXPECT_EQ(params.container, converted_params.container);
+  EXPECT_EQ(params.disposition, converted_params.disposition);
+  EXPECT_EQ(params.launch_source, converted_params.launch_source);
+  EXPECT_EQ(params.launch_files, converted_params.launch_files);
+}
+
+// Verifies that convert params with intent to crosapi and back works.
+TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+  auto params = CreateLaunchParams(container, disposition, false);
+  params.intent = apps_util::CreateIntentFromUrl(GURL("abc.example.com"));
+
+  auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
+  auto converted_params =
+      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
+  EXPECT_EQ(params.app_id, converted_params.app_id);
+  EXPECT_EQ(params.container, converted_params.container);
+  EXPECT_EQ(params.disposition, converted_params.disposition);
+  EXPECT_EQ(apps::mojom::LaunchSource::kFromIntentUrl,
+            converted_params.launch_source);
+  EXPECT_EQ(params.intent, converted_params.intent);
+}
+
+#endif  // defined(OS_CHROMEOS)

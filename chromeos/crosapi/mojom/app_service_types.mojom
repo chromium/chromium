@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module crosapi.mojom;
 
@@ -373,12 +373,34 @@ enum LaunchSource {
   [MinVersion=10] kFromUrlHandler,               // Url handler.
 };
 
+[Stable, Extensible]
+// The container type to launch the application in.
+enum LaunchContainer {
+  [Default] kLaunchContainerNone, // No specified container
+  kLaunchContainerWindow,         // Window container
+  kLaunchContainerTab,            // Tab container
+};
+
+[Stable, Extensible]
+// Controls how a tab is opened in a window.
+enum WindowOpenDisposition {
+  [Default] kUnknown,
+  kCurrentTab,
+  kNewForegroundTab,
+  kNewBackgroundTab,
+  kNewWindow,
+};
+
 [Stable]
 // The parameters to launch an app.
 struct LaunchParams {
   string app_id@0;               // The app id of the app.
   LaunchSource launch_source@1;  // The app launch source.
   Intent? intent@2;              // The intent the app will launch with.
+  // The container the app will launch in.
+  [MinVersion=14]LaunchContainer container@3;
+  // How the tab opened in a window if app is opened in tab.
+  [MinVersion=14]WindowOpenDisposition disposition@4;
 };
 
 [Stable]

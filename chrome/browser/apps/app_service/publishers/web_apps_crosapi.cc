@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -84,7 +85,10 @@ void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
     std::move(callback).Run(LaunchResult());
     return;
   }
-  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
+  controller_->Launch(
+      apps::ConvertLaunchParamsToCrosapi(params, proxy_->profile()),
+      base::DoNothing());
+  // TODO(crbug.com/1244506): Link up the return callback.
   std::move(callback).Run(LaunchResult());
 }
 
