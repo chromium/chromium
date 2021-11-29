@@ -10,7 +10,7 @@ import typing
 import os
 import datetime
 
-from driver import Driver
+from driver import DriverContext
 import scenarios
 import browsers
 
@@ -85,24 +85,24 @@ def main():
                               datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
-  driver = Driver(output_dir)
-  driver.CheckEnv(not args.no_checks)
+  with DriverContext(output_dir) as driver:
+    driver.CheckEnv(not args.no_checks)
 
-  # Measure or Profile all defined scenarios.
-  browser_factory = lambda broeswer_name: browsers.MakeBrowserDriver(
-      broeswer_name,
-      chrome_user_dir=args.chrome_user_dir,
-      chromium_path=args.chromium_path)
-  for scenario in IterScenarios(args.scenarios,
-                                browser_factory,
-                                meet_meeting_id=args.meet_meeting_id):
+    # Measure or Profile all defined scenarios.
+    browser_factory = lambda browser_name: browsers.MakeBrowserDriver(
+        browser_name,
+        chrome_user_dir=args.chrome_user_dir,
+        chromium_path=args.chromium_path)
+    for scenario in IterScenarios(args.scenarios,
+                                  browser_factory,
+                                  meet_meeting_id=args.meet_meeting_id):
 
-    if args.profile_mode:
-      logging.info(f'Profiling scenario {scenario.name} ...')
-      driver.Profile(scenario, profile_mode=args.profile_mode)
-    else:
-      logging.info(f'Recording scenario {scenario.name} ...')
-      driver.Record(scenario)
+      if args.profile_mode:
+        logging.info(f'Profiling scenario {scenario.name} ...')
+        driver.Profile(scenario, profile_mode=args.profile_mode)
+      else:
+        logging.info(f'Recording scenario {scenario.name} ...')
+        driver.Record(scenario)
 
 
 if __name__ == "__main__":

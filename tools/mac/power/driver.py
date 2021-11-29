@@ -14,7 +14,8 @@ import browsers
 import scenarios
 import utils
 
-class Driver:
+
+class DriverContext:
   """Class in charge of running the measurements and keeping track
   of the global state needed to do so.
   """
@@ -29,6 +30,19 @@ class Driver:
 
     # Make sure there is somewhere to put  results.
     os.makedirs(f"{self._output_dir}", exist_ok=True)
+
+  def __enter__(self):
+    self._caffeinate_process = subprocess.Popen([
+        "caffeinate",
+        "-d",  # Prevent the display from sleeping.
+        "-i",  # Prevent the system from idle sleeping. This doesn't really take
+        # effect since the display is forced on.
+        "-u"  # Force user_idle_level to active.
+    ])
+    return self
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    utils.TerminateProcess(self._caffeinate_process)
 
   def CheckEnv(self, throw_on_bad_env: bool):
     """Verifies that the environment is conducive to proper profiling or
@@ -198,6 +212,7 @@ class Driver:
     """Outputs a json file describing `scenario_driver` arguments into the
         output directory
     """
+    print(self._output_dir, f'{scenario_driver.name}_summary.json')
     with open(
         os.path.join(self._output_dir, f'{scenario_driver.name}_summary.json'),
         'w') as summary_file:
