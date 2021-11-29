@@ -109,9 +109,10 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     RTCEncodedVideoFrame* frame =
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame)
+            .ToLocalChecked());
   }
 
  protected:

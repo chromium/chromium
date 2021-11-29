@@ -81,9 +81,10 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
   ScriptValue CreateEncodedAudioFrameChunk(ScriptState* script_state) {
     RTCEncodedAudioFrame* frame = MakeGarbageCollected<RTCEncodedAudioFrame>(
         std::make_unique<FakeAudioFrame>());
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+            .ToLocalChecked());
   }
 
  protected:

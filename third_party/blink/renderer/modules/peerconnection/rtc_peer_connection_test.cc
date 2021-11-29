@@ -820,9 +820,9 @@ class RTCPeerConnectionCallSetupStateTest : public RTCPeerConnectionTest {
   }
 
   ScriptValue ToScriptValue(V8TestingScope& scope, RTCOfferOptions* value) {
-    v8::Isolate* isolate = scope.GetIsolate();
-    return ScriptValue(isolate,
-                       ToV8(value, scope.GetContext()->Global(), isolate));
+    return ScriptValue(scope.GetIsolate(), ToV8Traits<RTCOfferOptions>::ToV8(
+                                               scope.GetScriptState(), value)
+                                               .ToLocalChecked());
   }
 
  private:
