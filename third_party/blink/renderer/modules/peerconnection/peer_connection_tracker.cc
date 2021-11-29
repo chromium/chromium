@@ -353,92 +353,6 @@ String SerializeConfiguration(
   return result.ToString();
 }
 
-// Note: All of these strings need to be kept in sync with
-// peer_connection_update_table.js, in order to be displayed as friendly
-// strings on chrome://webrtc-internals.
-
-const char* GetSignalingStateString(
-    webrtc::PeerConnectionInterface::SignalingState state) {
-  const char* result = "";
-  switch (state) {
-    case webrtc::PeerConnectionInterface::SignalingState::kStable:
-      return "stable";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
-      return "have-local-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
-      return "have-remote-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
-      return "have-local-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
-      return "have-remote-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      break;
-  }
-  return result;
-}
-
-const char* GetIceConnectionStateString(
-    webrtc::PeerConnectionInterface::IceConnectionState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::kIceConnectionNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceConnectionChecking:
-      return "checking";
-    case webrtc::PeerConnectionInterface::kIceConnectionConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::kIceConnectionCompleted:
-      return "completed";
-    case webrtc::PeerConnectionInterface::kIceConnectionFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::kIceConnectionDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::kIceConnectionClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-const char* GetConnectionStateString(
-    webrtc::PeerConnectionInterface::PeerConnectionState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting:
-      return "connecting";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-const char* GetIceGatheringStateString(
-    webrtc::PeerConnectionInterface::IceGatheringState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::kIceGatheringNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceGatheringGathering:
-      return "gathering";
-    case webrtc::PeerConnectionInterface::kIceGatheringComplete:
-      return "complete";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 const char* GetTransceiverUpdatedReasonString(
     PeerConnectionTracker::TransceiverUpdatedReason reason) {
   switch (reason) {
@@ -1120,8 +1034,9 @@ void PeerConnectionTracker::TrackSignalingStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "signalingstatechange",
-                           GetSignalingStateString(state));
+  SendPeerConnectionUpdate(
+      id, "signalingstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
@@ -1131,8 +1046,9 @@ void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceconnectionstatechange (legacy)",
-                           GetIceConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "iceconnectionstatechange (legacy)",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackIceConnectionStateChange(
@@ -1142,8 +1058,9 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceconnectionstatechange",
-                           GetIceConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "iceconnectionstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackConnectionStateChange(
@@ -1153,8 +1070,9 @@ void PeerConnectionTracker::TrackConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "connectionstatechange",
-                           GetConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "connectionstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackIceGatheringStateChange(
@@ -1164,8 +1082,9 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "icegatheringstatechange",
-                           GetIceGatheringStateString(state));
+  SendPeerConnectionUpdate(
+      id, "icegatheringstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackSessionDescriptionCallback(
