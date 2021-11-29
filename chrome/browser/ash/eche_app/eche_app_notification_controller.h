@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +13,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 extern const char kEcheAppScreenLockNotifierId[];
@@ -39,7 +39,7 @@ class EcheAppNotificationController {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                    ash::eche_app::mojom::WebNotificationType> type);
+                    mojom::WebNotificationType> type);
 
  protected:
   // Exposed for testing.
@@ -79,6 +79,6 @@ class EcheAppNotificationController {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_

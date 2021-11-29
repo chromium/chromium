@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -17,10 +13,12 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
+class EcheAppManager;
 class EcheAppNotificationController;
+class SystemInfo;
 
 // Factory to create a single EcheAppManager.
 class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
@@ -56,14 +54,14 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace eche_app {
-using ::chromeos::eche_app::EcheAppManagerFactory;
+using ::ash::eche_app::EcheAppManagerFactory;
 }
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_

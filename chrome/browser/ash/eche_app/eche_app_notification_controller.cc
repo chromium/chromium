@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/eche_app/eche_app_notification_controller.h"
+#include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -14,7 +14,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 const char kEcheAppScreenLockNotifierId[] =
@@ -64,9 +64,8 @@ void EcheAppNotificationController::LaunchSettings() {
 
 void EcheAppNotificationController::LaunchLearnMore() {
   // TODO(crbug.com/1241352): Wait for UX confirm.
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(kEcheAppLearnMoreUrl),
-      /* from_user_interaction= */ true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                                            /* from_user_interaction= */ true);
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {
@@ -81,14 +80,11 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
     const absl::optional<std::u16string>& title,
     const absl::optional<std::u16string>& message,
     absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                  ash::eche_app::mojom::WebNotificationType> type) {
-  ash::eche_app::mojom::WebNotificationType web_type =
-      absl::get<ash::eche_app::mojom::WebNotificationType>(type);
+                  mojom::WebNotificationType> type) {
+  auto web_type = absl::get<mojom::WebNotificationType>(type);
   if (title && message) {
-    if (web_type ==
-            ash::eche_app::mojom::WebNotificationType::CONNECTION_FAILED ||
-        web_type ==
-            ash::eche_app::mojom::WebNotificationType::CONNECTION_LOST) {
+    if (web_type == mojom::WebNotificationType::CONNECTION_FAILED ||
+        web_type == mojom::WebNotificationType::CONNECTION_LOST) {
       // TODO(guanrulee): Show the buttons once they're completed.
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
@@ -166,4 +162,4 @@ void EcheAppNotificationController::NotificationDelegate::Click(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

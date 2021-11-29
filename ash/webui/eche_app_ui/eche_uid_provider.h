@@ -52,11 +52,4 @@ class EcheUidProvider : public mojom::UidGenerator {
 }  // namespace eche_app
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::kEcheAppSeedPref;
-}  // namespace eche_app
-}  // namespace chromeos
-
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_UID_PROVIDER_H_

@@ -9,9 +9,9 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/eche_app/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -105,7 +105,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const char* kNoPinAppIds[] = {
       file_manager::kAudioPlayerAppId,
       extension_misc::kFeedbackExtensionId,
-      chromeos::eche_app::kEcheAppId,
+      ash::eche_app::kEcheAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;

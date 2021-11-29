@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/eche_app/eche_app_notification_controller.h"
+#include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class TestableNotificationController : public EcheAppNotificationController {
@@ -51,7 +51,7 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
       notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
-  void Initialize(ash::eche_app::mojom::WebNotificationType type) {
+  void Initialize(mojom::WebNotificationType type) {
     absl::optional<std::u16string> title = u"title";
     absl::optional<std::u16string> message = u"message";
     notification_controller_->ShowNotificationFromWebUI(title, message, type);
@@ -92,4 +92,4 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

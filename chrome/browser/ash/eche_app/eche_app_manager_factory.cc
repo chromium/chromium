@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
+#include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 
 #include <string>
 
@@ -18,12 +18,12 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
+#include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/chromeos/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -42,7 +42,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 namespace {
@@ -225,7 +225,7 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
   const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
   const std::u16string device_type = ui::GetChromeOSDeviceName();
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {
     std::u16string given_name = user->GetGivenName();
     if (!given_name.empty()) {
@@ -240,4 +240,4 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
