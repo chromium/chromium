@@ -1266,9 +1266,8 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   state.SetStyle(CreateComputedStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
-  ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
+  ElementRuleCollector collector(state.ElementContext(),
+                                 StyleRecalcContext::FromAncestors(*element),
                                  selector_filter_, cascade.MutableMatchResult(),
                                  state.Style(), EInsideLink::kNotInsideLink);
   collector.SetPseudoElementStyleRequest(StyleRequest(pseudo_id, nullptr));

@@ -829,6 +829,70 @@ TEST_F(StyleResolverTest, CascadedValuesForPseudoElement) {
   EXPECT_EQ("1em", map.at(top)->CssText());
 }
 
+TEST_F(StyleResolverTest, CascadedValuesForElementInContainer) {
+  ScopedCSSContainerQueriesForTest scope(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size; }
+      @container (min-width: 1px) {
+        #inner {
+          top: 1em;
+        }
+      }
+      div {
+        top: 10em;
+      }
+    </style>
+    <div id="container">
+      <div id="inner"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto& resolver = GetDocument().GetStyleResolver();
+  Element* inner = GetDocument().getElementById("inner");
+  ASSERT_TRUE(inner);
+
+  auto map = resolver.CascadedValuesForElement(inner, kPseudoIdNone);
+
+  CSSPropertyName top(CSSPropertyID::kTop);
+  ASSERT_TRUE(map.at(top));
+  EXPECT_EQ("1em", map.at(top)->CssText());
+}
+
+TEST_F(StyleResolverTest, CascadedValuesForPseudoElementInContainer) {
+  ScopedCSSContainerQueriesForTest scope(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size; }
+      @container (min-width: 1px) {
+        #inner::before {
+          top: 1em;
+        }
+      }
+      div::before {
+        top: 10em;
+      }
+    </style>
+    <div id="container">
+      <div id="inner"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto& resolver = GetDocument().GetStyleResolver();
+  Element* inner = GetDocument().getElementById("inner");
+  ASSERT_TRUE(inner);
+
+  auto map = resolver.CascadedValuesForElement(inner, kPseudoIdBefore);
+
+  CSSPropertyName top(CSSPropertyID::kTop);
+  ASSERT_TRUE(map.at(top));
+  EXPECT_EQ("1em", map.at(top)->CssText());
+}
+
 TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id="host"><span></span></div>
