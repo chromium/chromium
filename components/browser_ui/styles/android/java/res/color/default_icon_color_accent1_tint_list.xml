@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<!-- TODO(https://crbug.com/1239289): Delete this once the min API is 23. -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources" >
-    <item android:color="@color/default_icon_color_accent1_baseline" />
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@macro/default_icon_color_accent1" />
 </selector>

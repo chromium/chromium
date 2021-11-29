@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<!-- ColorStateList in Android L does not work as expected when pointing to
-   attributes. This file should be replaced with the one in color-v23 once we
-   stop supporting Android L. See https://crbug.com/1242283. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <item android:alpha="@dimen/default_disabled_alpha"
-        android:color="@color/default_icon_color" android:state_enabled="false"/>
-    <item android:color="@color/default_icon_color_secondary" />
+        android:color="@macro/default_icon_color" android:state_enabled="false"/>
+    <item android:color="?attr/default_icon_color_secondary" />
 </selector>
