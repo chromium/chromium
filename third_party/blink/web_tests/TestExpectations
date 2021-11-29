@@ -7387,3 +7387,6 @@ crbug.com/1201879 [ Linux ] http/tests/inspector-protocol/issues/mixed-content-i
 crbug.com/1274171 inspector-protocol/debugger/debugger-setTimeout-sourceUrl-dedicated-worker-loop.js [ Pass Timeout ]
 crbug.com/1271485 http/tests/inspector-protocol/network/load-network-resource-different-frame-cookie.js [ Failure Pass Timeout ]
 crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollected.html [ Failure Pass ]
+
+# Sheriff 2021-11-29
+crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
