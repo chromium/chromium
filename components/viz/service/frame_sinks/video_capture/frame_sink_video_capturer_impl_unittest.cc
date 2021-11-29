@@ -338,6 +338,11 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
 
   void SetCopyOutputColor(YUVColor color) { color_ = color; }
 
+  // Returns number of copy output result callbacks that have been prepared to
+  // be sent back to the capturer. A new result callback is inserted every time
+  // a new CopyOutputRequest arrives and does not correspond to the number of
+  // results that have actually already been sent. Sending a result is done via
+  // |SendCopyOutputResult()|.
   int num_copy_results() const { return results_.size(); }
 
   void SendCopyOutputResult(int offset) {
@@ -736,10 +741,10 @@ TEST_F(FrameSinkVideoCapturerTest, CapturesCompositedFrames) {
   StopCapture();
 }
 
-// Tests that frame capturing halts when too many frames are in-flight, whether
+// Tests that frame capturing halts when too many frames are allocated, whether
 // that is because there are too many copy requests in-flight or because the
 // consumer has not finished consuming frames fast enough.
-TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
+TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPoolIsFull) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
@@ -752,8 +757,8 @@ TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
   ASSERT_EQ(num_refresh_frames, frame_sink_.num_copy_results());
   EXPECT_FALSE(IsRefreshRetryTimerRunning());
 
-  // Saturate the pipeline with CopyOutputRequests that have not yet executed.
-  int num_frames = FrameSinkVideoCapturerImpl::kDesignLimitMaxFrames;
+  // Saturate the pool with CopyOutputRequests that have not yet executed.
+  int num_frames = FrameSinkVideoCapturerImpl::kFramePoolCapacity;
   for (int i = num_refresh_frames; i < num_frames; ++i) {
     AdvanceClockToNextVsync();
     NotifyFrameDamaged(size_set().source_rect);
@@ -781,12 +786,28 @@ TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
   ASSERT_EQ(num_frames, frame_sink_.num_copy_results());
   EXPECT_TRUE(IsRefreshRetryTimerRunning());
 
-  // Notify the capturer that the first frame has been consumed. Then, with
-  // another compositor update, the capturer should issue another new copy
-  // request. The refresh timer should no longer be running because the next
-  // capture will satisfy the need to send updated content to the consumer.
+  // Notify the capturer that the first frame has been consumed. This will not
+  // cause the capturer to issue new copy requests, since the just-delivered
+  // frame will now be marked - the capturer will not return it to the pool at
+  // this time, so the pool is still at capacity. The refresh timer should still
+  // be running.
   EXPECT_TRUE(consumer.TakeFrame(0));
   consumer.SendDoneNotification(0);
+  AdvanceClockToNextVsync();
+  NotifyFrameDamaged(size_set().source_rect);
+  ASSERT_EQ(num_frames, frame_sink_.num_copy_results());
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+
+  // Complete the second copy request and notify the capturer that the second
+  // frame has been consumed. Then, with another compositor update, the capturer
+  // should issue a new copy request. The refresh timer should no longer be
+  // running because the next capture will satisfy the need to send updated
+  // content to the consumer. The frame produced by this CopyOutputRequest will
+  // now be marked for resurrection.
+  frame_sink_.SendCopyOutputResult(1);
+  ASSERT_EQ(2, consumer.num_frames_received());
+  EXPECT_TRUE(consumer.TakeFrame(1));
+  consumer.SendDoneNotification(1);
   AdvanceClockToNextVsync();
   NotifyFrameDamaged(size_set().source_rect);
   ++num_frames;
@@ -801,22 +822,27 @@ TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
   ASSERT_EQ(num_frames, frame_sink_.num_copy_results());
   EXPECT_TRUE(IsRefreshRetryTimerRunning());
 
-  // Complete all pending copy requests. Another compositor update should not
-  // cause any new copy requests to be issued because all frames are being
-  // delivered/consumed.
-  for (int i = 1; i < frame_sink_.num_copy_results(); ++i) {
+  // Complete all pending copy requests. The frame for the most recently
+  // delivered CopyOutputRequest becomes marked. This causes frame for COR[1] to
+  // become unmarked, which drops the last reference to it, so the compositor
+  // update will cause additional CopyOutputRequest to be issued. The refresh
+  // timer will not be running.
+  for (int i = 2; i < frame_sink_.num_copy_results(); ++i) {
     SCOPED_TRACE(testing::Message() << "frame #" << i);
     frame_sink_.SendCopyOutputResult(i);
   }
   ASSERT_EQ(frame_sink_.num_copy_results(), consumer.num_frames_received());
   AdvanceClockToNextVsync();
   NotifyFrameDamaged(size_set().source_rect);
+  ++num_frames;
   ASSERT_EQ(num_frames, frame_sink_.num_copy_results());
-  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
 
-  // Notify the capturer that all frames have been consumed. Finally, with
-  // another compositor update, capture should resume.
-  for (int i = 1; i < consumer.num_frames_received(); ++i) {
+  // Complete the newly issued COR:
+  frame_sink_.SendCopyOutputResult(frame_sink_.num_copy_results() - 1);
+
+  // Notify the capturer that all frames have been consumed.
+  for (int i = 2; i < consumer.num_frames_received(); ++i) {
     SCOPED_TRACE(testing::Message() << "frame #" << i);
     EXPECT_TRUE(consumer.TakeFrame(i));
     consumer.SendDoneNotification(i);
@@ -825,9 +851,10 @@ TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
   NotifyFrameDamaged(size_set().source_rect);
   ++num_frames;
   ASSERT_EQ(num_frames, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
   frame_sink_.SendCopyOutputResult(frame_sink_.num_copy_results() - 1);
   ASSERT_EQ(frame_sink_.num_copy_results(), consumer.num_frames_received());
-  EXPECT_FALSE(IsRefreshRetryTimerRunning());
 
   StopCapture();
 }

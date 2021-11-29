@@ -39,10 +39,6 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
     if (it->mapping.size() < bytes_required) {
       continue;
     }
-    // The buffer will possibly be rewritten, so the marked frame may be lost.
-    if (it->mapping.memory() == marked_frame_buffer_) {
-      ClearFrameMarking();
-    }
     PooledBuffer taken = std::move(*it);
     available_buffers_.erase(it.base() - 1);
     return WrapBuffer(std::move(taken), format, size);
@@ -56,8 +52,6 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
                          [](const PooledBuffer& a, const PooledBuffer& b) {
                            return a.mapping.size() < b.mapping.size();
                          });
-    if (it->mapping.memory() == marked_frame_buffer_)
-      marked_frame_buffer_ = nullptr;
     available_buffers_.erase(it.base() - 1);  // Release before allocating more.
     PooledBuffer reallocated =
         base::ReadOnlySharedMemoryRegion::Create(bytes_required);
@@ -82,81 +76,6 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
     return nullptr;
   }
   return WrapBuffer(std::move(additional), format, size);
-}
-
-void SharedMemoryVideoFramePool::MarkFrame(const media::VideoFrame& frame) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  marked_frame_buffer_ = frame.data(0);
-  marked_frame_size_ = frame.coded_size();
-  marked_frame_color_space_ = frame.ColorSpace();
-  marked_frame_pixel_format_ = frame.format();
-}
-
-void SharedMemoryVideoFramePool::ClearFrameMarking() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  marked_frame_buffer_ = nullptr;
-}
-
-bool SharedMemoryVideoFramePool::HasMarkedFrameWithSize(
-    const gfx::Size& size) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return marked_frame_buffer_ != nullptr && marked_frame_size_ == size;
-}
-
-scoped_refptr<VideoFrame>
-SharedMemoryVideoFramePool::ResurrectOrDuplicateContentFromMarkedFrame() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!marked_frame_buffer_)
-    return nullptr;
-
-  const auto it =
-      std::find_if(available_buffers_.rbegin(), available_buffers_.rend(),
-                   [this](const PooledBuffer& candidate) {
-                     return candidate.mapping.memory() == marked_frame_buffer_;
-                   });
-
-  // If the buffer is available, use it directly.
-  if (it != available_buffers_.rend()) {
-    // Wrap the buffer in a VideoFrame and return it.
-    PooledBuffer resurrected = std::move(*it);
-    available_buffers_.erase(it.base() - 1);
-    auto frame = WrapBuffer(std::move(resurrected), marked_frame_pixel_format_,
-                            marked_frame_size_);
-    frame->set_color_space(marked_frame_color_space_);
-    return frame;
-  }
-
-  // Buffer is currently in use. Reserve a new buffer and copy the contents
-  // over.
-  auto frame =
-      ReserveVideoFrame(marked_frame_pixel_format_, marked_frame_size_);
-  // The call to ReserverVideoFrame should not have cleared
-  // |marked_frame_buffer_|, because that buffer is currently in use.
-  DCHECK(marked_frame_buffer_);
-  if (!frame)
-    return nullptr;
-#if DCHECK_IS_ON()
-  // Sanity check that |marked_frame_buffer_| indeed corresponds to a buffer in
-  // |utilized_buffers_|. If MarkFrame() was erroneously called with a frame
-  // that did not belong to this pool or was otherwise tampered with, this might
-  // not be the case.
-  const auto source_it = std::find_if(
-      utilized_buffers_.rbegin(), utilized_buffers_.rend(),
-      [this](const std::pair<const media::VideoFrame*,
-                             base::ReadOnlySharedMemoryRegion>& candidate) {
-        return candidate.first->data(0) == marked_frame_buffer_;
-      });
-  DCHECK(source_it != utilized_buffers_.rend());
-#endif  // DCHECK_IS_ON()
-
-  // Copy the contents over.
-  const size_t num_bytes_to_copy = VideoFrame::AllocationSize(
-      marked_frame_pixel_format_, marked_frame_size_);
-  memcpy(frame->data(0), marked_frame_buffer_, num_bytes_to_copy);
-
-  frame->set_color_space(marked_frame_color_space_);
-  return frame;
 }
 
 base::ReadOnlySharedMemoryRegion

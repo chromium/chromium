@@ -131,16 +131,22 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       gfx::ColorSpace::CreateREC709();
 
   // The maximum number of frames in-flight in the capture pipeline, reflecting
-  // the storage capacity dedicated for this purpose. Example numbers, for a
-  // frame pool that is fully-allocated with 10 frames of size 1920x1080, using
-  // the I420 pixel format (12 bits per pixel). Then:
+  // the storage capacity dedicated for this purpose. Since the size of the pool
+  // does not align with the number of frames that can be in-flight (the
+  // capturer can artificially keep a marked frame alive, even if it's not
+  // currently in-flight), we will crate a pool with capacity equal to
+  // |kDesignLimitMaxFrames + 1|.
   //
-  //   storage_bytes_for_all_ten_frames = 10 * (1920 * 1080 * 12/8)
-  //     --> ~29.7 MB
+  // Example numbers, for a frame pool that is fully-allocated with 11 frames of
+  // size 1920x1080, using the I420 pixel format (12 bits per pixel). Then:
+  //
+  //   storage_bytes_for_all_frames = 11 * (1920 * 1080 * 12/8)
+  //     --> ~32.63 MB
   //
   // In practice, only 0-3 frames will be in-flight at a time, depending on the
   // content change rate and system performance.
   static constexpr int kDesignLimitMaxFrames = 10;
+  static constexpr int kFramePoolCapacity = kDesignLimitMaxFrames + 1;
 
   // A safe, sustainable maximum number of frames in-flight. In other words,
   // exceeding 60% of the design limit is considered "red line" operation.
@@ -236,6 +242,32 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   void OnLog(const std::string& message);
 
+  bool ShouldMark(const media::VideoFrame& frame,
+                  int64_t content_version) const;
+
+  // Marks |frame| for resurrection, using |content_version| as its content
+  // version. If |frame| is null, the frame marking will be cleared, in which
+  // case the |content_version| parameter is ignored.
+  void MarkFrame(scoped_refptr<media::VideoFrame> frame,
+                 int64_t content_version = -1);
+
+  // Returns true if currently marked frame can be resurrected. |size| specifies
+  // the desired size of the frame
+  bool CanResurrectFrame(const gfx::Size& size) const;
+
+  scoped_refptr<media::VideoFrame> ResurrectFrame() const {
+    return marked_frame_;
+  }
+
+  // Should be called when the frame that has been delivered to the consumer has
+  // been released by it.
+  void NotifyFrameReleased(scoped_refptr<media::VideoFrame> frame);
+
+  // Returns pipeline utilization. Pipeline utilization is different from pool
+  // utilization, since a marked frame may be returned multiple times w/o
+  // increasing pool utilization, but it would increase pipeline utilization.
+  float GetPipelineUtilization() const;
+
   // Owner/Manager of this instance.
   const raw_ptr<FrameSinkVideoCapturerManager> frame_sink_manager_;
 
@@ -308,7 +340,14 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   int64_t content_version_in_marked_frame_ = -1;
 
-  gfx::Size marked_frame_size_;
+  // The frame that is currently marked. Marked frame is the frame that has the
+  // most recent content version (with video overlays already applied), and thus
+  // can be directly returned to the consumer if the current content version
+  // matches the content version in the marked frame.
+  scoped_refptr<media::VideoFrame> marked_frame_ = nullptr;
+
+  // Number of frames that are currently in flight (i.e. in use by consumer).
+  int num_frames_in_flight_ = 0;
 
   // A queue of captured frames pending delivery. This queue is used to re-order
   // frames, if they should happen to be captured out-of-order.
