@@ -4155,6 +4155,15 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
     case ax::mojom::Event::kFocusContext:
       OnFocused();
       break;
+    case ax::mojom::Event::kFocusAfterMenuClose:
+      // The saved focused object is not always getting cleared when a popup
+      // becomes active. As a result, when the popup is dismissed, OnFocused()
+      // will return early thinking focus has not changed. Rather than trying
+      // to catch every case, take kFocusAfterMenuClose as a clear indication
+      // that a focus change should be presented and reset the saved focus.
+      g_current_focused = nullptr;
+      OnFocused();
+      break;
     case ax::mojom::Event::kSelection:
       OnSelected();
       // When changing tabs also fire a name changed event.

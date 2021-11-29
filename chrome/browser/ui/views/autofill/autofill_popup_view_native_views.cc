@@ -1300,6 +1300,8 @@ void AutofillPopupViewNativeViews::OnSelectedRowChanged(
 
   if (current_row_selection)
     rows_[*current_row_selection]->SetSelected(true);
+
+  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
 }
 
 void AutofillPopupViewNativeViews::OnSuggestionsChanged() {
