@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -44,10 +42,6 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   void OnIconInvalidated(const std::string& package_name) override;
 
  private:
-  // Called when activity icons are sent.
-  void ConvertActivityIcons(RequestActivityIconsCallback callback,
-                            std::vector<arc::mojom::ActivityIconPtr> icons);
-
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Arc> receivers_;
 
@@ -56,9 +50,6 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
 
   // profile_ should not be overridden.
   Profile* profile_ = nullptr;
-
-  // This must come last to make sure weak pointers are invalidated first.
-  base::WeakPtrFactory<ArcAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace crosapi
