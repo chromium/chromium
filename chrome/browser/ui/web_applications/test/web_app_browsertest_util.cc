@@ -376,4 +376,19 @@ void BrowserWaiter::OnBrowserRemoved(Browser* browser) {
   removed_run_loop_.Quit();
 }
 
+UpdateAwaiter::UpdateAwaiter(WebAppRegistrar& registrar) {
+  scoped_observation_.Observe(&registrar);
+}
+
+UpdateAwaiter::~UpdateAwaiter() = default;
+
+void UpdateAwaiter::AwaitUpdate() {
+  run_loop_.Run();
+}
+
+void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id,
+                                            base::StringPiece old_name) {
+  run_loop_.Quit();
+}
+
 }  // namespace web_app

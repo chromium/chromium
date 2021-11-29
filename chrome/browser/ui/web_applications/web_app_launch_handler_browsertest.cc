@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -10,15 +11,18 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
@@ -323,6 +327,135 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest, NoLaunchQueue) {
   EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
   EXPECT_FALSE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
   EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchParams").ExtractBool());
+}
+
+class WebAppLaunchHandlerOriginTrialBrowserTest : public InProcessBrowserTest {
+ public:
+  WebAppLaunchHandlerOriginTrialBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kWebAppEnableLaunchHandler);
+  }
+  ~WebAppLaunchHandlerOriginTrialBrowserTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Using the test public key from docs/origin_trials_integration.md#Testing.
+    command_line->AppendSwitchASCII(
+        embedder_support::kOriginTrialPublicKey,
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ScopedOsHooksSuppress os_hooks_suppress_{
+      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+};
+namespace {
+
+// InstallableManager requires https or localhost to load the manifest. Go with
+// localhost to avoid having to set up cert servers.
+constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
+constexpr char kTestWebAppHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+constexpr char kTestWebAppBody[] = R"(
+  <!DOCTYPE html>
+  <head>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta http-equiv="origin-trial" content="$1">
+  </head>
+)";
+
+constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
+constexpr char kTestManifestUrl[] =
+    "http://127.0.0.1:8000/manifest.webmanifest";
+constexpr char kTestManifestHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
+constexpr char kTestManifestBody[] = R"({
+  "name": "Test app",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }],
+  "launch_handler": {
+    "route_to": "existing-client",
+    "navigate_existing_client": "never"
+  }
+})";
+
+// Generated from script:
+// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000 "Launch
+// Handler" --expire-timestamp=2000000000
+constexpr char kOriginTrialToken[] =
+    "A12ynArMVnf0OepZoKB23txoJ/"
+    "jicU25In+"
+    "UseVdaSziSYtPMfobhyEhFdVasQ90uo4LMf2G6AIyRFxALB4oQgEAAABWeyJvcmlnaW4iOiAia"
+    "HR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiTGF1bmNoIEhhbmRsZXIiLCAiZXh"
+    "waXJ5IjogMjAwMDAwMDAwMH0=";
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
+  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
+
+  bool serve_token = true;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&serve_token](
+          content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        if (params->url_request.url.spec() == kTestWebAppUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestWebAppHeaders,
+              base::ReplaceStringPlaceholders(
+                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
+                  nullptr),
+              params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestManifestUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestManifestHeaders, kTestManifestBody, params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestIconUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/basic-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  // Install web app with origin trial token.
+  AppId app_id =
+      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+
+  // Origin trial should grant the app access.
+  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
+  EXPECT_EQ(provider.registrar().GetAppById(app_id)->launch_handler(),
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClient,
+                           LaunchHandler::NavigateExistingClient::kNever}));
+
+  // Open the page again with the token missing.
+  {
+    UpdateAwaiter update_awaiter(provider.registrar());
+
+    serve_token = false;
+    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+
+    update_awaiter.AwaitUpdate();
+  }
+
+  // The app should update to no longer have launch_handler defined without the
+  // origin trial.
+  EXPECT_EQ(provider.registrar().GetAppById(app_id)->launch_handler(),
+            absl::nullopt);
 }
 
 }  // namespace web_app

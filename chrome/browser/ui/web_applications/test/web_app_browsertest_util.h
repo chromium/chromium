@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "url/gurl.h"
 
@@ -108,6 +111,22 @@ class BrowserWaiter : public BrowserListObserver {
 
   base::RunLoop removed_run_loop_;
   raw_ptr<Browser> removed_browser_ = nullptr;
+};
+
+class UpdateAwaiter : public AppRegistrarObserver {
+ public:
+  explicit UpdateAwaiter(WebAppRegistrar& registrar);
+  ~UpdateAwaiter() override;
+  void AwaitUpdate();
+
+  // AppRegistrarObserver:
+  void OnWebAppManifestUpdated(const AppId& app_id,
+                               base::StringPiece old_name) override;
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace web_app
