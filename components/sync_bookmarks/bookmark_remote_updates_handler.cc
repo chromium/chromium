@@ -129,6 +129,35 @@ size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
   return iter - parent->children().begin();
 }
 
+// Checks that the |update_entity| is valid and returns false otherwise. It is
+// used to verify non-deletion updates. |update| must not be a deletion and a
+// permanent node (they are processed in a different way).
+bool IsValidUpdate(const syncer::EntityData& update_entity) {
+  DCHECK(!update_entity.is_deleted());
+  DCHECK(update_entity.server_defined_unique_tag.empty());
+
+  if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
+    // Ignore updates with invalid specifics.
+    DLOG(ERROR)
+        << "Couldn't process an update bookmark with an invalid specifics.";
+    LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
+    return false;
+  }
+
+  if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
+                               update_entity.client_tag_hash,
+                               update_entity.originator_cache_guid,
+                               update_entity.originator_client_item_id)) {
+    // Ignore updates with an unexpected GUID.
+    DLOG(ERROR) << "Couldn't process an update bookmark with unexpected GUID: "
+                << update_entity.specifics.bookmark().guid();
+    LogProblematicBookmark(RemoteBookmarkUpdateError::kUnexpectedGuid);
+    return false;
+  }
+
+  return true;
+}
+
 void ApplyRemoteUpdate(
     const syncer::UpdateResponseData& update,
     const SyncedBookmarkTracker::Entity* tracked_entity,
@@ -222,25 +251,8 @@ void BookmarkRemoteUpdatesHandler::Process(
     }
 
     // Only non-deletions should have valid specifics and unique positions.
-    if (!update_entity.is_deleted()) {
-      if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
-        // Ignore updates with invalid specifics.
-        DLOG(ERROR)
-            << "Couldn't process an update bookmark with an invalid specifics.";
-        LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
-        continue;
-      }
-      if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
-                                   update_entity.client_tag_hash,
-                                   update_entity.originator_cache_guid,
-                                   update_entity.originator_client_item_id)) {
-        // Ignore updates with an unexpected GUID.
-        DLOG(ERROR)
-            << "Couldn't process an update bookmark with unexpected GUID: "
-            << update_entity.specifics.bookmark().guid();
-        LogProblematicBookmark(RemoteBookmarkUpdateError::kUnexpectedGuid);
-        continue;
-      }
+    if (!update_entity.is_deleted() && !IsValidUpdate(update_entity)) {
+      continue;
     }
 
     bool should_ignore_update = false;
