@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -18,6 +19,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
@@ -1288,6 +1290,120 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_Completed) {
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_GOOGLE);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
+}
+
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestJourneyLoggerAllSectionStatsTest, with the basic-card being
+// disabled. Parameterized tests are not used because the test setup for both
+// tests are too different.
+class PaymentRequestJourneyLoggerWithoutBasicCardTestBase
+    : public PaymentRequestJourneyLoggerTestBase {
+ public:
+  PaymentRequestJourneyLoggerWithoutBasicCardTestBase(
+      const PaymentRequestJourneyLoggerWithoutBasicCardTestBase&) = delete;
+  PaymentRequestJourneyLoggerWithoutBasicCardTestBase& operator=(
+      const PaymentRequestJourneyLoggerWithoutBasicCardTestBase&) = delete;
+
+ protected:
+  PaymentRequestJourneyLoggerWithoutBasicCardTestBase() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+  // Install the payment app specified by `hostname`, e.g., "a.com". Note that
+  // the origin has to be initialized first to be supported here. The payment
+  // method of the installed payment app will be outputted in
+  // `url_method_output`, e.g., "https://a.com:12345".
+  void InstallPaymentApp(const std::string& hostname,
+                         std::string* url_method_output) {
+    NavigateTo(hostname, "/payment_handler_installer.html");
+    *url_method_output = https_server()->GetURL(hostname, "/").spec();
+    *url_method_output =
+        url_method_output->substr(0, url_method_output->length() - 1);
+    ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
+    ASSERT_EQ(
+        "success",
+        content::EvalJs(
+            GetActiveWebContents(),
+            content::JsReplace(
+                "install('payment_request_success_responder.js', [$1], false)",
+                *url_method_output)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+using PaymentRequestJourneyLoggerAllSectionStatsWithoutBasicCardTest =
+    PaymentRequestJourneyLoggerWithoutBasicCardTestBase;
+
+// Tests that the correct number of suggestions shown for each section is logged
+// when a Payment Request is completed.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestJourneyLoggerAllSectionStatsWithoutBasicCardTest,
+    NumberOfSuggestionsShown_Completed) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", &a_method_name);
+
+  std::string b_method_name;
+  InstallPaymentApp("b.com", &b_method_name);
+
+  NavigateTo("c.com",
+             "/payment_request_contact_details_and_free_shipping_test.html");
+  base::HistogramTester histogram_tester;
+
+  // Setup a credit card with an associated billing address.
+  autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
+  AddAutofillProfile(billing_address);
+
+  // Add another address.
+  AddAutofillProfile(autofill::test::GetFullProfile2());
+
+  // Complete the Payment Request.
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // Expect the appropriate number of suggestions shown to be logged.
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed", 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.Completed", 2, 1);
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_GOOGLE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
 }
 

@@ -149,6 +149,7 @@ class PaymentRequestBrowserTestBase
   // Will call JavaScript to invoke the PaymentRequest dialog and verify that
   // it's open and ready for input.
   void InvokePaymentRequestUI();
+  void InvokePaymentRequestUIWithJs(const std::string& script);
 
   // Will expect that all strings in |expected_strings| are present in output.
   void ExpectBodyContains(const std::vector<std::string>& expected_strings);

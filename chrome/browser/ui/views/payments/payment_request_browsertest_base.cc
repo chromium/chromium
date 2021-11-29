@@ -98,6 +98,7 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
       net::EmbeddedTestServer::TYPE_HTTPS);
   host_resolver()->AddRule("a.com", "127.0.0.1");
   host_resolver()->AddRule("b.com", "127.0.0.1");
+  host_resolver()->AddRule("c.com", "127.0.0.1");
   ASSERT_TRUE(https_server_->InitializeAndListen());
   https_server_->ServeFilesFromSourceDirectory("components/test/data/payments");
   https_server_->StartAcceptingConnections();
@@ -274,11 +275,15 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
 }
 
 void PaymentRequestBrowserTestBase::InvokePaymentRequestUI() {
+  InvokePaymentRequestUIWithJs(
+      "(function() { document.getElementById('buy').click(); })();");
+}
+
+void PaymentRequestBrowserTestBase::InvokePaymentRequestUIWithJs(
+    const std::string& click_buy_button_js) {
   ResetEventWaiterForDialogOpened();
 
   content::WebContents* web_contents = GetActiveWebContents();
-  const std::string click_buy_button_js =
-      "(function() { document.getElementById('buy').click(); })();";
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
 
   WaitForObservedEvent();
