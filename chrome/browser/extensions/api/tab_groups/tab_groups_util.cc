@@ -134,6 +134,8 @@ api::tab_groups::Color ColorIdToColor(
       return api::tab_groups::COLOR_PURPLE;
     case tab_groups::TabGroupColorId::kCyan:
       return api::tab_groups::COLOR_CYAN;
+    case tab_groups::TabGroupColorId::kOrange:
+      return api::tab_groups::COLOR_ORANGE;
   }
 
   NOTREACHED();
@@ -158,6 +160,8 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
       return tab_groups::TabGroupColorId::kPurple;
     case api::tab_groups::COLOR_CYAN:
       return tab_groups::TabGroupColorId::kCyan;
+    case api::tab_groups::COLOR_ORANGE:
+      return tab_groups::TabGroupColorId::kOrange;
     case api::tab_groups::COLOR_NONE:
       NOTREACHED();
   }

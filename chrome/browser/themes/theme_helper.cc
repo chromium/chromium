@@ -39,6 +39,9 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
   // Depending on UI variation enabled, dark mode saved group chip colors are
   // calculated by blending the default dark mode toolbar color with the tab
   // strip group colors at 24% or 48% alpha.
+  const SkColor default_dark_toolbar_color =
+      TP::GetDefaultColor(TP::COLOR_TOOLBAR, false, true);
+  float tab_group_chip_alpha = 0.24f;
 
   // Flat version of dark mode colors used in bookmarks bar to fill
   // the buttons.
@@ -50,6 +53,8 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
   const SkColor kFlatCyan = SkColorSetRGB(0x45, 0x5D, 0x65);
   const SkColor kFlatPurple = SkColorSetRGB(0x58, 0x4A, 0x68);
   const SkColor kFlatPink = SkColorSetRGB(0x65, 0x4A, 0x5D);
+  const SkColor kFlatOrange = color_utils::AlphaBlend(
+      gfx::kGoogleOrange300, default_dark_toolbar_color, tab_group_chip_alpha);
 
   switch (color_id) {
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE:
@@ -101,6 +106,13 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleCyan900, gfx::kGoogleCyan300};
     case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN:
       return {gfx::kGoogleCyan050, kFlatCyan};
+    case TP::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE:
+    case TP::COLOR_TAB_GROUP_DIALOG_ORANGE:
+    case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_ORANGE:
+    case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_ORANGE:
+      return {gfx::kGoogleOrange400, gfx::kGoogleOrange300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE:
+      return {gfx::kGoogleOrange050, kFlatOrange};
     case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREY:
       return {gfx::kGoogleGrey100, kFlatGrey};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY:
@@ -336,7 +348,7 @@ SkColor ThemeHelper::GetDefaultColor(
     bool incognito,
     const CustomThemeSupplier* theme_supplier) const {
   if (TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY <= id &&
-      id <= TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN)
+      id <= TP::MAX_COLOR_BOOKMARK_BAR)
     return GetTabGroupColor(id, incognito, theme_supplier);
 
   // For backward compat with older themes, some newer colors are generated from
@@ -751,7 +763,7 @@ SkColor ThemeHelper::GetTabGroupColor(
     bool incognito,
     const CustomThemeSupplier* theme_supplier) const {
   // Deal with tab group colors in the tabstrip.
-  if (id <= TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_CYAN) {
+  if (id <= TP::MAX_COLOR_TABSTRIP_INACTIVE) {
     int tab_color_id = id < TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREY
                            ? TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE
                            : TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE;
@@ -769,7 +781,7 @@ SkColor ThemeHelper::GetTabGroupColor(
   // Deal with the rest of the tab group colors.
   bool use_dark_mode_colors;
   if (id >= TP::COLOR_TAB_GROUP_DIALOG_GREY &&
-      id <= TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN) {
+      id <= TP::MAX_COLOR_BOOKMARK_BAR) {
     // To support custom themes, assume that the dark mode palette is more
     // appropriate for bookmark chips, tab group dialog bubble, and context sub
     // menu when the bookmark bar appears to be light text on dark bookmark bar.

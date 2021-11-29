@@ -30,7 +30,9 @@ const ColorLabelMap& GetTabGroupColorLabelMap() {
        {TabGroupColorId::kPurple,
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_PURPLE)},
        {TabGroupColorId::kCyan,
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_CYAN)}});
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_CYAN)},
+       {TabGroupColorId::kOrange,
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_ORANGE)}});
   return *kTabGroupColors;
 }
 

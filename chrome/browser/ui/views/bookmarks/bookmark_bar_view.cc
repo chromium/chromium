@@ -440,7 +440,7 @@ class BookmarkTabGroupButton : public BookmarkMenuButtonBase {
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
   tab_groups::TabGroupColorId tab_group_color_id_ =
-      tab_groups::TabGroupColorId::kRed;
+      tab_groups::TabGroupColorId::kOrange;
   float border_radius_ = 4.5f;
   float button_radius_ = 5.0f;
 };
@@ -1748,12 +1748,27 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   const ui::ThemeProvider* const tp = GetThemeProvider();
   if (tp) {
     text_color = tp->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
-    button->SetEnabledTextColors(text_color);
     if (node->is_folder()) {
       // If saved tab groups is enabled, set text color or dot if indicated by
       // flag parameter. Chip background and border colors are set in
       // OnPaintBackground.
       if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+        // Use this variable to set the tab_group_color for all folders in the
+        // bookmark bar
+        tab_groups::TabGroupColorId tab_group_color_id =
+            tab_groups::TabGroupColorId::kOrange;
+
+        // In most cases our text color will match the hover border color
+        // However, for yellow, orange, and custom colors this may not be true
+        // for contrast and visibility, so a default grey color may be
+        // more appropriate.
+        text_color =
+            tp->GetColor(GetTabGroupContextMenuColorId(tab_group_color_id));
+        bool default_to_grey = text_color == gfx::kGoogleYellow600 ||
+                               text_color == gfx::kGoogleOrange400;
+        if (default_to_grey)
+          text_color = gfx::kGoogleGrey800;
+
         // Set empty border using the default horizontal padding (but leaving
         // vertical empty). This provides enough space to render some
         // background to the left and right of the label. There's no need to
@@ -1777,6 +1792,8 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
                 chrome::BookmarkFolderIconType::kNormal, ui::kColorIcon));
       }
     }
+
+    button->SetEnabledTextColors(text_color);
   }
 
   button->set_context_menu_controller(this);
