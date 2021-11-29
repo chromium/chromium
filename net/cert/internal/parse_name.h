@@ -29,6 +29,7 @@ NET_EXPORT der::Input TypeGivenNameOid();
 NET_EXPORT der::Input TypeInitialsOid();
 NET_EXPORT der::Input TypeGenerationQualifierOid();
 NET_EXPORT der::Input TypeDomainComponentOid();
+NET_EXPORT der::Input TypeEmailAddressOid();
 
 // X509NameAttribute contains a representation of a DER-encoded RFC 2253
 // "AttributeTypeAndValue".

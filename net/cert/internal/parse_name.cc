@@ -170,6 +170,19 @@ der::Input TypeDomainComponentOid() {
   return der::Input(oid);
 }
 
+der::Input TypeEmailAddressOid() {
+  // RFC 5280 section A.1:
+  //
+  // pkcs-9 OBJECT IDENTIFIER ::=
+  //   { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 9 }
+  //
+  // id-emailAddress      AttributeType ::= { pkcs-9 1 }
+  //
+  // In dotted form: 1.2.840.113549.1.9.1
+  const uint8_t oid[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x01};
+  return der::Input(oid);
+}
+
 bool X509NameAttribute::ValueAsString(std::string* out) const {
   switch (value_tag) {
     case der::kTeletexString: {
@@ -269,6 +282,8 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
     type_string = "OU";
   } else if (type == TypeGivenNameOid()) {
     type_string = "GN";
+  } else if (type == TypeEmailAddressOid()) {
+    type_string = "emailAddress";
   } else {
     type_string = OidToString(type);
     if (type_string.empty())

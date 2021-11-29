@@ -23,17 +23,6 @@ DEFINE_CERT_ERROR_ID(kFailedNormalizingString, "Failed normalizing string");
 
 namespace {
 
-// RFC 5280 section A.1:
-//
-// pkcs-9 OBJECT IDENTIFIER ::=
-//   { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 9 }
-//
-// id-emailAddress      AttributeType ::= { pkcs-9 1 }
-//
-// In dotted form: 1.2.840.113549.1.9.1
-const uint8_t kOidEmailAddress[] = {0x2A, 0x86, 0x48, 0x86, 0xF7,
-                                    0x0D, 0x01, 0x09, 0x01};
-
 // Types of character set checking that NormalizeDirectoryString can perform.
 enum CharsetEnforcement {
   NO_ENFORCEMENT,
@@ -414,7 +403,7 @@ bool NameContainsEmailAddress(const der::Input& name_rdn_sequence,
       return false;
 
     for (const auto& type_and_value : type_and_values) {
-      if (type_and_value.type == der::Input(kOidEmailAddress)) {
+      if (type_and_value.type == TypeEmailAddressOid()) {
         *contained_email_address = true;
         return true;
       }
