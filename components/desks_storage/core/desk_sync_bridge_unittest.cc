@@ -552,9 +552,9 @@ TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
   EXPECT_EQ(4ul, bridge()->GetAllEntryUuids().size());
 
   base::RunLoop loop;
-  bridge()->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  bridge()->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 4ul);
 

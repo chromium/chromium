@@ -82,7 +82,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.
   void OnGetAllEntries(desks_storage::DeskModel::GetAllEntriesStatus status,
-                       std::vector<DeskTemplate*> entries);
+                       const std::vector<DeskTemplate*>& entries);
 
   // Callback after deleting an entry. Will then call `GetAllEntries` to update
   // the UI with the most up to date list of templates.

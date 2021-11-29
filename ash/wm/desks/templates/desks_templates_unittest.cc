@@ -141,7 +141,7 @@ class DesksTemplatesTest : public OverviewTestBase {
     base::RunLoop loop;
     desk_model()->GetAllEntries(base::BindLambdaForTesting(
         [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-            std::vector<DeskTemplate*> entries) {
+            const std::vector<DeskTemplate*>& entries) {
           EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
           templates = entries;
           loop.Quit();

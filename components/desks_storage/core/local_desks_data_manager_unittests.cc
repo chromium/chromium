@@ -256,9 +256,9 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -285,9 +285,9 @@ TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
   data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 4ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -325,9 +325,9 @@ TEST_F(LocalDeskDataManagerTest, CanMarkDuplicateEntryNames) {
       base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -363,9 +363,9 @@ TEST_F(LocalDeskDataManagerTest, AppendsDuplicateMarkingsCorrectly) {
       base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid7, entries));
@@ -488,9 +488,9 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 0ul);
         loop.Quit();
@@ -516,9 +516,9 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteAllEntries) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 0ul);
         loop.Quit();

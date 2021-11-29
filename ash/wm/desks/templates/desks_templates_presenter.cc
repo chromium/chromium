@@ -190,7 +190,7 @@ void DesksTemplatesPresenter::SaveDeskTemplate(
 
 void DesksTemplatesPresenter::OnGetAllEntries(
     desks_storage::DeskModel::GetAllEntriesStatus status,
-    std::vector<DeskTemplate*> entries) {
+    const std::vector<DeskTemplate*>& entries) {
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 

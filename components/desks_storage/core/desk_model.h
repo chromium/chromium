@@ -65,7 +65,7 @@ class DeskModel {
 
   using GetAllEntriesCallback =
       base::OnceCallback<void(GetAllEntriesStatus status,
-                              std::vector<ash::DeskTemplate*> entries)>;
+                              const std::vector<ash::DeskTemplate*>& entries)>;
   // Returns a vector of entries in the model.
   virtual void GetAllEntries(GetAllEntriesCallback callback) = 0;
 
