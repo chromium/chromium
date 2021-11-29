@@ -21,6 +21,8 @@
 #include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
@@ -104,13 +106,17 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
     return folder_header_view_->IsFolderNameEnabledForTest();
   }
 
-  void UpdatePreviousCursorPosition(const size_t previous_cursor_position) {
-    folder_header_view_->SetPreviousCursorPositionForTest(
-        previous_cursor_position);
-  }
+  void FocusText() { folder_header_view_->SetTextFocus(); }
 
-  void UpdatePreviousFolderName(const std::u16string& previous_name) {
-    folder_header_view_->SetPreviousFolderNameForTest(previous_name);
+  bool HasTextFocus() { return folder_header_view_->HasTextFocus(); }
+
+  void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    folder_header_view_->HandleKeyEvent(
+        folder_header_view_->GetFolderNameViewForTest(),
+        ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, flags));
+    folder_header_view_->HandleKeyEvent(
+        folder_header_view_->GetFolderNameViewForTest(),
+        ui::KeyEvent(ui::ET_KEY_RELEASED, key_code, flags));
   }
 
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
@@ -120,18 +126,6 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
   std::unique_ptr<views::Textfield> textfield_;
   std::unique_ptr<views::Widget> widget_;
 };
-
-TEST_F(FolderHeaderViewTest, SetFolderName) {
-  // Creating a folder with empty folder name.
-  AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
-  folder_header_view_->SetFolderItem(folder_item);
-  EXPECT_EQ("", GetFolderNameFromUI());
-  EXPECT_TRUE(CanEditFolderName());
-
-  // Update UI to set folder name to "test folder".
-  UpdateFolderName("test folder");
-  EXPECT_EQ("test folder", delegate_->folder_name());
-}
 
 TEST_F(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
@@ -163,8 +157,6 @@ TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
     max_len_name += "a";
   }
   std::string too_long_name = max_len_name + "a";
-  UpdatePreviousCursorPosition(0);
-  UpdatePreviousFolderName(std::u16string());
 
   // Expect that the folder name does not change, and does not truncate
   UpdateFolderName(too_long_name);
@@ -192,7 +184,7 @@ namespace {
 
 // Sends a tap gesture with events corresponding to touch-down and touch-up.
 // This is a template to support a |handler| with an OnGestureEvent() method
-// that isn't a ui::EventHandler implementation.
+// such as views::Widget or views::View.
 template <typename GestureHandler>
 void SendTap(GestureHandler* handler, const gfx::Point& location) {
   ui::GestureEvent tap_down(
@@ -256,6 +248,55 @@ TEST_F(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
   // Test that clicking in the same spot won't trigger folder rename.
   SendPress(widget_.get(), right_of_name_view);
   EXPECT_FALSE(name_view->HasFocus());
+}
+
+// Test that hitting the return key sets the folder name.
+TEST_F(FolderHeaderViewTest, SetFolderNameOnReturn) {
+  // Create a folder with empty folder name.
+  AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
+  folder_header_view_->SetFolderItem(folder_item);
+  ASSERT_EQ("", GetFolderNameFromUI());
+  ASSERT_TRUE(CanEditFolderName());
+
+  // Focus the text.
+  FocusText();
+  ASSERT_TRUE(HasTextFocus());
+
+  // Set the folder name.
+  UpdateFolderName("ret");
+  EXPECT_EQ("ret", GetFolderNameFromUI());
+
+  // Press return.
+  SendKey(ui::VKEY_RETURN);
+
+  // Make sure the return press unfocused the text and registered the name
+  // change.
+  EXPECT_FALSE(HasTextFocus());
+  EXPECT_EQ("ret", delegate_->folder_name());
+}
+
+// Test that hitting the escape key reverts the folder name.
+TEST_F(FolderHeaderViewTest, RevertFolderNameOnEscape) {
+  // Create a folder with empty folder name.
+  AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
+  folder_header_view_->SetFolderItem(folder_item);
+  ASSERT_EQ("", GetFolderNameFromUI());
+  ASSERT_TRUE(CanEditFolderName());
+
+  // Focus the text.
+  FocusText();
+  ASSERT_TRUE(HasTextFocus());
+
+  // Set the folder name.
+  UpdateFolderName("esc");
+  EXPECT_EQ("esc", GetFolderNameFromUI());
+
+  // Press escape.
+  SendKey(ui::VKEY_ESCAPE);
+
+  // Make sure the escape press unfocused the text and reverted the name change.
+  EXPECT_FALSE(HasTextFocus());
+  EXPECT_EQ("", delegate_->folder_name());
 }
 
 }  // namespace test
