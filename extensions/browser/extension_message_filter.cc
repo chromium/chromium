@@ -111,25 +111,23 @@ bool IsValidMessagingSource(RenderProcessHost& process,
             ContentScriptTracker::DidProcessRunContentScriptFromExtension(
                 process, extension_id);
         if (!is_content_script_expected) {
-          // TODO(https://crbug.com/1212918): Re-enable the enforcement (i.e.
-          // replace the UmaHistogramSparse call with a call to
-          // ReceivedBadMessage and returning false) after investigating and
-          // fixing the root cause of incorrect behavior reports coming from the
-          // end users.
+          // TODO(https://crbug.com/1212918): Remove some of the more excessive
+          // tracing once there are no more bad message reports to investigate.
+          // (Remove here + in ContentScriptTracker.)
           TRACE_EVENT_INSTANT("extensions",
                               "IsValidMessagingSource: kTab: bad message",
                               ChromeTrackEvent::kRenderProcessHost, process,
                               ChromeTrackEvent::kChromeExtensionId,
                               ExtensionIdForTracing(extension_id));
-          base::UmaHistogramSparse(
-              "Stability.BadMessageTerminated.Extensions",
+          bad_message::ReceivedBadMessage(
+              &process,
               bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
-        } else {
-          TRACE_EVENT_INSTANT("extensions", "IsValidMessagingSource: kTab: ok",
-                              ChromeTrackEvent::kRenderProcessHost, process,
-                              ChromeTrackEvent::kChromeExtensionId,
-                              ExtensionIdForTracing(extension_id));
+          return false;
         }
+        TRACE_EVENT_INSTANT("extensions", "IsValidMessagingSource: kTab: ok",
+                            ChromeTrackEvent::kRenderProcessHost, process,
+                            ChromeTrackEvent::kChromeExtensionId,
+                            ExtensionIdForTracing(extension_id));
       }
       return true;
   }
