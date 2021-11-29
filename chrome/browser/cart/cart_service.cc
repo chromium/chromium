@@ -150,6 +150,7 @@ CartService::CartService(Profile* profile)
                                       weak_ptr_factory_.GetWeakPtr());
   pref_change_registrar_.Add(prefs::kNtpDisabledModules, callback);
   pref_change_registrar_.Add(prefs::kCartDiscountEnabled, callback);
+  pref_change_registrar_.Add(prefs::kNtpModulesVisible, callback);
 }
 
 CartService::~CartService() = default;
@@ -988,7 +989,8 @@ bool CartService::IsCartAndDiscountEnabled() {
   if (list && base::Contains(list->GetList(), base::Value(kCartPrefsKey))) {
     return false;
   }
-  return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled);
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled) &&
+         profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible);
 }
 
 void CartService::SetCartDiscountLinkFetcherForTesting(
