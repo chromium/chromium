@@ -155,7 +155,7 @@ SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
     : bucket(bucket), can_store_raw_size(bucket->CanStoreRawSize()) {}
 
 template <bool thread_safe>
-void SlotSpanMetadata<thread_safe>::FreeSlowPath() {
+void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -185,11 +185,13 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath() {
     // Ensure that the slot span is full. That's the only valid case if we
     // arrive here.
     PA_DCHECK(num_allocated_slots < 0);
-    // A transition of num_allocated_slots from 0 to -1 is not legal, and
-    // likely indicates a double-free.
-    PA_CHECK(num_allocated_slots != -1);
-    num_allocated_slots = -num_allocated_slots - 2;
-    PA_DCHECK(num_allocated_slots == bucket->get_slots_per_span() - 1);
+    // A transition of num_allocated_slots from 0 to a negative value is not
+    // legal, and likely indicates a double-free.
+    PA_CHECK(static_cast<intptr_t>(num_allocated_slots) <
+             -static_cast<intptr_t>(number_of_freed));
+    num_allocated_slots = -num_allocated_slots - 2 * number_of_freed;
+    PA_DCHECK(static_cast<size_t>(num_allocated_slots) ==
+              bucket->get_slots_per_span() - number_of_freed);
     // Fully used slot span became partially used. It must be put back on the
     // non-full list. Also make it the current slot span to increase the
     // chances of it being filled up again. The old current slot span will be
@@ -202,7 +204,7 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath() {
     // Special case: for a partition slot span with just a single slot, it may
     // now be empty and we want to run it through the empty logic.
     if (UNLIKELY(num_allocated_slots == 0))
-      FreeSlowPath();
+      FreeSlowPath(number_of_freed /*ignored*/);
   }
 }
 

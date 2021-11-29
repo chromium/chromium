@@ -48,6 +48,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
+#include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -203,6 +204,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   using SlotSpan = internal::SlotSpanMetadata<thread_safe>;
   using Page = internal::PartitionPage<thread_safe>;
   using Bucket = internal::PartitionBucket<thread_safe>;
+  using FreeListEntry = internal::PartitionFreelistEntry;
   using SuperPageExtentEntry =
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
@@ -491,6 +493,11 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE void RawFree(void* slot_start);
   ALWAYS_INLINE void RawFree(void* slot_start, SlotSpan* slot_span)
       LOCKS_EXCLUDED(lock_);
+
+  ALWAYS_INLINE void RawFreeBatch(FreeListEntry* head,
+                                  FreeListEntry* tail,
+                                  size_t size,
+                                  SlotSpan* slot_span) LOCKS_EXCLUDED(lock_);
 
   ALWAYS_INLINE void RawFreeWithThreadCache(void* slot_start,
                                             SlotSpan* slot_span);
@@ -1222,6 +1229,26 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start,
 
   ScopedGuard guard{lock_};
   FreeInSlotSpan(slot_start, slot_span);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
+    FreeListEntry* head,
+    FreeListEntry* tail,
+    size_t size,
+    SlotSpan* slot_span) {
+  PA_DCHECK(head);
+  PA_DCHECK(tail);
+  PA_DCHECK(size > 0);
+  PA_DCHECK(slot_span);
+  PA_DCHECK(IsValidSlotSpan(slot_span));
+  // The passed freelist is likely to be just built up, which means that the
+  // corresponding pages were faulted in (without acquiring the lock). So there
+  // is no need to touch pages manually here before the lock.
+  ScopedGuard guard{lock_};
+  total_size_of_allocated_bytes -=
+      (slot_span->GetSlotSizeForBookkeeping() * size);
+  slot_span->AppendFreeList(head, tail, size);
 }
 
 template <bool thread_safe>

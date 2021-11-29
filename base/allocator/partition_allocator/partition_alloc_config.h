@@ -53,6 +53,10 @@ static_assert(sizeof(void*) != 8, "");
 #error "Card table can only be used when *Scan is allowed"
 #endif
 
+// Use batched freeing when sweeping pages. This builds up a freelist in the
+// scanner thread and appends to the slot-span's freelist only once.
+#define PA_STARSCAN_BATCHED_FREE 1
+
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

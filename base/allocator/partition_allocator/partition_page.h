@@ -154,9 +154,12 @@ struct __attribute__((packed)) SlotSpanMetadata {
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
-  BASE_EXPORT NOINLINE void FreeSlowPath();
+  BASE_EXPORT NOINLINE void FreeSlowPath(size_t number_of_freed);
   ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   ALWAYS_INLINE void Free(void* ptr);
+  ALWAYS_INLINE void AppendFreeList(PartitionFreelistEntry* head,
+                                    PartitionFreelistEntry* tail,
+                                    size_t number_of_freed);
 
   void Decommit(PartitionRoot<thread_safe>* root);
   void DecommitIfPossible(PartitionRoot<thread_safe>* root);
@@ -647,7 +650,51 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(void* slot_start)
   SetFreelistHead(entry);
   --num_allocated_slots;
   if (UNLIKELY(num_allocated_slots <= 0)) {
-    FreeSlowPath();
+    FreeSlowPath(1);
+  } else {
+    // All single-slot allocations must go through the slow path to
+    // correctly update the raw size.
+    PA_DCHECK(!CanStoreRawSize());
+  }
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
+    PartitionFreelistEntry* head,
+    PartitionFreelistEntry* tail,
+    size_t number_of_freed)
+    EXCLUSIVE_LOCKS_REQUIRED(
+        PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
+#if DCHECK_IS_ON()
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
+  root->lock_.AssertAcquired();
+  PA_DCHECK(!tail->GetNext(bucket->slot_size));
+  PA_DCHECK(number_of_freed);
+  PA_DCHECK(num_allocated_slots);
+  if (CanStoreRawSize()) {
+    PA_DCHECK(number_of_freed == 1);
+  }
+  {
+    size_t number_of_entries = 0;
+    for (auto* entry = head; entry;
+         entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
+      // Check that all entries belong to this slot span.
+      PA_DCHECK(ToSlotSpanStartPtr(this) <= entry);
+      PA_DCHECK(reinterpret_cast<char*>(entry) <
+                (static_cast<char*>(ToSlotSpanStartPtr(this)) +
+                 bucket->get_bytes_per_span()));
+    }
+    PA_DCHECK(number_of_entries == number_of_freed);
+  }
+#endif
+
+  tail->SetNext(freelist_head);
+  SetFreelistHead(head);
+  PA_DCHECK(static_cast<size_t>(num_allocated_slots) >= number_of_freed);
+  num_allocated_slots -= number_of_freed;
+
+  if (UNLIKELY(num_allocated_slots <= 0)) {
+    FreeSlowPath(number_of_freed);
   } else {
     // All single-slot allocations must go through the slow path to
     // correctly update the raw size.
