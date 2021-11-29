@@ -50227,6 +50227,7 @@ from previous Chrome versions.
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
   <int value="-1028251580" label="GamepadPollingInterval:disabled"/>
+  <int value="-1027941917" label="SnoopingProtection:enabled"/>
   <int value="-1027254093" label="LockScreenNotifications:disabled"/>
   <int value="-1027124889" label="NtlmV2Enabled:enabled"/>
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
@@ -53677,6 +53678,7 @@ from previous Chrome versions.
   <int value="1590278995"
       label="AutofillSendExperimentIdsInPaymentsRPCs:enabled"/>
   <int value="1590300329" label="CCTModulePostMessage:enabled"/>
+  <int value="1590837406" label="SnoopingProtection:disabled"/>
   <int value="1591653786" label="SpeculativePreconnect:enabled"/>
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>

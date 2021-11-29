@@ -5111,6 +5111,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "snooping-protection",
+    "owners": [ "martis", "charleszhao", "napper" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "spectre-v2-mitigation",
     "owners": [ "chromeos-security@google.com" ],
     "expiry_milestone": 100

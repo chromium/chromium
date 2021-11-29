@@ -2621,6 +2621,38 @@ const FeatureEntry::FeatureVariation kWin11StyleMenusVariations[] = {
 };
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Possible configurations for the snooping protection feature.
+// Empty params configures the feature to apply a simple threshold to one
+// sample.
+
+const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
+    {"filter_config_case", "2"},
+    {"count", "2"},
+    {"threshold", "40"},
+    {"initial_state", "false"}};
+
+const FeatureEntry::FeatureParam kSnoopingProtectionBalance[] = {
+    {"filter_config_case", "2"},
+    {"count", "2"},
+    {"threshold", "0"},
+    {"initial_state", "false"}};
+
+const FeatureEntry::FeatureParam kSnoopingProtectionRecall[] = {
+    {"filter_config_case", "2"},
+    {"count", "2"},
+    {"threshold", "-40"},
+    {"initial_state", "false"}};
+
+const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
+    {"Slow Precise", kSnoopingProtectionPrecision,
+     base::size(kSnoopingProtectionPrecision), nullptr},
+    {"Slow Balanced", kSnoopingProtectionBalance,
+     base::size(kSnoopingProtectionBalance), nullptr},
+    {"Slow Comprehensive", kSnoopingProtectionRecall,
+     base::size(kSnoopingProtectionRecall), nullptr}};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7662,6 +7694,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRequestDesktopSiteExceptionsName,
      flag_descriptions::kRequestDesktopSiteExceptionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kRequestDesktopSiteExceptions)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"snooping-protection", flag_descriptions::kSnoopingProtectionName,
+     flag_descriptions::kSnoopingProtectionDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSnoopingProtection,
+                                    kSnoopingProtectionVariations,
+                                    "SnoopingProtection")},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
