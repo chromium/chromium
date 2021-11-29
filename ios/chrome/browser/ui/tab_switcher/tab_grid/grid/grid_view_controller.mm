@@ -874,10 +874,26 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                  toIndexPath:CreateIndexPath(toIndex)];
   };
   auto completion = ^(BOOL finished) {
-    [self.collectionView
-        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:NO
-               scrollPosition:UICollectionViewScrollPositionNone];
+    // Bring back selected halo only for the moved cell, which lost it during
+    // the move (drag & drop).
+    if (self.selectedIndex != toIndex) {
+      return;
+    }
+    // Force reload of the selected cell now to avoid extra delay for the
+    // blue halo to appear. Bring the halo in 100ms.
+    [UIView
+        animateWithDuration:0.1
+                 animations:^{
+                   [self.collectionView reloadItemsAtIndexPaths:@[
+                     CreateIndexPath(self.selectedIndex)
+                   ]];
+                   [self.collectionView
+                       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                                    animated:NO
+                              scrollPosition:
+                                  UICollectionViewScrollPositionNone];
+                 }
+                 completion:nil];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
