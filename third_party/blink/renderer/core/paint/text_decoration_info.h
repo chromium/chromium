@@ -114,6 +114,10 @@ class CORE_EXPORT TextDecorationInfo {
   float StepFromResolvedThickness() const;
   Path PrepareDottedOrDashedStrokePath() const;
   Path PrepareWavyStrokePath() const;
+  bool IsSpellingOrGrammarError() const {
+    return line_data_.line == TextDecorationLine::kSpellingError ||
+           line_data_.line == TextDecorationLine::kGrammarError;
+  }
 
   const ComputedStyle& style_;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
@@ -131,6 +135,7 @@ class CORE_EXPORT TextDecorationInfo {
   int decoration_index_;
 
   struct LineData {
+    TextDecorationLine line;
     float line_offset;
     float double_offset;
     int wavy_offset_factor;
