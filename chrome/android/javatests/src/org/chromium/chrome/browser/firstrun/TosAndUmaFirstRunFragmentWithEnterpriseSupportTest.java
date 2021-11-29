@@ -31,7 +31,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -44,7 +43,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -59,9 +57,12 @@ import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.policy.PolicyService;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -77,7 +78,6 @@ import java.util.concurrent.TimeoutException;
  * workflow and UI transition.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @IntDef({FragmentState.LOADING, FragmentState.NO_POLICY, FragmentState.HAS_POLICY,
             FragmentState.WAITING_UNTIL_NEXT_PAGE})
@@ -111,7 +111,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
                     .build();
     @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
@@ -162,6 +163,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(mMockEnterpriseInfo);
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
+                FREMobileIdentityConsistencyFieldTrial.DISABLED_GROUP);
 
         setAppRestrictionsMockNotInitialized();
         setPolicyServiceMockNotInitialized();
@@ -531,6 +534,49 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         setAppRestrictionsMockInitialized(false);
         assertUIState(FragmentState.NO_POLICY);
         renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_nopolicy");
+    }
+
+    /** Tests TosAndUmaFirstRunFragment with uma dialog */
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "FirstRun"})
+    public void testRenderWithUmaDialog() throws Exception {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
+                FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
+        launchFirstRunThroughCustomTab();
+        setAppRestrictionsMockInitialized(false);
+        // Clear the focus on view to avoid unexpected highlight on background.
+        View tosAndUmaFragment =
+                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
+        Assert.assertNotNull(tosAndUmaFragment);
+        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
+
+        Assert.assertEquals(
+                "Uma checkbox should not be visible.", View.GONE, mUmaCheckBox.getVisibility());
+        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosandumadialog_nopolicy");
+    }
+
+    /** Tests TosAndUmaFirstRunFragment with uma dialog */
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "FirstRun"})
+    public void testRenderWithUmaDialogForChildAccount() throws Exception {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
+                FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
+        mAccountManagerTestRule.addAccount(
+                AccountManagerTestRule.createChildAccount("account@gmail.com").name);
+        launchFirstRunThroughCustomTab();
+        setAppRestrictionsMockInitialized(false);
+        // Clear the focus on view to avoid unexpected highlight on background.
+        View tosAndUmaFragment =
+                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
+        Assert.assertNotNull(tosAndUmaFragment);
+        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
+
+        Assert.assertEquals(
+                "Uma checkbox should not be visible.", View.GONE, mUmaCheckBox.getVisibility());
+        renderWithPortraitAndLandscape(
+                tosAndUmaFragment, "fre_tosandumadialog_childaccount_nopolicy");
     }
 
     @Test

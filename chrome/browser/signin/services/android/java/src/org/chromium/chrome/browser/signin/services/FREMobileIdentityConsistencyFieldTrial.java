@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.annotations.CalledByNative;
@@ -29,8 +30,11 @@ import java.util.Random;
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
     private static final String ENABLED_GROUP = "Enabled";
-    private static final String DISABLED_GROUP = "Disabled";
+    @VisibleForTesting
+    public static final String DISABLED_GROUP = "Disabled";
     private static final String DEFAULT_GROUP = "Default";
+    @VisibleForTesting
+    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog";
 
     @AnyThread
     public static boolean isEnabled() {
@@ -40,6 +44,15 @@ public class FREMobileIdentityConsistencyFieldTrial {
         }
         return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)
                 || ENABLED_GROUP.equals(getFirstRunTrialGroup());
+    }
+
+    @MainThread
+    public static boolean shouldShowOldFreWithUmaDialog() {
+        // Switch used for tests.
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
+            return false;
+        }
+        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup());
     }
 
     @CalledByNative
@@ -98,6 +111,14 @@ public class FREMobileIdentityConsistencyFieldTrial {
             group = DISABLED_GROUP;
         }
 
+        synchronized (LOCK) {
+            SharedPreferencesManager.getInstance().writeString(
+                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
+        }
+    }
+
+    @AnyThread
+    public static void setFirstRunTrialGroupForTesting(String group) {
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);

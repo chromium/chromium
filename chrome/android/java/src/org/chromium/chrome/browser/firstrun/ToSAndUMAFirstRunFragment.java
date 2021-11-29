@@ -25,8 +25,11 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
+import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -36,7 +39,8 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * Privacy Notice, and to opt-in to the usage statistics and crash reports collection ("UMA",
  * User Metrics Analysis) as defined in the Chrome Privacy Notice.
  */
-public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragment {
+public class ToSAndUMAFirstRunFragment
+        extends Fragment implements FirstRunFragment, FreUMADialogCoordinator.Listener {
     /** Alerts about some methods once ToSAndUMAFirstRunFragment executes them. */
     public interface Observer {
         /** See {@link #onNativeInitialized}. */
@@ -50,6 +54,8 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
     private boolean mNativeInitialized;
     private boolean mTosButtonClicked;
+    // TODO(https://crbug.com/1274145): Rename mAllowCrashUpload field.
+    private boolean mAllowCrashUpload;
 
     private Button mAcceptButton;
     private CheckBox mSendReportCheckBox;
@@ -75,6 +81,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mAllowCrashUpload = getUmaCheckBoxInitialState();
 
         mTitle = view.findViewById(R.id.title);
         mProgressSpinner = view.findViewById(R.id.progress_spinner);
@@ -85,14 +92,22 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
         mAcceptButton.setOnClickListener((v) -> onTosButtonClicked());
 
-        mSendReportCheckBox.setChecked(getUmaCheckBoxInitialState());
+        mSendReportCheckBox.setChecked(mAllowCrashUpload);
+        mSendReportCheckBox.setOnCheckedChangeListener(
+                ((compoundButton, isChecked) -> mAllowCrashUpload = isChecked));
         if (!canShowUmaCheckBox()) {
+            if (!FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()) {
+                mAllowCrashUpload =
+                        sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild();
+            }
             mSendReportCheckBox.setVisibility(View.GONE);
         }
 
         mTosAndPrivacy.setMovementMethod(LinkMovementMethod.getInstance());
 
         Resources resources = getResources();
+        final boolean showUmaDialog =
+                FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog();
         NoUnderlineClickableSpan clickableGoogleTermsSpan =
                 new NoUnderlineClickableSpan(resources, (view1) -> {
                     if (!isAdded()) return;
@@ -106,7 +121,9 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         NoUnderlineClickableSpan clickableFamilyLinkPrivacySpan =
                 new NoUnderlineClickableSpan(resources, (view1) -> {
                     if (!isAdded()) return;
-                    getPageDelegate().showInfoPage(R.string.family_link_privacy_policy_url);
+                    getPageDelegate().showInfoPage(showUmaDialog
+                                    ? R.string.google_privacy_policy_url
+                                    : R.string.family_link_privacy_policy_url);
                 });
 
         final CharSequence tosText;
@@ -114,15 +131,33 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         @ChildAccountStatus.Status
         int childAccountStatus = freProperties.getInt(
                 SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
-        if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
-            tosText = SpanApplier.applySpans(getString(R.string.fre_tos_and_privacy_child_account),
-                    new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                    new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                    new SpanInfo("<LINK3>", "</LINK3>", clickableFamilyLinkPrivacySpan));
+        if (showUmaDialog) {
+            final NoUnderlineClickableSpan clickableUMADialogSpan =
+                    new NoUnderlineClickableSpan(resources, (view1) -> openUmaDialog());
+            if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
+                tosText = SpanApplier.applySpans(
+                        getString(R.string.signin_fre_footer_supervised_user),
+                        new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan),
+                        new SpanInfo("<PRIVACY_LINK>", "</PRIVACY_LINK>",
+                                clickableFamilyLinkPrivacySpan),
+                        new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
+            } else {
+                tosText = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
+                        new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan),
+                        new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
+            }
         } else {
-            tosText = SpanApplier.applySpans(getString(R.string.fre_tos),
-                    new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                    new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
+            if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
+                tosText = SpanApplier.applySpans(
+                        getString(R.string.fre_tos_and_privacy_child_account),
+                        new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
+                        new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
+                        new SpanInfo("<LINK3>", "</LINK3>", clickableFamilyLinkPrivacySpan));
+            } else {
+                tosText = SpanApplier.applySpans(getString(R.string.fre_tos),
+                        new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
+                        new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
+            }
         }
         mTosAndPrivacy.setText(tosText);
 
@@ -184,7 +219,19 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         assert !isWaitingForNativeAndPolicyInit();
 
         setSpinnerVisible(false);
-        mSendReportCheckBox.setChecked(getUmaCheckBoxInitialState());
+        mSendReportCheckBox.setChecked(mAllowCrashUpload);
+    }
+
+    /** Implements {@link FreUMADialogCoordinator.Listener} */
+    @Override
+    public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
+        mAllowCrashUpload = allowCrashUpload;
+    }
+
+    private void openUmaDialog() {
+        new FreUMADialogCoordinator(requireContext(),
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                mAllowCrashUpload);
     }
 
     private void onTosButtonClicked() {
@@ -211,8 +258,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
             RecordHistogram.recordTimesHistogram("MobileFre.TosFragment.SpinnerVisibleDuration",
                     SystemClock.elapsedRealtime() - mTosAcceptedTime);
         }
-        boolean allowCrashUpload = canShowUmaCheckBox() && mSendReportCheckBox.isChecked();
-        getPageDelegate().acceptTermsOfService(allowCrashUpload);
+        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
     }
 
     private void setSpinnerVisible(boolean spinnerVisible) {
@@ -260,7 +306,8 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
      *         with whether other non-spinner elements can generally be shown.
      */
     protected boolean canShowUmaCheckBox() {
-        return sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild();
+        return !FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()
+                && (sShowUmaCheckBoxForTesting || ChromeVersionInfo.isOfficialBuild());
     }
 
     @VisibleForTesting
