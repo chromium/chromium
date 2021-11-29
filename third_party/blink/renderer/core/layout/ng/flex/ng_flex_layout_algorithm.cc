@@ -1026,9 +1026,11 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
                               : line_contexts[0].cross_axis_offset_;
 
   LayoutUnit final_content_main_size =
-      container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
+      (container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum())
+          .ClampNegativeToZero();
   LayoutUnit final_content_cross_size =
-      total_block_size_ - BorderScrollbarPadding().BlockSum();
+      (total_block_size_ - BorderScrollbarPadding().BlockSum())
+          .ClampNegativeToZero();
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
@@ -1061,10 +1063,12 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
-        container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
+        (container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum())
+            .ClampNegativeToZero();
   } else {
     final_content_cross_size =
-        total_block_size_ - BorderScrollbarPadding().BlockSum();
+        (total_block_size_ - BorderScrollbarPadding().BlockSum())
+            .ClampNegativeToZero();
   }
 
   absl::optional<LayoutUnit> fallback_baseline;
