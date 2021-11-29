@@ -1974,7 +1974,8 @@ TEST_F(CookieMonsterTest, GetExcludedCookiesForURL) {
 
   // Checking that excluded cookies get sent with their statuses with http
   // request.
-  excluded_cookies = GetExcludedCookiesForURL(cm.get(), http_www_foo_.url());
+  excluded_cookies = GetExcludedCookiesForURL(cm.get(), http_www_foo_.url(),
+                                              CookiePartitionKeychain());
   iter = excluded_cookies.begin();
 
   ASSERT_TRUE(iter != excluded_cookies.end());
@@ -2012,7 +2013,8 @@ TEST_F(CookieMonsterTest, GetExcludedCookiesForURL) {
   ASSERT_TRUE(++iter == excluded_cookies.end());
 
   // Check that no excluded cookies are sent with secure request
-  excluded_cookies = GetExcludedCookiesForURL(cm.get(), https_www_foo_.url());
+  excluded_cookies = GetExcludedCookiesForURL(cm.get(), https_www_foo_.url(),
+                                              CookiePartitionKeychain());
   iter = excluded_cookies.begin();
 
   EXPECT_TRUE(excluded_cookies.empty());
@@ -2069,8 +2071,8 @@ TEST_F(CookieMonsterTest, GetExcludedCookiesForURLPathMatching) {
   EXPECT_TRUE(
       CreateAndSetCookie(cm.get(), http_www_foo_.url(), "E=F;", options));
 
-  CookieAccessResultList excluded_cookies =
-      GetExcludedCookiesForURL(cm.get(), www_foo_foo_.url());
+  CookieAccessResultList excluded_cookies = GetExcludedCookiesForURL(
+      cm.get(), www_foo_foo_.url(), CookiePartitionKeychain());
   auto it = excluded_cookies.begin();
 
   ASSERT_TRUE(it != excluded_cookies.end());
@@ -2081,7 +2083,8 @@ TEST_F(CookieMonsterTest, GetExcludedCookiesForURLPathMatching) {
 
   ASSERT_TRUE(++it == excluded_cookies.end());
 
-  excluded_cookies = GetExcludedCookiesForURL(cm.get(), www_foo_bar_.url());
+  excluded_cookies = GetExcludedCookiesForURL(cm.get(), www_foo_bar_.url(),
+                                              CookiePartitionKeychain());
   it = excluded_cookies.begin();
 
   ASSERT_TRUE(it != excluded_cookies.end());

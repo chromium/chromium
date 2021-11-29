@@ -190,14 +190,16 @@ class CookieStoreTest : public testing::Test {
   }
 
   // This does not update the access time on the cookies.
-  CookieAccessResultList GetExcludedCookiesForURL(CookieStore* cs,
-                                                  const GURL& url) {
+  CookieAccessResultList GetExcludedCookiesForURL(
+      CookieStore* cs,
+      const GURL& url,
+      const CookiePartitionKeychain& cookie_partition_keychain) {
     DCHECK(cs);
     GetCookieListCallback callback;
     CookieOptions options = CookieOptions::MakeAllInclusive();
     options.set_return_excluded_cookies();
-    cs->GetCookieListWithOptionsAsync(
-        url, options, CookiePartitionKeychain::Todo(), callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_keychain,
+                                      callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.excluded_cookies();
   }
