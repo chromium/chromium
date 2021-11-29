@@ -780,6 +780,10 @@ class ExtensionService : public ExtensionServiceInterface,
                            DisableExtensionWhenSwitchingBetweenGreylistStates);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            AcknowledgedStateBackFilled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           ExtensionUninstalledWhenBlocklisted);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           ExtensionUninstalledWhenBlocklistFetching);
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
   friend class BlocklistStatesInteractionUnitTest;

@@ -5,16 +5,18 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
 class ExtensionPrefs;
-class ExtensionRegistry;
 class ExtensionService;
 
 // Manages the Safe Browsing blocklist/greylist state in extension pref.
-class SafeBrowsingVerdictHandler {
+class SafeBrowsingVerdictHandler : public ExtensionRegistryObserver {
  public:
   SafeBrowsingVerdictHandler(ExtensionPrefs* extension_prefs,
                              ExtensionRegistry* registry,
@@ -22,7 +24,7 @@ class SafeBrowsingVerdictHandler {
   SafeBrowsingVerdictHandler(const SafeBrowsingVerdictHandler&) = delete;
   SafeBrowsingVerdictHandler& operator=(const SafeBrowsingVerdictHandler&) =
       delete;
-  ~SafeBrowsingVerdictHandler() = default;
+  ~SafeBrowsingVerdictHandler() override;
 
   // Initializes and load greylist from prefs.
   void Init();
@@ -45,6 +47,14 @@ class SafeBrowsingVerdictHandler {
       const ExtensionIdSet& greylist,
       const ExtensionIdSet& unchanged,
       const Blocklist::BlocklistStateMap& state_map);
+
+  // ExtensionRegistryObserver overrides.
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   ExtensionPrefs* extension_prefs_ = nullptr;
   ExtensionRegistry* registry_ = nullptr;
