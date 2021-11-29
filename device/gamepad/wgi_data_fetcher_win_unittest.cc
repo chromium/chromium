@@ -6,9 +6,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
+#include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
@@ -44,12 +47,21 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
         /*connection_change_client=*/nullptr, std::move(fetcher),
         std::move(polling_thread));
 
-    RunUntilIdle();
+    FlushPollingThread();
   }
 
-  void RunUntilIdle() {
-    base::RunLoop().RunUntilIdle();
-    polling_thread_->FlushForTesting();
+  void FlushPollingThread() { polling_thread_->FlushForTesting(); }
+
+  void CheckGamepadAdded(PadState* pad_state) {
+    // Check if the recently added gamepad state has been initialized correctly.
+    EXPECT_TRUE(pad_state->is_initialized);
+    const Gamepad& gamepad = pad_state->data;
+    EXPECT_TRUE(gamepad.connected);
+    EXPECT_FALSE(gamepad.vibration_actuator.not_null);
+  }
+
+  void CheckGamepadRemoved() {
+    EXPECT_TRUE(fetcher().GetGamepadsForTesting().empty());
   }
 
   WgiDataFetcherWin& fetcher() const { return *fetcher_; }
@@ -75,24 +87,31 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   EXPECT_EQ(fake_gamepad_statics->GetGamepadAddedEventHandlerCount(), 1u);
   EXPECT_EQ(fake_gamepad_statics->GetGamepadRemovedEventHandlerCount(), 1u);
 
-  // Add a simulated WGI device.
+  // Simulate the gamepad adding behavior by passing an IGamepad, and make
+  // the gamepad-adding callback return on a different thread, demonstrated the
+  // multi-threaded apartments setting of the GamepadStatics COM API.
+  // Corresponding threading simulation is in FakeIGamepadStatics class.
   fake_gamepad_statics->SimulateGamepadAdded(fake_gamepad);
 
-  // Check size of connected gamepad list and ensure gamepad state
-  // is initialized correctly.
-  EXPECT_EQ(fetcher().GetGamepadsForTesting().size(), 1u);
-  PadState* state = fetcher().GetPadState(
-      fetcher().GetGamepadsForTesting().front().source_id);
-  EXPECT_TRUE(state->is_initialized);
-  Gamepad& pad = state->data;
-  EXPECT_TRUE(pad.connected);
-  EXPECT_FALSE(pad.vibration_actuator.not_null);
+  // Wait for the gampad polling thread to handle the gamepad added event.
+  FlushPollingThread();
 
-  // Remove the device.
+  // Assert that the gamepad has been added to the DataFetcher.
+  const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
+      gamepads = fetcher().GetGamepadsForTesting();
+  ASSERT_EQ(gamepads.size(), 1u);
+  CheckGamepadAdded(fetcher().GetPadState(gamepads.front().source_id));
+
+  // Simulate the gamepad removing behavior, and make the gamepad-removing
+  // callback return on a different thread, demonstrated the multi-threaded
+  // apartments setting of the GamepadStatics COM API. Corresponding threading
+  // simulation is in FakeIGamepadStatics class.
   fake_gamepad_statics->SimulateGamepadRemoved(fake_gamepad);
 
-  // Check that the device was removed.
-  EXPECT_TRUE(fetcher().GetGamepadsForTesting().empty());
+  // Wait for the gampad polling thread to handle the gamepad removed event.
+  FlushPollingThread();
+
+  CheckGamepadRemoved();
 }
 
 TEST_F(WgiDataFetcherWinTest, VerifyGamepadAddedErrorHandling) {

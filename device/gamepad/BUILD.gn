@@ -86,6 +86,7 @@ component("gamepad") {
       "xinput_haptic_gamepad_win.cc",
       "xinput_haptic_gamepad_win.h",
     ]
+    deps += [ "//device/base" ]
     libs = [ "hid.lib" ]
   }
 

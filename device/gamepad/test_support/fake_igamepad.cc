@@ -11,20 +11,20 @@ namespace device {
 FakeIGamepad::FakeIGamepad() = default;
 FakeIGamepad::~FakeIGamepad() = default;
 
-HRESULT WINAPI
-FakeIGamepad::get_Vibration(ABI::Windows::Gaming::Input::GamepadVibration*) {
+HRESULT WINAPI FakeIGamepad::get_Vibration(
+    ABI::Windows::Gaming::Input::GamepadVibration* gamepad_vibration) {
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
-HRESULT WINAPI
-FakeIGamepad::put_Vibration(ABI::Windows::Gaming::Input::GamepadVibration) {
+HRESULT WINAPI FakeIGamepad::put_Vibration(
+    ABI::Windows::Gaming::Input::GamepadVibration gamepad_vibration) {
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
-HRESULT WINAPI
-FakeIGamepad::GetCurrentReading(ABI::Windows::Gaming::Input::GamepadReading*) {
+HRESULT WINAPI FakeIGamepad::GetCurrentReading(
+    ABI::Windows::Gaming::Input::GamepadReading* gamepad_reading) {
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }

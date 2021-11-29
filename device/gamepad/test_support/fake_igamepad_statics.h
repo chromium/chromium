@@ -6,6 +6,8 @@
 #define DEVICE_GAMEPAD_TEST_SUPPORT_FAKE_IGAMEPAD_STATICS_H_
 
 #include <Windows.Gaming.Input.h>
+#include <inspectable.h>
+#include <windows.foundation.collections.h>
 #include <wrl.h>
 
 #include "base/containers/flat_map.h"
@@ -41,11 +43,19 @@ class FakeIGamepadStatics final
                ABI::Windows::Gaming::Input::Gamepad*>** value) final;
 
   // Adds a fake gamepad to simulate a gamepad connection operation for test.
+  // Due to the multi-threaded apartment nature of IGamepadStatics COM API, the
+  // callback would return on a different thread. We are using a separate
+  // `SequencedTaskRunner` in this fake implementation to simulate this
+  // behavior.
   void SimulateGamepadAdded(
       const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
           gamepad_to_add);
 
   // Uses a fake gamepad to simulate a gamepad disconnection operation for test.
+  // Due to the multi-threaded apartment nature of IGamepadStatics COM API, the
+  // callback would return on a different thread. We are using a separate
+  // `SequencedTaskRunner` in this fake implementation to simulate this
+  // behavior.
   void SimulateGamepadRemoved(
       const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
           gamepad_to_remove);
@@ -65,7 +75,23 @@ class FakeIGamepadStatics final
           ABI::Windows::Gaming::Input::Gamepad*>>>
       EventHandlerMap;
 
+  using GamepadEventTriggerCallback = void (FakeIGamepadStatics::*)(
+      const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
+          gamepad);
+
   ~FakeIGamepadStatics() final;
+
+  void SimulateGamepadEvent(const Microsoft::WRL::ComPtr<
+                                ABI::Windows::Gaming::Input::IGamepad>& gamepad,
+                            GamepadEventTriggerCallback callback);
+
+  void TriggerGamepadAddedCallbackOnRandomThread(
+      const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
+          gamepad_to_add);
+
+  void TriggerGamepadRemovedCallbackOnRandomThread(
+      const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
+          gamepad_to_remove);
 
   int64_t next_event_registration_token_ = 0;
 

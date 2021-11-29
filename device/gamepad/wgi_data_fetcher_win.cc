@@ -6,26 +6,33 @@
 
 #include <wrl/event.h>
 
+#include <string>
+
+#include "base/containers/cxx20_erase.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_util_win.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
-#include "base/win/scoped_hstring.h"
+#include "device/base/event_utils_winrt.h"
 
 namespace device {
 
-using GamepadPlugAndPlayHandler = ABI::Windows::Foundation::IEventHandler<
-    ABI::Windows::Gaming::Input::Gamepad*>;
-
 WgiDataFetcherWin::WgiDataFetcherWin() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   get_activation_factory_function_ = &base::win::RoGetActivationFactory;
 }
 
-WgiDataFetcherWin::~WgiDataFetcherWin() = default;
+WgiDataFetcherWin::~WgiDataFetcherWin() {
+  UnregisterEventHandlers();
+}
 
 GamepadSource WgiDataFetcherWin::source() {
   return Factory::static_source();
 }
 
 void WgiDataFetcherWin::OnAddedToProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::win::HStringReference::ResolveCoreWinRTStringDelayload()) {
     initialization_state_ =
         InitializationState::kCoreWinrtStringDelayLoadFailed;
@@ -41,25 +48,30 @@ void WgiDataFetcherWin::OnAddedToProvider() {
     return;
   }
 
-  EventRegistrationToken added_event_token;
-  hr = gamepad_statics_->add_GamepadAdded(
-      Microsoft::WRL::Callback<GamepadPlugAndPlayHandler>(
-          this, &WgiDataFetcherWin::OnGamepadAdded)
-          .Get(),
-      &added_event_token);
-  if (FAILED(hr)) {
+  // Create a Windows::Foundation::IEventHandler that runs a
+  // base::RepeatingCallback() on the gamepad polling thread when a gamepad
+  // is added or removed. This callback stores the current sequence task runner
+  // and weak pointer, so those two objects would remain active until the
+  // callback returns.
+  added_event_token_ = AddEventHandler(
+      gamepad_statics_.Get(),
+      &ABI::Windows::Gaming::Input::IGamepadStatics::add_GamepadAdded,
+      base::BindRepeating(&WgiDataFetcherWin::OnGamepadAdded,
+                          weak_factory_.GetWeakPtr()));
+  if (!added_event_token_) {
     initialization_state_ = InitializationState::kAddGamepadAddedFailed;
+    UnregisterEventHandlers();
     return;
   }
 
-  EventRegistrationToken removed_event_token;
-  hr = gamepad_statics_->add_GamepadRemoved(
-      Microsoft::WRL::Callback<GamepadPlugAndPlayHandler>(
-          this, &WgiDataFetcherWin::OnGamepadRemoved)
-          .Get(),
-      &removed_event_token);
-  if (FAILED(hr)) {
+  removed_event_token_ = AddEventHandler(
+      gamepad_statics_.Get(),
+      &ABI::Windows::Gaming::Input::IGamepadStatics::add_GamepadRemoved,
+      base::BindRepeating(&WgiDataFetcherWin::OnGamepadRemoved,
+                          weak_factory_.GetWeakPtr()));
+  if (!removed_event_token_) {
     initialization_state_ = InitializationState::kAddGamepadRemovedFailed;
+    UnregisterEventHandlers();
     return;
   }
 
@@ -71,16 +83,24 @@ void WgiDataFetcherWin::SetGetActivationFunctionForTesting(
   get_activation_factory_function_ = value;
 }
 
-HRESULT WgiDataFetcherWin::OnGamepadAdded(
+void WgiDataFetcherWin::OnGamepadAdded(
     IInspectable* /* sender */,
     ABI::Windows::Gaming::Input::IGamepad* gamepad) {
+  // While base::win::AddEventHandler stores the sequence_task_runner in the
+  // callback function object, it post the task back to the same sequence - the
+  // gamepad polling thread when the callback is returned on a different thread
+  // from the IGamepadStatics COM API. Thus `OnGamepadAdded` is also running on
+  // gamepad polling thread, it is the only thread that is able to access the
+  // `gamepads_` object, making it thread-safe.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (initialization_state_ != InitializationState::kInitialized)
-    return S_OK;
+    return;
 
   int source_id = next_source_id_++;
   PadState* state = GetPadState(source_id);
   if (!state)
-    return S_OK;
+    return;
   state->is_initialized = true;
   Gamepad& pad = state->data;
   pad.connected = true;
@@ -88,29 +108,24 @@ HRESULT WgiDataFetcherWin::OnGamepadAdded(
   pad.vibration_actuator.not_null = false;
   pad.mapping = GamepadMapping::kStandard;
   gamepads_.push_back({source_id, gamepad});
-  return S_OK;
 }
 
-HRESULT WgiDataFetcherWin::OnGamepadRemoved(
+void WgiDataFetcherWin::OnGamepadRemoved(
     IInspectable* /* sender */,
     ABI::Windows::Gaming::Input::IGamepad* gamepad) {
-  if (initialization_state_ != InitializationState::kInitialized)
-    return S_OK;
+  // While ::device::AddEventHandler stores the sequence_task_runner in the
+  // callback function object, it post the task back to the same sequence - the
+  // gamepad polling thread when the callback is returned on a different thread
+  // from the IGamepadStatics COM API. Thus `OnGamepadRemoved` is also running
+  // on gamepad polling thread, it is the only thread that is able to access the
+  // `gamepads_` object, making it thread-safe.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(initialization_state_, InitializationState::kInitialized);
 
-  auto gamepad_it =
-      std::find_if(gamepads_.begin(), gamepads_.end(),
-                   [=](const WindowsGamingInputControllerMapping& mapping) {
-                     return mapping.gamepad.Get() == gamepad;
-                   });
-
-  if (gamepad_it != gamepads_.end()) {
-    PadState* state = GetPadState(gamepad_it->source_id);
-    if (!state)
-      return S_OK;
-    state->source = GAMEPAD_SOURCE_NONE;
-    gamepads_.erase(gamepad_it);
-  }
-  return S_OK;
+  base::EraseIf(gamepads_,
+                [=](const WindowsGamingInputControllerMapping& mapping) {
+                  return mapping.gamepad.Get() == gamepad;
+                });
 }
 
 void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
@@ -128,6 +143,26 @@ WgiDataFetcherWin::GetInitializationState() const {
   return initialization_state_;
 }
 
+void WgiDataFetcherWin::UnregisterEventHandlers() {
+  if (added_event_token_) {
+    HRESULT hr =
+        gamepad_statics_->remove_GamepadAdded(added_event_token_.value());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Removing GamepadAdded Handler failed: "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+
+  if (removed_event_token_) {
+    HRESULT hr =
+        gamepad_statics_->remove_GamepadRemoved(removed_event_token_.value());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Removing GamepadRemoved Handler failed: "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+}
+
 WgiDataFetcherWin::WindowsGamingInputControllerMapping::
     WindowsGamingInputControllerMapping(
         int input_source_id,
@@ -136,10 +171,26 @@ WgiDataFetcherWin::WindowsGamingInputControllerMapping::
     : source_id(input_source_id), gamepad(input_gamepad) {}
 
 WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    ~WindowsGamingInputControllerMapping() = default;
+    WindowsGamingInputControllerMapping(
+        const WgiDataFetcherWin::WindowsGamingInputControllerMapping& other) =
+        default;
+
+WgiDataFetcherWin::WindowsGamingInputControllerMapping&
+WgiDataFetcherWin::WindowsGamingInputControllerMapping::
+    WindowsGamingInputControllerMapping::operator=(
+        const WgiDataFetcherWin::WindowsGamingInputControllerMapping& other) =
+        default;
 
 WgiDataFetcherWin::WindowsGamingInputControllerMapping::
     WindowsGamingInputControllerMapping(
-        const WindowsGamingInputControllerMapping& other) = default;
+        WgiDataFetcherWin::WindowsGamingInputControllerMapping&& other) =
+        default;
+
+WgiDataFetcherWin::WindowsGamingInputControllerMapping&
+WgiDataFetcherWin::WindowsGamingInputControllerMapping::operator=(
+    WgiDataFetcherWin::WindowsGamingInputControllerMapping&&) = default;
+
+WgiDataFetcherWin::WindowsGamingInputControllerMapping::
+    ~WindowsGamingInputControllerMapping() = default;
 
 }  // namespace device

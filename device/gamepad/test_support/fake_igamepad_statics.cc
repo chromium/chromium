@@ -5,6 +5,10 @@
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 
 namespace device {
 
@@ -58,14 +62,22 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
 
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  size_t items_removed = base::EraseIf(
+      gamepad_added_event_handler_map_,
+      [=](const auto& entry) { return entry.first == token.value; });
+  if (items_removed == 0)
+    return E_FAIL;
+  return S_OK;
 }
 
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadRemoved(EventRegistrationToken token) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  size_t items_removed = base::EraseIf(
+      gamepad_removed_event_handler_map_,
+      [=](const auto& entry) { return entry.first == token.value; });
+  if (items_removed == 0)
+    return E_FAIL;
+  return S_OK;
 }
 
 HRESULT WINAPI FakeIGamepadStatics::get_Gamepads(
@@ -75,22 +87,33 @@ HRESULT WINAPI FakeIGamepadStatics::get_Gamepads(
   return E_NOTIMPL;
 }
 
+void FakeIGamepadStatics::SimulateGamepadEvent(
+    const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
+        gamepad,
+    GamepadEventTriggerCallback callback) {
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  base::RunLoop run_loop;
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(callback, base::Unretained(this), gamepad));
+  task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 void FakeIGamepadStatics::SimulateGamepadAdded(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
         gamepad_to_add) {
-  // Iterate through |gamepad_added_event_handler_map_| invoking each
-  // callback with |gamepad_to_add|.
-  for (const auto& entry : gamepad_added_event_handler_map_)
-    entry.second->Invoke(this, gamepad_to_add.Get());
+  SimulateGamepadEvent(
+      gamepad_to_add,
+      &FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread);
 }
 
 void FakeIGamepadStatics::SimulateGamepadRemoved(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>&
         gamepad_to_remove) {
-  // Iterate through |gamepad_removed_event_handler_map_| invoking each
-  // callback with |gamepad_to_remove|.
-  for (const auto& entry : gamepad_removed_event_handler_map_)
-    entry.second->Invoke(this, gamepad_to_remove.Get());
+  SimulateGamepadEvent(
+      gamepad_to_remove,
+      &FakeIGamepadStatics::TriggerGamepadRemovedCallbackOnRandomThread);
 }
 
 void FakeIGamepadStatics::SetAddGamepadAddedStatus(HRESULT value) {
@@ -107,6 +130,28 @@ size_t FakeIGamepadStatics::GetGamepadAddedEventHandlerCount() const {
 
 size_t FakeIGamepadStatics::GetGamepadRemovedEventHandlerCount() const {
   return gamepad_removed_event_handler_map_.size();
+}
+
+void FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread(
+    const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
+        gamepad_to_add) {
+  for (const auto& it : gamepad_added_event_handler_map_) {
+    // Invokes the callback on a random thread.
+    it.second->Invoke(
+        static_cast<ABI::Windows::Gaming::Input::IGamepadStatics*>(this),
+        gamepad_to_add.Get());
+  }
+}
+
+void FakeIGamepadStatics::TriggerGamepadRemovedCallbackOnRandomThread(
+    const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
+        gamepad_to_remove) {
+  for (auto& it : gamepad_removed_event_handler_map_) {
+    // Invokes the callback on a random thread.
+    it.second->Invoke(
+        static_cast<ABI::Windows::Gaming::Input::IGamepadStatics*>(this),
+        gamepad_to_remove.Get());
+  }
 }
 
 }  // namespace device

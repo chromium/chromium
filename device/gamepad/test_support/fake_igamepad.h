@@ -21,12 +21,12 @@ class FakeIGamepad final
   FakeIGamepad& operator=(const FakeIGamepad&) = delete;
 
   // ABI::Windows::Gaming::Input::IGamepad fake implementation.
-  HRESULT WINAPI
-  get_Vibration(ABI::Windows::Gaming::Input::GamepadVibration*) override;
-  HRESULT WINAPI
-      put_Vibration(ABI::Windows::Gaming::Input::GamepadVibration) override;
-  HRESULT WINAPI
-  GetCurrentReading(ABI::Windows::Gaming::Input::GamepadReading*) override;
+  HRESULT WINAPI get_Vibration(ABI::Windows::Gaming::Input::GamepadVibration*
+                                   gamepad_vibration) override;
+  HRESULT WINAPI put_Vibration(
+      ABI::Windows::Gaming::Input::GamepadVibration gamepad_vibration) override;
+  HRESULT WINAPI GetCurrentReading(
+      ABI::Windows::Gaming::Input::GamepadReading* gamepad_reading) override;
 
  private:
   ~FakeIGamepad() final;

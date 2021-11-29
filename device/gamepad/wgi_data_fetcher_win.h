@@ -10,6 +10,9 @@
 #include <Windows.Gaming.Input.h>
 #include <wrl/event.h>
 
+#include "base/sequence_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace device {
 
 class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
@@ -21,8 +24,19 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
         int input_source_id,
         Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
             input_gamepad);
+
     WindowsGamingInputControllerMapping(
         const WindowsGamingInputControllerMapping& other);
+
+    WindowsGamingInputControllerMapping(
+        WindowsGamingInputControllerMapping&& other);
+
+    WindowsGamingInputControllerMapping& operator=(
+        const WindowsGamingInputControllerMapping& other);
+
+    WindowsGamingInputControllerMapping& operator=(
+        WindowsGamingInputControllerMapping&&);
+
     ~WindowsGamingInputControllerMapping();
 
     int source_id;
@@ -68,13 +82,16 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
  private:
   // Set the state of the new connected gamepad to initialized, update
   // gamepad state connection status, and add a new controller mapping for
-  // |gamepad| to |gamepads_|.
-  HRESULT OnGamepadAdded(IInspectable* /* sender */,
-                         ABI::Windows::Gaming::Input::IGamepad* gamepad);
+  // `gamepad` to `gamepads_` on gamepad polling thread.
+  void OnGamepadAdded(IInspectable* /* sender */,
+                      ABI::Windows::Gaming::Input::IGamepad* gamepad);
 
-  // Remove the gamepad from the connected WGI gamepad list.
-  HRESULT OnGamepadRemoved(IInspectable* /* sender */,
-                           ABI::Windows::Gaming::Input::IGamepad* gamepad);
+  // Remove the corresponding controller mapping of `gamepad` in `gamepads_`
+  // on gamepad polling thread.
+  void OnGamepadRemoved(IInspectable* /* sender */,
+                        ABI::Windows::Gaming::Input::IGamepad* gamepad);
+
+  void UnregisterEventHandlers();
 
   int next_source_id_ = 0;
   InitializationState initialization_state_ =
@@ -86,6 +103,13 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
       gamepad_statics_;
 
   GetActivationFactoryFunction get_activation_factory_function_;
+
+  absl::optional<EventRegistrationToken> added_event_token_;
+  absl::optional<EventRegistrationToken> removed_event_token_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<WgiDataFetcherWin> weak_factory_{this};
 };
 
 }  // namespace device
