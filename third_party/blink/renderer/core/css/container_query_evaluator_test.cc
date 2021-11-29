@@ -127,7 +127,7 @@ TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        contain: size layout style;
+        container-type: size;
         width: 500px;
         height: 500px;
       }
@@ -226,7 +226,7 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
     <style>
       main {
         display: block;
-        contain: size layout style;
+        container-type: size;
         width: 500px;
         height: 500px;
       }

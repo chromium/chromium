@@ -3642,7 +3642,7 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
@@ -3703,7 +3703,7 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
@@ -3763,7 +3763,7 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
@@ -3796,7 +3796,7 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }

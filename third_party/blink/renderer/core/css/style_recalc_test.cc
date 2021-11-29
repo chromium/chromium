@@ -51,7 +51,7 @@ TEST_F(StyleRecalcTest, SkipStyleRecalcForContainer) {
     <style>
       #outer { width: 300px; }
       #outer.narrow { width: 200px; }
-      #container { contain: inline-size layout style; }
+      #container { container-type: inline-size; }
       #container.narrow { width: 100px; }
       @container (max-width: 200px) {
         #affected { color: red; }

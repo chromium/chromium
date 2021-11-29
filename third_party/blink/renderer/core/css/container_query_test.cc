@@ -186,7 +186,7 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
-        contain: size layout style;
+        container-type: size;
         width: 500px;
         height: 500px;
       }
@@ -1041,7 +1041,6 @@ TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
     <style>
       #container {
         container-type: size;
-        contain: size style layout;
       }
       @container (min-width: 200px) {
         span { color: pink; }
