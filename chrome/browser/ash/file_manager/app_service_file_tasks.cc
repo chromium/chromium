@@ -63,7 +63,10 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
       return TASK_TYPE_WEB_APP;
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kStandaloneBrowserExtension:
-      // TODO(petermarshall): Distinguish Chrome apps from Extensions.
+      // Chrome apps and Extensions both get called file_handler, even though
+      // extensions really have file_browser_handler. It doesn't matter anymore
+      // because both are executed through App Service, which can tell the
+      // difference itself.
       return TASK_TYPE_FILE_HANDLER;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kCrostini:
@@ -214,27 +217,11 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    TaskType task_type = GetTaskType(app_type);
-    if (app_type == apps::mojom::AppType::kExtension) {
-      const extensions::Extension* extension =
-          extensions::ExtensionRegistry::Get(profile)
-              ->enabled_extensions()
-              .GetByID(launch_entry.app_id);
-      // TODO(petermarshall): For now we need to distinguish file_handler
-      // (chrome app) and file_browser_handler (extension) tasks. This is
-      // because we need to launch them differently. Once launching is handled
-      // by App Service, this can be removed.
-      // Extension may be null in tests, ignore that.
-      if (extension && extension->is_extension()) {
-        task_type = TASK_TYPE_FILE_BROWSER_HANDLER;
-      }
-    }
-
     constexpr int kIconSize = 32;
     GURL icon_url =
         apps::AppIconSource::GetIconURL(launch_entry.app_id, kIconSize);
     result_list->push_back(FullTaskDescriptor(
-        TaskDescriptor(launch_entry.app_id, task_type,
+        TaskDescriptor(launch_entry.app_id, GetTaskType(app_type),
                        launch_entry.activity_name),
         launch_entry.activity_label, Verb::VERB_OPEN_WITH, icon_url,
         /* is_default=*/false,

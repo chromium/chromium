@@ -174,6 +174,13 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
       const std::string& app_id,
       bool is_disabled_mode_changed);
 
+  void LaunchExtension(const std::string& app_id,
+                       int32_t event_flags,
+                       apps::mojom::IntentPtr intent,
+                       apps::mojom::LaunchSource launch_source,
+                       apps::mojom::WindowInfoPtr window_info,
+                       LaunchAppWithIntentCallback callback);
+
   apps::InstanceRegistry* instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>

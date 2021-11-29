@@ -37,6 +37,8 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_browser_handlers.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -73,6 +75,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
@@ -195,16 +199,66 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info,
     LaunchAppWithIntentCallback callback) {
-  content::WebContents* web_contents = LaunchAppWithIntentImpl(
-      app_id, event_flags, std::move(intent), launch_source,
-      std::move(window_info), std::move(callback));
-
-  if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
-    // Add a flag to remember this web_contents originated in the ARC context.
-    web_contents->SetUserData(
-        &arc::ArcWebContentsData::kArcTransitionFlag,
-        std::make_unique<arc::ArcWebContentsData>(web_contents));
+  const auto* extension = MaybeGetExtension(app_id);
+  if (!extension) {
+    std::move(callback).Run(/*success=*/false);
+    return;
   }
+  if (extension->is_app()) {
+    content::WebContents* web_contents = LaunchAppWithIntentImpl(
+        app_id, event_flags, std::move(intent), launch_source,
+        std::move(window_info), std::move(callback));
+
+    if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
+      // Add a flag to remember this web_contents originated in the ARC context.
+      web_contents->SetUserData(
+          &arc::ArcWebContentsData::kArcTransitionFlag,
+          std::make_unique<arc::ArcWebContentsData>(web_contents));
+    }
+  } else {
+    DCHECK(extension->is_extension());
+    // TODO(petermarshall): Set Arc flag as above?
+    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
+                    std::move(window_info), std::move(callback));
+  }
+}
+
+void ExtensionAppsChromeOs::LaunchExtension(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info,
+    LaunchAppWithIntentCallback callback) {
+  const auto* extension = MaybeGetExtension(app_id);
+  DCHECK(extension);
+
+  std::vector<storage::FileSystemURL> file_urls;
+  if (intent->files) {
+    storage::FileSystemContext* file_system_context =
+        file_manager::util::GetFileSystemContextForSourceURL(profile(),
+                                                             extension->url());
+    for (const mojom::IntentFilePtr& file : intent->files.value()) {
+      file_urls.push_back(
+          file_system_context->CrackURLInFirstPartyContext(file->url));
+    }
+  }
+
+  DCHECK(intent->activity_name);
+  std::string action_id = intent->activity_name.value_or("");
+
+  file_manager::file_browser_handlers::ExecuteFileBrowserHandler(
+      profile(), extension, action_id, file_urls,
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback,
+             extensions::api::file_manager_private::TaskResult result,
+             std::string error) {
+            bool success =
+                result !=
+                extensions::api::file_manager_private::TASK_RESULT_FAILED;
+            std::move(callback).Run(success);
+          },
+          std::move(callback)));
 }
 
 void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
