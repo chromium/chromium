@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2022-01-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
-    expires_after="2022-04-24">
+    expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed"
-    enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed.Unsigned"
-    enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2023-01-15">
   <obsolete>
     Removed in M97 since unsigned commands are no longer supported.
   </obsolete>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2022-01-01">
+    enum="RemoteCommandReceivedStatus" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Received.Unsigned"
-    enum="RemoteCommandReceivedStatus" expires_after="2022-01-01">
+    enum="RemoteCommandReceivedStatus" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2022-01-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
@@ -1422,7 +1422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.CBCMPolicyRefresh"
-    enum="EnterprisePolicyRefresh" expires_after="2022-01-01">
+    enum="EnterprisePolicyRefresh" expires_after="2023-01-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
