@@ -16,8 +16,6 @@ sys.path.insert(
                  'catapult', 'systrace'))
 from systrace import util
 
-_DEFAULT_CHROME_CATEGORIES = '_DEFAULT_CHROME_CATEGORIES'
-
 TRACING_LOGGER_NAME = 'chromium:tools/tracing'
 
 
@@ -115,8 +113,7 @@ def ProfileOptions(parser):
   profile_options.add_option('--chrome_categories',
                              help='Chrome tracing '
                              'categories to record.',
-                             type='string',
-                             default=_DEFAULT_CHROME_CATEGORIES)
+                             type='string')
   profile_options.add_option(
       '--skip_symbolize',
       help='Skips symbolization after recording trace profile, if specified.',
@@ -168,8 +165,11 @@ def SymbolizeOptions(parser):
       dest='local_build_dir')
   symbolization_options.add_option(
       '--dump_syms',
-      help=('Path to dump_syms binary. Searches the given build '
-            'directory for the binary, if not provided.'),
+      help=('Path to a dump_syms binary. Required when symbolizing an official '
+            'build. Optional on local builds as we can use --local_build_dir '
+            'to locate a binary. If built locally with '
+            'autoninja -C out/Release dump_syms then the binary path is '
+            'out/Release/dump_syms'),
       dest='dump_syms_path')
   symbolization_options.add_option(
       '--symbolizer',
@@ -204,6 +204,17 @@ def SetupProfilingCategories(options):
     options: The command-line options given.
   """
   if options.enable_profiler is None:
+    if not options.chrome_categories:
+      GetTracingLogger().warning(
+          'No trace category or profiler is enabled using --enable_profiler '
+          'and/or --chrome_categories, enabling all default categories.')
+    if not options.skip_symbolize:
+      GetTracingLogger().warning(
+          'No profiler is enabled, symbolization might fail without any '
+          'frames. Use --skip_symbolize to disable symbolization.')
+    else:
+      GetTracingLogger().info(
+          'No profiler is enabled, the trace will only have trace events.')
     return
 
   if options.chrome_categories is None:

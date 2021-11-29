@@ -219,7 +219,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
   def testDumpSymsNotFound(self):
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
-    exception_msg = 'dump_syms is missing.'
+    exception_msg = 'dump_syms binary not found.'
     with self.assertRaises(Exception) as e:
       breakpad_file_extractor.ExtractBreakpadFiles('fake/path/dump_syms',
                                                    self.test_build_dir,

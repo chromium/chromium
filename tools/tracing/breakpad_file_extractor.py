@@ -48,11 +48,7 @@ def ExtractBreakpadFiles(dump_syms_path,
       directories cannot be found.
   """
   # Check to see if |dump_syms_path| is a file.
-  dump_syms_path = _GetDumpSyms(dump_syms_path, build_dir)
-  if dump_syms_path is None:
-    raise Exception(
-        'dump_syms is missing. you can build dump_syms in the {build_dir} by'
-        'running ninja -C {build_dir} dump_syms'.format(build_dir=build_dir))
+  dump_syms_path = EnsureDumpSymsBinary(dump_syms_path, build_dir)
 
   # Check if |build_dir| and |breakpad_base_dir| are directories.
   if not os.path.isdir(build_dir):
@@ -233,7 +229,7 @@ def _RunDumpSyms(dump_syms_binary,
   return True
 
 
-def _GetDumpSyms(dump_syms_path, build_dir):
+def EnsureDumpSymsBinary(dump_syms_path, build_dir):
   """Checks to see if dump_syms can be found.
 
   Args:
@@ -241,15 +237,23 @@ def _GetDumpSyms(dump_syms_path, build_dir):
     build_dir: The path to a directory.
 
   Returns:
-    The path to the dump_syms binary or None if none is found.
+    The path to the dump_syms binary or raises exception.
   """
   if dump_syms_path is not None and os.path.isfile(
       dump_syms_path) and 'dump_syms' in dump_syms_path:
     return dump_syms_path
-  path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
-  if os.path.isfile(path_to_dump_syms):
-    return path_to_dump_syms
-  return None
+
+  if build_dir is not None:
+    path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
+    if os.path.isfile(path_to_dump_syms):
+      return path_to_dump_syms
+
+  if not build_dir:
+    build_dir = 'out/android'  # For error message.
+  raise Exception(
+      'dump_syms binary not found. Build a binary with '
+      'autoninja -C {build_dir} dump_syms and try again with '
+      '--dump_syms={build_dir}/dump_syms'.format(build_dir=build_dir))
 
 
 def IsValidBinaryPath(path):

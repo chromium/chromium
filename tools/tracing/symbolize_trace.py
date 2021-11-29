@@ -37,14 +37,22 @@ def SymbolizeTrace(trace_file, options):
 
   need_cleanup = False
   if options.local_breakpad_dir is None:
+    breakpad_file_extractor.EnsureDumpSymsBinary(options.dump_syms_path,
+                                                 options.local_build_dir)
+
     # Ensure valid |breakpad_output_dir|
     if options.breakpad_output_dir is None:
       # Create a temp dir if output dir is not provided.
       # Temp dir must be cleaned up later.
       options.breakpad_output_dir = tempfile.mkdtemp()
       need_cleanup = True
-      flag_utils.GetTracingLogger().debug(
-          'Created temporary directory to hold symbol files.')
+      flag_utils.GetTracingLogger().warning(
+          'Created temporary directory to hold symbol files. These symbols '
+          'will be cleaned up after symbolization. Please specify '
+          '--breakpad_output_dir=<cached_dir> to save the symbols, if you need '
+          'to profile multiple times. The future runs need to use '
+          '--local_breakpad_dir=<cached_dir> flag so the symbolizer uses the '
+          'cache.')
     else:
       if os.path.isdir(options.breakpad_output_dir):
         if os.listdir(options.breakpad_output_dir):
