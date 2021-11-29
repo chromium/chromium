@@ -177,6 +177,9 @@ extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 extern const char kAutofillCenterAligngedSuggestionsName[];
 extern const char kAutofillCenterAligngedSuggestionsDescription[];
 
+extern const char kAutofillVisualImprovementsForSuggestionUiName[];
+extern const char kAutofillVisualImprovementsForSuggestionUiDescription[];
+
 extern const char kAutofillTypeSpecificPopupWidthName[];
 extern const char kAutofillTypeSpecificPopupWidthDescription[];
 

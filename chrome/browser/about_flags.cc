@@ -2882,6 +2882,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCenterAligngedSuggestionsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCenterAlignedSuggestions)},
+    {"autofill-visual-improvements-for-suggestion-ui",
+     flag_descriptions::kAutofillVisualImprovementsForSuggestionUiName,
+     flag_descriptions::kAutofillVisualImprovementsForSuggestionUiDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillVisualImprovementsForSuggestionUi)},
     {"autofill-type-specific-popup-width",
      flag_descriptions::kAutofillTypeSpecificPopupWidthName,
      flag_descriptions::kAutofillTypeSpecificPopupWidthDescription, kOsDesktop,

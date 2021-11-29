@@ -294,6 +294,12 @@ const char kAutofillCenterAligngedSuggestionsDescription[] =
     "When enabled, the Autofill suggestion popup will be aligned to the center "
     "of the initiating field and not to its border.";
 
+const char kAutofillVisualImprovementsForSuggestionUiName[] =
+    "Visual improvements for the Autofill and Password Manager suggestion UI.";
+const char kAutofillVisualImprovementsForSuggestionUiDescription[] =
+    "Non function changes that visually improve the suggestion UI used for "
+    "addresses, passswords and credit cards.";
+
 const char kAutofillTypeSpecificPopupWidthName[] =
     "Type-specific width limits for the Autofill popup";
 const char kAutofillTypeSpecificPopupWidthDescription[] =

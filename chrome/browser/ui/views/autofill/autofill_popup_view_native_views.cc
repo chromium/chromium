@@ -108,7 +108,7 @@ constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillCenterAlignedSuggestions)
+          autofill::features::kAutofillVisualImprovementsForSuggestionUi)
           ? DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
           : DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 }
@@ -760,7 +760,7 @@ void AutofillPopupItemView::RefreshStyle() {
     }
 
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillCenterAlignedSuggestions)) {
+            features::kAutofillVisualImprovementsForSuggestionUi)) {
       label->SetEnabledColor(fg_color);
       continue;
     }
@@ -792,7 +792,7 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
         base::FeatureList::IsEnabled(
-            features::kAutofillCenterAlignedSuggestions)
+            features::kAutofillVisualImprovementsForSuggestionUi)
             ? views::style::STYLE_PRIMARY
             : views::style::STYLE_SECONDARY);
     KeepLabel(label.get());
@@ -884,7 +884,7 @@ int AutofillPopupSuggestionView::GetPrimaryTextStyle() {
 
 gfx::Font::Weight AutofillPopupSuggestionView::GetPrimaryTextWeight() const {
   return base::FeatureList::IsEnabled(
-             features::kAutofillCenterAlignedSuggestions)
+             features::kAutofillVisualImprovementsForSuggestionUi)
              ? gfx::Font::Weight::NORMAL
              : views::TypographyProvider::MediumWeightForUI();
 }

@@ -422,6 +422,12 @@ const base::Feature kAutofillUseNewSectioningMethod{
 const base::Feature kAutofillUseUnassociatedListedElements{
     "AutofillUseUnassociatedListedElements", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Introduces various visual improvements of the Autofill suggestion UI that is
+// also used for the password manager.
+const base::Feature kAutofillVisualImprovementsForSuggestionUi{
+    "AutofillVisualImprovementsForSuggestionUi",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 const base::Feature kAutofillEnableAblationStudy{
