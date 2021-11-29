@@ -32,6 +32,30 @@ public interface PasswordStoreAndroidBackend {
     void getAllLogins(Callback<byte[]> loginsReply, Callback<Exception> failureCallback);
 
     /**
+     * Triggers an async list call to retrieve autofillable logins.
+     *
+     * @param loginsReply Callback that is called on success with serialized {@link
+     *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     * TODO(crbug.com/1229655): Remove default keyword after downstream implementation.
+     */
+    default void getAutofillableLogins(
+            Callback<byte[]> loginsReply, Callback<Exception> failureCallback){};
+
+    /**
+     * Triggers an async list call to retrieve logins with matching signon realm.
+     *
+     * @param signonRealm Signon realm string matched by a substring match. The returned results
+     * must be validated (e.g matching "sample.com" also returns logins for "not-sample.com").
+     * @param loginsReply Callback that is called on success with serialized {@link
+     *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     * TODO(crbug.com/1229655): Remove default keyword after downstream implementation.
+     */
+    default void getLoginsForSignonRealm(String signonRealm, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback){};
+
+    /**
      * Triggers an async call to add a login to the store.
      *
      * @param pwdWithLocalData Serialized PasswordWithLocalData identifying the login to be added.
