@@ -29,23 +29,26 @@ class Ranker {
                      ResultsMap& results,
                      CategoriesList& categories);
 
-  // Ranks search results. It may:
-  // - return a vector of scores the same length as results[provider].
-  // - return nullopt, and directly modify the Scoring struct on search results.
-  // Implementations must not modify the input vectors themselves.
-  virtual absl::optional<std::vector<double>> RankResults(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider);
+  // Ranks search results. Should return a vector of scores that is the same
+  // length as |results|.
+  virtual std::vector<double> GetResultRanks(const ResultsMap& results,
+                                             ProviderType provider);
 
-  // Ranks categories. It may:
-  // - return a vector of scores the same length as |categories|.
-  // - return nullopt, and directly modify scores on categories.
-  // Implementations must not modify the input vectors themselves.
-  virtual absl::optional<std::vector<double>> RankCategories(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider);
+  // Ranks search results. Implementations should modify the scoring structs of
+  // |results|, but not modify the ordering of the vector itself.
+  virtual void UpdateResultRanks(ResultsMap& results, ProviderType provider);
+
+  // Ranks categories. Should return a vector of scores that is the same
+  // length as |categories|.
+  virtual std::vector<double> GetCategoryRanks(const ResultsMap& results,
+                                               const CategoriesList& categories,
+                                               ProviderType provider);
+
+  // Ranks categories. Implementations should modify the scoring members of
+  // structs in |categories|, but not modify the ordering of the vector itself.
+  virtual void UpdateCategoryRanks(const ResultsMap& results,
+                                   CategoriesList& categories,
+                                   ProviderType provider);
 
   // Called each time a user launches a result.
   virtual void Train(const LaunchData& launch);

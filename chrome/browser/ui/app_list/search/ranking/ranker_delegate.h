@@ -33,14 +33,10 @@ class RankerDelegate : public Ranker {
   void Start(const std::u16string& query,
              ResultsMap& results,
              CategoriesList& categories) override;
-  absl::optional<std::vector<double>> RankResults(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
-  absl::optional<std::vector<double>> RankCategories(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
+  void UpdateCategoryRanks(const ResultsMap& results,
+                           CategoriesList& categories,
+                           ProviderType provider) override;
   void Train(const LaunchData& launch) override;
   void Remove(ChromeSearchResult* result) override;
 

@@ -28,10 +28,7 @@ class RemovedResultsRanker : public Ranker {
   RemovedResultsRanker& operator=(const RemovedResultsRanker&) = delete;
 
   // Ranker:
-  absl::optional<std::vector<double>> RankResults(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
   void Remove(ChromeSearchResult* result) override;
 

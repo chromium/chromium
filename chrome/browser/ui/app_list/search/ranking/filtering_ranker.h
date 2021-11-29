@@ -24,10 +24,7 @@ class FilteringRanker : public Ranker {
   void Start(const std::u16string& query,
              ResultsMap& results,
              CategoriesList& categories) override;
-  absl::optional<std::vector<double>> RankResults(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
  private:
   std::u16string last_query_;

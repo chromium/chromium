@@ -15,18 +15,15 @@ void FtrlResultRanker::Start(const std::u16string& query,
                              ResultsMap& results,
                              CategoriesList& categories) {}
 
-absl::optional<std::vector<double>> FtrlResultRanker::RankResults(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
-  return absl::nullopt;
+void FtrlResultRanker::UpdateResultRanks(ResultsMap& results,
+                                         ProviderType provider) {
+  // TODO(crbug.com/1199206): WIP.
 }
 
-absl::optional<std::vector<double>> FtrlResultRanker::RankCategories(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
-  return absl::nullopt;
+void FtrlResultRanker::UpdateCategoryRanks(const ResultsMap& results,
+                                           CategoriesList& categories,
+                                           ProviderType provider) {
+  // TODO(crbug.com/1199206): WIP.
 }
 
 void FtrlResultRanker::Train(const LaunchData& launch) {}

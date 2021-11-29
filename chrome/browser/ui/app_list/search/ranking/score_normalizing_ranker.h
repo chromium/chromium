@@ -31,10 +31,7 @@ class ScoreNormalizingRanker : public Ranker {
   ScoreNormalizingRanker& operator=(const ScoreNormalizingRanker&) = delete;
 
   // Ranker:
-  absl::optional<std::vector<double>> RankResults(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
  private:
   // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.

@@ -15,10 +15,9 @@
 
 namespace app_list {
 
-absl::optional<std::vector<double>> CategoryItemRanker::RankCategories(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
+void CategoryItemRanker::UpdateCategoryRanks(const ResultsMap& results,
+                                             CategoriesList& categories,
+                                             ProviderType provider) {
   const auto& it = results.find(provider);
   DCHECK(it != results.end());
 
@@ -43,8 +42,6 @@ absl::optional<std::vector<double>> CategoryItemRanker::RankCategories(
   // Update the category objects with the new scores .
   for (auto& category : categories)
     category.score = high_scores[category.category];
-
-  return absl::nullopt;
 }
 
 }  // namespace app_list

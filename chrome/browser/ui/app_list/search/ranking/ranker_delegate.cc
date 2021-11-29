@@ -34,22 +34,17 @@ void RankerDelegate::Start(const std::u16string& query,
     ranker->Start(query, results, categories);
 }
 
-absl::optional<std::vector<double>> RankerDelegate::RankResults(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
+void RankerDelegate::UpdateResultRanks(ResultsMap& results,
+                                       ProviderType provider) {
   for (auto& ranker : rankers_)
-    ranker->RankResults(results, categories, provider);
-  return absl::nullopt;
+    ranker->UpdateResultRanks(results, provider);
 }
 
-absl::optional<std::vector<double>> RankerDelegate::RankCategories(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
+void RankerDelegate::UpdateCategoryRanks(const ResultsMap& results,
+                                         CategoriesList& categories,
+                                         ProviderType provider) {
   for (auto& ranker : rankers_)
-    ranker->RankCategories(results, categories, provider);
-  return absl::nullopt;
+    ranker->UpdateCategoryRanks(results, categories, provider);
 }
 
 void RankerDelegate::Train(const LaunchData& launch) {

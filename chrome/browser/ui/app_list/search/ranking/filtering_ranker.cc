@@ -26,19 +26,17 @@ void FilteringRanker::Start(const std::u16string& query,
   last_query_ = query;
 }
 
-absl::optional<std::vector<double>> FilteringRanker::RankResults(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
+void FilteringRanker::UpdateResultRanks(ResultsMap& results,
+                                        ProviderType provider) {
   // Don't perform any filtering on zero-state.
   if (last_query_.empty())
-    return absl::nullopt;
+    return;
 
   // We currently only filter omnibox results. So if we don't have any yet,
   // early exit.
   const auto it = results.find(ProviderType::kOmnibox);
   if (it == results.end())
-    return absl::nullopt;
+    return;
 
   // Compute the total number of results. If we have fewer than can fit in the
   // UI, early exit.
@@ -48,7 +46,7 @@ absl::optional<std::vector<double>> FilteringRanker::RankResults(
   for (const auto& type_results : results)
     total_results += type_results.second.size();
   if (total_results <= max_search_results)
-    return absl::nullopt;
+    return;
 
   // Sort the list of omnibox results best-to-worst.
   auto& omnibox_results = results[ProviderType::kOmnibox];
@@ -64,8 +62,6 @@ absl::optional<std::vector<double>> FilteringRanker::RankResults(
     if (!scoring.top_match)
       scoring.filter = true;
   }
-
-  return absl::nullopt;
 }
 
 }  // namespace app_list

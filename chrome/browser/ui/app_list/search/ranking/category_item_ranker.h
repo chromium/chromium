@@ -26,10 +26,9 @@ class CategoryItemRanker : public Ranker {
   CategoryItemRanker& operator=(const CategoryItemRanker&) = delete;
 
   // Ranker:
-  absl::optional<std::vector<double>> RankCategories(
-      ResultsMap& results,
-      CategoriesList& categories,
-      ProviderType provider) override;
+  void UpdateCategoryRanks(const ResultsMap& results,
+                           CategoriesList& categories,
+                           ProviderType provider) override;
 };
 
 }  // namespace app_list

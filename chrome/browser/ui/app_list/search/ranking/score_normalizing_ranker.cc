@@ -59,11 +59,9 @@ ScoreNormalizingRanker::ScoreNormalizingRanker(Profile* profile) {
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
-absl::optional<std::vector<double>> ScoreNormalizingRanker::RankResults(
-    ResultsMap& results,
-    CategoriesList& categories,
-    ProviderType provider) {
-  return absl::nullopt;
+void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
+                                               ProviderType provider) {
+  // TODO(crbug.com/1199206): WIP.
 }
 
 }  // namespace app_list

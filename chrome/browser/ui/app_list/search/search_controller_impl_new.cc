@@ -150,9 +150,10 @@ void SearchControllerImplNew::SetResults(
 
   results_[provider_type] = std::move(results);
 
-  // Update ranking of all results and categories.
-  ranker_->RankResults(results_, categories_, provider_type);
-  ranker_->RankCategories(results_, categories_, provider_type);
+  // Update ranking of all results and categories. This ordering is important,
+  // as result scores may affect category scores.
+  ranker_->UpdateResultRanks(results_, provider_type);
+  ranker_->UpdateCategoryRanks(results_, categories_, provider_type);
 
   // Compile a single list of results and sort by their relevance.
   std::vector<ChromeSearchResult*> all_results;

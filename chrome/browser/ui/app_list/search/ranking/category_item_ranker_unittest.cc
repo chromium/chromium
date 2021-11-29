@@ -69,15 +69,15 @@ TEST(CategoryItemRankerTest, UpdatesScores) {
   CategoriesList categories = CreateAllCategories();
 
   // Only the kInstalledApp results should be used in this call to Rank.
-  ranker.RankCategories(results, categories, ResultType::kInstalledApp);
+  ranker.UpdateCategoryRanks(results, categories, ResultType::kInstalledApp);
   EXPECT_THAT(categories, Contains(Metadata(Category::kApps, 1.5)));
 
   // Only the kInternalApp results should be used, but the best match ignored.
-  ranker.RankCategories(results, categories, ResultType::kInternalApp);
+  ranker.UpdateCategoryRanks(results, categories, ResultType::kInternalApp);
   EXPECT_THAT(categories, Contains(Metadata(Category::kApps, 2.0)));
 
   // Ranking a new category should preserve the old ranking.
-  ranker.RankCategories(results, categories, ResultType::kOmnibox);
+  ranker.UpdateCategoryRanks(results, categories, ResultType::kOmnibox);
   EXPECT_THAT(categories, Contains(Metadata(Category::kApps, 2.0)));
   EXPECT_THAT(categories, Contains(Metadata(Category::kWeb, 0.3)));
 }
