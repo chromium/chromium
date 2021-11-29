@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS local to local: no preflight required.
+PASS local to private: no preflight required.
+PASS local to public: no preflight required.
+PASS local to public: PUT preflight failure.
+PASS local to public: PUT preflight success,
+FAIL private to local: failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS private to local: missing CORS headers on preflight response.
+PASS private to local: missing PNA header on preflight response.
+PASS private to local: missing CORS headers on final response.
+FAIL private to local: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS private to local: PUT success.
+FAIL private to local: no-CORS mode failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL private to local: no-CORS mode missing CORS headers on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL private to local: no-CORS mode missing PNA header on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS private to local: no-CORS mode success.
+PASS private to private: no preflight required.
+PASS private to public: no preflight required.
+FAIL public to local: failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS public to local: missing CORS headers on preflight response.
+PASS public to local: missing PNA header on preflight response.
+PASS public to local: missing CORS headers on final response.
+FAIL public to local: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS public to local: PUT success.
+FAIL public to local: no-CORS mode failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL public to local: no-CORS mode missing CORS headers on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL public to local: no-CORS mode missing PNA header on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS public to local: no-CORS mode success.
+FAIL public to private: failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS public to private: missing CORS headers on preflight response.
+PASS public to private: missing PNA header on preflight response.
+PASS public to private: missing CORS headers on final response.
+FAIL public to private: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS public to private: PUT success.
+FAIL public to private: no-CORS mode failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL public to private: no-CORS mode missing CORS headers on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL public to private: no-CORS mode missing PNA header on preflight response. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS public to private: no-CORS mode success.
+PASS public to public: no preflight required.
+FAIL treat-as-public-address to local: failed preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+FAIL treat-as-public-address to local: success. assert_equals: response body expected "success" but got ""
+PASS treat-as-public-address to private: failed preflight.
+FAIL treat-as-public-address to private: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS treat-as-public-address to public: no preflight required.
+PASS local to local: websocket success.
+PASS private to local: websocket success.
+PASS public to local: websocket success.
+PASS treat-as-public to local: websocket success.
+Harness: the test ran to completion.
+

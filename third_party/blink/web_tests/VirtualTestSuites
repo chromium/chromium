@@ -1116,5 +1116,10 @@
     "prefix": "change-service-worker-priority-when-client-foreground-state-change",
     "bases": ["external/wpt/service-workers"],
     "args": ["--enable-features=ChangeServiceWorkerPriorityForClientForegroundStateChange"]
+  },
+  {
+    "prefix": "private-network-access-preflights",
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--enable-features=PrivateNetworkAccessRespectPreflightResults"]
   }
 ]

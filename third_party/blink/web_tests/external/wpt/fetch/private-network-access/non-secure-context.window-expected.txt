@@ -1,22 +1,22 @@
 This is a testharness.js-based test.
-PASS Local non-secure context can fetch local subresource.
-PASS Local non-secure context can fetch private subresource.
-PASS Local non-secure context can fetch public subresource.
-PASS Private non-secure context cannot fetch local subresource.
-PASS Private non-secure context can fetch private subresource.
-PASS Private non-secure context can fetch public subresource.
-PASS Public non-secure context cannot fetch local subresource.
-PASS Public non-secure context cannot fetch private subresource.
-PASS Public non-secure context can fetch public subresource.
-PASS Treat-as-public-address non-secure context cannot fetch local subresource.
-PASS Treat-as-public-address non-secure context cannot fetch private subresource.
-PASS Treat-as-public-address non-secure context can fetch public subresource.
-PASS Private HTTPS non-secure context cannot fetch local subresource.
-PASS Public HTTPS non-secure context cannot fetch local subresource.
-PASS Public HTTPS non-secure context cannot fetch private subresource.
-PASS Local non-secure context can open connection to ws://localhost.
-FAIL Private non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
-FAIL Public non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
-FAIL Treat-as-public non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
+PASS local to local: no preflight required.
+PASS local to private: no preflight required.
+PASS local to public: no preflight required.
+PASS private to local: failure.
+PASS private to private: no preflight required.
+PASS private to public: no preflight required.
+PASS public to local: failure.
+PASS public to private: failure.
+PASS public to public: no preflight required.
+PASS treat-as-public-address to local: failure.
+PASS treat-as-public-address to private: failure.
+PASS treat-as-public-address to public: no preflight required.
+PASS private https to local: failure.
+PASS public https to local: failure.
+PASS public https to private: failure.
+PASS local to local: websocket success.
+FAIL private to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
+FAIL public to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
+FAIL treat-as-public to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
 Harness: the test ran to completion.
 

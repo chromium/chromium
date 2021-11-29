@@ -1,3 +1,4 @@
+// META: script=/common/utils.js
 // META: script=resources/support.js
 // META: script=resources/ports.sub.js
 //
@@ -18,55 +19,85 @@ promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpLocal },
   target: { port: kPorts.httpLocal },
   expected: kFetchTestResult.success,
-}), "Local non-secure context can fetch local subresource.");
+}), "local to local: no preflight required.");
 
 promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpLocal },
-  target: { port: kPorts.httpPrivate },
+  target: {
+    port: kPorts.httpPrivate,
+    searchParams: { "final-headers": "cors" },
+  },
   expected: kFetchTestResult.success,
-}), "Local non-secure context can fetch private subresource.");
+}), "local to private: no preflight required.");
 
 promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpLocal },
-  target: { port: kPorts.httpPublic },
+  target: {
+    port: kPorts.httpPublic,
+    searchParams: { "final-headers": "cors" },
+  },
   expected: kFetchTestResult.success,
-}), "Local non-secure context can fetch public subresource.");
+}), "local to public: no preflight required.");
 
 promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpPrivate },
-  target: { port: kPorts.httpLocal },
+  target: {
+    port: kPorts.httpLocal,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
+  },
   expected: kFetchTestResult.failure,
-}), "Private non-secure context cannot fetch local subresource.");
+}), "private to local: failure.");
 
 promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpPrivate },
   target: { port: kPorts.httpPrivate },
   expected: kFetchTestResult.success,
-}), "Private non-secure context can fetch private subresource.");
+}), "private to private: no preflight required.");
 
 promise_test(t => fetchTest(t, {
   source: { port: kPorts.httpPrivate },
+  target: {
+    port: kPorts.httpPublic,
+    searchParams: { "final-headers": "cors" },
+  },
+  expected: kFetchTestResult.success,
+}), "private to public: no preflight required.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpPublic },
+  target: {
+    port: kPorts.httpLocal,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
+  },
+  expected: kFetchTestResult.failure,
+}), "public to local: failure.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpPublic },
+  target: {
+    port: kPorts.httpPrivate,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
+  },
+  expected: kFetchTestResult.failure,
+}), "public to private: failure.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpPublic },
   target: { port: kPorts.httpPublic },
   expected: kFetchTestResult.success,
-}), "Private non-secure context can fetch public subresource.");
-
-promise_test(t => fetchTest(t, {
-  source: { port: kPorts.httpPublic },
-  target: { port: kPorts.httpLocal },
-  expected: kFetchTestResult.failure,
-}), "Public non-secure context cannot fetch local subresource.");
-
-promise_test(t => fetchTest(t, {
-  source: { port: kPorts.httpPublic },
-  target: { port: kPorts.httpPrivate },
-  expected: kFetchTestResult.failure,
-}), "Public non-secure context cannot fetch private subresource.");
-
-promise_test(t => fetchTest(t, {
-  source: { port: kPorts.httpPublic },
-  target: { port: kPorts.httpPublic },
-  expected: kFetchTestResult.success,
-}), "Public non-secure context can fetch public subresource.");
+}), "public to public: no preflight required.");
 
 // These tests verify that documents fetched from the `local` address space yet
 // carrying the `treat-as-public-address` CSP directive are treated as if they
@@ -75,29 +106,46 @@ promise_test(t => fetchTest(t, {
 promise_test(t => fetchTest(t, {
   source: {
     port: kPorts.httpLocal,
-    treatAsPublicAddress: true,
+    headers: { "Content-Security-Policy": "treat-as-public-address" },
   },
-  target: { port: kPorts.httpLocal },
+  target: {
+    port: kPorts.httpLocal,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
+  },
   expected: kFetchTestResult.failure,
-}), "Treat-as-public-address non-secure context cannot fetch local subresource.");
+}), "treat-as-public-address to local: failure.");
 
 promise_test(t => fetchTest(t, {
   source: {
     port: kPorts.httpLocal,
-    treatAsPublicAddress: true,
+    headers: { "Content-Security-Policy": "treat-as-public-address" },
   },
-  target: { port: kPorts.httpPrivate },
+  target: {
+    port: kPorts.httpPrivate,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
+  },
   expected: kFetchTestResult.failure,
-}), "Treat-as-public-address non-secure context cannot fetch private subresource.");
+}), "treat-as-public-address to private: failure.");
 
 promise_test(t => fetchTest(t, {
   source: {
     port: kPorts.httpLocal,
-    treatAsPublicAddress: true,
+    headers: { "Content-Security-Policy": "treat-as-public-address" },
   },
-  target: { port: kPorts.httpPublic },
+  target: {
+    port: kPorts.httpPublic,
+    searchParams: { "final-headers": "cors" },
+  },
   expected: kFetchTestResult.success,
-}), "Treat-as-public-address non-secure context can fetch public subresource.");
+}), "treat-as-public-address to public: no preflight required.");
 
 // These tests verify that HTTPS iframes embedded in an HTTP top-level document
 // cannot fetch subresources from less-public address spaces. Indeed, even
@@ -112,9 +160,14 @@ promise_test(t => fetchTest(t, {
   target: {
     protocol: "https:",
     port: kPorts.httpsLocal,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
   },
   expected: kFetchTestResult.failure,
-}), "Private HTTPS non-secure context cannot fetch local subresource.");
+}), "private https to local: failure.");
 
 promise_test(t => fetchTest(t, {
   source: {
@@ -124,9 +177,14 @@ promise_test(t => fetchTest(t, {
   target: {
     protocol: "https:",
     port: kPorts.httpsLocal,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
   },
   expected: kFetchTestResult.failure,
-}), "Public HTTPS non-secure context cannot fetch local subresource.");
+}), "public https to local: failure.");
 
 promise_test(t => fetchTest(t, {
   source: {
@@ -136,9 +194,14 @@ promise_test(t => fetchTest(t, {
   target: {
     protocol: "https:",
     port: kPorts.httpsPrivate,
+    searchParams: {
+      "preflight-uuid": token(),
+      "preflight-headers": "cors+pna",
+      "final-headers": "cors",
+    },
   },
   expected: kFetchTestResult.failure,
-}), "Public HTTPS non-secure context cannot fetch private subresource.");
+}), "public https to private: failure.");
 
 // These tests verify that websocket connections behave similarly to fetches.
 
@@ -151,7 +214,7 @@ promise_test(t => websocketTest(t, {
     port: kPorts.wsLocal,
   },
   expected: kWebsocketTestResult.success,
-}), "Local non-secure context can open connection to ws://localhost.");
+}), "local to local: websocket success.");
 
 promise_test(t => websocketTest(t, {
   source: {
@@ -162,7 +225,7 @@ promise_test(t => websocketTest(t, {
     port: kPorts.wsLocal,
   },
   expected: kWebsocketTestResult.failure,
-}), "Private non-secure context cannot open connection to ws://localhost.");
+}), "private to local: websocket failure.");
 
 promise_test(t => websocketTest(t, {
   source: {
@@ -173,7 +236,7 @@ promise_test(t => websocketTest(t, {
     port: kPorts.wsLocal,
   },
   expected: kWebsocketTestResult.failure,
-}), "Public non-secure context cannot open connection to ws://localhost.");
+}), "public to local: websocket failure.");
 
 promise_test(t => websocketTest(t, {
   source: {
@@ -185,4 +248,4 @@ promise_test(t => websocketTest(t, {
     port: kPorts.wsLocal,
   },
   expected: kWebsocketTestResult.failure,
-}), "Treat-as-public non-secure context cannot open connection to ws://localhost.");
+}), "treat-as-public to local: websocket failure.");

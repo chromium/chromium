@@ -32,9 +32,6 @@ function futureMessage() {
   });
 };
 
-const kTreatAsPublicAddressSuffix =
-      "?pipe=header(Content-Security-Policy,treat-as-public-address)";
-
 // Resolves a URL relative to the current location, returning an absolute URL.
 //
 // `url` specifies the relative URL, e.g. "foo.html" or "http://foo.example".
@@ -47,10 +44,11 @@ const kTreatAsPublicAddressSuffix =
 //     // Optional. Overrides the port of the returned URL.
 //     port,
 //
-//     // Optional boolean. If defined and true, the returned URL path is altered
-//     // such that the response is served with a `treat-as-public-address` CSP
-//     // directive.
-//     treatAsPublicAddress,
+//     // Extra headers.
+//     headers,
+//
+//     // Extra search params.
+//     searchParams,
 //   }
 //
 function resolveUrl(url, options) {
@@ -59,24 +57,42 @@ function resolveUrl(url, options) {
     return result;
   }
 
-  const { port, protocol, treatAsPublicAddress } = options;
+  const { port, protocol, headers, searchParams } = options;
   if (port !== undefined) {
     result.port = port;
   }
   if (protocol !== undefined) {
     result.protocol = protocol;
   }
-  if (treatAsPublicAddress) {
-    result.searchParams.append(
-        "pipe", "header(Content-Security-Policy,treat-as-public-address)");
+  if (headers !== undefined) {
+    const pipes = [];
+    for (key in headers) {
+      pipes.push(`header(${key},${headers[key]})`);
+    }
+    result.searchParams.append("pipe", pipes.join("|"));
+  }
+  if (searchParams !== undefined) {
+    for (key in searchParams) {
+      result.searchParams.append(key, searchParams[key]);
+    }
   }
 
   return result;
 }
 
 const kFetchTestResult = {
-  success: true,
-  failure: "TypeError: Failed to fetch",
+  success: {
+    ok: true,
+    body: "success",
+  },
+  opaque: {
+    ok: false,
+    type: "opaque",
+    body: "",
+  },
+  failure: {
+    error: "TypeError: Failed to fetch",
+  },
 }
 
 // Runs a fetch test. Tries to fetch a given subresource from a given document.
@@ -88,20 +104,40 @@ const kFetchTestResult = {
 //     source,
 //
 //     // Optional. Options for `resolveUrl()` when computing the target URL.
+//     // See the documentation of `resources/preflight.py` for details on
+//     // valid `searchParams` and their effect.
 //     target,
+//
+//     // Fetch options.
+//     fetchOptions,
 //
 //     // Required. One of the values in `kFetchTestResult`.
 //     expected,
 //   }
 //
-async function fetchTest(t, { source, target, expected }) {
+async function fetchTest(t, { source, target, fetchOptions, expected }) {
   const sourceUrl = resolveUrl("resources/fetcher.html", source);
   const iframe = await appendIframe(t, document, sourceUrl);
 
-  const targetUrl = resolveUrl("/common/blank-with-cors.html", target);
+  const targetUrl = resolveUrl("resources/preflight.py", target);
+  const message = {
+    url: targetUrl.href,
+    options: fetchOptions,
+  };
+
   const reply = futureMessage();
-  iframe.contentWindow.postMessage(targetUrl.href, "*");
-  assert_equals(await reply, expected);
+  iframe.contentWindow.postMessage(message, "*");
+
+  const { error, ok, type, body } = await reply;
+
+  assert_equals(error, expected.error, "error");
+
+  assert_equals(ok, expected.ok, "response ok");
+  assert_equals(body, expected.body, "response body");
+
+  if (expected.type !== undefined) {
+    assert_equals(type, expected.type, "response type");
+  }
 }
 
 const kWebsocketTestResult = {
