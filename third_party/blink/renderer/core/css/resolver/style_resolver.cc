@@ -1646,8 +1646,8 @@ FilterOperations StyleResolver::ComputeFilterOperations(
 scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
+  StyleRecalcContext style_recalc_context =
+      StyleRecalcContext::FromAncestors(element);
   StyleRequest style_request;
   StyleResolverState state(GetDocument(), element, style_recalc_context,
                            style_request);
