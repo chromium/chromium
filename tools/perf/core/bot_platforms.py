@@ -489,6 +489,7 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_desktop'),
+    _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('media.mobile')
 ])
 _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
