@@ -8,7 +8,7 @@ import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js'
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {RmadErrorCode, RmaState, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {RmadErrorCode, State, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -164,7 +164,7 @@ export function shimlessRMAAppTest() {
     await clickNext();
     assertFalse(initialPage.hidden);
 
-    resolver.resolve({state: RmaState.kUpdateOs, error: RmadErrorCode.kOk});
+    resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
 
     const updatePage =
@@ -209,7 +209,7 @@ export function shimlessRMAAppTest() {
   test('UpdateNextButtonLabel', async () => {
     await initializeShimlessRMAApp(
         [{
-          state: RmaState.kSelectComponents,
+          state: State.kSelectComponents,
           canCancel: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
@@ -233,7 +233,7 @@ export function shimlessRMAAppTest() {
   test('ErrorSignalShowsErrorCode', async () => {
     await initializeShimlessRMAApp(
         [{
-          state: RmaState.kSelectComponents,
+          state: State.kSelectComponents,
           canCancel: true,
           canGoBack: true,
           error: RmadErrorCode.kOk

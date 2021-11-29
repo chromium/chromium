@@ -4,120 +4,120 @@
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
-import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, State, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
   {
-    state: RmaState.kWelcomeScreen,
+    state: State.kWelcomeScreen,
     canCancel: true,
     canGoBack: false,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kConfigureNetwork,
+    state: State.kConfigureNetwork,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kUpdateOs,
+    state: State.kUpdateOs,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kSelectComponents,
+    state: State.kSelectComponents,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kChooseDestination,
+    state: State.kChooseDestination,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kChooseWriteProtectDisableMethod,
+    state: State.kChooseWriteProtectDisableMethod,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kEnterRSUWPDisableCode,
+    state: State.kEnterRSUWPDisableCode,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kWaitForManualWPDisable,
+    state: State.kWaitForManualWPDisable,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kWPDisableComplete,
+    state: State.kWPDisableComplete,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kChooseFirmwareReimageMethod,
+    state: State.kChooseFirmwareReimageMethod,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kUpdateDeviceInformation,
+    state: State.kUpdateDeviceInformation,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kRestock,
+    state: State.kRestock,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kCheckCalibration,
+    state: State.kCheckCalibration,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kSetupCalibration,
+    state: State.kSetupCalibration,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kRunCalibration,
+    state: State.kRunCalibration,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kProvisionDevice,
+    state: State.kProvisionDevice,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kWaitForManualWPEnable,
+    state: State.kWaitForManualWPEnable,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kFinalize,
+    state: State.kFinalize,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kRepairComplete,
+    state: State.kRepairComplete,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk

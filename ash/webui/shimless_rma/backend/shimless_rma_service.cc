@@ -32,8 +32,8 @@ namespace shimless_rma {
 
 namespace {
 
-mojom::RmaState RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
-  return mojo::EnumTraits<ash::shimless_rma::mojom::RmaState,
+mojom::State RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
+  return mojo::EnumTraits<ash::shimless_rma::mojom::State,
                           rmad::RmadState::StateCase>::ToMojom(rmadState);
 }
 
@@ -119,7 +119,7 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
 
 void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
-      mojo_state_ != mojom::RmaState::kWelcomeScreen) {
+      mojo_state_ != mojom::State::kWelcomeScreen) {
     LOG(ERROR) << "FinalizeRepair called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
@@ -147,7 +147,7 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
 void ShimlessRmaService::NetworkSelectionComplete(
     NetworkSelectionCompleteCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
-      mojo_state_ != mojom::RmaState::kConfigureNetwork) {
+      mojo_state_ != mojom::State::kConfigureNetwork) {
     LOG(ERROR) << "NetworkSelectionComplete called from incorrect state "
                << state_proto_.state_case() << " / " << mojo_state_;
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
@@ -174,7 +174,7 @@ void ShimlessRmaService::GetCurrentOsVersion(
 
 void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
-      mojo_state_ != mojom::RmaState::kUpdateOs) {
+      mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "CheckForOsUpdates called from incorrect state "
                << state_proto_.state_case() << " / " << mojo_state_;
     std::move(callback).Run(false, "");
@@ -192,7 +192,7 @@ void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {
 
 void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
-      mojo_state_ != mojom::RmaState::kUpdateOs) {
+      mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "UpdateOs called from incorrect state "
                << state_proto_.state_case() << " / " << mojo_state_;
     std::move(callback).Run(false);
@@ -203,7 +203,7 @@ void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
 
 void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
-      mojo_state_ != mojom::RmaState::kUpdateOs) {
+      mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "UpdateOsSkipped called from incorrect state "
                << state_proto_.state_case() << " / " << mojo_state_;
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
@@ -215,8 +215,7 @@ void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
     LOG(ERROR) << "UpdateOsSkipped called while UpdateEngine active";
     // Override the rmad state (kWelcome) with the mojo sub-state for OS
     // updates.
-    std::move(callback).Run(mojom::RmaState::kUpdateOs, can_abort_,
-                            can_go_back_,
+    std::move(callback).Run(mojom::State::kUpdateOs, can_abort_, can_go_back_,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
@@ -962,7 +961,7 @@ void ShimlessRmaService::OnGetStateResponse(
     LOG(ERROR) << "Failed to call rmadClient";
     // TODO(gavindodd): This needs better handling. Maybe display an error and
     // force a chrome update?
-    std::move(callback).Run(mojom::RmaState::kUnknown, false, false,
+    std::move(callback).Run(mojom::State::kUnknown, false, false,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
@@ -1003,8 +1002,8 @@ void ShimlessRmaService::OnNetworkListResponse(
       switch (network->type) {
         case NetworkType::kWiFi:
         case NetworkType::kEthernet:
-          mojo_state_ = mojom::RmaState::kUpdateOs;
-          std::move(callback).Run(mojom::RmaState::kUpdateOs, can_abort_,
+          mojo_state_ = mojom::State::kUpdateOs;
+          std::move(callback).Run(mojom::State::kUpdateOs, can_abort_,
                                   can_go_back_,
                                   rmad::RmadErrorCode::RMAD_ERROR_OK);
           return;
@@ -1018,8 +1017,8 @@ void ShimlessRmaService::OnNetworkListResponse(
       }
     }
   }
-  mojo_state_ = mojom::RmaState::kConfigureNetwork;
-  std::move(callback).Run(mojom::RmaState::kConfigureNetwork, can_abort_,
+  mojo_state_ = mojom::State::kConfigureNetwork;
+  std::move(callback).Run(mojom::State::kConfigureNetwork, can_abort_,
                           can_go_back_, rmad::RmadErrorCode::RMAD_ERROR_OK);
 }
 
@@ -1068,9 +1067,9 @@ void ShimlessRmaService::OsUpdateOrNextRmadStateCallback(
   if (version.empty()) {
     TransitionNextStateGeneric(std::move(callback));
   } else {
-    mojo_state_ = mojom::RmaState::kUpdateOs;
-    std::move(callback).Run(mojom::RmaState::kUpdateOs, can_abort_,
-                            can_go_back_, rmad::RmadErrorCode::RMAD_ERROR_OK);
+    mojo_state_ = mojom::State::kUpdateOs;
+    std::move(callback).Run(mojom::State::kUpdateOs, can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_OK);
   }
 }
 

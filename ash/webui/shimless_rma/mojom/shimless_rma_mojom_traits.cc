@@ -12,7 +12,7 @@
 namespace mojo {
 namespace {
 
-using MojomRmaState = ash::shimless_rma::mojom::RmaState;
+using MojomRmaState = ash::shimless_rma::mojom::State;
 using ProtoRmadState = rmad::RmadState::StateCase;
 
 using MojomRmadErrorCode = ash::shimless_rma::mojom::RmadErrorCode;

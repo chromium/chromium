@@ -18,7 +18,7 @@ import './mojom/shimless_rma.mojom-lite.js';
  * Convenience type as mojo-lite does not define types for method results and
  * this is used frequently.
  * @typedef {{
- *   state: !RmaState,
+ *   state: !State,
  *   canCancel: boolean,
  *   canGoBack: boolean,
  *   error: !RmadErrorCode
@@ -27,9 +27,9 @@ import './mojom/shimless_rma.mojom-lite.js';
 export let StateResult;
 
 /**
- * @typedef {ash.shimlessRma.mojom.RmaState}
+ * @typedef {ash.shimlessRma.mojom.State}
  */
-export const RmaState = ash.shimlessRma.mojom.RmaState;
+export const State = ash.shimlessRma.mojom.State;
 
 /**
  * @typedef {ash.shimlessRma.mojom.RmadErrorCode}

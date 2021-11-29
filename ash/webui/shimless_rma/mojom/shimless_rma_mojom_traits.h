@@ -13,9 +13,8 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<ash::shimless_rma::mojom::RmaState,
-                  rmad::RmadState::StateCase> {
-  static ash::shimless_rma::mojom::RmaState ToMojom(
+struct EnumTraits<ash::shimless_rma::mojom::State, rmad::RmadState::StateCase> {
+  static ash::shimless_rma::mojom::State ToMojom(
       rmad::RmadState::StateCase key_status);
 };
 

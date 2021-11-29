@@ -167,8 +167,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 
  private:
-  using TransitionStateCallback = base::OnceCallback<
-      void(mojom::RmaState, bool, bool, rmad::RmadErrorCode)>;
+  using TransitionStateCallback =
+      base::OnceCallback<void(mojom::State, bool, bool, rmad::RmadErrorCode)>;
 
   template <class Callback>
   void TransitionNextStateGeneric(Callback callback);
@@ -197,7 +197,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   bool can_abort_ = false;
   bool can_go_back_ = false;
   // Used to validate mojo only states such as kConfigureNetwork
-  mojom::RmaState mojo_state_;
+  mojom::State mojo_state_;
 
   absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
   absl::optional<rmad::CalibrationOverallStatus>
