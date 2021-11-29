@@ -1057,11 +1057,13 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   ASSERT_TRUE(locker->GetDisplayLockContext());
   EXPECT_TRUE(locker->GetDisplayLockContext()->IsLocked());
 
-  // TODO(crbug.com/1202618):
-  // EXPECT_FALSE(locker->firstChild()->GetComputedStyle()) << "The #locker
-  // element should get content-visibility:hidden as part of the lifecycle
-  // update and its descendants should not have been styled";
-  EXPECT_TRUE(locker->firstChild()->GetComputedStyle());
+  EXPECT_TRUE(locker->firstChild()->GetComputedStyle())
+      << "The #locker element does not get content-visibility:hidden on the "
+         "first pass over its children during the lifecycle update because we "
+         "do not have the container laid out at that point. This is not a spec "
+         "violation since it says the work _should_ be avoided. If this "
+         "expectation changes because we are able to optimize this case, that "
+         "is fine too.";
 }
 
 TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
