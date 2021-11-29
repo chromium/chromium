@@ -2,7 +2,6 @@
 -All/AutofillServer*
 -All/AutofillUpload*
 -All/UserAgentUtilsTest.UserAgentStringOrdering*
--ArchiveManagerTest.Get*
 -ArchiveManagerTest.Try*
 -BaseFileTest.Readonly*
 -BaseFileTest.RenameWith*
@@ -28,9 +27,6 @@
 -NetworkTimeTrackerTest.Update*
 -OfflinePageMetadataStoreTest.LoadStore*
 -OfflinePageMetadataStoreTest.LoadVersion*
--OfflinePageModelTaskifiedTest.Clear*
--OfflinePageModelTaskifiedTest.Persistent*
--OfflinePageModelTaskifiedTest.SavePageSuccessful
 -PaintPreviewSerialUtils.TestSerialTypeface
 -PaintPreviewSubset*
 -PersonalDataManagerTest.Should*
@@ -44,6 +40,7 @@
 -SyncHttpBridgeTest.Http*
 -SyncHttpBridgeTest.TestExtra*
 -SyncHttpBridgeTest.TestResponse*
+-SystemMemoryPressureEvaluatorFuchsiaDeath*
 -UIDev*
 -VariationsCrash*
 -WebAppOriginAssociationFetcher*
