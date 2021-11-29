@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.content_creation.reactions;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.util.Size;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
@@ -151,22 +152,34 @@ public class LightweightReactionsMediator {
             encoder.setQuality(GIF_QUALITY);
             encoder.setRepeat(GIF_REPEAT);
             encoder.start(fos);
+
             // The encoder will keep invoking the host's prepareFrame() and drawFrame() until this
             // many frames have been generated.
             int frameCount = sceneCoordinator.getFrameCount();
             assert frameCount != 0;
             mFramesGenerated = 0;
 
-            // For performance reasons, the scene might need to be scaled down in the final
-            // GIF. Determine the scale factor based on the largest scene dimension.
-            int width = sceneCoordinator.getWidth();
-            int height = sceneCoordinator.getHeight();
-            int largestDimension = Math.max(width, height);
+            // For performance reasons, the result might need to be scaled down for devices with
+            // very large display sizes. Determine the scale factor based on the largest dimension
+            // of the background screenshot and the maximum output dimension.
+            Size screenshotSize = sceneCoordinator.getScreenshotDisplaySize();
+            int screenshotWidth = screenshotSize.getWidth();
+            int screenshotHeight = screenshotSize.getHeight();
+            int largestDimension = Math.max(screenshotWidth, screenshotHeight);
             float scaleFactor = largestDimension <= GIF_MAX_DIMENSION_PX
                     ? 1f
                     : (float) GIF_MAX_DIMENSION_PX / largestDimension;
-            int scaledWidth = (int) (width * scaleFactor);
-            int scaledHeight = (int) (height * scaleFactor);
+            int scaledScreenshotWidth = (int) (screenshotWidth * scaleFactor);
+            int scaledScreenshotHeight = (int) (screenshotHeight * scaleFactor);
+
+            // The raw frames need to be cropped on the sides to account for the grey background
+            // bars. Calculate the X offset at which to start the crop. Also remember the scene
+            // dimensions for drawing the raw frames.
+            int sceneWidth = sceneCoordinator.getSceneWidth();
+            int sceneHeight = sceneCoordinator.getSceneHeight();
+            int scaledSceneWidth = (int) (sceneWidth * scaleFactor);
+            int scaledSceneHeight = (int) (sceneHeight * scaleFactor);
+            int cropOffsetX = (scaledSceneWidth - scaledScreenshotWidth) / 2;
 
             Callback<Void> prepareFrameCallback = new Callback<Void>() {
                 @Override
@@ -180,14 +193,17 @@ public class LightweightReactionsMediator {
                         StreamUtil.closeQuietly(fos);
                         return;
                     }
+
                     // The next frame is ready to be drawn and encoded. Use ARGB_8888 config for the
                     // bitmap, which is a standard configuration that allows transparency.
-                    Bitmap frame =
-                            Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888);
-                    Canvas canvas = new Canvas(frame);
+                    Bitmap rawFrame = Bitmap.createBitmap(
+                            scaledSceneWidth, scaledSceneHeight, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(rawFrame);
                     canvas.scale(scaleFactor, scaleFactor);
                     host.drawFrame(canvas);
-                    encoder.addFrame(frame);
+                    Bitmap croppedFrame = Bitmap.createBitmap(rawFrame, cropOffsetX, 0,
+                            scaledScreenshotWidth, scaledScreenshotHeight);
+                    encoder.addFrame(croppedFrame);
                     ++mFramesGenerated;
                     progressDialog.setProgress((int) (100.0 * mFramesGenerated / frameCount));
 

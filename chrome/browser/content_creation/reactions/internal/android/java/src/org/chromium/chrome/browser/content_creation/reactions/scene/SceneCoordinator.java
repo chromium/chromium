@@ -8,6 +8,9 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.util.Size;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.Callback;
@@ -41,6 +44,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
+    private ImageView mScreenshotView;
 
     private int mNbReactionsAdded;
     private int mNbTypeChange;
@@ -67,9 +71,10 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         mNbMove = 0;
     }
 
-    public void setSceneBackground(RelativeLayout sceneBackground) {
+    public void setSceneBackground(RelativeLayout sceneBackground, ImageView screenshotView) {
         mSceneBackground = sceneBackground;
         mSceneBackground.setOnClickListener((view) -> { clearSelection(); });
+        mScreenshotView = screenshotView;
     }
 
     public void addReactionInDefaultLocation(ReactionMetadata reaction) {
@@ -149,17 +154,32 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     /**
-     * Gets the width of the current scene, in pixels.
+     * Gets the width of the scene view, in pixels.
      */
-    public int getWidth() {
+    public int getSceneWidth() {
         return mSceneBackground.getWidth();
     }
 
     /**
-     * Gets the height of the current scene, in pixels.
+     * Gets the height of the scene view, in pixels.
      */
-    public int getHeight() {
+    public int getSceneHeight() {
         return mSceneBackground.getHeight();
+    }
+
+    /**
+     * Gets the actual display dimensions of the screenshot image, in pixels.
+     */
+    public Size getScreenshotDisplaySize() {
+        float[] imageMatrix = new float[9];
+        mScreenshotView.getImageMatrix().getValues(imageMatrix);
+        int intrinsicWidth = mScreenshotView.getDrawable().getIntrinsicWidth();
+        int intrinsicHeight = mScreenshotView.getDrawable().getIntrinsicHeight();
+        float scaleX = imageMatrix[Matrix.MSCALE_X];
+        float scaleY = imageMatrix[Matrix.MSCALE_Y];
+        int actualWidth = Math.round(intrinsicWidth * scaleX);
+        int actualHeight = Math.round(intrinsicHeight * scaleY);
+        return new Size(actualWidth, actualHeight);
     }
 
     /**

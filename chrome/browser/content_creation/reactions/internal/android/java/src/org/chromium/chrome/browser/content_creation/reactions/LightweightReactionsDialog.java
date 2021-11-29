@@ -53,7 +53,8 @@ public class LightweightReactionsDialog extends DialogFragment {
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         setBackgroundImage();
         mSceneCoordinator.setSceneBackground(
-                mContentView.findViewById(R.id.lightweight_reactions_scene));
+                mContentView.findViewById(R.id.lightweight_reactions_scene),
+                mContentView.findViewById(R.id.lightweight_reactions_background));
         builder.setView(mContentView);
 
         if (mDialogObserver != null) {
