@@ -41,10 +41,6 @@ class CONTENT_EXPORT HandwritingRecognitionServiceImpl
   void CreateHandwritingRecognizer(
       handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
       CreateHandwritingRecognizerCallback callback) override;
-  // Always returns `kNotSupported`.
-  void QueryHandwritingRecognizerSupport(
-      handwriting::mojom::HandwritingFeatureQueryPtr query,
-      QueryHandwritingRecognizerSupportCallback callback) override;
 
   // Always return `nullptr`.
   void QueryHandwritingRecognizer(

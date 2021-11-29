@@ -76,36 +76,6 @@ void CrOSHandwritingRecognitionServiceImpl::CreateHandwritingRecognizer(
                                         std::move(callback));
 }
 
-void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
-    handwriting::mojom::HandwritingFeatureQueryPtr query,
-    QueryHandwritingRecognizerSupportCallback callback) {
-  auto query_result = handwriting::mojom::HandwritingFeatureQueryResult::New();
-  if (!query->languages.empty()) {
-    query_result->languages =
-        (IsCrOSLibHandwritingRootfsEnabled() && query->languages.size() == 1 &&
-         CrOSHandwritingRecognizerImpl::SupportsLanguageTag(
-             query->languages[0]))
-            ? handwriting::mojom::HandwritingFeatureStatus::kSupported
-            : handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-  if (query->alternatives) {
-    // CrOS's HWR model always supports alternatives.
-    query_result->alternatives =
-        IsCrOSLibHandwritingRootfsEnabled()
-            ? handwriting::mojom::HandwritingFeatureStatus::kSupported
-            : handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-  if (query->segmentation_result) {
-    // CrOS's HWR model always supports segmentation.
-    query_result->segmentation_result =
-        IsCrOSLibHandwritingRootfsEnabled()
-            ? handwriting::mojom::HandwritingFeatureStatus::kSupported
-            : handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-
-  std::move(callback).Run(std::move(query_result));
-}
-
 void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
     handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
     QueryHandwritingRecognizerCallback callback) {

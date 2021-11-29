@@ -44,31 +44,22 @@ TEST_F(HandwritingRecognitionServiceImplTest, CreateHandwritingRecognizer) {
   EXPECT_TRUE(is_callback_called);
 }
 
-TEST_F(HandwritingRecognitionServiceImplTest,
-       QueryHandwritingRecognizerSupport) {
+TEST_F(HandwritingRecognitionServiceImplTest, QueryHandwritingRecognizer) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService> remote;
   HandwritingRecognitionServiceImpl::Create(
       remote.BindNewPipeAndPassReceiver());
-  auto query = handwriting::mojom::HandwritingFeatureQuery::New();
-  query->languages.push_back("en");
-  query->alternatives = true;
+
+  auto constraint = handwriting::mojom::HandwritingModelConstraint::New();
+  constraint->languages.push_back("en");
+
   bool is_callback_called = false;
   base::RunLoop runloop;
-  remote->QueryHandwritingRecognizerSupport(
-      std::move(query),
+  remote->QueryHandwritingRecognizer(
+      std::move(constraint),
       base::BindLambdaForTesting(
-          [&](handwriting::mojom::HandwritingFeatureQueryResultPtr result) {
-            EXPECT_FALSE(result.is_null());
+          [&](handwriting::mojom::QueryHandwritingRecognizerResultPtr result) {
             // We do not support anything here.
-            EXPECT_EQ(
-                result->languages,
-                handwriting::mojom::HandwritingFeatureStatus::kNotSupported);
-            EXPECT_EQ(
-                result->alternatives,
-                handwriting::mojom::HandwritingFeatureStatus::kNotSupported);
-            EXPECT_EQ(
-                result->segmentation_result,
-                handwriting::mojom::HandwritingFeatureStatus::kNotQueried);
+            EXPECT_TRUE(result.is_null());
             is_callback_called = true;
             runloop.Quit();
           }));

@@ -13,10 +13,6 @@
   Promise<HandwritingRecognizer>
       createHandwritingRecognizer(HandwritingModelConstraint constraint);
 
-  [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionQuerySupport]
-  Promise<HandwritingFeatureQueryResult>
-      queryHandwritingRecognizerSupport(HandwritingFeatureQuery query);
-
   [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionQueryRecognizer]
   Promise<HandwritingRecognizerQueryResult?>
       queryHandwritingRecognizer(HandwritingModelConstraint constraint);

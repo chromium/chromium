@@ -35,9 +35,6 @@ class CONTENT_EXPORT CrOSHandwritingRecognitionServiceImpl final
   void CreateHandwritingRecognizer(
       handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
       CreateHandwritingRecognizerCallback callback) override;
-  void QueryHandwritingRecognizerSupport(
-      handwriting::mojom::HandwritingFeatureQueryPtr query,
-      QueryHandwritingRecognizerSupportCallback callback) override;
   void QueryHandwritingRecognizer(
       handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
       QueryHandwritingRecognizerCallback callback) override;

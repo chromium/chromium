@@ -35389,7 +35389,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3890" label="HTMLFencedFrameElement"/>
   <int value="3891" label="CSSFilterLuminanceToAlpha"/>
   <int value="3892" label="HandwritingRecognitionCreateRecognizer"/>
-  <int value="3893" label="HandwritingRecognitionQuerySupport"/>
+  <int value="3893" label="OBSOLETE_HandwritingRecognitionQuerySupport"/>
   <int value="3894" label="HandwritingRecognitionStartDrawing"/>
   <int value="3895" label="HandwritingRecognitionGetPrediction"/>
   <int value="3896" label="WebBluetoothManufacturerDataFilter"/>

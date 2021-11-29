@@ -103,39 +103,6 @@ struct HandwritingHints {
   uint32 alternatives;
 };
 
-// Represents the struct for query features supported by the backend handwriting
-// recognizer.
-// Corresponds to handwriting_feature_query.idl.
-struct HandwritingFeatureQuery {
-  // If non-empty, queries whether the languages are supported.
-  // Languages are IETF BCP 47 language tags, e.g., "en", "zh-CN", "zh-Hans".
-  array<string> languages;
-  // Whether the "alternative" feature is queried.
-  bool alternatives;
-  // Whether the "segmentation" feature is queried.
-  bool segmentation_result;
-};
-
-// Because "bool" is not nullable, we need to define an enum to present the
-// status. And this will also be helpful when we need to extend it, for
-// example, adding `kNeedDownload`.
-// Add `kNotQueried` to make it possible to use `mojo::Converter` to convert
-// `HandwritingFeatureQueryResult` types (otherwise, there is no way to know
-// whether a feature is queried or not in the converter function.
-enum HandwritingFeatureStatus {
-  kNotQueried,
-  kSupported,
-  kNotSupported,
-};
-
-// The feature query result.
-// Corresponds to handwriting_feature_query_result.idl.
-struct HandwritingFeatureQueryResult {
-  HandwritingFeatureStatus languages = kNotQueried;
-  HandwritingFeatureStatus alternatives = kNotQueried;
-  HandwritingFeatureStatus segmentation_result = kNotQueried;
-};
-
 enum HandwritingRecognitionType {
   kText,
 };
@@ -195,11 +162,6 @@ interface HandwritingRecognitionService {
   CreateHandwritingRecognizer(HandwritingModelConstraint constraint)
     => (CreateHandwritingRecognizerResult result,
         pending_remote<HandwritingRecognizer>? handwriting_recognizer);
-  // Queries the features supported by the platform.
-  // This is used by IDL API
-  // `blink::HandwritingRecognitionService::queryHandwritingRecognizerSupport`.
-  QueryHandwritingRecognizerSupport(HandwritingFeatureQuery query)
-    => (HandwritingFeatureQueryResult? result);
 
   // Queries the features of the best recognizer satisfying `constraint`.
   // `blink::HandwritingRecognitionService::queryHandwritingRecognizer`.

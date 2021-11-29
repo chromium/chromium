@@ -84,22 +84,6 @@ class MockHandwritingRecognitionService {
     };
   }
 
-  async queryHandwritingRecognizerSupport(query) {
-    const support = {};
-    // In this mock class, we pretend we support all features.
-    if (query.languages.length !== 0) {
-      support.languages = true;
-    }
-    if (query.alternatives === true) {
-      support.alternatives = true;
-    }
-    if (query.segmentationResult === true) {
-      support.segmentationResult = true;
-    }
-
-    return {result: support};
-  }
-
   async queryHandwritingRecognizer(constraint) {
     // Pretend to support all features.
     let desc =  {

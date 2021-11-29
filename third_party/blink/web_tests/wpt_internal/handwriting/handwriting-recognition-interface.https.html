@@ -10,8 +10,6 @@
   import {generateHandwritingPrediction} from './resources/mock-handwriting-recognition-service.js';
 
   promise_test(async () => {
-    assert_not_equals(navigator.queryHandwritingRecognizerSupport, undefined);
-    assert_not_equals(navigator.queryHandwritingRecognizerSupport, null);
     assert_not_equals(navigator.queryHandwritingRecognizer, undefined);
     assert_not_equals(navigator.queryHandwritingRecognizer, null);
     assert_not_equals(navigator.createHandwritingRecognizer, undefined);
@@ -48,16 +46,6 @@
     assert_equals(stroke.getPoints()[0].y, 2);
     assert_equals(stroke.getPoints()[0].t, 3);
   }, 'HandwritingPoint can not be changed after added.');
-
-  promise_test(async () => {
-    const response = await navigator.queryHandwritingRecognizerSupport({
-      languages: ['en'],
-      alternatives: false
-    });
-    assert_equals(Object.keys(response).length, 2);
-    assert_equals(response.languages, true);
-    assert_equals(response.alternatives, true);
-  }, 'queryHandwritingRecognizerSupport works.');
 
   promise_test(async () => {
     const response = await navigator.queryHandwritingRecognizer({

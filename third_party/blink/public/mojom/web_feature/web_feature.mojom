@@ -3203,7 +3203,7 @@ enum WebFeature {
   kHTMLFencedFrameElement = 3890,
   kCSSFilterLuminanceToAlpha = 3891,
   kHandwritingRecognitionCreateRecognizer = 3892,
-  kHandwritingRecognitionQuerySupport = 3893,
+  kOBSOLETE_HandwritingRecognitionQuerySupport = 3893,
   kHandwritingRecognitionStartDrawing = 3894,
   kHandwritingRecognitionGetPrediction = 3895,
   kWebBluetoothManufacturerDataFilter = 3896,
