@@ -1276,8 +1276,6 @@ void RenderViewContextMenu::AppendLinkItems() {
     const Browser* browser = GetBrowser();
     const bool in_app =
         browser && (browser->is_type_app() || browser->is_type_app_popup());
-    WebContents* active_web_contents =
-        browser ? browser->tab_strip_model()->GetActiveWebContents() : nullptr;
 
     Profile* profile = GetProfile();
     absl::optional<web_app::SystemAppType> link_system_app_type =
@@ -1413,26 +1411,25 @@ void RenderViewContextMenu::AppendLinkItems() {
             SendTabToSelfSyncServiceFactory::GetForProfile(profile),
             params_.link_url);
     if (browser && !ShouldUseShareMenu() && should_offer_to_share_url) {
-      if (send_tab_to_self::GetValidDeviceCount(GetBrowser()->profile()) == 1) {
+      if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
 #if defined(OS_MAC)
-        menu_model_.AddItem(IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                            l10n_util::GetStringFUTF16(
-                                IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                                send_tab_to_self::GetSingleTargetDeviceName(
-                                    GetBrowser()->profile())));
+        menu_model_.AddItem(
+            IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
+            l10n_util::GetStringFUTF16(
+                IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
+                send_tab_to_self::GetSingleTargetDeviceName(GetProfile())));
 #else
         menu_model_.AddItemWithIcon(
             IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
             l10n_util::GetStringFUTF16(
                 IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                send_tab_to_self::GetSingleTargetDeviceName(
-                    GetBrowser()->profile())),
+                send_tab_to_self::GetSingleTargetDeviceName(GetProfile())),
             ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
 #endif
       } else {
         send_tab_to_self_sub_menu_model_ =
             std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-                active_web_contents,
+                source_web_contents_,
                 send_tab_to_self::SendTabToSelfMenuType::kLink,
                 params_.link_url);
 #if defined(OS_MAC)
@@ -1715,30 +1712,28 @@ void RenderViewContextMenu::AppendPageItems() {
   // Send-Tab-To-Self (user's other devices), page level.
   bool send_tab_to_self_menu_present = false;
   if (GetBrowser() && !ShouldUseShareMenu() &&
-      send_tab_to_self::ShouldOfferFeature(
-          GetBrowser()->tab_strip_model()->GetActiveWebContents())) {
+      send_tab_to_self::ShouldOfferFeature(source_web_contents_)) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     send_tab_to_self_menu_present = true;
-    if (send_tab_to_self::GetValidDeviceCount(GetBrowser()->profile()) == 1) {
+    if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
 #if defined(OS_MAC)
-      menu_model_.AddItem(IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                          l10n_util::GetStringFUTF16(
-                              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                              send_tab_to_self::GetSingleTargetDeviceName(
-                                  GetBrowser()->profile())));
+      menu_model_.AddItem(
+          IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
+          l10n_util::GetStringFUTF16(
+              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
+              send_tab_to_self::GetSingleTargetDeviceName(GetProfile())));
 #else
       menu_model_.AddItemWithIcon(
           IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
           l10n_util::GetStringFUTF16(
               IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-              send_tab_to_self::GetSingleTargetDeviceName(
-                  GetBrowser()->profile())),
+              send_tab_to_self::GetSingleTargetDeviceName(GetProfile())),
           ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
 #endif
     } else {
       send_tab_to_self_sub_menu_model_ =
           std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-              GetBrowser()->tab_strip_model()->GetActiveWebContents(),
+              source_web_contents_,
               send_tab_to_self::SendTabToSelfMenuType::kContent);
 #if defined(OS_MAC)
       menu_model_.AddSubMenuWithStringId(
@@ -2639,25 +2634,22 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      send_tab_to_self::ShareToSingleTarget(
-          GetBrowser()->tab_strip_model()->GetActiveWebContents());
+      send_tab_to_self::ShareToSingleTarget(source_web_contents_);
       send_tab_to_self::RecordDeviceClicked(
           send_tab_to_self::ShareEntryPoint::kContentMenu);
       break;
 
     case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      send_tab_to_self::ShareToSingleTarget(
-          GetBrowser()->tab_strip_model()->GetActiveWebContents(),
-          params_.link_url);
+      send_tab_to_self::ShareToSingleTarget(source_web_contents_,
+                                            params_.link_url);
       send_tab_to_self::RecordDeviceClicked(
           send_tab_to_self::ShareEntryPoint::kLinkMenu);
       break;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE: {
-      auto* web_contents =
-          GetBrowser()->tab_strip_model()->GetActiveWebContents();
       auto* bubble_controller =
-          qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
+          qrcode_generator::QRCodeGeneratorBubbleController::Get(
+              source_web_contents_);
       if (params_.media_type == ContextMenuDataMediaType::kImage) {
         base::RecordAction(
             UserMetricsAction("SharingQRCode.DialogLaunched.ContextMenuImage"));
