@@ -129,7 +129,9 @@ message TelemetryData {
 enum MetricEventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   NETWORK_HTTPS_LATENCY_CHANGE = 1;
-  AUDIO_SEVERE_UNDERRUN = 2;
+  NETWORK_CONNECTION_STATE_CHANGE = 2;
+  NETWORK_SIGNAL_STRENGTH_CHANGE = 3;
+  AUDIO_SEVERE_UNDERRUN = 4;
 }
 
 // Indicates one of the following conditions occurred on the device, data
