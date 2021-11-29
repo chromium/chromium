@@ -41,7 +41,12 @@ const int kNumExpectedBuckets = 60 * 24 * 60 / 15;
 int64_t GetListPrefInt64Value(const base::ListValue& list_update,
                               size_t index) {
   std::string string_value;
-  EXPECT_TRUE(list_update.GetString(index, &string_value));
+  base::Value::ConstListView list_view = list_update.GetList();
+  if (index < list_view.size() && list_view[index].is_string()) {
+    string_value = list_view[index].GetString();
+  } else {
+    ADD_FAILURE() << "invalid index or [index] not a string";
+  }
 
   int64_t value = 0;
   EXPECT_TRUE(base::StringToInt64(string_value, &value));

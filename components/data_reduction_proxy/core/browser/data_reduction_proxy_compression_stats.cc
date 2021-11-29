@@ -51,11 +51,10 @@ namespace {
 // Returns the value at |index| of |list_value| as an int64_t.
 int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
   int64_t val = 0;
-  std::string pref_value;
-  bool rv = list_value.GetString(index, &pref_value);
-  DCHECK(rv);
-  if (rv) {
-    rv = base::StringToInt64(pref_value, &val);
+  base::Value::ConstListView list_value_view = list_value.GetList();
+  if (index < list_value_view.size() && list_value_view[index].is_string()) {
+    std::string pref_value = list_value_view[index].GetString();
+    bool rv = base::StringToInt64(pref_value, &val);
     DCHECK(rv);
   }
   return val;
