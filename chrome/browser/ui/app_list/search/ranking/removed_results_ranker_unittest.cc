@@ -54,6 +54,10 @@ class RemovedResultsRankerTest : public testing::Test {
     return ranker.initialized();
   }
 
+  PersistentProto<RemovedResultsProto> GetProto() {
+    return PersistentProto<RemovedResultsProto>(GetPath(), base::Seconds(0));
+  }
+
   RemovedResultsProto ReadFromDisk() {
     EXPECT_TRUE(base::PathExists(GetPath()));
     std::string proto_str;
@@ -71,7 +75,7 @@ class RemovedResultsRankerTest : public testing::Test {
 };
 
 TEST_F(RemovedResultsRankerTest, CheckInitializeEmpty) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   EXPECT_FALSE(IsInitialized(ranker));
   Wait();
 
@@ -81,7 +85,7 @@ TEST_F(RemovedResultsRankerTest, CheckInitializeEmpty) {
 }
 
 TEST_F(RemovedResultsRankerTest, RemoveResults) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   Wait();
 
   // Request to remove results.
@@ -102,7 +106,7 @@ TEST_F(RemovedResultsRankerTest, RemoveResults) {
 }
 
 TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   Wait();
 
   // Request to remove results, with a duplicate.
@@ -123,7 +127,7 @@ TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
 }
 
 TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   Wait();
 
   // Request to remove some results.
@@ -166,7 +170,7 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
 }
 
 TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   Wait();
 
   ResultsMap results_map;
@@ -178,7 +182,7 @@ TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
 }
 
 TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
-  RemovedResultsRanker ranker(GetPath(), base::Seconds(0));
+  RemovedResultsRanker ranker(GetProto());
   Wait();
 
   // Request to remove some results.

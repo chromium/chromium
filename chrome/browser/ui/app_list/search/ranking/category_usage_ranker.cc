@@ -70,9 +70,10 @@ CategoryUsageRanker::CategoryUsageRanker(Profile* profile) {
   params.half_life = 10.0f;
   params.boost_factor = 10.0f;
 
-  ranker_ = std::make_unique<MrfuCache>(
+  MrfuCache::Proto proto(
       RankerStateDirectory(profile).AppendASCII("category_usage_ranker.pb"),
-      params);
+      /*write_delay=*/base::Seconds(3));
+  ranker_ = std::make_unique<MrfuCache>(std::move(proto), params);
 }
 
 CategoryUsageRanker::~CategoryUsageRanker() {}

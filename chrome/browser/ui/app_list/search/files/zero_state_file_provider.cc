@@ -99,18 +99,6 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
         profile->GetPath().AppendASCII("zero_state_local_files.pb"), config,
         chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
   }
-
-  // Normalize scores if the launcher search normalization experiment is
-  // enabled, but don't if the categorical search experiment is also enabled.
-  // This is because categorical search normalizes scores from all providers
-  // during ranking, and we don't want to do it twice.
-  if (base::FeatureList::IsEnabled(
-          app_list_features::kEnableLauncherSearchNormalization) &&
-      !app_list_features::IsCategoricalSearchEnabled()) {
-    auto path =
-        RankerStateDirectory(profile).AppendASCII("score_norm_local.pb");
-    normalizer_.emplace(path, ScoreNormalizer::Params());
-  }
 }
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
@@ -142,10 +130,6 @@ void ZeroStateFileProvider::SetSearchResults(
   SearchProvider::Results new_results;
   for (const auto& filepath_score : results.first) {
     double score = filepath_score.second;
-    if (normalizer_.has_value()) {
-      score = normalizer_->UpdateAndNormalize("results", score);
-    }
-
     auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,

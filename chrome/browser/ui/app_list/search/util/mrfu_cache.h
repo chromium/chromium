@@ -78,14 +78,13 @@ class MrfuCache {
     size_t max_items = 50;
     // Items below min_score may be deleted.
     float min_score = 0.01f;
-    // How long to wait until writing any updates to disk.
-    base::TimeDelta write_delay = base::Seconds(30);
   };
 
   // A vector of items and their scores. No guarantees of ordering.
   using Items = std::vector<std::pair<std::string, float>>;
+  using Proto = PersistentProto<MrfuCacheProto>;
 
-  MrfuCache(const base::FilePath& path, const Params& params);
+  MrfuCache(MrfuCache::Proto proto, const Params& params);
   ~MrfuCache();
 
   MrfuCache(const MrfuCache&) = delete;

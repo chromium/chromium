@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -121,9 +120,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Whether the suggested files feature is enabled. True if both the experiment
   // is enabled, and the suggested content toggle is enabled.
   const bool suggested_files_enabled_;
-
-  // Score normalizer for Finch experiment. Nullopt if experiment disabled.
-  absl::optional<ScoreNormalizer> normalizer_;
 
   // Whether we have sent at least one request to ItemSuggest to warm up the
   // results cache.

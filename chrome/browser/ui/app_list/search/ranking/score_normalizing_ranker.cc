@@ -8,13 +8,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
 namespace {
-
-// Prefix added to the name of each score normalizer, which is used for prefs
-// storage.
-constexpr char kNormalizerPrefix[] = "categorical_search_normalizer_";
 
 // Returns true if results from this provider should not have their result
 // scores normalized. This is to prevent creating an unnecessary number of
@@ -42,26 +39,12 @@ bool ShouldIgnoreProvider(ProviderType type) {
 
 }  // namespace
 
-ScoreNormalizingRanker::ScoreNormalizingRanker(Profile* profile) {
-  static constexpr int kProviderMin = static_cast<int>(ProviderType::kUnknown);
-  static constexpr int kProviderMax = static_cast<int>(ProviderType::kMaxValue);
-
-  for (int provider_int = kProviderMin; provider_int <= kProviderMax;
-       ++provider_int) {
-    const ProviderType provider = static_cast<ProviderType>(provider_int);
-    if (ShouldIgnoreProvider(provider))
-      continue;
-
-    const std::string name =
-        base::StrCat({kNormalizerPrefix, base::NumberToString(provider_int)});
-  }
-}
+ScoreNormalizingRanker::ScoreNormalizingRanker(
+    PersistentProto<ScoreNormalizerProto> proto) {}
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
 void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
-                                               ProviderType provider) {
-  // TODO(crbug.com/1199206): WIP.
-}
+                                               ProviderType provider) {}
 
 }  // namespace app_list

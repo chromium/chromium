@@ -20,8 +20,7 @@ namespace app_list {
 // On a call to Rank(), previously removed results are filtered out.
 class RemovedResultsRanker : public Ranker {
  public:
-  explicit RemovedResultsRanker(const base::FilePath& path,
-                                const base::TimeDelta write_delay);
+  explicit RemovedResultsRanker(PersistentProto<RemovedResultsProto> proto);
   ~RemovedResultsRanker() override;
 
   RemovedResultsRanker(const RemovedResultsRanker&) = delete;

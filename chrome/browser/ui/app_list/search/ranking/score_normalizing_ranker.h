@@ -7,10 +7,11 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
-
-class Profile;
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
+
+class ScoreNormalizerProto;
 
 // A ranker that transforms the result scores of search providers into something
 // close to a uniform distribution. This is done:
@@ -22,9 +23,12 @@ namespace app_list {
 //
 // Some providers don't have any transformation applied, see
 // ShouldIgnoreProvider in the implementation for details.
+//
+// TODO(crbug.com/1199206): This was made a no-op after stability concerns, but
+// will be re-added soon.
 class ScoreNormalizingRanker : public Ranker {
  public:
-  explicit ScoreNormalizingRanker(Profile* profile);
+  explicit ScoreNormalizingRanker(PersistentProto<ScoreNormalizerProto> proto);
   ~ScoreNormalizingRanker() override;
 
   ScoreNormalizingRanker(const ScoreNormalizingRanker&) = delete;
@@ -32,9 +36,6 @@ class ScoreNormalizingRanker : public Ranker {
 
   // Ranker:
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
-
- private:
-  // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.
 };
 
 }  // namespace app_list

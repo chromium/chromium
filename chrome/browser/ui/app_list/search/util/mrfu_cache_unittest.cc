@@ -34,6 +34,10 @@ class MrfuCacheTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
+  PersistentProto<MrfuCacheProto> GetProto() {
+    return PersistentProto<MrfuCacheProto>(GetPath(), base::Seconds(0));
+  }
+
   MrfuCache::Params TestingParams(float half_life = 10.0f,
                                   float boost_factor = 5.0f) {
     MrfuCache::Params params;
@@ -41,7 +45,6 @@ class MrfuCacheTest : public testing::Test {
     params.boost_factor = boost_factor;
     params.max_items = 3u;
     params.min_score = 0.01f;
-    params.write_delay = base::Seconds(0);
     return params;
   }
 
@@ -74,14 +77,14 @@ class MrfuCacheTest : public testing::Test {
 };
 
 TEST_F(MrfuCacheTest, UnusedItemHasScoreZero) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
 
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
 }
 
 TEST_F(MrfuCacheTest, CheckInitializeEmptyAndSize) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   EXPECT_FALSE(cache.initialized());
   EXPECT_EQ(cache.size(), 0u);
   EXPECT_TRUE(cache.empty());
@@ -96,7 +99,7 @@ TEST_F(MrfuCacheTest, CheckInitializeEmptyAndSize) {
 }
 
 TEST_F(MrfuCacheTest, UseAndGetOneItem) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
 
   // Our boost_factor is set to 5, so it should take 5 consecutive uses for "A"
@@ -107,7 +110,7 @@ TEST_F(MrfuCacheTest, UseAndGetOneItem) {
 }
 
 TEST_F(MrfuCacheTest, UseAndDecayItem) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
 
   // Use "A" once and record that score.
@@ -122,7 +125,7 @@ TEST_F(MrfuCacheTest, UseAndDecayItem) {
 }
 
 TEST_F(MrfuCacheTest, GetNormalized) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
 
   EXPECT_FLOAT_EQ(cache.GetNormalized("A"), 0.0f);
@@ -141,7 +144,7 @@ TEST_F(MrfuCacheTest, GetNormalized) {
 }
 
 TEST_F(MrfuCacheTest, GetAll) {
-  MrfuCache cache(GetPath(),
+  MrfuCache cache(GetProto(),
                   TestingParams(/*half_life=*/1.0f, /*boost_factor=*/1.0f));
   EXPECT_TRUE(cache.GetAll().empty());
   Wait();
@@ -159,7 +162,7 @@ TEST_F(MrfuCacheTest, GetAll) {
 }
 
 TEST_F(MrfuCacheTest, GetAllNormalized) {
-  MrfuCache cache(GetPath(),
+  MrfuCache cache(GetProto(),
                   TestingParams(/*half_life=*/1.0f, /*boost_factor=*/1.0f));
   EXPECT_TRUE(cache.GetAll().empty());
   Wait();
@@ -183,12 +186,12 @@ TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
   // 0.933033) and boost rate of 5.
   const float kExpected = 0.233f;
 
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   EXPECT_NEAR(boost_coeff(cache), kExpected, 0.001f);
 }
 
 TEST_F(MrfuCacheTest, GetAndUseBeforeInitComplete) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
 
   // Get calls should return default values because init is incomplete.
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
@@ -207,7 +210,7 @@ TEST_F(MrfuCacheTest, GetAndUseBeforeInitComplete) {
 }
 
 TEST_F(MrfuCacheTest, CleanupOnTooManyItems) {
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
 
   for (std::string item : {"A", "B", "C", "D", "E", "F"}) {
@@ -243,7 +246,7 @@ TEST_F(MrfuCacheTest, WriteToDisk) {
   float a_score;
   float b_score;
   {
-    MrfuCache cache(GetPath(), TestingParams());
+    MrfuCache cache(GetProto(), TestingParams());
     Wait();
     cache.Use("A");
     cache.Use("B");
@@ -277,7 +280,7 @@ TEST_F(MrfuCacheTest, ReadFromDisk) {
   WriteToDisk(proto);
 
   // Then create a cache and check the score values.
-  MrfuCache cache(GetPath(), TestingParams());
+  MrfuCache cache(GetProto(), TestingParams());
   Wait();
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.5f);
   EXPECT_FLOAT_EQ(cache.Get("B"), 0.6f);
@@ -292,7 +295,7 @@ TEST_F(MrfuCacheTest, Sort) {
 
 TEST_F(MrfuCacheTest, ResetWithItems) {
   {
-    MrfuCache cache(GetPath(), TestingParams());
+    MrfuCache cache(GetProto(), TestingParams());
     Wait();
 
     cache.Use("A");

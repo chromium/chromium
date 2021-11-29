@@ -34,12 +34,11 @@ class ScoreNormalizer {
 
     // The maximum number of bins to discretize each distribution into.
     int32_t max_bins = 5;
-
-    // How long to wait until writing any updates to disk.
-    base::TimeDelta write_delay = base::Seconds(30);
   };
 
-  ScoreNormalizer(const base::FilePath& filepath, const Params& params);
+  using Proto = PersistentProto<ScoreNormalizerProto>;
+
+  ScoreNormalizer(ScoreNormalizer::Proto proto, const Params& params);
   ~ScoreNormalizer();
 
   ScoreNormalizer(const ScoreNormalizer&) = delete;

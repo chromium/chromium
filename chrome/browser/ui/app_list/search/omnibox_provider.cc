@@ -56,18 +56,6 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_->AddObserver(this);
-
-  // Normalize scores if the launcher search normalization experiment is
-  // enabled, but don't if the categorical search experiment is also enabled.
-  // This is because categorical search normalizes scores from all providers
-  // during ranking, and we don't want to do it twice.
-  if (base::FeatureList::IsEnabled(
-          app_list_features::kEnableLauncherSearchNormalization) &&
-      !app_list_features::IsCategoricalSearchEnabled()) {
-    auto path =
-        RankerStateDirectory(profile).AppendASCII("score_norm_omnibox.pb");
-    normalizer_.emplace(path, ScoreNormalizer::Params());
-  }
 }
 
 OmniboxProvider::~OmniboxProvider() {}
@@ -118,12 +106,6 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     auto result = std::make_unique<OmniboxResult>(
         profile_, list_controller_, controller_.get(), &favicon_cache_, match,
         is_zero_state_input_);
-
-    if (normalizer_.has_value()) {
-      result->set_relevance(
-          normalizer_->UpdateAndNormalize("results", result->relevance()));
-    }
-
     new_results.emplace_back(std::move(result));
   }
 

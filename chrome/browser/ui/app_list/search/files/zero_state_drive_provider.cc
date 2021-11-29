@@ -142,18 +142,6 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   auto* power_manager = chromeos::PowerManagerClient::Get();
   if (power_manager)
     power_observation_.Observe(power_manager);
-
-  // Normalize scores if the launcher search normalization experiment is
-  // enabled, but don't if the categorical search experiment is also enabled.
-  // This is because categorical search normalizes scores from all providers
-  // during ranking, and we don't want to do it twice.
-  if (base::FeatureList::IsEnabled(
-          app_list_features::kEnableLauncherSearchNormalization) &&
-      !app_list_features::IsCategoricalSearchEnabled()) {
-    auto path =
-        RankerStateDirectory(profile).AppendASCII("score_norm_drive.pb");
-    normalizer_.emplace(path, ScoreNormalizer::Params());
-  }
 }
 
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
@@ -275,10 +263,6 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
 
     double score = 1.0 - (item_index / total_items);
     ++item_index;
-
-    if (normalizer_.has_value()) {
-      score = normalizer_->UpdateAndNormalize("results", score);
-    }
 
     // TODO(crbug.com/1034842): Use |cache_results_| to attach the session id to
     // the result.

@@ -57,9 +57,9 @@ inline void InsertBin(Bins& bins, double lower_divider, double count) {
 
 }  // namespace
 
-ScoreNormalizer::ScoreNormalizer(const base::FilePath& filepath,
+ScoreNormalizer::ScoreNormalizer(ScoreNormalizer::Proto proto,
                                  const Params& params)
-    : proto_(filepath, params.write_delay), params_(params) {
+    : proto_(std::move(proto)), params_(params) {
   proto_.RegisterOnRead(base::BindOnce(&ScoreNormalizer::OnProtoRead,
                                        weak_factory_.GetWeakPtr()));
   proto_.Init();

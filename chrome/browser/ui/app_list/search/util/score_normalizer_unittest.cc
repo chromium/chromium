@@ -45,11 +45,14 @@ class ScoreNormalizerTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
+  PersistentProto<ScoreNormalizerProto> GetProto() {
+    return PersistentProto<ScoreNormalizerProto>(GetPath(), base::Seconds(0));
+  }
+
   ScoreNormalizer::Params TestingParams(size_t bins = 4) {
     ScoreNormalizer::Params params;
     params.version = 3;
     params.max_bins = bins;
-    params.write_delay = base::Seconds(0);
     return params;
   }
 
@@ -103,7 +106,7 @@ class ScoreNormalizerTest : public testing::Test {
 // A dummy test to ensure that the score normalizer doesn't crash on
 // initialization.
 TEST_F(ScoreNormalizerTest, Initialize) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  ScoreNormalizer normalizer(GetProto(), TestingParams());
   Wait();
   SUCCEED();
 }
@@ -116,7 +119,7 @@ TEST_F(ScoreNormalizerTest, StateClearedOnVersionChange) {
   }
 
   {
-    ScoreNormalizer normalizer(GetPath(), TestingParams());
+    ScoreNormalizer normalizer(GetProto(), TestingParams());
     Wait();
     EXPECT_EQ(get_proto(normalizer)->parameter_version(), 3);
     // TODO(crbug.com/1199206): Check that state is reset once it's added to the
@@ -127,7 +130,7 @@ TEST_F(ScoreNormalizerTest, StateClearedOnVersionChange) {
 // The first N scores don't do any bin merging/splitting logic, they just fill
 // out the bins. Check we do this correctly.
 TEST_F(ScoreNormalizerTest, PopulateBins) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  ScoreNormalizer normalizer(GetProto(), TestingParams());
   Wait();
   normalizer.Update("testing", 1);
   normalizer.Update("testing", 2);
@@ -139,7 +142,7 @@ TEST_F(ScoreNormalizerTest, PopulateBins) {
 // Updates to the bins should end up on disk.
 TEST_F(ScoreNormalizerTest, BinUpdatesWrittenToDisk) {
   {
-    ScoreNormalizer normalizer(GetPath(), TestingParams());
+    ScoreNormalizer normalizer(GetProto(), TestingParams());
     Wait();
     normalizer.Update("testing", 1);
     normalizer.Update("testing", 2);
@@ -153,7 +156,7 @@ TEST_F(ScoreNormalizerTest, BinUpdatesWrittenToDisk) {
 
 // Add scores in such a way that bins should never split.
 TEST_F(ScoreNormalizerTest, AddScoresWithoutSplitting) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  ScoreNormalizer normalizer(GetProto(), TestingParams());
   Wait();
   normalizer.Update("testing", 1);
   normalizer.Update("testing", 2);
@@ -189,7 +192,7 @@ TEST_F(ScoreNormalizerTest, AddScoresWithoutSplitting) {
 // the merge index. In this case the split and merge and directly next to each
 // other.
 TEST_F(ScoreNormalizerTest, SmallLefthandedSplitMerge) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  ScoreNormalizer normalizer(GetProto(), TestingParams());
   Wait();
 
   // Set up some bins.
@@ -209,7 +212,7 @@ TEST_F(ScoreNormalizerTest, SmallLefthandedSplitMerge) {
 TEST_F(ScoreNormalizerTest, LargeLefthandedSplitMerge) {
   auto params = TestingParams();
   params.max_bins = 5;
-  ScoreNormalizer normalizer(GetPath(), params);
+  ScoreNormalizer normalizer(GetProto(), params);
   Wait();
 
   // Set up some bins.
@@ -229,7 +232,7 @@ TEST_F(ScoreNormalizerTest, LargeLefthandedSplitMerge) {
 // the merge index. In this case the split and merge and directly next to each
 // other.
 TEST_F(ScoreNormalizerTest, SmallRighthandedSplitMerge) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  ScoreNormalizer normalizer(GetProto(), TestingParams());
   Wait();
 
   // Set up some bins.
@@ -247,7 +250,7 @@ TEST_F(ScoreNormalizerTest, SmallRighthandedSplitMerge) {
 // Add scores to cause one split/merge, where the split index is to the right of
 // the merge index. In this case there's a gap between the split and merge.
 TEST_F(ScoreNormalizerTest, LargeRighthandedSplitMerge) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+  ScoreNormalizer normalizer(GetProto(), TestingParams(5));
   Wait();
 
   // Set up some bins.
@@ -267,20 +270,20 @@ TEST_F(ScoreNormalizerTest, LargeRighthandedSplitMerge) {
 TEST_F(ScoreNormalizerTest, NormalizeSpecialCases) {
   {
     // A normalizer that hasn't finished initializing.
-    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    ScoreNormalizer normalizer(GetProto(), TestingParams(5));
     EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
   }
 
   {
     // An empty normalizer
-    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    ScoreNormalizer normalizer(GetProto(), TestingParams(5));
     Wait();
     EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
   }
 
   {
     // A normalizer with two bins
-    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    ScoreNormalizer normalizer(GetProto(), TestingParams(5));
     Wait();
     normalizer.Update("testing", 1.0);
     EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
@@ -289,7 +292,7 @@ TEST_F(ScoreNormalizerTest, NormalizeSpecialCases) {
 
 // Tests normalizing scores in the leftmost and rightmost bins.
 TEST_F(ScoreNormalizerTest, NormalizeEdgeBins) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+  ScoreNormalizer normalizer(GetProto(), TestingParams(5));
   Wait();
 
   // Bin dividers are: -infinity, 2, 3, 4, 5
@@ -313,7 +316,7 @@ TEST_F(ScoreNormalizerTest, NormalizeEdgeBins) {
 
 // Tests normalizing scores in the non-leftmost and non-rightmost bins.
 TEST_F(ScoreNormalizerTest, NormalizeMiddleBins) {
-  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+  ScoreNormalizer normalizer(GetProto(), TestingParams(5));
   Wait();
 
   // Bin dividers are: -infinity, 2, 3, 4, 5
