@@ -15,6 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
@@ -49,6 +50,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     }
 
     private void launchSubpage() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
         mMainController.launchSubpage(this);
     }
 
@@ -67,6 +69,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         assert !mDelegate.isIncognito();
         AboutThisSiteView view = new AboutThisSiteView(parent.getContext(), null);
         view.setSiteInfo(mSiteInfo, () -> {
+            mMainController.recordAction(
+                    PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED);
             new TabDelegate(/*incognito=*/false)
                     .createNewTab(
                             new LoadUrlParams(mSiteInfo.getDescription().getSource().getUrl()),
