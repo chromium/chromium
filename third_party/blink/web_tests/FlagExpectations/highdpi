@@ -240,7 +240,6 @@ crbug.com/1179552 fragmentation/single-line-cells-repeating-thead-with-caption.h
 crbug.com/1179552 fragmentation/single-line-cells-repeating-thead-with-two-captions.html [ Failure ]
 crbug.com/1179552 fragmentation/table-row-page-break-collapsed-border.html [ Failure ]
 
-crbug.com/1179554 html/dialog/removed-element-is-removed-from-top-layer.html [ Failure ]
 crbug.com/1179554 http/tests/css/css-resources-referrer.html [ Failure ]
 crbug.com/1179554 http/tests/csspaint/entire-canvas-visible-zoom.html [ Failure ]
 crbug.com/1179554 http/tests/csspaint/geometry-background-image-zoom.html [ Failure ]
