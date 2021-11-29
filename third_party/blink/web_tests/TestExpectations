@@ -916,6 +916,16 @@ crbug.com/949909 external/wpt/css/css-text-decor/text-decoration-040-manual.html
 # `text-decoration-skip-ink: all` not implemented yet.
 crbug.com/1054656 external/wpt/css/css-text-decor/text-decoration-skip-ink-005.html [ Skip ]
 
+# `text-decoration: spelling|grammar-error`
+crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]
+crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-grammar-error-color-001.optional.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-grammar-error-color-002.optional.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-grammar-error-color-dynamic-001.optional.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-spelling-error-color-001.optional.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-spelling-error-color-002.optional.html [ Failure ]
+crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-spelling-error-color-dynamic-001.optional.html [ Failure ]
+
 crbug.com/722825 media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Pass Skip Timeout ]
 
 #### crbug.com/783229 overflow

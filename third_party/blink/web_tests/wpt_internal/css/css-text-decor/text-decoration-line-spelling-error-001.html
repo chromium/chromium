@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Text Decoration Test: text-decoration-line: spelling-error</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-spelling-error">
+<meta name="assert" content="This test checks that the rendering of 'text-decoration-line: spelling-error' matches the default spelling markers.">
+<link rel="match" href="text-decoration-line-spelling-error-001-ref.html">
+<script src="../support/markers.js"></script>
+<style>
+  span {
+    text-decoration-line: spelling-error;
+  }
+</style>
+
+<p>The test passes if "quikc" has a spelling error marker that looks like the default spelling error marker.</p>
+<div>The <span>quikc</span> brown fox.</div>
