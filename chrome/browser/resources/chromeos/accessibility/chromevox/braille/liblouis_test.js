@@ -10,7 +10,8 @@
 // Include test fixture.
 GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 
-ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
+// Disabled due to high flakes/failures; see https://crbug.com/1274472.
+DISABLED_ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   createLiblouis() {
     return new LibLouis(
         chrome.extension.getURL('chromevox/braille/liblouis_wrapper.js'), '',
@@ -37,7 +38,8 @@ function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
         chrome.extension.getURL('chromevox/braille/liblouis_wrapper.js'), '',
         testFunc.bind(this));
   };
-  TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
+  TEST_F('DISABLED_ChromeVoxLibLouisTest', testName, wrappedTestFunc,
+         opt_preamble);
 }
 
 function LIBLOUIS_TEST_F_WITH_PREAMBLE(preamble, testName, testFunc) {
