@@ -275,6 +275,7 @@ test("components_unittests") {
       "//components/domain_reliability:unit_tests",
       "//components/drive:unit_tests",
       "//components/embedder_support:unit_tests",
+      "//components/enterprise/content:unit_tests",
       "//components/favicon/content:unit_tests",
       "//components/federated_learning:unit_tests",
       "//components/feed:unit_tests",

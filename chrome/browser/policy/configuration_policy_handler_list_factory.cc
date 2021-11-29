@@ -67,6 +67,8 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/content/copy_prevention_settings_policy_handler.h"
+#include "components/enterprise/content/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
@@ -1551,9 +1553,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserAgentClientHintsGREASEUpdateEnabled,
     policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled,
     base::Value::Type::BOOLEAN},
-  { key::kCopyPreventionSettings,
-    policy_prefs::kCopyPreventionSettings,
-    base::Value::Type::DICTIONARY},
 };
 // clang-format on
 
@@ -1806,6 +1805,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
+  handlers->AddHandler(std::make_unique<CopyPreventionSettingsPolicyHandler>(
+      key::kCopyPreventionSettings,
+      enterprise::content::kCopyPreventionSettings, chrome_schema));
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN) || \

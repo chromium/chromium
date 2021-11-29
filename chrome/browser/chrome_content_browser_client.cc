@@ -186,6 +186,7 @@
 #include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/content/pref_names.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
@@ -1313,7 +1314,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kCorsNonWildcardRequestHeadersSupport,
                                 true);
   registry->RegisterDictionaryPref(
-      policy::policy_prefs::kCopyPreventionSettings);
+      enterprise::content::kCopyPreventionSettings);
 }
 
 // static

@@ -297,6 +297,7 @@
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
+      <part file="enterprise_strings.grdp" />
       <part file="error_page_strings.grdp" />
       <part file="find_in_page_strings.grdp" />
       <part file="flags_strings.grdp" />
