@@ -3134,8 +3134,6 @@ crbug.com/626703 [ Mac11 ] virtual/css-calc-infinity-and-nan-disabled/external/w
 crbug.com/626703 [ Mac11 ] virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-does-not-inherit.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-parent.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-19.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/layout_ng_block_frag/external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-002.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/plz-dedicated-worker/external/wpt/fetch/metadata/redirect/multiple-redirect-https-downgrade-upgrade.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/link.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-filter.html [ Timeout ]
