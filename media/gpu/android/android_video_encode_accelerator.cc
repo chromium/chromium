@@ -209,6 +209,19 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
+  auto status = media_codec_->GetInputFormatStride(&input_buffer_stride_);
+  if (status != MEDIA_CODEC_OK || input_buffer_stride_ <= 0) {
+    DLOG(ERROR) << "Can't read stride from input format";
+    return false;
+  }
+
+  status =
+      media_codec_->GetInputFormatYPlaneHeight(&input_buffer_yplane_height_);
+  if (status != MEDIA_CODEC_OK || input_buffer_yplane_height_ <= 0) {
+    DLOG(ERROR) << "Can't read y-plane height from input format";
+    return false;
+  }
+
   // Conservative upper bound for output buffer size: decoded size + 2KB.
   const size_t output_buffer_capacity =
       VideoFrame::AllocationSize(config.input_format,
@@ -341,17 +354,29 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   RETURN_ON_FAILURE(status == MEDIA_CODEC_OK, "GetInputBuffer failed.",
                     kPlatformFailureError);
 
-  size_t queued_size =
-      VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame->coded_size());
-  RETURN_ON_FAILURE(capacity >= queued_size,
-                    "Failed to get input buffer: " << input_buf_index,
+  uint8_t* dst_y = buffer;
+  const int dst_stride_y = input_buffer_stride_;
+  const int uv_plane_offset =
+      input_buffer_yplane_height_ * input_buffer_stride_;
+  uint8_t* dst_uv = buffer + uv_plane_offset;
+  const int dst_stride_uv = input_buffer_stride_;
+
+  const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
+      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, frame->coded_size());
+  const size_t queued_size =
+      // size of Y-plane plus padding till UV-plane
+      uv_plane_offset +
+      // size of all UV-plane lines but the last one
+      (uv_plane_size.height() - 1) * dst_stride_uv +
+      // size of the very last line in UV-plane (it's not padded to full stride)
+      uv_plane_size.width() * 2;
+
+  RETURN_ON_FAILURE(queued_size <= capacity,
+                    "Frame doesn't fit into the input buffer. "
+                        << "queued_size: " << queued_size
+                        << "capacity: " << capacity,
                     kPlatformFailureError);
 
-  uint8_t* dst_y = buffer;
-  int dst_stride_y = frame->stride(VideoFrame::kYPlane);
-  uint8_t* dst_uv = buffer + frame->stride(VideoFrame::kYPlane) *
-                                 frame->rows(VideoFrame::kYPlane);
-  int dst_stride_uv = frame->stride(VideoFrame::kUPlane) * 2;
   // Why NV12?  Because COLOR_FORMAT_YUV420_SEMIPLANAR.  See comment at other
   // mention of that constant.
   bool converted = !libyuv::I420ToNV12(

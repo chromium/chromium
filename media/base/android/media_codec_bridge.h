@@ -87,6 +87,20 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual MediaCodecStatus GetOutputColorSpace(
       gfx::ColorSpace* color_space) = 0;
 
+  // Fills in |stride| with required Y-plane stride in the encoder's input
+  // buffer. Returns MEDIA_CODEC_OK on success, with |stride| initialized, or
+  // MEDIA_CODEC_ERROR with |stride| unmodified otherwise.
+  // (see MediaFormat#KEY_STRIDE for more details)
+  virtual MediaCodecStatus GetInputFormatStride(int* stride) = 0;
+
+  // Fills in |height| with required Y-plane height in the encoder's input
+  // buffer. (i.e. the number of rows that must be skipped to get from the top
+  // of the Y plane to the top of the UV plane in the bytebuffer.)
+  // Returns MEDIA_CODEC_OK on success, with |height| initialized, or
+  // MEDIA_CODEC_ERROR with |height| unmodified otherwise.
+  // (see MediaFormat#KEY_SLICE_HEIGHT for more details)
+  virtual MediaCodecStatus GetInputFormatYPlaneHeight(int* height) = 0;
+
   // Submits a byte array to the given input buffer. Call this after getting an
   // available buffer from DequeueInputBuffer(). If |data| is NULL, it assumes
   // the input buffer has already been populated (but still obeys |size|).

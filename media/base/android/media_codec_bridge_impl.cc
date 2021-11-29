@@ -343,11 +343,10 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputSize(gfx::Size* size) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK) {
-    size->SetSize(Java_GetOutputFormatResult_width(env, result),
-                  Java_GetOutputFormatResult_height(env, result));
+    size->SetSize(Java_MediaFormatWrapper_width(env, result),
+                  Java_MediaFormatWrapper_height(env, result));
   }
   return status;
 }
@@ -357,10 +356,9 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputSamplingRate(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK)
-    *sampling_rate = Java_GetOutputFormatResult_sampleRate(env, result);
+    *sampling_rate = Java_MediaFormatWrapper_sampleRate(env, result);
   return status;
 }
 
@@ -369,10 +367,9 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK)
-    *channel_count = Java_GetOutputFormatResult_channelCount(env, result);
+    *channel_count = Java_MediaFormatWrapper_channelCount(env, result);
   return status;
 }
 
@@ -386,16 +383,15 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status != MEDIA_CODEC_OK)
     return status;
 
   // TODO(liberato): Consider consolidating these to save JNI hops.  However,
   // since this is called only rarely, it's clearer this way.
-  int standard = Java_GetOutputFormatResult_colorStandard(env, result);
-  int range = Java_GetOutputFormatResult_colorRange(env, result);
-  int transfer = Java_GetOutputFormatResult_colorTransfer(env, result);
+  int standard = Java_MediaFormatWrapper_colorStandard(env, result);
+  int range = Java_MediaFormatWrapper_colorRange(env, result);
+  int transfer = Java_MediaFormatWrapper_colorTransfer(env, result);
   gfx::ColorSpace::PrimaryID primary_id;
   gfx::ColorSpace::TransferID transfer_id;
   gfx::ColorSpace::MatrixID matrix_id = gfx::ColorSpace::MatrixID::RGB;
@@ -459,6 +455,25 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
   *color_space = gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
 
   return MEDIA_CODEC_OK;
+}
+
+MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatStride(int* stride) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
+  if (status == MEDIA_CODEC_OK)
+    *stride = Java_MediaFormatWrapper_stride(env, result);
+  return status;
+}
+MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatYPlaneHeight(int* height) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
+  if (status == MEDIA_CODEC_OK)
+    *height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
+  return status;
 }
 
 MediaCodecStatus MediaCodecBridgeImpl::QueueInputBuffer(

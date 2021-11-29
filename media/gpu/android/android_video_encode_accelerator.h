@@ -108,6 +108,12 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // change after.
   gfx::Size frame_size_;
 
+  // Y and UV plane strides in the encoder's input buffer
+  int input_buffer_stride_ = 0;
+
+  // Y-plane height in the encoder's input
+  int input_buffer_yplane_height_ = 0;
+
   uint32_t last_set_bitrate_;  // In bps.
 
   // True if there is encoder error.
