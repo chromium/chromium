@@ -86,7 +86,8 @@ class StabilityReportExtractorThreadTrackerTest : public testing::Test {
     std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
     bool success = mmfile->Initialize(
         File(debug_file_path_, File::FLAG_CREATE | File::FLAG_READ |
-                                   File::FLAG_WRITE | File::FLAG_SHARE_DELETE),
+                                   File::FLAG_WRITE |
+                                   File::FLAG_WIN_SHARE_DELETE),
         {0, static_cast<int64_t>(kFileSize)},
         MemoryMappedFile::READ_WRITE_EXTEND);
     if (!success || !mmfile->IsValid())
