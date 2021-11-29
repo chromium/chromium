@@ -624,7 +624,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   EXPECT_TRUE(exchange_data);
   EXPECT_TRUE(exchange_data->GetSource());
   EXPECT_TRUE(exchange_data->GetSource()->IsUrlType());
-  EXPECT_TRUE(exchange_data->GetSource()->origin()->IsSameOriginWith(
+  EXPECT_TRUE(exchange_data->GetSource()->GetOrigin()->IsSameOriginWith(
       url::Origin::Create(GURL(kGmailUrl))));
 }
 

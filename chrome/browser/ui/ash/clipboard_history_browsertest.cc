@@ -1172,7 +1172,7 @@ class FakeDataTransferPolicyController
     // For other data destinations, only the data from `allowed_origin_`
     // should be accessible.
     return data_src && data_src->IsUrlType() &&
-           (*data_src->origin() == allowed_origin_);
+           (*data_src->GetOrigin() == allowed_origin_);
   }
 
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,

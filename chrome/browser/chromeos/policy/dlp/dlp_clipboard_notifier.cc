@@ -112,9 +112,9 @@ void DlpClipboardNotifier::NotifyBlockedAction(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
-  DCHECK(data_src->origin());
+  DCHECK(data_src->GetOrigin());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->origin()->host());
+      base::UTF8ToUTF16(data_src->GetOrigin()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
@@ -149,12 +149,12 @@ void DlpClipboardNotifier::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
-  DCHECK(data_src->origin());
+  DCHECK(data_src->GetOrigin());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->origin()->host());
+      base::UTF8ToUTF16(data_src->GetOrigin()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
@@ -199,12 +199,12 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> paste_cb) {
   DCHECK(data_src);
-  DCHECK(data_src->origin());
+  DCHECK(data_src->GetOrigin());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->origin()->host());
+      base::UTF8ToUTF16(data_src->GetOrigin()->host());
 
   blink_paste_cb_ = std::move(paste_cb);
   Observe(web_contents);

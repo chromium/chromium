@@ -5,7 +5,6 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 
-#include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -62,7 +61,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   bool IsUrlType() const { return type_ == EndpointType::kUrl; }
 
-  const url::Origin* origin() const { return base::OptionalOrNullptr(origin_); }
+  const url::Origin* GetOrigin() const;
 
   EndpointType type() const { return type_; }
 
