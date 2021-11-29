@@ -230,7 +230,7 @@ status::Code VerifyPatch(base::File patch_file) {
 status::Code VerifyPatch(const base::FilePath& patch_path) {
   using base::File;
   File patch_file(patch_path, File::FLAG_OPEN | File::FLAG_READ |
-                                  base::File::FLAG_SHARE_DELETE);
+                                  base::File::FLAG_WIN_SHARE_DELETE);
   return VerifyPatchCommon(std::move(patch_file), patch_path);
 }
 
