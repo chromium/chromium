@@ -451,30 +451,38 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
   if (!chrome_item)
     return;
 
+  std::unique_ptr<ash::AppListItemMetadata> data = chrome_item->CloneMetadata();
   VLOG(2) << this << " UpdateAppItemFromSyncItem: " << sync_item->ToString();
+  bool has_changes = false;
   const bool position_change =
       (sync_item->item_ordinal.IsValid() &&
        (!chrome_item->position().IsValid() ||
         !chrome_item->position().Equals(sync_item->item_ordinal)));
   if (position_change) {
-    // This updates the position in both chrome and ash:
-    SetItemPosition(chrome_item->id(), sync_item->item_ordinal);
+    has_changes = true;
+    data->position = sync_item->item_ordinal;
   }
 
   // Only update the item name if it is a Folder or the name is empty.
   if (update_name && sync_item->item_name != chrome_item->name() &&
       (chrome_item->is_folder() || chrome_item->name().empty())) {
-    // This updates the name in both chrome and ash:
-    SetItemName(chrome_item->id(), sync_item->item_name);
+    has_changes = true;
+    data->name = sync_item->item_name;
   }
 
   const bool folder_change =
       (update_folder && chrome_item->folder_id() != sync_item->parent_id);
   if (folder_change) {
+    has_changes = true;
     VLOG(2) << " Moving Item To Folder: " << sync_item->parent_id;
-    // This updates the folder in both chrome and ash:
-    SetItemFolderId(chrome_item->id(), sync_item->parent_id);
+    data->folder_id = sync_item->parent_id;
   }
+
+  if (!has_changes)
+    return;
+
+  // This updates the position in both chrome and ash:
+  model_.SetItemMetadata(chrome_item->id(), std::move(data));
 
   // The code below handles position change or folder change under temporary
   // sort.
@@ -613,22 +621,28 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
     ash::RequestMoveToFolderReason reason) {
   DCHECK(!folder_id.empty());
 
-  // The target position relies on the items under the target folder. Therefore
-  // calculate `target_position` before moving the item to the folder.
-  syncer::StringOrdinal target_position;
-  ChromeAppListItem* last_child =
-      item_manager_->FindLastChildInFolder(folder_id);
-  if (!last_child) {
-    // The moved item is the first item under folder.
-    target_position = syncer::StringOrdinal::CreateInitialOrdinal();
-  } else {
-    // TODO(https://crbug.com/1247408): now the new item is always added to the
-    // rear. We should take launcher sort order into consideration.
-    target_position = last_child->position().CreateAfter();
-  }
+  ash::AppListItem* item = model_.FindItem(id);
+  if (item) {
+    // The target position relies on the items under the target folder.
+    // Therefore calculate `target_position` before moving the item to the
+    // folder.
+    syncer::StringOrdinal target_position;
+    ChromeAppListItem* last_child =
+        item_manager_->FindLastChildInFolder(folder_id);
+    if (!last_child) {
+      // The moved item is the first item under folder.
+      target_position = syncer::StringOrdinal::CreateInitialOrdinal();
+    } else {
+      // TODO(https://crbug.com/1247408): now the new item is always added to
+      // the rear. We should take launcher sort order into consideration.
+      target_position = last_child->position().CreateAfter();
+    }
 
-  SetItemFolderId(id, folder_id);
-  SetItemPosition(id, target_position);
+    std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+    data->folder_id = folder_id;
+    data->position = target_position;
+    model_.SetItemMetadata(id, std::move(data));
+  }
 
   if (!is_under_temporary_sort())
     return;
@@ -653,9 +667,14 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
 void ChromeAppListModelUpdater::RequestMoveItemToRoot(
     std::string id,
     syncer::StringOrdinal target_position) {
-  SetItemFolderId(id, "");
+  ash::AppListItem* item = model_.FindItem(id);
+  if (!item)
+    return;
 
-  SetItemPosition(id, target_position);
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->folder_id = "";
+  data->position = target_position;
+  model_.SetItemMetadata(id, std::move(data));
 }
 
 void ChromeAppListModelUpdater::RequestAppListSort(

@@ -388,9 +388,9 @@ void AppListModel::ReparentOrDeleteItemInFolder(
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   DCHECK(folder) << "Folder not found for item: " << item->ToDebugString();
 
+  const std::string item_parent_id = item->folder_id();
   std::unique_ptr<AppListItem> removed_item =
       RemoveItemFromFolder(folder, item);
-
   if (destination_folder_id.has_value()) {
     // When an item is removed from a folder, it can be moved to the top
     // list or a folder.
@@ -406,12 +406,11 @@ void AppListModel::ReparentOrDeleteItemInFolder(
     // Destroy `removed_item` and notify observers.
     for (auto& observer : observers_)
       observer.OnAppListItemWillBeDeleted(item);
-    std::string id = removed_item->id();
     removed_item.reset();  // Deletes item.
   }
 
   // Delete the folder if the folder becomes empty after child removal.
-  DeleteFolderIfEmpty(folder);
+  DeleteFolderIfEmpty(item_parent_id);
 }
 
 std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
@@ -424,13 +423,13 @@ std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
   return removed_item;
 }
 
-void AppListModel::DeleteFolderIfEmpty(AppListFolderItem* folder) {
-  if (folder->item_list()->item_count())
+void AppListModel::DeleteFolderIfEmpty(const std::string& folder_id) {
+  const AppListFolderItem* folder = FindFolderItem(folder_id);
+  if (!folder || folder->item_list()->item_count())
     return;
 
   DVLOG(2) << "Deleting empty folder: " << folder->ToDebugString();
-  std::string copy_id = folder->id();
-  DeleteItem(copy_id);
+  DeleteItem(folder_id);
 }
 
 void AppListModel::SetRootItemPosition(

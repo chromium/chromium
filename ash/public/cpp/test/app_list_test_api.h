@@ -17,6 +17,7 @@ class View;
 
 namespace ash {
 class AppsGridView;
+class AppListModel;
 class PaginationModel;
 
 // Accesses ash data for app list view testing.
@@ -26,6 +27,9 @@ class ASH_EXPORT AppListTestApi {
   ~AppListTestApi();
   AppListTestApi(const AppListTestApi& other) = delete;
   AppListTestApi& operator=(const AppListTestApi& other) = delete;
+
+  // Returns the active app list model.
+  AppListModel* GetAppListModel();
 
   // Waits for the bubble launcher window to open on the primary display.
   // See AppListBubblePresenter::Show(). Only used with productivity launcher

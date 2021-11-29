@@ -184,8 +184,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   std::unique_ptr<AppListItem> RemoveItemFromFolder(AppListFolderItem* folder,
                                                     AppListItem* item);
 
-  // Deletes `folder` if `folder` is empty.
-  void DeleteFolderIfEmpty(AppListFolderItem* folder);
+  // Deletes folder with ID `folder_id` if it's empty.
+  void DeleteFolderIfEmpty(const std::string& folder_id);
 
   // Sets the position of a root item.
   void SetRootItemPosition(AppListItem* item,

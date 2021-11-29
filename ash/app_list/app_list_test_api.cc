@@ -45,10 +45,6 @@ PagedAppsGridView* GetPagedAppsGridView() {
   return AppListView::TestApi(app_list_view).GetRootAppsGridView();
 }
 
-AppListModel* GetAppListModel() {
-  return AppListModelProvider::Get()->model();
-}
-
 // Waits until a child window is added to a container window.
 class WindowAddedWaiter : public aura::WindowObserver {
  public:
@@ -80,6 +76,10 @@ class WindowAddedWaiter : public aura::WindowObserver {
 
 AppListTestApi::AppListTestApi() = default;
 AppListTestApi::~AppListTestApi() = default;
+
+AppListModel* AppListTestApi::GetAppListModel() {
+  return AppListModelProvider::Get()->model();
+}
 
 void AppListTestApi::WaitForBubbleWindow() {
   DCHECK(features::IsProductivityLauncherEnabled());

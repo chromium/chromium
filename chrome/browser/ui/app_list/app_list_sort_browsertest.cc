@@ -369,6 +369,9 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
   // Move apps to one folder.
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
+  app_list_test_api_.GetTopLevelAppsGridView()
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
 
   ash::AppListItemView* item_view =
       app_list_test_api_.GetTopLevelAppsGridView()->view_model()->view_at(1);
