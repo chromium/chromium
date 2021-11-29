@@ -1038,6 +1038,54 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   move_loop_handler->RunMoveLoop({});
 }
 
+// Ensure no memory issues happen when the dragged window is destroyed just
+// after quitting the move loop. Regression test for crbug.com/1267791 and
+// should be caught in both regular and ASAN builds, where more details about
+// the actual memory issue is provided.
+TEST_P(WaylandWindowDragControllerTest, HandleDraggedWindowDestruction) {
+  // 1. Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // 2. Start the window drag session.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  ScheduleTestTask(
+      base::BindLambdaForTesting([&]() { move_loop_handler->EndMoveLoop(); }));
+
+  // 3. Run the move loop.
+  move_loop_handler->RunMoveLoop({});
+  Sync();
+
+  // 4. Destroy the dragged window just after quitting move loop.
+  const auto* dangling_window_ptr = window_.get();
+  window_.reset();
+  Sync();
+  EXPECT_NE(dangling_window_ptr, drag_controller()->pointer_grab_owner_);
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  // 5. Ensure no events are dispatched for drop. Which indirectly means that
+  // drop handling code at window drag controller does not call into the above
+  // destroyed dragged window.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+  SendDndDrop();
+  Sync();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // 6. Verifies that related state is correctly reset after drop.
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{
