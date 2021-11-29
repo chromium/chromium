@@ -27,6 +27,11 @@ SharedHighlightingPromo::~SharedHighlightingPromo() = default;
 void SharedHighlightingPromo::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopSharedHighlightingFeature)) {
+    return;
+  }
+
   if (HasTextFragment(validated_url.spec()))
     CheckExistingSelectors(render_frame_host);
 }
