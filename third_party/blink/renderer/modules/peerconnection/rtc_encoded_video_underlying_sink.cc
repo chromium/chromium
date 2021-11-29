@@ -14,8 +14,10 @@ namespace blink {
 
 RTCEncodedVideoUnderlyingSink::RTCEncodedVideoUnderlyingSink(
     ScriptState* script_state,
-    TransformerCallback transformer_callback)
-    : transformer_callback_(std::move(transformer_callback)) {
+    TransformerCallback transformer_callback,
+    webrtc::TransformableFrameInterface::Direction expected_direction)
+    : transformer_callback_(std::move(transformer_callback)),
+      expected_direction_(expected_direction) {
   DCHECK(transformer_callback_);
 }
 
@@ -50,6 +52,12 @@ ScriptPromise RTCEncodedVideoUnderlyingSink::write(
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
+    return ScriptPromise();
+  }
+
+  if (webrtc_frame->GetDirection() != expected_direction_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid frame");
     return ScriptPromise();
   }
 
