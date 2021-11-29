@@ -35,7 +35,6 @@ const char kCertificateHeader[] = "CERTIFICATE";
 void ExtractCertificatesFromData(const std::string& data_string,
                                  const base::FilePath& file_path,
                                  std::vector<CertInput>* certs) {
-  // TODO(mattm): support PKCS #7 (.p7b) files.
   net::PEMTokenizer pem_tokenizer(data_string, {kCertificateHeader});
   int block = 0;
   while (pem_tokenizer.GetNext()) {
@@ -51,6 +50,22 @@ void ExtractCertificatesFromData(const std::string& data_string,
   // If it was a PEM file, return the extracted results.
   if (block)
     return;
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> pkcs7_cert_buffers;
+  if (net::x509_util::CreateCertBuffersFromPKCS7Bytes(
+          base::as_bytes(base::make_span(data_string)), &pkcs7_cert_buffers)) {
+    int n = 0;
+    for (const auto& cert_buffer : pkcs7_cert_buffers) {
+      CertInput cert;
+      cert.der_cert = std::string(
+          net::x509_util::CryptoBufferAsStringPiece(cert_buffer.get()));
+      cert.source_file_path = file_path;
+      cert.source_details = base::StringPrintf("PKCS #7 cert %i", n);
+      certs->push_back(cert);
+      ++n;
+    }
+    return;
+  }
 
   // Otherwise, assume it is a single DER cert.
   CertInput cert;
