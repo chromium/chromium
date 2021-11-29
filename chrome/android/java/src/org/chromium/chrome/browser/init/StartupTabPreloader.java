@@ -141,6 +141,18 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
                 "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent");
     }
 
+    @Override
+    public void onFirstNavigationCommit() {
+        recordDurationFromLoadDecisionIntoHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit");
+    }
+
+    @Override
+    public void onFirstContentfulPaint() {
+        recordDurationFromLoadDecisionIntoHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint");
+    }
+
     // Records the duration from the load decision to the current time into |histogram| (suffixed
     // by the state of the tab preload and match decisions).
     private void recordDurationFromLoadDecisionIntoHistogram(String histogram) {
