@@ -26,7 +26,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * Shows the dialog that informs the user about the progress of the reaction GIF generation. Also
  * allows the user to cancel the generation and go back to editing the scene.
  */
-class LightweightReactionsProgressDialog extends DialogFragment {
+public class LightweightReactionsProgressDialog extends DialogFragment {
     private MaterialProgressBar mProgressBar;
     private TextView mProgressPercentage;
     private View.OnClickListener mCancelListener;
