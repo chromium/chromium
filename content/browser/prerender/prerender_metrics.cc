@@ -43,7 +43,7 @@ void RecordPrerenderCancelledInterface(const std::string& interface_name) {
     // expclitly, e.g., channel-associated interfaces. Record these interfaces
     // with the sparse histogram to ensure all of them are tracked.
     base::UmaHistogramSparse(
-        "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+        "Prerender.Experimental.PrerenderCancelledUnknownInterface",
         InterfaceNameHasher(interface_name));
   }
 }

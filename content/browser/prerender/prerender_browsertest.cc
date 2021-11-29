@@ -1916,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
   SetBrowserClientForTesting(old_browser_client);
 }
@@ -1967,7 +1967,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
 }
 
@@ -2696,7 +2696,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
       InterfaceNameHasher(mojom::PepperHost::Name_), 1);
 
   // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
@@ -2714,7 +2714,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kUnknown, 2);
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+      "Prerender.Experimental.PrerenderCancelledUnknownInterface",
       InterfaceNameHasher(mojom::PepperHost::Name_), 2);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
