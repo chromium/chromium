@@ -326,6 +326,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="334252345105450327">Iegūt ekrānuzņēmumu</translation>
 <translation id="3351879221545518001">Jūsu ekrānā šobrīd tiek veikta apraide.</translation>
 <translation id="3364721542077212959">Skārienekrāna pildspalvas rīki</translation>
+<translation id="3365977133351922112">Jūsu tālrunis atrodas pārāk tālu. Pārvietojiet tālruni tuvāk.</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3371140690572404006">USB-C ierīce (pieslēgvieta labajā pusē priekšā)</translation>
 <translation id="3375634426936648815">Izveidots savienojums</translation>
@@ -602,6 +603,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
 <translation id="5199367439331364630">Lai pierakstītos Chromebook datorā, ievadiet paroli.</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 cits paziņojums}zero{# citu paziņojumu}one{# cits paziņojums}other{# citi paziņojumi}}</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="5208059991603368177">Ieslēgts</translation>
@@ -884,6 +886,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7398254312354928459">Ieslēgts tīkla savienojums</translation>
 <translation id="7405710164030118432">Lai atbloķētu šo ierīci, ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="7406608787870898861">Mobilā tīkla iestatīšanas pabeigšana</translation>
+<translation id="740790383907119240">Lietotņu saīsnes</translation>
 <translation id="741244894080940828">izteikšana citās mērvienībās</translation>
 <translation id="7413851974711031813">Lai aizvērtu, nospiediet taustiņu Escape</translation>
 <translation id="742594950370306541">Kamera tiek lietota.</translation>
@@ -986,6 +989,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8061464966246066292">Augsts kontrasts</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
+<translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8132487352815776550">Izslēgt subtitrus</translation>
@@ -1034,6 +1038,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ir <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Lai atceltu, nospiediet alternēšanas taustiņu + meklēšanas vai pārslēgšanas taustiņu.</translation>
 <translation id="8492573885090281069">Displejā <ph name="DISPLAY_NAME" /> netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" />. Izšķirtspēja tika nomainīta uz: <ph name="FALLBACK_RESOLUTION" />. Lai saglabātu izmaiņas, noklikšķiniet uz Apstiprināt. Iepriekšējie iestatījumi tiks atjaunoti pēc: <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Jūsu Chromebook datorā ir izslēgts Bluetooth savienojums. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
 <translation id="8513108775083588393">Pagriezt aut.</translation>
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>

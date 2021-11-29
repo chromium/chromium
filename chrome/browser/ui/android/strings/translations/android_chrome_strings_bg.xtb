@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">Изпращане на текст до устройствата ви</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4714588616299687897">Икономисвайте до 60% от данните</translation>
+<translation id="471759387343966120">Продължавайки, приемате <ph name="BEGIN_TOS_LINK" />Общите условия<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.\nС цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
 <translation id="4720023427747327413">Отваряне в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогнете за подобряването на Chrome. <ph name="BEGIN_LINK" />Участвайте в анкетата<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">Установена е връзка с устройството</translation>
 <translation id="8088176524274673045">За да споделите с хората в близост, те трябва да сканират този QR код</translation>
 <translation id="8103578431304235997">Раздел в режим „инкогнито“</translation>
+<translation id="8105613260829665809">Продължавайки, приемате <ph name="BEGIN_TOS_LINK" />Общите условия<ph name="END_TOS_LINK" />.\nС цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="8110024788458304985">Помощ за подобряването на функциите и ефективността на Chrome</translation>

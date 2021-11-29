@@ -27,7 +27,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1111781754511998498">Proyector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda actualizar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">El modo de colores temático usa los colores de tu fondo de pantalla para aplicarlos ligeramente a la interfaz.</translation>
-<translation id="112308213915226829">Auto-ocultar biblioteca</translation>
+<translation id="112308213915226829">Ocultar la barra automáticamente</translation>
 <translation id="1142002900084379065">Fotos recientes</translation>
 <translation id="1148499908455722006">Abrir el diálogo de información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
@@ -266,7 +266,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="2942350706960889382">Lupa con vista acoplada</translation>
-<translation id="2942516765047364088">Posición de la biblioteca</translation>
+<translation id="2942516765047364088">Posición de la barra</translation>
 <translation id="2946119680249604491">Agregar conexión</translation>
 <translation id="2961963223658824723">Se produjo un error. Vuelve a intentarlo en unos segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>

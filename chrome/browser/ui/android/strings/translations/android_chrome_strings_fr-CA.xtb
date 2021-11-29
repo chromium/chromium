@@ -604,6 +604,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4696983787092045100">Envoyer le message texte à vos appareils</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
 <translation id="4714588616299687897">Économisez jusqu'à 60 % de vos données</translation>
+<translation id="471759387343966120">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" /> et la <ph name="BEGIN_PRIVACY_LINK" />politique de confidentialité<ph name="END_PRIVACY_LINK" />.\nPour contribuer à l'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Proposer une traduction</translation>
 <translation id="4720023427747327413">Ouvrir dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Aidez-nous à améliorer Chrome. <ph name="BEGIN_LINK" />Répondez à notre sondage<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="808747664143081553">Connecté à l'appareil</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
+<translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour contribuer à l'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation</translation>
 <translation id="8110024788458304985">Contribuer à améliorer les fonctionnalités et les performances de Chrome</translation>
@@ -1286,6 +1288,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8551513938758868521">Verrouiller les onglets de navigation privée en quittant Chrome</translation>
 <translation id="8555836665334561807">Sur connexion Wi-Fi</translation>
 <translation id="8559990750235505898">Proposez des traductions de pages dans d'autres langues</translation>
+<translation id="8560560256644480257">Création d'un GIF en cours… <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Retrouvez votre liste de lecture dans les favoris</translation>
 <translation id="8562452229998620586">Les mots de passe enregistrés s'affichent ici.</translation>
 <translation id="856481929701340285">Voir version ordinateur</translation>

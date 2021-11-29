@@ -604,6 +604,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4696983787092045100">Matnni qurilmalaringizga yuborish</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4714588616299687897">Trafigingizni 60% gacha tejang</translation>
+<translation id="471759387343966120">Davom etish orqali siz <ph name="BEGIN_TOS_LINK" />Xizmat shartlari<ph name="END_TOS_LINK" /> va <ph name="BEGIN_PRIVACY_LINK" />Maxfiylik siyosatiga<ph name="END_PRIVACY_LINK" /> rozilik bildirasiz.\nIlovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Boshqarish<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> orqali ochish</translation>
 <translation id="4720982865791209136">Chrome brauzerini yaxshilashga yordam bering. <ph name="BEGIN_LINK" />So‘rovnomada qatnashing.<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="808747664143081553">Qurilmaga ulandi</translation>
 <translation id="8088176524274673045">Yaqin-atrofdagilarga ulashish uchun ular shu QR kodni skanerlashi kerak.</translation>
 <translation id="8103578431304235997">Inkognito sahifa</translation>
+<translation id="8105613260829665809">Davom etish bilan siz <ph name="BEGIN_TOS_LINK" />xizmat shartlariga<ph name="END_TOS_LINK" /> rozilik bildirasiz.\nIlovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Boshqarish<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Boshqa qurilmalardagi xatcho‘plaringizni ko‘rish uchun sinxronizatsiyani yoqing</translation>
 <translation id="8110024788458304985">Chrome OS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
