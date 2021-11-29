@@ -1249,9 +1249,8 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
   DCHECK(element);
   StyleResolverState state(GetDocument(), *element);
   MatchResult match_result;
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
-  ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
+  ElementRuleCollector collector(state.ElementContext(),
+                                 StyleRecalcContext::FromAncestors(*element),
                                  selector_filter_, match_result, state.Style(),
                                  EInsideLink::kNotInsideLink);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);

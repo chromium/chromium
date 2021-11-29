@@ -2121,4 +2121,41 @@ TEST_F(StyleResolverTest, IsInertWithDialogAndFullscreen) {
   EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
 }
 
+TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size }
+      @container (min-width: 1px) {
+        #target { }
+      }
+      @container (min-width: 99999px) {
+        #target { color: red }
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = GetDocument().getElementById("target");
+  auto& resolver = GetDocument().GetStyleResolver();
+
+  auto* rule_list = resolver.StyleRulesForElement(
+      target,
+      StyleResolver::kAuthorCSSRules | StyleResolver::kCrossOriginCSSRules);
+  ASSERT_FALSE(rule_list) << "A nullptr is returned if no rules were collected";
+
+  rule_list = resolver.StyleRulesForElement(
+      target, StyleResolver::kAuthorCSSRules |
+                  StyleResolver::kCrossOriginCSSRules |
+                  StyleResolver::kEmptyCSSRules);
+  ASSERT_TRUE(rule_list);
+  ASSERT_EQ(rule_list->size(), 1u)
+      << "The empty #target rule in the container query should be collected";
+  EXPECT_TRUE(rule_list->at(0)->Properties().IsEmpty())
+      << "Check that it is in fact the empty rule";
+}
+
 }  // namespace blink
