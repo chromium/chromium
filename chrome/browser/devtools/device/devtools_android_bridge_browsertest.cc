@@ -108,9 +108,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
   EXPECT_EQ(2ul, targets->GetList().size());
 
   std::set<std::string> actual;
-  for (size_t i = 0; i < targets->GetList().size(); i++) {
+  for (const base::Value& item : targets->GetList()) {
     std::string value;
-    targets->GetString(i, &value);
+    if (item.is_string())
+      value = item.GetString();
     actual.insert(value);
   }
   EXPECT_STREQ("localhost:9222, localhost:9229", SetToString(actual).c_str());
