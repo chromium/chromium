@@ -38,8 +38,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Notifications.Actions" enum="NotificationActionType"
-    expires_after="M85">
+    expires_after="2022-11-22">
   <owner>dewittj@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded every time they happen. This
     histogram will record every single event that happens separately.
@@ -610,8 +612,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"
-    enum="NotificationActionType" expires_after="M85">
+    enum="NotificationActionType" expires_after="2022-11-22">
   <owner>dewittj@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded once per notification, when it
     is closed. This differs from the Notifications.Actions histogram in that

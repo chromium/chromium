@@ -1152,9 +1152,11 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
-    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2018-11-30">
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2022-11-22">
   <owner>yoshiki@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The cause of the scroll event by the user on the message center. Only the
     first event after the message center opens is recorded. For example, the
