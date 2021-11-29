@@ -71,8 +71,12 @@ bool SpellingServiceClient::RequestTextCheck(
   DCHECK(pref);
 
   std::string dictionary;
-  pref->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-      ->GetString(0, &dictionary);
+  const base::Value* dicts_list =
+      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
+  DCHECK(dicts_list->is_list());
+  base::Value::ConstListView dicts_lists_view = dicts_list->GetList();
+  if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
+    dictionary = dicts_lists_view[0].GetString();
 
   std::string language_code;
   std::string country_code;
@@ -176,8 +180,13 @@ bool SpellingServiceClient::IsAvailable(content::BrowserContext* context,
   // If the locale for spelling has not been set, the user has not decided to
   // use spellcheck so we don't do anything remote (suggest or spelling).
   std::string locale;
-  pref->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-      ->GetString(0, &locale);
+  const base::Value* dicts_list =
+      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
+  DCHECK(dicts_list->is_list());
+  base::Value::ConstListView dicts_lists_view = dicts_list->GetList();
+  if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
+    locale = dicts_lists_view[0].GetString();
+
   if (locale.empty())
     return false;
 
