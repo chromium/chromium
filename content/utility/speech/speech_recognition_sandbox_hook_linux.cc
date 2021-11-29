@@ -53,6 +53,8 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
 bool SpeechRecognitionPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
 #if BUILDFLAG(ENABLE_SODA)
+  DVLOG(0) << "SODA test binary path: "
+           << GetSodaTestBinaryPath().value().c_str();
   void* soda_test_library = dlopen(GetSodaTestBinaryPath().value().c_str(),
                                    RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
   DCHECK(soda_test_library);
