@@ -870,7 +870,7 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
     gfx::Point element_origin;
     BubbleBorder::Arrow supplied_arrow;
     gfx::Point expected_arrow_position;
-    bool expected_arrow_visibility;
+    bool expected_arrow_visibility_and_return_value;
   } test_cases[]{
       // First are using the following scenario:
       //
@@ -1028,9 +1028,12 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
     views::BubbleBorder border(BubbleBorder::Arrow::NONE,
                                BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
     border.set_arrow(test_case.supplied_arrow);
-    border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-        {test_case.element_origin, element_size}, true, bubble_bounds_copy);
-    EXPECT_EQ(border.visible_arrow(), test_case.expected_arrow_visibility);
+    EXPECT_EQ(
+        border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+            {test_case.element_origin, element_size}, true, bubble_bounds_copy),
+        test_case.expected_arrow_visibility_and_return_value);
+    EXPECT_EQ(border.visible_arrow(),
+              test_case.expected_arrow_visibility_and_return_value);
     EXPECT_EQ(border.GetVisibibleArrowRectForTesting().origin(),
               test_case.expected_arrow_position);
     EXPECT_EQ(GetVisibleArrowSize(test_case.supplied_arrow),
@@ -1038,8 +1041,47 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
   }
 }
 
-// Tests that BubbleBorder::IsVerticalArrow() correctly returns if the arrow is
-// placed on the top or on the bottom of the bubble.
+TEST_F(BubbleBorderTest,
+       AddArrowToBubbleCornerAndPointTowardsAnchorWithInsufficientSpave) {
+  // This bubble bound has uinsufficient width to place an arrow on the top or
+  // the bottom.
+  const gfx::Rect insufficient_width_bubble_bounds(0, 0, 10, 200);
+
+  // This bound has insufficient height to place an arrow on the left or right.
+  const gfx::Rect insufficient_height_bubble_bounds(0, 0, 100, 10);
+
+  // Create bounds for the element, the specifics do no matter.
+  const gfx::Rect element_bounds(0, 0, 350, 100);
+
+  struct TestCase {
+    gfx::Rect bubble_bounds;
+    BubbleBorder::Arrow supplied_arrow;
+    bool expected_arrow_visibility_and_return_value;
+  } test_cases[]{
+      // Bubble is placeable on top because there is sufficient width.
+      {insufficient_height_bubble_bounds, BubbleBorder::Arrow::TOP_CENTER,
+       true},
+      // Bubble is not placeable on top because the width is insufficient.
+      {insufficient_width_bubble_bounds, BubbleBorder::Arrow::TOP_CENTER,
+       false},
+      // Bubble is not placeable on the side because the height is insufficient.
+      {insufficient_height_bubble_bounds, BubbleBorder::Arrow::LEFT_CENTER,
+       false},
+      // Bubble is placeable on the side because the height is sufficient.
+      {insufficient_width_bubble_bounds, BubbleBorder::Arrow::LEFT_CENTER,
+       true},
+  };
+
+  for (auto test_case : test_cases) {
+    views::BubbleBorder border(BubbleBorder::Arrow::NONE,
+                               BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+    border.set_arrow(test_case.supplied_arrow);
+    EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+                  element_bounds, true, test_case.bubble_bounds),
+              test_case.expected_arrow_visibility_and_return_value);
+  }
+}
+
 TEST_F(BubbleBorderTest, IsVerticalArrow) {
   struct TestCase {
     BubbleBorder::Arrow arrow;

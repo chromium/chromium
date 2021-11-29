@@ -231,7 +231,10 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   //
   // If |move_bubble_to_add_arrow| is true, the |bubble_bounds| are displaced to
   // account for the size of the arrow.
-  void AddArrowToBubbleCornerAndPointTowardsAnchor(
+  //
+  // Returns false if the arrow cannot be added due to missing space on the
+  // bubble border.
+  bool AddArrowToBubbleCornerAndPointTowardsAnchor(
       const gfx::Rect& anchor_rect,
       bool move_bubble_to_add_arrow,
       gfx::Rect& bubble_bounds);
