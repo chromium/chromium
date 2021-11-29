@@ -23,6 +23,7 @@
 #include "tools/mac/power/power_sampler/sample_counter.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
+#include "tools/mac/power/power_sampler/smc_sampler.h"
 #include "tools/mac/power/power_sampler/timer_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
 
@@ -151,6 +152,10 @@ int main(int argc, char** argv) {
     controller.AddSampler(std::move(sampler));
 
   sampler = power_sampler::BatterySampler::Create();
+  if (sampler)
+    controller.AddSampler(std::move(sampler));
+
+  sampler = power_sampler::SMCSampler::Create();
   if (sampler)
     controller.AddSampler(std::move(sampler));
 

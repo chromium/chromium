@@ -12,6 +12,9 @@ if (is_mac) {
       "resource_coalition_internal_types_mac.h",
       "resource_coalition_mac.h",
       "resource_coalition_mac.mm",
+      "smc_internal_types_mac.h",
+      "smc_mac.h",
+      "smc_mac.mm",
     ]
 
     deps = [ "//base" ]

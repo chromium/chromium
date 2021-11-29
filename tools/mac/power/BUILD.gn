@@ -47,6 +47,8 @@ static_library("power_sampler_lib") {
     "power_sampler/sampling_controller.h",
     "power_sampler/sampling_event_source.cc",
     "power_sampler/sampling_event_source.h",
+    "power_sampler/smc_sampler.h",
+    "power_sampler/smc_sampler.mm",
     "power_sampler/timer_sampling_event_source.cc",
     "power_sampler/timer_sampling_event_source.h",
     "power_sampler/user_idle_level_sampler.cc",
@@ -84,6 +86,7 @@ test("power_sampler_unittests") {
     "power_sampler/main_display_sampler_unittest.cc",
     "power_sampler/resource_coalition_sampler_unittest.cc",
     "power_sampler/sampling_controller_unittest.cc",
+    "power_sampler/smc_sampler_unittest.mm",
     "power_sampler/timer_sampling_event_source_unittest.cc",
     "power_sampler/user_idle_level_sampler_unittest.cc",
   ]

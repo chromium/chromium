@@ -7,8 +7,8 @@
 
 #include "components/metrics/metrics_provider.h"
 
-#include "base/bind.h"
-#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "base/threading/sequence_bound.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PowerMetricsProvider : public metrics::MetricsProvider {
  public:
@@ -23,8 +23,9 @@ class PowerMetricsProvider : public metrics::MetricsProvider {
   void OnRecordingDisabled() override;
 
  private:
+  // Records metrics from the ThreadPool.
   class Impl;
-  scoped_refptr<Impl> impl_;
+  absl::optional<base::SequenceBound<Impl>> impl_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_POWER_METRICS_PROVIDER_MAC_H_
