@@ -872,11 +872,6 @@
           '--test-launcher-jobs=1',
         ],
       },
-      'sandbox_linux_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.sandbox_linux_unittests.filter',
-        ],
-      },
       'sql_unittests': {},
       'url_unittests': {},
       'vaapi_unittest': {
