@@ -187,16 +187,21 @@ void FakeVideoCaptureDeviceFactory::SetToCustomDevicesConfig(
   devices_config_ = config;
 }
 
-std::unique_ptr<VideoCaptureDevice> FakeVideoCaptureDeviceFactory::CreateDevice(
+VideoCaptureErrorOrDevice FakeVideoCaptureDeviceFactory::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   for (const auto& entry : devices_config_) {
     if (device_descriptor.device_id != entry.device_id)
       continue;
-    return CreateDeviceWithSettings(entry);
+    auto device = CreateDeviceWithSettings(entry);
+    return device ? VideoCaptureErrorOrDevice(std::move(device))
+                  : VideoCaptureErrorOrDevice(
+                        VideoCaptureError::
+                            kErrorFakeDeviceIntentionallyEmittingErrorEvent);
   }
-  return nullptr;
+  return VideoCaptureErrorOrDevice(
+      VideoCaptureError::kErrorFakeDeviceIntentionallyEmittingErrorEvent);
 }
 
 void FakeVideoCaptureDeviceFactory::GetDevicesInfo(

@@ -497,12 +497,14 @@ void VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase() {
 #elif defined(OS_MAC)
   invalid_descriptor.capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
 #endif
-  std::unique_ptr<VideoCaptureDevice> device =
+  VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(invalid_descriptor);
 
 #if !defined(OS_MAC)
-  EXPECT_FALSE(device);
+  EXPECT_FALSE(device_status.ok());
 #else
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device = device_status.ReleaseDevice();
   // The presence of the actual device is only checked on AllocateAndStart()
   // and not on creation.
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(1);
@@ -539,9 +541,10 @@ void VideoCaptureDeviceTest::RunCaptureWithSizeTestCase() {
   const int width = size.width();
   const int height = size.height();
 
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
@@ -586,9 +589,10 @@ void VideoCaptureDeviceTest::RunAllocateBadSizeTestCase() {
   const auto device_info = FindUsableDevice();
   ASSERT_TRUE(device_info);
 
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
@@ -621,8 +625,10 @@ void VideoCaptureDeviceTest::RunReAllocateCameraTestCase() {
   // First, do a number of very fast device start/stops.
   for (int i = 0; i <= 5; i++) {
     video_capture_client_ = CreateDeviceClient();
-    std::unique_ptr<VideoCaptureDevice> device(
-        video_capture_device_factory_->CreateDevice(device_info->descriptor));
+    VideoCaptureErrorOrDevice device_status =
+        video_capture_device_factory_->CreateDevice(device_info->descriptor);
+    ASSERT_TRUE(device_status.ok());
+    std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
     gfx::Size resolution;
     if (i % 2)
       resolution = gfx::Size(640, 480);
@@ -644,8 +650,10 @@ void VideoCaptureDeviceTest::RunReAllocateCameraTestCase() {
   capture_params.requested_format.pixel_format = PIXEL_FORMAT_I420;
 
   video_capture_client_ = CreateDeviceClient();
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   device->AllocateAndStart(capture_params, std::move(video_capture_client_));
   WaitForCapturedFrame();
@@ -679,9 +687,10 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
     return;
   }
 #endif
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
@@ -735,9 +744,10 @@ void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
   const gfx::Size frame_size =
       device_info->supported_formats.front().frame_size;
 
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted()).Times(testing::AtLeast(1));
@@ -778,9 +788,10 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
   const gfx::Size frame_size =
       device_info->supported_formats.front().frame_size;
 
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
@@ -826,9 +837,10 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest,
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
 
-  std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(device_info->descriptor));
-  ASSERT_TRUE(device);
+  VideoCaptureErrorOrDevice device_status =
+      video_capture_device_factory_->CreateDevice(device_info->descriptor);
+  ASSERT_TRUE(device_status.ok());
+  std::unique_ptr<VideoCaptureDevice> device(device_status.ReleaseDevice());
 
   VideoCaptureParams capture_params;
   capture_params.requested_format.frame_size.SetSize(320, 240);

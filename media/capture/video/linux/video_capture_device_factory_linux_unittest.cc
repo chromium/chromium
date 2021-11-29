@@ -100,7 +100,7 @@ TEST_F(VideoCaptureDeviceFactoryLinuxTest,
   fake_v4l2_->AddDevice(stub_device_id, FakeV4L2DeviceConfig(descriptor));
 
   // Exercise
-  auto device = factory_->CreateDevice(descriptor);
+  auto device = factory_->CreateDevice(descriptor).ReleaseDevice();
   VideoCaptureParams arbitrary_params;
   arbitrary_params.requested_format.frame_size = gfx::Size(1280, 720);
   arbitrary_params.requested_format.frame_rate = 30.0f;

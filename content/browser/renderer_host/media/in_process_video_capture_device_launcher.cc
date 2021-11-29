@@ -265,8 +265,8 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
-      new media::VideoCaptureBufferPoolImpl(
-          requested_buffer_type, buffer_pool_max_buffer_count);
+      new media::VideoCaptureBufferPoolImpl(requested_buffer_type,
+                                            buffer_pool_max_buffer_count);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<media::VideoCaptureDeviceClient>(
@@ -476,7 +476,8 @@ void InProcessVideoCaptureDeviceLauncher::OnFakeDevicesEnumerated(
     return;
   }
   auto video_capture_device =
-      fake_device_factory_->CreateDevice(devices_info.front().descriptor);
+      fake_device_factory_->CreateDevice(devices_info.front().descriptor)
+          .ReleaseDevice();
   video_capture_device->AllocateAndStart(params, std::move(device_client));
   std::move(result_callback).Run(std::move(video_capture_device));
 }

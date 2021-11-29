@@ -46,7 +46,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
       scoped_refptr<V4L2CaptureDevice> v4l2,
       std::unique_ptr<DeviceProvider> device_provider);
 
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 

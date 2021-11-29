@@ -33,7 +33,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   ~VideoCaptureDeviceFactoryChromeOS() override;
 
   // VideoCaptureDeviceFactory interface implementations.
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) final;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 

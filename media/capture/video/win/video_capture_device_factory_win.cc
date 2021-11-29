@@ -353,7 +353,7 @@ VideoCaptureDeviceFactoryWin::~VideoCaptureDeviceFactoryWin() {
   }
 }
 
-std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (device_descriptor.capture_api) {
@@ -372,7 +372,7 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
       DVLOG(1) << " MediaFoundation Device: "
                << device_descriptor.display_name();
       if (device->Init())
-        return device;
+        return VideoCaptureErrorOrDevice(std::move(device));
       break;
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
@@ -385,14 +385,16 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
           device_descriptor, std::move(capture_filter));
       DVLOG(1) << " DirectShow Device: " << device_descriptor.display_name();
       if (device->Init())
-        return device;
+        return VideoCaptureErrorOrDevice(std::move(device));
       break;
     }
     default:
       NOTREACHED();
       break;
   }
-  return nullptr;
+  return VideoCaptureErrorOrDevice(
+      VideoCaptureError::
+          kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 }
 
 bool VideoCaptureDeviceFactoryWin::CreateDeviceEnumMonikerDirectShow(
@@ -584,18 +586,17 @@ void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
       &VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP,
       base::Unretained(factory), base::Passed(&devices_info),
       base::Passed(&result_callback));
-  auto callback =
-      Microsoft::WRL::Callback<
-          ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
-              DeviceInformationCollection*>>(
-          [com_thread_runner, device_info_callback](
-              IAsyncOperation<DeviceInformationCollection*>* operation,
-              AsyncStatus status) -> HRESULT {
-            com_thread_runner->PostTask(
-                FROM_HERE, base::BindOnce(device_info_callback,
-                                          base::Unretained(operation)));
-            return S_OK;
-          });
+  auto callback = Microsoft::WRL::Callback<
+      ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
+          DeviceInformationCollection*>>(
+      [com_thread_runner, device_info_callback](
+          IAsyncOperation<DeviceInformationCollection*>* operation,
+          AsyncStatus status) -> HRESULT {
+        com_thread_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(device_info_callback, base::Unretained(operation)));
+        return S_OK;
+      });
 
   ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
       dev_info_statics;

@@ -66,12 +66,15 @@ void MockDeviceFactory::RemoveAllDevices() {
   devices_.clear();
 }
 
-std::unique_ptr<media::VideoCaptureDevice> MockDeviceFactory::CreateDevice(
+VideoCaptureErrorOrDevice MockDeviceFactory::CreateDevice(
     const media::VideoCaptureDeviceDescriptor& device_descriptor) {
   if (devices_.find(device_descriptor) == devices_.end())
-    return nullptr;
-  return std::make_unique<RawPointerVideoCaptureDevice>(
-      devices_[device_descriptor]);
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  return VideoCaptureErrorOrDevice(
+      std::make_unique<RawPointerVideoCaptureDevice>(
+          devices_[device_descriptor]));
 }
 
 void MockDeviceFactory::GetDevicesInfo(GetDevicesInfoCallback callback) {

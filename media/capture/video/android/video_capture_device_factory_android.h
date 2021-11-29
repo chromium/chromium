@@ -33,7 +33,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
 
   ~VideoCaptureDeviceFactoryAndroid() override;
 
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 

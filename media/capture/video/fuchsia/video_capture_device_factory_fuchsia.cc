@@ -113,8 +113,7 @@ VideoCaptureDeviceFactoryFuchsia::~VideoCaptureDeviceFactoryFuchsia() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-std::unique_ptr<VideoCaptureDevice>
-VideoCaptureDeviceFactoryFuchsia::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryFuchsia::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   uint64_t device_id;
@@ -123,7 +122,9 @@ VideoCaptureDeviceFactoryFuchsia::CreateDevice(
 
   // Test may call CreateDevice() with an invalid |device_id|.
   if (!converted)
-    return nullptr;
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 
   // CreateDevice() may be called before GetDeviceDescriptors(). Make sure
   // |device_watcher_| is initialized.
@@ -132,7 +133,8 @@ VideoCaptureDeviceFactoryFuchsia::CreateDevice(
 
   fidl::InterfaceHandle<fuchsia::camera3::Device> device;
   device_watcher_->ConnectToDevice(device_id, device.NewRequest());
-  return std::make_unique<VideoCaptureDeviceFuchsia>(std::move(device));
+  return VideoCaptureErrorOrDevice(
+      std::make_unique<VideoCaptureDeviceFuchsia>(std::move(device)));
 }
 
 void VideoCaptureDeviceFactoryFuchsia::GetDevicesInfo(

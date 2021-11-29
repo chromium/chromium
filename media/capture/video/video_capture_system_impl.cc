@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_metrics.h"
 
 namespace {
@@ -91,7 +92,8 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureSystemImpl::CreateDevice(
   const VideoCaptureDeviceInfo* device_info = LookupDeviceInfoFromId(device_id);
   if (!device_info)
     return nullptr;
-  return factory_->CreateDevice(device_info->descriptor);
+  auto device_status = factory_->CreateDevice(device_info->descriptor);
+  return device_status.ok() ? device_status.ReleaseDevice() : nullptr;
 }
 
 const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(

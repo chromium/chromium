@@ -26,7 +26,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryMac
   static void SetGetDevicesInfoRetryCount(int count);
   static int GetGetDevicesInfoRetryCount();
 
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 };

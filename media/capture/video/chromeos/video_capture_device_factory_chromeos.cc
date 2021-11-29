@@ -36,15 +36,21 @@ VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
   camera_hal_ipc_thread_.Stop();
 }
 
-std::unique_ptr<VideoCaptureDevice>
-VideoCaptureDeviceFactoryChromeOS::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!initialized_) {
-    return nullptr;
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice);
   }
-  return camera_hal_delegate_->CreateDevice(task_runner_for_screen_observer_,
-                                            device_descriptor);
+  auto device = camera_hal_delegate_->CreateDevice(
+      task_runner_for_screen_observer_, device_descriptor);
+  return device
+             ? VideoCaptureErrorOrDevice(std::move(device))
+             : VideoCaptureErrorOrDevice(
+                   VideoCaptureError::
+                       kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 }
 
 void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(
