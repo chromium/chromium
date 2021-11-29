@@ -116,11 +116,12 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
-  std::string login_screen_locale;
   if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
       !login_screen_locales->GetList().empty() &&
-      login_screen_locales->GetString(0, &login_screen_locale)) {
+      login_screen_locales->GetList()[0].is_string()) {
+    std::string login_screen_locale =
+        login_screen_locales->GetList()[0].GetString();
     local_state->SetString(language::prefs::kApplicationLocale,
                            login_screen_locale);
     return true;
