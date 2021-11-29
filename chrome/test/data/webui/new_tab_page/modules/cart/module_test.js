@@ -264,9 +264,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       $$(moduleElement, '#cartItemRepeat').render();
 
       // Assert.
-      const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
-      assertEquals(2, cartItems.length);
-      let menuButton = cartItems[0].querySelector('.icon-more-vert');
+      const cartContainers =
+          moduleElement.shadowRoot.querySelectorAll('.cart-container');
+      assertEquals(2, cartContainers.length);
+      let menuButton = cartContainers[0].querySelector('.icon-more-vert');
       const actionMenu = $$(moduleElement, '#cartActionMenu');
       assertFalse(actionMenu.open);
 
@@ -303,7 +304,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertFalse(actionMenu.open);
 
       // Act.
-      menuButton = cartItems[1].querySelector('.icon-more-vert');
+      menuButton = cartContainers[1].querySelector('.icon-more-vert');
       menuButton.click();
 
       // Assert.
@@ -353,13 +354,14 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       $$(moduleElement, '#cartItemRepeat').render();
 
       // Assert.
-      let cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
-      assertEquals(1, cartItems.length);
+      let cartContainers =
+          moduleElement.shadowRoot.querySelectorAll('.cart-container');
+      assertEquals(1, cartContainers.length);
       const actionMenu = $$(moduleElement, '#cartActionMenu');
       assertFalse(actionMenu.open);
 
       // Act.
-      cartItems[0].querySelector('.icon-more-vert').click();
+      cartContainers[0].querySelector('.icon-more-vert').click();
 
       // Assert.
       assertTrue(actionMenu.open);
@@ -374,12 +376,12 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       const hideEvent = await waitForDismissEvent;
       const hideToastMessage = hideEvent.detail.message;
       const hideRestoreCallback = hideEvent.detail.restoreCallback;
-      cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+      cartContainers = moduleElement.shadowRoot.querySelectorAll('.cart-item');
 
       // Assert.
       assertFalse($$(moduleElement, '#dismissCartToast').open);
       assertEquals(1, handler.getCallCount('hideCart'));
-      assertEquals(0, cartItems.length);
+      assertEquals(0, cartContainers.length);
       assertEquals(
           loadTimeData.getStringF(
               'modulesCartCartMenuHideMerchantToastMessage', 'Foo'),
@@ -392,11 +394,11 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
       hideRestoreCallback();
       await flushTasks();
-      cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+      cartContainers = moduleElement.shadowRoot.querySelectorAll('.cart-item');
 
       // Assert.
       assertEquals(1, handler.getCallCount('restoreHiddenCart'));
-      assertEquals(1, cartItems.length);
+      assertEquals(1, cartContainers.length);
       assertEquals(
           1, metrics.count('NewTabPage.Carts.RestoreLastCartRestoresModule'));
     });
@@ -896,7 +898,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
     function checkVisibleRange(moduleElement, startIndex, endIndex) {
       const carts = moduleElement.shadowRoot.querySelector('#cartCarousel')
-                        .querySelectorAll('.cart-item');
+                        .querySelectorAll('.cart-container');
       assertTrue(startIndex >= 0);
       assertTrue(endIndex < carts.length);
       for (let i = 0; i < carts.length; i++) {
@@ -911,7 +913,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     function getVisibilityForIndex(moduleElement, index) {
       const cartCarousel =
           moduleElement.shadowRoot.querySelector('#cartCarousel');
-      const cart = cartCarousel.querySelectorAll('.cart-item')[index];
+      const cart = cartCarousel.querySelectorAll('.cart-container')[index];
       return (cart.offsetLeft > cartCarousel.scrollLeft) &&
           (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
           (cart.offsetLeft + cart.offsetWidth);
@@ -979,7 +981,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'https://ebay.com', 1, 4, moduleElement);
 
       // Act.
-      cartItems[0].querySelector('.icon-more-vert').click();
+      const cartContainers =
+          moduleElement.shadowRoot.querySelectorAll('.cart-container');
+      cartContainers[0].querySelector('.icon-more-vert').click();
 
       // Assert.
       assertEquals(4, handler.getCallCount('getDiscountURL'));
