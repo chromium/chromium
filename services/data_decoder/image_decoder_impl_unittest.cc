@@ -113,7 +113,9 @@ class ImageDecoderImplTest : public testing::Test {
   ImageDecoderImpl* decoder() { return &decoder_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // V8 is generally multi threaded and may use tasks for arbitrary reasons,
+  // such as GC and off-thread compilation.
+  base::test::TaskEnvironment task_environment_;
   ImageDecoderImpl decoder_;
 };
 
