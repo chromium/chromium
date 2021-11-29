@@ -533,11 +533,6 @@ specific_include_rules = {
     # DBus interface to highlight a file within its parent folder
     "+dbus"
   ],
-  "platform_util_mac.mm": [
-    # The following is used to forward methods to an NSWindow in another
-    # process, via the views::Widget API.
-    "+ui/views/widget/widget.h",
-  ],
   "exo_parts\.cc": [
     "+ash/shell.h",
   ],

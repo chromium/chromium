@@ -3,7 +3,6 @@ include_rules = [
   "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",
-  "+ui/base",
 
   # For access to testing command line switches.
   "+ppapi/shared_impl",

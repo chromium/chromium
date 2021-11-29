@@ -35,9 +35,6 @@ specific_include_rules = {
   ".*fuzz.*": [
     "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
   ],
-  "assistant_util_unittest\.cc": [
-    "+ui/events/devices/device_data_manager.h",
-  ],
   "child_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
