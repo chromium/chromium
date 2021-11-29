@@ -120,15 +120,15 @@ struct BackupRefPtrImpl {
     // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
     void* ptr = const_cast<void*>(cv_ptr);
     // This covers the nullptr case, as address 0 is never in GigaCage.
-    bool ret = IsManagedByPartitionAllocBRPPool(ptr);
+    bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(ptr);
 
     // There are many situations where the compiler can prove that
-    // ReleaseWrappedPtr is called on a value that is always NULL, but the way
-    // the check above is written, the compiler can't prove that NULL is not
-    // managed by PartitionAlloc; and so the compiler has to emit a useless
+    // ReleaseWrappedPtr is called on a value that is always nullptr, but the
+    // way the check above is written, the compiler can't prove that nullptr is
+    // not managed by PartitionAlloc; and so the compiler has to emit a useless
     // check and dead code.
     // To avoid that without making the runtime check slower, explicitly promise
-    // to the compiler that ret will always be false for NULL pointers.
+    // to the compiler that is_in_brp_pool will always be false for nullptr.
     //
     // This condition would look nicer and might also theoretically be nicer for
     // the optimizer if it was written as "if (ptr == nullptr) { ... }", but
@@ -137,10 +137,10 @@ struct BackupRefPtrImpl {
     // https://reviews.llvm.org/D97848
     // https://chromium-review.googlesource.com/c/chromium/src/+/2727400/2/base/memory/checked_ptr.h#120
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CHECK(ptr != nullptr || !ret);
+    CHECK(ptr != nullptr || !is_in_brp_pool);
 #endif
 #if HAS_BUILTIN(__builtin_assume)
-    __builtin_assume(ptr != nullptr || !ret);
+    __builtin_assume(ptr != nullptr || !is_in_brp_pool);
 #endif
 
     // There may be pointers immediately after the allocation, e.g.
@@ -161,12 +161,12 @@ struct BackupRefPtrImpl {
     // it must be at least partition page away from the beginning of a super
     // page.
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    if (ret) {
+    if (is_in_brp_pool) {
       CheckThatAddressIsntWithinFirstPartitionPage(ptr);
     }
 #endif
 
-    return ret;
+    return is_in_brp_pool;
   }
 
   // Wraps a pointer.
