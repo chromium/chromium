@@ -373,6 +373,9 @@ external/wpt/webdriver/tests/new_session/invalid_capabilities.py [ Skip ]
 external/wpt/webdriver/tests/new_session/response.py [ Skip ]
 external/wpt/webdriver/tests/send_alert_text/send.py [ Skip ]
 external/wpt/webdriver/tests/bidi/session_subscribe/subscribe.py [ Skip ]
+external/wpt/webdriver/tests/bidi/log_entry_added/__init__.py [ Skip ]
+external/wpt/webdriver/tests/bidi/log_entry_added/console_args.py [ Skip ]
+external/wpt/webdriver/tests/bidi/log_entry_added/javascript.py [ Skip ]
 
 # WebVr was never supported on Chrome more than as an experimental feature,
 # and even that level of support is now removed. WebVr was replaced with WebXr.
