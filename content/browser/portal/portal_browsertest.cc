@@ -1417,6 +1417,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivateEarlyInNavigation) {
   GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
   CreatePortalToUrl(web_contents_impl, url);
 
+  // Install a beforeunload handler.
+  main_frame->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+
   // Have the outer page try to navigate away but stop it early in the request,
   // where it is still possible to stop.
   GURL destination =
@@ -1458,6 +1462,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivateLateInNavigation) {
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
   CreatePortalToUrl(web_contents_impl, url);
+
+  // Install a beforeunload handler.
+  main_frame->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
   // Have the outer page try to navigate away and reach the point where it's
   // about to process the response (after which it will commit). It is too late
