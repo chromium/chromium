@@ -100,15 +100,23 @@ preprocess_if_expr("preprocess_src") {
     "chromeos/smb_shares/smb_browser_proxy.js",
     "most_visited/browser_proxy.js",
     "most_visited/window_proxy.js",
+    "color_change_listener/browser_proxy.js",
+    "color_change_listener/colors_css_updater.js",
   ]
 }
 
 preprocess_if_expr("preprocess_mojom") {
-  deps = [ "//ui/webui/resources/cr_components/most_visited:mojom_webui_js" ]
+  deps = [
+    "color_change_listener:mojom_webui_js",
+    "most_visited:mojom_webui_js",
+  ]
   in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojom_manifest"
-  in_files = [ "most_visited/most_visited.mojom-webui.js" ]
+  in_files = [
+    "most_visited/most_visited.mojom-webui.js",
+    "color_change_listener/color_change_listener.mojom-webui.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -385,6 +393,7 @@ if (is_chromeos_ash) {
 
 group("closure_compile") {
   deps = [
+    "color_change_listener:closure_compile",
     "managed_dialog:closure_compile",
     "managed_footnote:closure_compile",
     "most_visited:closure_compile",

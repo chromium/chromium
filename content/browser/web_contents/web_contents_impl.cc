@@ -8977,6 +8977,7 @@ void WebContentsImpl::OnColorProviderChanged() {
     SetColorProviderSource(DefaultColorProviderSource::GetInstance());
     return;
   }
+  observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 }
 
 const ui::ColorProvider* WebContentsImpl::GetColorProvider() const {

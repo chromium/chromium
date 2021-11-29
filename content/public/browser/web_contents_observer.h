@@ -652,6 +652,10 @@ class CONTENT_EXPORT WebContentsObserver {
   // Invoked when background color is changed.
   virtual void OnBackgroundColorChanged() {}
 
+  // Invoked when the ColorProvider instance associated with this WebContents
+  // has changed.
+  virtual void OnColorProviderChanged() {}
+
   // Called when a message is added to the console of the WebContents. This is
   // invoked before forwarding the message to the WebContents' delegate.
   // |source_id| is a URL. |untrusted_stack_trace| is not present for most

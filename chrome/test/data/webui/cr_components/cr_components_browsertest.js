@@ -27,6 +27,18 @@ var CrComponentsBrowserTest = class extends PolymerTest {
   }
 };
 
+var CrComponentsColorChangeListenerTest =
+    class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/color_change_listener_test.js';
+  }
+};
+
+TEST_F('CrComponentsColorChangeListenerTest', 'All', function() {
+  mocha.run();
+});
+
 var CrComponentsManagedFootnoteTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
