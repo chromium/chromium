@@ -347,6 +347,14 @@ TEST_F(RawPtrTest, OperatorEQCastHierarchy) {
   Derived* raw_derived_ptr = &derived_val;
   const Base1* raw_base1_ptr = &derived_val;
   volatile Base2* raw_base2_ptr = &derived_val;
+  // Double check the basic understanding of pointers: Even though the numeric
+  // value (i.e. the address) isn't equal, the pointers are still equal. That's
+  // because from derived to base adjusts the address.
+  // raw_ptr must behave the same, which is checked below.
+  ASSERT_NE(reinterpret_cast<uintptr_t>(raw_base2_ptr),
+            reinterpret_cast<uintptr_t>(raw_derived_ptr));
+  ASSERT_TRUE(raw_base2_ptr == raw_derived_ptr);
+
   CountingRawPtr<const volatile Derived> checked_derived_ptr = &derived_val;
   CountingRawPtr<volatile Base1> checked_base1_ptr = &derived_val;
   CountingRawPtr<const Base2> checked_base2_ptr = &derived_val;
@@ -742,6 +750,8 @@ TEST_F(RawPtrTest, DerivedStructsComparison) {
   // as a |BaseStruct*| doesn't cause CFI errors.
   EXPECT_NE(checked_derived1_ptr,
             static_cast<BaseStruct*>(checked_derived2_ptr.get()));
+  EXPECT_NE(static_cast<BaseStruct*>(checked_derived1_ptr.get()),
+            checked_derived2_ptr);
 }
 
 }  // namespace

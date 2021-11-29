@@ -79,9 +79,9 @@ struct RawPtrNoOpImpl {
   static ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
-    // static_cast may change the address if upcasting to base that lies in the
-    // middle of the derived object.
-    return static_cast<To*>(wrapped_ptr);
+    // Note, this cast may change the address if upcasting to base that lies in
+    // the middle of the derived object.
+    return wrapped_ptr;
   }
 
   // Advance the wrapped pointer by |delta| bytes.
@@ -237,9 +237,9 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
-    // static_cast may change the address if upcasting to base that lies in the
-    // middle of the derived object.
-    return static_cast<To*>(wrapped_ptr);
+    // Note, this cast may change the address if upcasting to base that lies in
+    // the middle of the derived object.
+    return wrapped_ptr;
   }
 
   // Advance the wrapped pointer by |delta| bytes.
@@ -526,6 +526,8 @@ class raw_ptr {
   ALWAYS_INLINE operator T*() const { return GetForExtraction(); }
   template <typename U>
   explicit ALWAYS_INLINE operator U*() const {
+    // This operator may be invoked from static_cast, meaning the types may not
+    // be implicitly convertible, hence the need for static_cast here.
     return static_cast<U*>(GetForExtraction());
   }
 
@@ -588,9 +590,7 @@ class raw_ptr {
   }
   template <typename U>
   friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
-    // Add |const volatile| when casting, in case |U| has any. Even if |T|
-    // doesn't, comparison between |T*| and |const volatile U*| is fine.
-    return lhs.GetForComparison() == static_cast<std::add_cv_t<U>*>(rhs);
+    return lhs.GetForComparison() == rhs;
   }
   template <typename U>
   friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, U* rhs) {
@@ -654,10 +654,7 @@ class raw_ptr {
 template <typename U, typename V, typename I>
 ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
                               const raw_ptr<V, I>& rhs) {
-  // Add |const volatile| when casting, in case |V| has any. Even if |U|
-  // doesn't, comparison between |U*| and |const volatile V*| is fine.
-  return lhs.GetForComparison() ==
-         static_cast<std::add_cv_t<V>*>(rhs.GetForComparison());
+  return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
 }  // namespace base
