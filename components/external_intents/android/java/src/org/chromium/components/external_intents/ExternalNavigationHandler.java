@@ -1151,7 +1151,8 @@ public class ExternalNavigationHandler {
             boolean isExternalProtocol) {
         if (params.getRedirectHandler() != null && incomingIntentRedirect && !isExternalProtocol
                 && !params.getRedirectHandler().isFromCustomTabIntent()
-                && !params.getRedirectHandler().hasNewResolver(resolvingInfos)) {
+                && !params.getRedirectHandler().hasNewResolver(
+                        resolvingInfos, (Intent intent) -> queryIntentActivities(intent))) {
             if (DEBUG) Log.i(TAG, "Custom tab redirect no handled");
             return true;
         }
@@ -1584,7 +1585,7 @@ public class ExternalNavigationHandler {
     @NonNull
     private List<ResolveInfo> queryIntentActivities(Intent intent) {
         return PackageManagerUtils.queryIntentActivities(
-                intent, PackageManager.GET_RESOLVED_FILTER);
+                intent, PackageManager.GET_RESOLVED_FILTER | PackageManager.MATCH_DEFAULT_ONLY);
     }
 
     private static boolean intentResolutionMatches(Intent intent, Intent other) {
@@ -1646,7 +1647,8 @@ public class ExternalNavigationHandler {
      */
     public static boolean resolveIntent(Intent intent, boolean allowSelfOpen) {
         Context context = ContextUtils.getApplicationContext();
-        ResolveInfo info = PackageManagerUtils.resolveActivity(intent, 0);
+        ResolveInfo info =
+                PackageManagerUtils.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (info == null) return false;
 
         final String packageName = context.getPackageName();

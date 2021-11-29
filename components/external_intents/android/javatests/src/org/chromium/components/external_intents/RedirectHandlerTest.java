@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
@@ -42,6 +43,9 @@ public class RedirectHandlerTest {
     private static Intent sYtIntent;
     private static Intent sMoblieYtIntent;
     private static Intent sFooIntent;
+
+    private Function<Intent, List<ResolveInfo>> mQueryIntentFunction =
+            (Intent intent) -> queryIntentActivities(intent);
 
     static {
         try {
@@ -75,9 +79,12 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, true, false, 0, 0);
         Assert.assertTrue(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertFalse(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertFalse(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -95,9 +102,12 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 1);
         Assert.assertTrue(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertFalse(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertFalse(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -115,9 +125,12 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(PageTransition.FORM_SUBMIT, false, false, 0, 1);
         Assert.assertTrue(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertFalse(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertFalse(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -135,9 +148,12 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, true, false, 0, 0);
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertTrue(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -155,7 +171,8 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, true, false, 0, 0);
         Assert.assertTrue(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertFalse(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
+        Assert.assertFalse(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -163,9 +180,12 @@ public class RedirectHandlerTest {
         handler.clear();
         Assert.assertFalse(handler.isOnNavigation());
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertTrue(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
     }
 
     @Test
@@ -180,9 +200,12 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 1);
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertTrue(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -200,7 +223,8 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, true, false, 0, 0);
         Assert.assertTrue(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertFalse(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
+        Assert.assertFalse(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -209,9 +233,12 @@ public class RedirectHandlerTest {
         handler.updateNewUrlLoading(
                 PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 1);
         Assert.assertFalse(handler.isOnEffectiveIntentRedirectChain());
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sMoblieYtIntent)));
-        Assert.assertTrue(handler.hasNewResolver(queryIntentActivities(sFooIntent)));
-        Assert.assertFalse(handler.hasNewResolver(new ArrayList<ResolveInfo>()));
+        Assert.assertTrue(handler.hasNewResolver(
+                queryIntentActivities(sMoblieYtIntent), mQueryIntentFunction));
+        Assert.assertTrue(
+                handler.hasNewResolver(queryIntentActivities(sFooIntent), mQueryIntentFunction));
+        Assert.assertFalse(
+                handler.hasNewResolver(new ArrayList<ResolveInfo>(), mQueryIntentFunction));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(1, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
