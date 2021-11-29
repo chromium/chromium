@@ -98,7 +98,7 @@ class CORE_EXPORT NewScriptFunction final
     virtual void CallRaw(ScriptState*,
                          const v8::FunctionCallbackInfo<v8::Value>&);
 
-    // The length of the aosociated JavaScript function. Implement this only
+    // The length of the associated JavaScript function. Implement this only
     // when the function is exposed to scripts.
     virtual int Length() const { return 0; }
 
