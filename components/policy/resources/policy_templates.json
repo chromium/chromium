@@ -10477,7 +10477,8 @@
       'tags': ['admin-sharing'],
       'desc': '''Setting the policy to enabled or leaving it unset has enrolled devices report device audio volume.
 
-      Setting the policy to Disabled means enrolled devices don't record or report audio status.''',
+      Setting the policy to Disabled means enrolled devices don't record or report audio status.
+      Exception: System volume level information is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10578,8 +10579,9 @@
       'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:29-'],
+      'supported_on': ['chrome_os:29-95'],
       'supported_chrome_os_management': ['google_cloud'],
+      'deprecated': True,
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -10588,9 +10590,9 @@
       'id': 224,
       'caption': '''Report device network interfaces''',
       'tags': ['admin-sharing'],
-      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the list of network interfaces with their types and hardware addresses.
+      'desc': '''This policy is deprecated in M96. Please use <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION">ReportDeviceNetworkConfiguration</ph> and <ph name="REPORT_DEVICE_NETWORK_STATUS">ReportDeviceNetworkStatus</ph> instead.
 
-      Setting the policy to Disabled means enrolled devices don't report the network interface.''',
+      Setting the policy to Enabled or leaving it unset has enrolled devices report the list of network interfaces with their types and hardware addresses. Setting the policy to Disabled means enrolled devices don't report the network interface.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10692,7 +10694,8 @@
       'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:42-'],
+      'supported_on': ['chrome_os:42-95'],
+      'deprecated': True,
       'supported_chrome_os_management': ['google_cloud'],
       'device_only': True,
       'features': {
@@ -10702,9 +10705,9 @@
       'id': 290,
       'caption': '''Report hardware status''',
       'tags': ['admin-sharing'],
-      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report hardware statistics such as CPU/RAM usage.
+      'desc': '''This policy is deprecated as of M96. Please use <ph name="REPORT_DEVICE_CPU_INFO">ReportDeviceCpuInfo</ph>, <ph name="REPORT_DEVICE_MEMORY_INFO">ReportDeviceMemoryInfo</ph>, <ph name="REPORT_DEVICE_STORAGE_STATUS">ReportDeviceStorageStatus</ph>, <ph name="REPORT_DEVICE_SECURITY_STATUS">ReportDeviceSecurityStatus</ph>, and <ph name="REPORT_DEVICE_AUDIO_STATUS">ReportDeviceAudioStatus</ph> instead.
 
-      Setting the policy to Disabled means enrolled devices don't report the hardware statistics.''',
+      Setting the policy to Enabled or leaving it unset has enrolled devices report hardware statistics such as CPU/RAM usage. Setting the policy to Disabled means enrolled devices don't report the hardware statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10753,9 +10756,10 @@
       'id': 900,
       'caption': '''Report device security status''',
       'tags': ['admin-sharing'],
-      'desc': '''Setting the policy to enabled or leaving it unset has enrolled devices report device TPM security status.
+      'desc': '''Setting the policy to enabled reports device TPM security status.
 
-      Setting the policy to Disabled means enrolled devices don't record or report TPM security status.''',
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't record or report TPM security status.
+      Exception: TPM information is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10861,9 +10865,10 @@
       'id': 513,
       'caption': '''Report storage status''',
       'tags': ['admin-sharing'],
-      'desc': '''Setting the policy to Enabled has enrolled devices report hardware statistics and identifiers for storage devices.
+      'desc': '''This policy is set to Enabled by default. It controls the enrolled devices to report hardware statistics and identifiers for storage devices.
 
-      Setting the policy to Disabled or leaving it unset means enrolled devices don't report storage statistics.''',
+      Setting the policy to Disabled means enrolled devices don't report storage statistics.
+      Eexception: Disk size and disk free space is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10901,11 +10906,10 @@
       'id': 656,
       'caption': '''Report CPU info''',
       'tags': ['admin-sharing'],
-      'desc': '''Report information for a device's CPU(s).
+      'desc': '''This policy is set to Enabled by default. It controls the enrolled devices to report the CPU model name, architecture, and maximum clock speed (and CPU utilization and temperature for M96 and above).
 
-      If the policy is set to false or left unset, the information will not be reported.
-      If set to true, the CPU model name, architecture, and maximum clock speed will be
-      reported for each CPU.''',
+      Setting the policy to Disabled means enrolled devices don’t report any CPU information.
+      Exception CPU utilization and temperature reporting is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -10944,10 +10948,10 @@
       'id': 682,
       'caption': '''Report memory info''',
       'tags': ['admin-sharing'],
-      'desc': '''Report information about a device's memory.
+      'desc': '''This policy is set to Enabled by default. It controls the enrolled devices to report the memory information.
 
-      If the policy is set to false or left unset, the information will not be reported.
-      If set to true, the device's memory information will be reported.''',
+      Setting the policy to Disabled means enrolled devices don’t report any memory information.
+      Exception: free memory information is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 or below.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
