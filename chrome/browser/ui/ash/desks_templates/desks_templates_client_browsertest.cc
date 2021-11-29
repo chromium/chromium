@@ -55,6 +55,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +98,7 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   std::vector<GURL> urls;
   for (int i = 0; i < tab_strip_model->count(); ++i)
-    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetVisibleURL());
   return urls;
 }
 
@@ -249,10 +251,14 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
                                  /*user_gesture=*/false);
     Browser* browser = Browser::Create(params);
+    // Create a new tab and make sure the urls have loaded.
     for (int i = 0; i < urls.size(); i++) {
+      content::TestNavigationObserver navigation_observer(urls[i]);
+      navigation_observer.StartWatchingNewWebContents();
       chrome::AddTabAt(
           browser, urls[i], /*index=*/-1,
           /*foreground=*/!active_url_index || active_url_index.value() == i);
+      navigation_observer.Wait();
     }
     browser->window()->Show();
     return browser;
@@ -677,6 +683,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // Set the template we created as the template we want to launch.
   SetAndLaunchTemplate(std::move(desk_template));
 
+  // Wait for the tabs to load.
+  content::RunAllTasksUntilIdle();
+
   // Verify that the browser was launched with the correct urls and active tab.
   Browser* new_browser = FindBrowser(browser_window_id);
   ASSERT_TRUE(new_browser);
@@ -974,6 +983,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that basic operations using the native UI work as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUIBasic) {
+  auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
+  ASSERT_EQ(0, desk_model->GetEntryCount());
+
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
@@ -991,21 +1003,94 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUIBasic) {
   ASSERT_TRUE(save_desk_as_template_button);
   ClickButton(save_desk_as_template_button);
 
-  // TODO(sophiewen): The desks templates button doesn't show up currently
-  // after saving a desk. Leave and reenter overview for now.
-  ash::ToggleOverview();
-  ash::WaitForOverviewExitAnimation();
+  ash::WaitForDesksTemplatesUI();
+
+  EXPECT_EQ(1, desk_model->GetEntryCount());
+
+  // Tests that since we have one template right now, so that the expanded state
+  // desk button is shown, and the desk templates grid has one item.
+  auto* expanded_state_templates_button =
+      ash::GetExpandedStateDesksTemplatesButton();
+  ASSERT_TRUE(expanded_state_templates_button);
+  EXPECT_TRUE(expanded_state_templates_button->GetVisible());
+
+  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  EXPECT_TRUE(template_item);
+}
+
+// Tests launching a template with a browser window.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
+  // Create a new browser and add a few tabs to it, and specify the active tab
+  // index.
+  const int browser_active_index = 1;
+  Browser* browser = CreateBrowser(
+      {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
+      /*active_url_index=*/browser_active_index);
+
+  // Verify that the active tab is correct.
+  EXPECT_EQ(browser_active_index, browser->tab_strip_model()->active_index());
+
+  aura::Window* window = browser->window()->GetNativeWindow();
+  const int32_t browser_window_id =
+      window->GetProperty(app_restore::kWindowIdKey);
+  // Get current tabs from browser.
+  const std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  // There are two browser windows currently, the default one and the one we
+  // just created.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
+  views::Button* save_desk_as_template_button =
+      ash::GetSaveDeskAsTemplateButton();
+  ASSERT_TRUE(save_desk_as_template_button);
+  ClickButton(save_desk_as_template_button);
 
-  // Tests that since we have one template right now, so the desks templates
-  // button is shown.
-  zero_state_templates_button = ash::GetZeroStateDesksTemplatesButton();
-  ASSERT_TRUE(zero_state_templates_button);
-  EXPECT_TRUE(zero_state_templates_button->GetVisible());
+  ash::WaitForDesksTemplatesUI();
 
-  // TODO(richui): Add tests for launching and deleting.
+  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  ASSERT_TRUE(template_item);
+  ClickButton(template_item);
+
+  // TODO(sammiequon): Investigate a better wait here after the new desk from
+  // template behavior is finalized and implemented.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+  run_loop.Run();
+
+  // Wait for the tabs to load.
+  content::RunAllTasksUntilIdle();
+
+  // There are a total of four browser windows now. The two initial ones and the
+  // two created from our template.
+  EXPECT_EQ(4u, BrowserList::GetInstance()->size());
+
+  // Test that the created browser has the same tabs and the same active tab.
+  Browser* new_browser = FindBrowser(browser_window_id);
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
+  EXPECT_EQ(browser_active_index,
+            new_browser->tab_strip_model()->active_index());
+
+  // Verify that the browser window has been launched on the new desk (desk B).
+  EXPECT_EQ(1, ash::DesksController::Get()->GetActiveDeskIndex());
+  aura::Window* browser_window = new_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(browser_window);
+  EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerB),
+            browser_window->parent());
 }
+
+// TODO(crbug.com/1273532): Add more tests:
+// - Deleting templates.
+// - Launching templates with uninstalled apps.
+// - Launching ARC apps.
+// - Port tests that use `DesksTemplatesClient` directly. These were meant to
+//   test launching while the prototype extension was being built, but now we
+//   can do end to end tests with the native UI.
 
 class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
  public:

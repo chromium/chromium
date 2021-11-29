@@ -114,25 +114,6 @@ class DesksTemplatesTest : public OverviewTestBase {
     return restore_data;
   }
 
-  // Return the `grid_item_index`th DesksTemplatesItemView from the first
-  // OverviewGrid in `GetOverviewGridList()`.
-  DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index) {
-    views::Widget* grid_widget =
-        GetOverviewGridList().front()->desks_templates_grid_widget();
-    DCHECK(grid_widget);
-
-    const DesksTemplatesGridView* templates_grid_view =
-        static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-    DCHECK(templates_grid_view);
-
-    std::vector<DesksTemplatesItemView*> grid_items =
-        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
-    DesksTemplatesItemView* item_view = grid_items.at(grid_item_index);
-    DCHECK(item_view);
-
-    return item_view;
-  }
-
   // Gets the current list of template entries from the desk model directly
   // without updating the UI.
   const std::vector<DeskTemplate*> GetAllEntries() {
@@ -162,20 +143,6 @@ class DesksTemplatesTest : public OverviewTestBase {
               loop.Quit();
             }));
     loop.Run();
-  }
-
-  // A lot of the UI relies on calling into the local desk data manager to
-  // update, which sends callbacks via posting tasks. Call `WaitForUI()` if
-  // testing a piece of the UI which calls into the desk model.
-  void WaitForUI() {
-    auto* overview_session = GetOverviewSession();
-    DCHECK(overview_session);
-
-    base::RunLoop run_loop;
-    DesksTemplatesPresenterTestApi(
-        overview_session->desks_templates_presenter())
-        .SetOnUpdateUiClosure(run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   views::View* GetDesksTemplatesButtonForRoot(aura::Window* root_window,
@@ -271,7 +238,7 @@ class DesksTemplatesTest : public OverviewTestBase {
                                 ->widget_delegate()
                                 ->AsDialogDelegate();
     dialog_delegate->AcceptDialog();
-    WaitForUI();
+    WaitForDesksTemplatesUI();
   }
 
   // Open overview mode if we're not in overview mode yet, and then show the
@@ -279,11 +246,11 @@ class DesksTemplatesTest : public OverviewTestBase {
   void OpenOverviewAndShowTemplatesGrid() {
     if (!GetOverviewSession()) {
       ToggleOverview();
-      WaitForUI();
+      WaitForDesksTemplatesUI();
     }
 
     ShowDesksTemplatesGrids();
-    WaitForUI();
+    WaitForDesksTemplatesUI();
   }
 
   void ClickOnView(const views::View* view) {
@@ -321,13 +288,13 @@ class DesksTemplatesTest : public OverviewTestBase {
   void OpenOverviewAndSaveTemplate(aura::Window* root) {
     if (!GetOverviewSession()) {
       ToggleOverview();
-      WaitForUI();
+      WaitForDesksTemplatesUI();
     }
 
     auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
     ASSERT_TRUE(save_template->IsVisible());
     ClickOnView(save_template->GetContentsView());
-    WaitForUI();
+    WaitForDesksTemplatesUI();
     for (auto& overview_grid : GetOverviewGridList())
       ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
   }
@@ -387,7 +354,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibilityClamshell) {
   // There are no entries initially, so the none of the desks templates buttons
   // are visible.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/false,
                              /*trace_string=*/"one-desk-zero-entries");
@@ -400,7 +367,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibilityClamshell) {
   // Reenter overview and verify the zero state desks templates buttons are
   // visible since there is one entry to view.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   verify_button_visibilities(/*zero_state_shown=*/true,
                              /*expanded_state_shown=*/false,
                              /*trace_string=*/"one-desk-one-entry");
@@ -419,7 +386,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibilityClamshell) {
   // Reenter overview and verify the expanded state desks templates buttons are
   // visible since there is one entry to view.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/true,
                              /*trace_string=*/"two-desk-one-entry");
@@ -430,7 +397,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibilityClamshell) {
 
   // Reenter overview and verify neither of the buttons are shown.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/false,
                              /*trace_string=*/"two-desk-zero-entries");
@@ -446,7 +413,7 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
 
   // Start overview mode. The no windows widget should be visible.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   auto& grid_list = GetOverviewGridList();
   ASSERT_EQ(2u, grid_list.size());
   EXPECT_TRUE(grid_list[0]->no_windows_widget());
@@ -468,7 +435,7 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
 
   // Start overview mode. The window is visible in the overview mode.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
 
@@ -509,7 +476,7 @@ TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
 
   // Start overview mode. `test_window_2` should be visible in overview mode.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_EQ(1.0f, test_window_2->layer()->opacity());
   auto& overview_grid = GetOverviewGridList()[0];
@@ -518,7 +485,7 @@ TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
 
   // Open the desk templates grid. This should hide `test_window_2`.
   ShowDesksTemplatesGrids();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   EXPECT_EQ(0.0f, test_window_2->layer()->opacity());
 
   // While in the desk templates grid, delete the active desk by clicking on the
@@ -709,7 +676,7 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
   // There are no saved template entries and one test window initially.
   auto test_window = CreateAppWindow();
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
 
   // The `save_desk_as_template_widget` is visible when at least one window is
   // open.
@@ -743,7 +710,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   {
     DeskSwitchAnimationWaiter waiter;
     ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
-    WaitForUI();
+    WaitForDesksTemplatesUI();
     waiter.Wait();
   }
 
@@ -763,7 +730,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
     DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
         /*grid_item_index=*/0);
     ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
-    WaitForUI();
+    WaitForDesksTemplatesUI();
     waiter.Wait();
   }
 
@@ -1026,7 +993,7 @@ TEST_F(DesksTemplatesTest, EnteringInTabletMode) {
   // Test that the templates buttons are created but invisible. The save desk as
   // template button is not created.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   aura::Window* root = Shell::GetPrimaryRootWindow();
   auto* zero_state = GetDesksTemplatesButtonForRoot(root,
                                                     /*zero_state=*/true);
@@ -1048,7 +1015,7 @@ TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
   // Test that on entering overview, the zero state desks templates button and
   // the save template button are visible.
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   aura::Window* root = Shell::GetPrimaryRootWindow();
   auto* zero_state = GetDesksTemplatesButtonForRoot(root,
                                                     /*zero_state=*/true);
@@ -1167,7 +1134,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
   // dialog should show up.
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
   ASSERT_TRUE(save_template->IsVisible());
   ClickOnView(save_template->GetContentsView());
@@ -1196,7 +1163,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
       ->widget_delegate()
       ->AsDialogDelegate()
       ->AcceptDialog();
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   EXPECT_TRUE(GetOverviewSession());
   EXPECT_TRUE(GetOverviewGridList()[0]->desks_templates_grid_widget());
 
@@ -1291,7 +1258,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
   ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
   // Launching a template fetches it from the desk model asynchronously. Make
   // sure the async call is done before waiting.
-  WaitForUI();
+  WaitForDesksTemplatesUI();
   waiter.Wait();
 
   EXPECT_FALSE(InOverviewSession());

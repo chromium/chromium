@@ -6,6 +6,8 @@
 
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -64,6 +66,25 @@ DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
 
 DesksTemplatesIconViewTestApi::~DesksTemplatesIconViewTestApi() = default;
 
+DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index) {
+  const auto* overview_grid = GetPrimaryOverviewGrid();
+  if (!overview_grid)
+    return nullptr;
+
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  DCHECK(grid_widget);
+
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  DCHECK(templates_grid_view);
+
+  std::vector<DesksTemplatesItemView*> grid_items =
+      DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+  DesksTemplatesItemView* item_view = grid_items.at(grid_item_index);
+  DCHECK(item_view);
+  return item_view;
+}
+
 views::Button* GetZeroStateDesksTemplatesButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
@@ -75,6 +96,19 @@ views::Button* GetZeroStateDesksTemplatesButton() {
                         : nullptr;
 }
 
+views::Button* GetExpandedStateDesksTemplatesButton() {
+  const auto* overview_grid = GetPrimaryOverviewGrid();
+  if (!overview_grid)
+    return nullptr;
+
+  // May be null in tablet mode.
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  return desks_bar_view
+             ? desks_bar_view->expanded_state_desks_templates_button()
+                   ->inner_button()
+             : nullptr;
+}
+
 views::Button* GetSaveDeskAsTemplateButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
@@ -83,6 +117,21 @@ views::Button* GetSaveDeskAsTemplateButton() {
       overview_grid->save_desk_as_template_widget_for_testing();
   return widget ? static_cast<views::Button*>(widget->GetContentsView())
                 : nullptr;
+}
+
+views::Button* GetTemplateItemButton(int index) {
+  auto* item = GetItemViewFromOverviewGrid(index);
+  return item ? static_cast<views::Button*>(item) : nullptr;
+}
+
+void WaitForDesksTemplatesUI() {
+  auto* overview_session = GetOverviewSession();
+  DCHECK(overview_session);
+
+  base::RunLoop run_loop;
+  DesksTemplatesPresenterTestApi(overview_session->desks_templates_presenter())
+      .SetOnUpdateUiClosure(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace ash
