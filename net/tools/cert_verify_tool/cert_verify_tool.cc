@@ -255,6 +255,15 @@ void PrintInputChain(const CertInput& target,
   std::cout << "\n";
 }
 
+void PrintAdditionalRoots(const std::vector<CertInput>& root_der_certs) {
+  std::cout << "Additional roots:\n";
+  for (const auto& cert : root_der_certs) {
+    PrintCertHashAndSubject(
+        net::x509_util::CreateCryptoBuffer(cert.der_cert).get());
+  }
+  std::cout << "\n";
+}
+
 const char kUsage[] =
     " [flags] <target/chain>\n"
     "\n"
@@ -426,6 +435,8 @@ int main(int argc, char** argv) {
   }
 
   PrintInputChain(target_der_cert, intermediate_der_certs);
+  if (!root_der_certs.empty())
+    PrintAdditionalRoots(root_der_certs);
 
   // Create a network thread to be used for AIA fetches, and wait for a
   // CertNetFetcher to be constructed on that thread.
