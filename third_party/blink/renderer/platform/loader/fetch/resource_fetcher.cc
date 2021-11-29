@@ -1889,6 +1889,19 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
+
+  // A response should not serve partial content if it was not requested via a
+  // Range header: https://fetch.spec.whatwg.org/#main-fetch so keep it out
+  // of the preload cache in case of a non-206 response (which generates an
+  // error).
+  if (resource->GetResponse().GetType() ==
+          network::mojom::FetchResponseType::kOpaque &&
+      resource->GetResponse().HasRangeRequested() &&
+      !resource->GetResourceRequest().HttpHeaderFields().Contains(
+          net::HttpRequestHeaders::kRange)) {
+    RemovePreload(resource);
+  }
+
   if (type == kDidFinishLoading) {
     resource->Finish(response_end, freezable_task_runner_.get());
 
