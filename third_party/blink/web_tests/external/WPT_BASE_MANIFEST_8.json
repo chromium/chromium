@@ -214665,6 +214665,19 @@
         {}
        ]
       ],
+      "multiple-textpaths.svg": [
+       "6df4ecc27bbddaa76709e041620dacdc5c1303bd",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/multiple-textpaths-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "no-background.svg": [
        "117b5d6357ff48a3db742d0a5358c622e1e4757d",
        [
@@ -278247,7 +278260,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "685946dce591c42dc79c84eddd8bcd5548559918",
+         "8f08c5ef1c70b6b230c14fe88300ccd7dcaa11db",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -278357,7 +278370,7 @@
          []
         ],
         "text.yaml": [
-         "32a45ff14e95a826300c8d777d7e67d45cc66d23",
+         "b65dbe68be73d974496bf43efd82865506f7a72c",
          []
         ],
         "the-canvas-state.yaml": [
@@ -304316,6 +304329,10 @@
       ]
      },
      "reftests": {
+      "multiple-textpaths-ref.svg": [
+       "a6dcd3c5d5e5fe1a9aa74d2539c14e66c95cbece",
+       []
+      ],
       "no-background-ref.svg": [
        "18c6ed4f1bd5905652d209007322dc394769665b",
        []
@@ -410319,6 +410336,20 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.letterSpacing.change.font.html": [
+        "5b42b89e3254c560810e35f1f571d85111503407",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.html": [
+        "fadfaaf2015f4a8a3ec1f51e3def3b474833b409",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
         "f197d22afa45d02307b9a0324c64f5013eb3439e",
         [
@@ -410333,15 +410364,22 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.spacing.measure.html": [
-        "9240a0835cdcdd779a75447d0d113e5cca298b11",
+       "2d.text.drawing.style.textRendering.settings.html": [
+        "f6634ee1a0d69b8749864479920e5c3a8f9e9671",
         [
          null,
          {}
         ]
        ],
-       "2d.text.drawing.style.textRendering.settings.html": [
-        "f6634ee1a0d69b8749864479920e5c3a8f9e9671",
+       "2d.text.drawing.style.wordSpacing.change.font.html": [
+        "d29bc8ec203880e7f56015cc94d0e00d96582b9e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.html": [
+        "4cd3c237cd8db811f6c937d6518db021bd7b27c2",
         [
          null,
          {}
@@ -426623,6 +426661,34 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.letterSpacing.change.font.html": [
+        "cb6b5e3e6030affd94c68791b128446fddf78c6c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.change.font.worker.js": [
+        "c5f771eb05caa02f8b7ccaa708589e89e8d5f66c",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.change.font.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.html": [
+        "d35b328ad521684fb339bc396a6e551dd4f2e152",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.worker.js": [
+        "4ca6e3dc860fa406ee7150e631da5a7be55a3f0c",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.worker.html",
+         {}
+        ]
+       ],
        "2d.text.drawing.style.measure.direction.html": [
         "46355fbe18566aabc31054946e8947d07d7777c0",
         [
@@ -426686,20 +426752,6 @@
          {}
         ]
        ],
-       "2d.text.drawing.style.spacing.measure.html": [
-        "070c93633ab22d649d0ec194b3ccdd68c44d5d47",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.spacing.measure.worker.js": [
-        "ef03ff52ea6dfeb0e99a771c409afe90f9cea1c0",
-        [
-         "html/canvas/offscreen/text/2d.text.drawing.style.spacing.measure.worker.html",
-         {}
-        ]
-       ],
        "2d.text.drawing.style.spacing.worker.js": [
         "5b5a417f52f7aa9a3cbd6297268988032680b8c0",
         [
@@ -426718,6 +426770,34 @@
         "0e6721c1412146b6b80819fe515c7e53352e9107",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.textRendering.settings.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.change.font.html": [
+        "883f41ccf52d4e8ed82dfb1403932d89b1ff4cc3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.change.font.worker.js": [
+        "a787045c613dbe3eb05e551a9fd1a2a0e25eca82",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.change.font.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.html": [
+        "96833f53faa248c4155059c0e4424b5271960008",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.worker.js": [
+        "b30926e4e7810959f1eec47652bbeaf88ff6230a",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.wordSpacing.measure.worker.html",
          {}
         ]
        ],
@@ -535434,7 +535514,7 @@
      ]
     ],
     "status-error.htm": [
-     "a9c15c4c51b3a8693ccae0d71acf1ffc4d0b50be",
+     "76709c23d10cfc77509a16a29783deec8a17480e",
      [
       null,
       {}
