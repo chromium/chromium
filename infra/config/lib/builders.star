@@ -288,7 +288,7 @@ def _code_coverage_property(
 
     return code_coverage or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, fail_early):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if instance:
@@ -318,9 +318,6 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
     if ensure_verified:
         reclient["ensure_verified"] = True
-    fail_early = defaults.get_value("reclient_fail_early", fail_early)
-    if fail_early:
-        reclient["fail_early"] = True
     return reclient or None
 
 ################################################################################
@@ -364,7 +361,6 @@ defaults = args.defaults(
     reclient_publish_trace = None,
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
-    reclient_fail_early = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -416,7 +412,6 @@ def builder(
         reclient_publish_trace = args.DEFAULT,
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
-        reclient_fail_early = None,
         **kwargs):
     """Define a builder.
 
@@ -569,8 +564,6 @@ def builder(
         reclient_cache_silo: A string indicating a cache siling key to use for
             remote caching.
         reclient_ensure_verified: If True, it verifies build artifacts.
-        reclient_fail_early: If True, build fails when fallbacks exceed a
-            predefined threshold.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -704,7 +697,6 @@ def builder(
         publish_trace = reclient_publish_trace,
         cache_silo = reclient_cache_silo,
         ensure_verified = reclient_ensure_verified,
-        fail_early = reclient_fail_early,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient

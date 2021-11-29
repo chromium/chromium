@@ -1,6 +1,5 @@
 {
   "$build/reclient": {
-    "fail_early": true,
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics"
   },

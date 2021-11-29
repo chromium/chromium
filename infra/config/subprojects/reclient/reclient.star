@@ -57,7 +57,6 @@ def fyi_reclient_staging_builder(
     return ci.builder(
         name = name,
         reclient_instance = reclient_instance,
-        reclient_fail_early = True,
         console_view_entry = consoles.console_view_entry(
             category = "rbe|linux",
             short_name = "rcs",
