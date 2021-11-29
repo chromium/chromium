@@ -591,6 +591,9 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         extensions->payment()->isPayment()) {
       mojo_options->is_payment_credential_creation = true;
     }
+    if (extensions->hasMinPinLength() && extensions->minPinLength()) {
+      mojo_options->min_pin_length_requested = true;
+    }
   }
 
   return mojo_options;

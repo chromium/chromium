@@ -304,6 +304,10 @@ bool ValidateResponseExtensions(const CtapMakeCredentialRequest& request,
       if (!request.cred_blob || !it.second.is_bool()) {
         return false;
       }
+    } else if (ext_name == kExtensionMinPINLength) {
+      if (!request.min_pin_length_requested || !it.second.is_unsigned()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;

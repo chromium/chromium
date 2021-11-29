@@ -528,6 +528,10 @@ struct PublicKeyCredentialCreationOptions {
   // migration.
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A
   bool google_legacy_app_id_support = false;
+
+  // Whether the minPinLength extension was set to true.
+  // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+  bool min_pin_length_requested = false;
 };
 
 enum PublicKeyCredentialType {

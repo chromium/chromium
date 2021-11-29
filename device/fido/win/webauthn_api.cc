@@ -313,6 +313,17 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     });
   }
 
+  if (request.min_pin_length_requested &&
+      api_version >= WEBAUTHN_API_VERSION_3) {
+    static const BOOL kRequestMinPINLength = TRUE;
+    extensions.emplace_back(WEBAUTHN_EXTENSION{
+        /*pwszExtensionIdentifier=*/
+        WEBAUTHN_EXTENSIONS_IDENTIFIER_MIN_PIN_LENGTH,
+        /*cbExtension=*/sizeof(kRequestMinPINLength),
+        /*pvExtension=*/const_cast<BOOL*>(&kRequestMinPINLength),
+    });
+  }
+
   DWORD enterprise_attestation = WEBAUTHN_ENTERPRISE_ATTESTATION_NONE;
   switch (request.attestation_preference) {
     case AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator:

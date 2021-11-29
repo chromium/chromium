@@ -115,6 +115,14 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // authenticators to consider, i.e. for the Windows API.
   bool cred_protect_enforce = false;
 
+  // min_pin_length_requested indicates that the minPinLength extension[1]
+  // should be sent to request that the authenticator report the minimum allowed
+  // PIN length configured.
+  //
+  // [1]
+  // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+  bool min_pin_length_requested = false;
+
   // cred_blob contains an optional credBlob extension.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   absl::optional<std::vector<uint8_t>> cred_blob;

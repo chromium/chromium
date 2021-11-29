@@ -23,6 +23,9 @@ dictionary AuthenticationExtensionsClientInputs {
   USVString credentialProtectionPolicy;
   boolean enforceCredentialProtectionPolicy = false;
 
+  // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+  boolean minPinLength;
+
   // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
   [RuntimeEnabled=WebAuthenticationResidentKeyRequirement] boolean credProps = false;
 

@@ -571,7 +571,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*enforce_protection_policy=*/false, /*appid_exclude=*/absl::nullopt,
         /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
         /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt,
-        /*google_legacy_app_id_support=*/false);
+        /*google_legacy_app_id_support=*/false,
+        /*min_pin_length_requested=*/false);
 
     return mojo_options;
   }

@@ -1177,6 +1177,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     extensions_map.emplace(kExtensionCredBlob, true);
   }
 
+  if (request.min_pin_length_requested) {
+    extensions_map.emplace(kExtensionMinPINLength,
+                           static_cast<int>(mutable_state()->min_pin_length));
+  }
+
   if (config_.add_extra_extension) {
     extensions_map.emplace(cbor::Value("unsolicited"), cbor::Value(42));
   }

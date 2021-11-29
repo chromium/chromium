@@ -159,6 +159,11 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return absl::nullopt;
         }
         request.cred_blob = extension.second.GetBytestring();
+      } else if (extension_name == kExtensionMinPINLength) {
+        if (!extension.second.is_bool()) {
+          return absl::nullopt;
+        }
+        request.min_pin_length_requested = extension.second.GetBool();
       }
     }
   }
@@ -291,6 +296,10 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.cred_blob) {
     extensions.emplace(kExtensionCredBlob, *request.cred_blob);
+  }
+
+  if (request.min_pin_length_requested) {
+    extensions.emplace(kExtensionMinPINLength, true);
   }
 
   if (!extensions.empty()) {
