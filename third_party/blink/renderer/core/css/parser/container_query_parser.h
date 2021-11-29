@@ -29,16 +29,22 @@ class CORE_EXPORT ContainerQueryParser {
   std::unique_ptr<MediaQueryExpNode> ParseQuery(CSSParserTokenRange);
 
  private:
+  using FeatureSet = MediaQueryParser::FeatureSet;
+
   std::unique_ptr<MediaQueryExpNode> ConsumeContainerQuery(
       CSSParserTokenRange&);
   std::unique_ptr<MediaQueryExpNode> ConsumeContainerCondition(
       CSSParserTokenRange&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeatureQuery(CSSParserTokenRange&);
+  std::unique_ptr<MediaQueryExpNode> ConsumeFeatureQuery(CSSParserTokenRange&,
+                                                         const FeatureSet&);
   std::unique_ptr<MediaQueryExpNode> ConsumeFeatureQueryInParens(
-      CSSParserTokenRange&);
+      CSSParserTokenRange&,
+      const FeatureSet&);
   std::unique_ptr<MediaQueryExpNode> ConsumeFeatureCondition(
-      CSSParserTokenRange&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&);
+      CSSParserTokenRange&,
+      const FeatureSet&);
+  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&,
+                                                    const FeatureSet&);
 
   const CSSParserContext& context_;
   MediaQueryParser media_query_parser_;

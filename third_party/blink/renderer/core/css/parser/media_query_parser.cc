@@ -18,6 +18,26 @@ using css_parsing_utils::ConsumeAnyValue;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
+namespace {
+
+class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
+  STACK_ALLOCATED();
+
+ public:
+  explicit MediaQueryFeatureSet(CSSParserMode parser_mode)
+      : parser_mode_(parser_mode) {}
+
+  bool IsAllowed(const String& feature) const override {
+    return parser_mode_ == kUASheetMode ||
+           feature != media_feature_names::kImmersiveMediaFeature;
+  }
+
+ private:
+  CSSParserMode parser_mode_;
+};
+
+}  // namespace
+
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
     const ExecutionContext* execution_context) {
@@ -159,19 +179,21 @@ MediaQueryOperator MediaQueryParser::ConsumeComparison(
   return MediaQueryOperator::kNone;
 }
 
-String MediaQueryParser::ConsumeAllowedName(CSSParserTokenRange& range) {
+String MediaQueryParser::ConsumeAllowedName(CSSParserTokenRange& range,
+                                            const FeatureSet& feature_set) {
   if (range.Peek().GetType() != kIdentToken)
     return g_null_atom;
   String name =
       AttemptStaticStringCreation(range.Peek().Value().ToString().LowerASCII());
-  if (!IsMediaFeatureAllowedInMode(name))
+  if (!feature_set.IsAllowed(name))
     return g_null_atom;
   range.ConsumeIncludingWhitespace();
   return name;
 }
 
-String MediaQueryParser::ConsumeUnprefixedName(CSSParserTokenRange& range) {
-  String name = ConsumeAllowedName(range);
+String MediaQueryParser::ConsumeUnprefixedName(CSSParserTokenRange& range,
+                                               const FeatureSet& feature_set) {
+  String name = ConsumeAllowedName(range, feature_set);
   if (name.IsNull())
     return name;
   DCHECK_EQ(name, name.LowerASCII());
@@ -184,11 +206,12 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ParseNameValueComparison(
     CSSParserTokenRange lhs,
     MediaQueryOperator op,
     CSSParserTokenRange rhs,
-    NameAffinity name_affinity) {
+    NameAffinity name_affinity,
+    const FeatureSet& feature_set) {
   if (name_affinity == NameAffinity::kRight)
     std::swap(lhs, rhs);
 
-  String feature_name = ConsumeUnprefixedName(lhs);
+  String feature_name = ConsumeUnprefixedName(lhs, feature_set);
   if (feature_name.IsNull() || !lhs.AtEnd())
     return nullptr;
 
@@ -209,7 +232,8 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ParseNameValueComparison(
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    const FeatureSet& feature_set) {
   // Because we don't know exactly where <mf-name> appears in the grammar, we
   // split |range| on top-level separators, and parse each segment
   // individually.
@@ -227,7 +251,7 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
 
   // <mf-boolean> = <mf-name>
   if (range.AtEnd()) {
-    String feature_name = ConsumeAllowedName(segment1);
+    String feature_name = ConsumeAllowedName(segment1, feature_set);
     if (feature_name.IsNull() || !segment1.AtEnd())
       return nullptr;
     auto exp = MediaQueryExp::Create(feature_name, range, fake_context_,
@@ -242,7 +266,7 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
     range.ConsumeIncludingWhitespace();
     if (range.AtEnd())
       return nullptr;
-    String feature_name = ConsumeAllowedName(segment1);
+    String feature_name = ConsumeAllowedName(segment1, feature_set);
     if (feature_name.IsNull() || !segment1.AtEnd())
       return nullptr;
     auto exp = MediaQueryExp::Create(feature_name, range, fake_context_,
@@ -276,14 +300,14 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
   // try both.
   if (range.AtEnd()) {
     // Try: <mf-name> <mf-comparison> <mf-value>
-    if (auto node = ParseNameValueComparison(segment1, op1, segment2,
-                                             NameAffinity::kLeft)) {
+    if (auto node = ParseNameValueComparison(
+            segment1, op1, segment2, NameAffinity::kLeft, feature_set)) {
       return node;
     }
 
     // Otherwise: <mf-value> <mf-comparison> <mf-name>
     return ParseNameValueComparison(segment1, op1, segment2,
-                                    NameAffinity::kRight);
+                                    NameAffinity::kRight, feature_set);
   }
 
   // Otherwise, the feature must be on the form:
@@ -305,7 +329,7 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
   if (range.AtEnd())
     return nullptr;
 
-  String feature_name = ConsumeUnprefixedName(segment2);
+  String feature_name = ConsumeUnprefixedName(segment2, feature_set);
   if (feature_name.IsNull() || !segment2.AtEnd())
     return nullptr;
 
@@ -373,7 +397,7 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeInParens(
     block = original_block;
 
     // ( <media-feature> )
-    auto feature = ConsumeFeature(block);
+    auto feature = ConsumeFeature(block, MediaQueryFeatureSet(mode_));
     if (feature && block.AtEnd())
       return MediaQueryExpNode::Nested(std::move(feature));
   }
@@ -478,12 +502,6 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
   } while (!range.AtEnd() && ConsumeUntilCommaInclusive(range));
 
   return query_set_;
-}
-
-bool MediaQueryParser::IsMediaFeatureAllowedInMode(
-    const String& media_feature) const {
-  return mode_ == kUASheetMode ||
-         media_feature != media_feature_names::kImmersiveMediaFeature;
 }
 
 bool MediaQueryParser::IsNotKeywordEnabled() const {

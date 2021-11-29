@@ -67,6 +67,24 @@ std::unique_ptr<MediaQueryExpNode> ConsumeNotAndOr(Func func,
   return result;
 }
 
+class SizeFeatureSet : public MediaQueryParser::FeatureSet {
+  STACK_ALLOCATED();
+
+ public:
+  bool IsAllowed(const String& name) const override {
+    return name == media_feature_names::kWidthMediaFeature ||
+           name == media_feature_names::kMinWidthMediaFeature ||
+           name == media_feature_names::kMaxWidthMediaFeature ||
+           name == media_feature_names::kHeightMediaFeature ||
+           name == media_feature_names::kMinHeightMediaFeature ||
+           name == media_feature_names::kMaxHeightMediaFeature ||
+           name == media_feature_names::kAspectRatioMediaFeature ||
+           name == media_feature_names::kMinAspectRatioMediaFeature ||
+           name == media_feature_names::kMaxAspectRatioMediaFeature ||
+           name == media_feature_names::kOrientationMediaFeature;
+  }
+};
+
 }  // namespace
 
 ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
@@ -145,7 +163,7 @@ std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeContainerQuery(
     auto block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
-    auto query = ConsumeFeatureQuery(block);
+    auto query = ConsumeFeatureQuery(block, SizeFeatureSet());
     if (query && block.AtEnd())
       return MediaQueryExpNode::Function(std::move(query), "size");
   }
@@ -165,28 +183,31 @@ ContainerQueryParser::ConsumeContainerCondition(CSSParserTokenRange& range) {
 }
 
 std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeFeatureQuery(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
-  if (auto feature = ConsumeFeature(range))
+  if (auto feature = ConsumeFeature(range, feature_set))
     return feature;
   range = original_range;
 
-  if (auto node = ConsumeFeatureCondition(range))
+  if (auto node = ConsumeFeatureCondition(range, feature_set))
     return node;
 
   return nullptr;
 }
 
 std::unique_ptr<MediaQueryExpNode>
-ContainerQueryParser::ConsumeFeatureQueryInParens(CSSParserTokenRange& range) {
+ContainerQueryParser::ConsumeFeatureQueryInParens(
+    CSSParserTokenRange& range,
+    const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
   if (range.Peek().GetType() == kLeftParenthesisToken) {
     auto block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
-    auto query = ConsumeFeatureQuery(block);
+    auto query = ConsumeFeatureQuery(block, feature_set);
     if (query && block.AtEnd())
       return MediaQueryExpNode::Nested(std::move(query));
   }
@@ -196,17 +217,19 @@ ContainerQueryParser::ConsumeFeatureQueryInParens(CSSParserTokenRange& range) {
 }
 
 std::unique_ptr<MediaQueryExpNode>
-ContainerQueryParser::ConsumeFeatureCondition(CSSParserTokenRange& range) {
+ContainerQueryParser::ConsumeFeatureCondition(CSSParserTokenRange& range,
+                                              const FeatureSet& feature_set) {
   return ConsumeNotAndOr(
-      [this](CSSParserTokenRange& range) {
-        return this->ConsumeFeatureQueryInParens(range);
+      [this, &feature_set](CSSParserTokenRange& range) {
+        return this->ConsumeFeatureQueryInParens(range, feature_set);
       },
       range);
 }
 
 std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeFeature(
-    CSSParserTokenRange& range) {
-  return media_query_parser_.ConsumeFeature(range);
+    CSSParserTokenRange& range,
+    const FeatureSet& feature_set) {
+  return media_query_parser_.ConsumeFeature(range, feature_set);
 }
 
 }  // namespace blink

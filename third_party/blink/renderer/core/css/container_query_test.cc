@@ -51,9 +51,12 @@ class ContainerQueryTest : public PageTestBase,
   }
 
   PhysicalAxes QueriedAxes(String query) {
-    ContainerQuery* container_query = ParseContainerQuery(query);
-    DCHECK(container_query);
-    return container_query->QueriedAxes();
+    // This does not use ParseContainerQuery, since we want to allow queries
+    // with "unknown" parts.
+    auto* rule = DynamicTo<StyleRuleContainer>(css_test_helpers::ParseRule(
+        GetDocument(), "@container " + query + " {}"));
+    DCHECK(rule);
+    return rule->GetContainerQuery().QueriedAxes();
   }
 
   String SerializeCondition(StyleRuleContainer* container) {
@@ -130,6 +133,27 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
   EXPECT_FALSE(ParseAtContainer("@container somename not size(width) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) and size(height) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) or size(height) {}"));
+}
+
+TEST_F(ContainerQueryTest, ValidFeatures) {
+  // https://drafts.csswg.org/css-contain-3/#size-container
+  EXPECT_TRUE(ParseAtContainer("@container size(width) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(min-width: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(max-width: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(height) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(min-height: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(max-height: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(aspect-ratio) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(min-aspect-ratio: 1/2) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(max-aspect-ratio: 1/2) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container size(orientation: portrait) {}"));
+
+  EXPECT_FALSE(ParseAtContainer("@container (grid) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(color) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(color-index) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(color-index >= 1) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(grid) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(resolution: 150dpi) {}"));
 }
 
 TEST_F(ContainerQueryTest, RuleParsing) {
@@ -246,13 +270,14 @@ TEST_F(ContainerQueryTest, QueriedAxes) {
   EXPECT_EQ(both, QueriedAxes("size((width: 1px) and (height: 1px))"));
   EXPECT_EQ(both, QueriedAxes("size((min-width: 1px) and (max-height: 1px))"));
 
-  // TODO(crbug.com/1145970): We want to test the case where no axes are
-  // queried (kPhysicalAxisNone). This can (for now) be achieved by using
-  // some media query feature (e.g. "resolution"). Ultimately, using
-  // "resolution" will not be allowed in @container: we will then need to find
-  // another way to author a container query that queries no axes (or make it
-  // illegal altogether).
-  EXPECT_EQ(none, QueriedAxes("size(resolution: 150dpi)"));
+  EXPECT_EQ(both, QueriedAxes("size(aspect-ratio: 1/2)"));
+  EXPECT_EQ(both, QueriedAxes("size(min-aspect-ratio: 1/2)"));
+  EXPECT_EQ(both, QueriedAxes("size(min-aspect-ratio: 1/2)"));
+
+  EXPECT_EQ(both, QueriedAxes("size(orientation: portrait)"));
+  EXPECT_EQ(both, QueriedAxes("size(orientation: landscape)"));
+
+  EXPECT_EQ(none, QueriedAxes("size(unknown)"));
 }
 
 TEST_F(ContainerQueryTest, QueryZoom) {

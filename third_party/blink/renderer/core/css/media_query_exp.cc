@@ -308,7 +308,8 @@ bool MediaQueryExp::IsWidthDependent() const {
          media_feature_ == media_feature_names::kMaxWidthMediaFeature ||
          media_feature_ == media_feature_names::kAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
-         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature;
+         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kOrientationMediaFeature;
 }
 
 bool MediaQueryExp::IsHeightDependent() const {
@@ -317,7 +318,8 @@ bool MediaQueryExp::IsHeightDependent() const {
          media_feature_ == media_feature_names::kMaxHeightMediaFeature ||
          media_feature_ == media_feature_names::kAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
-         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature;
+         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kOrientationMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)

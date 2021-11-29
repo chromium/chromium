@@ -38,6 +38,14 @@ class CORE_EXPORT MediaQueryParser {
       CSSParserMode,
       const ExecutionContext*);
 
+  // Passed to ConsumeFeature to determine which features are allowed.
+  class FeatureSet {
+    STACK_ALLOCATED();
+
+   public:
+    virtual bool IsAllowed(const String&) const = 0;
+  };
+
  private:
   friend class ContainerQueryParser;
 
@@ -72,13 +80,13 @@ class CORE_EXPORT MediaQueryParser {
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-name
   //
-  // The <mf-name> is only consumed if the name is allowed in the current
-  // mode.
-  String ConsumeAllowedName(CSSParserTokenRange&);
+  // The <mf-name> is only consumed if the name is allowed by the specified
+  // FeatureSet.
+  String ConsumeAllowedName(CSSParserTokenRange&, const FeatureSet&);
 
   // Like ConsumeAllowedName, except returns null if the name has a min-
   // or max- prefix.
-  String ConsumeUnprefixedName(CSSParserTokenRange&);
+  String ConsumeUnprefixedName(CSSParserTokenRange&, const FeatureSet&);
 
   enum class NameAffinity {
     // <mf-name> appears on the left, e.g. width < 10px.
@@ -100,12 +108,14 @@ class CORE_EXPORT MediaQueryParser {
       CSSParserTokenRange lhs,
       MediaQueryOperator op,
       CSSParserTokenRange rhs,
-      NameAffinity);
+      NameAffinity,
+      const FeatureSet&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&);
+  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&,
+                                                    const FeatureSet&);
 
   enum class ConditionMode {
     // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
@@ -137,8 +147,6 @@ class CORE_EXPORT MediaQueryParser {
   scoped_refptr<MediaQuerySet> ConsumeSingleCondition(CSSParserTokenRange);
 
   scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
-
-  bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
 
   // True if <media-not> is enabled.
   bool IsNotKeywordEnabled() const;
