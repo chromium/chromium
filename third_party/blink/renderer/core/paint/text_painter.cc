@@ -93,10 +93,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     TextDecorationLine lines = decoration.Lines();
     bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
     bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
-    bool is_spelling_error =
-        EnumHasFlags(lines, TextDecorationLine::kSpellingError);
-    bool is_grammar_error =
-        EnumHasFlags(lines, TextDecorationLine::kGrammarError);
     if (flip_underline_and_overline)
       std::swap(has_underline, has_overline);
 
@@ -104,25 +100,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
 
     float resolved_thickness = decoration_info.ResolvedThickness();
     context.SetStrokeThickness(resolved_thickness);
-
-    if (is_spelling_error || is_grammar_error) {
-      DCHECK(!has_underline && !has_overline &&
-             !EnumHasFlags(lines, TextDecorationLine::kLineThrough));
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), decoration.UnderlineOffset(),
-              resolved_thickness);
-      decoration_info.SetLineData(is_spelling_error
-                                      ? TextDecorationLine::kSpellingError
-                                      : TextDecorationLine::kGrammarError,
-                                  paint_underline_offset);
-      // We ignore "text-decoration-skip-ink: auto" for spelling and grammar
-      // error markers.
-      AppliedDecorationPainter decoration_painter(context, decoration_info);
-      decoration_painter.Paint();
-      continue;
-    }
 
     if (has_underline && decoration_info.FontData()) {
       // Don't apply text-underline-offset to overline.

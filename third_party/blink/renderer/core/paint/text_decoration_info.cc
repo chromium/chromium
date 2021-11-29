@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -143,18 +142,8 @@ TextDecorationInfo::TextDecorationInfo(
 
   for (const AppliedTextDecoration& decoration :
        style_.AppliedTextDecorations()) {
-    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
-        EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
-      // Spelling and grammar error thickness doesn't depend on the font size.
-#if defined(OS_MAC)
-      applied_decorations_thickness_.push_back(2.f);
-#else
-      applied_decorations_thickness_.push_back(1.f);
-#endif
-    } else {
-      applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
-          decoration.Thickness(), decorating_box_style));
-    }
+    applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
+        decoration.Thickness(), decorating_box_style));
   }
   DCHECK_EQ(style_.AppliedTextDecorations().size(),
             applied_decorations_thickness_.size());
@@ -173,8 +162,6 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
   int wavy_offset_factor;
   switch (line) {
     case TextDecorationLine::kUnderline:
-    case TextDecorationLine::kSpellingError:
-    case TextDecorationLine::kGrammarError:
       double_offset = double_offset_from_thickness;
       wavy_offset_factor = 1;
       break;
@@ -196,7 +183,6 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       NOTREACHED();
   }
 
-  line_data_.line = line;
   line_data_.line_offset = line_offset;
   line_data_.double_offset = double_offset;
   line_data_.wavy_offset_factor = wavy_offset_factor;
@@ -215,25 +201,10 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
 }
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
-  if (IsSpellingOrGrammarError()) {
-#if defined(OS_MAC)
-    return ETextDecorationStyle::kDotted;
-#else
-    return ETextDecorationStyle::kWavy;
-#endif
-  }
-
   return style_.AppliedTextDecorations()[decoration_index_].Style();
 }
 
 Color TextDecorationInfo::LineColor() const {
-  // TODO(rego): Allow customize the spelling and grammar error color with
-  // text-decoration-color property.
-  if (line_data_.line == TextDecorationLine::kSpellingError)
-    return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
-  if (line_data_.line == TextDecorationLine::kGrammarError)
-    return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
-
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
   if (selection_text_decoration_ &&
@@ -345,9 +316,6 @@ float TextDecorationInfo::ControlPointDistanceFromResolvedThickness() const {
   // Distance between decoration's axis and Bezier curve's control points. The
   // height of the curve is based on this distance. Increases the curve's height
   // as strokeThickness increases to make the curve look better.
-  if (IsSpellingOrGrammarError())
-    return 5;
-
   return 3.5 * WavyDecorationSizing();
 }
 
@@ -355,9 +323,6 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
   // Increment used to form the diamond shape between start point (p1), control
   // points and end point (p2) along the axis of the decoration. Makes the curve
   // wider as strokeThickness increases to make the curve look better.
-  if (IsSpellingOrGrammarError())
-    return 3;
-
   return 2.5 * WavyDecorationSizing();
 }
 
@@ -401,10 +366,6 @@ Path TextDecorationInfo::PrepareWavyStrokePath() const {
   float wave_offset = DoubleOffset() * line_data_.wavy_offset_factor;
 
   float control_point_distance = ControlPointDistanceFromResolvedThickness();
-  // For spelling and grammar errors we invert the control_point_distance to get
-  // a result closer to Microsoft Word circa 2021.
-  if (IsSpellingOrGrammarError())
-    control_point_distance = -control_point_distance;
   float step = StepFromResolvedThickness();
 
   gfx::PointF start_point = StartPoint();
@@ -413,15 +374,10 @@ Path TextDecorationInfo::PrepareWavyStrokePath() const {
   // AppliedDecorationPainter::StrokeWavyTextDecoration().
   // Offset the start point, so the beizer curve starts before the current line,
   // that way we can clip it exactly the same way in both ends.
-  // For spelling and grammar errors we offset an extra half step, to get a
-  // result closer to Microsoft Word circa 2021.
-  float start_offset = (IsSpellingOrGrammarError() ? -2.5 : -2) * step;
-  gfx::PointF p1(start_point + gfx::Vector2dF(start_offset, wave_offset));
+  gfx::PointF p1(start_point + gfx::Vector2dF(-2 * step, wave_offset));
   // Increase the width including the previous offset, plus an extra wave to be
   // painted after the line.
-  float extra_width = (IsSpellingOrGrammarError() ? 4.5 : 4) * step;
-  gfx::PointF p2(start_point +
-                 gfx::Vector2dF(width_ + extra_width, wave_offset));
+  gfx::PointF p2(start_point + gfx::Vector2dF(width_ + 4 * step, wave_offset));
 
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
