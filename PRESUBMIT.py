@@ -2059,7 +2059,7 @@ def CheckChromeOsSyncedPrefRegistration(input_api, output_api):
       affected_file,
       files_to_check=('^ash/',
                       '^chromeos/',  # Top-level src/chromeos.
-                      '/chromeos/',  # Any path component.
+                      '.*/chromeos/',  # Any path component.
                       '^components/arc',
                       '^components/exo'),
       files_to_skip=(input_api.DEFAULT_FILES_TO_SKIP))

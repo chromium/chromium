@@ -1523,8 +1523,7 @@ class HardcodedGoogleHostsTest(unittest.TestCase):
 class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
 
   def testWarnsOnChromeOsDirectories(self):
-    input_api = MockInputApi()
-    input_api.files = [
+    files = [
       MockFile('ash/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
       MockFile('chrome/browser/chromeos/file.cc',
@@ -1536,9 +1535,12 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       MockFile('components/exo/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
     ]
-    warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
-      input_api, MockOutputApi())
-    self.assertEqual(1, len(warnings))
+    input_api = MockInputApi()
+    for file in files:
+      input_api.files = [file]
+      warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
+        input_api, MockOutputApi())
+      self.assertEqual(1, len(warnings))
 
   def testDoesNotWarnOnSyncOsPref(self):
     input_api = MockInputApi()
@@ -1550,7 +1552,7 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
 
-  def testDoesNotWarnOnCrossPlatformDirectories(self):
+  def testDoesNotWarnOnOtherDirectories(self):
     input_api = MockInputApi()
     input_api.files = [
       MockFile('chrome/browser/ui/file.cc',
@@ -1558,6 +1560,8 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       MockFile('components/sync/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
       MockFile('content/browser/file.cc',
+               ['PrefRegistrySyncable::SYNCABLE_PREF']),
+      MockFile('a/notchromeos/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
     ]
     warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
