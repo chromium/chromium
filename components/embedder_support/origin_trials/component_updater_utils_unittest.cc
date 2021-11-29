@@ -102,14 +102,14 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
     ASSERT_EQ(features.size(), disabled_feature_list->GetList().size());
 
-    std::string disabled_feature;
     for (size_t i = 0; i < features.size(); ++i) {
-      const bool found = disabled_feature_list->GetString(i, &disabled_feature);
-      EXPECT_TRUE(found) << "Entry not found or not a string at index " << i;
-      if (!found) {
+      const std::string* disabled_feature =
+          disabled_feature_list->GetList()[i].GetIfString();
+      if (!disabled_feature) {
+        ADD_FAILURE() << "Entry not found or not a string at index " << i;
         continue;
       }
-      EXPECT_EQ(features[i], disabled_feature)
+      EXPECT_EQ(features[i], *disabled_feature)
           << "Feature lists differ at index " << i;
     }
   }
@@ -136,14 +136,15 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
     ASSERT_EQ(tokens.size(), disabled_token_list->GetList().size());
 
-    std::string disabled_token;
     for (size_t i = 0; i < tokens.size(); ++i) {
-      const bool found = disabled_token_list->GetString(i, &disabled_token);
-      EXPECT_TRUE(found) << "Entry not found or not a string at index " << i;
-      if (!found) {
+      const std::string* disabled_token =
+          disabled_token_list->GetList()[i].GetIfString();
+
+      if (!disabled_token) {
+        ADD_FAILURE() << "Entry not found or not a string at index " << i;
         continue;
       }
-      EXPECT_EQ(tokens[i], disabled_token)
+      EXPECT_EQ(tokens[i], *disabled_token)
           << "Token lists differ at index " << i;
     }
   }
