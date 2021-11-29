@@ -50,6 +50,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.graphics.Typeface;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
 import android.widget.CheckBox;
@@ -3005,6 +3006,8 @@ public class AutofillAssistantGenericUiTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O, sdk_is_less_than = VERSION_CODES.Q,
+        message = "https://crbug.com/1269453")
     public void testCreditCardUi() throws Exception {
         // When the toggle button becomes checked, we write the current card to
         // |selected_credit_card|.
