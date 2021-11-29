@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_
-#define ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_
+#ifndef CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_
+#define CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_
 
 #include <memory>
 
@@ -18,7 +18,7 @@ namespace policy {
 // WeeklyTime class contains day of week and time. Day of week is number from 1
 // to 7 (1 = Monday, 2 = Tuesday, etc.) Time is in milliseconds from the
 // beginning of the day.
-class COMPONENT_EXPORT(ASH_POLICY) WeeklyTime {
+class COMPONENT_EXPORT(CHROMEOS_POLICY) WeeklyTime {
  public:
   // Dictionary value key constants for testing.
   static const char kDayOfWeek[];
@@ -118,10 +118,10 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTime {
 };
 
 // Constructs a WeeklyTime from an exploded base::Time.
-COMPONENT_EXPORT(ASH_POLICY)
+COMPONENT_EXPORT(CHROMEOS_POLICY)
 WeeklyTime GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
                                      const absl::optional<int> timezone_offset);
 
 }  // namespace policy
 
-#endif  // ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_
+#endif  // CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_H_

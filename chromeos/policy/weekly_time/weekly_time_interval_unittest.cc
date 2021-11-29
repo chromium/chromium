@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 
 #include <tuple>
 #include <utility>
 
-#include "ash/components/policy/weekly_time/weekly_time.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

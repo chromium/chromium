@@ -840,8 +840,8 @@
     },
     'cros_commercial_policy': {
       'filepath': 'ash/policy/'\
-                  '|ash/components/policy/'\
                   '|components/policy/'\
+                  '|chromeos/policy/'\
                   '|chrome/browser/ash/policy/'\
                   '|chrome/browser/policy/'
     },

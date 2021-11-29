@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/policy/weekly_time/time_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/ignore_result.h"
@@ -16,6 +15,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 

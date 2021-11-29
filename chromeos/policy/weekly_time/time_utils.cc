@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/policy/weekly_time/time_utils.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
 
 #include <algorithm>
 #include <memory>
 
-#include "ash/components/policy/weekly_time/weekly_time.h"
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"

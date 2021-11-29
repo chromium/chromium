@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/policy/weekly_time/time_utils.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
 
 #include <memory>
 #include <utility>
 
-#include "ash/components/policy/weekly_time/weekly_time.h"
-#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;

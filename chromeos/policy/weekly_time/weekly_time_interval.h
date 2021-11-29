@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
-#define ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
+#ifndef CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
+#define CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
 
 #include <memory>
 
-#include "ash/components/policy/weekly_time/weekly_time.h"
 #include "base/component_export.h"
 #include "base/values.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,7 +19,7 @@ namespace policy {
 // Interval can be wrapped across the end of the week.
 // Interval is empty if start = end. Empty intervals aren't allowed.
 // Both WeeklyTimes need to have the same timezone_offset.
-class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
+class COMPONENT_EXPORT(CHROMEOS_POLICY) WeeklyTimeInterval {
  public:
   // Dictionary value key constants for testing.
   static const char kStart[];
@@ -89,4 +89,4 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
 
 }  // namespace policy
 
-#endif  // ASH_COMPONENTS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
+#endif  // CHROMEOS_POLICY_WEEKLY_TIME_WEEKLY_TIME_INTERVAL_H_
