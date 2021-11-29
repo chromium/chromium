@@ -9,9 +9,32 @@ import argparse
 import json
 import os
 
-_PATCH = 'cr3'
-_LATEST_VERSION = '11-robolectric-6757853.' + _PATCH
+_PATCH = 'cr1'
+_LATEST_VERSION = '12-robolectric-7732740.' + _PATCH
 _ROBO_URL_FILES = {
+    'android-all-instrumented-12-robolectric-7732740-i3.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/12-robolectric-7732740-i3/android-all-instrumented-12-robolectric-7732740-i3.jar',
+    'android-all-instrumented-11-robolectric-6757853-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/11-robolectric-6757853-i1/android-all-instrumented-11-robolectric-6757853-i1.jar',
+    'android-all-instrumented-10-robolectric-5803371-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/10-robolectric-5803371-i1/android-all-instrumented-10-robolectric-5803371-i1.jar',
+    'android-all-instrumented-9-robolectric-4913185-2-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/9-robolectric-4913185-2-i1/android-all-instrumented-9-robolectric-4913185-2-i1.jar',
+    'android-all-instrumented-8.1.0-robolectric-4611349-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/8.1.0-robolectric-4611349-i1/android-all-instrumented-8.1.0-robolectric-4611349-i1.jar',
+    'android-all-instrumented-8.0.0_r4-robolectric-r1-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/8.0.0_r4-robolectric-r1-i1/android-all-instrumented-8.0.0_r4-robolectric-r1-i1.jar',
+    'android-all-instrumented-7.1.0_r7-robolectric-r1-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.1.0_r7-robolectric-r1-i1/android-all-instrumented-7.1.0_r7-robolectric-r1-i1.jar',
+    'android-all-instrumented-6.0.1_r3-robolectric-r1-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/6.0.1_r3-robolectric-r1-i1/android-all-instrumented-6.0.1_r3-robolectric-r1-i1.jar',
+    'android-all-instrumented-5.0.2_r3-robolectric-r0-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/5.0.2_r3-robolectric-r0-i1/android-all-instrumented-5.0.2_r3-robolectric-r0-i1.jar',
+    'android-all-instrumented-4.4_r1-robolectric-r2-i1.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/4.4_r1-robolectric-r2-i1/android-all-instrumented-4.4_r1-robolectric-r2-i1.jar',
+
+    'android-all-12-robolectric-7732740.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/12-robolectric-7732740/android-all-12-robolectric-7732740.jar',
     'android-all-11-robolectric-6757853.jar':
         'https://repo.maven.apache.org/maven2/org/robolectric/android-all/11-robolectric-6757853/android-all-11-robolectric-6757853.jar',
     'android-all-10-robolectric-5803371.jar':
