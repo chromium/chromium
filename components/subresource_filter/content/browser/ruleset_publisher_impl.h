@@ -16,9 +16,8 @@
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 namespace subresource_filter {
 
@@ -30,7 +29,7 @@ class RulesetService;
 // renderer processes, where they will be memory-mapped as-needed by the
 // UnverifiedRulesetDealer.
 class RulesetPublisherImpl : public RulesetPublisher,
-                             public content::NotificationObserver {
+                             public content::RenderProcessHostCreationObserver {
  public:
   RulesetPublisherImpl(
       RulesetService* ruleset_service,
@@ -61,12 +60,9 @@ class RulesetPublisherImpl : public RulesetPublisher,
                                           content::RenderProcessHost* rph);
 
  private:
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
 
-  content::NotificationRegistrar notification_registrar_;
   RulesetFilePtr ruleset_data_{nullptr, base::OnTaskRunnerDeleter{nullptr}};
   base::OnceClosure ruleset_published_callback_;
 
