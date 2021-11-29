@@ -1,6 +1,6 @@
 # Code Coverage in Chromium
 
-### Coverage Dashboard: [link](https://analysis.chromium.org/p/chromium/coverage)
+### Coverage Dashboard: [link](https://analysis.chromium.org/coverage/p/chromium)
 
 Table of contents:
 
