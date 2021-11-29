@@ -123,6 +123,10 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void GetBuffered_Locked(
       WebTimeRanges* /* out */,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) const;
+  void Remove_Locked(double start,
+                     double end,
+                     ExceptionState*,
+                     MediaSourceAttachmentSupplement::ExclusiveKey pass_key);
 
   void RemovedFromMediaSource();
   double HighestPresentationTimestamp();
@@ -179,10 +183,6 @@ class SourceBuffer final : public EventTargetWithInlineData,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void Abort_Locked(
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
-  void Remove_Locked(double start,
-                     double end,
-                     ExceptionState*,
-                     MediaSourceAttachmentSupplement::ExclusiveKey pass_key);
   void ChangeType_Locked(
       const String& type,
       ExceptionState*,

@@ -1046,8 +1046,8 @@ void MediaSource::DurationChangeAlgorithm(
     // then call remove(new duration, old duration) on all all objects in
     // sourceBuffers.
     for (unsigned i = 0; i < source_buffers_->length(); ++i) {
-      source_buffers_->item(i)->remove(new_duration, old_duration,
-                                       ASSERT_NO_EXCEPTION);
+      source_buffers_->item(i)->Remove_Locked(new_duration, old_duration,
+                                              &ASSERT_NO_EXCEPTION, pass_key);
     }
   }
 
