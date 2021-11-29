@@ -75,6 +75,8 @@ class AppServiceProxyLacros : public KeyedService,
 
   void ReInitializeForTesting(Profile* profile);
 
+  Profile* profile() const { return profile_; }
+
   apps::AppRegistryCache& AppRegistryCache();
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
 
@@ -315,8 +317,6 @@ class AppServiceProxyLacros : public KeyedService,
 
     apps::IconLoader* overriding_icon_loader_for_testing_;
   };
-
-  Profile* profile() const { return profile_; }
 
   bool IsValidProfile();
 

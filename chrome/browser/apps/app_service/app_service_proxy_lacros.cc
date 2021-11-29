@@ -288,11 +288,10 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
     return;
   }
 
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
-      std::move(launch_params));
+      CreateCrosapiLaunchParamsWithEventFlags(this, app_id, event_flags,
+                                              launch_source,
+                                              display::kInvalidDisplayId));
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(
@@ -314,13 +313,11 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
                  << " does not support Launch().";
     return;
   }
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
-  launch_params->intent =
-      apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      this, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+  params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
-      std::move(launch_params));
+      std::move(params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithIntent(
@@ -345,13 +342,13 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     return;
   }
 
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
-  launch_params->intent =
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      this, app_id, event_flags, launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+  params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
-      std::move(launch_params));
+      std::move(params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(

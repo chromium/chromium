@@ -15,6 +15,7 @@
 #include "ui/base/window_open_disposition.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -105,6 +106,13 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
 apps::AppLaunchParams ConvertCrosapiToLaunchParams(
     const crosapi::mojom::LaunchParamsPtr& crosapi_params,
     Profile* profile);
+
+crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
+    apps::AppServiceProxy* proxy,
+    const std::string& app_id,
+    int event_flags,
+    apps::mojom::LaunchSource launch_source,
+    int64_t display_id);
 #endif  // defined(OS_CHROMEOS)
 
 }  // namespace apps

@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -111,6 +113,19 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
   }
 
   NOTREACHED();
+}
+
+apps::mojom::LaunchContainer ConvertWindowModeToAppLaunchContainer(
+    apps::mojom::WindowMode window_mode) {
+  switch (window_mode) {
+    case apps::mojom::WindowMode::kBrowser:
+      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+    case apps::mojom::WindowMode::kWindow:
+    case apps::mojom::WindowMode::kTabbedWindow:
+      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    case apps::mojom::WindowMode::kUnknown:
+      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+  }
 }
 
 }  // namespace
@@ -396,6 +411,24 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
   params.intent = apps_util::ConvertCrosapiToAppServiceIntent(
       crosapi_params->intent, profile);
   return params;
+}
+
+crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
+    apps::AppServiceProxy* proxy,
+    const std::string& app_id,
+    int event_flags,
+    apps::mojom::LaunchSource launch_source,
+    int64_t display_id) {
+  apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&window_mode](const apps::AppUpdate& update) {
+        window_mode = update.WindowMode();
+      });
+  auto launch_params = apps::CreateAppIdLaunchParamsWithEventFlags(
+      app_id, event_flags, launch_source, display_id,
+      /*fallback_container=*/
+      ConvertWindowModeToAppLaunchContainer(window_mode));
+  return apps::ConvertLaunchParamsToCrosapi(launch_params, proxy->profile());
 }
 #endif  // defined(OS_CHROMEOS)
 

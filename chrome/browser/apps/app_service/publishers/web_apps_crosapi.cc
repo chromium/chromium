@@ -133,10 +133,11 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
     return;
   }
 
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
-  controller_->Launch(std::move(launch_params), base::DoNothing());
+  controller_->Launch(
+      CreateCrosapiLaunchParamsWithEventFlags(
+          proxy_, app_id, event_flags, launch_source,
+          window_info ? window_info->display_id : display::kInvalidDisplayId),
+      base::DoNothing());
 }
 
 void WebAppsCrosapi::LaunchAppWithIntent(
@@ -151,12 +152,13 @@ void WebAppsCrosapi::LaunchAppWithIntent(
     return;
   }
 
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
-  launch_params->intent =
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      proxy_, app_id, event_flags, launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+
+  params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
-  controller_->Launch(std::move(launch_params), base::DoNothing());
+  controller_->Launch(std::move(params), base::DoNothing());
   // TODO(crbug/1261263): handle the case where launch fails.
   std::move(callback).Run(/*success=*/true);
 }
@@ -169,12 +171,10 @@ void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,
     return;
   }
 
-  auto launch_params = crosapi::mojom::LaunchParams::New();
-  launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
-  launch_params->intent =
-      apps_util::CreateCrosapiIntentForViewFiles(file_paths);
-  controller_->Launch(std::move(launch_params), base::DoNothing());
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      proxy_, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+  params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+  controller_->Launch(std::move(params), base::DoNothing());
 }
 
 void WebAppsCrosapi::Uninstall(const std::string& app_id,
