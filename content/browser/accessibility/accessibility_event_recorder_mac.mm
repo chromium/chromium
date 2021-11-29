@@ -155,6 +155,9 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
 std::string
 AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
     CFDictionaryRef user_info) {
+  if (user_info == nil)
+    return {};
+
   std::vector<std::string> serialized_info;
   CFDictionaryApplyFunction(
       user_info,
