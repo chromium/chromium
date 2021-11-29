@@ -75,6 +75,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::mac::SetOverrideFrameworkBundlePath(
         base::FilePath(info->chrome_framework_path));
 
+    // Note that `info->user_data_dir` for shims contains the app data path,
+    // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
+    const base::FilePath user_data_dir =
+        base::FilePath(info->user_data_dir).DirName().DirName().DirName();
+
+    // TODO(https://crbug.com/1274807): Specify `user_data_dir` to  CrashPad.
     ChromeCrashReporterClient::Create();
     crash_reporter::InitializeCrashpad(true, "app_shim");
 
@@ -136,10 +142,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::PlatformThread::SetName("CrAppShimMain");
 
     AppShimController::Params controller_params;
-    // Note that |info->user_data_dir| for shims contains the app data path,
-    // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
-    controller_params.user_data_dir =
-        base::FilePath(info->user_data_dir).DirName().DirName().DirName();
+    controller_params.user_data_dir = user_data_dir;
     // Similarly, extract the full profile path from |info->user_data_dir|.
     // Ignore |info->profile_dir| because it is only the relative path (unless
     // it is empty, in which case this is a profile-agnostic app).
