@@ -522,19 +522,20 @@ void UserManagerBase::ParseUserList(const base::ListValue& users_list,
                                     std::set<AccountId>* users_set) {
   users_vector->clear();
   users_set->clear();
-  for (size_t i = 0; i < users_list.GetList().size(); ++i) {
-    std::string email;
-    if (!users_list.GetString(i, &email) || email.empty()) {
+  base::Value::ConstListView users_list_view = users_list.GetList();
+  for (size_t i = 0; i < users_list_view.size(); ++i) {
+    const std::string* email = users_list_view[i].GetIfString();
+    if (!email || email->empty()) {
       LOG(ERROR) << "Corrupt entry in user list at index " << i << ".";
       continue;
     }
 
     const AccountId account_id = known_user::GetAccountId(
-        email, std::string() /* id */, AccountType::UNKNOWN);
+        *email, std::string() /* id */, AccountType::UNKNOWN);
 
     if (existing_users.find(account_id) != existing_users.end() ||
         !users_set->insert(account_id).second) {
-      LOG(ERROR) << "Duplicate user: " << email;
+      LOG(ERROR) << "Duplicate user: " << *email;
       continue;
     }
     users_vector->push_back(account_id);
@@ -885,9 +886,9 @@ const User* UserManagerBase::FindUserInList(const AccountId& account_id) const {
 bool UserManagerBase::UserExistsInList(const AccountId& account_id) const {
   const base::ListValue* user_list =
       GetLocalState()->GetList(kRegularUsersPref);
-  for (size_t i = 0; i < user_list->GetList().size(); ++i) {
-    std::string email;
-    if (user_list->GetString(i, &email) && (account_id.GetUserEmail() == email))
+  for (const base::Value& i : user_list->GetList()) {
+    const std::string* email = i.GetIfString();
+    if (email && (account_id.GetUserEmail() == *email))
       return true;
   }
   return false;
