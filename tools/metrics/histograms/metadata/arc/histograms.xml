@@ -1002,9 +1002,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.LowLatencyStylusLibrary.PredictionTarget" units="ms"
-    expires_after="2021-12-31">
-  <owner>shuanghu@chromium.org</owner>
+    expires_after="2022-04-24">
   <owner>phshah@chromium.org</owner>
+  <owner>arc-app-dev@google.com</owner>
   <summary>
     Prediction target used in ChromeOS Low-latency Stylus Library.
   </summary>
@@ -1012,8 +1012,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.LowLatencyStylusLibraryApisCounter"
     enum="LowLatencyStylusLibraryApisList" expires_after="2022-04-24">
-  <owner>shuanghu@chromium.org</owner>
   <owner>phshah@chromium.org</owner>
+  <owner>arc-app-dev@google.com</owner>
   <summary>
     Records the number of times ChromeOS Low-latency Stylus Library API called.
     Counter adding when its Stub library receive the call from applications.
