@@ -46978,6 +46978,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8026721" label="Zaza"/>
 </enum>
 
+<enum name="LanguagePackState">
+  <int value="0" label="Error"/>
+  <int value="1" label="Not installed"/>
+  <int value="2" label="Installing"/>
+  <int value="3" label="Installed"/>
+</enum>
+
 <enum name="LanguageSettingsActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Click on the 'Add Language' button">
