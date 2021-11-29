@@ -307384,12 +307384,6 @@
       ]
      },
      "bidi": {
-      "log_entry_added": {
-       "__init__.py": [
-        "551d815c653b44a3466ea9bb3dde1d9a7611032e",
-        []
-       ]
-      },
       "new_session": {
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -308206,6 +308200,20 @@
     ],
     "idlharness.https.window-expected.txt": [
      "e2bdd82e26c163eb3e3ddc6e66e19d04752d1835",
+     []
+    ]
+   },
+   "webnn": {
+    "META.yml": [
+     "3f87fc8042d2b3de1bf13d64333ba08cdfdabb3b",
+     []
+    ],
+    "idlharness.https.any-expected.txt": [
+     "821c20117dc9b631d96b65c225f6a8b599804d13",
+     []
+    ],
+    "idlharness.https.any.worker-expected.txt": [
+     "aee1a78e9670486982a6a51b2b23bf1446c0bb75",
      []
     ]
    },
@@ -512632,6 +512640,59 @@
      ]
     ]
    },
+   "webnn": {
+    "idlharness.https.any.js": [
+     "203c3ccc24e4f5894b633146a4f021d698b7fa3e",
+     [
+      "webnn/idlharness.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/idlharness.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ]
+   },
    "webrtc": {
     "RTCCertificate-postMessage.html": [
      "6cca240057668f90ecd896a15d76d17cfdc7d036",
@@ -549237,24 +549298,6 @@
         }
        ]
       ]
-     },
-     "bidi": {
-      "log_entry_added": {
-       "console_args.py": [
-        "3af11df86a8b64dd6175dbc654abbc3dbfe522ed",
-        [
-         null,
-         {}
-        ]
-       ],
-       "javascript.py": [
-        "820856712dc3a6b5ddb8dbdfc557972a5433843b",
-        [
-         null,
-         {}
-        ]
-       ]
-      }
      },
      "close_window": {
       "close.py": [
