@@ -612,17 +612,29 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
   # Current gn directory cannot be used when we run this script in a gn action
   # rule, because gn doesn't allow recursive invocations due to potential side
   # effects.
-  with tempfile.TemporaryDirectory(dir=gn_out_dir) as tmp_dir:
-    shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
-    subprocess.check_output([
-        _GnBinary(), "gen", "--root=%s" % _REPOSITORY_ROOT, tmp_dir
-    ])
-    gn_deps = subprocess.check_output([
-        _GnBinary(), "desc", "--root=%s" % _REPOSITORY_ROOT, tmp_dir,
-        gn_target, "deps", "--as=buildfile", "--all"
-    ])
-    if isinstance(gn_deps, bytes):
-      gn_deps = gn_deps.decode("utf-8")
+  try:
+    with tempfile.TemporaryDirectory(dir=gn_out_dir) as tmp_dir:
+      shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
+      subprocess.check_output(
+          [_GnBinary(), "gen",
+           "--root=%s" % _REPOSITORY_ROOT, tmp_dir])
+      gn_deps = subprocess.check_output([
+          _GnBinary(), "desc",
+          "--root=%s" % _REPOSITORY_ROOT, tmp_dir, gn_target, "deps",
+          "--as=buildfile", "--all"
+      ])
+      if isinstance(gn_deps, bytes):
+        gn_deps = gn_deps.decode("utf-8")
+  except:
+    print("""
+    ############################################################################
+
+    This is known issue, please report the failure to https://crbug.com/1208393.
+
+    ############################################################################
+    """)
+    subprocess.check_call(['tasklist.exe'])
+    raise
 
   return GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
 
