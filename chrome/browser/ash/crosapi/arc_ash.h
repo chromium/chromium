@@ -9,25 +9,20 @@
 #include <vector>
 
 #include "chromeos/crosapi/mojom/arc.mojom.h"
-#include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-class Profile;
 
 namespace crosapi {
 
 // This class is the ash-chrome implementation of Arc interface. This claas must
 // only be used from the main thread.
-class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
+class ArcAsh : public mojom::Arc {
  public:
   ArcAsh();
   ArcAsh(const ArcAsh&) = delete;
   ArcAsh& operator=(const ArcAsh&) = delete;
   ~ArcAsh() override;
 
-  // If profile_ is already set, ignore the call.
-  void MaybeSetProfile(Profile* profile);
   void BindReceiver(mojo::PendingReceiver<mojom::Arc> receiver);
 
   // crosapi::mojom::Arc:
@@ -38,18 +33,12 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   void RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
 
-  // arc::ArcLacrosObserver:
-  void OnIconInvalidated(const std::string& package_name) override;
-
  private:
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Arc> receivers_;
 
   // This class supports any number of observers.
   mojo::RemoteSet<mojom::ArcObserver> observers_;
-
-  // profile_ should not be overridden.
-  Profile* profile_ = nullptr;
 };
 
 }  // namespace crosapi

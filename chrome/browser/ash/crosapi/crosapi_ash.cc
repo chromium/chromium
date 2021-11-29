@@ -198,8 +198,6 @@ void CrosapiAsh::BindReceiver(
 }
 
 void CrosapiAsh::BindArc(mojo::PendingReceiver<mojom::Arc> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  arc_ash_->MaybeSetProfile(profile);
   arc_ash_->BindReceiver(std::move(receiver));
 }
 

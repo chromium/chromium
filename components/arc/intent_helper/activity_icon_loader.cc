@@ -2,31 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/common/intent_helper/activity_icon_loader.h"
+#include "components/arc/intent_helper/activity_icon_loader.h"
 
 #include <string.h>
 
 #include <tuple>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/arc/intent_helper/adaptive_icon_delegate.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace arc {
 namespace internal {
@@ -46,10 +40,8 @@ ui::ResourceScaleFactor GetSupportedResourceScaleFactor() {
 }
 
 // Returns an instance for calling RequestActivityIcons().
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Ash requests icons to ArcServiceManager.
-absl::variant<mojom::IntentHelperInstance*, ActivityIconLoader::GetResult>
-GetInstanceForRequestActivityIcons() {
+mojom::IntentHelperInstance* GetInstanceForRequestActivityIcons(
+    ActivityIconLoader::GetResult* out_error_code) {
   auto* arc_service_manager = ArcServiceManager::Get();
   if (!arc_service_manager) {
     // TODO(hidehiko): IsArcAvailable() looks not the condition to be checked
@@ -61,53 +53,36 @@ GetInstanceForRequestActivityIcons() {
     // ArcServiceManager::Get() return value, which can be nullptr.
     if (!IsArcAvailable()) {
       VLOG(2) << "ARC bridge is not supported.";
-      return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
+      if (out_error_code) {
+        *out_error_code =
+            ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
+      }
+    } else {
+      VLOG(2) << "ARC bridge is not ready.";
+      if (out_error_code)
+        *out_error_code = ActivityIconLoader::GetResult::FAILED_ARC_NOT_READY;
     }
-
-    VLOG(2) << "ARC bridge is not ready.";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_READY;
+    return nullptr;
   }
 
   auto* intent_helper_holder =
       arc_service_manager->arc_bridge_service()->intent_helper();
   if (!intent_helper_holder->IsConnected()) {
     VLOG(2) << "ARC intent helper instance is not ready.";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_READY;
+    if (out_error_code)
+      *out_error_code = ActivityIconLoader::GetResult::FAILED_ARC_NOT_READY;
+    return nullptr;
   }
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
-  if (!instance)
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
+  if (!instance && out_error_code)
+    *out_error_code = ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
   return instance;
 }
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-// Lacros requests icons to ash-chrome via crosapi.
-absl::variant<crosapi::mojom::Arc*, ActivityIconLoader::GetResult>
-GetInstanceForRequestActivityIcons() {
-  auto* service = chromeos::LacrosService::Get();
-
-  if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
-    VLOG(2) << "ARC is not supported in Lacros.";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
-  }
-
-  if (service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) <
-      int{crosapi::mojom::Arc::MethodMinVersions::
-              kRequestActivityIconsMinVersion}) {
-    VLOG(2) << "Ash Lacros-Arc version "
-            << service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_)
-            << " does not support RequestActivityIcons().";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
-  }
-
-  return service->GetRemote<crosapi::mojom::Arc>().get();
-}
-
-#endif
 
 ActivityIconLoader::ActivityName GenerateActivityName(
-    const ActivityIconLoader::ActivityIconPtr& icon) {
+    const mojom::ActivityIconPtr& icon) {
   return ActivityIconLoader::ActivityName(
       icon->activity->package_name, icon->activity->activity_name.has_value()
                                         ? (*icon->activity->activity_name)
@@ -153,12 +128,12 @@ ActivityIconLoader::Icons ResizeIconsInternal(
 }
 
 std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
-    std::vector<ActivityIconLoader::ActivityIconPtr> icons,
+    std::vector<mojom::ActivityIconPtr> icons,
     ui::ResourceScaleFactor scale_factor) {
   auto result = std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
   for (size_t i = 0; i < icons.size(); ++i) {
     static const size_t kBytesPerPixel = 4;
-    const ActivityIconLoader::ActivityIconPtr& icon = icons.at(i);
+    const mojom::ActivityIconPtr& icon = icons.at(i);
     if (icon->width > kMaxIconSizeInPx || icon->height > kMaxIconSizeInPx ||
         icon->width == 0 || icon->height == 0 ||
         icon->icon.size() != (icon->width * icon->height * kBytesPerPixel)) {
@@ -244,12 +219,12 @@ ActivityIconLoader::GetResult ActivityIconLoader::GetActivityIcons(
     OnIconsReadyCallback cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unique_ptr<ActivityToIconsMap> result(new ActivityToIconsMap);
-  std::vector<ActivityNamePtr> activities_to_fetch;
+  std::vector<mojom::ActivityNamePtr> activities_to_fetch;
 
   for (const auto& activity : activities) {
     const auto& it = cached_icons_.find(activity);
     if (it == cached_icons_.end()) {
-      ActivityNamePtr name(ActivityNamePtr::Struct::New());
+      mojom::ActivityNamePtr name(mojom::ActivityName::New());
       name->package_name = activity.package_name;
       name->activity_name = activity.activity_name;
       activities_to_fetch.push_back(std::move(name));
@@ -264,17 +239,18 @@ ActivityIconLoader::GetResult ActivityIconLoader::GetActivityIcons(
     return GetResult::SUCCEEDED_SYNC;
   }
 
-  auto instance = GetInstanceForRequestActivityIcons();
-  if (absl::holds_alternative<GetResult>(instance)) {
+  GetResult error_code;
+  auto* instance = GetInstanceForRequestActivityIcons(&error_code);
+  if (!instance) {
     // The mojo channel is not yet ready (or not supported at all). Run the
     // callback with |result| that could be empty.
     std::move(cb).Run(std::move(result));
-    return absl::get<GetResult>(instance);
+    return error_code;
   }
 
   // Fetch icons from ARC.
-  absl::get<0>(instance)->RequestActivityIcons(
-      std::move(activities_to_fetch), ScaleFactor(scale_factor_),
+  instance->RequestActivityIcons(
+      std::move(activities_to_fetch), mojom::ScaleFactor(scale_factor_),
       base::BindOnce(&ActivityIconLoader::OnIconsReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result),
                      std::move(cb)));
@@ -296,7 +272,7 @@ void ActivityIconLoader::AddCacheEntryForTesting(const ActivityName& activity) {
 void ActivityIconLoader::OnIconsReadyForTesting(
     std::unique_ptr<ActivityToIconsMap> cached_result,
     OnIconsReadyCallback cb,
-    std::vector<ActivityIconPtr> icons) {
+    std::vector<mojom::ActivityIconPtr> icons) {
   OnIconsReady(std::move(cached_result), std::move(cb), std::move(icons));
 }
 
@@ -316,7 +292,7 @@ bool ActivityIconLoader::HasIconsReadyCallbackRun(GetResult result) {
 void ActivityIconLoader::OnIconsReady(
     std::unique_ptr<ActivityToIconsMap> cached_result,
     OnIconsReadyCallback cb,
-    std::vector<ActivityIconPtr> icons) {
+    std::vector<mojom::ActivityIconPtr> icons) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (delegate_) {
     std::vector<ActivityName> actvity_names;
@@ -333,8 +309,6 @@ void ActivityIconLoader::OnIconsReady(
 
   // TODO(crbug.com/1083331): Remove when the adaptive icon feature is enabled
   // by default.
-  // TODO(crbug.com/1272349): Adaptive Icon is not supported in Lacros now. Do
-  // not remove this until it's supported.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ResizeAndEncodeIcons, std::move(icons), scale_factor_),

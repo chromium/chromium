@@ -4944,7 +4944,6 @@ static_library("browser") {
       "//components/account_manager_core",
       "//components/app_restore",
       "//components/arc",
-      "//components/arc/common",
       "//components/arc/mojom",
       "//components/desks_storage",
       "//components/metrics/structured:neutrino_logging",
@@ -5217,7 +5216,6 @@ static_library("browser") {
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
-      "//components/arc/common",
       "//ui/platform_window",
     ]
   }

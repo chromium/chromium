@@ -1,6 +1,5 @@
 include_rules = [
   "+chrome/browser/ui/views",
   "+components/account_manager_core",
-  "+components/arc",
   "+components/memory_pressure",
 ]
