@@ -486,10 +486,10 @@ already present in the provided output root.""")
   _ParseMojoms(mojom_files, input_roots, output_root, module_roots,
                args.enabled_features, module_metadata, allowed_imports)
   logging.info('Finished')
-  # Exit without running GC, which can save multiple seconds due the large
-  # number of object created.
-  os._exit(0)
 
 
 if __name__ == '__main__':
   Run(sys.argv[1:])
+  # Exit without running GC, which can save multiple seconds due to the large
+  # number of object created.
+  os._exit(0)
