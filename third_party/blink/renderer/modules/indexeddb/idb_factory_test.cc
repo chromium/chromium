@@ -31,24 +31,16 @@
 namespace blink {
 namespace {
 
-class TestHelperFunction : public ScriptFunction {
+class TestHelperFunction : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                bool* called_flag) {
-    auto* self =
-        MakeGarbageCollected<TestHelperFunction>(script_state, called_flag);
-    return self->BindToV8Function();
-  }
+  explicit TestHelperFunction(bool* called_flag) : called_flag_(called_flag) {}
 
-  TestHelperFunction(ScriptState* script_state, bool* called_flag)
-      : ScriptFunction(script_state), called_flag_(called_flag) {}
-
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     *called_flag_ = true;
     return value;
   }
 
+ private:
   bool* called_flag_;
 };
 
@@ -142,9 +134,12 @@ TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
 
   bool on_fulfilled = false;
   bool on_rejected = false;
-  promise.Then(
-      TestHelperFunction::CreateFunction(scope.GetScriptState(), &on_fulfilled),
-      TestHelperFunction::CreateFunction(scope.GetScriptState(), &on_rejected));
+  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+                   scope.GetScriptState(),
+                   MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
+               MakeGarbageCollected<NewScriptFunction>(
+                   scope.GetScriptState(),
+                   MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
 
   EXPECT_FALSE(on_fulfilled);
   EXPECT_FALSE(on_rejected);
@@ -187,9 +182,12 @@ TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
 
   bool on_fulfilled = false;
   bool on_rejected = false;
-  promise.Then(
-      TestHelperFunction::CreateFunction(scope.GetScriptState(), &on_fulfilled),
-      TestHelperFunction::CreateFunction(scope.GetScriptState(), &on_rejected));
+  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+                   scope.GetScriptState(),
+                   MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
+               MakeGarbageCollected<NewScriptFunction>(
+                   scope.GetScriptState(),
+                   MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
 
   EXPECT_FALSE(on_fulfilled);
   EXPECT_FALSE(on_rejected);
