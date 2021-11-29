@@ -1296,6 +1296,100 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   }
 }
 
+// https://crbug.com/1266819 suggested that navigating to a cross-origin page
+// from a cross-origin isolated page is a good reproducer for potential
+// speculative RFHs + crossOriginIsolated issues. Tests from both a regular and
+// a crashed frame to also verify with the crash optimization commit.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SpeculativeSiteInstanceAndCrossOriginIsolation) {
+  GURL coop_page_a =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  GURL page_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Usual navigation.
+  {
+    // Start on a COI page.
+    EXPECT_TRUE(NavigateToURL(shell(), coop_page_a));
+    scoped_refptr<SiteInstanceImpl> main_site_instance(
+        current_frame_host()->GetSiteInstance());
+    EXPECT_TRUE(main_site_instance->IsCrossOriginIsolated());
+
+    // Popup to a cross-origin page.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1, 'windowName')", page_b)));
+    WebContents* popup = shell_observer.GetShell()->web_contents();
+    WaitForLoadStop(popup);
+
+    RenderFrameHostImpl* popup_frame_host = static_cast<WebContentsImpl*>(popup)
+                                                ->GetPrimaryFrameTree()
+                                                .root()
+                                                ->current_frame_host();
+    scoped_refptr<SiteInstanceImpl> popup_site_instance(
+        popup_frame_host->GetSiteInstance());
+    EXPECT_FALSE(popup_site_instance->IsCrossOriginIsolated());
+
+    // Verify that COOP enforcement was done properly.
+    EXPECT_FALSE(
+        main_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
+    EXPECT_EQ(true, EvalJs(popup_frame_host, "window.opener == null;"));
+    EXPECT_EQ("", EvalJs(popup_frame_host, "window.name"));
+    popup->Close();
+  }
+
+  // Navigation from a crashed page.
+  {
+    // Start on a COI page.
+    EXPECT_TRUE(NavigateToURL(shell(), coop_page_a));
+    scoped_refptr<SiteInstanceImpl> main_site_instance(
+        current_frame_host()->GetSiteInstance());
+    EXPECT_TRUE(main_site_instance->IsCrossOriginIsolated());
+
+    // Open an empty popup.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       "window.open('about:blank', 'windowName')"));
+    WebContents* popup = shell_observer.GetShell()->web_contents();
+    WaitForLoadStop(popup);
+    RenderFrameHostImpl* popup_frame_host = static_cast<WebContentsImpl*>(popup)
+                                                ->GetPrimaryFrameTree()
+                                                .root()
+                                                ->current_frame_host();
+    scoped_refptr<SiteInstanceImpl> popup_site_instance(
+        popup_frame_host->GetSiteInstance());
+
+    // Crash it.
+    {
+      RenderProcessHost* process = popup_site_instance->GetProcess();
+      ASSERT_TRUE(process);
+      auto crash_observer = std::make_unique<RenderProcessHostWatcher>(
+          process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+      process->Shutdown(0);
+      crash_observer->Wait();
+    }
+
+    // Navigate it to a cross-origin page.
+    EXPECT_TRUE(NavigateToURL(popup, page_b));
+    WaitForLoadStop(popup);
+    popup_frame_host = static_cast<WebContentsImpl*>(popup)
+                           ->GetPrimaryFrameTree()
+                           .root()
+                           ->current_frame_host();
+    popup_site_instance = popup_frame_host->GetSiteInstance();
+    EXPECT_FALSE(popup_site_instance->IsCrossOriginIsolated());
+
+    // Verify that COOP enforcement was done properly.
+    EXPECT_FALSE(
+        main_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
+    EXPECT_EQ(true, EvalJs(popup_frame_host, "window.opener == null;"));
+    EXPECT_EQ("", EvalJs(popup_frame_host, "window.name"));
+    popup->Close();
+  }
+}
+
 // Try to host into the same cross-origin isolated process, two cross-origin
 // documents. The second's response sets CSP:sandbox, so its origin is opaque
 // and derived from the first.
