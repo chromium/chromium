@@ -8,11 +8,13 @@
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_optional.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer.h"
 
 namespace ui {
 class AXPropertyNode;
-}
+
+}  // namespace ui
 
 namespace content {
 namespace a11y {
@@ -34,56 +36,8 @@ struct NodeComparator {
 using LineIndexer =
     ui::AXTreeIndexer<GetDOMId, NSArray*, ChildrenOf, NodeComparator>;
 
-// Implements stateful id values. Similar to absl::optional, but
-// multi-state allowing nullable values.
-class CONTENT_EXPORT OptionalNSObject final {
- public:
-  enum {
-    // Indicates a valid value; can be nil.
-    kId,
-
-    // Indicates a call error, and may also indicate a parser error.
-    kError,
-
-    // Indicates a called property is not applicable to the object.
-    kNotApplicable,
-
-    // Indicates the property can't have an associated object.
-    kUnsupported,
-  };
-
-  static OptionalNSObject Unsupported() {
-    return OptionalNSObject(kUnsupported);
-  }
-  static OptionalNSObject Error() { return OptionalNSObject(kError); }
-  static OptionalNSObject NotApplicable() {
-    return OptionalNSObject(kNotApplicable);
-  }
-  static OptionalNSObject NotNilOrError(id other_value) {
-    return OptionalNSObject(other_value, other_value != nil ? kId : kError);
-  }
-  static OptionalNSObject NotNullOrNotApplicable(id other_value) {
-    return OptionalNSObject(other_value,
-                            other_value != nil ? kId : kNotApplicable);
-  }
-
-  explicit OptionalNSObject(int flag) : value(nil), flag(flag) {}
-  explicit OptionalNSObject(id value, int flag = kId)
-      : value(value), flag(flag) {}
-
-  bool IsUnsupported() const { return flag == kUnsupported; }
-  bool IsNotApplicable() const { return flag == kNotApplicable; }
-  bool IsError() const { return flag == kError; }
-  bool IsNotNil() const { return value != nil; }
-  bool HasValue() { return flag == kId; }
-  constexpr const id& operator*() const& { return value; }
-
-  std::string ToString() const;
-
- private:
-  id value;
-  int flag;
-};
+// Optional tri-state id object.
+using OptionalNSObject = ui::AXOptional<id>;
 
 // Invokes attributes matching the given property filter.
 class CONTENT_EXPORT AttributeInvoker final {

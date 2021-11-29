@@ -20,6 +20,18 @@ AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 }  // extern "C"
 #endif
 
+namespace ui {
+
+// Template specialization Nit: ui::AXOptional<id>.
+template <>
+std::string ui::AXOptional<id>::ToString() const {
+  if (IsNotNull())
+    return base::SysNSStringToUTF8([NSString stringWithFormat:@"%@", value_]);
+  return StateToString();
+}
+
+}  // namespace ui
+
 namespace content {
 namespace a11y {
 
@@ -49,22 +61,6 @@ namespace {
                 "up or none";
 
 }  // namespace
-
-// OptionalNSObject
-
-std::string OptionalNSObject::ToString() const {
-  if (IsNotApplicable()) {
-    return "<n/a>";
-  } else if (IsUnsupported()) {
-    return "<unsupported>";
-  } else if (IsError()) {
-    return "<error>";
-  } else if (value == nil) {
-    return "<nil>";
-  } else {
-    return base::SysNSStringToUTF8([NSString stringWithFormat:@"%@", value]);
-  }
-}
 
 // AttributeInvoker
 
@@ -203,7 +199,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   }
   if (property_node.name_or_value == "AXPerformAction") {
     OptionalNSObject param = ParamByPropertyNode(property_node);
-    if (param.IsNotNil()) {
+    if (param.IsNotNull()) {
       PerformAction(target, *param);
       return OptionalNSObject::Unsupported();
     }
@@ -216,7 +212,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
       // Setter
       if (property_node.rvalue) {
         OptionalNSObject rvalue = Invoke(*property_node.rvalue);
-        if (rvalue.IsNotNil()) {
+        if (rvalue.IsNotNull()) {
           SetAttributeValueOf(target, attribute, *rvalue);
           return {rvalue};
         }
@@ -233,7 +229,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   for (NSString* attribute : ParameterizedAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       OptionalNSObject param = ParamByPropertyNode(property_node);
-      if (param.IsNotNil()) {
+      if (param.IsNotNull()) {
         return OptionalNSObject(
             ParameterizedAttributeValueOf(target, attribute, *param));
       }
@@ -337,7 +333,7 @@ OptionalNSObject AttributeInvoker::InvokeForDictionary(
 
   NSString* key = PropertyNodeToString(property_node);
   NSDictionary* dictionary = target;
-  return OptionalNSObject::NotNilOrError(dictionary[key]);
+  return OptionalNSObject::NotNullOrError(dictionary[key]);
 }
 
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(
@@ -360,35 +356,35 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
   const std::string& property_name = property_node.name_or_value;
   if (property_name == "AXLineForIndex" ||
       property_name == "AXTextMarkerForIndex") {  // Int
-    return OptionalNSObject::NotNilOrError(PropertyNodeToInt(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToInt(arg_node));
   }
   if (property_name == "AXPerformAction") {
-    return OptionalNSObject::NotNilOrError(PropertyNodeToString(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToString(arg_node));
   }
   if (property_name == "AXCellForColumnAndRow") {  // IntArray
-    return OptionalNSObject::NotNilOrError(PropertyNodeToIntArray(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToIntArray(arg_node));
   }
   if (property_name ==
       "AXTextMarkerRangeForUnorderedTextMarkers") {  // TextMarkerArray
-    return OptionalNSObject::NotNilOrError(
+    return OptionalNSObject::NotNullOrError(
         PropertyNodeToTextMarkerArray(arg_node));
   }
   if (property_name == "AXStringForRange") {  // NSRange
-    return OptionalNSObject::NotNilOrError(PropertyNodeToRange(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToRange(arg_node));
   }
   if (property_name == "AXIndexForChildUIElement" ||
       property_name == "AXTextMarkerRangeForUIElement") {  // UIElement
-    return OptionalNSObject::NotNilOrError(PropertyNodeToUIElement(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToUIElement(arg_node));
   }
   if (property_name == "AXIndexForTextMarker" ||
       property_name == "AXNextWordEndTextMarkerForTextMarker" ||
       property_name ==
           "AXPreviousWordStartTextMarkerForTextMarker") {  // TextMarker
-    return OptionalNSObject::NotNilOrError(PropertyNodeToTextMarker(arg_node));
+    return OptionalNSObject::NotNullOrError(PropertyNodeToTextMarker(arg_node));
   }
   if (property_name == "AXSelectedTextMarkerRangeAttribute" ||
       property_name == "AXStringForTextMarkerRange") {  // TextMarkerRange
-    return OptionalNSObject::NotNilOrError(
+    return OptionalNSObject::NotNullOrError(
         PropertyNodeToTextMarkerRange(arg_node));
   }
 
@@ -477,7 +473,7 @@ NSArray* AttributeInvoker::PropertyNodeToTextMarkerArray(
       [[NSMutableArray alloc] initWithCapacity:arraynode.arguments.size()];
   for (const auto& paramnode : arraynode.arguments) {
     OptionalNSObject text_marker = Invoke(paramnode);
-    if (!text_marker.IsNotNil()) {
+    if (!text_marker.IsNotNull()) {
       if (log_failure)
         INTARRAY_FAIL(arraynode,
                       paramnode.ToFlatString() + "is not a text marker")

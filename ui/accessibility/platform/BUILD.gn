@@ -69,6 +69,7 @@ source_set("platform") {
     "inspect/ax_inspect_scenario.h",
     "inspect/ax_inspect_utils.cc",
     "inspect/ax_inspect_utils.h",
+    "inspect/ax_optional.h",
     "inspect/ax_property_node.cc",
     "inspect/ax_property_node.h",
     "inspect/ax_script_instruction.cc",
