@@ -8,7 +8,7 @@ module arc.mojom;
 
 import "components/arc/mojom/app_permissions.mojom";
 import "components/arc/mojom/compatibility_mode.mojom";
-import "components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/scale_factor.mojom";
 import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 

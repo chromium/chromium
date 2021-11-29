@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/video_encode_accelerator.mojom-shared.h"
+#include "ash/components/arc/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 
 // Needs to be included after 'video_encode_accelerator.h'.
-#include "components/arc/mojom/video_encode_accelerator.mojom.h"
+#include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
 
 namespace mojo {
 
@@ -161,4 +161,4 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_

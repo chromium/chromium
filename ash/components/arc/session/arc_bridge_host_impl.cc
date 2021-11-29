@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "ash/components/arc/mojom/video.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/mojo_channel.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
@@ -68,7 +69,6 @@
 #include "components/arc/mojom/tracing.mojom.h"
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/arc/mojom/usb_host.mojom.h"
-#include "components/arc/mojom/video.mojom.h"
 #include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/mojom/wallpaper.mojom.h"

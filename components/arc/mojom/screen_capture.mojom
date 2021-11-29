@@ -14,8 +14,8 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/gfx.mojom";
-import "components/arc/mojom/video_common.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/video_common.mojom";
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
 // desktop capture as well as creating a session for it.

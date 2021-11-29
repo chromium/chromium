@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/mojom/video_encode_accelerator_mojom_traits.h"
+#include "ash/components/arc/mojom/video_encode_accelerator_mojom_traits.h"
 
-#include "components/arc/mojom/video_accelerator_mojom_traits.h"
+#include "ash/components/arc/mojom/video_accelerator_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {

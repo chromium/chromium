@@ -17,8 +17,8 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/gfx.mojom";
-import "components/arc/mojom/video_common.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/video_common.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Information of the bitstream buffer.

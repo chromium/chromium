@@ -6,7 +6,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
 
 // For future maintainers, each of the below enums were hand picked
 // from their equivalents in the Android source. Keep them in the

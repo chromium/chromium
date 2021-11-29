@@ -7,7 +7,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
 
 [Extensible]
 enum VideoCodecProfile {

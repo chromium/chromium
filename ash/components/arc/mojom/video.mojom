@@ -6,9 +6,9 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/video_decode_accelerator.mojom";
-import "components/arc/mojom/video_encode_accelerator.mojom";
-import "components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
 
 // Deprecated method IDs: 0
 // Next method ID: 2

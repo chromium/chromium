@@ -26,7 +26,7 @@ static_library("video_accelerator") {
   deps = [
     ":common",
     "//ash/components/arc:arc_features",
-    "//components/arc/mojom:media",
+    "//ash/components/arc/mojom:media",
     "//gpu/ipc/common:common",
     "//media",
   ]

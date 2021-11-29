@@ -7,11 +7,11 @@ module viz.mojom;
 [EnableIf=is_chromeos_ash]
 import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_decode_accelerator.mojom";
+import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_encode_accelerator.mojom";
+import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]

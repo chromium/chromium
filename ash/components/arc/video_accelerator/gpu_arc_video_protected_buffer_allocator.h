@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/video_protected_buffer_allocator.mojom.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/video_protected_buffer_allocator.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace arc {

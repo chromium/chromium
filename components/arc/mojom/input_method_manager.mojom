@@ -7,7 +7,7 @@
 module arc.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/ime.mojom";
 
 // Represents the information of an Android IME.

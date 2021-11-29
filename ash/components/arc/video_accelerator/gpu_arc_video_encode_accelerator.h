@@ -9,9 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "ash/components/arc/video_accelerator/video_frame_plane.h"
 #include "base/files/scoped_file.h"
-#include "components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"

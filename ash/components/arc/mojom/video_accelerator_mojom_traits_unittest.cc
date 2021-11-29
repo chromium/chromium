@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/mojom/video_accelerator_mojom_traits.h"
+#include "ash/components/arc/mojom/video_accelerator_mojom_traits.h"
 
 #include <vector>
 
-#include "components/arc/mojom/video_common.mojom.h"
+#include "ash/components/arc/mojom/video_common.mojom.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

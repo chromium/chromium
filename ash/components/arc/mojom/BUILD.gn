@@ -10,6 +10,116 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # inclusion is done through read_file(), which does not respect the global
 # defines for GN, so it itself cannot use the "is_chromeos" variable.
 if (is_chromeos_ash) {
+  # Media related mojo interfaces. These are used by
+  # //services/viz/public/mojom. We have this separate mojom target to
+  # avoid pulling in unnecessary interfaces.
+  mojom("media") {
+    sources = [
+      "gfx.mojom",
+      "video.mojom",
+      "video_common.mojom",
+      "video_decode_accelerator.mojom",
+      "video_encode_accelerator.mojom",
+      "video_protected_buffer_allocator.mojom",
+    ]
+
+    public_deps = [
+      "//ash/components/arc/mojom:protected_buffer_manager",
+      "//sandbox/policy/mojom",
+      "//ui/gfx/geometry/mojom",
+    ]
+
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "arc.mojom.Rect"
+            cpp = "::gfx::Rect"
+          },
+          {
+            mojom = "arc.mojom.Range"
+            cpp = "::gfx::Range"
+          },
+        ]
+        traits_headers = [ "arc_gfx_mojom_traits.h" ]
+        traits_sources = [ "arc_gfx_mojom_traits.cc" ]
+        traits_public_deps = [ "//ui/gfx" ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.ColorPlaneLayout"
+            cpp = "media::ColorPlaneLayout"
+          },
+          {
+            mojom = "arc.mojom.Size"
+            cpp = "gfx::Size"
+          },
+          {
+            mojom = "arc.mojom.VideoCodecProfile"
+            cpp = "media::VideoCodecProfile"
+          },
+
+          {
+            mojom = "arc.mojom.VideoFrameLayout"
+
+            # media::VideoFrameLayout doesn't have default constructor, so we
+            # cannot convert directly.
+            cpp = "std::unique_ptr<media::VideoFrameLayout>"
+            move_only = true
+            nullable_is_same_type = true
+          },
+          {
+            mojom = "arc.mojom.VideoFramePlane"
+            cpp = "arc::VideoFramePlane"
+            move_only = true
+          },
+          {
+            mojom = "arc.mojom.VideoPixelFormat"
+            cpp = "media::VideoPixelFormat"
+          },
+        ]
+        traits_headers = [ "video_accelerator_mojom_traits.h" ]
+        traits_sources = [ "video_accelerator_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//ash/components/arc/video_accelerator:common",
+          "//media",
+          "//ui/gfx/geometry",
+        ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.VideoFrameStorageType"
+            cpp = "::media::VideoEncodeAccelerator::Config::StorageType"
+          },
+          {
+            mojom = "arc.mojom.VideoEncodeAccelerator.Error"
+            cpp = "::media::VideoEncodeAccelerator::Error"
+          },
+          {
+            mojom = "arc.mojom.VideoEncodeProfile"
+            cpp = "::media::VideoEncodeAccelerator::SupportedProfile"
+          },
+          {
+            mojom = "arc.mojom.VideoEncodeAcceleratorConfig"
+            cpp = "::media::VideoEncodeAccelerator::Config"
+          },
+          {
+            mojom = "arc.mojom.Bitrate"
+            cpp = "::media::Bitrate"
+          },
+        ]
+        traits_headers = [ "video_encode_accelerator_mojom_traits.h" ]
+        traits_sources = [ "video_encode_accelerator_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//base",
+          "//media/gpu",
+        ]
+      },
+    ]
+  }
+
   mojom("camera_intent") {
     sources = [ "camera_intent.mojom" ]
     webui_module_path = "/ash/components/arc/mojom"
@@ -21,7 +131,7 @@ if (is_chromeos_ash) {
       "notifications.mojom",
     ]
 
-    deps = [ "//components/arc/mojom:media" ]  # for gfx.mojom
+    deps = [ ":media" ]  # for gfx.mojom
 
     cpp_typemaps = [
       {

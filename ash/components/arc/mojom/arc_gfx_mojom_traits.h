@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/gfx.mojom-shared.h"
+#include "ash/components/arc/mojom/gfx.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
@@ -31,4 +31,4 @@ struct StructTraits<arc::mojom::RangeDataView, gfx::Range> {
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_

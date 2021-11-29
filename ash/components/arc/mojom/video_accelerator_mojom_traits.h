@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
 
 #include <memory>
 
+#include "ash/components/arc/mojom/video_common.mojom-shared.h"
 #include "ash/components/arc/video_accelerator/video_frame_plane.h"
-#include "components/arc/mojom/video_common.mojom-shared.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -133,4 +133,4 @@ struct StructTraits<arc::mojom::VideoFrameLayoutDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
