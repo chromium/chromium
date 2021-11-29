@@ -16,6 +16,7 @@
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -120,9 +121,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void OnDeviceCaptureHandleChange(const std::string& label,
                                    const blink::MediaStreamDevice& device);
 
-  void OnHostDestroyedOrStopped();
   void SetWebContentsObserver(
-      std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer);
+      std::unique_ptr<MediaStreamWebContentsObserver,
+                      BrowserThread::DeleteOnUIThread> web_contents_observer);
 
   static int next_requester_id_;
 
@@ -134,7 +135,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
 
-  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
+  std::unique_ptr<MediaStreamWebContentsObserver,
+                  BrowserThread::DeleteOnUIThread>
+      web_contents_observer_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 };

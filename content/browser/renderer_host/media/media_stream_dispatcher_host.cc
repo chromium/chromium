@@ -44,19 +44,21 @@ void BindMediaStreamDeviceObserverReceiver(
     render_frame_host->GetRemoteInterfaces()->GetInterface(std::move(receiver));
 }
 
-std::unique_ptr<MediaStreamWebContentsObserver> StartObservingWebContents(
-    int render_process_id,
-    int render_frame_id,
-    base::RepeatingClosure focus_callback) {
+std::unique_ptr<MediaStreamWebContentsObserver, BrowserThread::DeleteOnUIThread>
+StartObservingWebContents(int render_process_id,
+                          int render_frame_id,
+                          base::RepeatingClosure focus_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* const web_contents = WebContents::FromRenderFrameHost(
       RenderFrameHost::FromID(render_process_id, render_frame_id));
-  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer;
+  std::unique_ptr<MediaStreamWebContentsObserver,
+                  BrowserThread::DeleteOnUIThread>
+      web_contents_observer;
   if (web_contents) {
-    web_contents_observer = std::make_unique<MediaStreamWebContentsObserver>(
+    web_contents_observer.reset(new MediaStreamWebContentsObserver(
         web_contents, base::BindPostTask(GetIOThreadTaskRunner({}),
-                                         std::move(focus_callback)));
+                                         std::move(focus_callback))));
   }
   return web_contents_observer;
 }
@@ -119,7 +121,7 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
 MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  OnHostDestroyedOrStopped();
+  web_contents_observer_.reset();
   CancelAllRequests();
 }
 
@@ -137,7 +139,8 @@ void MediaStreamDispatcherHost::Create(
 }
 
 void MediaStreamDispatcherHost::SetWebContentsObserver(
-    std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer) {
+    std::unique_ptr<MediaStreamWebContentsObserver,
+                    BrowserThread::DeleteOnUIThread> web_contents_observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   web_contents_observer_ = std::move(web_contents_observer);
@@ -178,19 +181,6 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
   DCHECK(device.display_media_info.has_value());
 
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
-}
-
-void MediaStreamDispatcherHost::OnHostDestroyedOrStopped() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](std::unique_ptr<MediaStreamWebContentsObserver>
-                            web_contents_observer) {
-                       // By allowing |web_contents_observer| to go out of scope
-                       // here, we trigger its destruction on the UI thread.
-                     },
-                     std::move(web_contents_observer_)));
 }
 
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
