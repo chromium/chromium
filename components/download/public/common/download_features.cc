@@ -75,8 +75,8 @@ const base::Feature kAllowFileBufferSizeControl{
 #endif
 };
 
-const base::Feature kAllowSavePackageScanning{
-    "AllowSavePackageScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAllowSavePackageScanning{"AllowSavePackageScanning",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kIncognitoDownloadsWarning{
     "IncognitoDownloadsWarning", base::FEATURE_DISABLED_BY_DEFAULT};
