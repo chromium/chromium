@@ -92,10 +92,12 @@ class MediaInternalsTestBase {
     const size_t actual_size = actual_list->GetList().size();
     ASSERT_EQ(expected_size, actual_size);
     for (size_t i = 0; i < expected_size; ++i) {
-      std::string expected_value, actual_value;
-      ASSERT_TRUE(expected_list.GetString(i, &expected_value));
-      ASSERT_TRUE(actual_list->GetString(i, &actual_value));
-      EXPECT_EQ(expected_value, actual_value);
+      const std::string* expected_value =
+          expected_list.GetList()[i].GetIfString();
+      const std::string* actual_value = actual_list->GetList()[i].GetIfString();
+      ASSERT_TRUE(expected_value);
+      ASSERT_TRUE(actual_value);
+      EXPECT_EQ(*expected_value, *actual_value);
     }
   }
 
