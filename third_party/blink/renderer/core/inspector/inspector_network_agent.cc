@@ -484,11 +484,13 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
       return protocol::Network::CorsErrorEnum::PreflightInvalidAllowCredentials;
 
-    case network::mojom::CorsError::kPreflightMissingAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightMissingAllowExternal;
+    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightMissingAllowPrivateNetwork;
 
-    case network::mojom::CorsError::kPreflightInvalidAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightInvalidAllowExternal;
+    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightInvalidAllowPrivateNetwork;
 
     case network::mojom::CorsError::kInvalidAllowMethodsPreflightResponse:
       return protocol::Network::CorsErrorEnum::

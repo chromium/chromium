@@ -15794,8 +15794,8 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="kPreflightInvalidAllowOriginValue"/>
   <int value="15" label="kPreflightAllowOriginMismatch"/>
   <int value="16" label="kPreflightInvalidAllowCredentials"/>
-  <int value="17" label="kPreflightMissingAllowExternal"/>
-  <int value="18" label="kPreflightInvalidAllowExternal"/>
+  <int value="17" label="kPreflightMissingAllowPrivateNetwork"/>
+  <int value="18" label="kPreflightInvalidAllowPrivateNetwork"/>
   <int value="19" label="kInvalidAllowMethodsPreflightResponse"/>
   <int value="20" label="kInvalidAllowHeadersPreflightResponse"/>
   <int value="21" label="kMethodDisallowedByPreflightResponse"/>

@@ -132,14 +132,12 @@ namespace header_names {
 
 const char kAccessControlAllowCredentials[] =
     "Access-Control-Allow-Credentials";
-const char kAccessControlAllowExternal[] = "Access-Control-Allow-External";
 const char kAccessControlAllowHeaders[] = "Access-Control-Allow-Headers";
 const char kAccessControlAllowMethods[] = "Access-Control-Allow-Methods";
 const char kAccessControlAllowOrigin[] = "Access-Control-Allow-Origin";
 const char kAccessControlAllowPrivateNetwork[] =
     "Access-Control-Allow-Private-Network";
 const char kAccessControlMaxAge[] = "Access-Control-Max-Age";
-const char kAccessControlRequestExternal[] = "Access-Control-Request-External";
 const char kAccessControlRequestHeaders[] = "Access-Control-Request-Headers";
 const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
 const char kAccessControlRequestPrivateNetwork[] =

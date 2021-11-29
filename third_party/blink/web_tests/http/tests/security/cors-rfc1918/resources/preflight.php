@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
         header("HTTP/1.1 200");
         header("Access-Control-Allow-Origin: ${_SERVER['HTTP_ORIGIN']}");
         header("Access-Control-Allow-Methods: GET");
-        header("Access-Control-Allow-External: true");
+        header("Access-Control-Allow-Private-Network: true");
         exit;
     }
 }

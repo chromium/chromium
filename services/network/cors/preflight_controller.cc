@@ -131,12 +131,6 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
         header_names::kAccessControlRequestPrivateNetwork, "true");
   }
 
-  // TODO(https://crbug.com/1263483): Remove this.
-  if (request.is_external_request) {
-    preflight_request->headers.SetHeader(
-        header_names::kAccessControlRequestExternal, "true");
-  }
-
   DCHECK(request.request_initiator);
   preflight_request->request_initiator = request.request_initiator;
   preflight_request->headers.SetHeader(
@@ -255,19 +249,37 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
   return error_status;
 }
 
-// Checks errors for the currently experimental "Access-Control-Allow-External"
-// header. Shares error conditions with standard preflight checking.
-// TODO(https://crbug.com/590714): Access-Control-Allow-External header is
-// stale. Following implementation need to be updated to follow the latest spec,
-// https://wicg.github.io/private-network-access/.
-absl::optional<CorsErrorStatus> CheckExternalPreflight(
-    const absl::optional<std::string>& allow_external) {
-  if (!allow_external)
-    return CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal);
-  if (*allow_external == kLowerCaseTrue)
+// Checks errors for the "Access-Control-Allow-Private-Network" header.
+//
+// See the CORS-preflight fetch algorithm modifications laid out in the Private
+// Network Access spec, in step 4 of the CORS preflight section as of writing:
+// https://wicg.github.io/private-network-access/#cors-preflight
+absl::optional<CorsErrorStatus> CheckAllowPrivateNetworkHeader(
+    const mojom::URLResponseHead& head,
+    const ResourceRequest& original_request) {
+  if (original_request.target_ip_address_space ==
+      mojom::IPAddressSpace::kUnknown) {
+    // Not a Private Network Access preflight.
     return absl::nullopt;
-  return CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                         *allow_external);
+  }
+
+  absl::optional<std::string> header = GetHeaderString(
+      head.headers, header_names::kAccessControlAllowPrivateNetwork);
+  if (!header) {
+    CorsErrorStatus status(
+        mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+    status.target_address_space = original_request.target_ip_address_space;
+    return status;
+  }
+
+  if (*header != kLowerCaseTrue) {
+    CorsErrorStatus status(
+        mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, *header);
+    status.target_address_space = original_request.target_ip_address_space;
+    return status;
+  }
+
+  return absl::nullopt;
 }
 
 std::unique_ptr<PreflightResult> CreatePreflightResult(
@@ -292,37 +304,21 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
   if (*detected_error_status)
     return nullptr;
 
-  // TODO(https://crbug.com/1263483): Remove this.
-  if (original_request.is_external_request) {
-    *detected_error_status = CheckExternalPreflight(GetHeaderString(
-        head.headers, header_names::kAccessControlAllowExternal));
-    if (*detected_error_status)
+  absl::optional<CorsErrorStatus> status =
+      CheckAllowPrivateNetworkHeader(head, original_request);
+  if (status) {
+    if (enforce_private_network_access_header) {
+      *detected_error_status = std::move(status);
       return nullptr;
-  }
+    }
 
-  // See the CORS-preflight fetch algorithm modifications laid out in the
-  // Private Network Access spec, in step 4 of the CORS preflight section as of
-  // writing: https://wicg.github.io/private-network-access/#cors-preflight
-  if (original_request.target_ip_address_space !=
-      mojom::IPAddressSpace::kUnknown) {
-    absl::optional<CorsErrorStatus> status =
-        CheckExternalPreflight(GetHeaderString(
-            head.headers, header_names::kAccessControlAllowPrivateNetwork));
-
-    if (status) {
-      if (enforce_private_network_access_header) {
-        *detected_error_status = std::move(status);
-        return nullptr;
-      }
-
-      // We only report these errors as warnings when they are suppressed, since
-      // `CorsURLLoader` already reports them otherwise.
-      if (devtools_observer) {
-        devtools_observer->OnCorsError(
-            original_request.devtools_request_id,
-            original_request.request_initiator, client_security_state.Clone(),
-            original_request.url, *status, /*is_warning=*/true);
-      }
+    // We only report these errors as warnings when they are suppressed, since
+    // `CorsURLLoader` already reports them otherwise.
+    if (devtools_observer) {
+      devtools_observer->OnCorsError(
+          original_request.devtools_request_id,
+          original_request.request_initiator, client_security_state.Clone(),
+          original_request.url, *status, /*is_warning=*/true);
     }
   }
 
@@ -583,13 +579,6 @@ PreflightController::CheckPreflightAccessForTesting(
   return CheckPreflightAccess(response_url, response_status_code,
                               allow_origin_header, allow_credentials_header,
                               actual_credentials_mode, origin);
-}
-
-// static
-absl::optional<CorsErrorStatus>
-PreflightController::CheckExternalPreflightForTesting(
-    const absl::optional<std::string>& allow_external) {
-  return CheckExternalPreflight(allow_external);
 }
 
 PreflightController::PreflightController(NetworkService* network_service)

@@ -803,26 +803,6 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
             invalid_status_error->cors_error);
 }
 
-TEST_F(PreflightControllerTest, CheckExternalPreflightErrors) {
-  EXPECT_FALSE(PreflightController::CheckExternalPreflightForTesting(
-      std::string("true")));
-
-  absl::optional<CorsErrorStatus> error2 =
-      PreflightController::CheckExternalPreflightForTesting(absl::nullopt);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kPreflightMissingAllowExternal,
-            error2->cors_error);
-  EXPECT_EQ("", error2->failed_parameter);
-
-  absl::optional<CorsErrorStatus> error3 =
-      PreflightController::CheckExternalPreflightForTesting(
-          std::string("TRUE"));
-  ASSERT_TRUE(error3);
-  EXPECT_EQ(mojom::CorsError::kPreflightInvalidAllowExternal,
-            error3->cors_error);
-  EXPECT_EQ("TRUE", error3->failed_parameter);
-}
-
 }  // namespace
 
 }  // namespace cors

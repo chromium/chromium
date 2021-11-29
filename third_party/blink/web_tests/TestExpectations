@@ -7147,7 +7147,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html
 crbug.com/1250457 [ Mac ] virtual/scroll-unification/plugins/plugin-map-data-to-src.html [ Failure ]
 crbug.com/1250457 [ Mac ] storage/websql/open-database-set-empty-version.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-same.sub.https.html [ Timeout ]
-crbug.com/1250457 [ Mac ] virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/portals/http/tests/devtools/portals/portals-console.js [ Skip Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prerender/wpt_internal/prerender/csp-prefetch-src-allow.html [ Skip Timeout ]

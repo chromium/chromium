@@ -71,11 +71,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       mojom::CredentialsMode actual_credentials_mode,
       const url::Origin& origin);
 
-  // Checks errors for the currently experimental
-  // "Access-Control-Allow-External" header for testing.
-  static absl::optional<CorsErrorStatus> CheckExternalPreflightForTesting(
-      const absl::optional<std::string>& allow_external);
-
   explicit PreflightController(NetworkService* network_service);
 
   PreflightController(const PreflightController&) = delete;

@@ -40,8 +40,8 @@ bool IsPreflightError(network::mojom::CorsError error_code) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
     case network::mojom::CorsError::kPreflightInvalidStatus:
     case network::mojom::CorsError::kPreflightDisallowedRedirect:
-    case network::mojom::CorsError::kPreflightMissingAllowExternal:
-    case network::mojom::CorsError::kPreflightInvalidAllowExternal:
+    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
+    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
       return true;
     default:
       return false;
@@ -187,20 +187,20 @@ String GetErrorString(const network::CorsErrorStatus& status,
     case CorsError::kPreflightDisallowedRedirect:
       builder.Append("Redirect is not allowed for a preflight request.");
       break;
-    case CorsError::kPreflightMissingAllowExternal:
-      builder.Append(
-          "No 'Access-Control-Allow-External' header was present in the "
-          "preflight response for this external request (This is an "
-          "experimental header which is defined in "
-          "'https://wicg.github.io/cors-rfc1918/').");
+    case CorsError::kPreflightMissingAllowPrivateNetwork:
+      Append(builder, {"No 'Access-Control-Allow-Private-Network' header "
+                       "was present in the preflight response for this private "
+                       "network request targeting the `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` address space."});
       break;
-    case CorsError::kPreflightInvalidAllowExternal:
+    case CorsError::kPreflightInvalidAllowPrivateNetwork:
       Append(builder,
-             {"The 'Access-Control-Allow-External' header in the preflight "
-              "response for this external request had a value of '",
-              hint,
-              "',  not 'true' (This is an experimental header which is defined "
-              "in 'https://wicg.github.io/cors-rfc1918/')."});
+             {"The 'Access-Control-Allow-Private-Network' header in the "
+              "preflight response for this private network request targeting "
+              "the `",
+              ShortAddressSpace(status.target_address_space),
+              "` address space had a value of '", hint, "',  not 'true'."});
       break;
     case CorsError::kInvalidAllowMethodsPreflightResponse:
       builder.Append(

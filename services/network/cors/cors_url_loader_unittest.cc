@@ -3126,9 +3126,12 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessMissingResponseHeaderSimple) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
   EXPECT_THAT(client().completion_status().cors_error_status,
-              Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowExternal)));
+              Optional(expected_status));
 }
 
 TEST_F(CorsURLLoaderTest, PrivateNetworkAccessMissingResponseHeaderPreflight) {
@@ -3156,9 +3159,12 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessMissingResponseHeaderPreflight) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
   EXPECT_THAT(client().completion_status().cors_error_status,
-              Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowExternal)));
+              Optional(expected_status));
 }
 
 TEST_F(CorsURLLoaderTest, PrivateNetworkAccessInvalidResponseHeaderSimple) {
@@ -3183,10 +3189,12 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessInvalidResponseHeaderSimple) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
-  EXPECT_THAT(
-      client().completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                               "invalid-value")));
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(expected_status));
 }
 
 TEST_F(CorsURLLoaderTest, PrivateNetworkAccessInvalidResponseHeaderPreflight) {
@@ -3215,10 +3223,12 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessInvalidResponseHeaderPreflight) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
-  EXPECT_THAT(
-      client().completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                               "invalid-value")));
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(expected_status));
 }
 
 TEST_F(CorsURLLoaderTest, PrivateNetworkAccessSuccessSimple) {
@@ -3825,11 +3835,14 @@ TEST_F(CorsURLLoaderTest,
 
   devtools_observer.WaitUntilCorsError();
 
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
   EXPECT_EQ(error_params.devtools_request_id, "devtools");
-  EXPECT_EQ(error_params.status,
-            CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal));
+  EXPECT_EQ(error_params.status, expected_status);
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -3994,16 +4007,18 @@ TEST_F(CorsURLLoaderTest,
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
   EXPECT_THAT(client().completion_status().cors_error_status,
-              Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowExternal)));
+              Optional(expected_status));
 
   devtools_observer.WaitUntilCorsError();
 
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
-  EXPECT_EQ(error_params.status,
-            CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal));
+  EXPECT_EQ(error_params.status, expected_status);
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -4063,18 +4078,18 @@ TEST_F(CorsURLLoaderTest,
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
-  EXPECT_THAT(
-      client().completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                               "invalid-value")));
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(expected_status));
 
   devtools_observer.WaitUntilCorsError();
 
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
-  EXPECT_EQ(error_params.status,
-            CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                            "invalid-value"));
+  EXPECT_EQ(error_params.status, expected_status);
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);

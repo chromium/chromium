@@ -4908,8 +4908,14 @@ domain Network
       PreflightInvalidAllowOriginValue
       PreflightAllowOriginMismatch
       PreflightInvalidAllowCredentials
+      # TODO(https://crbug.com/1263483): Remove this once frontend code does
+      # not reference it anymore.
       PreflightMissingAllowExternal
+      # TODO(https://crbug.com/1263483): Remove this once frontend code does
+      # not reference it anymore.
       PreflightInvalidAllowExternal
+      PreflightMissingAllowPrivateNetwork
+      PreflightInvalidAllowPrivateNetwork
       InvalidAllowMethodsPreflightResponse
       InvalidAllowHeadersPreflightResponse
       MethodDisallowedByPreflightResponse
