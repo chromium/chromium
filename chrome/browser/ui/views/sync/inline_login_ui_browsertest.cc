@@ -720,8 +720,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
-// https://crbug.com/1271819: Added Mac due to excessive flakiness
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+// https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
