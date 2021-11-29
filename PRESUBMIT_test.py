@@ -3977,5 +3977,47 @@ class MPArchApiUsage(unittest.TestCase):
         ])
 
 
+class AssertAshOnlyCodeTest(unittest.TestCase):
+    def testErrorsOnlyOnAshDirectories(self):
+        files_in_ash = [
+            MockFile('ash/BUILD.gn', []),
+            MockFile('chrome/browser/ash/BUILD.gn', []),
+        ]
+        other_files = [
+            MockFile('chrome/browser/BUILD.gn', []),
+            MockFile('chrome/browser/BUILD.gn', ['assert(is_chromeos_ash)']),
+        ]
+        input_api = MockInputApi()
+        input_api.files = files_in_ash
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(2, len(errors))
+
+        input_api.files = other_files
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+    def testDoesNotErrorOnNonGNFiles(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/test.h', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/test.cc',
+                     ['assert(is_chromeos_ash)']),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+    def testDoesNotErrorWithAssertion(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/BUILD.gn', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/BUILD.gn',
+                     ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/BUILD.gn',
+                     ['assert(is_chromeos_ash, "test")']),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+
 if __name__ == '__main__':
   unittest.main()

@@ -5447,3 +5447,30 @@ def CheckMPArchApiUsage(input_api, output_api):
     output_api.AppendCC('mparch-reviews+watch@chromium.org')
 
   return []
+
+
+def CheckAssertAshOnlyCode(input_api, output_api):
+    """Errors if a BUILD.gn file in an ash/ directory doesn't include
+    assert(is_chromeos_ash).
+    """
+
+    def FileFilter(affected_file):
+        """Includes directories known to be Ash only."""
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=(
+                r'^ash/.*BUILD\.gn',  # Top-level src/ash/.
+                r'.*/ash/.*BUILD\.gn'),  # Any path component.
+            files_to_skip=(input_api.DEFAULT_FILES_TO_SKIP))
+
+    errors = []
+    pattern = input_api.re.compile(r'assert\(is_chromeos_ash')
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+        if (not pattern.search(input_api.ReadFile(f))):
+            errors.append(
+                output_api.PresubmitError(
+                    'Please add assert(is_chromeos_ash) to %s. If that\'s not '
+                    'possible, please create and issue and add a comment such '
+                    'as:\n  # TODO(https://crbug.com/XXX): add '
+                    'assert(is_chromeos_ash) when ...' % f.LocalPath()))
+    return errors
