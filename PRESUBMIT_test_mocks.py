@@ -101,7 +101,7 @@ class MockInputApi(object):
         raise TypeError('files_to_check should be an iterable of strings')
       for pattern in files_to_check:
         compiled_pattern = re.compile(pattern)
-        if compiled_pattern.search(local_path):
+        if compiled_pattern.match(local_path):
           found_in_files_to_check = True
           break
     if files_to_skip:
@@ -109,7 +109,7 @@ class MockInputApi(object):
         raise TypeError('files_to_skip should be an iterable of strings')
       for pattern in files_to_skip:
         compiled_pattern = re.compile(pattern)
-        if compiled_pattern.search(local_path):
+        if compiled_pattern.match(local_path):
           return False
     return found_in_files_to_check
 
