@@ -300,7 +300,27 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
-  NOTIMPLEMENTED();
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support Launch().";
+    return;
+  }
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent =
+      apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
+      std::move(launch_params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithIntent(
@@ -346,6 +366,24 @@ void AppServiceProxyLacros::LaunchAppWithUrl(
 
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support Launch().";
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
+      ConvertLaunchParamsToCrosapi(params, profile_));
+
   // TODO(crbug.com/1244506): Add params on crosapi and implement this.
   std::move(callback).Run(LaunchResult());
 }

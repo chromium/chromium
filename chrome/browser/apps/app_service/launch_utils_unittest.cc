@@ -270,4 +270,19 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   EXPECT_EQ(params.intent, converted_params.intent);
 }
 
+// Verifies that convert params from crosapi with incomplete params works.
+TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
+  auto params = crosapi::mojom::LaunchParams::New();
+  params->app_id = "aaaa";
+  params->launch_source = apps::mojom::LaunchSource::kFromIntentUrl;
+
+  auto converted_params = apps::ConvertCrosapiToLaunchParams(params, &profile_);
+
+  EXPECT_EQ(params->app_id, converted_params.app_id);
+  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerNone,
+            converted_params.container);
+  EXPECT_EQ(WindowOpenDisposition::UNKNOWN, converted_params.disposition);
+  EXPECT_EQ(apps::mojom::LaunchSource::kFromIntentUrl,
+            converted_params.launch_source);
+}
 #endif  // defined(OS_CHROMEOS)

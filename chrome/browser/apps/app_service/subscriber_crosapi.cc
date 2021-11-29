@@ -119,16 +119,9 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
 
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-
-  if (launch_params->intent) {
-    proxy->LaunchAppWithIntent(launch_params->app_id, ui::EF_NONE,
-                               apps_util::ConvertCrosapiToAppServiceIntent(
-                                   launch_params->intent, profile_),
-                               launch_params->launch_source, nullptr);
-  } else {
-    proxy->Launch(launch_params->app_id, ui::EF_NONE,
-                  launch_params->launch_source, nullptr);
-  }
+  // TODO(crbug.com/1244506): Link up the return callback.
+  proxy->LaunchAppWithParams(
+      ConvertCrosapiToLaunchParams(launch_params, profile_), base::DoNothing());
 }
 
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
