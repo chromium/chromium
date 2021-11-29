@@ -50,6 +50,7 @@
 #endif
 
 class BackgroundContents;
+class BreadcrumbManagerBrowserAgent;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
 class BrowserSyncedWindowDelegate;
@@ -1234,6 +1235,10 @@ class Browser : public TabStripModelObserver,
 
   // Controls both signin and sync consent.
   SigninViewController signin_view_controller_;
+
+  // Listens for browser-related breadcrumb events to be added to crash reports.
+  std::unique_ptr<BreadcrumbManagerBrowserAgent>
+      breadcrumb_manager_browser_agent_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
