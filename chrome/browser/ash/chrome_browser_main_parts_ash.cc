@@ -1349,6 +1349,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
   quick_answers_controller_.reset();
+  if (features::IsBluetoothRevampEnabled())
+    bluetooth_pref_state_observer_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
