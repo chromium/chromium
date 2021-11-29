@@ -6,10 +6,12 @@
 
 #include "base/values.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::DictionaryValue;
-using base::ListValue;
+using ::base::DictionaryValue;
+using ::base::ListValue;
+using ::testing::Optional;
 
 TEST(PluginFinderTest, JsonSyntax) {
   std::unique_ptr<base::DictionaryValue> plugin_list =
@@ -24,7 +26,6 @@ TEST(PluginFinderTest, JsonSyntax) {
     const base::DictionaryValue* plugin = NULL;
     ASSERT_TRUE(plugin_it.value().GetAsDictionary(&plugin));
     std::string dummy_str;
-    bool dummy_bool;
     if (plugin->HasKey("lang"))
       EXPECT_TRUE(plugin->GetString("lang", &dummy_str));
     if (plugin->HasKey("url"))
@@ -32,13 +33,11 @@ TEST(PluginFinderTest, JsonSyntax) {
     EXPECT_TRUE(plugin->GetString("name", &dummy_str));
     if (plugin->HasKey("help_url"))
       EXPECT_TRUE(plugin->GetString("help_url", &dummy_str));
-    bool display_url = false;
     if (plugin->HasKey("displayurl")) {
-      EXPECT_TRUE(plugin->GetBoolean("displayurl", &display_url));
-      EXPECT_TRUE(display_url);
+      EXPECT_THAT(plugin->FindBoolKey("displayurl"), Optional(true));
     }
     if (plugin->HasKey("requires_authorization"))
-      EXPECT_TRUE(plugin->GetBoolean("requires_authorization", &dummy_bool));
+      EXPECT_TRUE(plugin->FindBoolKey("requires_authorization").has_value());
     const base::ListValue* mime_types = NULL;
     if (plugin->GetList("mime_types", &mime_types)) {
       for (const auto& mime_type : mime_types->GetList()) {

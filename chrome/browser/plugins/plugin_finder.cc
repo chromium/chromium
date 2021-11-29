@@ -73,15 +73,14 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
   std::u16string name;
   success = plugin_dict->GetString("name", &name);
   DCHECK(success);
-  bool display_url = true;
-  plugin_dict->GetBoolean("displayurl", &display_url);
+  bool display_url = plugin_dict->FindBoolKey("displayurl").value_or(true);
   std::u16string group_name_matcher;
   success = plugin_dict->GetString("group_name_matcher", &group_name_matcher);
   DCHECK(success);
   std::string language_str;
   plugin_dict->GetString("lang", &language_str);
-  bool plugin_is_deprecated = false;
-  plugin_dict->GetBoolean("plugin_is_deprecated", &plugin_is_deprecated);
+  bool plugin_is_deprecated =
+      plugin_dict->FindBoolKey("plugin_is_deprecated").value_or(false);
 
   std::unique_ptr<PluginMetadata> plugin = std::make_unique<PluginMetadata>(
       identifier, name, display_url, GURL(url), GURL(help_url),
