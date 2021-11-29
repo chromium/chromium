@@ -762,6 +762,33 @@
             ]
         }
     ],
+    "ApplyNativeOcclusionToCompositor": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Release_6",
+                    "params": {
+                        "type": "release"
+                    },
+                    "enable_features": [
+                        "ApplyNativeOcclusionToCompositor"
+                    ]
+                },
+                {
+                    "name": "Throttle_6",
+                    "params": {
+                        "type": "throttle"
+                    },
+                    "enable_features": [
+                        "ApplyNativeOcclusionToCompositor"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcEnableThrottlingNotification": [
         {
             "platforms": [
