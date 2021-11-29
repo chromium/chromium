@@ -41,7 +41,7 @@ enum class RemoteBookmarkUpdateError {
   // Invalid unique position.
   // kDeprecatedInvalidUniquePosition = 2,
   // Permanent node creation in an incremental update.
-  kPermanentNodeCreationAfterMerge = 3,
+  // kDeprecatedPermanentNodeCreationAfterMerge = 3,
   // Parent entity not found in server.
   kMissingParentEntity = 4,
   // Parent node not found locally.
@@ -129,12 +129,17 @@ size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
   return iter - parent->children().begin();
 }
 
+bool IsPermanentNodeUpdate(const syncer::EntityData& update_entity) {
+  return update_entity.parent_id == "0" ||
+         !update_entity.server_defined_unique_tag.empty();
+}
+
 // Checks that the |update_entity| is valid and returns false otherwise. It is
 // used to verify non-deletion updates. |update| must not be a deletion and a
 // permanent node (they are processed in a different way).
 bool IsValidUpdate(const syncer::EntityData& update_entity) {
   DCHECK(!update_entity.is_deleted());
-  DCHECK(update_entity.server_defined_unique_tag.empty());
+  DCHECK(!IsPermanentNodeUpdate(update_entity));
 
   if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
     // Ignore updates with invalid specifics.
@@ -238,17 +243,7 @@ void BookmarkRemoteUpdatesHandler::Process(
   for (const syncer::UpdateResponseData* update : ReorderUpdates(&updates)) {
     const syncer::EntityData& update_entity = update->entity;
 
-    // Ignore changes to the permanent nodes (e.g. bookmarks bar). We only
-    // care about their children.
-    if (!update_entity.server_defined_unique_tag.empty()) {
-      if (bookmark_tracker_->GetEntityForSyncId(update_entity.id) == nullptr) {
-        DLOG(ERROR)
-            << "Permanent nodes should have been merged during intial sync.";
-        LogProblematicBookmark(
-            RemoteBookmarkUpdateError::kPermanentNodeCreationAfterMerge);
-      }
-      continue;
-    }
+    DCHECK(!IsPermanentNodeUpdate(update_entity));
 
     // Only non-deletions should have valid specifics and unique positions.
     if (!update_entity.is_deleted() && !IsValidUpdate(update_entity)) {
@@ -424,7 +419,7 @@ BookmarkRemoteUpdatesHandler::ReorderUpdates(
   for (const syncer::UpdateResponseData& update : *updates) {
     const syncer::EntityData& update_entity = update.entity;
     // Ignore updates to root nodes.
-    if (update_entity.parent_id == "0") {
+    if (IsPermanentNodeUpdate(update_entity)) {
       continue;
     }
     if (update_entity.is_deleted()) {
@@ -457,7 +452,7 @@ BookmarkRemoteUpdatesHandler::ReorderUpdates(
   for (const syncer::UpdateResponseData& update : *updates) {
     const syncer::EntityData& update_entity = update.entity;
     // Ignore updates to root nodes.
-    if (update_entity.parent_id == "0") {
+    if (IsPermanentNodeUpdate(update_entity)) {
       root_node_updates_count++;
       continue;
     }
@@ -537,7 +532,7 @@ BookmarkRemoteUpdatesHandler::ProcessCreate(
     const syncer::UpdateResponseData& update) {
   const syncer::EntityData& update_entity = update.entity;
   DCHECK(!update_entity.is_deleted());
-  DCHECK(update_entity.server_defined_unique_tag.empty());
+  DCHECK(!IsPermanentNodeUpdate(update_entity));
   DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
 
   const bookmarks::BookmarkNode* parent_node = GetParentNode(update_entity);
@@ -588,7 +583,7 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
             bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   // Must not be a deletion.
   DCHECK(!update_entity.is_deleted());
-  DCHECK(update_entity.server_defined_unique_tag.empty());
+  DCHECK(!IsPermanentNodeUpdate(update_entity));
   DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
   DCHECK(!tracked_entity->IsUnsynced());
 
@@ -673,7 +668,7 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
             bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   DCHECK(!tracked_entity->bookmark_node() ||
          !tracked_entity->bookmark_node()->is_permanent_node());
-  DCHECK(update_entity.server_defined_unique_tag.empty());
+  DCHECK(!IsPermanentNodeUpdate(update_entity));
 
   if (tracked_entity->metadata()->is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.

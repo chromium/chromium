@@ -60,7 +60,7 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kConflictingTypes = 0,
   kInvalidSpecifics = 1,
   // kDeprecatedInvalidUniquePosition = 2,
-  kPermanentNodeCreationAfterMerge = 3,
+  // kDeprecatedPermanentNodeCreationAfterMerge = 3,
   kMissingParentEntity = 4,
   kMissingParentNode = 5,
   kMissingParentEntityInConflict = 6,

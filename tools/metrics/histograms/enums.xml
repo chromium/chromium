@@ -73520,7 +73520,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Remote and local bookmarks types don't match (URL vs. Folder)"/>
   <int value="1" label="Invalid specifics"/>
   <int value="2" label="Invalid unique position (deprecated)"/>
-  <int value="3" label="Permanent node creation in an incremental update"/>
+  <int value="3"
+      label="Permanent node creation in an incremental update (deprecated)"/>
   <int value="4" label="Parent entity not found in server"/>
   <int value="5" label="Parent node not found locally"/>
   <int value="6"
