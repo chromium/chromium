@@ -24,7 +24,6 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridgeDelegateImpl.java",
 ]
 
 feed_srcjar_deps = []

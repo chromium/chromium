@@ -43,7 +43,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.feed.hooks.FeedHooks;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -64,7 +63,6 @@ import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.chrome.test.util.browser.Features;
@@ -160,8 +158,6 @@ public class FeedSurfaceCoordinatorTest {
 
     // Mocked xSurface setup.
     @Mock
-    private FeedHooks mFeedHooks;
-    @Mock
     private ProcessScope mProcessScope;
     @Mock
     private SurfaceScope mSurfaceScope;
@@ -234,10 +230,8 @@ public class FeedSurfaceCoordinatorTest {
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
 
-        // XSurface setup.
-        when(mFeedHooks.createProcessScope(any(ProcessScopeDependencyProvider.class)))
-                .thenReturn(mProcessScope);
-        when(mFeedHooks.isEnabled()).thenReturn(true);
+        FeedServiceBridge.setProcessScopeForTesting(mProcessScope);
+
         when(mProcessScope.obtainSurfaceScope(any(SurfaceScopeDependencyProvider.class)))
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideListRenderer()).thenReturn(mRenderer);
@@ -260,6 +254,7 @@ public class FeedSurfaceCoordinatorTest {
         FeedFeatures.setFakePrefsForTest(null);
         FeedSurfaceMediator.setPrefForTest(null, null);
         TemplateUrlServiceFactory.setInstanceForTesting(null);
+        FeedServiceBridge.setProcessScopeForTesting(null);
     }
 
     @Test
@@ -359,6 +354,6 @@ public class FeedSurfaceCoordinatorTest {
                         -> { return null; },
                 new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS), null,
                 false, /*viewportView=*/null, mFeedActionDelegate,
-                /*helpAndFeedbackLauncher=*/null, mFeedHooks);
+                /*helpAndFeedbackLauncher=*/null);
     }
 }

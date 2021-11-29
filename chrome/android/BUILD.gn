@@ -23,7 +23,6 @@ import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
-import("//chrome/browser/feed/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
@@ -281,6 +280,7 @@ android_library("app_hooks_java") {
 java_group("delegate_public_impl_java") {
   deps = [
     ":app_hooks_java",
+    "//chrome/browser/feed/android:hooks_public_impl_java",
     "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/locale:delegate_public_impl_java",
     "//chrome/browser/password_manager/android:backend_interface_public_impl_java",
@@ -290,9 +290,6 @@ java_group("delegate_public_impl_java") {
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/language/android:ulp_delegate_public_java",
   ]
-  if (enable_new_feed_hooks) {
-    deps += [ "//chrome/browser/feed/android:hooks_public_impl_java" ]
-  }
 }
 
 java_cpp_template("vr_build_config") {

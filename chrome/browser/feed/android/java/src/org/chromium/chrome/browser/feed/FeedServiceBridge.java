@@ -14,11 +14,15 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.feed.hooks.FeedHooks;
+import org.chromium.chrome.browser.feed.hooks.FeedHooksImpl;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 /**
@@ -33,27 +37,45 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.TEST_HOOKS;
     }
 
-    /**
-     * Interface to chrome_java. Eventually, we will move some of these pieces into the Feed module
-     * to eliminate the need for an interface here.
-     */
-    public static interface Delegate {
-        default ProcessScope getProcessScope() {
-            return null;
-        }
-        /** Called when state of the feed must be cleared. */
-        default void clearAll() {}
-    }
-
-    private static Delegate sDelegate = new Delegate() {};
-    public static void setDelegate(Delegate delegate) {
-        sDelegate = delegate;
-    }
+    private static ProcessScope sXSurfaceProcessScope;
 
     public static ProcessScope xSurfaceProcessScope() {
-        ProcessScope ps = sDelegate.getProcessScope();
-        return ps;
+        if (sXSurfaceProcessScope != null) {
+            return sXSurfaceProcessScope;
+        }
+        FeedHooks feedHooks = FeedHooksImpl.getInstance();
+        if (!feedHooks.isEnabled()) {
+            return null;
+        }
+        Class<?> dependencyProviderFactoryClazz;
+        try {
+            dependencyProviderFactoryClazz = Class.forName(
+                    "org.chromium.chrome.browser.app.feed.ProcessScopeDependencyProviderFactory");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+
+        ProcessScopeDependencyProvider dependencyProvider = null;
+        try {
+            dependencyProvider = (ProcessScopeDependencyProvider) dependencyProviderFactoryClazz
+                                         .getDeclaredMethod("create")
+                                         .invoke(null);
+        } catch (NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+        }
+        if (dependencyProvider == null) {
+            return null;
+        }
+
+        sXSurfaceProcessScope = feedHooks.createProcessScope(dependencyProvider);
+        return sXSurfaceProcessScope;
     }
+
+    public static void setProcessScopeForTesting(ProcessScope processScope) {
+        sXSurfaceProcessScope = processScope;
+    }
+
     public static boolean isEnabled() {
         return FeedServiceBridgeJni.get().isEnabled();
     }
@@ -81,7 +103,7 @@ public final class FeedServiceBridge {
 
     @CalledByNative
     public static void clearAll() {
-        sDelegate.clearAll();
+        FeedSurfaceTracker.getInstance().clearAll();
     }
 
     @CalledByNative

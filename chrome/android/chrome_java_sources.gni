@@ -72,6 +72,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/appmenu/UpdateMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/app/feed/NavigationRecorder.java",
+  "java/src/org/chromium/chrome/browser/app/feed/ProcessScopeDependencyProviderFactory.java",
   "java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementActivity.java",
   "java/src/org/chromium/chrome/browser/app/feed/followmanagement/FollowManagementActivity.java",
   "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
