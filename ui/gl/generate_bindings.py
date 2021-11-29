@@ -46,6 +46,11 @@ versions array. This can be overridden by supplying a 'known_as' key.
 """
 GL_FUNCTIONS = [
 { 'return_type': 'void',
+  'versions': [{ 'name': 'glAcquireTexturesANGLE',
+                 'extensions': ['GL_ANGLE_vulkan_image'] }],
+  'arguments': 'GLuint numTextures, const GLuint* textures, '
+               'const GLenum* layouts', },
+{ 'return_type': 'void',
   'names': ['glActiveShaderProgram'],
   'arguments': 'GLuint pipeline, GLuint program', },
 { 'return_type': 'void',
@@ -1814,6 +1819,10 @@ GL_FUNCTIONS = [
   'names': ['glReleaseShaderCompiler'],
   'arguments': 'void', },
 { 'return_type': 'void',
+  'versions': [{ 'name': 'glReleaseTexturesANGLE',
+                 'extensions': ['GL_ANGLE_vulkan_image'] }],
+  'arguments': 'GLuint numTextures, const GLuint* textures, GLenum* layouts', },
+{ 'return_type': 'void',
   'names': ['glRenderbufferStorageEXT', 'glRenderbufferStorage'],
   'arguments':
       'GLenum target, GLenum internalformat, GLsizei width, GLsizei height', },
@@ -2491,6 +2500,12 @@ EGL_FUNCTIONS = [
                  'extensions': ['EGL_MESA_image_dma_buf_export'] }],
   'arguments': 'EGLDisplay dpy, EGLImageKHR image, int* fourcc, '
                'int* num_planes, EGLuint64KHR* modifiers', },
+{ 'return_type': 'EGLBoolean',
+    'versions': [{'name': 'eglExportVkImageANGLE',
+                  'extensions':
+                      ['EGL_ANGLE_vulkan_image']}],
+  'arguments': 'EGLDisplay dpy, EGLImageKHR image, void* vk_image, '
+               'void* vk_image_create_info', },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglGetCompositorTimingANDROID',
                  'extensions': [

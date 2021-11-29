@@ -214,6 +214,16 @@ MockEGLInterface::Mock_eglExportDMABUFImageQueryMESA(EGLDisplay dpy,
 }
 
 EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglExportVkImageANGLE(EGLDisplay dpy,
+                                             EGLImageKHR image,
+                                             void* vk_image,
+                                             void* vk_image_create_info) {
+  MakeEglMockFunctionUnique("eglExportVkImageANGLE");
+  return interface_->ExportVkImageANGLE(dpy, image, vk_image,
+                                        vk_image_create_info);
+}
+
+EGLBoolean GL_BINDING_CALL
 MockEGLInterface::Mock_eglGetCompositorTimingANDROID(EGLDisplay dpy,
                                                      EGLSurface surface,
                                                      EGLint numTimestamps,
@@ -717,6 +727,8 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglExportDMABUFImageQueryMESA") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglExportDMABUFImageQueryMESA);
+  if (strcmp(name, "eglExportVkImageANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_eglExportVkImageANGLE);
   if (strcmp(name, "eglGetCompositorTimingANDROID") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetCompositorTimingANDROID);

@@ -212,6 +212,7 @@ bool g_egl_angle_display_power_preference_supported = false;
 bool g_egl_angle_external_context_and_surface_supported = false;
 bool g_egl_ext_query_device_supported = false;
 bool g_egl_angle_context_virtualization_supported = false;
+bool g_EGL_ANGLE_vulkan_image_supported = false;
 EGLGpuSwitchingObserver* g_egl_gpu_switching_observer = nullptr;
 
 constexpr const char kSwapEventTraceCategories[] = "gpu";
@@ -1128,6 +1129,9 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   g_egl_angle_context_virtualization_supported =
       HasEGLExtension("EGL_ANGLE_context_virtualization");
 
+  g_EGL_ANGLE_vulkan_image_supported =
+      HasEGLExtension("EGL_ANGLE_vulkan_image");
+
   if (g_egl_angle_power_preference_supported) {
     g_egl_gpu_switching_observer = new EGLGpuSwitchingObserver();
     ui::GpuSwitchingManager::GetInstance()->AddObserver(
@@ -1296,6 +1300,11 @@ bool GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported() {
 // static
 bool GLSurfaceEGL::IsANGLEContextVirtualizationSupported() {
   return g_egl_angle_context_virtualization_supported;
+}
+
+// static
+bool GLSurfaceEGL::IsANGLEVulkanImageClientBufferSupported() {
+  return g_EGL_ANGLE_vulkan_image_supported;
 }
 
 bool GLSurfaceEGL::IsEGLQueryDeviceSupported() {

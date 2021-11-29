@@ -203,6 +203,8 @@ void DriverEGL::InitializeExtensionBindings() {
       extensions, "EGL_ANGLE_surface_d3d_texture_2d_share_handle");
   ext.b_EGL_ANGLE_sync_control_rate =
       gfx::HasExtension(extensions, "EGL_ANGLE_sync_control_rate");
+  ext.b_EGL_ANGLE_vulkan_image =
+      gfx::HasExtension(extensions, "EGL_ANGLE_vulkan_image");
   ext.b_EGL_CHROMIUM_sync_control =
       gfx::HasExtension(extensions, "EGL_CHROMIUM_sync_control");
   ext.b_EGL_EXT_image_flush_external =
@@ -268,6 +270,11 @@ void DriverEGL::InitializeExtensionBindings() {
     fn.eglExportDMABUFImageQueryMESAFn =
         reinterpret_cast<eglExportDMABUFImageQueryMESAProc>(
             GetGLProcAddress("eglExportDMABUFImageQueryMESA"));
+  }
+
+  if (ext.b_EGL_ANGLE_vulkan_image) {
+    fn.eglExportVkImageANGLEFn = reinterpret_cast<eglExportVkImageANGLEProc>(
+        GetGLProcAddress("eglExportVkImageANGLE"));
   }
 
   if (ext.b_EGL_ANDROID_get_frame_timestamps) {
@@ -564,6 +571,14 @@ EGLBoolean EGLApiBase::eglExportDMABUFImageQueryMESAFn(
     EGLuint64KHR* modifiers) {
   return driver_->fn.eglExportDMABUFImageQueryMESAFn(dpy, image, fourcc,
                                                      num_planes, modifiers);
+}
+
+EGLBoolean EGLApiBase::eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                               EGLImageKHR image,
+                                               void* vk_image,
+                                               void* vk_image_create_info) {
+  return driver_->fn.eglExportVkImageANGLEFn(dpy, image, vk_image,
+                                             vk_image_create_info);
 }
 
 EGLBoolean EGLApiBase::eglGetCompositorTimingANDROIDFn(
@@ -1088,6 +1103,15 @@ EGLBoolean TraceEGLApi::eglExportDMABUFImageQueryMESAFn(
                                 "TraceEGLAPI::eglExportDMABUFImageQueryMESA");
   return egl_api_->eglExportDMABUFImageQueryMESAFn(dpy, image, fourcc,
                                                    num_planes, modifiers);
+}
+
+EGLBoolean TraceEGLApi::eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                                EGLImageKHR image,
+                                                void* vk_image,
+                                                void* vk_image_create_info) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglExportVkImageANGLE");
+  return egl_api_->eglExportVkImageANGLEFn(dpy, image, vk_image,
+                                           vk_image_create_info);
 }
 
 EGLBoolean TraceEGLApi::eglGetCompositorTimingANDROIDFn(
@@ -1773,6 +1797,20 @@ EGLBoolean LogEGLApi::eglExportDMABUFImageQueryMESAFn(EGLDisplay dpy,
                  << static_cast<const void*>(modifiers) << ")");
   EGLBoolean result = egl_api_->eglExportDMABUFImageQueryMESAFn(
       dpy, image, fourcc, num_planes, modifiers);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLBoolean LogEGLApi::eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                              EGLImageKHR image,
+                                              void* vk_image,
+                                              void* vk_image_create_info) {
+  GL_SERVICE_LOG("eglExportVkImageANGLE"
+                 << "(" << dpy << ", " << image << ", "
+                 << static_cast<const void*>(vk_image) << ", "
+                 << static_cast<const void*>(vk_image_create_info) << ")");
+  EGLBoolean result = egl_api_->eglExportVkImageANGLEFn(dpy, image, vk_image,
+                                                        vk_image_create_info);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }

@@ -218,6 +218,8 @@ component("gl") {
       sources += [
         "gl_angle_util_vulkan.cc",
         "gl_angle_util_vulkan.h",
+        "gl_image_egl_angle_vulkan.cc",
+        "gl_image_egl_angle_vulkan.h",
       ]
     }
 

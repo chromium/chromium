@@ -81,6 +81,10 @@ EGLBoolean eglExportDMABUFImageQueryMESAFn(EGLDisplay dpy,
                                            int* fourcc,
                                            int* num_planes,
                                            EGLuint64KHR* modifiers) override;
+EGLBoolean eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                   EGLImageKHR image,
+                                   void* vk_image,
+                                   void* vk_image_create_info) override;
 EGLBoolean eglGetCompositorTimingANDROIDFn(EGLDisplay dpy,
                                            EGLSurface surface,
                                            EGLint numTimestamps,

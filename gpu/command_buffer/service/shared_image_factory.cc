@@ -31,6 +31,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/trace_util.h"
 
 #if defined(OS_LINUX) && defined(USE_OZONE) && BUILDFLAG(ENABLE_VULKAN)
@@ -40,6 +41,7 @@
 #if (defined(OS_LINUX) || defined(OS_FUCHSIA) || defined(OS_WIN)) && \
     BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_angle_vulkan.h"
 #elif defined(OS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_ahardwarebuffer.h"
@@ -174,7 +176,11 @@ SharedImageFactory::SharedImageFactory(
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
     // Desktop Linux, not ChromeOS.
-    if (ShouldUseExternalVulkanImageFactory()) {
+    if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+      auto factory = std::make_unique<SharedImageBackingFactoryAngleVulkan>(
+          gpu_preferences, workarounds, gpu_feature_info, context_state);
+      factories_.push_back(std::move(factory));
+    } else if (ShouldUseExternalVulkanImageFactory()) {
       auto external_vk_image_factory =
           std::make_unique<ExternalVkImageFactory>(context_state);
       factories_.push_back(std::move(external_vk_image_factory));

@@ -97,6 +97,11 @@ Mock_eglExportDMABUFImageQueryMESA(EGLDisplay dpy,
                                    int* num_planes,
                                    EGLuint64KHR* modifiers);
 static EGLBoolean GL_BINDING_CALL
+Mock_eglExportVkImageANGLE(EGLDisplay dpy,
+                           EGLImageKHR image,
+                           void* vk_image,
+                           void* vk_image_create_info);
+static EGLBoolean GL_BINDING_CALL
 Mock_eglGetCompositorTimingANDROID(EGLDisplay dpy,
                                    EGLSurface surface,
                                    EGLint numTimestamps,

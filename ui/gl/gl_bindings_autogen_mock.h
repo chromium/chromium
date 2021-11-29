@@ -12,6 +12,9 @@
 // no-include-guard-because-multiply-included
 // NOLINT(build/header_guard)
 
+static void GL_BINDING_CALL Mock_glAcquireTexturesANGLE(GLuint numTextures,
+                                                        const GLuint* textures,
+                                                        const GLenum* layouts);
 static void GL_BINDING_CALL Mock_glActiveShaderProgram(GLuint pipeline,
                                                        GLuint program);
 static void GL_BINDING_CALL Mock_glActiveTexture(GLenum texture);
@@ -1743,6 +1746,9 @@ static void GL_BINDING_CALL Mock_glReadnPixelsRobustANGLE(GLint x,
                                                           GLsizei* rows,
                                                           void* data);
 static void GL_BINDING_CALL Mock_glReleaseShaderCompiler(void);
+static void GL_BINDING_CALL Mock_glReleaseTexturesANGLE(GLuint numTextures,
+                                                        const GLuint* textures,
+                                                        GLenum* layouts);
 static void GL_BINDING_CALL Mock_glRenderbufferStorage(GLenum target,
                                                        GLenum internalformat,
                                                        GLsizei width,

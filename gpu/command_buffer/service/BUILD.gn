@@ -359,6 +359,11 @@ target(link_target_type, "gles2_sources") {
       "//gpu/vulkan",
     ]
 
+    sources += [
+      "shared_image_backing_factory_angle_vulkan.cc",
+      "shared_image_backing_factory_angle_vulkan.h",
+    ]
+
     if (is_linux || is_chromeos || is_fuchsia || is_android || is_win) {
       sources += [
         "external_semaphore.cc",

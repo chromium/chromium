@@ -11,6 +11,9 @@
 #ifndef UI_GL_GL_STUB_AUTOGEN_GL_H_
 #define UI_GL_GL_STUB_AUTOGEN_GL_H_
 
+void glAcquireTexturesANGLEFn(GLuint numTextures,
+                              const GLuint* textures,
+                              const GLenum* layouts) override {}
 void glActiveShaderProgramFn(GLuint pipeline, GLuint program) override {}
 void glActiveTextureFn(GLenum texture) override {}
 void glAttachShaderFn(GLuint program, GLuint shader) override {}
@@ -1221,6 +1224,9 @@ void glReadPixelsRobustANGLEFn(GLint x,
                                GLsizei* rows,
                                void* pixels) override {}
 void glReleaseShaderCompilerFn() override {}
+void glReleaseTexturesANGLEFn(GLuint numTextures,
+                              const GLuint* textures,
+                              GLenum* layouts) override {}
 void glRenderbufferStorageEXTFn(GLenum target,
                                 GLenum internalformat,
                                 GLsizei width,
