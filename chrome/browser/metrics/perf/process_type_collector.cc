@@ -26,13 +26,18 @@ void SkipLine(re2::StringPiece* contents) {
 
 // Matches both Ash-Chrome and Lacros binaries.
 const LazyRE2 kChromeExePathMatcher = {
-    R"(/(opt/google/chrome|)"
-    R"(run/lacros|)"
-    R"(run/imageloader/lacros\S*/[\d.]*)/chrome\s*)"};
+    R"(((/opt/google/chrome/chrome|)"
+    R"(/run/lacros/chrome|)"
+    R"(/run/imageloader/lacros\S*/[\d.]*/chrome)\s*))"};
 
+// Matches Lacros binaries.
+const LazyRE2 kLacrosExePathMatcher = {
+    R"(/run/lacros/chrome|)"
+    R"(/run/imageloader/lacros\S*/[\d.]*/chrome)"};
 }  // namespace
 
-std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes() {
+std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes(
+    std::vector<uint32_t>& lacros_pids) {
   std::string output;
   if (!base::GetAppOutput(std::vector<std::string>({"ps", "-ewwo", "pid,cmd"}),
                           &output)) {
@@ -41,7 +46,7 @@ std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes() {
     return std::map<uint32_t, Process>();
   }
 
-  return ParseProcessTypes(output);
+  return ParseProcessTypes(output, lacros_pids);
 }
 
 std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
@@ -58,7 +63,8 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
 }
 
 std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
-    re2::StringPiece contents) {
+    re2::StringPiece contents,
+    std::vector<uint32_t>& lacros_pids) {
   static const LazyRE2 kLineMatcher = {
       R"(\s*(\d+))"    // PID
       R"(\s+(.+)\n?)"  // COMMAND LINE
@@ -89,8 +95,14 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
       continue;
     }
 
-    if (!RE2::Consume(&cmd_line, *kChromeExePathMatcher)) {
+    re2::StringPiece cmd;
+    if (!RE2::Consume(&cmd_line, *kChromeExePathMatcher, &cmd)) {
       continue;
+    }
+
+    // Use a second match to record any Lacros PID.
+    if (RE2::Consume(&cmd, *kLacrosExePathMatcher)) {
+      lacros_pids.emplace_back(pid);
     }
 
     std::string type;

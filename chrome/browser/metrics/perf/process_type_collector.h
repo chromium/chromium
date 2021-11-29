@@ -20,8 +20,10 @@ class ProcessTypeCollector {
   // that disallows blocking, should post a task with MayBlock() task trait to
   // execute these methods or make sure to call these methods asynchronously.
   // Collects process types by running ps command and returns a map of Chrome
-  // PIDs to their process types.
-  static std::map<uint32_t, Process> ChromeProcessTypes();
+  // PIDs to their process types. It also populates a list of Lacros PID's,
+  // if any.
+  static std::map<uint32_t, Process> ChromeProcessTypes(
+      std::vector<uint32_t>& lacros_pids);
 
   // Collects thread types by running ps command and returns a map of Chrome
   // TIDs to their thread types.
@@ -31,9 +33,11 @@ class ProcessTypeCollector {
   ProcessTypeCollector() = delete;
   ~ProcessTypeCollector() = delete;
   // Parses the output of `ps -ewwo pid,cmd` command and returns a map of Chrome
-  // PIDs to their process types.
+  // PIDs to their process types. It also populates a list of Lacros PID's,
+  // if any.
   static std::map<uint32_t, Process> ParseProcessTypes(
-      re2::StringPiece contents);
+      re2::StringPiece contents,
+      std::vector<uint32_t>& lacros_pids);
 
   // Parses the output of `ps -ewLo pid,lwp,comm` command and returns a map of
   // Chrome TIDs to their thread types.

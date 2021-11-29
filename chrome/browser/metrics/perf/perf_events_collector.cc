@@ -289,8 +289,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
 }
 
 void CollectProcessTypes(SampledProfile* sampled_profile) {
+  std::vector<uint32_t> lacros_pids;
   std::map<uint32_t, Process> process_types =
-      ProcessTypeCollector::ChromeProcessTypes();
+      ProcessTypeCollector::ChromeProcessTypes(lacros_pids);
   std::map<uint32_t, Thread> thread_types =
       ProcessTypeCollector::ChromeThreadTypes();
   if (!process_types.empty() && !thread_types.empty()) {
@@ -298,6 +299,10 @@ void CollectProcessTypes(SampledProfile* sampled_profile) {
                                                      process_types.end());
     sampled_profile->mutable_thread_types()->insert(thread_types.begin(),
                                                     thread_types.end());
+  }
+  if (!lacros_pids.empty()) {
+    sampled_profile->mutable_lacros_pids()->Add(lacros_pids.begin(),
+                                                lacros_pids.end());
   }
 }
 
