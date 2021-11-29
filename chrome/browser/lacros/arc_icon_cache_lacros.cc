@@ -20,5 +20,6 @@ void ArcIconCacheLacros::Start() {
 }
 
 void ArcIconCacheLacros::OnIconInvalidated(const std::string& package_name) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  icon_loader_.InvalidateIcons(package_name);
 }

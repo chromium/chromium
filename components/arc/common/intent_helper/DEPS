@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/components/arc/arc_util.h",
+  "+chromeos/crosapi/mojom",
+  "+chromeos/lacros",
+  "+components/arc/mojom",
+  "+components/arc/session",
+  "+ui/base",
+  "+ui/gfx",
+]

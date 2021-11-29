@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "arc_ash(\.cc|.h)": [
+    "+components/arc/intent_helper",
+  ],
   "message_center_ash(\.cc|_unittest\.cc)": [
     # Provides a mojo interface around the message center, but lives in this
     # directory for consistency with other crosapi classes.

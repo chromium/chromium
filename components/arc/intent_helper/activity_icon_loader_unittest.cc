@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/intent_helper/activity_icon_loader.h"
+#include "components/arc/common/intent_helper/activity_icon_loader.h"
 
 #include <memory>
 #include <utility>
@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/arc/intent_helper/adaptive_icon_delegate.h"
+#include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 

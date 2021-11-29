@@ -9,6 +9,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
+#include "components/arc/common/intent_helper/activity_icon_loader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 // This class receives arc icon info updates from Ash. It can only be used on
@@ -28,6 +29,9 @@ class ArcIconCacheLacros : public crosapi::mojom::ArcObserver {
 
   // crosapi::mojom::ArcObserver
   void OnIconInvalidated(const std::string& package_name) override;
+
+  // Cached activity icons.
+  arc::internal::ActivityIconLoader icon_loader_;
 
   // Receives mojo messages from ash-chrome.
   mojo::Receiver<crosapi::mojom::ArcObserver> receiver_{this};

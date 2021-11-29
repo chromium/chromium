@@ -170,6 +170,8 @@ ArcIntentHelperBridge::~ArcIntentHelperBridge() {
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   icon_loader_.InvalidateIcons(package_name);
+  for (auto& observer : observer_list_)
+    observer.OnIconInvalidated(package_name);
 }
 
 void ArcIntentHelperBridge::OnIntentFiltersUpdated(
