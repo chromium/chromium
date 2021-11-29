@@ -156,13 +156,17 @@ class InProcessHandler {
    public:
     ScopedReport(IOSIntermediateDumpWriter* writer,
                  const IOSSystemDataCollector& system_data,
+                 const std::map<std::string, std::string>& annotations,
                  const uint64_t* frames = nullptr,
                  const size_t num_frames = 0);
-    ~ScopedReport() {}
+    ~ScopedReport();
     ScopedReport(const ScopedReport&) = delete;
     ScopedReport& operator=(const ScopedReport&) = delete;
 
    private:
+    IOSIntermediateDumpWriter* writer_;
+    const uint64_t* frames_;
+    const size_t num_frames_;
     IOSIntermediateDumpWriter::ScopedRootMap rootMap_;
   };
 
@@ -178,9 +182,6 @@ class InProcessHandler {
     open_new_file_after_report_ = open_new_file_after_report;
   }
 
-  void ProcessIntermediateDumpWithCompleteAnnotations(
-      const base::FilePath& file,
-      const std::map<std::string, std::string>& annotations);
   void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
   std::vector<base::FilePath> PendingFiles();
   bool OpenNewFile();

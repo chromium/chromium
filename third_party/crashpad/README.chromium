@@ -45,3 +45,8 @@ Local Modifications:
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
  - Cherry picked 8342e6bd613a5b2e44eca1d74288e3115ccef139 for M97.
+ - Cherry picked d4bdb997a6605125909efab3e0e11e7cdf41cb64,
+                 717b3c9e7bbe845576f2b8f18ba2ef53d5777ebd,
+                 4bf79bc2bfb1ae3098f792fb9f7ccb0d5a4e726c,
+                 54f2581bf1ef2d1023bd7f19b4ed5393a5f64a54 and
+                 3a7e935a8687e579537861cc23209f30c00155f3 for M97 for iOS.

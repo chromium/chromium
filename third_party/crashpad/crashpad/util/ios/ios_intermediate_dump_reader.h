@@ -22,6 +22,21 @@
 namespace crashpad {
 namespace internal {
 
+//! \brief The return value for IOSIntermediateDumpReader::Initialize.
+enum class IOSIntermediateDumpReaderInitializeResult : int {
+  //! \brief The intermediate dump was read successfully, initialization
+  //!     succeeded.
+  kSuccess,
+
+  //! \brief The intermediate dump could be loaded, but parsing was incomplete.
+  //!     An attempt to parse the RootMap should still be made, as there may
+  //!     still be valuable information to put into a minidump.
+  kIncomplete,
+
+  //! \brief The intermediate dump could not be loaded, initialization failed.
+  kFailure,
+};
+
 //! \brief Open and parse iOS intermediate dumps.
 class IOSIntermediateDumpReader {
  public:
@@ -42,7 +57,8 @@ class IOSIntermediateDumpReader {
   //! \return On success, returns `true`, otherwise returns `false`. Clients may
   //!     still attempt to parse RootMap, as partial minidumps may still be
   //!     usable.
-  bool Initialize(const base::FilePath& path);
+  IOSIntermediateDumpReaderInitializeResult Initialize(
+      const base::FilePath& path);
 
   //! \brief Returns an IOSIntermediateDumpMap corresponding to the root of the
   //!     intermediate dump.

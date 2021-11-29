@@ -20,6 +20,8 @@
 #include <signal.h>
 #include <sys/types.h>
 
+#include <map>
+
 #include "client/crashpad_info.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
@@ -46,7 +48,10 @@ class InProcessIntermediateDumpHandler final {
   //! \brief Write ProcessSnapshot data to the intermediate dump.
   //!
   //! \param[in] writer The dump writer
-  static void WriteProcessInfo(IOSIntermediateDumpWriter* writer);
+  //! \param[in] annotations The simple map annotations.
+  static void WriteProcessInfo(
+      IOSIntermediateDumpWriter* writer,
+      const std::map<std::string, std::string>& annotations);
 
   //! \brief Write SystemSnapshot data to the intermediate dump.
   //!

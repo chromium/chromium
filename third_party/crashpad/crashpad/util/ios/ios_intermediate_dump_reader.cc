@@ -29,7 +29,8 @@
 namespace crashpad {
 namespace internal {
 
-bool IOSIntermediateDumpReader::Initialize(const base::FilePath& path) {
+IOSIntermediateDumpReaderInitializeResult IOSIntermediateDumpReader::Initialize(
+    const base::FilePath& path) {
   ScopedFileHandle handle(LoggingOpenFileForRead(path));
   auto reader = std::make_unique<WeakFileHandleFileReader>(handle.get());
 
@@ -40,14 +41,17 @@ bool IOSIntermediateDumpReader::Initialize(const base::FilePath& path) {
   // Don't initialize invalid or empty files.
   FileOffset size = LoggingFileSizeByHandle(handle.get());
   if (!handle.is_valid() || size == 0) {
-    return false;
+    return IOSIntermediateDumpReaderInitializeResult::kFailure;
   }
 
+  IOSIntermediateDumpReaderInitializeResult result =
+      IOSIntermediateDumpReaderInitializeResult::kSuccess;
   if (!Parse(reader.get(), size)) {
     LOG(ERROR) << "Intermediate dump parsing failed";
+    result = IOSIntermediateDumpReaderInitializeResult::kIncomplete;
   }
 
-  return true;
+  return result;
 }
 
 bool IOSIntermediateDumpReader::Parse(FileReaderInterface* reader,
@@ -142,7 +146,7 @@ bool IOSIntermediateDumpReader::Parse(FileReaderInterface* reader,
         if (key == IntermediateDumpKey::kInvalid)
           return false;
 
-        off_t value_length;
+        size_t value_length;
         if (!reader->ReadExactly(&value_length, sizeof(value_length))) {
           return false;
         }

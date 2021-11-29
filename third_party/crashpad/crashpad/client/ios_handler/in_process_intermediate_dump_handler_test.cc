@@ -55,7 +55,8 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
   void WriteReport() {
     internal::IOSIntermediateDumpWriter::ScopedRootMap rootMap(writer_.get());
     InProcessIntermediateDumpHandler::WriteHeader(writer_.get());
-    InProcessIntermediateDumpHandler::WriteProcessInfo(writer_.get());
+    InProcessIntermediateDumpHandler::WriteProcessInfo(
+        writer_.get(), {{"before_dump", "pre"}});
     InProcessIntermediateDumpHandler::WriteSystemInfo(writer_.get(),
                                                       system_data_);
     InProcessIntermediateDumpHandler::WriteThreadInfo(writer_.get(), 0, 0);
@@ -147,7 +148,8 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
   ASSERT_TRUE(process_snapshot.Initialize(path(), {{"after_dump", "post"}}));
 
   auto process_map = process_snapshot.AnnotationsSimpleMap();
-  EXPECT_EQ(process_map.size(), 1u);
+  EXPECT_EQ(process_map.size(), 2u);
+  EXPECT_EQ(process_map["before_dump"], "pre");
   EXPECT_EQ(process_map["after_dump"], "post");
 
   std::map<std::string, std::string> all_annotations_simple_map;
