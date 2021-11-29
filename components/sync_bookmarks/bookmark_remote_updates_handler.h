@@ -46,8 +46,8 @@ class BookmarkRemoteUpdatesHandler {
                bool got_new_encryption_requirements);
 
   // Public for testing.
-  static std::vector<const syncer::UpdateResponseData*> ReorderUpdatesForTest(
-      const syncer::UpdateResponseDataList* updates);
+  static std::vector<const syncer::UpdateResponseData*>
+  ReorderValidUpdatesForTest(const syncer::UpdateResponseDataList* updates);
 
   static size_t ComputeChildNodeIndexForTest(
       const bookmarks::BookmarkNode* parent,
@@ -58,8 +58,8 @@ class BookmarkRemoteUpdatesHandler {
   // Reorders incoming updates such that parent creation is before child
   // creation and child deletion is before parent deletion, and deletions should
   // come last. The returned pointers point to the elements in the original
-  // |updates|.
-  static std::vector<const syncer::UpdateResponseData*> ReorderUpdates(
+  // |updates|. In this process, invalid updates are filtered out.
+  static std::vector<const syncer::UpdateResponseData*> ReorderValidUpdates(
       const syncer::UpdateResponseDataList* updates);
 
   // Returns the tracked entity that should be affected by a remote change, or

@@ -68,7 +68,7 @@ void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
   base::UmaHistogramEnumeration("Sync.ProblematicServerSideBookmarks", problem);
 }
 
-// Recursive method to traverse a forest created by ReorderUpdates() to to
+// Recursive method to traverse a forest created by ReorderValidUpdates() to
 // emit updates in top-down order. |ordered_updates| must not be null because
 // traversed updates are appended to |*ordered_updates|.
 void TraverseAndAppendChildren(
@@ -240,15 +240,12 @@ void BookmarkRemoteUpdatesHandler::Process(
   // re-encryption phase at the end.
   std::unordered_set<std::string> entities_with_up_to_date_encryption;
 
-  for (const syncer::UpdateResponseData* update : ReorderUpdates(&updates)) {
+  for (const syncer::UpdateResponseData* update :
+       ReorderValidUpdates(&updates)) {
     const syncer::EntityData& update_entity = update->entity;
 
     DCHECK(!IsPermanentNodeUpdate(update_entity));
-
-    // Only non-deletions should have valid specifics and unique positions.
-    if (!update_entity.is_deleted() && !IsValidUpdate(update_entity)) {
-      continue;
-    }
+    DCHECK(update_entity.is_deleted() || IsValidUpdate(update_entity));
 
     bool should_ignore_update = false;
     const SyncedBookmarkTracker::Entity* tracked_entity =
@@ -372,9 +369,9 @@ void BookmarkRemoteUpdatesHandler::Process(
 
 // static
 std::vector<const syncer::UpdateResponseData*>
-BookmarkRemoteUpdatesHandler::ReorderUpdatesForTest(
+BookmarkRemoteUpdatesHandler::ReorderValidUpdatesForTest(
     const syncer::UpdateResponseDataList* updates) {
-  return ReorderUpdates(updates);
+  return ReorderValidUpdates(updates);
 }
 
 // static
@@ -387,7 +384,7 @@ size_t BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
 
 // static
 std::vector<const syncer::UpdateResponseData*>
-BookmarkRemoteUpdatesHandler::ReorderUpdates(
+BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
     const syncer::UpdateResponseDataList* updates) {
   // This method sorts the remote updates according to the following rules:
   // 1. Creations and updates come before deletions.
@@ -415,14 +412,21 @@ BookmarkRemoteUpdatesHandler::ReorderUpdates(
                      base::StringPieceHash>
       parent_to_children;
 
-  // Add only non-deletions to |id_to_updates|.
+  // Add only valid, non-deletions to |id_to_updates|.
+  int invalid_updates_count = 0;
+  int root_node_updates_count = 0;
   for (const syncer::UpdateResponseData& update : *updates) {
     const syncer::EntityData& update_entity = update.entity;
     // Ignore updates to root nodes.
     if (IsPermanentNodeUpdate(update_entity)) {
+      ++root_node_updates_count;
       continue;
     }
     if (update_entity.is_deleted()) {
+      continue;
+    }
+    if (!IsValidUpdate(update_entity)) {
+      ++invalid_updates_count;
       continue;
     }
     id_to_updates[update_entity.id] = &update;
@@ -446,14 +450,11 @@ BookmarkRemoteUpdatesHandler::ReorderUpdates(
     TraverseAndAppendChildren(root, id_to_updates, parent_to_children,
                               &ordered_updates);
   }
-
-  int root_node_updates_count = 0;
   // Add deletions.
   for (const syncer::UpdateResponseData& update : *updates) {
     const syncer::EntityData& update_entity = update.entity;
     // Ignore updates to root nodes.
     if (IsPermanentNodeUpdate(update_entity)) {
-      root_node_updates_count++;
       continue;
     }
     if (update_entity.is_deleted()) {
@@ -461,7 +462,8 @@ BookmarkRemoteUpdatesHandler::ReorderUpdates(
     }
   }
   // All non root updates should have been included in |ordered_updates|.
-  DCHECK_EQ(updates->size(), ordered_updates.size() + root_node_updates_count);
+  DCHECK_EQ(updates->size(), ordered_updates.size() + root_node_updates_count +
+                                 invalid_updates_count);
   return ordered_updates;
 }
 

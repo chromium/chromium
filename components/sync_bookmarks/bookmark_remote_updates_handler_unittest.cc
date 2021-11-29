@@ -239,9 +239,40 @@ TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest, ShouldIgnoreRootNodes) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkRootUpdateData());
   std::vector<const syncer::UpdateResponseData*> ordered_updates =
-      BookmarkRemoteUpdatesHandler::ReorderUpdatesForTest(&updates);
+      BookmarkRemoteUpdatesHandler::ReorderValidUpdatesForTest(&updates);
   // Root node update should be filtered out.
   EXPECT_THAT(ordered_updates.size(), Eq(0U));
+}
+
+TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
+     ShouldIgnoreInvalidSpecifics) {
+  const std::string kId = "id";
+  const std::string kTitle = "title";
+  const syncer::UniquePosition kPosition = RandomUniquePosition();
+
+  syncer::UpdateResponseDataList updates;
+
+  // Create update with an invalid GUID.
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kId,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/base::GUID(),
+      /*title=*/kTitle,
+      /*is_deletion=*/false,
+      /*version=*/0,
+      /*unique_position=*/kPosition));
+
+  base::HistogramTester histogram_tester;
+  std::vector<const syncer::UpdateResponseData*> ordered_updates =
+      BookmarkRemoteUpdatesHandler::ReorderValidUpdatesForTest(&updates);
+
+  // The update should be filtered out.
+  EXPECT_THAT(ordered_updates.size(), Eq(0U));
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.ProblematicServerSideBookmarks",
+      /*sample=*/ExpectedRemoteBookmarkUpdateError::kInvalidSpecifics,
+      /*expected_count=*/1);
 }
 
 TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
@@ -297,7 +328,7 @@ TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
                                /*is_deletion=*/false));
 
   std::vector<const syncer::UpdateResponseData*> ordered_updates =
-      BookmarkRemoteUpdatesHandler::ReorderUpdatesForTest(&updates);
+      BookmarkRemoteUpdatesHandler::ReorderValidUpdatesForTest(&updates);
 
   // No update should be dropped.
   ASSERT_THAT(ordered_updates.size(), Eq(6U));
