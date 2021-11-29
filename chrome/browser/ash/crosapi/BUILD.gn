@@ -137,6 +137,7 @@ source_set("crosapi") {
   deps = [
     "//ash",
     "//ash/components/account_manager",
+    "//ash/components/arc/session",
     "//ash/components/settings:settings",
     "//ash/constants",
     "//base",
@@ -169,6 +170,7 @@ source_set("crosapi") {
     "//chromeos/system",
     "//chromeos/tpm",
     "//components/arc",
+    "//components/arc/mojom",
     "//components/exo",
     "//components/keyed_service/content",
     "//components/metrics",

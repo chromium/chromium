@@ -35,3 +35,15 @@ static_library("common") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "intent_helper/activity_icon_loader_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}
