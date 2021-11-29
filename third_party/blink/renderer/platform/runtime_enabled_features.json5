@@ -2256,12 +2256,6 @@
       origin_trial_feature_name: "ForceTouchEventFeatureDetectionForInspector",
       status: "stable",
     },
-    {
-      name: "TransferableStreams",
-      status: "stable",
-      origin_trial_feature_name: "RTCInsertableStreams",
-      implied_by: ["RTCInsertableStreams"],
-    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService"

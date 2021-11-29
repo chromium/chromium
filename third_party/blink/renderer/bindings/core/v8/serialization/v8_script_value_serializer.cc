@@ -83,9 +83,6 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     wtf_size_t object_index,
     Transferables& transferables,
     ExceptionState& exception_state) {
-  bool transferable_streams_enabled =
-      RuntimeEnabledFeatures::TransferableStreamsEnabled(
-          CurrentExecutionContext(isolate));
   // Validation of Objects implementing an interface, per WebIDL spec 4.1.15.
   if (V8MessagePort::HasInstance(object, isolate)) {
     MessagePort* port =
@@ -173,8 +170,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.offscreen_canvases.push_back(offscreen_canvas);
     return true;
   }
-  if (transferable_streams_enabled &&
-      V8ReadableStream::HasInstance(object, isolate)) {
+  if (V8ReadableStream::HasInstance(object, isolate)) {
     ReadableStream* stream =
         V8ReadableStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.readable_streams.Contains(stream)) {
@@ -187,8 +183,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.readable_streams.push_back(stream);
     return true;
   }
-  if (transferable_streams_enabled &&
-      V8WritableStream::HasInstance(object, isolate)) {
+  if (V8WritableStream::HasInstance(object, isolate)) {
     WritableStream* stream =
         V8WritableStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.writable_streams.Contains(stream)) {
@@ -201,8 +196,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.writable_streams.push_back(stream);
     return true;
   }
-  if (transferable_streams_enabled &&
-      V8TransformStream::HasInstance(object, isolate)) {
+  if (V8TransformStream::HasInstance(object, isolate)) {
     TransformStream* stream =
         V8TransformStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.transform_streams.Contains(stream)) {
@@ -347,23 +341,21 @@ void V8ScriptValueSerializer::FinalizeTransfer(
     if (exception_state.HadException())
       return;
 
-    if (TransferableStreamsEnabled()) {
-      // Order matters here, because the order in which streams are added to the
-      // |stream_ports_| array must match the indexes which are calculated in
-      // WriteDOMObject().
-      serialized_script_value_->TransferReadableStreams(
-          script_state_, transferables_->readable_streams, exception_state);
-      if (exception_state.HadException())
-        return;
-      serialized_script_value_->TransferWritableStreams(
-          script_state_, transferables_->writable_streams, exception_state);
-      if (exception_state.HadException())
-        return;
-      serialized_script_value_->TransferTransformStreams(
-          script_state_, transferables_->transform_streams, exception_state);
-      if (exception_state.HadException())
-        return;
-    }
+    // Order matters here, because the order in which streams are added to the
+    // |stream_ports_| array must match the indexes which are calculated in
+    // WriteDOMObject().
+    serialized_script_value_->TransferReadableStreams(
+        script_state_, transferables_->readable_streams, exception_state);
+    if (exception_state.HadException())
+      return;
+    serialized_script_value_->TransferWritableStreams(
+        script_state_, transferables_->writable_streams, exception_state);
+    if (exception_state.HadException())
+      return;
+    serialized_script_value_->TransferTransformStreams(
+        script_state_, transferables_->transform_streams, exception_state);
+    if (exception_state.HadException())
+      return;
 
     for (auto& transfer_list : transferables_->transfer_lists.Values()) {
       transfer_list->FinalizeTransfer(exception_state);
@@ -695,8 +687,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
                     : 1);
     return true;
   }
-  if (wrapper_type_info == V8ReadableStream::GetWrapperTypeInfo() &&
-      TransferableStreamsEnabled()) {
+  if (wrapper_type_info == V8ReadableStream::GetWrapperTypeInfo()) {
     ReadableStream* stream = wrappable->ToImpl<ReadableStream>();
     size_t index = kNotFound;
     if (transferables_)
@@ -717,8 +708,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint32(static_cast<uint32_t>(index));
     return true;
   }
-  if (wrapper_type_info == V8WritableStream::GetWrapperTypeInfo() &&
-      TransferableStreamsEnabled()) {
+  if (wrapper_type_info == V8WritableStream::GetWrapperTypeInfo()) {
     WritableStream* stream = wrappable->ToImpl<WritableStream>();
     size_t index = kNotFound;
     if (transferables_)
@@ -744,8 +734,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
         static_cast<uint32_t>(index + transferables_->readable_streams.size()));
     return true;
   }
-  if (wrapper_type_info == V8TransformStream::GetWrapperTypeInfo() &&
-      TransferableStreamsEnabled()) {
+  if (wrapper_type_info == V8TransformStream::GetWrapperTypeInfo()) {
     TransformStream* stream = wrappable->ToImpl<TransformStream>();
     size_t index = kNotFound;
     if (transferables_)
@@ -953,11 +942,6 @@ void* V8ScriptValueSerializer::ReallocateBufferMemory(void* old_buffer,
 
 void V8ScriptValueSerializer::FreeBufferMemory(void* buffer) {
   return WTF::Partitions::BufferFree(buffer);
-}
-
-bool V8ScriptValueSerializer::TransferableStreamsEnabled() const {
-  return RuntimeEnabledFeatures::TransferableStreamsEnabled(
-      ExecutionContext::From(script_state_));
 }
 
 }  // namespace blink

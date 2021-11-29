@@ -119,8 +119,6 @@ class CORE_EXPORT V8ScriptValueSerializer
                                size_t* actual_size) override;
   void FreeBufferMemory(void* buffer) override;
 
-  bool TransferableStreamsEnabled() const;
-
   ScriptState* script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueSerializer serializer_;

@@ -113,8 +113,6 @@ class CORE_EXPORT V8ScriptValueDeserializer
       v8::Isolate*,
       uint32_t) override;
 
-  bool TransferableStreamsEnabled() const;
-
   ScriptState* script_state_;
   UnpackedSerializedScriptValue* unpacked_value_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;

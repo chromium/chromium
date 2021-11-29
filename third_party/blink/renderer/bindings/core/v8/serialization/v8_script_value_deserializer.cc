@@ -189,12 +189,10 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
 }
 
 void V8ScriptValueDeserializer::Transfer() {
-  if (TransferableStreamsEnabled()) {
-    // TODO(ricea): Make ExtendableMessageEvent store an
-    // UnpackedSerializedScriptValue like MessageEvent does, and then this
-    // special case won't be necessary.
-    streams_ = std::move(serialized_script_value_->GetStreams());
-  }
+  // TODO(ricea): Make ExtendableMessageEvent store an
+  // UnpackedSerializedScriptValue like MessageEvent does, and then this
+  // special case won't be necessary.
+  streams_ = std::move(serialized_script_value_->GetStreams());
 
   // There's nothing else to transfer if the deserializer was not given an
   // unpacked value.
@@ -557,8 +555,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return canvas;
     }
     case kReadableStreamTransferTag: {
-      if (!TransferableStreamsEnabled())
-        return nullptr;
       uint32_t index = 0;
       if (!ReadUint32(&index) || index >= streams_.size()) {
         return nullptr;
@@ -569,8 +565,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           std::move(streams_[index].readable_optimizer), exception_state);
     }
     case kWritableStreamTransferTag: {
-      if (!TransferableStreamsEnabled())
-        return nullptr;
       uint32_t index = 0;
       if (!ReadUint32(&index) || index >= streams_.size()) {
         return nullptr;
@@ -581,8 +575,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           std::move(streams_[index].writable_optimizer), exception_state);
     }
     case kTransformStreamTransferTag: {
-      if (!TransferableStreamsEnabled())
-        return nullptr;
       uint32_t index = 0;
       if (!ReadUint32(&index) ||
           index == std::numeric_limits<decltype(index)>::max() ||
@@ -798,11 +790,6 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
   // a process boundary.
   CHECK(shared_array_buffers_contents.IsEmpty());
   return v8::MaybeLocal<v8::SharedArrayBuffer>();
-}
-
-bool V8ScriptValueDeserializer::TransferableStreamsEnabled() const {
-  return RuntimeEnabledFeatures::TransferableStreamsEnabled(
-      ExecutionContext::From(script_state_));
 }
 
 }  // namespace blink
