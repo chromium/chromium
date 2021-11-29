@@ -10,6 +10,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -683,6 +685,47 @@ public class FeedStreamTest {
 
         assertThat(nativeViewContent.getNativeView(layout),
                 not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
+    }
+
+    @Test
+    @SmallTest
+    public void testUnreadContentObserver_nullInterestFeed() {
+        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
+                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
+                /* isInterestFeed= */ true,
+                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /*helpAndFeedbackLauncher=*/null);
+        assertNull(stream.getUnreadContentObserverForTest());
+    }
+
+    @Test
+    @SmallTest
+    public void testUnreadContentObserver_notNullWebFeed_sortOff() {
+        Map<String, Boolean> features = new HashMap<>();
+        features.put(ChromeFeatureList.WEB_FEED_SORT, false);
+        FeatureList.setTestFeatures(features);
+        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
+                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
+                /* isInterestFeed= */ false,
+                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /*helpAndFeedbackLauncher=*/null);
+        assertNotNull(stream.getUnreadContentObserverForTest());
+        FeatureList.setTestFeatures(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testUnreadContentObserver_notNullWebFeed_sortOn() {
+        Map<String, Boolean> features = new HashMap<>();
+        features.put(ChromeFeatureList.WEB_FEED_SORT, true);
+        FeatureList.setTestFeatures(features);
+        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
+                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
+                /* isInterestFeed= */ false,
+                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /*helpAndFeedbackLauncher=*/null);
+        assertNotNull(stream.getUnreadContentObserverForTest());
+        FeatureList.setTestFeatures(null);
     }
 
     private int getLoadMoreTriggerScrollDistance() {

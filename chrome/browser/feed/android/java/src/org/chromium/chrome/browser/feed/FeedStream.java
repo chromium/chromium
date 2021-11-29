@@ -488,26 +488,30 @@ public class FeedStream implements Stream {
                 mScrollReporter.trackScroll(dx, dy);
             }
         };
+
         // Only watch for unread content on the web feed, not for-you feed.
         // Sort options only available for web feed right now.
-        if (!isInterestFeed && ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)) {
+        if (!isInterestFeed) {
             mUnreadContentObserver = new UnreadContentObserver(/*isWebFeed=*/true);
 
-            @ContentOrder
-            int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)) {
+                @ContentOrder
+                int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
 
-            mSortView = LayoutInflater.from(activity).inflate(R.layout.feed_options_panel, null);
-            SortView chipView = mSortView.findViewById(R.id.button_bar);
-            ListModel<PropertyModel> sortModel = new ListModel<>();
-            ListModelChangeProcessor<ListModel<PropertyModel>, SortView, Void> processor =
-                    new ListModelChangeProcessor<>(sortModel, chipView, new SortViewBinder());
-            sortModel.addObserver(processor);
+                mSortView =
+                        LayoutInflater.from(activity).inflate(R.layout.feed_options_panel, null);
+                SortView chipView = mSortView.findViewById(R.id.button_bar);
+                ListModel<PropertyModel> sortModel = new ListModel<>();
+                ListModelChangeProcessor<ListModel<PropertyModel>, SortView, Void> processor =
+                        new ListModelChangeProcessor<>(sortModel, chipView, new SortViewBinder());
+                sortModel.addObserver(processor);
 
-            sortModel.add(
-                    createSortModel(ContentOrder.REVERSE_CHRON, R.string.latest, currentSort));
+                sortModel.add(
+                        createSortModel(ContentOrder.REVERSE_CHRON, R.string.latest, currentSort));
 
-            sortModel.add(createSortModel(
-                    ContentOrder.GROUPED, R.string.feed_sort_publisher, currentSort));
+                sortModel.add(createSortModel(
+                        ContentOrder.GROUPED, R.string.feed_sort_publisher, currentSort));
+            }
         }
     }
 
@@ -1041,6 +1045,11 @@ public class FeedStream implements Stream {
         return mMainScrollListener;
     }
 
+    @VisibleForTesting
+    UnreadContentObserver getUnreadContentObserverForTest() {
+        return mUnreadContentObserver;
+    }
+
     // Scroll state can't be restored until enough items are added to the recycler view adapter.
     // Attempts to restore scroll state every time new items are added to the adapter.
     class RestoreScrollObserver extends RecyclerView.AdapterDataObserver {
@@ -1100,7 +1109,8 @@ public class FeedStream implements Stream {
         }
     }
 
-    private class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+    @VisibleForTesting
+    class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
         ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
 
         UnreadContentObserver(boolean isWebFeed) {
