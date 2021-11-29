@@ -10,7 +10,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -105,10 +104,9 @@ std::tuple<v8::ScriptCompiler::CompileOptions,
            v8::ScriptCompiler::NoCacheReason>
 V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                const ClassicScript& classic_script) {
-  const ScriptSourceCode& source = classic_script.GetScriptSourceCode();
-  return GetCompileOptions(cache_options, source.CacheHandler(),
-                           source.Source().length(),
-                           source.SourceLocationType());
+  return GetCompileOptions(cache_options, classic_script.CacheHandler(),
+                           classic_script.SourceText().length(),
+                           classic_script.SourceLocationType());
 }
 
 std::tuple<v8::ScriptCompiler::CompileOptions,

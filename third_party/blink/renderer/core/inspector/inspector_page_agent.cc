@@ -40,7 +40,6 @@
 #include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -947,13 +946,11 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
             v8_inspector::V8ContextInfo::executionContextId(
                 script_state->GetContext()));
         DCHECK(scope);
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-            ->RunScript(window,
-                        ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+        ClassicScript::CreateUnspecifiedScript(source)->RunScript(
+            window, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
       } else {
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-            ->RunScript(window,
-                        ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+        ClassicScript::CreateUnspecifiedScript(source)->RunScript(
+            window, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
       }
       continue;
     }
@@ -975,17 +972,16 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
           v8_inspector::V8ContextInfo::executionContextId(
               script_state->GetContext()));
       DCHECK(scope);
-      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+      ClassicScript::CreateUnspecifiedScript(source)
           ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
     } else {
-      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+      ClassicScript::CreateUnspecifiedScript(source)
           ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
     }
   }
 
   if (!script_to_evaluate_on_load_once_.IsEmpty()) {
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode(script_to_evaluate_on_load_once_))
+    ClassicScript::CreateUnspecifiedScript(script_to_evaluate_on_load_once_)
         ->RunScript(frame->DomWindow(),
                     ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
@@ -1677,16 +1673,15 @@ void InspectorPageAgent::ApplyCompilationModeOverride(
     const ClassicScript& classic_script,
     v8::ScriptCompiler::CachedData** cached_data,
     v8::ScriptCompiler::CompileOptions* compile_options) {
-  if (classic_script.GetScriptSourceCode().SourceLocationType() !=
+  if (classic_script.SourceLocationType() !=
       ScriptSourceLocationType::kExternalFile)
     return;
-  if (classic_script.GetScriptSourceCode().Url().IsEmpty())
+  if (classic_script.SourceUrl().IsEmpty())
     return;
-  auto it = compilation_cache_.find(
-      classic_script.GetScriptSourceCode().Url().GetString());
+  auto it = compilation_cache_.find(classic_script.SourceUrl().GetString());
   if (it == compilation_cache_.end()) {
     auto requested = requested_compilation_cache_.find(
-        classic_script.GetScriptSourceCode().Url().GetString());
+        classic_script.SourceUrl().GetString());
     if (requested != requested_compilation_cache_.end() && requested->value)
       *compile_options = v8::ScriptCompiler::kEagerCompile;
     return;
@@ -1700,7 +1695,7 @@ void InspectorPageAgent::ApplyCompilationModeOverride(
 void InspectorPageAgent::DidProduceCompilationCache(
     const ClassicScript& classic_script,
     v8::Local<v8::Script> script) {
-  KURL url = classic_script.GetScriptSourceCode().Url();
+  KURL url = classic_script.SourceUrl();
   if (url.IsEmpty())
     return;
   String url_string = url.GetString();
@@ -1708,15 +1703,14 @@ void InspectorPageAgent::DidProduceCompilationCache(
   if (requested == requested_compilation_cache_.end())
     return;
   requested_compilation_cache_.erase(requested);
-  if (classic_script.GetScriptSourceCode().SourceLocationType() !=
+  if (classic_script.SourceLocationType() !=
       ScriptSourceLocationType::kExternalFile)
     return;
   // TODO(caseq): should we rather issue updates if compiled code differs?
   if (compilation_cache_.Contains(url_string))
     return;
   static const int kMinimalCodeLength = 1024;
-  if (classic_script.GetScriptSourceCode().Source().length() <
-      kMinimalCodeLength)
+  if (classic_script.SourceText().length() < kMinimalCodeLength)
     return;
   std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
       v8::ScriptCompiler::CreateCodeCache(script->GetUnboundScript()));

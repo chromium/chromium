@@ -32,9 +32,8 @@ enum class ScriptSourceLocationType {
   // by the parser.
   kInlineInsideGeneratedElement,
 
-  // Other values. Never have a ScriptResource and the corresponding
-  // ScriptSourceCode or source string is created outside of
-  // ClassicPendingScript.
+  // Other values. Never have a ScriptResource and source string is created
+  // outside of ClassicPendingScript.
 
   // A chrome-internal source.
   kInternal,

@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -74,9 +73,9 @@ constexpr char kDocumentTransitionToken[] =
   document.head()->appendChild(meta);
 
   v8::HandleScope scope(v8::Isolate::GetCurrent());
-  auto value = ClassicScript::CreateUnspecifiedScript(
-                   ScriptSourceCode("!!document.documentTransition"))
-                   ->RunScriptAndReturnValue(document.domWindow());
+  auto value =
+      ClassicScript::CreateUnspecifiedScript("!!document.documentTransition")
+          ->RunScriptAndReturnValue(document.domWindow());
 
   NonThrowableExceptionState exceptionState;
   bool enabled = ToBoolean(scope.GetIsolate(), value, exceptionState);

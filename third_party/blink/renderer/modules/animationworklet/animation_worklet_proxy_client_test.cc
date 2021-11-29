@@ -11,7 +11,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -178,12 +177,10 @@ class AnimationWorkletProxyClientTest : public RenderingTest {
           registerAnimator('stateless_animator', Stateless);
       )JS";
 
-    ASSERT_TRUE(
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-            ->RunScriptOnWorkerOrWorklet(*first_global_scope));
-    ASSERT_TRUE(
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-            ->RunScriptOnWorkerOrWorklet(*second_global_scope));
+    ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
+                    ->RunScriptOnWorkerOrWorklet(*first_global_scope));
+    ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
+                    ->RunScriptOnWorkerOrWorklet(*second_global_scope));
 
     std::unique_ptr<AnimationWorkletInput> state =
         std::make_unique<AnimationWorkletInput>();

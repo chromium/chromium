@@ -131,7 +131,7 @@ void DevToolsHost::EvaluateScript(const String& expression) {
   V8ScriptRunner::CompileAndRunInternalScript(
       script_state->GetIsolate(), script_state,
       *ClassicScript::CreateUnspecifiedScript(
-          ScriptSourceCode(expression, ScriptSourceLocationType::kInternal),
+          expression, ScriptSourceLocationType::kInternal,
           SanitizeScriptErrors::kDoNotSanitize));
 }
 

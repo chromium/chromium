@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -332,12 +331,12 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
         GetSchedulingType(), false,
         ScriptStreamer::NotStreamingReason::kInlineScript);
 
-    ScriptSourceCode source_code(source_text_for_inline_script_,
-                                 source_location_type_, cache_handler,
-                                 document_url, StartingPosition());
-    return MakeGarbageCollected<ClassicScript>(
-        source_code, base_url_for_inline_script_, options_,
-        SanitizeScriptErrors::kDoNotSanitize);
+    return ClassicScript::Create(
+        source_text_for_inline_script_,
+        ClassicScript::StripFragmentIdentifier(document_url),
+        base_url_for_inline_script_, options_, source_location_type_,
+        SanitizeScriptErrors::kDoNotSanitize, cache_handler,
+        StartingPosition());
   }
 
   DCHECK(GetResource()->IsLoaded());
@@ -373,18 +372,14 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
                          TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
                          not_streamed_reason);
 
-  ScriptSourceCode source_code(streamer, cache_consumer_, resource,
-                               not_streamed_reason);
   // The base URL for external classic script is
   //
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
   // ... the URL from which the script was obtained, ...</spec>
   const KURL& base_url = resource->GetResponse().ResponseUrl();
-  return MakeGarbageCollected<ClassicScript>(
-      source_code, base_url, options_,
-      resource->GetResponse().IsCorsSameOrigin()
-          ? SanitizeScriptErrors::kDoNotSanitize
-          : SanitizeScriptErrors::kSanitize);
+  return ClassicScript::CreateFromResource(resource, base_url, options_,
+                                           streamer, not_streamed_reason,
+                                           cache_consumer_);
 }
 
 // static

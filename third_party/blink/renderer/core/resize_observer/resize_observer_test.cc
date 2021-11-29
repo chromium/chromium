@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_resize_observer_options.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -256,11 +255,11 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
   // Test whether ResizeObserver is kept alive by direct JS reference
   //
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("var ro = new ResizeObserver( entries => {});"))
+      "var ro = new ResizeObserver( entries => {});")
       ->RunScript(&Window(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   ASSERT_EQ(observers.size(), 1U);
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("ro = undefined;"))
+  ClassicScript::CreateUnspecifiedScript("ro = undefined;")
       ->RunScript(&Window(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -271,17 +270,17 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
   // Test whether ResizeObserver is kept alive by an Element
   //
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("var ro = new ResizeObserver( () => {});"
-                       "var el = document.createElement('div');"
-                       "ro.observe(el);"
-                       "ro = undefined;"))
+      "var ro = new ResizeObserver( () => {});"
+      "var el = document.createElement('div');"
+      "ro.observe(el);"
+      "ro = undefined;")
       ->RunScript(&Window(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   ASSERT_EQ(observers.size(), 1U);
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.size(), 1U);
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("el = undefined;"))
+  ClassicScript::CreateUnspecifiedScript("el = undefined;")
       ->RunScript(&Window(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   ThreadState::Current()->CollectAllGarbageForTesting();

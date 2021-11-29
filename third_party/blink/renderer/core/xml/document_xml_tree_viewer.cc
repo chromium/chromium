@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/xml/document_xml_tree_viewer.h"
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -24,8 +23,8 @@ void TransformDocumentToXMLTreeView(Document& document) {
 
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
 
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(script_string, ScriptSourceLocationType::kInternal))
+  ClassicScript::CreateUnspecifiedScript(script_string,
+                                         ScriptSourceLocationType::kInternal)
       ->RunScriptInIsolatedWorldAndReturnValue(
           document.domWindow(), IsolatedWorldId::kDocumentXMLTreeViewerWorldId);
 

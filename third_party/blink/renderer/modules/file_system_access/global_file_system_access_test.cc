@@ -130,8 +130,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationRequiredOtherwiseDenied) {
       [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         FAIL();
       }));
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("window.showOpenFilePicker();"))
+  ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
       ->RunScript(GetFrame().DomWindow());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(frame->HasStickyUserActivation());
@@ -166,8 +165,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
 
         std::move(callback).Run(std::move(error), std::move(entries));
       }));
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("window.showOpenFilePicker();"))
+  ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
       ->RunScript(GetFrame().DomWindow());
   manager_run_loop.Run();
 
@@ -216,8 +214,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesErrors) {
           std::move(callback).Run(std::move(error), std::move(entries));
         },
         status));
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode("window.showOpenFilePicker();"))
+    ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
         ->RunScript(GetFrame().DomWindow());
     manager_run_loop.Run();
 

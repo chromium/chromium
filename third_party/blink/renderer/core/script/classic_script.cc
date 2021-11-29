@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
@@ -15,6 +14,25 @@
 namespace blink {
 
 namespace {
+
+ParkableString TreatNullSourceAsEmpty(const ParkableString& source) {
+  // The following is the historical comment for this method, while this might
+  // be already obsolete, because `TreatNullSourceAsEmpty()` has been applied in
+  // all constructors since before.
+  //
+  // ScriptSourceCode allows for the representation of the null/not-there-really
+  // ScriptSourceCode value.  Encoded by way of a source_.IsNull() being true,
+  // with the nullary constructor to be used to construct such a value.
+  //
+  // Should the other constructors be passed a null string, that is interpreted
+  // as representing the empty script. Consequently, we need to disambiguate
+  // between such null string occurrences.  Do that by converting the latter
+  // case's null strings into empty ones.
+  if (source.IsNull())
+    return ParkableString();
+
+  return source;
+}
 
 KURL SanitizeBaseUrl(const KURL& raw_base_url,
                      SanitizeScriptErrors sanitize_script_errors) {
@@ -28,35 +46,120 @@ KURL SanitizeBaseUrl(const KURL& raw_base_url,
   return raw_base_url;
 }
 
+String SourceMapUrlFromResponse(const ResourceResponse& response) {
+  String source_map_url = response.HttpHeaderField(http_names::kSourceMap);
+  if (!source_map_url.IsEmpty())
+    return source_map_url;
+
+  // Try to get deprecated header.
+  return response.HttpHeaderField(http_names::kXSourceMap);
+}
+
 }  // namespace
 
-ClassicScript::ClassicScript(const ScriptSourceCode& script_source_code,
-                             const KURL& base_url,
-                             const ScriptFetchOptions& fetch_options,
-                             SanitizeScriptErrors sanitize_script_errors)
-    : Script(fetch_options, SanitizeBaseUrl(base_url, sanitize_script_errors)),
-      script_source_code_(script_source_code),
-      sanitize_script_errors_(sanitize_script_errors) {}
+KURL ClassicScript::StripFragmentIdentifier(const KURL& url) {
+  if (url.IsEmpty())
+    return KURL();
+
+  if (!url.HasFragmentIdentifier())
+    return url;
+
+  KURL copy = url;
+  copy.RemoveFragmentIdentifier();
+  return copy;
+}
+
+ClassicScript* ClassicScript::Create(
+    const String& source_text,
+    const KURL& source_url,
+    const KURL& base_url,
+    const ScriptFetchOptions& fetch_options,
+    ScriptSourceLocationType source_location_type,
+    SanitizeScriptErrors sanitize_script_errors,
+    SingleCachedMetadataHandler* cache_handler,
+    const TextPosition& start_position,
+    ScriptStreamer::NotStreamingReason not_streaming_reason) {
+  // External files should use CreateFromResource().
+  DCHECK(source_location_type != ScriptSourceLocationType::kExternalFile);
+
+  return MakeGarbageCollected<ClassicScript>(
+      ParkableString(source_text.Impl()), source_url, base_url, fetch_options,
+      source_location_type, sanitize_script_errors, cache_handler,
+      start_position, nullptr, not_streaming_reason);
+}
+
+ClassicScript* ClassicScript::CreateFromResource(
+    ScriptResource* resource,
+    const KURL& base_url,
+    const ScriptFetchOptions& fetch_options,
+    ScriptStreamer* streamer,
+    ScriptStreamer::NotStreamingReason not_streamed_reason,
+    ScriptCacheConsumer* cache_consumer) {
+  DCHECK_EQ(!streamer, not_streamed_reason !=
+                           ScriptStreamer::NotStreamingReason::kInvalid);
+
+  // We lose the encoding information from ScriptResource.
+  // Not sure if that matters.
+  return MakeGarbageCollected<ClassicScript>(
+      resource->SourceText(), StripFragmentIdentifier(resource->Url()),
+      base_url, fetch_options, ScriptSourceLocationType::kExternalFile,
+      resource->GetResponse().IsCorsSameOrigin()
+          ? SanitizeScriptErrors::kDoNotSanitize
+          : SanitizeScriptErrors::kSanitize,
+      resource->CacheHandler(), TextPosition::MinimumPosition(), streamer,
+      not_streamed_reason, cache_consumer,
+      SourceMapUrlFromResponse(resource->GetResponse()));
+}
 
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
-    const ScriptSourceCode& script_source_code,
+    const String& source_text,
+    ScriptSourceLocationType source_location_type,
     SanitizeScriptErrors sanitize_script_errors) {
   return MakeGarbageCollected<ClassicScript>(
-      script_source_code, KURL(), ScriptFetchOptions(), sanitize_script_errors);
+      ParkableString(source_text.Impl()), KURL(), KURL(), ScriptFetchOptions(),
+      source_location_type, sanitize_script_errors);
 }
 
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
     const WebScriptSource& source,
     SanitizeScriptErrors sanitize_script_errors) {
-  return ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(source.code, ScriptSourceLocationType::kUnknown,
-                       nullptr /* cache_handler */, source.url),
+  return MakeGarbageCollected<ClassicScript>(
+      ParkableString(String(source.code).Impl()),
+      StripFragmentIdentifier(source.url), KURL() /* base_url */,
+      ScriptFetchOptions(), ScriptSourceLocationType::kUnknown,
       sanitize_script_errors);
 }
 
+ClassicScript::ClassicScript(
+    const ParkableString& source_text,
+    const KURL& source_url,
+    const KURL& base_url,
+    const ScriptFetchOptions& fetch_options,
+    ScriptSourceLocationType source_location_type,
+    SanitizeScriptErrors sanitize_script_errors,
+    SingleCachedMetadataHandler* cache_handler,
+    const TextPosition& start_position,
+    ScriptStreamer* streamer,
+    ScriptStreamer::NotStreamingReason not_streaming_reason,
+    ScriptCacheConsumer* cache_consumer,
+    const String& source_map_url)
+    : Script(fetch_options, SanitizeBaseUrl(base_url, sanitize_script_errors)),
+      source_text_(TreatNullSourceAsEmpty(source_text)),
+      source_url_(source_url),
+      source_location_type_(source_location_type),
+      sanitize_script_errors_(sanitize_script_errors),
+      cache_handler_(cache_handler),
+      start_position_(start_position),
+      streamer_(streamer),
+      not_streaming_reason_(not_streaming_reason),
+      cache_consumer_(cache_consumer),
+      source_map_url_(source_map_url) {}
+
 void ClassicScript::Trace(Visitor* visitor) const {
   Script::Trace(visitor);
-  visitor->Trace(script_source_code_);
+  visitor->Trace(cache_handler_);
+  visitor->Trace(streamer_);
+  visitor->Trace(cache_consumer_);
 }
 
 ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
@@ -124,11 +227,8 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
 
 std::pair<size_t, size_t> ClassicScript::GetClassicScriptSizes() const {
   size_t cached_metadata_size =
-      GetScriptSourceCode().CacheHandler()
-          ? GetScriptSourceCode().CacheHandler()->GetCodeCacheSize()
-          : 0;
-  return std::pair<size_t, size_t>(GetScriptSourceCode().Source().length(),
-                                   cached_metadata_size);
+      CacheHandler() ? CacheHandler()->GetCodeCacheSize() : 0;
+  return std::pair<size_t, size_t>(SourceText().length(), cached_metadata_size);
 }
 
 }  // namespace blink

@@ -100,7 +100,7 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
   }
 
   if (!api_script_.IsEmpty()) {
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(api_script_))
+    ClassicScript::CreateUnspecifiedScript(api_script_)
         ->RunScript(GetSupplementable()->DomWindow());
   }
 }

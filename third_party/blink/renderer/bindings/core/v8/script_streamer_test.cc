@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
@@ -174,16 +173,17 @@ class ScriptStreamingTest : public testing::Test {
     ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
     if (streamer) {
       if (streamer->IsStreamingSuppressed()) {
-        return ClassicScript::CreateUnspecifiedScript(
-            ScriptSourceCode(nullptr, cache_consumer, resource_,
-                             streamer->StreamingSuppressedReason()));
+        return ClassicScript::CreateFromResource(
+            resource_, KURL(), ScriptFetchOptions(), nullptr,
+            streamer->StreamingSuppressedReason(), cache_consumer);
       }
-      return ClassicScript::CreateUnspecifiedScript(
-          ScriptSourceCode(streamer, cache_consumer, resource_,
-                           ScriptStreamer::NotStreamingReason::kInvalid));
+      return ClassicScript::CreateFromResource(
+          resource_, KURL(), ScriptFetchOptions(), streamer,
+          ScriptStreamer::NotStreamingReason::kInvalid, cache_consumer);
     }
-    return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(
-        nullptr, cache_consumer, resource_, resource_->NoStreamerReason()));
+    return ClassicScript::CreateFromResource(
+        resource_, KURL(), ScriptFetchOptions(), nullptr,
+        resource_->NoStreamerReason(), cache_consumer);
   }
 
   Settings* GetSettings() const {
@@ -260,7 +260,7 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_TRUE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -295,7 +295,7 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_TRUE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -387,10 +387,10 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   EXPECT_TRUE(resource_client_->Finished());
 
   ClassicScript* classic_script = CreateClassicScript();
-  // ScriptSourceCode doesn't refer to the streamer, since we have suppressed
+  // ClassicScript doesn't refer to the streamer, since we have suppressed
   // the streaming and resumed the non-streaming code path for script
   // compilation.
-  EXPECT_FALSE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, EmptyScripts) {
@@ -405,7 +405,7 @@ TEST_F(ScriptStreamingTest, EmptyScripts) {
   EXPECT_TRUE(resource_client_->Finished());
 
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_FALSE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, SmallScripts) {
@@ -423,7 +423,7 @@ TEST_F(ScriptStreamingTest, SmallScripts) {
   EXPECT_TRUE(resource_client_->Finished());
 
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_FALSE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
@@ -447,7 +447,7 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_TRUE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -481,7 +481,7 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_TRUE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -516,7 +516,7 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ClassicScript* classic_script = CreateClassicScript();
-  EXPECT_TRUE(classic_script->GetScriptSourceCode().Streamer());
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;

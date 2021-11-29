@@ -12,7 +12,6 @@
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_settings.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1083,7 +1082,7 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
 
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("document.body.innerHTML = 'throttled'"))
+      "document.body.innerHTML = 'throttled'")
       ->RunScript(To<LocalDOMWindow>(frame_element->contentWindow()));
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
@@ -1324,14 +1323,13 @@ TEST_P(FrameThrottlingTest, SynchronousLayoutInAnimationFrameCallback) {
   auto* second_frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("second"));
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(
-          "window.requestAnimationFrame(function() {\n"
-          "  var throttledFrame = window.parent.frames.first;\n"
-          "  throttledFrame.document.documentElement.style = 'margin: 50px';\n"
-          "  "
-          "throttledFrame.document.querySelector('#d').getBoundingClientRect();"
-          "\n"
-          "});\n"))
+      "window.requestAnimationFrame(function() {\n"
+      "  var throttledFrame = window.parent.frames.first;\n"
+      "  throttledFrame.document.documentElement.style = 'margin: 50px';\n"
+      "  "
+      "throttledFrame.document.querySelector('#d').getBoundingClientRect();"
+      "\n"
+      "});\n")
       ->RunScript(To<LocalDOMWindow>(second_frame_element->contentWindow()));
   CompositeFrame();
 }
@@ -1361,7 +1359,7 @@ TEST_P(FrameThrottlingTest, AllowOneAnimationFrame) {
 
   v8::HandleScope scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Value> result =
-      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.didRaf;"))
+      ClassicScript::CreateUnspecifiedScript("window.didRaf;")
           ->RunScriptAndReturnValue(
               To<LocalDOMWindow>(frame_element->contentWindow()));
   EXPECT_TRUE(result->IsTrue());

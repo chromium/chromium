@@ -249,8 +249,8 @@ function createShadowRootWithin(node) {
 }
 createShadowRootWithin(document.body);
 )";
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode(script, ScriptSourceLocationType::kInternal))
+    ClassicScript::CreateUnspecifiedScript(script,
+                                           ScriptSourceLocationType::kInternal)
         ->RunScript(web_frame_->GetFrame()->DomWindow(),
                     ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }

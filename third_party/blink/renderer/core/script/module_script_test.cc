@@ -8,7 +8,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -55,6 +54,14 @@ class MockCachedMetadataSender : public CachedMetadataSender {
   bool IsServedFromCacheStorage() override { return false; }
 };
 
+ClassicScript* CreateClassicScript(const String& source_text,
+                                   SingleCachedMetadataHandler* cache_handler) {
+  return ClassicScript::Create(source_text, KURL(), KURL(),
+                               ScriptFetchOptions(),
+                               ScriptSourceLocationType::kInternal,
+                               SanitizeScriptErrors::kSanitize, cache_handler);
+}
+
 static const int kScriptRepeatLength = 500;
 
 }  // namespace
@@ -98,14 +105,13 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
   // test.
   static void TestFoo(V8TestingScope& scope) {
     v8::Local<v8::Value> value =
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
+        ClassicScript::CreateUnspecifiedScript("window.foo")
             ->RunScriptAndReturnValue(&scope.GetWindow());
     EXPECT_TRUE(value->IsNumber());
     EXPECT_EQ(kScriptRepeatLength,
               value->NumberValue(scope.GetContext()).ToChecked());
 
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode("window.foo = undefined;"))
+    ClassicScript::CreateUnspecifiedScript("window.foo = undefined;")
         ->RunScript(&scope.GetWindow());
   }
 
@@ -239,13 +245,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   EXPECT_CALL(*sender_ptr, Send(_, _, _));
   EXPECT_CALL(checkpoint, Call(4));
 
-  // In actual cases CachedMetadataHandler and its code cache data are passed
-  // via ScriptSourceCode+ScriptResource, but here they are passed via
-  // ScriptSourceCode constructor for inline scripts. So far, this is sufficient
-  // for unit testing.
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
-                       cache_handler))
+  CreateClassicScript(LargeSourceText(), cache_handler)
       ->RunScript(&scope.GetWindow());
 
   checkpoint.Call(4);
@@ -378,13 +378,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   // CachedMetadata after it has been cleared.
   EXPECT_CALL(checkpoint, Call(4));
 
-  // In actual cases CachedMetadataHandler and its code cache data are passed
-  // via ScriptSourceCode+ScriptResource, but here they are passed via
-  // ScriptSourceCode constructor for inline scripts. So far, this is sufficient
-  // for unit testing.
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
-                       cache_handler))
+  CreateClassicScript(LargeSourceText(), cache_handler)
       ->RunScript(&scope.GetWindow());
   checkpoint.Call(4);
 

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -281,7 +280,7 @@ TEST_P(ModuleRecordTest, Evaluate) {
                 .GetResultType(),
             ScriptEvaluationResult::ResultType::kSuccess);
   v8::Local<v8::Value> value =
-      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
+      ClassicScript::CreateUnspecifiedScript("window.foo")
           ->RunScriptAndReturnValue(&scope.GetWindow());
   ASSERT_TRUE(value->IsString());
   EXPECT_EQ("bar", ToCoreString(v8::Local<v8::String>::Cast(value)));

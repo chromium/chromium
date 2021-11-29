@@ -40,7 +40,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/resources/grit/inspector_overlay_resources_map.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_inspector_overlay_host.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -1326,11 +1325,9 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(command->Serialize()), &json);
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(
-          "dispatch(" +
-              String(reinterpret_cast<const char*>(json.data()), json.size()) +
-              ")",
-          ScriptSourceLocationType::kInspector))
+      "dispatch(" +
+          String(reinterpret_cast<const char*>(json.data()), json.size()) + ")",
+      ScriptSourceLocationType::kInspector)
       ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 }
@@ -1345,11 +1342,9 @@ void InspectorOverlayAgent::EvaluateInOverlay(
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(command->Serialize()), &json);
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(
-          "dispatch(" +
-              String(reinterpret_cast<const char*>(json.data()), json.size()) +
-              ")",
-          ScriptSourceLocationType::kInspector))
+      "dispatch(" +
+          String(reinterpret_cast<const char*>(json.data()), json.size()) + ")",
+      ScriptSourceLocationType::kInspector)
       ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 }
@@ -1359,7 +1354,7 @@ String InspectorOverlayAgent::EvaluateInOverlayForTest(const String& script) {
   v8::HandleScope handle_scope(ToIsolate(OverlayMainFrame()));
   v8::Local<v8::Value> string =
       ClassicScript::CreateUnspecifiedScript(
-          ScriptSourceCode(script, ScriptSourceLocationType::kInspector))
+          script, ScriptSourceLocationType::kInspector)
           ->RunScriptAndReturnValue(
               To<LocalFrame>(OverlayMainFrame())->DomWindow(),
               ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);

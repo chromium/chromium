@@ -103,8 +103,8 @@ TEST_F(TouchEventTest, DispatchWithEmptyDocTargetDoesntCrash) {
       "document.dispatchEvent(touch_event);";
 
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script))
-      ->RunScript(GetDocument().domWindow());
+  ClassicScript::CreateUnspecifiedScript(script)->RunScript(
+      GetDocument().domWindow());
 }
 
 class TouchEventTestNoFrame : public testing::Test {};

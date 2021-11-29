@@ -9,7 +9,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -111,7 +110,7 @@ v8::Local<v8::Value> RoundTrip(
 }
 
 v8::Local<v8::Value> Eval(const String& source, V8TestingScope& scope) {
-  return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+  return ClassicScript::CreateUnspecifiedScript(source)
       ->RunScriptAndReturnValue(&scope.GetWindow());
 }
 

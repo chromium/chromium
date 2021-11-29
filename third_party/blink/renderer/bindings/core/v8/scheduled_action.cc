@@ -33,7 +33,6 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
@@ -147,11 +146,12 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   // TODO(crbug.com/1133238): Plumb base URL etc. from the initializing script.
   DVLOG(1) << "ScheduledAction::execute " << this << ": executing from source";
   v8::HandleScope scope(script_state_->GetIsolate());
-  ClassicScript* script = MakeGarbageCollected<ClassicScript>(
-      ScriptSourceCode(code_,
-                       ScriptSourceLocationType::kEvalForScheduledAction),
-      KURL(), ScriptFetchOptions(), SanitizeScriptErrors::kDoNotSanitize);
-  script->RunScriptOnScriptStateAndReturnValue(script_state_->Get());
+  ClassicScript* script =
+      ClassicScript::Create(code_, KURL(), KURL(), ScriptFetchOptions(),
+                            ScriptSourceLocationType::kEvalForScheduledAction,
+                            SanitizeScriptErrors::kDoNotSanitize);
+  ignore_result(
+      script->RunScriptOnScriptStateAndReturnValue(script_state_->Get()));
 }
 
 void ScheduledAction::Trace(Visitor* visitor) const {

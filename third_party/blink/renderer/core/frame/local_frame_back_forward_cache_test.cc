@@ -105,8 +105,7 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
   // hand, the case 2) can happen. See https://crbug.com/994169
   Microtask::EnqueueMicrotask(base::BindOnce(
       [](LocalFrame* frame) {
-        ClassicScript::CreateUnspecifiedScript(
-            ScriptSourceCode("console.log('hi');"))
+        ClassicScript::CreateUnspecifiedScript("console.log('hi');")
             ->RunScript(frame->DomWindow());
       },
       frame));

@@ -363,15 +363,14 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
   v8::Local<v8::Value> function_value;
   // `kDoNotSanitize` is used for internal scripts for keeping the existing
   // behavior.
-  bool success =
-      V8ScriptRunner::CompileAndRunInternalScript(
-          isolate_, ScriptState::From(context),
-          *ClassicScript::CreateUnspecifiedScript(
-              ScriptSourceCode("(function(e) { console.log(e.type, e); })",
-                               ScriptSourceLocationType::kInternal),
-              SanitizeScriptErrors::kDoNotSanitize))
-          .ToLocal(&function_value) &&
-      function_value->IsFunction();
+  bool success = V8ScriptRunner::CompileAndRunInternalScript(
+                     isolate_, ScriptState::From(context),
+                     *ClassicScript::CreateUnspecifiedScript(
+                         "(function(e) { console.log(e.type, e); })",
+                         ScriptSourceLocationType::kInternal,
+                         SanitizeScriptErrors::kDoNotSanitize))
+                     .ToLocal(&function_value) &&
+                 function_value->IsFunction();
   DCHECK(success);
   CreateFunctionPropertyWithData(
       context, object, "monitorEvents", ThreadDebugger::MonitorEventsCallback,

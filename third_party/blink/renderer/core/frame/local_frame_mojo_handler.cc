@@ -885,7 +885,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
   // `kDoNotSanitize` is used because this is only for tests and some tests
   // need `kDoNotSanitize` for dynamic imports.
   ClassicScript* script = ClassicScript::CreateUnspecifiedScript(
-      javascript, SanitizeScriptErrors::kDoNotSanitize);
+      javascript, ScriptSourceLocationType::kUnknown,
+      SanitizeScriptErrors::kDoNotSanitize);
 
   if (world_id == DOMWrapperWorld::kMainWorldId) {
     result = script->RunScriptAndReturnValue(DomWindow());

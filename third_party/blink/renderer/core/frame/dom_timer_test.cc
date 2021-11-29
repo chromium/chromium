@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -62,7 +61,7 @@ class DOMTimerTest : public RenderingTest {
   }
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
-    return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(expr))
+    return ClassicScript::CreateUnspecifiedScript(expr)
         ->RunScriptAndReturnValue(GetDocument().domWindow());
   }
 
@@ -79,9 +78,8 @@ class DOMTimerTest : public RenderingTest {
   }
 
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
-    ScriptSourceCode script(script_text);
-    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
-        GetDocument().domWindow());
+    ClassicScript::CreateUnspecifiedScript(String(script_text))
+        ->RunScript(GetDocument().domWindow());
     platform()->RunUntilIdle();
   }
 };
