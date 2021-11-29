@@ -347,8 +347,10 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="QuickAnswers.Consent" units="impressions"
-    expires_after="2022-05-01">
+<histogram name="QuickAnswers.Consent" units="impressions" expires_after="M98">
+  <obsolete>
+    Removed 10-2021
+  </obsolete>
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
@@ -360,7 +362,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.Consent.Duration{QuickAnswersConsentInteractionType}"
-    units="ms" expires_after="2021-08-09">
+    units="ms" expires_after="M98">
+  <obsolete>
+    Removed 10-2021
+  </obsolete>
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
@@ -381,7 +386,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.Consent.Impression{QuickAnswersConsentInteractionType}"
-    units="impressions" expires_after="2022-01-02">
+    units="impressions" expires_after="M98">
+  <obsolete>
+    Removed 10-2021
+  </obsolete>
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
