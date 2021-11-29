@@ -506,8 +506,9 @@ void AppShimController::UpdateProfileMenu(
     [item setTag:mojo_item->menu_index];
     [item setState:mojo_item->active ? NSOnState : NSOffState];
     [item setTarget:profile_menu_target_.get()];
-    gfx::Image icon(mojo_item->icon);
-    [item setImage:icon.ToNSImage()];
+    // TODO(https://crbug.com/1274236, https://crbug.com/898608): Fix
+    // crashes in gfx::Image::ToNSImage, and re-add the profile icon to
+    // the menu.
     [menu insertItem:item atIndex:i];
   }
 }
