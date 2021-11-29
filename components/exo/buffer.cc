@@ -641,6 +641,8 @@ bool SolidColorBuffer::ProduceTransferableResource(
     bool secure_output_only,
     viz::TransferableResource* resource,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
+  std::move(per_commit_explicit_release_callback)
+      .Run(/*release_fence=*/gfx::GpuFenceHandle());
   return false;
 }
 
