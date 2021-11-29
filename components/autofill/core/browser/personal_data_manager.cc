@@ -1383,6 +1383,27 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   suggestion_selection::PrepareSuggestions(labels, &unique_suggestions,
                                            comparator);
 
+  // If this feature is enabled, we add an icon to the address (profile)
+  // suggestion if there is more than on profile related field in the form.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseConsistentPopupSettingsIcons)) {
+    // Returns true if |type| is related to address profiles.
+    auto is_field_type_profile_related = [](ServerFieldType type) {
+      FieldTypeGroup group = AutofillType(type).group();
+      return group == FieldTypeGroup::kName ||
+             group == FieldTypeGroup::kAddressHome ||
+             group == FieldTypeGroup::kPhoneHome ||
+             group == FieldTypeGroup::kEmail;
+    };
+
+    if (base::ranges::count_if(field_types, is_field_type_profile_related) >
+        1) {
+      for (auto& suggestion : unique_suggestions) {
+        suggestion.icon = "accountIcon";
+      }
+    }
+  }
+
   return unique_suggestions;
 }
 

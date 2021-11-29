@@ -132,10 +132,6 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillUseConsistentPopupSettingsIcons)) {
-        suggestions.back().icon = "accountIcon";
-      }
     }
   }
 
