@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("policy") {
-  output_name = "chromeos_policy"  # Avoid conflict with //sandbox/policy
-  defines = [ "IS_CHROMEOS_POLICY_IMPL" ]
+  output_name = "ash_policy"  # Avoid conflict with //sandbox/policy
+  defines = [ "IS_ASH_POLICY_IMPL" ]
 
   public_deps = [
     "//components/policy/proto",

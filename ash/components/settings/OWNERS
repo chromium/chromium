@@ -1,4 +1,4 @@
-file://chromeos/policy/OWNERS
+file://ash/components/policy/OWNERS
 
 # (in PST)
 stevenjb@chromium.org

@@ -40,7 +40,6 @@ component("chromeos") {
       "//base",
       "//base:i18n",
       "//chromeos/dbus",
-      "//chromeos/policy",
       "//google_apis",
       "//services/network/public/cpp:cpp",
     ]
@@ -165,7 +164,6 @@ test("chromeos_unittests") {
       "//chromeos/memory:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
-      "//chromeos/policy:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",
       "//chromeos/startup:unit_tests",
