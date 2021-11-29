@@ -28,6 +28,7 @@
 #include <surface-augmenter-server-protocol.h>
 #include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
+#include <touchpad-haptics-unstable-v1-server-protocol.h>
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
@@ -89,6 +90,7 @@
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
+#include "components/exo/wayland/zcr_touchpad_haptics.h"
 #include "components/exo/wayland/zwp_idle_inhibit_manager.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
@@ -364,6 +366,9 @@ void Server::Initialize() {
       std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());
   wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 1,
                    xdg_shell_data_.get(), bind_xdg_shell);
+
+  wl_global_create(wl_display_.get(), &zcr_touchpad_haptics_v1_interface, 1,
+                   display_, bind_touchpad_haptics);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_FULLSCREEN_SHELL)

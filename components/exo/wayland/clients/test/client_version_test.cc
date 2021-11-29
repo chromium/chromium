@@ -23,6 +23,7 @@
 #include <surface-augmenter-server-protocol.h>
 #include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
+#include <touchpad-haptics-unstable-v1-server-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
@@ -88,6 +89,7 @@ struct Globals {
   std::unique_ptr<zcr_remote_shell_v1> zcr_remote_shell_v1;
   std::unique_ptr<zcr_remote_shell_v2> zcr_remote_shell_v2;
   std::unique_ptr<zcr_stylus_tools_v1> zcr_stylus_tools_v1;
+  std::unique_ptr<zcr_touchpad_haptics_v1> zcr_touchpad_haptics_v1;
   std::unique_ptr<zwp_pointer_gestures_v1> zwp_pointer_gestures_v1;
   std::unique_ptr<zwp_pointer_constraints_v1> zwp_pointer_constraints_v1;
   std::unique_ptr<zwp_relative_pointer_manager_v1>
@@ -180,6 +182,7 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zcr_stylus_tools_v1, zcr_stylus_tools_v1),
           REGISTRY_CALLBACK(zcr_text_input_extension_v1,
                             zcr_text_input_extension_v1),
+          REGISTRY_CALLBACK(zcr_touchpad_haptics_v1, zcr_touchpad_haptics_v1),
           REGISTRY_CALLBACK(zwp_pointer_gestures_v1, zwp_pointer_gestures_v1),
           REGISTRY_CALLBACK(zwp_pointer_constraints_v1,
                             zwp_pointer_constraints_v1),

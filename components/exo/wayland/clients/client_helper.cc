@@ -97,6 +97,7 @@ DEFAULT_DELETER(zcr_remote_shell_v2, zcr_remote_shell_v2_destroy)
 DEFAULT_DELETER(zcr_stylus_tools_v1, zcr_stylus_tools_v1_destroy)
 DEFAULT_DELETER(zcr_text_input_extension_v1,
                 zcr_text_input_extension_v1_destroy)
+DEFAULT_DELETER(zcr_touchpad_haptics_v1, zcr_touchpad_haptics_v1_destroy)
 DEFAULT_DELETER(zwp_pointer_gestures_v1, zwp_pointer_gestures_v1_destroy)
 DEFAULT_DELETER(zwp_pointer_constraints_v1, zwp_pointer_constraints_v1_destroy)
 DEFAULT_DELETER(zwp_relative_pointer_manager_v1,
