@@ -197,7 +197,7 @@ public class SigninCheckerTest {
         // test case therefore is not currently hittable on a real device; however it is included
         // here for completeness.
         mAccountManagerTestRule.addAccount("the.default.account@gmail.com");
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -214,7 +214,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void signinWhenChildAccountIsFirstAccount() {
-        final CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        final CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
         mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
 
         mActivityTestRule.startMainActivityOnBlankPage();

@@ -198,8 +198,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     public void testRender_SignInPromoWithAccount() throws Exception {
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         // Scroll to the sign in promo in case it is not visible.
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));

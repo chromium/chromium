@@ -44,7 +44,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -128,11 +127,10 @@ public class AccountManagementFragmentTest {
             sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
     public void
     testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
         // The code under test doesn't care what account type this is, though in practice only
         // EDU accounts are supported on devices where the primary account is a child account.
-        mAccountManagerTestRule.addAccount(
-                AccountUtils.createAccountFromName("account@school.com"));
+        mAccountManagerTestRule.addAccount("account@school.com");
         mAccountManagerTestRule.waitForSeeding();
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);

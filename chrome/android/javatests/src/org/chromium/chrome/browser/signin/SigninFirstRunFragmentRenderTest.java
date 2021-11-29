@@ -155,7 +155,7 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testFragmentRotationToLandscapeWithAccount() throws IOException {
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         launchActivityWithFragment(Configuration.ORIENTATION_PORTRAIT);
 
         ActivityTestUtils.rotateActivityToOrientation(
@@ -171,7 +171,7 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testFragmentRotationToPortraitWithAccount() throws IOException {
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
 
         ActivityTestUtils.rotateActivityToOrientation(
@@ -189,7 +189,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
 
         launchActivityWithFragment(orientation);
 
@@ -206,7 +206,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWithAccountOnManagedDevice(boolean nightModeEnabled, int orientation)
             throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
 
         launchActivityWithFragment(orientation);
 
@@ -234,7 +234,7 @@ public class SigninFirstRunFragmentRenderTest {
         });
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
 
         launchActivityWithFragment(orientation);
 
@@ -275,7 +275,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithChildAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
 
         launchActivityWithFragment(orientation);
 

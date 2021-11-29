@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -96,13 +96,12 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldHideSyncPromoForNTPWhenDefaultAccountCannotOfferSyncPromos() {
-        final Account account =
-                AccountUtils.createAccountFromName("test.account.default@gmail.com");
-        mAccountManagerTestRule.addAccount(account);
+        final CoreAccountInfo accountInfo =
+                mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
         mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
         doReturn(Optional.of(false))
                 .when(mFakeAccountManagerFacade)
-                .canOfferExtendedSyncPromos(account);
+                .canOfferExtendedSyncPromos(CoreAccountInfo.getAndroidAccountFrom(accountInfo));
 
         Assert.assertFalse(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
@@ -110,9 +109,7 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldHideSyncPromoForNTPWhenDefaultAccountCapabilityIsNotFetched() {
-        final Account account =
-                AccountUtils.createAccountFromName("test.account.default@gmail.com");
-        mAccountManagerTestRule.addAccount(account);
+        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
         mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
 
         Assert.assertFalse(
@@ -121,16 +118,16 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldShowSyncPromoForNTPWhenSecondaryAccountCannotOfferSyncPromos() {
-        final Account secondAccount =
-                AccountUtils.createAccountFromName("test.account.secondary@gmail.com");
+        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
+        final CoreAccountInfo secondAccountInfo =
+                mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
+        final Account secondAccount = CoreAccountInfo.getAndroidAccountFrom(secondAccountInfo);
         doAnswer(invocation -> {
             final Account account0 = invocation.getArgument(0);
             return Optional.of(!account0.equals(secondAccount));
         })
                 .when(mFakeAccountManagerFacade)
                 .canOfferExtendedSyncPromos(any());
-        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
-        mAccountManagerTestRule.addAccount(secondAccount);
 
         Assert.assertTrue(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));

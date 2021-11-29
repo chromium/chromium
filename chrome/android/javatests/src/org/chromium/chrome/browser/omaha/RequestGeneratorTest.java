@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
@@ -125,8 +124,7 @@ public class RequestGeneratorTest {
     /**
      * Checks that the XML is being created properly.
      */
-    private RequestGenerator createAndCheckXML(
-            DeviceType deviceType, boolean sendInstallEvent, Account... accounts) {
+    private RequestGenerator createAndCheckXML(DeviceType deviceType, boolean sendInstallEvent) {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         AdvancedMockContext context = new AdvancedMockContext(targetContext);
 
@@ -135,10 +133,6 @@ public class RequestGeneratorTest {
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
                 .thenReturn(true);
-
-        for (Account account : accounts) {
-            mAccountManagerTestRule.addAccount(account);
-        }
 
         String sessionId = "random_session_id";
         String requestId = "random_request_id";

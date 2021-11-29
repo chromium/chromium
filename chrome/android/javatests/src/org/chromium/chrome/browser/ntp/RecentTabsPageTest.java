@@ -105,8 +105,7 @@ public class RecentTabsPageTest {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPage = loadRecentTabsPage();
         mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
         Assert.assertEquals(1,

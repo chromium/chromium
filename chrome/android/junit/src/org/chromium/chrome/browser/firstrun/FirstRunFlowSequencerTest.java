@@ -51,7 +51,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
 public class FirstRunFlowSequencerTest {
-    private static final String ADULT_ACCOUNT = "adult.account@gmail.com";
+    private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
     private static final Account CHILD_ACCOUNT =
             AccountManagerTestRule.createChildAccount(/*baseName=*/"account@gmail.com");
 
@@ -182,7 +182,7 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowOneChildAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
         when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
                 .thenReturn(false);
         mDelegate.isSyncAllowed = true;
@@ -206,7 +206,7 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowShowDataReductionPage() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         mAccountManagerTestRule.addAccount("second.test.account@gmail.com");
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
@@ -276,7 +276,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFlowShowSyncConsentPageWhenUserIsSignedIn() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
