@@ -601,6 +601,17 @@ export const ENTRIES = {
     typeText: 'JPEG image'
   }),
 
+  webpImage: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'image.webp',
+    // No mime type.
+    targetPath: 'image.webp',
+    lastModifiedTime: 'Jan 19, 2021, 1:10 PM',
+    nameText: 'image.webp',
+    sizeText: '5 KB',
+    typeText: 'WebP image'
+  }),
+
   rawImage: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'raw.orf',

@@ -1760,6 +1760,56 @@ testcase.openQuickViewImageRawWithOrientation = async () => {
 };
 
 /**
+ * Tests opening Quick View with a VP8X format WEBP image.
+ */
+testcase.openQuickViewImageWebp = async () => {
+  const caller = getCaller();
+
+  /**
+   * The tag used to create a safe environment to display the preview: webview
+   * for legacy Files app and iframe for Files SWA.
+   */
+  const previewTag = remoteCall.isSwaMode() ? 'iframe' : 'webview';
+
+  /**
+   * The preview resides in the <files-safe-media type="image"> shadow DOM,
+   * which is a child of the #quick-view shadow DOM.
+   */
+  const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
+
+  // Open Files app on Downloads containing ENTRIES.rawImage.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.webpImage], []);
+
+  // Open the file in Quick View.
+  await openQuickView(appId, ENTRIES.webpImage.nameText);
+
+  // Wait for the Quick View preview to load and display its content.
+  function checkPreviewImageLoaded(elements) {
+    let haveElements = Array.isArray(elements) && elements.length === 1;
+    if (haveElements) {
+      haveElements = elements[0].styles.display.includes('block');
+    }
+    if (!haveElements || elements[0].attributes.loaded !== '') {
+      return pending(caller, `Waiting for ${previewTag} to load.`);
+    }
+    return;
+  }
+  await repeatUntil(async () => {
+    return checkPreviewImageLoaded(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [preview, ['display']]));
+  });
+
+  // Check: the correct mimeType should be displayed.
+  const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
+  chrome.test.assertEq('image/webp', mimeType);
+
+  // Check: the correct dimensions should be displayed.
+  const size = await getQuickViewMetadataBoxField(appId, 'Dimensions');
+  chrome.test.assertEq('400 x 175', size);
+};
+
+/**
  * Tests that opening Quick View on an image and clicking the image does not
  * focus the image. Instead, the user should still be able to cycle through
  * file list items in Quick View: crbug.com/1038835.

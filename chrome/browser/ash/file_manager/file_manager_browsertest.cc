@@ -571,6 +571,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewImageRaw").FilesSwa(),
         TestCase("openQuickViewImageRawWithOrientation"),
         TestCase("openQuickViewImageRawWithOrientation").FilesSwa(),
+        TestCase("openQuickViewImageWebp"),
+        TestCase("openQuickViewImageWebp").FilesSwa(),
         TestCase("openQuickViewBrokenImage"),
         TestCase("openQuickViewBrokenImage").FilesSwa(),
         TestCase("openQuickViewImageClick"),
