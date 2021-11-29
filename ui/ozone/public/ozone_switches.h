@@ -8,6 +8,8 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 
+// TODO(rjkroege): Specify this at the time of ::InitializeUI to avoid the habit
+// of using command line variables as convenient as global variables.
 namespace switches {
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kOzonePlatform[];
@@ -21,6 +23,9 @@ COMPONENT_EXPORT(OZONE_BASE) extern const char kEnableWaylandIme[];
 COMPONENT_EXPORT(OZONE_BASE) extern const char kDisableWaylandIme[];
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kUseWaylandExplicitGrab[];
+
+COMPONENT_EXPORT(OZONE_BASE)
+extern const char kUseWaylandNormalThreadPriority[];
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kDisableExplicitDmaFences[];
 
