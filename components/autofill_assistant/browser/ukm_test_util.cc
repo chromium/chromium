@@ -44,6 +44,17 @@ GetUkmTriggerConditionEvaluationTime(
                                  {kTriggerConditionTimingMs});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmStartRequest(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(
+      kStartRequestEntry, {kStarted, kCaller, kSource, kIntent, kExperiments});
+}
+
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmRegularScriptOnboarding(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kRegularScriptOnboardingEntry, {kOnboarding});
+}
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,

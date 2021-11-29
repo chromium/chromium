@@ -20,9 +20,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantMetrics;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
-import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -85,8 +83,6 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
      */
     @Override
     public void show(Callback<Integer> callback) {
-        AutofillAssistantMetrics.recordOnBoarding(
-                OnBoarding.OB_SHOWN, mParameters.get(INTENT_IDENTFIER));
         mOnboardingShown = true;
 
         initViewImpl(callback);

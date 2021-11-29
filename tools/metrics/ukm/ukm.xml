@@ -2359,6 +2359,90 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.RegularScriptOnboarding">
+  <owner>arbesser@google.com</owner>
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Various metrics related to the onboarding during regular scripts. This is
+    recorded at the start of a regular script.
+  </summary>
+  <metric name="Onboarding" enum="AutofillAssistantOnBoarding">
+    <summary>
+      The various ways in which the onboarding may complete or fail.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.StartRequest">
+  <owner>arbesser@google.com</owner>
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Metrics collected at the very beginning of an autofill-assistant flow.
+  </summary>
+  <metric name="Caller" enum="AutofillAssistantCaller">
+    <summary>
+      The caller that requested the start of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Experiments">
+    <summary>
+      Bitmask of the running experiments.
+    </summary>
+  </metric>
+  <metric name="Intent" enum="AutofillAssistantIntent">
+    <summary>
+      The autofill-assistant intent of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Source" enum="AutofillAssistantSource">
+    <summary>
+      The source that requested the start of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Started" enum="AutofillAssistantStarted">
+    <summary>
+      The various ways that a start request may succeed or fail.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.Timing">
   <owner>arbesser@google.com</owner>
   <owner>hluca@google.com</owner>

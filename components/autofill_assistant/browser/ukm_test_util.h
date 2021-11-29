@@ -27,6 +27,9 @@ const char kTriggerScriptOnboardingEntry[] =
     "AutofillAssistant.LiteScriptOnboarding";
 const char kInChromeTriggeringEntry[] = "AutofillAssistant.InChromeTriggering";
 const char kAutofillAssistantTimingEntry[] = "AutofillAssistant.Timing";
+const char kStartRequestEntry[] = "AutofillAssistant.StartRequest";
+const char kRegularScriptOnboardingEntry[] =
+    "AutofillAssistant.RegularScriptOnboarding";
 const char kAutofillAssistantCollectContact[] =
     "AutofillAssistant.CollectContact";
 const char kAutofillAssistantCollectCreditCard[] =
@@ -44,6 +47,12 @@ const char kTriggerScriptFinished[] = "LiteScriptFinished";
 const char kTriggerScriptOnboarding[] = "LiteScriptOnboarding";
 const char kInChromeTriggerAction[] = "InChromeTriggerAction";
 const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
+const char kStarted[] = "Started";
+const char kCaller[] = "Caller";
+const char kSource[] = "Source";
+const char kIntent[] = "Intent";
+const char kExperiments[] = "Experiments";
+const char kOnboarding[] = "Onboarding";
 const char kCompleteContactProfilesCount[] = "CompleteContactProfilesCount";
 const char kIncompleteContactProfilesCount[] = "IncompleteContactProfilesCount";
 const char kInitialContactFieldsStatus[] = "InitialContactFieldsStatus";
@@ -75,7 +84,10 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmTriggerConditionEvaluationTime(ukm::TestAutoSetUkmRecorder& ukm_recorder);
-
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmStartRequest(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmRegularScriptOnboarding(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -119,13 +131,28 @@ using UkmEnumVariant = absl::variant<TriggerScriptProto::TriggerUIType,
                                      Metrics::TriggerScriptStarted,
                                      Metrics::TriggerScriptFinishedState,
                                      Metrics::TriggerScriptOnboarding,
-                                     Metrics::InChromeTriggerAction>;
+                                     Metrics::InChromeTriggerAction,
+                                     Metrics::AutofillAssistantStarted,
+                                     Metrics::AutofillAssistantCaller,
+                                     Metrics::AutofillAssistantSource,
+                                     Metrics::AutofillAssistantIntent,
+                                     Metrics::AutofillAssistantExperiment,
+                                     Metrics::Onboarding>;
 
 // The metric names corresponding to the variant alternatives of UkmEnumVariant.
 // NOTE: When adding entries, remember to also modify UkmEnumVariant!
-const std::vector<std::string> kUkmEnumMetricNames = {
-    kTriggerUiType,         kTriggerScriptShownToUser, kTriggerScriptStarted,
-    kTriggerScriptFinished, kTriggerScriptOnboarding,  kInChromeTriggerAction};
+const std::vector<std::string> kUkmEnumMetricNames = {kTriggerUiType,
+                                                      kTriggerScriptShownToUser,
+                                                      kTriggerScriptStarted,
+                                                      kTriggerScriptFinished,
+                                                      kTriggerScriptOnboarding,
+                                                      kInChromeTriggerAction,
+                                                      kStarted,
+                                                      kCaller,
+                                                      kSource,
+                                                      kIntent,
+                                                      kExperiments,
+                                                      kOnboarding};
 
 // Intended to be used to convert a UkmEnumVariant to int64_t using a visitor.
 // Usage:

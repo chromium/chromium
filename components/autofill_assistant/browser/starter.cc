@@ -302,7 +302,8 @@ void Starter::OnHeuristicMatch(const GURL& url,
            std::vector<std::string>(intents.begin(), intents.end()), ",")},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", url.spec()}};
+      {"ORIGINAL_DEEPLINK", url.spec()},
+      {"CALLER", "7"}};
   // Add/overwrite with debug parameters if specified.
   for (const auto& debug_param :
        implicit_triggering_debug_parameters_.additional_script_parameters()) {
@@ -430,6 +431,9 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
       {platform_delegate_->GetMakeSearchesAndBrowsingBetterEnabled(),
        platform_delegate_->GetProactiveHelpSettingEnabled(),
        platform_delegate_->GetFeatureModuleInstalled()});
+  Metrics::RecordStartRequest(ukm_recorder_, current_ukm_source_id_,
+                              pending_trigger_context_->GetScriptParameters(),
+                              startup_mode);
 
   // Trigger scripts may need to wait for navigation to the deeplink domain to
   // ensure that UKMs are recorded for the right source-id.
@@ -485,8 +489,11 @@ void Starter::CancelPendingStartup(
   }
   platform_delegate_->HideOnboarding();
   if (waiting_for_onboarding_) {
-    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
-    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_SHOWN);
+    Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                           current_ukm_source_id_,
+                                           Metrics::Onboarding::OB_NO_ANSWER);
+    Metrics::RecordRegularScriptOnboarding(
+        ukm_recorder_, current_ukm_source_id_, Metrics::Onboarding::OB_SHOWN);
     waiting_for_onboarding_ = false;
   }
   OnStartDone(/* start_regular_script = */ false);
@@ -689,25 +696,47 @@ void Starter::OnOnboardingFinished(
           std::string());
   switch (result) {
     case OnboardingResult::DISMISSED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
+      Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                             current_ukm_source_id_,
+                                             Metrics::Onboarding::OB_NO_ANSWER);
       Metrics::RecordDropOut(
           Metrics::DropOutReason::ONBOARDING_BACK_BUTTON_CLICKED, intent);
       break;
     case OnboardingResult::REJECTED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_CANCELLED);
+      if (shown) {
+        Metrics::RecordRegularScriptOnboarding(
+            ukm_recorder_, current_ukm_source_id_,
+            Metrics::Onboarding::OB_CANCELLED);
+      } else {
+        // Should not happen, but it's technically possible. Only OB_NOT_SHOWN
+        // will be recorded, since OB_REJECTED is intended to convey explicit
+        // user rejection only.
+      }
       Metrics::RecordDropOut(Metrics::DropOutReason::DECLINED, intent);
       break;
     case OnboardingResult::NAVIGATION:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
+      Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                             current_ukm_source_id_,
+                                             Metrics::Onboarding::OB_NO_ANSWER);
       Metrics::RecordDropOut(Metrics::DropOutReason::ONBOARDING_NAVIGATION,
                              intent);
       break;
     case OnboardingResult::ACCEPTED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_ACCEPTED);
+      if (shown) {
+        Metrics::RecordRegularScriptOnboarding(
+            ukm_recorder_, current_ukm_source_id_,
+            Metrics::Onboarding::OB_ACCEPTED);
+      } else {
+        // This can happen if the onboarding was already accepted and was thus
+        // not shown. We will record OB_NOT_SHOWN but not OB_ACCEPTED, as the
+        // latter is intended to convey explicit user consent only.
+      }
       break;
   }
-  Metrics::RecordOnboardingResult(shown ? Metrics::OnBoarding::OB_SHOWN
-                                        : Metrics::OnBoarding::OB_NOT_SHOWN);
+  Metrics::RecordRegularScriptOnboarding(
+      ukm_recorder_, current_ukm_source_id_,
+      shown ? Metrics::Onboarding::OB_SHOWN
+            : Metrics::Onboarding::OB_NOT_SHOWN);
 
   if (result != OnboardingResult::ACCEPTED) {
     runtime_manager_->SetUIState(UIState::kNotShown);

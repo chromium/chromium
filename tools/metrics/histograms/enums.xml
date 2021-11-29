@@ -5520,6 +5520,18 @@ others/histograms.xml -->
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAssistantCaller">
+  <int value="0" label="UNKNOWN_CALLER"/>
+  <int value="1" label="ASSISTANT"/>
+  <int value="2" label="SEARCH"/>
+  <int value="3" label="STARTER_APP"/>
+  <int value="4" label="SEARCH_ADS"/>
+  <int value="5" label="SHOPPING_PROPERTY"/>
+  <int value="6" label="EMULATOR"/>
+  <int value="7" label="IN_CHROME"/>
+  <int value="8" label="DIRECT_ACTION"/>
+</enum>
+
 <enum name="AutofillAssistantCollectUserDataResult">
   <int value="0" label="Unknown result"/>
   <int value="1" label="Success"/>
@@ -5585,6 +5597,22 @@ others/histograms.xml -->
   <int value="2" label="Cache hit, unsupported domain"/>
   <int value="3" label="No heuristic match"/>
   <int value="4" label="Trigger script requested"/>
+</enum>
+
+<enum name="AutofillAssistantIntent">
+  <int value="0" label="UNDEFINED_INTENT"/>
+  <int value="3" label="BUY_MOVIE_TICKET"/>
+  <int value="9" label="RENT_CAR"/>
+  <int value="10" label="SHOPPING"/>
+  <int value="11" label="TELEPORT"/>
+  <int value="14" label="SHOPPING_ASSISTED_CHECKOUT"/>
+  <int value="15" label="FLIGHTS_CHECKIN"/>
+  <int value="17" label="FOOD_ORDERING"/>
+  <int value="18" label="PASSWORD_CHANGE"/>
+  <int value="19" label="FOOD_ORDERING_PICKUP"/>
+  <int value="20" label="FOOD_ORDERING_DELIVERY"/>
+  <int value="22" label="UNLAUNCHED_VERTICAL_1"/>
+  <int value="25" label="FIND_COUPONS"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptFinished">
@@ -5688,6 +5716,28 @@ others/histograms.xml -->
   <int value="1" label="Initially incomplete &amp; Success"/>
   <int value="2" label="Initially complete &amp; Failure"/>
   <int value="3" label="Initially incomplete &amp; Failure"/>
+</enum>
+
+<enum name="AutofillAssistantSource">
+  <int value="0" label="UNKNOWN_SOURCE"/>
+  <int value="1" label="ORGANIC"/>
+  <int value="2" label="FRESH_DEEPLINK"/>
+  <int value="3" label="STARTER_APP"/>
+  <int value="4" label="EMULATOR_VALIDATION"/>
+  <int value="5" label="S_API"/>
+  <int value="6" label="C_CARD"/>
+  <int value="7" label="MD_CARD"/>
+  <int value="8" label="C_NOTIFICATION"/>
+  <int value="9" label="G_CAROUSEL"/>
+</enum>
+
+<enum name="AutofillAssistantStarted">
+  <int value="0" label="FAILED_FEATURE_DISABLED"/>
+  <int value="1" label="FAILED_MANDATORY_PARAMETER_MISSING"/>
+  <int value="2" label="FAILED_SETTING_DISABLED"/>
+  <int value="3" label="FAILED_NO_INITIAL_URL"/>
+  <int value="4" label="OK_DELAYED_START"/>
+  <int value="5" label="OK_IMMEDIATE_START"/>
 </enum>
 
 <enum name="AutofillAssistantTextToSpeechButtonAction">

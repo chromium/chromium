@@ -296,6 +296,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.AutofillAssistant.OnBoarding{Intent}"
     enum="AutofillAssistantOnBoarding" expires_after="2022-06-08">
+  <obsolete>
+    Removed in November 2021.
+  </obsolete>
   <owner>lsuder@chromium.org</owner>
   <owner>mcarlen@chromium.org</owner>
   <summary>
