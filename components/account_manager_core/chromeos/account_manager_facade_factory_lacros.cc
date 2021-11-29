@@ -38,6 +38,10 @@ class AccountManagerFacadeFactoryLacros {
  public:
   void CreateAshAccountManagerForTests(
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
+    // `account_manager_facade_` depends on `ash_account_manager_` and cannot be
+    // reset, as users may be holding weak references to it.
+    DCHECK(!account_manager_facade_);
+
     Reset();
     ash_account_manager_ = std::make_unique<account_manager::AccountManager>();
     account_manager_mojo_service_ =
