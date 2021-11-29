@@ -470,7 +470,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
                                                    id object,
                                                    NSDictionary* bindings) {
-        // All destinations are displayed in regular mode.
+        if (object == self.siteInfoDestination) {
+          return [self currentWebPageSupportsSiteInfo];
+        }
+        // All other destinations are displayed in regular mode.
         if (!self.isIncognito) {
           return true;
         }
