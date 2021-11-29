@@ -89,47 +89,44 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
       continue;
     }
 
-    // Get the main frame since web app manifest is only available in the main
-    // frame's document by definition. The main frame's document must come from
-    // the same origin.
-    RenderFrameHostImpl* top_level_render_frame_host = render_frame_host;
-    while (top_level_render_frame_host->GetParent() != nullptr) {
-      top_level_render_frame_host = top_level_render_frame_host->GetParent();
-    }
-    WebContentsImpl* top_level_web_content = static_cast<WebContentsImpl*>(
-        WebContents::FromRenderFrameHost(top_level_render_frame_host));
-    if (!top_level_web_content) {
-      top_level_render_frame_host->AddMessageToConsole(
+    // Get the WebContents associated with the frame and print console messages
+    // to the main frame of the WebContents since web app manifest is only
+    // available in the main frame's document by definition. The main frame's
+    // document must come from the same origin.
+    WebContentsImpl* web_content = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(render_frame_host));
+    if (!web_content) {
+      render_frame_host->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Unable to find the web page for \"" + context_url.spec() +
               "\" to fetch payment handler manifest (for name and icon).");
       continue;
     }
 
-    if (top_level_web_content->IsHidden()) {
-      top_level_render_frame_host->AddMessageToConsole(
+    if (web_content->IsHidden()) {
+      web_content->GetMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Unable to fetch payment handler manifest (for name and icon) for "
           "\"" +
               context_url.spec() + "\" from a hidden top level web page \"" +
-              top_level_web_content->GetLastCommittedURL().spec() + "\".");
+              web_content->GetLastCommittedURL().spec() + "\".");
       continue;
     }
 
     if (!url::IsSameOriginWith(context_url,
-                               top_level_web_content->GetLastCommittedURL())) {
-      top_level_render_frame_host->AddMessageToConsole(
+                               web_content->GetLastCommittedURL())) {
+      web_content->GetMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Unable to fetch payment handler manifest (for name and icon) for "
           "\"" +
               context_url.spec() +
               "\" from a cross-origin top level web page \"" +
-              top_level_web_content->GetLastCommittedURL().spec() + "\".");
+              web_content->GetLastCommittedURL().spec() + "\".");
       continue;
     }
 
-    web_contents_ = top_level_web_content->GetWeakPtr();
-    top_level_render_frame_host->GetPage().GetManifest(
+    web_contents_ = web_content->GetWeakPtr();
+    web_contents_->GetMainFrame()->GetPage().GetManifest(
         base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::
                            FetchPaymentAppManifestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
