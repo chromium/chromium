@@ -345,6 +345,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 observer.onActivityAttachmentChanged(this, window);
             }
         }
+
+        updateInteractableState();
     }
 
     /**
@@ -1483,7 +1485,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     private void updateInteractableState() {
         boolean currentState = !mIsHidden && !isFrozen()
-                && (mIsViewAttachedToWindow || VrModuleProvider.getDelegate().isInVr());
+                && (mIsViewAttachedToWindow || VrModuleProvider.getDelegate().isInVr())
+                && !isDetached(this);
 
         if (currentState == mInteractableState) return;
 
