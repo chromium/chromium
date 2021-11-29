@@ -950,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.TargetJitterBufferDelayMs" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-12-26">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The target jitter buffer delay for the receiving side. Sampled once every 10
