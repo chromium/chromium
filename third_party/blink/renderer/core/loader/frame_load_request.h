@@ -26,8 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -177,9 +177,7 @@ struct CORE_EXPORT FrameLoadRequest {
   void SetInitiatorFrameToken(const LocalFrameToken& token) {
     initiator_frame_token_ = token;
   }
-  const LocalFrameToken* GetInitiatorFrameToken() const {
-    return base::OptionalOrNullptr(initiator_frame_token_);
-  }
+  const LocalFrameToken* GetInitiatorFrameToken() const;
 
  private:
   LocalDOMWindow* origin_window_;
