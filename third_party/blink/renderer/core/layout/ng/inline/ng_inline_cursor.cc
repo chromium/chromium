@@ -501,7 +501,6 @@ PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForText(
       Current().IsLineBreak() &&
       // This is for old compatible that old doesn't paint last br in a page.
       !IsLastBRInPage(*Current().GetLayoutObject())) {
-    DCHECK(!logical_rect.size.inline_size);
     logical_rect.size.inline_size =
         LayoutUnit(Current().Style().GetFont().SpaceWidth());
   }
