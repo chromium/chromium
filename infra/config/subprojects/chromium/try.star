@@ -658,6 +658,8 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_compile_x64_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    cores = 16,
+    ssd = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
@@ -676,6 +678,8 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_compile_x86_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    cores = 16,
+    ssd = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
