@@ -12,9 +12,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace file_manager {
 namespace util {
@@ -37,8 +40,11 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
-  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
-            GetFileManagerMainPageUrl().spec());
+  EXPECT_EQ(url::Origin::Create(GetFileManagerMainPageUrl()).GetURL(),
+            file_manager::util::GetFileManagerURL());
+  EXPECT_THAT(
+      GetFileManagerMainPageUrl().spec(),
+      ::testing::StartsWith(file_manager::util::GetFileManagerURL().spec()));
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
@@ -51,9 +57,8 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
       "",       // search_query
       false     // show_android_picker_apps
   );
-  EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
-  EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+  EXPECT_EQ(url::Origin::Create(url).GetURL(),
+            file_manager::util::GetFileManagerURL());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
@@ -98,9 +103,10 @@ TEST(FileManagerUrlUtilTest,
       "search query",
       true  // show_android_picker_apps
   );
-  EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
-  EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+  EXPECT_EQ(file_manager::util::GetFileManagerURL().scheme(), url.scheme());
+  // URL path can be / or /main.html depending on which version of the app is
+  // launched. For the legacy, we'd expect /main.html, otherwise, just /.
+  EXPECT_THAT(url.path(), ::testing::StartsWith("/"));
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
