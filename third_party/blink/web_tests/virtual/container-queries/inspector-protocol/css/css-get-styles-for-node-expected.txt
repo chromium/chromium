@@ -55,8 +55,8 @@ Dumping inherited rules:
     padding-top: 20px; @[undefined-undefined]
 *#parent-div* {    regular
     width: 100px; @[20:4-20:17]
-    contain: size layout style; @[21:4-21:31]
+    container-type: size; @[21:4-21:25]
     width: 100px; @[undefined-undefined]
-    contain: size layout style; @[undefined-undefined]
+    container-type: size; @[undefined-undefined]
 }
 

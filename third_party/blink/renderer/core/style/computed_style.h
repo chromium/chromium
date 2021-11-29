@@ -2079,9 +2079,7 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
   bool IsContainerForContainerQueries() const {
-    return (StyleType() == kPseudoIdNone) &&
-           (ContainsStyle() && ContainsLayout() &&
-            (ContainsInlineSize() || ContainsBlockSize()));
+    return StyleType() == kPseudoIdNone && IsInlineOrBlockSizeContainer();
   }
 
   // Display utility functions.

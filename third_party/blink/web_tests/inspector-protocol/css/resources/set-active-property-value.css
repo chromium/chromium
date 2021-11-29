@@ -19,7 +19,7 @@
 
 #parent-div {
     width: 100px;
-    contain: size layout style;
+    container-type: size;
 }
 
 @container (min-width: 50px) {
