@@ -943,7 +943,8 @@ base::Value ArcNetHostImpl::TranslatePasspointCredentialsToDict(
     const mojom::PasspointCredentials& cred) {
   // Fill in EAP credentials fields.
   if (!cred.eap) {
-    LOG(ERROR) << "Failed to get EAP credentials for passpoint credentials";
+    LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
+    return base::Value();
   }
   auto dict = TranslateEapCredentialsToDict(*cred.eap);
 
@@ -972,6 +973,11 @@ void ArcNetHostImpl::AddPasspointCredentials(
     return;
 
   const auto properties = TranslatePasspointCredentialsToDict(*credentials);
+  if (properties.is_none()) {
+    NET_LOG(ERROR) << "Failed to translate PasspointCredentials properties";
+    return;
+  }
+
   const auto* profile = GetNetworkProfile();
   if (!profile || profile->path.empty()) {
     LOG(ERROR) << "Unable to get network profile path";
