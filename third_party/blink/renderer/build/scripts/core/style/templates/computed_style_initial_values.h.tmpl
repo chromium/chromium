@@ -48,6 +48,9 @@ class ComputedStyleInitialValues{
   static AutoRepeatType InitialGridAutoRepeatType() {
     return AutoRepeatType::kNoAutoRepeat;
   }
+  static GridAxisType InitialGridAxisType() {
+    return GridAxisType::kStandaloneAxis;
+  }
 
   // FIXME: Remove letter-spacing/word-spacing and replace them with respective
   // FontBuilder calls.

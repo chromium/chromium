@@ -1039,6 +1039,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     OrderedNamedGridLines& auto_repeat_ordered_named_grid_lines,
     wtf_size_t& auto_repeat_insertion_point,
     AutoRepeatType& auto_repeat_type,
+    GridAxisType& grid_axis_type,
     StyleResolverState& state) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
@@ -1053,16 +1054,31 @@ void StyleBuilderConverter::ConvertGridTrackList(
       ConvertGridLineNamesList(curr_value, current_named_grid_line,
                                named_grid_lines, ordered_named_grid_lines,
                                is_in_repeat, is_first_repeat);
+      if (grid_axis_type == GridAxisType::kSubgriddedAxis)
+        ++current_named_grid_line;
     } else {
+      DCHECK_EQ(grid_axis_type, GridAxisType::kStandaloneAxis);
       ++current_named_grid_line;
       track_sizes.LegacyTrackList().push_back(
           ConvertGridTrackSize(state, curr_value));
     }
   };
 
-  for (auto curr_value : To<CSSValueList>(value)) {
+  const auto& values = To<CSSValueList>(value);
+  auto* curr_value = values.begin();
+
+  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled()) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kSubgrid) {
+      grid_axis_type = GridAxisType::kSubgriddedAxis;
+      ++curr_value;
+    }
+  }
+
+  for (; curr_value != values.end(); ++curr_value) {
     if (auto* grid_auto_repeat_value =
-            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value.Get())) {
+            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value->Get())) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
       wtf_size_t auto_repeat_index = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
@@ -1071,11 +1087,13 @@ void StyleBuilderConverter::ConvertGridTrackList(
       auto_repeat_type = auto_repeat_id == CSSValueID::kAutoFill
                              ? AutoRepeatType::kAutoFill
                              : AutoRepeatType::kAutoFit;
-      for (auto auto_repeat_value : To<CSSValueList>(*curr_value)) {
+      for (auto auto_repeat_value : To<CSSValueList>(**curr_value)) {
         if (auto_repeat_value->IsGridLineNamesValue()) {
           ConvertGridLineNamesList(*auto_repeat_value, auto_repeat_index,
                                    auto_repeat_named_grid_lines,
                                    auto_repeat_ordered_named_grid_lines);
+          if (grid_axis_type == GridAxisType::kSubgriddedAxis)
+            ++auto_repeat_index;
           continue;
         }
         ++auto_repeat_index;
@@ -1094,7 +1112,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     }
 
     if (auto* grid_integer_repeat_value =
-            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value.Get())) {
+            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value->Get())) {
       const wtf_size_t repetitions = grid_integer_repeat_value->Repetitions();
 
       for (wtf_size_t i = 0; i < repetitions; ++i) {
@@ -1105,7 +1123,8 @@ void StyleBuilderConverter::ConvertGridTrackList(
         }
       }
 
-      if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+      if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
+          (grid_axis_type == GridAxisType::kStandaloneAxis)) {
         Vector<GridTrackSize, 1> repeater_track_sizes;
         for (auto integer_repeat_value : *grid_integer_repeat_value) {
           if (!integer_repeat_value->IsGridLineNamesValue()) {
@@ -1120,18 +1139,20 @@ void StyleBuilderConverter::ConvertGridTrackList(
       continue;
     }
 
-    ConvertLineNameOrTrackSize(*curr_value);
+    ConvertLineNameOrTrackSize(**curr_value);
     if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
-        !curr_value->IsGridLineNamesValue()) {
+        !curr_value->Get()->IsGridLineNamesValue()) {
       track_sizes.NGTrackList().AddRepeater(
-          {ConvertGridTrackSize(state, *curr_value)});
+          {ConvertGridTrackSize(state, **curr_value)});
     }
   }
 
-  // The parser should have rejected any <track-list> without any <track-size>
-  // as this is not conformant to the syntax.
+  // Unless the axis is subgridded, the parser should have rejected any
+  // <track-list> without any <track-size> as this is not conformant to
+  // the syntax.
   DCHECK(!track_sizes.LegacyTrackList().IsEmpty() ||
-         !auto_repeat_track_sizes.IsEmpty());
+         !auto_repeat_track_sizes.IsEmpty() ||
+         (grid_axis_type == GridAxisType::kSubgriddedAxis));
 }
 
 void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(

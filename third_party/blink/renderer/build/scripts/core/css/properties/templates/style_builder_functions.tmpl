@@ -392,14 +392,15 @@ To<Longhand>(resolved_property).{{apply_call}};
   OrderedNamedGridLines ordered_named_grid_lines;
   NamedGridLinesMap auto_repeat_named_grid_lines;
   OrderedNamedGridLines auto_repeat_ordered_named_grid_lines;
-  AutoRepeatType autoRepeatType = ComputedStyleInitialValues::InitialGridAutoRepeatType();
+  AutoRepeatType auto_repeat_type = ComputedStyleInitialValues::InitialGridAutoRepeatType();
   wtf_size_t auto_repeat_insertion_point =
       ComputedStyleInitialValues::InitialGridAutoRepeatInsertionPoint();
+  GridAxisType grid_axis_type = ComputedStyleInitialValues::InitialGridAxisType();
   StyleBuilderConverter::ConvertGridTrackList(
       value, track_sizes, named_grid_lines, ordered_named_grid_lines,
       auto_repeat_track_sizes, auto_repeat_named_grid_lines,
       auto_repeat_ordered_named_grid_lines, auto_repeat_insertion_point,
-      autoRepeatType, state);
+      auto_repeat_type, grid_axis_type, state);
   const NamedGridAreaMap& named_grid_areas = state.Style()->NamedGridArea();
   if (!named_grid_areas.IsEmpty()) {
     StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
@@ -414,7 +415,8 @@ To<Longhand>(resolved_property).{{apply_call}};
   state.Style()->SetAutoRepeatNamedGrid{{type}}Lines(auto_repeat_named_grid_lines);
   state.Style()->SetAutoRepeatOrderedNamedGrid{{type}}Lines(
       auto_repeat_ordered_named_grid_lines);
-  state.Style()->SetGridAutoRepeat{{type}}sType(autoRepeatType);
+  state.Style()->SetGridAutoRepeat{{type}}sType(auto_repeat_type);
+  state.Style()->SetGrid{{type}}sAxisType(grid_axis_type);
     {% endcall %}
   {% endif %}
 {%- endmacro %}

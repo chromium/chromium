@@ -971,6 +971,22 @@
       keywords: ["no-auto-repeat", "auto-fill", "auto-fit"],
       default_value: "no-auto-repeat",
     },
+    {
+      name: "GridColumnsAxisType",
+      field_template: "keyword",
+      type_name: "GridAxisType",
+      field_group: "*->grid",
+      keywords: ["standalone-axis", "subgridded-axis"],
+      default_value: "standalone-axis",
+    },
+    {
+      name: "GridRowsAxisType",
+      field_template: "keyword",
+      type_name: "GridAxisType",
+      field_group: "*->grid",
+      keywords: ["standalone-axis", "subgridded-axis"],
+      default_value: "standalone-axis",
+    },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
     // is true for such ComputedStyle objects.
