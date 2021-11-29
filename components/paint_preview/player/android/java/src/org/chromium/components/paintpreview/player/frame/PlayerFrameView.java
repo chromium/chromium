@@ -37,6 +37,7 @@ public class PlayerFrameView extends FrameLayout {
     private List<View> mSubFrameViews;
     private List<Rect> mSubFrameRects;
     private Matrix mScaleMatrix;
+    private Matrix mOffset = new Matrix();
     protected WebContentsAccessibility mWebContentsAccessibility;
 
     /**
@@ -103,6 +104,10 @@ public class PlayerFrameView extends FrameLayout {
         mSubFrameRects = subFrameRects;
     }
 
+    void updateOffset(int left, int top) {
+        mOffset.setTranslate(left, top);
+    }
+
     void updateViewPort(int left, int top, int right, int bottom) {
         mBitmapPainter.updateViewPort(left, top, right, bottom);
         layoutSubFrames();
@@ -127,6 +132,7 @@ public class PlayerFrameView extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
+        canvas.concat(mOffset);
         canvas.concat(mScaleMatrix);
         mBitmapPainter.onDraw(canvas);
         canvas.restore();

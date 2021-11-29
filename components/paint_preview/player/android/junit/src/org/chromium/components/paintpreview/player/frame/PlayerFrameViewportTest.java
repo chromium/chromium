@@ -4,7 +4,9 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Size;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,6 +37,96 @@ public class PlayerFrameViewportTest {
         Assert.assertEquals(0, viewportRect.top);
         Assert.assertEquals(100, viewportRect.width());
         Assert.assertEquals(200, viewportRect.height());
+
+        Rect visibleRect = viewport.getVisibleViewport(false);
+        Assert.assertEquals(0, visibleRect.left);
+        Assert.assertEquals(0, visibleRect.top);
+        Assert.assertEquals(100, visibleRect.width());
+        Assert.assertEquals(200, visibleRect.height());
+    }
+
+    /**
+     * Tests that viewport size is set/get correctly.
+     */
+    @Test
+    public void testVisibleViewport() {
+        PlayerFrameViewport viewport = new PlayerFrameViewport();
+        viewport.setSize(100, 200);
+
+        Assert.assertEquals(100, viewport.getWidth());
+        Assert.assertEquals(200, viewport.getHeight());
+
+        Rect viewportRect = viewport.asRect();
+        Assert.assertEquals(0, viewportRect.left);
+        Assert.assertEquals(0, viewportRect.top);
+        Assert.assertEquals(100, viewportRect.width());
+        Assert.assertEquals(200, viewportRect.height());
+
+        Rect visibleRect = viewport.getVisibleViewport(true);
+        Assert.assertEquals(0, visibleRect.left);
+        Assert.assertEquals(0, visibleRect.top);
+        Assert.assertEquals(0, visibleRect.width());
+        Assert.assertEquals(0, visibleRect.height());
+        Point offset = viewport.getOffset();
+        Assert.assertEquals(0, offset.x);
+        Assert.assertEquals(0, offset.y);
+
+        Assert.assertTrue(viewport.isVisible(false));
+        Assert.assertFalse(viewport.isVisible(true));
+
+        viewport.setVisibleRegion(10, 25, 30, 55);
+        visibleRect = viewport.getVisibleViewport(true);
+        Assert.assertEquals(10, visibleRect.left);
+        Assert.assertEquals(25, visibleRect.top);
+        Assert.assertEquals(20, visibleRect.width());
+        Assert.assertEquals(30, visibleRect.height());
+        offset = viewport.getOffset();
+        Assert.assertEquals(10, offset.x);
+        Assert.assertEquals(25, offset.y);
+        Assert.assertTrue(viewport.isVisible(true));
+
+        viewport.setTrans(5, 15);
+        visibleRect = viewport.getVisibleViewport(true);
+        Assert.assertEquals(15, visibleRect.left);
+        Assert.assertEquals(40, visibleRect.top);
+        Assert.assertEquals(20, visibleRect.width());
+        Assert.assertEquals(30, visibleRect.height());
+        offset = viewport.getOffset();
+        Assert.assertEquals(10, offset.x);
+        Assert.assertEquals(25, offset.y);
+        Assert.assertTrue(viewport.isVisible(true));
+    }
+
+    /**
+     * Tests that bitmap tile size is set correctly.
+     */
+    @Test
+    public void testBitmapTileSize() {
+        PlayerFrameViewport viewport = new PlayerFrameViewport();
+        viewport.setSize(100, 300);
+
+        Assert.assertEquals(100, viewport.getWidth());
+        Assert.assertEquals(300, viewport.getHeight());
+
+        Size tileSize = viewport.getBitmapTileSize();
+        Assert.assertEquals(100, tileSize.getWidth());
+        Assert.assertEquals(150, tileSize.getHeight());
+
+        viewport.setSize(50, 400);
+        tileSize = viewport.getBitmapTileSize();
+        Assert.assertEquals(50, tileSize.getWidth());
+        Assert.assertEquals(200, tileSize.getHeight());
+
+        viewport.overrideTileSize(10, 20);
+        viewport.setSize(40, 100);
+        tileSize = viewport.getBitmapTileSize();
+        Assert.assertEquals(10, tileSize.getWidth());
+        Assert.assertEquals(20, tileSize.getHeight());
+
+        viewport.overrideTileSize(4000, 4000);
+        tileSize = viewport.getBitmapTileSize();
+        Assert.assertEquals(2500, tileSize.getWidth());
+        Assert.assertEquals(2500, tileSize.getHeight());
     }
 
     /**
