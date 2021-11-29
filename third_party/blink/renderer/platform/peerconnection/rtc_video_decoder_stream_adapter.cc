@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_log.h"
@@ -294,6 +295,8 @@ RTCVideoDecoderStreamAdapter::~RTCVideoDecoderStreamAdapter() {
 
 void RTCVideoDecoderStreamAdapter::InitializeOrReinitializeSync() {
   DVLOG(3) << __func__;
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::InitializeOrReinitializeSync");
 
   // Can be called on |worker_thread_| or |decoding_thread_|.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
@@ -314,6 +317,7 @@ void RTCVideoDecoderStreamAdapter::InitializeOrReinitializeSync() {
 bool RTCVideoDecoderStreamAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::Configure");
 
   video_codec_type_ = settings.codec_type();
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
@@ -338,6 +342,9 @@ bool RTCVideoDecoderStreamAdapter::Configure(const Settings& settings) {
 
 void RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked() {
   lock_.AssertAcquired();
+  TRACE_EVENT0(
+      "webrtc",
+      "RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked");
 
   // Don't log more than once.
   if (logged_init_status_)
@@ -367,6 +374,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     int64_t render_time_ms) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::Decode");
 
 #if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   const bool has_software_fallback =
@@ -580,6 +588,8 @@ int32_t RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback(
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   DCHECK(callback);
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback");
 
   base::AutoLock auto_lock(lock_);
   decode_complete_callback_ = callback;
@@ -594,6 +604,7 @@ int32_t RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback(
 
 int32_t RTCVideoDecoderStreamAdapter::Release() {
   DVLOG(1) << __func__;
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::Release");
 
   base::AutoLock auto_lock(lock_);
 
@@ -621,6 +632,8 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
     InitCB init_cb) {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::InitializeOnMediaThread");
 
   // There's no re-init these days.  If we ever need to re-init, such as to
   // clear an error, then `decoder_stream_` and `demuxer_stream_` should be
@@ -675,6 +688,8 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
 
 void RTCVideoDecoderStreamAdapter::OnInitializeDone(base::TimeTicks start_time,
                                                     bool success) {
+  TRACE_EVENT1("webrtc", "RTCVideoDecoderStreamAdapter::OnInitializeDone",
+               "success", success);
   RecordInitializationLatency(base::TimeTicks::Now() - start_time);
   {
     base::AutoLock auto_lock(lock_);
@@ -700,6 +715,7 @@ void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
     std::unique_ptr<PendingBuffer> pending_buffer) {
   DVLOG(4) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::DecodeOnMediaThread");
   {
     base::AutoLock auto_lock(lock_);
 
@@ -726,6 +742,8 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
     media::VideoDecoderStream::ReadResult result) {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT1("webrtc", "RTCVideoDecoderStreamAdapter::OnFrameReady",
+               "success", result.has_value());
 
   pending_read_ = false;
 
@@ -795,6 +813,7 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
 
 void RTCVideoDecoderStreamAdapter::AttemptRead() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::AttemptRead");
   {
     base::AutoLock auto_lock(lock_);
 
@@ -820,6 +839,9 @@ void RTCVideoDecoderStreamAdapter::AttemptRead() {
 bool RTCVideoDecoderStreamAdapter::ShouldReinitializeForSettingHDRColorSpace(
     const webrtc::EncodedImage& input_image) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::"
+               "ShouldReinitializeForSettingHDRColorSpace");
 
   if (config_.profile() == media::VP9PROFILE_PROFILE2 &&
       input_image.ColorSpace()) {
@@ -838,6 +860,7 @@ void RTCVideoDecoderStreamAdapter::ResetOnMediaThread() {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!pending_reset_);
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::ResetOnMediaThread");
   // A pending read is okay.  We may decide to reset at any time, even if a read
   // is in progress.  It'll be aborted when we reset `decoder_stream_`, and no
   // new read will be issued until the reset completes.
@@ -888,6 +911,7 @@ void RTCVideoDecoderStreamAdapter::AdjustQueueLength_Locked() {
 void RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread() {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread");
 
   base::AutoLock auto_lock(lock_);
   weak_this_factory_.InvalidateWeakPtrs();
@@ -912,6 +936,9 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
     media::VideoDecoder* decoder) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
+  TRACE_EVENT1("webrtc", "RTCVideoDecoderStreamAdapter::OnDecoderChanged",
+               "decoder",
+               (decoder ? static_cast<int>(decoder->GetDecoderType()) : -1));
 
   if (!decoder) {
     decoder_configured_ = false;
@@ -971,6 +998,8 @@ void RTCVideoDecoderStreamAdapter::RecordMaxInFlightDecodesLockedOnMedia() {
 
 void RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia");
 
   // Shut down and begin re-init.  It's okay if there has not been an init
   // before this.
@@ -989,6 +1018,8 @@ void RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia() {
 int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   lock_.AssertAcquired();
+  TRACE_EVENT0("webrtc",
+               "RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked");
 
   // We will either prefer software decoders by asking DecodersStream, or prefer
   // them by asking rtc to use rtc sw decoders.  Either way, we don't contribute
