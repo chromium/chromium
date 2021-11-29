@@ -50,6 +50,11 @@ Address::Address(std::unique_ptr<autofill::AutofillProfile> _profile)
     : profile(std::move(_profile)) {}
 Address::~Address() = default;
 
+UserDataMetrics::UserDataMetrics() = default;
+UserDataMetrics::~UserDataMetrics() = default;
+UserDataMetrics::UserDataMetrics(const UserDataMetrics&) = default;
+UserDataMetrics& UserDataMetrics::operator=(const UserDataMetrics&) = default;
+
 UserData::UserData() = default;
 UserData::~UserData() = default;
 

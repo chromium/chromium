@@ -1765,6 +1765,20 @@ void Controller::SetProfile(
   UpdateCollectUserDataActions();
 }
 
+void Controller::ReloadUserData(UserDataEventField event_field,
+                                UserDataEventType event_type) {
+  if (collect_user_data_options_ == nullptr) {
+    return;
+  }
+
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      event_field, event_type);
+
+  auto callback = std::move(collect_user_data_options_->reload_data_callback);
+  SetCollectUserDataOptions(nullptr);
+  std::move(callback).Run(&user_data_);
+}
+
 void Controller::SetTermsAndConditions(
     TermsAndConditionsState terms_and_conditions) {
   user_data_.terms_and_conditions_ = terms_and_conditions;

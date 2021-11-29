@@ -431,9 +431,6 @@ CollectUserDataAction::LoginDetails::LoginDetails(
 
 CollectUserDataAction::LoginDetails::~LoginDetails() = default;
 
-CollectUserDataAction::MetricsData::MetricsData() = default;
-CollectUserDataAction::MetricsData::~MetricsData() = default;
-
 CollectUserDataAction::CollectUserDataAction(ActionDelegate* delegate,
                                              const ActionProto& proto)
     : Action(delegate, proto) {
@@ -526,6 +523,8 @@ void CollectUserDataAction::InternalProcessAction(
   collect_user_data_options_->selected_user_data_changed_callback =
       base::BindRepeating(&CollectUserDataAction::OnSelectionStateChanged,
                           weak_ptr_factory_.GetWeakPtr());
+  collect_user_data_options_->reload_data_callback = base::BindOnce(
+      &CollectUserDataAction::ReloadAction, weak_ptr_factory_.GetWeakPtr());
   if (requests_pwm_logins) {
     delegate_->GetWebsiteLoginManager()->GetLoginsForUrl(
         delegate_->GetWebContents()->GetLastCommittedURL(),
@@ -539,15 +538,19 @@ void CollectUserDataAction::InternalProcessAction(
 }
 
 void CollectUserDataAction::EndAction(const ClientStatus& status) {
-  delegate_->CleanUpAfterPrompt();
   metrics_data_.action_successful = status.ok();
-  UpdateProcessedAction(status);
   MaybeLogMetrics();
   if (metrics_data_.action_successful) {
     delegate_->SetLastSuccessfulUserDataOptions(
         std::move(collect_user_data_options_));
   }
+  delegate_->CleanUpAfterPrompt();
+  UpdateProcessedAction(status);
   std::move(callback_).Run(std::move(processed_action_proto_));
+}
+
+bool CollectUserDataAction::HasActionEnded() const {
+  return !callback_;
 }
 
 void CollectUserDataAction::OnGetLogins(
@@ -678,16 +681,7 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   UpdateDateTimeRangeStart(user_data);
   UpdateDateTimeRangeEnd(user_data);
 
-  // Gather info for UMA histograms.
-  if (!shown_to_user_) {
-    shown_to_user_ = true;
-    metrics_data_.source_id =
-        ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
-    FillInitialDataStateForMetrics(user_data->available_contacts_,
-                                   user_data->available_addresses_,
-                                   user_data->available_payment_instruments_);
-    FillInitiallySelectedDataStateForMetrics(user_data);
-  }
+  UpdateMetrics(user_data);
 
   if (collect_user_data.has_prompt()) {
     delegate_->SetStatusMessage(collect_user_data.prompt());
@@ -697,12 +691,33 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   delegate_->CollectUserData(collect_user_data_options_.get());
 }
 
+void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
+  DCHECK(user_data);
+  if (!shown_to_user_) {
+    shown_to_user_ = true;
+    if (user_data->previous_user_data_metrics_) {
+      // Restore metrics data from a previous run that was interrupted by
+      // reloading the user data.
+      metrics_data_ = *user_data->previous_user_data_metrics_;
+    } else {
+      metrics_data_.source_id =
+          ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
+      FillInitialDataStateForMetrics(user_data->available_contacts_,
+                                     user_data->available_addresses_,
+                                     user_data->available_payment_instruments_);
+      FillInitiallySelectedDataStateForMetrics(user_data);
+    }
+  }
+  user_data->previous_user_data_metrics_.reset();
+}
+
 void CollectUserDataAction::OnGetUserData(
     const CollectUserDataProto& collect_user_data,
     UserData* user_data,
     const UserModel* user_model) {
-  if (!callback_)
+  if (HasActionEnded()) {
     return;
+  }
   action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
@@ -719,8 +734,9 @@ void CollectUserDataAction::OnAdditionalActionTriggered(
     int index,
     UserData* user_data,
     const UserModel* user_model) {
-  if (!callback_)
+  if (HasActionEnded()) {
     return;
+  }
   action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
@@ -734,8 +750,9 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
     int link,
     UserData* user_data,
     const UserModel* user_model) {
-  if (!callback_)
+  if (HasActionEnded()) {
     return;
+  }
   action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
@@ -743,6 +760,20 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
       link);
   WriteProcessedAction(user_data, user_model);
   EndAction(ClientStatus(ACTION_APPLIED));
+}
+
+void CollectUserDataAction::ReloadAction(UserData* user_data) {
+  if (HasActionEnded()) {
+    return;
+  }
+  action_stopwatch_.StartActiveTime();
+  delegate_->GetPersonalDataManager()->RemoveObserver(this);
+
+  metrics_data_.personal_data_changed = true;
+  user_data->previous_user_data_metrics_ = metrics_data_;
+  // We do not wish to log this yet.
+  metrics_data_.metrics_logged = true;
+  EndAction(ClientStatus(RESEND_USER_DATA));
 }
 
 void CollectUserDataAction::OnSelectionStateChanged(
@@ -1731,7 +1762,7 @@ void CollectUserDataAction::UpdateSelectedCreditCard(UserData* user_data) {
 }
 
 void CollectUserDataAction::OnPersonalDataChanged() {
-  if (!callback_) {
+  if (HasActionEnded()) {
     return;
   }
 

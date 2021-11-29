@@ -3699,5 +3699,94 @@ TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
                   source_id_, kInitialCreditCardFieldsStatus, 0)}));
 }
 
+TEST_F(CollectUserDataActionTest, ReloadsDataOnRequest) {
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->reload_data_callback)
+                .Run(&user_data_);
+          }));
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+
+  EXPECT_CALL(callback_,
+              Run(Pointee(AllOf(
+                  Property(&ProcessedActionProto::status, RESEND_USER_DATA)))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  ASSERT_TRUE(user_data_.previous_user_data_metrics_);
+  EXPECT_TRUE(user_data_.previous_user_data_metrics_->personal_data_changed);
+}
+
+TEST_F(CollectUserDataActionTest, ReloadingActionDoesNotLog) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->reload_data_callback)
+                .Run(&user_data_);
+          }));
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+  action->ProcessAction(callback_.Get());
+  // We can't wait for the callback_ to be called and destroy the action there,
+  // it will trigger a "heap use after free" error.
+  action.reset();
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.PaymentRequest.Prefilled", 0u);
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.PaymentRequest.AutofillChanged", 0u);
+}
+
+TEST_F(CollectUserDataActionTest, ActionLogsPreviousState) {
+  base::HistogramTester histogram_tester;
+
+  UserDataMetrics metrics;
+  metrics.source_id = source_id_;
+  metrics.initially_prefilled = true;
+  metrics.personal_data_changed = true;
+  user_data_.previous_user_data_metrics_ = metrics;
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            // We don't have data. "Initially prefilled" would be set to
+            // false. Don't finish the action, let the destructor log.
+          }));
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->set_shipping_address_name("shipping");
+
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+  action->ProcessAction(callback_.Get());
+  // We can't wait for the callback_ to be called and destroy the action there,
+  // it will trigger a "heap use after free" error.
+  action.reset();
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.PaymentRequest.Prefilled",
+      Metrics::PaymentRequestPrefilled::PREFILLED_FAILURE, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.PaymentRequest.AutofillChanged",
+      Metrics::PaymentRequestPrefilled::PREFILLED_FAILURE, 1u);
+  EXPECT_FALSE(user_data_.previous_user_data_metrics_);
+}
+
 }  // namespace
 }  // namespace autofill_assistant

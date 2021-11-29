@@ -235,6 +235,8 @@ class Controller : public ScriptExecutorDelegate,
   void SetCreditCard(std::unique_ptr<autofill::CreditCard> card,
                      std::unique_ptr<autofill::AutofillProfile> billing_profile,
                      UserDataEventType event_type) override;
+  void ReloadUserData(UserDataEventField event_field,
+                      UserDataEventType event_type) override;
   void SetTermsAndConditions(
       TermsAndConditionsState terms_and_conditions) override;
   void SetLoginOption(const std::string& identifier) override;

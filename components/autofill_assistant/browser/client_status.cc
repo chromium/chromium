@@ -158,6 +158,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::EMPTY_VALUE_EXPRESSION_RESULT:
       out << "EMPTY_VALUE_EXPRESSION_RESULT";
       break;
+    case ProcessedActionStatusProto::RESEND_USER_DATA:
+      out << "RESEND_USER_DATA";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.

@@ -75,41 +75,9 @@ class CollectUserDataAction : public Action,
     absl::optional<WebsiteLoginManager::Login> login;
   };
 
-  struct MetricsData {
-    MetricsData();
-    ~MetricsData();
-    bool metrics_logged = false;
-    ukm::SourceId source_id;
-
-    bool initially_prefilled = false;
-    bool personal_data_changed = false;
-    bool action_successful = false;
-
-    // Selection states.
-    Metrics::UserDataSelectionState contact_selection_state =
-        Metrics::UserDataSelectionState::NO_CHANGE;
-    Metrics::UserDataSelectionState credit_card_selection_state =
-        Metrics::UserDataSelectionState::NO_CHANGE;
-    Metrics::UserDataSelectionState shipping_selection_state =
-        Metrics::UserDataSelectionState::NO_CHANGE;
-
-    // Initial counts of complete/incomplete entries.
-    int complete_contacts_initial_count;
-    int incomplete_contacts_initial_count;
-    int complete_credit_cards_initial_count;
-    int incomplete_credit_cards_initial_count;
-    int complete_shipping_addresses_initial_count;
-    int incomplete_shipping_addresses_initial_count;
-
-    // Bitmasks of fields present in the initially selected entries.
-    int selected_contact_field_bitmask;
-    int selected_shipping_address_field_bitmask;
-    int selected_credit_card_field_bitmask;
-    int selected_billing_address_field_bitmask;
-  };
-
   void InternalProcessAction(ProcessActionCallback callback) override;
   void EndAction(const ClientStatus& status);
+  bool HasActionEnded() const;
 
   void OnGetUserData(const CollectUserDataProto& collect_user_data,
                      UserData* user_data,
@@ -120,6 +88,7 @@ class CollectUserDataAction : public Action,
   void OnTermsAndConditionsLinkClicked(int link,
                                        UserData* user_data,
                                        const UserModel* user_model);
+  void ReloadAction(UserData* user_data);
 
   // Only used for logging purposes.
   void OnSelectionStateChanged(UserDataEventField field,
@@ -129,6 +98,7 @@ class CollectUserDataAction : public Action,
                    std::vector<WebsiteLoginManager::Login> logins);
   void ShowToUser();
   void OnShowToUser(UserData* user_data, UserData::FieldChange* field_change);
+  void UpdateMetrics(UserData* user_data);
 
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.
   bool CreateOptionsFromProto();
@@ -163,7 +133,7 @@ class CollectUserDataAction : public Action,
                               UserData::FieldChange* field_change = nullptr);
   void MaybeLogMetrics();
 
-  MetricsData metrics_data_;
+  UserDataMetrics metrics_data_;
   bool shown_to_user_ = false;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;

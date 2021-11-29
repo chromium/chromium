@@ -114,6 +114,10 @@ class UiDelegate {
       std::unique_ptr<autofill::AutofillProfile> billing_profile,
       UserDataEventType event_type) = 0;
 
+  // Reload the user data for the collect user data action.
+  virtual void ReloadUserData(UserDataEventField event_field,
+                              UserDataEventType event_type) = 0;
+
   // Sets the state of the third party terms & conditions, pertaining to the
   // current collect user data options.
   virtual void SetTermsAndConditions(

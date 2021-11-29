@@ -2179,6 +2179,24 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
       }));
 }
 
+TEST_F(ControllerTest, UserDataFormReload) {
+  auto options = std::make_unique<MockCollectUserDataOptions>();
+  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  options->reload_data_callback = reload_callback.Get();
+  base::MockCallback<
+      base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
+      change_callback;
+  options->selected_user_data_changed_callback = change_callback.Get();
+
+  controller_->SetCollectUserDataOptions(options.get());
+
+  EXPECT_CALL(change_callback, Run(UserDataEventField::CONTACT_EVENT,
+                                   UserDataEventType::ENTRY_CREATED));
+  EXPECT_CALL(reload_callback, Run);
+  controller_->ReloadUserData(UserDataEventField::CONTACT_EVENT,
+                              UserDataEventType::ENTRY_CREATED);
+}
+
 TEST_F(ControllerTest, SetTermsAndConditions) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
 
