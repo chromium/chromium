@@ -618,8 +618,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
     }
 
-    if (types && types->GetString(index, &type))
-      match_type = GetAutocompleteMatchType(type);
+    if (types && index < types->GetList().size() &&
+        types->GetList()[index].is_string()) {
+      match_type =
+          GetAutocompleteMatchType(types->GetList()[index].GetString());
+    }
+
     std::string deletion_url;
     if (suggestion_details) {
       const base::Value& suggestion_detail =
