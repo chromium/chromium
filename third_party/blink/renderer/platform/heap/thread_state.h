@@ -44,6 +44,11 @@ class PLATFORM_EXPORT ThreadState final {
     return &ThreadStateStorage::Current()->thread_state();
   }
 
+  // Returns true if the current thread is currently sweeping, i.e., whether the
+  // caller is invoked from a destructor.
+  static ALWAYS_INLINE bool IsSweepingOnOwningThread(
+      ThreadStateStorage& storage);
+
   // Attaches a ThreadState to the main-thread.
   static ThreadState* AttachMainThread();
   // Attaches a ThreadState to the currently running thread. Must not be the
@@ -67,12 +72,6 @@ class PLATFORM_EXPORT ThreadState final {
   bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
 
   void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
-
-  bool InAtomicSweepingPause() const {
-    auto& heap_handle = cpp_heap().GetHeapHandle();
-    return cppgc::subtle::HeapState::IsInAtomicPause(heap_handle) &&
-           cppgc::subtle::HeapState::IsSweeping(heap_handle);
-  }
 
   bool IsAllocationAllowed() const {
     return cppgc::subtle::DisallowGarbageCollectionScope::
@@ -109,6 +108,12 @@ class PLATFORM_EXPORT ThreadState final {
   base::PlatformThreadId thread_id_;
   bool forced_scheduled_gc_for_testing_ = false;
 };
+
+// static
+bool ThreadState::IsSweepingOnOwningThread(ThreadStateStorage& storage) {
+  return cppgc::subtle::HeapState::IsSweepingOnOwningThread(
+      storage.heap_handle());
+}
 
 }  // namespace blink
 

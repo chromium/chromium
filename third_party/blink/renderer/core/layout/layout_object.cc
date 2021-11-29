@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -4055,7 +4056,7 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
 void LayoutObject::Destroy() {
   NOT_DESTROYED();
   CHECK(g_allow_destroying_layout_object_in_finalizer ||
-        !ThreadState::Current()->InAtomicSweepingPause());
+        !ThreadState::IsSweepingOnOwningThread(*ThreadStateStorage::Current()));
 
   // Mark as being destroyed to avoid trouble with merges in |RemoveChild()| and
   // other house keepings.
