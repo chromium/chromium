@@ -166,7 +166,7 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   self.collectionView.backgroundColor = ntp_home::kNTPBackgroundColor();
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.cardBorderRadius = kCardBorderRadius;
-  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
+  self.styler.separatorColor = [UIColor clearColor];
   self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
 
   ApplyVisualConstraints(@[ @"V:|[collection]|", @"H:|[collection]|" ],
