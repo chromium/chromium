@@ -4916,6 +4916,12 @@
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
     Set a pin or password on this Chromebook to protect access to your phone’s apps.
   </message>
+  <message name="IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_TITLE" translateable="false" desc="Title for notification shown when the apps streaming settigs is disabled on phone while using app stream of EcheApp.">
+    Could not launch <ph name="APP_NAME">$1<ex>the app</ex></ph>
+  </message>
+  <message name="IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_MESSAGE" translateable="false" desc="Message for the notification shown when the apps streaming settings is disabled on phony while using app stream of EcheApp.">
+    Enable apps streaming settings from your phone.
+  </message>
 
   <!-- User Image Selection Dialog -->
   <message name="IDS_USER_IMAGE_SCREEN_TITLE" desc="String to be displayed in the title bar of the oobe/login user image selection dialog">

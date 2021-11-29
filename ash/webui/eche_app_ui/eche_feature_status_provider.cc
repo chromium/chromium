@@ -25,6 +25,30 @@ using ::chromeos::multidevice_setup::mojom::Feature;
 using ::chromeos::multidevice_setup::mojom::FeatureState;
 using ::chromeos::multidevice_setup::mojom::HostStatus;
 
+bool IsHostDisabled(const RemoteDeviceRef& device) {
+  return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
+             SoftwareFeatureState::kNotSupported &&
+         device.GetSoftwareFeatureState(SoftwareFeature::kEcheHost) ==
+             SoftwareFeatureState::kSupported;
+}
+
+bool HasBeenDisabledByPhone(
+    multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
+    const RemoteDeviceRefList& remote_devices) {
+  if (host_status.first == HostStatus::kNoEligibleHosts) {
+    return false;
+  }
+
+  if (host_status.second.has_value()) {
+    return IsHostDisabled(*(host_status.second));
+  }
+  for (const RemoteDeviceRef& device : remote_devices) {
+    if (IsHostDisabled(device))
+      return true;
+  }
+  return false;
+}
+
 bool IsEnabledHost(const RemoteDeviceRef& device) {
   return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
              SoftwareFeatureState::kNotSupported &&
@@ -166,6 +190,10 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
                             multidevice_setup_client_->GetHostStatus(),
                             device_sync_client_->GetSyncedDevices(),
                             feature_state)) {
+    if (HasBeenDisabledByPhone(multidevice_setup_client_->GetHostStatus(),
+                               device_sync_client_->GetSyncedDevices())) {
+      return FeatureStatus::kNotEnabledByPhone;
+    }
     return FeatureStatus::kIneligible;
   }
 

@@ -41,7 +41,12 @@ EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
 void EcheRecentAppClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  if (recent_apps_handler_ && launch_app_helper_->IsAppLaunchAllowed()) {
+  const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+      launch_app_helper_->checkAppLaunchProhibitedReason(
+          feature_status_provider_->GetStatus());
+  if (recent_apps_handler_ &&
+      prohibited_reason ==
+          LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited) {
     recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
                                                         base::Time::Now());
   }
@@ -49,16 +54,31 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
 
 void EcheRecentAppClickHandler::OnRecentAppClicked(
     const phonehub::Notification::AppMetadata& app_metadata) {
-  if (launch_app_helper_->IsAppLaunchAllowed()) {
-    launch_app_helper_->LaunchEcheApp(
-        /*notification_id=*/absl::nullopt, app_metadata.package_name,
-        app_metadata.visible_app_name, app_metadata.user_id);
-  } else {
-    launch_app_helper_->ShowNotification(
-        /* title= */ absl::nullopt, /* message= */ absl::nullopt,
-        std::make_unique<LaunchAppHelper::NotificationInfo>(
-            LaunchAppHelper::NotificationInfo::Category::kNative,
-            LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
+  const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+      launch_app_helper_->checkAppLaunchProhibitedReason(
+          feature_status_provider_->GetStatus());
+  switch (prohibited_reason) {
+    case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
+      launch_app_helper_->LaunchEcheApp(
+          /*notification_id=*/absl::nullopt, app_metadata.package_name,
+          app_metadata.visible_app_name, app_metadata.user_id);
+      break;
+    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
+      launch_app_helper_->ShowNotification(
+          /* title= */ absl::nullopt, /* message= */ absl::nullopt,
+          std::make_unique<LaunchAppHelper::NotificationInfo>(
+              LaunchAppHelper::NotificationInfo::Category::kNative,
+              LaunchAppHelper::NotificationInfo::NotificationType::
+                  kScreenLock));
+      break;
+    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone:
+      launch_app_helper_->ShowNotification(
+          app_metadata.visible_app_name, /* message= */ absl::nullopt,
+          std::make_unique<LaunchAppHelper::NotificationInfo>(
+              LaunchAppHelper::NotificationInfo::Category::kNative,
+              LaunchAppHelper::NotificationInfo::NotificationType::
+                  kDisabledByPhone));
+      break;
   }
 }
 
@@ -83,7 +103,8 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
 bool EcheRecentAppClickHandler::IsClickable(FeatureStatus status) {
   return status == FeatureStatus::kDisconnected ||
          status == FeatureStatus::kConnecting ||
-         status == FeatureStatus::kConnected;
+         status == FeatureStatus::kConnected ||
+         status == FeatureStatus::kNotEnabledByPhone;
 }
 
 }  // namespace eche_app

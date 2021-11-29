@@ -27,6 +27,9 @@ const char kEcheAppRetryConnectionNotifierId[] =
 const char kEcheAppFromWebWithoudButtonNotifierId[] =
     "eche_app_notification_ids.from_web_without_button";
 
+const char kEcheAppDisabledByPhoneNotifierId[] =
+    "eche_app_notification_ids.disabled_by_phone";
+
 // TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
 // some point.
 const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
@@ -120,6 +123,20 @@ void EcheAppNotificationController::ShowScreenLockNotification(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE),
       gfx::Image(), rich_notification_data,
       new NotificationDelegate(kEcheAppScreenLockNotifierId,
+                               weak_ptr_factory_.GetWeakPtr())));
+}
+
+void EcheAppNotificationController::ShowDisabledByPhoneNotification(
+    const absl::optional<std::u16string>& title) {
+  // No need to take the action.
+  ShowNotification(CreateNotification(
+      kEcheAppDisabledByPhoneNotifierId,
+      l10n_util::GetStringFUTF16(
+          IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_TITLE, title.value()),
+      l10n_util::GetStringUTF16(
+          IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_MESSAGE),
+      gfx::Image(), message_center::RichNotificationData(),
+      new NotificationDelegate(kEcheAppDisabledByPhoneNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
 }
 

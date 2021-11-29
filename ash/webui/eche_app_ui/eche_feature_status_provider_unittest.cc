@@ -201,6 +201,13 @@ TEST_F(EcheFeatureStatusProviderTest, NoEligiblePhones) {
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 }
 
+TEST_F(EcheFeatureStatusProviderTest, NotEnabledByPhone) {
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/false);
+  EXPECT_EQ(FeatureStatus::kNotEnabledByPhone, GetStatus());
+}
+
 TEST_F(EcheFeatureStatusProviderTest, Disabled) {
   SetEligibleSyncedDevices();
 

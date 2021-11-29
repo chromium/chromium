@@ -38,16 +38,31 @@ EcheNotificationClickHandler::~EcheNotificationClickHandler() {
 void EcheNotificationClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  if (launch_app_helper_->IsAppLaunchAllowed()) {
-    launch_app_helper_->LaunchEcheApp(
-        notification_id, app_metadata.package_name,
-        app_metadata.visible_app_name, app_metadata.user_id);
-  } else {
-    launch_app_helper_->ShowNotification(
-        app_metadata.visible_app_name, /* message= */ absl::nullopt,
-        std::make_unique<LaunchAppHelper::NotificationInfo>(
-            LaunchAppHelper::NotificationInfo::Category::kNative,
-            LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
+  const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+      launch_app_helper_->checkAppLaunchProhibitedReason(
+          feature_status_provider_->GetStatus());
+  switch (prohibited_reason) {
+    case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
+      launch_app_helper_->LaunchEcheApp(
+          notification_id, app_metadata.package_name,
+          app_metadata.visible_app_name, app_metadata.user_id);
+      break;
+    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
+      launch_app_helper_->ShowNotification(
+          app_metadata.visible_app_name, /* message= */ absl::nullopt,
+          std::make_unique<LaunchAppHelper::NotificationInfo>(
+              LaunchAppHelper::NotificationInfo::Category::kNative,
+              LaunchAppHelper::NotificationInfo::NotificationType::
+                  kScreenLock));
+      break;
+    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone:
+      launch_app_helper_->ShowNotification(
+          app_metadata.visible_app_name, /* message= */ absl::nullopt,
+          std::make_unique<LaunchAppHelper::NotificationInfo>(
+              LaunchAppHelper::NotificationInfo::Category::kNative,
+              LaunchAppHelper::NotificationInfo::NotificationType::
+                  kDisabledByPhone));
+      break;
   }
 }
 
@@ -65,25 +80,28 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
   } else if (is_click_handler_set_ && !clickable) {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
-    if (NeedClose(feature_status_provider_->GetStatus()) &&
-        !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
-      PA_LOG(INFO) << "Close Eche app window";
-      launch_app_helper_->CloseEcheApp();
-    }
+  }
+
+  if (NeedClose(feature_status_provider_->GetStatus()) &&
+      !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
+    PA_LOG(INFO) << "Close Eche app window";
+    launch_app_helper_->CloseEcheApp();
   }
 }
 
 bool EcheNotificationClickHandler::IsClickable(FeatureStatus status) {
   return status == FeatureStatus::kDisconnected ||
          status == FeatureStatus::kConnecting ||
-         status == FeatureStatus::kConnected;
+         status == FeatureStatus::kConnected ||
+         status == FeatureStatus::kNotEnabledByPhone;
 }
 
 // Checks FeatureStatus that eche feature is not able to use.
 bool EcheNotificationClickHandler::NeedClose(FeatureStatus status) {
   return status == FeatureStatus::kIneligible ||
          status == FeatureStatus::kDisabled ||
-         status == FeatureStatus::kDependentFeature;
+         status == FeatureStatus::kDependentFeature ||
+         status == FeatureStatus::kNotEnabledByPhone;
 }
 }  // namespace eche_app
 }  // namespace ash

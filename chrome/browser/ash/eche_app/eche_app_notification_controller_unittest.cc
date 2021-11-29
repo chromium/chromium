@@ -91,5 +91,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   notification->delegate()->Click(1, absl::nullopt);
 }
 
+TEST_F(EcheAppNotificationControllerTest, ShowDisabledByPhoneNotification) {
+  absl::optional<std::u16string> title = u"title";
+  notification_controller_->ShowDisabledByPhoneNotification(title);
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kEcheAppDisabledByPhoneNotifierId);
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
+}
+
 }  // namespace eche_app
 }  // namespace ash

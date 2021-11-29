@@ -19,6 +19,7 @@ namespace eche_app {
 extern const char kEcheAppScreenLockNotifierId[];
 extern const char kEcheAppRetryConnectionNotifierId[];
 extern const char kEcheAppFromWebWithoudButtonNotifierId[];
+extern const char kEcheAppDisabledByPhoneNotifierId[];
 
 // Controller class to show notifications.
 class EcheAppNotificationController {
@@ -40,6 +41,11 @@ class EcheAppNotificationController {
       const absl::optional<std::u16string>& message,
       absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
                     mojom::WebNotificationType> type);
+
+  // Shows the notification when apps streaming settings is disabled on the
+  // phone.
+  void ShowDisabledByPhoneNotification(
+      const absl::optional<std::u16string>& title);
 
  protected:
   // Exposed for testing.

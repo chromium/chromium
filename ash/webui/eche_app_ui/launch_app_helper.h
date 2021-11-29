@@ -7,6 +7,7 @@
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,6 +33,9 @@ class LaunchAppHelper {
     enum class NotificationType {
       // Remind users to enable screen lock.
       kScreenLock = 0,
+
+      // Remind user to enable the apps streaming setting from remote devices.
+      kDisabledByPhone = 1,
     };
 
     NotificationInfo(
@@ -62,6 +66,20 @@ class LaunchAppHelper {
 
   using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
+  // Enum representing potential reasons why an app is forbidden to launch.
+  enum class AppLaunchProhibitedReason {
+    // Launching app is allowed.
+    kNotProhibited = 0,
+
+    // Launching app is not allowed because it requires the user to enable the
+    // screen lock.
+    kDisabledByScreenLock = 1,
+
+    // Launching app is not allowed because it requires the user enable apps
+    // streaming setting from remote devices.
+    kDisabledByPhone = 2,
+  };
+
   LaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                   LaunchEcheAppFunction launch_eche_app_function,
                   CloseEcheAppFunction close_eche_app_function,
@@ -72,7 +90,8 @@ class LaunchAppHelper {
   LaunchAppHelper& operator=(const LaunchAppHelper&) = delete;
 
   // Exposed virtual for testing.
-  virtual bool IsAppLaunchAllowed() const;
+  virtual LaunchAppHelper::AppLaunchProhibitedReason
+  checkAppLaunchProhibitedReason(FeatureStatus status) const;
 
   // Exposed virtual for testing.
   // The notification could be generated from webUI or native layer, for the
@@ -89,11 +108,15 @@ class LaunchAppHelper {
   void CloseEcheApp() const;
 
  private:
+  bool IsScreenLockRequired() const;
   phonehub::PhoneHubManager* phone_hub_manager_;
   LaunchEcheAppFunction launch_eche_app_function_;
   CloseEcheAppFunction close_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         LaunchAppHelper::AppLaunchProhibitedReason reasons);
 
 }  // namespace eche_app
 }  // namespace ash

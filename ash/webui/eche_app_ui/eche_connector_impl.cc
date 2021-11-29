@@ -36,6 +36,8 @@ void EcheConnectorImpl::SendMessage(const std::string& message) {
     case FeatureStatus::kDependentFeaturePending:
       PA_LOG(WARNING) << "Attempting to send message with ineligible dep";
       break;
+    case FeatureStatus::kNotEnabledByPhone:
+      FALLTHROUGH;
     case FeatureStatus::kIneligible:
       PA_LOG(WARNING) << "Attempting to send message for ineligible feature";
       break;
