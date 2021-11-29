@@ -453,15 +453,6 @@ typedef GLboolean (GL_APIENTRYP PFNGLENABLEFEATURECHROMIUMPROC) (
 #endif
 #endif  /* GL_CHROMIUM_command_buffer_latency_query */
 
-/* GL_CHROMIUM_screen_space_antialiasing */
-#ifndef GL_CHROMIUM_screen_space_antialiasing
-#define GL_CHROMIUM_screen_space_antialiasing 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glApplyScreenSpaceAntialiasingCHROMIUM();
-#endif
-typedef void(GL_APIENTRYP PFNGLAPPLYSCREENSPACEANTIALIASINGCHROMIUMPROC)();
-#endif /* GL_CHROMIUM_screen_space_antialiasing */
-
 /* GL_ARB_robustness */
 #ifndef GL_ARB_robustness
 #define GL_ARB_robustness 1
