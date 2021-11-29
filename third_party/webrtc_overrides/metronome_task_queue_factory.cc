@@ -31,6 +31,12 @@ const base::FeatureParam<base::TimeDelta> kWebRtcMetronomeTaskQueueTick{
 const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludePacer{
     &kWebRtcMetronomeTaskQueue, "exclude_pacer", /*default_value=*/true};
 
+const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeDecoders{
+    &kWebRtcMetronomeTaskQueue, "exclude_decoders", /*default_value=*/true};
+
+const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeMisc{
+    &kWebRtcMetronomeTaskQueue, "exclude_misc", /*default_value=*/false};
+
 namespace {
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
@@ -184,12 +190,23 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
       scoped_refptr<MetronomeSource> metronome_source)
       : metronome_source_(std::move(metronome_source)),
         high_priority_task_queue_factory_(CreateWebRtcTaskQueueFactory()),
-        exclude_pacer_(kWebRtcMetronomeTaskQueueExcludePacer.Get()) {}
+        exclude_pacer_(kWebRtcMetronomeTaskQueueExcludePacer.Get()),
+        exclude_decoders_(kWebRtcMetronomeTaskQueueExcludeDecoders.Get()),
+        exclude_misc_(kWebRtcMetronomeTaskQueueExcludeMisc.Get()) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
-    if ((priority == webrtc::TaskQueueFactory::Priority::HIGH) ||
-        (exclude_pacer_ && name.compare("TaskQueuePacedSender") == 0)) {
+    bool use_metronome;
+    if (name.compare("TaskQueuePacedSender") == 0) {
+      use_metronome = !exclude_pacer_;
+    } else if (name.compare("DecodingQueue") == 0) {
+      use_metronome = !exclude_decoders_;
+    } else if (priority == webrtc::TaskQueueFactory::Priority::HIGH) {
+      use_metronome = false;
+    } else {
+      use_metronome = !exclude_misc_;
+    }
+    if (!use_metronome) {
       return high_priority_task_queue_factory_->CreateTaskQueue(name, priority);
     }
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
@@ -203,6 +220,8 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   const std::unique_ptr<webrtc::TaskQueueFactory>
       high_priority_task_queue_factory_;
   const bool exclude_pacer_;
+  const bool exclude_decoders_;
+  const bool exclude_misc_;
 };
 
 }  // namespace
