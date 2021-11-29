@@ -1158,6 +1158,14 @@ void PaintOpReader::ReadRecordPaintFilter(
     return;
   }
 
+  // RecordPaintFilter also requires kRasterAtScale to have {1.f, 1.f} as the
+  // raster_scale, since that is intended for kFixedScale
+  if (scaling_behavior == PaintShader::ScalingBehavior::kRasterAtScale &&
+      (raster_scale.width() != 1.f || raster_scale.height() != 1.f)) {
+    SetInvalid(DeserializationError::kInvalidRasterScale);
+    return;
+  }
+
   Read(&record);
   if (!valid_)
     return;
