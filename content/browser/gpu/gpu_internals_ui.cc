@@ -694,9 +694,9 @@ class GpuMessageHandler
 
   // Submessages dispatched from OnCallAsync
   std::unique_ptr<base::DictionaryValue> OnRequestClientInfo(
-      const base::ListValue* list);
+      std::vector<base::Value> list);
   std::unique_ptr<base::ListValue> OnRequestLogMessages(
-      const base::ListValue* list);
+      std::vector<base::Value> list);
 
  private:
   // True if observing the GpuDataManager (re-attaching as observer would
@@ -733,28 +733,27 @@ void GpuMessageHandler::RegisterMessages() {
 }
 
 void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
-  DCHECK_GE(args->GetList().size(), static_cast<size_t>(2));
+  base::Value::ConstListView args_list = args->GetList();
+  DCHECK_GE(args_list.size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
-  bool ok;
-  const base::Value& requestId = args->GetList()[0];
-
+  const base::Value& requestId = args_list[0];
   std::string submessage;
-  ok = args->GetString(1, &submessage);
-  DCHECK(ok);
+  if (args_list[1].is_string())
+    submessage = args_list[1].GetString();
+  else
+    DCHECK(false) << "submessage isn't string";
 
-  auto submessageArgs = std::make_unique<base::ListValue>();
-  for (size_t i = 2; i < args->GetList().size(); ++i) {
-    const base::Value& arg = args->GetList()[i];
-
-    submessageArgs->Append(arg.Clone());
+  std::vector<base::Value> submessageArgs;
+  for (size_t i = 2; i < args_list.size(); ++i) {
+    submessageArgs.push_back(args_list[i].Clone());
   }
 
   // call the submessage handler
   std::unique_ptr<base::Value> ret;
   if (submessage == "requestClientInfo") {
-    ret = OnRequestClientInfo(submessageArgs.get());
+    ret = OnRequestClientInfo(std::move(submessageArgs));
   } else if (submessage == "requestLogMessages") {
-    ret = OnRequestLogMessages(submessageArgs.get());
+    ret = OnRequestLogMessages(std::move(submessageArgs));
   } else {  // unrecognized submessage
     NOTREACHED();
     return;
@@ -794,33 +793,33 @@ void GpuMessageHandler::OnBrowserBridgeInitialized(
 }
 
 std::unique_ptr<base::DictionaryValue> GpuMessageHandler::OnRequestClientInfo(
-    const base::ListValue* list) {
+    std::vector<base::Value> args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict = std::make_unique<base::DictionaryValue>();
 
-  dict->SetString("version", GetContentClient()->browser()->GetProduct());
+  dict->SetStringKey("version", GetContentClient()->browser()->GetProduct());
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
 #if defined(OS_WIN)
-  dict->SetString("command_line", base::WideToUTF8(command_line));
+  dict->SetStringKey("command_line", base::WideToUTF8(command_line));
 #else
-  dict->SetString("command_line", command_line);
+  dict->SetStringKey("command_line", command_line);
 #endif
-  dict->SetString("operating_system",
-                  base::SysInfo::OperatingSystemName() + " " +
-                  base::SysInfo::OperatingSystemVersion());
-  dict->SetString("angle_commit_id", angle::GetANGLECommitHash());
-  dict->SetString("graphics_backend",
-                  std::string("Skia/" STRINGIZE(SK_MILESTONE)
-                              " " SKIA_COMMIT_HASH));
-  dict->SetString("revision_identifier", GPU_LISTS_VERSION);
+  dict->SetStringKey("operating_system",
+                     base::SysInfo::OperatingSystemName() + " " +
+                         base::SysInfo::OperatingSystemVersion());
+  dict->SetStringKey("angle_commit_id", angle::GetANGLECommitHash());
+  dict->SetStringKey(
+      "graphics_backend",
+      std::string("Skia/" STRINGIZE(SK_MILESTONE) " " SKIA_COMMIT_HASH));
+  dict->SetStringKey("revision_identifier", GPU_LISTS_VERSION);
 
   return dict;
 }
 
 std::unique_ptr<base::ListValue> GpuMessageHandler::OnRequestLogMessages(
-    const base::ListValue*) {
+    std::vector<base::Value> args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return GpuDataManagerImpl::GetInstance()->GetLogMessages();
