@@ -220,6 +220,7 @@ void ZipFileCreator::WriteZipFile(
                                                this, std::cref(listener)),
       .progress_period = base::Milliseconds(1000),
       .recursive = true,
+      .continue_on_error = true,
   });
 
   listener->OnFinished(success);

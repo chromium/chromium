@@ -73,7 +73,17 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, FailZipForAbsentFile) {
   creator->Start(LaunchService());
 
   run_loop.Run();
-  EXPECT_EQ(ZipFileCreator::kError, creator->GetResult());
+  EXPECT_EQ(ZipFileCreator::kSuccess, creator->GetResult());
+
+  // Check final progress.
+  {
+    const ZipFileCreator::Progress progress = creator->GetProgress();
+    EXPECT_EQ(0, progress.bytes);
+    EXPECT_EQ(0, progress.files);
+    EXPECT_EQ(0, progress.directories);
+    EXPECT_LE(2, progress.update_count);
+    EXPECT_EQ(ZipFileCreator::kSuccess, progress.result);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
