@@ -5694,9 +5694,8 @@ scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
   DCHECK(!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
          !IsHighlightPseudoElement(request.pseudo_id));
 
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
-  return StyleForPseudoElement(style_recalc_context, request);
+  return StyleForPseudoElement(
+      StyleRecalcContext::FromInclusiveAncestors(*this), request);
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
