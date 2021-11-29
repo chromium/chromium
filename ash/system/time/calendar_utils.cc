@@ -100,17 +100,17 @@ base::Time GetStartOfNextMonthLocal(base::Time date) {
   return GetStartOfMonthLocal(GetStartOfMonthLocal(date) + base::Days(33));
 }
 
-base::Time GetStartOfMonthUTC(const base::Time& date) {
+ASH_EXPORT base::Time GetStartOfMonthUTC(const base::Time& date) {
   return (date -
           base::Days(calendar_utils::GetExplodedUTC(date).day_of_month - 1))
       .UTCMidnight();
 }
 
-base::Time GetStartOfPreviousMonthUTC(base::Time date) {
+ASH_EXPORT base::Time GetStartOfPreviousMonthUTC(base::Time date) {
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) - base::Days(1));
 }
 
-base::Time GetStartOfNextMonthUTC(base::Time date) {
+ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   // Adds over 31 days to make sure it goes to the next month.
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }

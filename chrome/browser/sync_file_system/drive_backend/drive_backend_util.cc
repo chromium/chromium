@@ -16,6 +16,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/logger.h"
 #include "components/drive/drive_api_util.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 

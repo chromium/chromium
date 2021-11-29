@@ -440,6 +440,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.FetchEvents.Result"
+    enum="CalendarEventFetchApiError" expires_after="2022-11-10">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded whenever calendar events are fetched. The recorded enum value
+    indicates the return code of the fetch request.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
     enum="CaptureModeBarButtonType" expires_after="2022-09-29">
   <owner>chinsenj@chromium.org</owner>

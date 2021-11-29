@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -330,6 +331,7 @@ void CalendarViewController::OnCalendarEventsFetched(
     std::unique_ptr<google_apis::calendar::EventList> events) {
   // TODO https://crbug.com/1258179 we need to handle the other error codes we
   // can possibly receive, and know for certain which fetch request failed.
+  base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
   if (error != google_apis::HTTP_SUCCESS) {
     LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
     return;

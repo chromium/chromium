@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,8 +153,9 @@ class MockCalendarViewController : public CalendarViewController {
     SingleMonthEventMap empty_month;
     event_months_.emplace(start_of_month, empty_month);
 
-    // Receive the results of the fetch.
-    OnCalendarEventsFetched(google_apis::HTTP_SUCCESS,
+    // Receive the results of the fetch.  Check whether we've set an error code
+    // for start_of_month.
+    OnCalendarEventsFetched(GetFetchErrorCode(start_of_month),
                             std::move(fetched_events));
   }
 
@@ -162,8 +165,32 @@ class MockCalendarViewController : public CalendarViewController {
     injected_events_ = std::move(events);
   }
 
+  // For testing of event-fetching error cases.  Specify the error codes we want
+  // fetches of the previous, current, and next months' events to return.
+  void SetFetchErrors(base::Time current_date,
+                      google_apis::ApiErrorCode prev,
+                      google_apis::ApiErrorCode current,
+                      google_apis::ApiErrorCode next) {
+    ResetFetchErrors();
+    fetch_errors_.emplace(
+        calendar_utils::GetStartOfPreviousMonthUTC(current_date), prev);
+    fetch_errors_.emplace(calendar_utils::GetStartOfMonthUTC(current_date),
+                          current);
+    fetch_errors_.emplace(calendar_utils::GetStartOfNextMonthUTC(current_date),
+                          next);
+  }
+  void ResetFetchErrors() { fetch_errors_.clear(); }
+  google_apis::ApiErrorCode GetFetchErrorCode(base::Time date) {
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
+    auto it = fetch_errors_.find(date);
+    if (it != fetch_errors_.end())
+      error = it->second;
+    return error;
+  }
+
  private:
   std::unique_ptr<google_apis::calendar::EventList> injected_events_;
+  std::map<base::Time, google_apis::ApiErrorCode> fetch_errors_;
 };
 
 class CalendarViewControllerEventsTest : public AshTestBase {
@@ -675,6 +702,112 @@ TEST_F(CalendarViewControllerEventsTest, PruneEvents) {
   EXPECT_TRUE(IsDayWithEventsInternal(kStartTime1, &events));
   events.clear();
   EXPECT_TRUE(IsDayWithEventsInternal(kStartTime2, &events));
+}
+
+TEST_F(CalendarViewControllerEventsTest, RecordFetchResultHistogram_Success) {
+  const char* kStartTime = "23 Oct 2009 11:30 GMT";
+  const char* kEndTime = "23 Oct 2009 12:30 GMT";
+  const char* kId = "id_0";
+  const char* kSummary = "summary_0";
+  base::HistogramTester histogram_tester;
+
+  // Current date is just kStartTime.
+  base::Time current_date;
+  bool result = base::Time::FromString(kStartTime, &current_date);
+  DCHECK(result);
+  SetFakeNow(current_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewControllerEventsTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+  controller_ = std::make_unique<MockCalendarViewController>();
+
+  // Set up list of events to inject.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
+  SingleDayEventList events;
+
+  // Haven't injected anything yet, so no events on kStartTime0.
+  events.clear();
+  EXPECT_FALSE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Inject events (pretend the user just added them).
+  event_list->InjectItemForTesting(std::move(event));
+  controller_->InjectEvents(std::move(event_list));
+
+  // Now fetch the events, which will get all events from the current month, as
+  // well as next/prev months.
+  controller_->FetchEvents();
+
+  // We should have recorded "success" for all three fetches (current, prev, and
+  // next months).
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/3);
+}
+
+TEST_F(CalendarViewControllerEventsTest, RecordFetchResultHistogram_Failure) {
+  const char* kStartTime = "23 Oct 2009 11:30 GMT";
+  const char* kEndTime = "23 Oct 2009 12:30 GMT";
+  const char* kId = "id_0";
+  const char* kSummary = "summary_0";
+  base::HistogramTester histogram_tester;
+
+  // Current date is just kStartTime.
+  base::Time current_date;
+  bool result = base::Time::FromString(kStartTime, &current_date);
+  DCHECK(result);
+  SetFakeNow(current_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewControllerEventsTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+  controller_ = std::make_unique<MockCalendarViewController>();
+
+  // Set up list of events to inject.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
+  SingleDayEventList events;
+
+  // Haven't injected anything yet, so no events on kStartTime0.
+  events.clear();
+  EXPECT_FALSE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Inject events (pretend the user just added them).
+  event_list->InjectItemForTesting(std::move(event));
+  controller_->InjectEvents(std::move(event_list));
+
+  // Set up return error codes.
+  controller_->SetFetchErrors(current_date, google_apis::HTTP_UNAUTHORIZED,
+                              google_apis::NO_CONNECTION,
+                              google_apis::PARSE_ERROR);
+
+  // Now fetch the events, which will get all events from the current month, as
+  // well as next/prev months.
+  controller_->FetchEvents();
+
+  // We should have recorded "success" for no fetches, and one each for the
+  // errors we specified.
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
+                                     google_apis::HTTP_UNAUTHORIZED,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
+                                     google_apis::NO_CONNECTION,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
+                                     google_apis::PARSE_ERROR,
+                                     /*expected_count=*/1);
 }
 
 }  // namespace ash

@@ -11077,6 +11077,35 @@ Called by update_bad_message_reasons.py.-->
   <int value="32" label="Overlay disabled"/>
 </enum>
 
+<enum name="CalendarEventFetchApiError">
+  <int value="200" label="HTTP_SUCCESS"/>
+  <int value="201" label="HTTP_CREATED"/>
+  <int value="204" label="HTTP_NO_CONTENT"/>
+  <int value="302" label="HTTP_NOT_FOUND"/>
+  <int value="304" label="HTTP_NOT_MODIFIED"/>
+  <int value="308" label="HTTP_RESUME_INCOMPLETE"/>
+  <int value="400" label="HTTP_BAD_REQUEST"/>
+  <int value="401" label="HTTP_UNAUTHORIZED"/>
+  <int value="403" label="HTTP_FORBIDDEN"/>
+  <int value="404" label="HTTP_NOT_FOUND"/>
+  <int value="409" label="HTTP_CONFLICT"/>
+  <int value="410" label="HTTP_GONE"/>
+  <int value="411" label="HTTP_LENGTH_REQUIRED"/>
+  <int value="412" label="HTTP_PRECONDITION"/>
+  <int value="500" label="HTTP_INTERNAL_SERVER_ERROR"/>
+  <int value="501" label="HTTP_NOT_IMPLEMENTED"/>
+  <int value="502" label="HTTP_BAD_GATEWAY"/>
+  <int value="503" label="HTTP_SERVICE_UNAVAILABLE"/>
+  <int value="900" label="NO_CONNECTION"/>
+  <int value="901" label="NOT_READY"/>
+  <int value="902" label="OTHER_ERROR"/>
+  <int value="903" label="CANCELLED"/>
+  <int value="904" label="PARSE_ERROR"/>
+  <int value="1000" label="DRIVE_FILE_ERROR"/>
+  <int value="1001" label="DRIVE_NO_SPACE"/>
+  <int value="1002" label="DRIVE_RESPONSE_TOO_LARGE"/>
+</enum>
+
 <enum name="CameraPrivacySwitchEvent">
   <int value="0" label="Camera privacy switch toggled on"/>
   <int value="1" label="Camera privacy switch toggled off"/>
