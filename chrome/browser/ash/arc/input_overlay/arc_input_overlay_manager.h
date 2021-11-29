@@ -9,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -51,8 +52,10 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
-
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
 
   // KeyedService overrides:
   void Shutdown() override;
@@ -79,11 +82,16 @@ class ArcInputOverlayManager : public KeyedService,
   std::unique_ptr<InputMethodObserver> input_method_observer_;
   // Only one window is registered since there is only one window can be focused
   // each time.
-  aura::Window* registered_window_ = nullptr;
+  aura::Window* registered_top_level_window_ = nullptr;
+  std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
 
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
   void NotifyTextInputState();
+  void AddObserverToInputMethod();
+  void RemoveObserverFromInputMethod();
+  void RegisterWindow(aura::Window* top_level_window);
+  void UnRegisterWindow(aura::Window* top_level_window);
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -107,39 +108,6 @@ constexpr const char kValidJsonActionMoveKey[] =
     })json";
 }  // namespace
 
-// Records all key events for testing.
-class EventCapturer : public ui::EventHandler {
- public:
-  EventCapturer() = default;
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-  ~EventCapturer() override = default;
-
-  void Clear() {
-    key_events_.clear();
-    touch_events_.clear();
-  }
-
-  std::vector<std::unique_ptr<ui::KeyEvent>>& key_events() {
-    return key_events_;
-  }
-  std::vector<std::unique_ptr<ui::TouchEvent>>& touch_events() {
-    return touch_events_;
-  }
-
- private:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    key_events_.emplace_back(std::make_unique<ui::KeyEvent>(*event));
-  }
-
-  void OnTouchEvent(ui::TouchEvent* event) override {
-    touch_events_.emplace_back(std::make_unique<ui::TouchEvent>(*event));
-  }
-
-  std::vector<std::unique_ptr<ui::KeyEvent>> key_events_;
-  std::vector<std::unique_ptr<ui::TouchEvent>> touch_events_;
-};
-
 class TouchInjectorTest : public views::ViewsTestBase {
  protected:
   TouchInjectorTest()
@@ -181,7 +149,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
 
   aura::Window* root_window() { return GetContext(); }
 
-  EventCapturer event_capturer_;
+  input_overlay::test::EventCapturer event_capturer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   std::unique_ptr<views::Widget> widget_;

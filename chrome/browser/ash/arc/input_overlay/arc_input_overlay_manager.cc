@@ -116,9 +116,62 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
-  auto it = input_overlay_enabled_windows_.find(registered_window_);
+  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
   if (it != input_overlay_enabled_windows_.end())
     it->second->NotifyTextInputState(is_text_input_active_);
+}
+
+void ArcInputOverlayManager::AddObserverToInputMethod() {
+  if (!registered_top_level_window_)
+    return;
+  DCHECK(registered_top_level_window_->GetHost());
+  DCHECK(!input_method_);
+  input_method_ = registered_top_level_window_->GetHost()->GetInputMethod();
+  if (input_method_)
+    input_method_->AddObserver(input_method_observer_.get());
+}
+
+void ArcInputOverlayManager::RemoveObserverFromInputMethod() {
+  if (!input_method_)
+    return;
+  input_method_->RemoveObserver(input_method_observer_.get());
+  input_method_ = nullptr;
+}
+
+void ArcInputOverlayManager::RegisterWindow(aura::Window* top_level_window) {
+  if (!top_level_window || registered_top_level_window_ == top_level_window)
+    return;
+  auto it = input_overlay_enabled_windows_.find(top_level_window);
+  if (it == input_overlay_enabled_windows_.end())
+    return;
+  DCHECK(!registered_top_level_window_);
+  it->second->RegisterEventRewriter();
+  registered_top_level_window_ = top_level_window;
+  AddObserverToInputMethod();
+  // If the window is on the extended window, it turns out only primary root
+  // window catches the key event. So it needs to forward the key event from
+  // primary root window to extended root window event source.
+  if (registered_top_level_window_->GetRootWindow() !=
+      ash::Shell::GetPrimaryRootWindow()) {
+    key_event_source_rewriter_ =
+        std::make_unique<KeyEventSourceRewriter>(registered_top_level_window_);
+  }
+}
+
+void ArcInputOverlayManager::UnRegisterWindow(aura::Window* top_level_window) {
+  if (!registered_top_level_window_ ||
+      registered_top_level_window_ != top_level_window) {
+    return;
+  }
+  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
+  DCHECK(it != input_overlay_enabled_windows_.end());
+  if (it == input_overlay_enabled_windows_.end())
+    return;
+  if (key_event_source_rewriter_)
+    key_event_source_rewriter_.reset();
+  it->second->UnRegisterEventRewriter();
+  registered_top_level_window_ = nullptr;
+  RemoveObserverFromInputMethod();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,31 +198,36 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
     if (!package_name || package_name->empty())
       return;
     ReadData(*package_name, top_level_window);
-
-    // Add input method observer if it is not added.
-    if (!input_method_ && window->GetHost()) {
-      input_method_ = window->GetHost()->GetInputMethod();
-      if (input_method_)
-        input_method_->AddObserver(input_method_observer_.get());
-    }
   }
 }
 
 void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
-  if (input_overlay_enabled_windows_.contains(window))
-    input_overlay_enabled_windows_.erase(window);
-
   if (window_observations_.IsObservingSource(window))
     window_observations_.RemoveObservation(window);
+  UnRegisterWindow(window);
+  input_overlay_enabled_windows_.erase(window);
+}
+
+void ArcInputOverlayManager::OnWindowAddedToRootWindow(aura::Window* window) {
+  if (!window)
+    return;
+  RegisterWindow(window->GetToplevelWindow());
+}
+
+void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
+    aura::Window* window,
+    aura::Window* new_root) {
+  if (!window)
+    return;
+  // There might be child window surface removing, we don't unregister window
+  // until the top_level_window is removed from the root.
+  UnRegisterWindow(window);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // KeyedService:
 void ArcInputOverlayManager::Shutdown() {
-  if (input_method_) {
-    input_method_->RemoveObserver(input_method_observer_.get());
-    input_method_ = nullptr;
-  }
+  UnRegisterWindow(registered_top_level_window_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,23 +242,12 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
 
   if (gained_focus)
     gained_focus_top_level_window = gained_focus->GetToplevelWindow();
-  else
-    registered_window_ = nullptr;
 
   if (lost_focus_top_level_window == gained_focus_top_level_window)
     return;
 
-  auto it = input_overlay_enabled_windows_.find(lost_focus_top_level_window);
-  if (it != input_overlay_enabled_windows_.end()) {
-    it->second->UnRegisterEventRewriter();
-    registered_window_ = nullptr;
-  }
-
-  it = input_overlay_enabled_windows_.find(gained_focus_top_level_window);
-  if (it != input_overlay_enabled_windows_.end()) {
-    it->second->RegisterEventRewriter();
-    registered_window_ = gained_focus_top_level_window;
-  }
+  UnRegisterWindow(lost_focus_top_level_window);
+  RegisterWindow(gained_focus_top_level_window);
 }
 
 }  // namespace arc
