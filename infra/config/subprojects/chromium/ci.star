@@ -4232,7 +4232,7 @@ ci.fyi_windows_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["use_clang_coverage", "enable_reclient"],
+            apply_configs = ["use_clang_coverage", "enable_reclient", "reclient_test"],
         ),
     ),
     console_view_entry = consoles.console_view_entry(
