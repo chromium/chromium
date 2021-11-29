@@ -31,10 +31,10 @@ int TypeToPrefValue(SessionStartupPref::Type type) {
 
 void URLListToPref(const base::ListValue* url_list, SessionStartupPref* pref) {
   pref->urls.clear();
-  for (size_t i = 0; i < url_list->GetList().size(); ++i) {
-    std::string url_text;
-    if (url_list->GetString(i, &url_text)) {
-      GURL fixed_url = url_formatter::FixupURL(url_text, std::string());
+  for (const base::Value& i : url_list->GetList()) {
+    const std::string* url_text = i.GetIfString();
+    if (url_text) {
+      GURL fixed_url = url_formatter::FixupURL(*url_text, std::string());
       pref->urls.push_back(fixed_url);
     }
   }
