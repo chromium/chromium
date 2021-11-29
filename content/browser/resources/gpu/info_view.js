@@ -280,6 +280,8 @@ export function makeInfoView(browserBridge) {
         'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
         'raw_draw': 'Raw Draw',
         'video_encode': 'Video Encode',
+        'direct_rendering_display_compositor':
+            'Direct Rendering Display Compositor',
       };
 
       const statusMap = {
