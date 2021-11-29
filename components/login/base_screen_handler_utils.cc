@@ -11,15 +11,25 @@ namespace login {
 
 namespace {
 
+// Helpers to let ParseListString produce output of appropriate type.
+void ConvertFromUTF8(const std::string& in, std::string& out) {
+  out = in;
+}
+
+void ConvertFromUTF8(const std::string& in, std::u16string& out) {
+  out = base::UTF8ToUTF16(in);
+}
+
 template <typename StringListType>
 bool ParseStringList(const base::Value* value, StringListType* out_value) {
-  const base::ListValue* list = nullptr;
-  if (!value->GetAsList(&list))
+  if (!value->is_list())
     return false;
-  out_value->resize(list->GetList().size());
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    if (!list->GetString(i, &((*out_value)[i])))
+  base::Value::ConstListView list = value->GetList();
+  out_value->resize(list.size());
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!list[i].is_string())
       return false;
+    ConvertFromUTF8(list[i].GetString(), (*out_value)[i]);
   }
   return true;
 }
