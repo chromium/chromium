@@ -14,6 +14,9 @@ namespace tools {
 // Prints help for tree selectors like --pattern, --chromium etc.
 void PrintHelpForTreeSelectors();
 
+// Prints the help footer portion.
+void PrintHelpFooter();
+
 // Returns tree selector from command line arguments.
 absl::optional<ui::AXTreeSelector> TreeSelectorFromCommandLine(
     const base::CommandLine& command_line);

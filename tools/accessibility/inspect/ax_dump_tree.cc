@@ -36,7 +36,9 @@ void PrintHelp() {
   tools::PrintHelpForTreeSelectors();
   printf(
       "  --filters\tfile containing property filters used to filter out\n"
-      "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
+      "  \t\taccessible tree, for example:\n"
+      "  \t\t--filters=/absolute/path/to/filters/file\n");
+  tools::PrintHelpFooter();
 }
 
 int main(int argc, char** argv) {
@@ -55,6 +57,10 @@ int main(int argc, char** argv) {
 
   base::FilePath filters_path =
       command_line->GetSwitchValuePath(kFiltersSwitch);
+  if (filters_path.empty() && command_line->HasSwitch(kFiltersSwitch)) {
+    LOG(ERROR) << "Error: empty filter path given. Run with --help for help.";
+    return 0;
+  }
 
   absl::optional<AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
@@ -65,8 +71,6 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  LOG(ERROR)
-      << "* Error: no accessible tree was identified to dump. Run with --help "
-         "for help.";
+  LOG(ERROR) << "Error: no accessible tree to dump. Run with --help for help.";
   return 1;
 }

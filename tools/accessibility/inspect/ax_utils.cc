@@ -63,7 +63,14 @@ void PrintHelpForTreeSelectors() {
   printf("    --safari\tSafari browser\n");
 #endif
   printf(
-      "  --active-tab\tActive tab of browser, if application is a browser\n");
+      "  --active-tab\tactive tab of browser, if application is a browser\n");
+}
+
+void PrintHelpFooter() {
+  printf(
+      "\nmore info at "
+      "https://www.chromium.org/developers/accessibility/testing/"
+      "automated-testing/ax-inspect\n");
 }
 
 absl::optional<AXTreeSelector> TreeSelectorFromCommandLine(

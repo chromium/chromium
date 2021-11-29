@@ -39,6 +39,7 @@ void PrintHelp() {
   printf("\nusage: ax_dump_events <options>\n");
   printf("options:\n");
   tools::PrintHelpForTreeSelectors();
+  tools::PrintHelpFooter();
 }
 
 }  // namespace
