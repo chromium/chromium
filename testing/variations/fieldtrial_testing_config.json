@@ -5838,7 +5838,7 @@
             ]
         }
     ],
-    "PageInfoAboutThisSiteAndroid": [
+    "PageInfoAboutThisSite": [
         {
             "platforms": [
                 "android"
@@ -5854,9 +5854,7 @@
                     ]
                 }
             ]
-        }
-    ],
-    "PageInfoAboutThisSiteDesktop": [
+        },
         {
             "platforms": [
                 "linux",
