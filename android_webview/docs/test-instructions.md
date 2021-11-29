@@ -252,5 +252,5 @@ WebView also has an AndroidX module, which has its own tests (similar to CTS
 tests). These tests live under the AOSP source tree, under
 `//platform/frameworks/support/`.
 
-TODO(ntfschr): document the solution for http://crbug.com/891102, when that's
+TODO(ntfschr): document the solution for https://crbug.com/891102, when that's
 fixed.

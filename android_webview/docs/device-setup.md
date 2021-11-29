@@ -63,7 +63,7 @@ strongly consider one of the above first.
 ***
 
 **Prerequisite:** a machine capable of [building
-Android](http://source.android.com/source/building.html).
+Android](https://source.android.com/source/building.html).
 
 Clone an AOSP checkout, picking a branch supported for your device (you'll need
 a branch above 5.0.0) from the [list of
