@@ -1928,7 +1928,9 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
   size_t num_deleted = 0;
   PartitionedCookieMap::iterator cookie_partition_it =
       partitioned_cookies_.find(cookie_partition_key);
-  DCHECK(cookie_partition_it != partitioned_cookies_.end());
+
+  if (cookie_partition_it == partitioned_cookies_.end())
+    return num_deleted;
 
   if (cookie_partition_it->second->count(key) > kPerPartitionDomainMaxCookies) {
     // TODO(crbug.com/1225444): Log garbage collection for partitioned cookies.

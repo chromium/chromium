@@ -956,7 +956,9 @@
   },
   {
     "prefix": "partitioned-cookies",
-    "bases": ["external/wpt/cookies/partitioned-cookies/", "http/tests/inspector-protocol/network/"],
+    "bases": ["external/wpt/cookies/partitioned-cookies/",
+              "http/tests/cookies/partitioned-cookies",
+              "http/tests/inspector-protocol/network/"],
     "args": ["--enable-features=PartitionedCookies"]
   },
   {
