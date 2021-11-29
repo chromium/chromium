@@ -1,74 +1,142 @@
 # WebDriver BiDi for Chromium
 
-This is an implementation of the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium, implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.
+This is an implementation of the
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium,
+implemented as a JavaScript layer translating between BiDi and CDP, running
+inside a Chrome tab.
 
-Current status can be checked here: [Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA).
+Current status can be checked here:
+[Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA)
+.
 
 ## Setup
 
 This is a Node.js project, so install dependencies as usual:
 
-    npm install
+```sh
+npm install
+```
 
 ## Starting the Server
 
-    npm run server
+```sh
+npm run server
+```
 
-This will run the server on port 8080. Use the `PORT` environment variable or `--port=...` argument to run it on another port:
+This will run the server on port 8080. Use the `PORT` environment variable
+or `--port=...` argument to run it on another port:
 
-    PORT=8081 npm run server
-    npm run server -- --port=8081
+```sh
+PORT=8081 npm run server
+npm run server -- --port=8081
+```
 
 Use the `DEBUG` environment variable to see debug info:
 
-    DEBUG=* npm run server
+```sh
+DEBUG=* npm run server
+```
 
 Use the CLI argument `--headless=false` to run browser in headful mode:
 
-    npm run server -- --headless=false
+```sh
+npm run server -- --headless=false
+```
 
 ### Starting on Linux and Mac
 
 TODO: verify if it works on Windows.
 
-You can also run the server by using script `./runBiDiServer.sh`. It will write output to the file `log.txt`:
+You can also run the server by using script `./runBiDiServer.sh`. It will write
+output to the file `log.txt`:
 
-    ./runBiDiServer.sh --port=8081 --headless=false
+```sh
+./runBiDiServer.sh --port=8081 --headless=false
+```
 
-## Running the Tests
+## Running the Tests and Examples
 
 ### Unit tests
 
 Running:
 
-    npm run unit
+```sh
+npm run unit
+```
 
 ### e2e tests
 
-**Note**: Most of the e2e tests currently fail, but this is how to run them.
+The e2e tests are written using Python, in order to learn how to eventually do
+this in web-platform-tests.
 
-The e2e tests are written using Python, in order to learn how to eventually do this
-in web-platform-tests. Python 3.6+ and some dependencies are required:
+#### Installation
 
-    python3 -m pip install --user -r tests/requirements.txt
+Python 3.6+ and some dependencies are required:
 
-Running:
+```sh
+python3 -m pip install --user -r tests/requirements.txt
+```
 
-    npm run e2e
+#### Running
 
-This will run the e2e tests against an already running server on port 8080. Use the `PORT` environment variable to connect to another port:
+The e2e tests require BiDi server running on the same host. By default, tests
+try to connect to the port `8080`. The server can be run from the project root:
 
-    PORT=8081 npm run e2e
+```sh
+npm run e2e
+```
+
+Use the `PORT` environment variable to connect to another port:
+
+```sh
+PORT=8081 npm run e2e
+```
+
+### Examples
+
+The examples are stored in the `/examples` folder and are intended to show who
+the BiDi protocol can be used. Examples are based on
+[Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
+.
+
+#### Instalation
+
+The examples are written using Python, to align with e2e test. Python 3.6+ and
+some dependencies are required:
+
+```sh
+python3 -m pip install --user -r tests/requirements.txt
+```
+
+#### Running
+
+The examples require BiDi server running on the same host on the port `8080`.
+The server can be run from the project root:
+
+```sh
+npm run server
+```
+
+After running server, examples can be simply run:
+
+```sh
+python3 examples/cross-browser.py
+```
 
 ## How does it work?
 
-The architecture is described in the [WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY).
+The architecture is described in the
+[WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY)
+.
 
 There are 2 main modules:
 
-1. backend WS server in `src`. It runs webSocket server, and for each ws connection runs an instance of browser with BiDi Mapper.
-2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend, and map them to CDP commands.
+1. backend WS server in `src`. It runs webSocket server, and for each ws
+   connection runs an instance of browser with BiDi Mapper.
+2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the
+   backend, and map them to CDP commands.
 
 ## Contributing
 
-The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a new command, add it to `_processCommand`, write and call processor for it.
+The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To
+add a new command, add it to `_processCommand`, write and call processor for it.

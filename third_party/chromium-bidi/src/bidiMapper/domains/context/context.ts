@@ -28,7 +28,6 @@ export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
   _sessionId?: string;
 
-  private _dummyContextObjectId: string = '';
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   private _evaluateStacktraceLineOffset = 1;
@@ -63,14 +62,16 @@ export class Context {
     await this._cdpClient.Runtime.enable();
     await this._cdpClient.Page.enable();
     await this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+  }
 
-    // TODO sadym: `dummyContextObject` needed for the running context.
-    // Use the proper `executionContextId` instead:
-    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
+  // TODO sadym: `dummyContextObject` needed for the running context.
+  // Use the proper `executionContextId` instead:
+  // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
+  private async _getDummyContextId(): Promise<string> {
     const dummyContextObject = await this._cdpClient.Runtime.evaluate({
       expression: '(()=>{return {}})()',
     });
-    this._dummyContextObjectId = dummyContextObject.result.objectId!;
+    return dummyContextObject.result.objectId!;
   }
 
   _setSessionId(sessionId: string): void {
@@ -154,7 +155,7 @@ export class Context {
   ): Promise<CommonDataTypes.RemoteValue> {
     const response = await this._cdpClient.Runtime.callFunctionOn({
       functionDeclaration: `${this.EVALUATOR_SCRIPT}.serialize`,
-      objectId: this._dummyContextObjectId,
+      objectId: await this._getDummyContextId(),
       arguments: [cdpObject],
       returnByValue: true,
     });
@@ -266,7 +267,7 @@ export class Context {
       arguments: args.map((a) => ({ value: a })),
       awaitPromise: true,
       returnByValue: true,
-      objectId: this._dummyContextObjectId,
+      objectId: await this._getDummyContextId(),
     });
 
     if (cdpCallFunctionResult.exceptionDetails) {
