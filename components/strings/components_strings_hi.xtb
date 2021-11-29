@@ -15,6 +15,7 @@
 <translation id="1030706264415084469"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए बड़ी मात्रा में डेटा संग्रहीत करना चाहता है</translation>
 <translation id="1032854598605920125">घड़ी की दिशा में घुमाएं</translation>
 <translation id="1036348656032585052">बंद करें</translation>
+<translation id="1036982837258183574">फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">जॉब शीट मैसेज</translation>
@@ -415,7 +416,6 @@
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
 <translation id="2248949050832152960">WebAuthn का इस्तेमाल करें</translation>
 <translation id="2250931979407627383">बाईं ओर एज़ स्टिच</translation>
-<translation id="2251943122176102076">गोपनीय कॉन्टेंट कैप्चर किए जाने की वजह से, एडमिन स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देता है:</translation>
 <translation id="225207911366869382">यह मान इस नीति के लिए हटा दिया गया है.</translation>
 <translation id="2258928405015593961">खत्म हाेने की तारीख डालें और फिर से काेशिश करें</translation>
 <translation id="225943865679747347">गड़बड़ी कोड: <ph name="ERROR_CODE" /></translation>
@@ -826,6 +826,8 @@
       उसे सूची से हटाने और फिर से जोड़ने की कोशिश करें.</translation>
 <translation id="3630699740441428070">इस डिवाइस के एडमिन ने आपके नेटवर्क कनेक्शन को कॉन्फ़िगर किया है. ऐसे में, उन्हें आपके नेटवर्क का ट्रैफ़िक दिख सकता है. इस ट्रैफ़िक में ऐसी वेबसाइटें शामिल हैं जिन पर आप जाते हैं.</translation>
 <translation id="3631244953324577188">बायोमेट्रिक्स</translation>
+<translation id="3632503704576938756">स्क्रीन शेयर करना फिर से शुरू किया गया</translation>
+<translation id="3632892046558972264">स्क्रीन शेयर करना रोका गया</translation>
 <translation id="3633738897356909127">'Chrome अपडेट करें' बटन, अपनी Chrome सेटिंग से Chrome अपडेट करने के लिए Enter दबाएं</translation>
 <translation id="3634530185120165534">ट्रे 5</translation>
 <translation id="3634567936866541746">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. खातों को सुरक्षित करने के लिए, Chrome का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
@@ -869,7 +871,6 @@
 <translation id="3760561303380396507">क्या आप कार्ड वेरीफ़िकेशन कोड (सीवीसी) के बजाय Windows Hello का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="3761171036307311438">कार्ड पर नाम:</translation>
 <translation id="3761718714832595332">स्थिति छिपाएं</translation>
-<translation id="3765032636089507299">सुरक्षित ब्राउज़िंग पेज अभी बन रहा है.</translation>
 <translation id="3765588406864124894">मेलबॉक्स 9</translation>
 <translation id="3767485424735936570">एडमिन नीति के मुताबिक, इस कॉन्टेंट को कॉपी करके <ph name="VM_NAME" /> में चिपकाने का सुझाव नहीं दिया जाता</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep में जल्दी से नया नोट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
@@ -1061,6 +1062,7 @@
 <translation id="4346197816712207223">स्वीकार किए जाने वाले क्रेडिट कार्ड</translation>
 <translation id="4346833872170306413">आरओसी-16के</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> से कनेक्शन सुरक्षित नहीं है</translation>
+<translation id="4349365535725594680">गोपनीय कॉन्टेंट शेयर नहीं किया जा सकता</translation>
 <translation id="4350629523305688469">कई फ़ंक्शन वाली ट्रे</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> आस-पास मौजूद ब्लूटूथ वाले डिवाइस स्कैन करना चाहती है. ये डिवाइस मिले हैं:</translation>
 <translation id="4351175281479794167">पुष्टि करने के लिए कोड डालें</translation>
@@ -1092,12 +1094,10 @@
 <translation id="4451135742916150903">साइट, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="4460315069258617173">तब तक अनुमति है, जब तक आप इस साइट के लिए टैब बंद नहीं कर देते</translation>
 <translation id="4464826014807964867">ऐसी वेबसाइटें जिनके बारे में आपके संगठन ने जानकारी दी है</translation>
-<translation id="4465818729556336129">यह दस्तावेज़ गोपनीय है और आपके एडमिन ने इसे प्रिंट करने की सलाह नहीं दी है.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यह फ़ॉर्म सुरक्षित नहीं है. ऑटोमैटिक भरने की सुविधा बंद कर दी गई है.</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
 <translation id="4481251927743463293">गुप्त मोड क्या करता है</translation>
-<translation id="4481394504112738036">गोपनीय फ़ाइल</translation>
 <translation id="4482953324121162758">इस साइट का अनुवाद नहीं किया जाएगा.</translation>
 <translation id="4490717597759821841">ए7</translation>
 <translation id="449126573531210296">अपने Google खाते के क्रेडेंशियल का इस्तेमाल कर, सिंक किए गए पासवर्ड को सुरक्षित करें.</translation>
@@ -1211,7 +1211,6 @@
           <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
-<translation id="4834718916855725099">स्क्रीन पर गोपनीय कॉन्टेंट होने की वजह से, एडमिन स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देता है:</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>
@@ -1501,7 +1500,6 @@
 <translation id="5786044859038896871">क्या अपनी कार्ड जानकारी भरना चाहते हैं?</translation>
 <translation id="578633867165174378">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. हमारा सुझाव है कि आप इस पासवर्ड को अभी बदल दें.</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5797429178165847917">गोपनीय कॉन्टेंट कैप्चर करें</translation>
 <translation id="5803412860119678065">क्या आप अपनी <ph name="CARD_DETAIL" /> भरना चाहते हैं?</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी पुराने सिफ़र सुइट का उपयोग करके सुरक्षित किया गया है.</translation>
@@ -1528,7 +1526,6 @@
 <translation id="5903264686717710770">शीर्षक :</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> की मूल नीति के मुताबिक रोक लगाई गई.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
-<translation id="5913377024445952699">स्क्रीन को कैप्चर करने की सुविधा रोक दी गई है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919090499915321845">बी10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 उपयोग में है}one{# उपयोग में हैं}other{# उपयोग में हैं}}</translation>
@@ -1651,6 +1648,7 @@
 <translation id="6328786501058569169">यह साइट भ्रामक है</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
+<translation id="6340739886198108203">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देती है:</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium के बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -1830,6 +1828,7 @@
 <translation id="6972629891077993081">एचआईडी डिवाइस</translation>
 <translation id="6973656660372572881">फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर और .pac स्‍क्रिप्‍ट URL दोनों ही बताए गए हैं.</translation>
 <translation id="6973932557599545801">माफ़ करें, मैं आपकी मदद नहीं कर सकती. कृपया खुद करने की कोशिश करें.</translation>
+<translation id="6978236010531171013">फिर भी शेयर करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6979983982287291980">आप जो फ़ाइलें डाउनलोड करते हैं वे विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजी जाती हैं. उदाहरण के लिए, इन्हें संवेदनशील डेटा या मैलवेयर की जांच के लिए स्कैन किया जा सकता है.</translation>
@@ -1882,7 +1881,6 @@
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
 <translation id="717330890047184534">Gaia आईडी:</translation>
-<translation id="7173920250514487165">अपनी स्क्रीन पर मौजूद गोपनीय कॉन्टेंट को कैप्चर करें</translation>
 <translation id="7174545416324379297">आपस में मिला दिया गया</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="7179323680825933600">भुगतान के तरीके सेव करें और भरें</translation>
@@ -2021,6 +2019,7 @@
 <translation id="7578104083680115302">Google के साथ सहेजे गए कार्ड का उपयोग करके डिवाइसों में मौजूद साइटों और ऐप्‍स पर तुरंत भुगतान करें.</translation>
 <translation id="7581199239021537589">साइड 2 इमेज Y शिफ़्ट</translation>
 <translation id="7582602800368606489">Google Calendar में जल्दी से नया इवेंट बनाएं</translation>
+<translation id="7591288787774558753">क्या गोपनीय कॉन्टेंट शेयर करना है?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" />, <ph name="TOP_LEVEL_URL" /> पर कुकी और साइट डेटा का इस्तेमाल करना चाहता है</translation>
 <translation id="7592362899630581445">सर्वर का प्रमाणपत्र नाम संबंधी प्रतिबंधों का उल्लंघन करता है.</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> से कम</translation>
@@ -2031,6 +2030,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग में अपने पासवर्ड देखने और उन्हें प्रबंधित करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="7616645509853975347">आपके एडमिन ने आपके ब्राउज़र पर Chrome Enterprise Connectors नाम की सेटिंग को चालू कर दिया है. इस सेटिंग की मदद से आपके कुछ डेटा को ऐक्सेस किया जा सकता है.</translation>
 <translation id="7619838219691048931">एंड शीट</translation>
+<translation id="7625242817712715120">एडमिन नीति इस कॉन्टेंट को प्रिंट करने का सुझाव नहीं देती है</translation>
 <translation id="762844065391966283">एक बार में एक</translation>
 <translation id="7633909222644580952">परफ़ॉर्मेंस डेटा और क्रैश रिपोर्ट</translation>
 <translation id="7637571805876720304">क्रोमियम से क्रेडिट कार्ड निकालें?</translation>
@@ -2184,6 +2184,7 @@
 <translation id="809898108652741896">ए6</translation>
 <translation id="8100588592594801589">अमान्य कार्ड हटा दिए गए हैं</translation>
 <translation id="8103161714697287722">भुगतान का तरीका</translation>
+<translation id="8103643211515685474">फिर भी प्रिंट करें</translation>
 <translation id="8105368624971345109">बंद करें</translation>
 <translation id="810875025413331850">आस-पास का कोई ब्लूटूथ डिवाइस नहीं मिला.</translation>
 <translation id="8116925261070264013">आवाज़ बंद की गई</translation>
@@ -2333,7 +2334,6 @@
 <translation id="8622948367223941507">लीगल-एक्स्ट्रा</translation>
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8625384913736129811">इस कार्ड को इस डिवाइस में सेव करें</translation>
-<translation id="8627040765059109009">स्क्रीन को कैप्चर करने की सुविधा फिर से शुरू कर दी गई है</translation>
 <translation id="865032292777205197">मोशन सेंसर</translation>
 <translation id="8663226718884576429">ऑर्डर की खास बातें, <ph name="TOTAL_LABEL" />, ज़्यादा जानकारी</translation>
 <translation id="8666678546361132282">अंग्रेज़ी</translation>
@@ -2398,6 +2398,7 @@
 <translation id="886872106311861689">बी3</translation>
 <translation id="8870413625673593573">हाल ही में बंद किए गए</translation>
 <translation id="8870494189203302833">इसी तरह उलटा करके रखें</translation>
+<translation id="8870700989640064057">क्या गोपनीय फ़ाइल प्रिंट करनी है?</translation>
 <translation id="8871553383647848643">अपने ब्राउज़र का लुक पसंद के मुताबिक बनाएं</translation>
 <translation id="8874824191258364635">मान्य कार्ड संख्या डालें</translation>
 <translation id="8884537526797090108">गोपनीय कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
@@ -2476,6 +2477,7 @@
 <translation id="9119042192571987207">अपलोड किया गया</translation>
 <translation id="9128016270925453879">नीतियां लोड हो गई हैं</translation>
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
+<translation id="9131119348384879525">क्या गोपनीय कॉन्टेंट कैप्चर करना है?</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9141013498910525015">पते प्रबंधित करें</translation>
 <translation id="9144951720726881238">समय समाप्ति तारीख:</translation>

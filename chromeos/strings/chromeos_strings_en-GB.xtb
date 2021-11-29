@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activation status</translation>
+<translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Use current keypair</translation>
 <translation id="2323506179655536734">SKIPPED</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">PASSED</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2859243502336719778">Critical update</translation>
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">Printed page <ph name="PRINTED_PAGES" /> out of <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Scanning page <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completed.</translation>
 <translation id="3459509316159669723">Printing</translation>
+<translation id="3462187165860821523">Updating <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Partially activated</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
+<translation id="3932043219784172185">No device connected</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3966286471246132217">For more accurate results, close all apps until the test is complete.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">Not run</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Update peripherals</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> is off</translation>
 <translation id="4429881212383817840">Kerberos ticket expires soon</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">Old password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Scan to</translation>
+<translation id="4472575034687746823">Get started</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">Signal strength</translation>
 <translation id="4707579418881001319">L2TP/IPsec + user certificate</translation>
 <translation id="4731797938093519117">Parent access</translation>
+<translation id="473775607612524610">Update</translation>
 <translation id="475869545581454722">Chrome OS password updated</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4930320165497208503">To set up or update a connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
-<translation id="5061169534910302641">Update version and restart</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
 <translation id="5142961317498132443">Authentication</translation>
@@ -400,6 +407,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">End and save</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
+<translation id="7068619307603204412">Prepare your device</translation>
 <translation id="708426984172631313">STOPPED</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Failed – authorisation failed</translation>
@@ -413,6 +421,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
+<translation id="7240035910874241640">All peripherals are up to date</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
@@ -454,6 +463,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
+<translation id="7786540085520432425">While updating, you can minimise window but do not unplug your device. This may take a few minutes and your device might not work during this update</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7835501727204647447">Install CloudReady</translation>
@@ -487,6 +497,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8217675307824400706">Get connected</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
+<translation id="8281886186245836920">Skip</translation>
 <translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>
 <translation id="8291967909914612644">Home provider country</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -511,6 +522,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8498220429738806196">Traffic counters</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Just a few more minutes…</translation>
+<translation id="8520963233738002436">Your <ph name="DEVICE_NAME" /> is up to date</translation>
 <translation id="8521021929829989041">Use as personal device</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Your operator may require this option to connect to their network. Contact your operator for details.</translation>
@@ -550,6 +562,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8970109610781093811">Run again</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan page {NUMBER_OF_PAGES}}other{Scan page {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Installing - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Frequency:</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution has high latency</translation>

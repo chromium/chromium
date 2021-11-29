@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Neues Fenster im Inkognitomodus öffnen</translation>
 <translation id="152892567002884378">Lauter</translation>
 <translation id="1560480564179555003">"<ph name="SHIFT" />" <ph name="SEPARATOR1" /> "<ph name="ALT" />" <ph name="SEPARATOR2" /> "<ph name="L" />", dann "<ph name="ESC" />"</translation>
+<translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
 <translation id="1652741121070700329">Zum Anfang des vorherigen Wortes springen</translation>
 <translation id="1679841710523778799">Helligkeit erhöhen</translation>
 <translation id="168356808214100546">"<ph name="ALT" />" gedrückt halten und "<ph name="TAB" />" drücken, bis das gewünschte Fenster angezeigt wird, dann loslassen.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126">"<ph name="CTRL" />" <ph name="SEPARATOR" /> 1 bis 8</translation>
 <translation id="3837047332182291558">Helligkeit der Tastaturbeleuchtung erhöhen (nur für beleuchtete Tastaturen)</translation>
 <translation id="3949671998904569433">Komma</translation>
-<translation id="3976707995992061296">Legen Sie fest, ob das aktive Fenster allen Desktops zugewiesen wird</translation>
 <translation id="3976863468609830880">Auf das letzte Symbol in der Ablage klicken</translation>
 <translation id="3994783594793697310">Display-Zoomstufe zurücksetzen</translation>
 <translation id="4026843240379844265">Aktive Fenster zwischen den Bildschirmen verschieben</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">"<ph name="CTRL" />" <ph name="SEPARATOR" /> "<ph name="SHIFT" />" gedrückt halten und auf einen Link klicken</translation>
 <translation id="561814908794220892">Webseite in einem neuen Tab öffnen</translation>
 <translation id="5620219513321115856">Aktives Fenster in nächsten Desktop rechts verschieben</translation>
+<translation id="5699366815052349604">Aktives Fenster allen Desktops zuweisen</translation>
 <translation id="5710621673935162997">"<ph name="CTRL" />" <ph name="SEPARATOR1" /> "<ph name="L" />" oder "<ph name="ALT" />" <ph name="SEPARATOR2" /> "<ph name="D" />"</translation>
 <translation id="5757111373163288447">Link in dem Tab öffnen</translation>
 <translation id="5757474750054631686">Tastatur dimmen (nur für beleuchtete Tastaturen)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Display heranzoomen</translation>
 <translation id="634687982629734605">Fokus wechseln zwischen: Statusbereich (Bereich mit Kontobild), Launcher, Adressleiste, Lesezeichenleiste (falls sichtbar), offene Webseite und Downloadleiste (falls sichtbar). Wenn ein fokussierbares Dialogfeld angezeigt wird, können Sie den Fokus stattdessen darauf richten.</translation>
 <translation id="6359811074279051077">"<ph name="MODIFIER" />" <ph name="SEPARATOR" /> "<ph name="KEY" />"</translation>
-<translation id="6372960562287888784">Den ersten bis achten Desktop aktivieren.</translation>
 <translation id="6395172954772765143">Text bis zum Zeilenende markieren</translation>
 <translation id="6425378783626925378">Auf Symbole 1 bis 8 in der Ablage klicken</translation>
 <translation id="6435207348963613811">Vorheriges Element in der Ablage markieren</translation>

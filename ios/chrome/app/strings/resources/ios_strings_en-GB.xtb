@@ -138,6 +138,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
+<translation id="2271351792809375263">Use the passwords that you saved to Chrome in other apps on your device</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2302742851632557585">Change password on website</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
@@ -258,6 +259,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3393920035788932672">Pop-ups Allowed</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
 <translation id="3404744938087714423">Signing out turns off sync.</translation>
+<translation id="3414451675185661089">2. Tap on Passwords</translation>
 <translation id="3425644765244388016">Card nickname</translation>
 <translation id="3433057996795775706">Deleting this password will not delete your account on <ph name="WEBSITE" />. Change your password on <ph name="WEBSITE" /> to keep it safe from others.</translation>
 <translation id="3443810440409579745">Tab received.</translation>
@@ -331,6 +333,7 @@ Follow the steps below:</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time range</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
+<translation id="4153925727916232411">This lets you take and upload photos, as well as scan QR codes.</translation>
 <translation id="4172051516777682613">Always show</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
 <translation id="4181841719683918333">Languages</translation>
@@ -378,6 +381,7 @@ Follow the steps below:</translation>
 <translation id="4666531726415300315">Signed in as <ph name="EMAIL" />.
 
 Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
+<translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
 <translation id="470966556546083668">Don't turn on sync</translation>
 <translation id="473775607612524610">Update</translation>
@@ -458,6 +462,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
+<translation id="5523579157975978438">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Passwords.</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
 <translation id="5532698011560297095">Can't Sign In</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
@@ -547,7 +552,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
-<translation id="6308436439357671616">This lets you take and upload photos.</translation>
 <translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324528485781869530">Switch Sync Account</translation>
 <translation id="6324669097367352121">Sign in settings</translation>
@@ -740,6 +744,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="7971521879845308059">Block Pop-ups</translation>
 <translation id="797413074872316787">To sync and personalise across devices, turn on sync.</translation>
+<translation id="7978018860671536736">3. Tap auto-fill passwords</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
@@ -765,6 +770,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8205564605687841303">Cancel</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
+<translation id="8237382152611443140">Open auto-fill password settings</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8917490105272468696">Yes, I'm In</translation>
 <translation id="8952559610785099500">Add password</translation>
 <translation id="895541991026785598">Report an Issue</translation>
+<translation id="8974714402877957201">1. Open iPad settings</translation>
 <translation id="8976382372951310360">Help</translation>
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>

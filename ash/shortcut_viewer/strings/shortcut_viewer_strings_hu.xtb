@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Új ablak megnyitása inkognitó módban</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, majd <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
 <translation id="1652741121070700329">Ugrás az előző szó elejére</translation>
 <translation id="1679841710523778799">Fényerő növelése</translation>
 <translation id="168356808214100546">Tartsa lenyomva az <ph name="ALT" /> billentyűt, majd nyomja meg a <ph name="TAB" /> billentyűt, amíg nem jut el addig az ablakig, amelyet meg szeretne nyitni, majd engedje fel.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1-től 8-ig</translation>
 <translation id="3837047332182291558">Billentyűzet megvilágításának erősítése (csak háttérvilágítással rendelkező billentyűzeteknél)</translation>
 <translation id="3949671998904569433">vessző</translation>
-<translation id="3976707995992061296">Annak be-, illetve kikapcsolása, hogy az aktív ablak minden asztalhoz hozzá legyen-e rendelve</translation>
 <translation id="3976863468609830880">A polcon lévő utolsó ikonra kattintás</translation>
 <translation id="3994783594793697310">Kijelző nagyítási szintjének visszaállítása</translation>
 <translation id="4026843240379844265">Aktív ablak áthelyezése egyik kijelzőről a másikra</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Tartsa lenyomva a <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> billentyűt, és kattintson a linkre</translation>
 <translation id="561814908794220892">Weboldal megnyitása új lapon</translation>
 <translation id="5620219513321115856">Az aktív ablaknak a jobb oldali asztalra helyezése</translation>
+<translation id="5699366815052349604">Rendeljen hozzá aktív ablakot minden asztalhoz.</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> vagy <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Link megnyitása a lapon</translation>
 <translation id="5757474750054631686">Billentyűzet megvilágításának halványítása (csak háttérvilágítással rendelkező billentyűzeteknél)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Kijelző nagyítása</translation>
 <translation id="634687982629734605">Fókuszváltás a következők között: állapotsor (ahol a fiókjához tartozó kép jelenik meg), Indító, címsáv, könyvjelzősáv (ha látható), a megnyitott weboldal és a letöltéssáv (ha látható). Ha fókuszálható párbeszédpanel jelenik meg, helyezze inkább oda a fókuszt.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Az 1–8. asztal aktiválása.</translation>
 <translation id="6395172954772765143">Szöveg kijelölése a sor végéig</translation>
 <translation id="6425378783626925378">A polcon lévő ikonokra kattintás (1–8-ig)</translation>
 <translation id="6435207348963613811">Az előző elem kiemelése a polcon</translation>

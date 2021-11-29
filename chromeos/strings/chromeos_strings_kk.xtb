@@ -77,6 +77,7 @@
 <translation id="2016697457005847575">Ақауларды жою қадамдарын орындап көріңіз</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
+<translation id="2104796393919810494">Жөндеу аяқталды</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -89,6 +90,7 @@
 <translation id="2224337661447660594">Интернет жоқ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Белсендіру күйі</translation>
+<translation id="2287186687001756809">Қолжетімді суреттер жоқ. Суреттер қосу үшін <ph name="LINK" /> сайтына өтіңіз.</translation>
 <translation id="2307344026739914387">Ағымдағы кілттер жұбын пайдалану</translation>
 <translation id="2323506179655536734">ӨТКІЗІП ЖІБЕРІЛДІ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
@@ -157,6 +159,8 @@
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
+<translation id="360089215033199597">Жөндеу жұмысын жеңілдету үшін Wi-Fi желісіне қосылған жөн.
+        Желі сақталады.</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
@@ -172,6 +176,7 @@
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
 <translation id="387301095347517405">Батареяңыздың толық зарядтау циклінен өту саны</translation>
+<translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3966286471246132217">Нәтижелер нақтырақ болу үшін, сынақ аяқталғанша барлық қолданбаларды жабыңыз.</translation>
@@ -211,6 +216,7 @@
 <translation id="445059817448385655">Ескі құпия сөз</translation>
 <translation id="4453205916657964690">Қосалқы желі маскасы</translation>
 <translation id="4454245904991689773">Сақтау орны</translation>
+<translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -233,6 +239,7 @@
 <translation id="469379815867856270">Сигнал күші</translation>
 <translation id="4707579418881001319">L2TP/IPsec + пайдаланушы сертификаты</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
+<translation id="473775607612524610">Жаңарту</translation>
 <translation id="475869545581454722">Chrome OS құпия сөзі жаңартылды</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
@@ -476,8 +483,10 @@
 <translation id="816013303019725643">Құлыпты ашу кодын енгізіңіз:</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8217675307824400706">Қосылу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>
+<translation id="8281886186245836920">Өткізіп жіберу</translation>
 <translation id="8286154143153872371">Тұсқағазды көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>
 <translation id="8291967909914612644">Жергілікті провайдер елі</translation>
 <translation id="8294431847097064396">Дереккөз</translation>

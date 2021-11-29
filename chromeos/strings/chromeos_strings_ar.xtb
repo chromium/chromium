@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
+<translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">تم الاجتياز</translation>
 <translation id="2789486458103222910">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
+<translation id="2859243502336719778">تحديث مُهم</translation>
 <translation id="2860473693272905224">يُرجى وضع صفحة أخرى على الماسح الضوئي.</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">عدد الصفحات التي تمت طباعتها: <ph name="PRINTED_PAGES" /> من أصل <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUM" />. اكتمل المسح الضوئي بنسبة <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">الطباعة</translation>
+<translation id="3462187165860821523">جارٍ تحديث <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
+<translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
 <translation id="3966286471246132217">للحصول على نتائج أكثر دقة، عليك إغلاق كل التطبيقات إلى أن يكتمل الاختبار.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">تحديث الأجهزة الملحقة</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4428374560396076622">شبكة<ph name="NETWORK_NAME" /> متوقّفة</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4453205916657964690">قناع الشبكة الفرعية</translation>
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
+<translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4511264077854731334">المدخل</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">قوة الإشارة</translation>
 <translation id="4707579418881001319">‏L2TP/IPSec + شهادة المستخدم</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
+<translation id="473775607612524610">تحديث</translation>
 <translation id="475869545581454722">‏تم تعديل كلمة مرور نظام التشغيل Chrome</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4930320165497208503">لإعداد اتصال أو تعديله، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
+<translation id="4950314376641394653">تم تحديث البرامج الثابتة لجهاز <ph name="DEVICE_NAME" /> إلى الإصدار <ph name="VERSION" /></translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">الجدار الناري</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
 <translation id="5050042263972837708">اسم المجموعة</translation>
 <translation id="5051044138948155788">هذه هي الصفحة الوحيدة وستؤدي إزالتها إلى نقلك إلى شاشة بدء المسح الضوئي.</translation>
-<translation id="5061169534910302641">تحديث الإصدار ثم إعادة التشغيل</translation>
 <translation id="5088172560898466307">اسم مضيف الخادم</translation>
 <translation id="5089810972385038852">الولاية</translation>
 <translation id="5142961317498132443">المصادقة</translation>
@@ -400,6 +407,7 @@
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
 <translation id="7058278511608979688">إنهاء وحفظ</translation>
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
+<translation id="7068619307603204412">تحضير جهازك لإجراء التحديث</translation>
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
@@ -413,6 +421,7 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
+<translation id="7240035910874241640">كل الأجهزة الملحقة محدّثة</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>
@@ -454,6 +463,7 @@
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
 <translation id="7784116172884276937">لم يتم ضبط أي خوادم لنظام أسماء النطاقات.</translation>
+<translation id="7786540085520432425">يمكنك تصغير النافذة أثناء إجراء التحديث، ولكن يجب عدم فصل جهازك عن مصدر الكهرباء. قد يستغرق إتمام التحديث بضع دقائق، وقد لا يعمل جهازك خلال فترة التحديث.</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7819857487979277519">‏PSK (WPA أو RSN)</translation>
 <translation id="7835501727204647447">‏تثبيت CloudReady</translation>
@@ -487,6 +497,7 @@
 <translation id="8217675307824400706">الاتصال بالإنترنت</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
+<translation id="8281886186245836920">التخطّي</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>
 <translation id="8294431847097064396">المصدر</translation>
@@ -511,6 +522,7 @@
 <translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
+<translation id="8520963233738002436">جهاز <ph name="DEVICE_NAME" /> مُحدّث</translation>
 <translation id="8521021929829989041">الاستخدام كجهاز شخصي</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
@@ -550,6 +562,7 @@
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
+<translation id="8994273342647807496">جارٍ التثبيت: %<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>

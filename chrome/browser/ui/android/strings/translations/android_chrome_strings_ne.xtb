@@ -94,6 +94,7 @@
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मेट्नुहोस्</translation>
+<translation id="1518421282666914498">भावना जनाउने GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
 <translation id="1538801903729528855">वेबमा भ्वाइस सर्च गर्दा अझ राम्रा सुविधाहरू प्राप्त गर्नुहोस्</translation>
 <translation id="1544826120773021464">आफ्नो Google खाताको व्यवस्थापन गर्न "खाताको व्यवस्थापन गर्नुहोस्" नामक बटनमा क्लिक गर्नुहोस्</translation>
@@ -116,6 +117,7 @@
 <translation id="1702543251015153180">अँध्यारो थिमसम्बन्धी सेटिङ बदल्ने हो?</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1724977129262658800">आफ्नो पासवर्ड बदल्न अनलक गर्नुहोस्</translation>
+<translation id="1726477445370128854">Chrome ले उसलाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राख्छ। यसले गर्दा तपाईं ती पेज छिटोछरितो रूपमा ब्राउज गर्न र खोज्न सक्नुहुन्छ</translation>
 <translation id="173522743738009831">प्राइभेसी स्यान्डबक्सका बारेमा</translation>
 <translation id="1736419249208073774">अन्वेषण गर्नुहोस्</translation>
 <translation id="1749561566933687563">तपाईंका पुस्तक चिन्हहरू सिंक गर्नुहोस्</translation>
@@ -217,7 +219,6 @@
 <translation id="2321958826496381788">तपाईंले आरामसँग पढ्न सक्दासम्म स्लाइडरलाई तान्नुहोस्। अनुच्छेदमा दोहोरो ट्याप गरेपछि पाठ कम्तीमा पनि यतिको ठुलो देखिनुपर्छ।</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
-<translation id="2337236196941929873">Chrome ले उसलाई तपाईंले खोल्न सक्नुहुन्छ जस्तो लागेका पेजहरू प्रिलोड गर्छ। तपाईंले कुकी प्रयोग गर्ने अनुमति दिनुभयो भने Chrome ले पेज प्रिलोड गर्ने सुविधा प्रदान गर्न कुकी प्रयोग गर्न सक्छ। यसै गरी Chrome ले साइटहरूमा तपाईंको पहिचान लुकाउन पेजहरू इन्क्रिप्ट गरी Google मार्फत पठाउन सक्छ।</translation>
 <translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="2345671828921229300">कुनै शब्दबारे जानकारी खोज्न त्यसलाई टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
@@ -277,6 +278,7 @@
 <translation id="2649068648233607930"><ph name="DOMAIN" /> ले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="2650751991977523696">फाइल पुनः डाउनलोड गर्ने हो?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# अडियो फाइल}other{# अडियो फाइलहरू}}</translation>
+<translation id="265156376773362237">पेज प्रिलोड गर्ने डिफल्ट मोड</translation>
 <translation id="2656405586795711023">वेब एपहरू</translation>
 <translation id="2689830683995595741">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
@@ -312,6 +314,7 @@
 <translation id="2856503607207334158">साइन इन गर्न सकिएन</translation>
 <translation id="2860954141821109167">यस यन्त्रमा कुनै फोन एप सक्षम गरिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2870560284913253234">साइट</translation>
+<translation id="2871733351037274014">पेजहरू प्रिलोड गरियोस्</translation>
 <translation id="2888126860611144412">Chrome को बारेमा</translation>
 <translation id="2891154217021530873">पृष्ठ लोड गर्न रोक्नुहोस्</translation>
 <translation id="2892647708214602204">यो फाइल तयार भएपछि तपाईंले सूचना प्राप्त गर्नु हुने छ</translation>
@@ -329,7 +332,6 @@
 <translation id="2942036813789421260">पूर्वावलोकन ट्याब बन्द छ</translation>
 <translation id="2946420957526726953">तपाईंको फोन अन्य डिभाइससँग कनेक्ट गर्न Chrome अपडेट गरिँदै छ</translation>
 <translation id="2951071800649516099">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा वेबपेजहरू हाल्नुहोस्</translation>
-<translation id="2956410042958133412">यो खाता <ph name="PARENT_NAME_1" /> र <ph name="PARENT_NAME_2" /> द्वारा व्यवस्थित गरिएको छ।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
 <translation id="2961210776189273067">सम्बोधन</translation>
 <translation id="2979025552038692506">चयन गरिएको इन्कोग्निटो ट्याब</translation>
@@ -342,10 +344,12 @@
 <translation id="2992473221983447149">फोटोका वर्णन</translation>
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
+<translation id="2997081575621687554">Google को साइटले आफ्नो पेजमा भएका लिंकहरू गोप्य तरिकाले प्रिलोड गर्न लगाएका खण्डमा Chrome ले कुकीहरू प्रयोग नगरिकनै पेजहरू Google का सर्भरमार्फत इन्क्रिप्ट गरी प्रिलोड गरेर राख्छ। यसो गर्दा पेजहरू प्रिलोड गरिएको साइटमा भएको तपाईंको जानकारी लुकाइन्छ।</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
 <translation id="301080557829842765">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
 <translation id="3016635187733453316">यो डिभाइस इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3026955690410463085">लिंक समावेश गरियोस्</translation>
+<translation id="3029276696788198026">कुनै पनि पेज प्रिलोड नगरियोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
@@ -379,6 +383,7 @@
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3234978181857588512">डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="3236059992281584593">१ मिनेट बाँकी छ</translation>
+<translation id="3237087289225714896">पेज प्रिलोड गर्ने डिफल्ट मोड:</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">तपाईंले Chrome को प्रयोगसम्बन्धी रिपोर्टहरू पनि सेयर गर्नुभयो भने ती रिपोर्टमा तपाईंले खोलेका URL हरू समावेश हुन्छन्</translation>
 <translation id="3250563604907490871">Wi-Fi मा कनेक्ट हुँदा 'फोटो वर्णन गर्ने' सुविधा सुचारु हुने छ</translation>
@@ -412,6 +417,7 @@
 <translation id="3389286852084373014">पाठ ज्यादै ठुलो छ</translation>
 <translation id="3391512812407811893">प्राइभेसी स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="3398320232533725830">पुस्तक चिन्ह प्रबन्धक खोल्नुहोस्</translation>
+<translation id="3407392651057365886">थप पेजहरू प्रिलोड गरेर राखिन्छ। अन्य साइटहरूले अनुरोध गरेका खण्डमा पेजहरू Google का सर्भरमार्फत प्रिलोड गरेर राखिन सक्छ।</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3421726884497337397">कस्तो अवस्थामा तेस्रो पक्षीय कुकीहरू ब्लक गर्ने भन्ने कुरा छान्नुहोस्</translation>
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
@@ -468,7 +474,6 @@
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="3778956594442850293">गृह स्क्रिनमा थपियो</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{१ ट्याब}other{# वटा ट्याब}}</translation>
-<translation id="3803783897442799486">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि उक्त एपको प्रयोग र क्र्याससम्बन्धी डेटा पठाउँछ। <ph name="BEGIN_LINK2" />व्यवस्थापन गर्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">अटोप्ले सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
@@ -535,6 +540,7 @@
 <translation id="4196597275619698563">कार्ड बनाउनुहोस्</translation>
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
 <translation id="4209895695669353772">Google ले सिफारिस गरेको वैयक्तीकृत सामग्री प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
+<translation id="4214315110991671325">तपाईंले कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो भने Chrome ले पेजहरू प्रिलोड गरेर राख्ने प्रयोजनका लागि ती कुकी प्रयोग गर्न सक्छ।</translation>
 <translation id="4225895483398857530">टुलबारको सर्टकट</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4248098802131000011">डेटा चोरी हुने तथा सुरक्षासम्बन्धी अन्य समस्याबाट आफ्ना पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
@@ -583,6 +589,7 @@
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
 <translation id="4538018662093857852">लाइट मोड सक्रिय गर्नुहोस्</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">यहाँ आफ्नो पासवर्ड हेर्न वा प्रतिलिपि गर्न यो डिभाइसमा स्क्रिन लक सेट गर्नुहोस्।</translation>
 <translation id="4554077758708533499">USB केबल प्रयोग गरी कनेक्ट गरिएको छ</translation>
 <translation id="4557685098773234337">यही पेजमा अझ छिटो जान आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
@@ -613,6 +620,7 @@
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
+<translation id="471759387343966120">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" /> र <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता\u00A0नीति<ph name="END_PRIVACY_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />मा खोल्नुहोस्</translation>
 <translation id="4720982865791209136">Chrome लाई सुधार्न मद्दत गर्नुहोस्। <ph name="BEGIN_LINK" />सर्वेक्षणमा भाग लिनुहोस्।<ph name="END_LINK" /></translation>
@@ -724,6 +732,7 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5324858694974489420">अभिभावक सेटिङहरू</translation>
+<translation id="5326921373682845375">प्रिलोड गरिएका पेजहरू इन्क्रिप्ट गरिएकाले र ती पेजसँग सम्बन्धित साइट Google को साइट भएकाले यी पेज गोप्य तरिकाले प्रिलोड गर्दा Google का सर्भरहरूले नयाँ जानकारी प्राप्त गर्दैनन्।</translation>
 <translation id="5329858041417644019">तपाईंको ब्राउजरको व्यवस्थापन गरिएको छैन</translation>
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
@@ -750,7 +759,6 @@
 <translation id="5483197086164197190">Chrome नेभिगेट गर्ने तरिका</translation>
 <translation id="5487521232677179737">डेटा मेटाउनुहोस्</translation>
 <translation id="549025011754480756">बोलेर खोज्ने तरिका</translation>
-<translation id="5512137114520586844">यो खाता <ph name="PARENT_NAME" /> द्वारा व्यवस्थित गरिएको छ।</translation>
 <translation id="5514904542973294328">यो डिभाइसका प्रशासकले असक्षम पार्नुभएको</translation>
 <translation id="5515439363601853141">आफ्नो पासवर्ड हेर्न अनलक गर्नुहोस्</translation>
 <translation id="5517095782334947753">तपाईंसँग <ph name="FROM_ACCOUNT" /> का पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू छन्।</translation>
@@ -875,6 +883,7 @@
 <translation id="6154478581116148741">यो यन्त्रबाट आफ्ना पासवर्डहरू निर्यात गर्न सेटिङहरूमा गई स्क्रिन लक सक्रिय गर्नुहोस्</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6159729262978459665">यसले सिंक गरिएका सबै डिभाइसबाट इतिहास मेटाउँछ।</translation>
+<translation id="6162892189396105610">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राखिन्छ।</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
 <translation id="6203593061661911168">Wi-Fi मा कनेक्ट भएपछि डाउनलोड गर्न थालिने छ</translation>
@@ -909,6 +918,7 @@
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
 <translation id="6378173571450987352">विवरणहरू: प्रयोग गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
+<translation id="6380100320871303656">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज अझ छिटो अन्तरालमा प्रिलोड गरेर राखिन्छ। यो सेटिङ अन हुँदा बढी डेटा प्रयोग हुन सक्छ।</translation>
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">यन्त्र फेरि अनलाइन भयो</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> मा <ph name="ERROR_CODE" /></translation>
@@ -942,6 +952,7 @@
 <translation id="6532866250404780454">तपाईंले Chrome मार्फत हेर्नुभएका साइटहरू देखिने छैनन्। साइटका सबै टाइमरहरू मेटाइने छन्।</translation>
 <translation id="6534565668554028783">Google ले प्रतिक्रिया जनाउन निकै लामो समय लियो</translation>
 <translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6541042852576515209">आकार बदल्नुहोस् र रोटेट गर्नुहोस्</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6546511553472444032">यो फाइल हानिकारक हुन सक्छ</translation>
@@ -1015,6 +1026,7 @@
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6903907808598579934">सिंकलाई सक्रिय गर्नुहोस्</translation>
+<translation id="6909589135458168665">पेजहरू प्रिलोड गरियोस्</translation>
 <translation id="6929699136511445623">Android सिस्टम सिंक गर्ने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="6942665639005891494">सेटिङहरू नामक मेनुको विकल्प प्रयोग गरी डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="694267552845942083">तपाईं हाल सिंकसम्बन्धी तपाईंका सेटिङ आफ्नो आवश्यकता अनुकूल पार्दै हुनुहुन्छ। सिंक गर्ने सुविधा अन गर्ने प्रक्रिया पूरा गर्न स्क्रिनको फेदको छेवैमा रहेको 'पुष्टि गर्नुहोस्' नामक बटनमा ट्याप गर्नुहोस्। माथि जानुहोस्</translation>
@@ -1046,6 +1058,7 @@
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="7121362699166175603">ठेगाना पट्टीका इतिहास र स्वतः पूर्णताहरूलाई खाली गर्छ। तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य किसिमका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="7138678301420049075">अन्य</translation>
+<translation id="7143462160780459030">स्क्रिनसट लिन सकिँदैन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7155317020660659215">QR कोड स्क्यान गर्न आफ्नो सेटिङ परिवर्तन गरी Chrome लाई तपाईंको क्यामेरा प्रयोग गर्न दिनुहोस्</translation>
@@ -1097,6 +1110,8 @@
 <translation id="7444811645081526538">थप कोटिहरू</translation>
 <translation id="7453467225369441013">तपाईंलाई धेरैजसो साइटहरूबाट साइन आउट गर्छ। तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="7454641608352164238">पर्याप्त खाली ठाउँ छैन</translation>
+<translation id="7456774706094330779">अझ धेरै पेजहरू प्रिलोड गर्ने मोड</translation>
+<translation id="7468819939926272717">कुनै भावना छनौट गर्नुहोस्</translation>
 <translation id="7474822150871987353">पेजबाट नबाहिरिकन वेबसाइटहरूमा भएका खास शब्द वा वाक्यांशका बारेमा थप जानकारी प्राप्त गर्नुहोस्। यो पेजमा भएको एउटा वा सोभन्दा बढी शब्दका बारेमा खोज्न ती शब्द चयन गर्नुहोस्।</translation>
 <translation id="7475192538862203634">तपाईँले यसलाई प्राय: देखिरहनु भएको छ भने, यी <ph name="BEGIN_LINK" />सुझावहरू<ph name="END_LINK" /> प्रयास गर्नुहोस्।</translation>
 <translation id="7475688122056506577">SD कार्ड फेला परेन। तपाईंका केही फाइलहरू हराइरहेका हुन सक्छन्।</translation>
@@ -1144,6 +1159,7 @@
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
 <translation id="766587987807204883">लेखहरू यहाँ देखिन्छन् र तपाईं ती लेखहरू अफलाइन भएका बेलामा पनि पढ्न सक्नुहुन्छ</translation>
 <translation id="7682724950699840886">निम्न सुझावहरूअनुसार गरी हेर्नुहोस्: कृपया आफ्नो यन्त्रमा पर्याप्त खाली ठाउँ रहेको कुरा सुनिश्चित गरेर पुनः निर्यात गर्ने प्रयास गर्नुहोस्।</translation>
+<translation id="768618399695552958">तपाईंले खोलेका केही पेजहरू प्रिलोड गरेर राखिन्छ। Google का सर्भर र Google साइट लिंक गरेपछि पेजहरू ती सर्भरमार्फत प्रिलोड गरेर राखिन सक्छ।</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मा इमेल सिर्जना गर्नुहोस्</translation>
 <translation id="7704317875155739195">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
@@ -1179,6 +1195,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज पढ्नुभएको छैन}other{तपाईंले <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> वटा पेज पढ्नुभएको छैन}}</translation>
 <translation id="7882131421121961860">कुनै इतिहास भेट्टिएन</translation>
 <translation id="7886917304091689118">Chrome मा चलिरहेको छ</translation>
+<translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
 <translation id="789763218334337857">Chrome प्रयोग गर्ने तरिका</translation>
 <translation id="7903184275147100332">यो कार्य पूरा हुन एक मिनेट लाग्न सक्छ</translation>
 <translation id="7919123827536834358">यी भाषाहरू स्वतः अनुवाद गर्नुहोस्</translation>
@@ -1196,7 +1213,6 @@
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
-<translation id="7981313251711023384">ब्राउजिङ र खोजी कार्यलाई अझ छिटो बनाउन पृष्ठहरू पूर्वलोड गर्नुहोस्</translation>
 <translation id="7986497153528221272">पासवर्डहरू हेर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
 <translation id="799576009106109668">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिएको हुनाले तपाईं छिटो ब्राउज गर्नु हुने छ</translation>
 <translation id="7998918019931843664">बन्द ट्याब पुन: खोल्नुहोस्</translation>
@@ -1216,6 +1232,7 @@
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>
+<translation id="8062594758852531064">अझ धेरै पेजहरू प्रिलोड गर्ने मोड:</translation>
 <translation id="8063895661287329888">पुस्तक चिन्ह थप्न सकिएन।</translation>
 <translation id="806745655614357130">मेरो डेटा अलग राख्नुहोस्</translation>
 <translation id="8073388330009372546">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -1226,6 +1243,7 @@
 <translation id="808747664143081553">यन्त्रसँग कनेक्ट गरियो</translation>
 <translation id="8088176524274673045">वरपर रहेका मान्छेहरूसँग सेयर गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="8103578431304235997">इन्कोग्निटो ट्याब</translation>
+<translation id="8105613260829665809">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>
@@ -1250,6 +1268,7 @@
 <translation id="8250920743982581267">कागजातहरू</translation>
 <translation id="825412236959742607">यस पृष्ठले अत्यधिक मेमोरी प्रयोग गर्छ, त्यसैले Chrome ले केही सामग्री हटायो।</translation>
 <translation id="8255617931166444521">साइटहरूले तपाईंले ब्राउजरमार्फत ती साइटमा गर्नुभएका क्रियाकलापहरू हेर्ने प्रयोजनका लागि मात्र तपाईंका कुकीहरू प्रयोग गर्न सक्छन्</translation>
+<translation id="8259179246279078674">प्रिलोड गरिएका पेजहरू इन्क्रिप्ट गरिने हुनाले Google ले प्रिलोड गरिएको पेजमा भएको सामग्रीका बारेमा कुनै पनि कुरा थाहा पाउने छैन। Google का सर्भरहरूले कुन कुन साइटले पेजहरू गोप्य तरिकाले प्रिलोड गरेर राख्छन् भन्ने कुरा थाहा पाउने छ। यो जानकारी पेजहरू प्रिलोड गरेर राख्ने प्रयोजनका लागि मात्र प्रयोग गरिन्छ र उक्त जानकारी तपाईंको Google खातामा भएको जानकारीसँग सम्बन्धित हुँदैन।</translation>
 <translation id="8260126382462817229">फेरि साइन इन गरी हेर्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="82619448491672958">अन्य ट्याबहरू हेर्नुहोस्</translation>
@@ -1263,6 +1282,7 @@
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगरियोस्</translation>
 <translation id="8349013245300336738">प्रयोग गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
+<translation id="8352996530981010042">प्रतिक्रियाहरू डाउनलोड गर्न सकिँदैन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8354977102499939946">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
@@ -1307,6 +1327,7 @@
 <translation id="8551513938758868521">Chrome बाट बाहिरिएपछि इन्कोग्निटो ट्याब लक गरियोस्</translation>
 <translation id="8555836665334561807">Wi-Fi प्रयोग गरेका बेला</translation>
 <translation id="8559990750235505898">अन्य भाषाहरूमा पृष्ठहरूको अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
+<translation id="8560560256644480257">GIF बनाउने कार्य <ph name="PERCENT" />%% पूरा भयो</translation>
 <translation id="8560602726703398413">आफ्नो अध्ययन सूची बुकमार्कहरूमा फेला पार्नुहोस्</translation>
 <translation id="8562452229998620586">बचत गरिएका पासवर्डहरू यहाँ देखिनेछन्।</translation>
 <translation id="856481929701340285">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>
@@ -1325,6 +1346,7 @@
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="8641930654639604085">वयस्क व्यक्तिहरूका लागि निर्मित साइटहरूमाथि रोक लगाउने प्रयास गर्नुहोस्</translation>
 <translation id="864544049772947936">विन्डोहरू व्यवस्थापन गर्नु… (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8646467750715887511">तपाईंले पेजहरू खोलेपछि मात्र ती पेज लोड हुन्छन्।</translation>
 <translation id="8655129584991699539">तपाईं Chrome का सेटिङहरूमा गई डेटा खाली गर्न सक्नुहुन्छ</translation>
 <translation id="8656747343598256512">आफ्नो Google खाता प्रयोग गरी यो साइट र Chrome मा साइन इन गर्नुहोस्। तपाईं सिंक गर्ने सुविधा पछि अन गर्न सक्नुहुन्छ।</translation>
 <translation id="8659579665266920523">Chrome मार्फत खोज्ने तरिका</translation>
@@ -1421,6 +1443,7 @@
 <translation id="9209888181064652401">कल गर्न सकिएन</translation>
 <translation id="9212845824145208577">योभन्दा तल जान मिल्दैन। यो पेजको अझै तल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="9219103736887031265">फोटो</translation>
+<translation id="92381315203627188">कुनै साइटले आफ्नो पेजमा भएका लिंकहरू गोप्य तरिकाले प्रिलोड गर्न लगाएका खण्डमा Chrome ले कुकीहरू प्रयोग नगरिकनै पेजहरू Google का सर्भरमार्फत इन्क्रिप्ट गरी प्रिलोड गरेर राख्छ। यसो गर्दा पेजहरू प्रिलोड गरिएको साइटमा भएको तपाईंको जानकारी लुकाइन्छ।</translation>
 <translation id="926205370408745186">आफूले Chrome मा गरेका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउनुहोस्</translation>
 <translation id="927968626442779827">Google Chrome को लाइट मोड प्रयोग गर्नुहोस्</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> फलो गरिँदै छ</translation>

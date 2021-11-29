@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Đang hủy quá trình quét</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
+<translation id="1857850044054738019">Chọn lựa chọn này nếu thiết bị đang được bổ sung hoặc được tân trang lại để
+         phân phối cho một khách hàng mới.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
@@ -116,6 +118,7 @@
 <translation id="2783010256799387990">ĐÃ ĐẠT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
+<translation id="2859243502336719778">Bản cập nhật quan trọng</translation>
 <translation id="2860473693272905224">Đặt một trang khác lên máy quét</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
@@ -150,6 +153,7 @@
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Đang quét trang <ph name="PAGE_NUM" />. Ðã quét được <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">In</translation>
+<translation id="3462187165860821523">Đang cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>
@@ -172,6 +176,7 @@
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
+<translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="3942420633017001071">Chẩn đoán</translation>
 <translation id="3966286471246132217">Để có kết quả chính xác hơn, hãy đóng tất cả các ứng dụng cho đến khi quá trình kiểm tra hoàn tất.</translation>
@@ -197,11 +202,13 @@
 <translation id="4244962993387259361">Bạn cần ít nhất 500 MB trống để chạy tính năng kiểm tra Bộ nhớ. Để giải phóng dung lượng, hãy chuyển đến phần Cài đặt &gt; Trình quản lý bộ nhớ.</translation>
 <translation id="4258281355379922695">Độ trễ của yêu cầu HTTP</translation>
 <translation id="4271957103967917607">Xem toàn màn hình</translation>
+<translation id="4275799948641988986">Sau khi sửa chữa, ai sẽ là người dùng thiết bị?</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Cập nhật thiết bị ngoại vi</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> đang tắt</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
@@ -209,6 +216,7 @@
 <translation id="445059817448385655">Mật khẩu cũ</translation>
 <translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
+<translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
 <translation id="4511264077854731334">Cổng</translation>
@@ -231,6 +239,7 @@
 <translation id="469379815867856270">Cường độ tín hiệu</translation>
 <translation id="4707579418881001319">L2TP/IPsec + chứng chỉ người dùng</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
+<translation id="473775607612524610">Cập nhật</translation>
 <translation id="475869545581454722">Đã cập nhật mật khẩu Chrome OS</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4794140124556169553">Việc chạy quá trình kiểm tra CPU có thể ảnh hưởng đến hiệu suất của hệ thống</translation>
@@ -239,6 +248,7 @@
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4835901797422965222">Không có mạng nào đang hoạt động</translation>
+<translation id="4839698083503556542">Tạo phim của riêng bạn</translation>
 <translation id="484790837831576105">(Android) Quá trình phân giải DNS</translation>
 <translation id="4848429997038228357">ĐANG CHẠY</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
@@ -251,6 +261,7 @@
 <translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="4930320165497208503">Để thiết lập hoặc cập nhật kết nối, hãy chuyển đến phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
+<translation id="4950314376641394653">Chương trình cơ sở của <ph name="DEVICE_NAME" /> đã được cập nhật lên phiên bản <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
 <translation id="4985509611418653372">Chạy</translation>
 <translation id="4987769320337599931">Tường lửa</translation>
@@ -392,6 +403,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7040230719604914234">Nhà mạng</translation>
 <translation id="7058278511608979688">Kết thúc và lưu</translation>
 <translation id="7059230779847288458">Đang sạc, còn <ph name="TIME_VALUE" /> nữa là pin đầy</translation>
+<translation id="7068619307603204412">Chuẩn bị thiết bị của bạn</translation>
 <translation id="708426984172631313">ĐÃ DỪNG</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Không thành công – Ủy quyền không thành công</translation>
@@ -405,12 +417,14 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
+<translation id="7240035910874241640">Tất cả thiết bị ngoại vi đã được cập nhật</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
 <translation id="7297226631177386107">Không thể kết nối với các trang web HTTPS qua tường lửa</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Thiết bị sẽ thuộc về một chủ sở hữu khác</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Thiết bị mạng</translation>
 <translation id="7359657277149375382">Loại tệp</translation>
@@ -418,6 +432,9 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7415801143053185905">Yêu cầu HTTP có độ trễ rất cao</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
+<translation id="7451112128070628323">Chọn lựa chọn này nếu quyền sở hữu thiết bị không thay đổi.
+        Ví dụ: thiết bị đang được chuyển cho một người khác
+         trong cùng một tổ chức.</translation>
 <translation id="7469648432129124067">Đã phát hiện thấy cổng</translation>
 <translation id="7487067081878637334">Công nghệ</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
@@ -442,6 +459,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7763470514545477072">Khớp hậu tố tên miền</translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
 <translation id="7784116172884276937">Không có máy chủ DNS nào được thiết lập</translation>
+<translation id="7786540085520432425">Trong khi cập nhật, bạn có thể thu nhỏ cửa sổ nhưng không rút dây nguồn thiết bị. Quá trình này có thể mất vài phút và thiết bị của bạn có thể không hoạt động trong quá trình cập nhật</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>
 <translation id="7835501727204647447">Cài đặt CloudReady</translation>
@@ -473,6 +491,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8246209727385807362">Nhà cung cấp dịch vụ không xác định</translation>
+<translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8286154143153872371">Vui lòng kết nối mạng và tải lại trang để xem hình nền.</translation>
 <translation id="8291967909914612644">Quốc gia của nhà cung cấp Home</translation>
 <translation id="8294431847097064396">Nguồn</translation>
@@ -497,6 +516,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8498220429738806196">Bộ đếm lưu lượng truy cập</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> của bạn đã được cập nhật</translation>
 <translation id="8521021929829989041">Sử dụng làm thiết bị cá nhân</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>
@@ -536,12 +556,14 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Quét}=1{Quét trang {NUMBER_OF_PAGES}}other{Quét trang {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Đang cài đặt – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Quá trình phân giải DNS có độ trễ cao</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
+<translation id="9095415590198785865">Thiết bị sẽ thuộc về cùng một chủ sở hữu</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>

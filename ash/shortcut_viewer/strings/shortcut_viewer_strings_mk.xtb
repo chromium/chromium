@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Отворете нов прозорец во режим „Инкогнито“</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а потоа <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="1652741121070700329">Преместете се на почетокот на претходниот збор</translation>
 <translation id="1679841710523778799">Зголемете ја осветленоста</translation>
 <translation id="168356808214100546">Притиснете и задржете <ph name="ALT" />, притискајте <ph name="TAB" /> додека не го добиете прозорецот што сакате да го отворите, а потоа пуштете.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 до 8</translation>
 <translation id="3837047332182291558">Направете ја тастатура посветла (само за тастатури со заднинско осветлување)</translation>
 <translation id="3949671998904569433">запирка</translation>
-<translation id="3976707995992061296">Вклучете/исклучете дали активниот прозорец е доделен на сите работни површини</translation>
 <translation id="3976863468609830880">Кликнете на последната икона на полицата</translation>
 <translation id="3994783594793697310">Ресетирајте го нивото на зумирање на екранот</translation>
 <translation id="4026843240379844265">Премести го активниот прозорец помеѓу екраните</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Притиснете <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и кликнете на линк</translation>
 <translation id="561814908794220892">Отворете ја веб-страницата во нова картичка</translation>
 <translation id="5620219513321115856">Преместете го активниот прозорец на работниот простор десно</translation>
+<translation id="5699366815052349604">Назначете активен прозорец на сите работни површини</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Отворете го линкот во картичката</translation>
 <translation id="5757474750054631686">Затемнете ја тастатурата (само за тастатури со заднинско осветлување)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Зумирајте го екранот</translation>
 <translation id="634687982629734605">Префрлајте го фокусот помеѓу: статусната област (каде што се појавува сликата од сметката), стартерот, лентата за адреси, лентата со обележувачи (ако е видлива), веб-страницата што е отворена и лентата за преземања (ако е видлива). Ако се прикаже дијалог за фокусирање, поместете го фокусот таму.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Активирајте ја од 1. до 8. работна површина.</translation>
 <translation id="6395172954772765143">Изберете текст на крајот од редот</translation>
 <translation id="6425378783626925378">Кликнете на иконите од 1 до 8 на полицата</translation>
 <translation id="6435207348963613811">Нагласете ја претходната ставка на полицата</translation>

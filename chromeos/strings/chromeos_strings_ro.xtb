@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stare de activare</translation>
+<translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
 <translation id="2323506179655536734">OMIS</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
+<translation id="2859243502336719778">Actualizare esențială</translation>
 <translation id="2860473693272905224">Așază altă pagină pe scaner</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
+<translation id="3462187165860821523">Se actualizează dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
+<translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
 <translation id="3966286471246132217">Pentru rezultate mai precise, închide toate aplicațiile până la încheierea testului.</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Actualizează dispozitivele periferice</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4428374560396076622">Rețeaua <ph name="NETWORK_NAME" /> este dezactivată</translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">Parolă veche</translation>
 <translation id="4453205916657964690">Mască de subrețea</translation>
 <translation id="4454245904991689773">Scanează către</translation>
+<translation id="4472575034687746823">Începeți</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">Puterea semnalului</translation>
 <translation id="4707579418881001319">L2TP/IPSec + certificat de utilizator</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
+<translation id="473775607612524610">Actualizează</translation>
 <translation id="475869545581454722">Parola sistemului de operare Chrome a fost actualizată</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4930320165497208503">Pentru a configura sau a actualiza o conexiune, accesează <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4950314376641394653">Firmware-ul <ph name="DEVICE_NAME" /> a fost actualizat la versiunea <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
 <translation id="5051044138948155788">Aceasta este singura pagină. Astfel, vei accesa ecranul de pornire a scanării.</translation>
-<translation id="5061169534910302641">Actualizează versiunea și repornește</translation>
 <translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5142961317498132443">Autentificare</translation>
@@ -399,6 +406,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Finalizează și salvează</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
+<translation id="7068619307603204412">Pregătește dispozitivul</translation>
 <translation id="708426984172631313">OPRIT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nu a reușit – Autorizarea nu a reușit</translation>
@@ -412,6 +420,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
+<translation id="7240035910874241640">Toate dispozitivele periferice sunt actualizate</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecții de imagini de fundal</translation>
@@ -452,6 +461,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
+<translation id="7786540085520432425">În timpul actualizării, poți minimiza fereastra, dar nu deconecta dispozitivul de la sursa de alimentare. Procesul poate dura câteva minute și este posibil ca dispozitivul să nu funcționeze pe durata actualizării.</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7819857487979277519">PSK (WPA sau RSN)</translation>
 <translation id="7835501727204647447">Instalează CloudReady</translation>
@@ -485,6 +495,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8217675307824400706">Conectează-te</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
+<translation id="8281886186245836920">Omite</translation>
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>
 <translation id="8291967909914612644">Țara furnizorului local</translation>
 <translation id="8294431847097064396">Sursă</translation>
@@ -509,6 +520,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8498220429738806196">Contoare de trafic</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8503836310948963452">Mai sunt câteva minute…</translation>
+<translation id="8520963233738002436">Dispozitivul <ph name="DEVICE_NAME" /> este actualizat</translation>
 <translation id="8521021929829989041">Folosește ca dispozitiv personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
@@ -548,6 +560,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
+<translation id="8994273342647807496">Se instalează – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>

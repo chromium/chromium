@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">在無痕模式中開啟新視窗</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按 <ph name="ESC" /> 鍵</translation>
+<translation id="1586324912145647027">前往桌面 1 至 8</translation>
 <translation id="1652741121070700329">移至上一個字詞的開頭</translation>
 <translation id="1679841710523778799">調高亮度</translation>
 <translation id="168356808214100546">按住 <ph name="ALT" /> 鍵並輕按 <ph name="TAB" /> 鍵，直到切換至您要開啟的視窗，然後鬆開手指。</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 至 8 鍵</translation>
 <translation id="3837047332182291558">調亮鍵盤 (只適用於背光鍵盤)</translation>
 <translation id="3949671998904569433">逗號</translation>
-<translation id="3976707995992061296">切換是否要將使用中的視窗指派給所有桌面</translation>
 <translation id="3976863468609830880">按一下捷徑列中的最後一個圖示</translation>
 <translation id="3994783594793697310">重設顯示縮放比例</translation>
 <translation id="4026843240379844265">在顯示屏之間移動使用中的視窗</translation>
@@ -131,6 +131,7 @@
 <translation id="5563050856984839829">按 <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> 鍵，然後按一下連結</translation>
 <translation id="561814908794220892">在新分頁中開啟網頁</translation>
 <translation id="5620219513321115856">將使用中的視窗移至右側桌面</translation>
+<translation id="5699366815052349604">將使用中的視窗指派給所有桌面</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> 鍵或 <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /> 鍵</translation>
 <translation id="5757111373163288447">在分頁中開啟連結</translation>
 <translation id="5757474750054631686">調暗鍵盤 (只適用於背光鍵盤)</translation>
@@ -151,7 +152,6 @@
 <translation id="6340769215862220182">放大顯示</translation>
 <translation id="634687982629734605">在以下位置之間切換焦點：狀態區 (帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁及下載列 (如有顯示)。如果畫面上有可成為焦點的對話框，焦點會改為移至對話框。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
-<translation id="6372960562287888784">啟動第 1 到第 8 個桌面。</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
 <translation id="6425378783626925378">按一下捷徑列中的第 1-8 個圖示</translation>
 <translation id="6435207348963613811">突顯捷徑列中的上一個項目</translation>

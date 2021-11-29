@@ -6,7 +6,6 @@
 <translation id="1258009455399840361">வலஞ்சுழியில் 90 டிகிரிக்குச் சுழற்று</translation>
 <translation id="1276998909102132017">கேலரி படங்கள்</translation>
 <translation id="1300209025925956156">ஆவணத்தை ஸ்கேன் செய்யுங்கள்</translation>
-<translation id="1303487788671416818">முழு அளவு வீடியோ ஸ்னாப்ஹோஸ்ட்டை இயக்கு</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. அவற்றைப் பயன்படுத்த Search மற்றும் இடது அம்புக்குறியை அழுத்தவும்.</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> அகற்றப்பட்டது.</translation>
@@ -28,6 +27,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> செயலில் உள்ளது</translation>
 <translation id="2144806332417375165">பிரத்தியேக வீடியோ அளவுருக்கள்</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
+<translation id="2271433936731426666">முழு அளவு வீடியோ ஸ்னாப்ஷாட்டை இயக்கு</translation>
 <translation id="229579744168541441">டிஸ்கிற்கு இடமாற்று</translation>
 <translation id="2320741269052147773">இடப்புறம் நகர்த்தவும்</translation>
 <translation id="2501278716633472235">திரும்பிச் செல்</translation>
@@ -56,6 +56,7 @@
 <translation id="3517926952904427380">படத்தை நீளவாக்கில் எடுக்க முடியவில்லை</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> ஃபைலை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
 <translation id="3573890771273113519">ஸ்கேன் பயன்முறைக்கு மாறு</translation>
+<translation id="3583444040776960729">ஆவணத்தின் கீழ் இடது மூலை</translation>
 <translation id="3789724198583203151">இடஞ்சுழியில் 90 டிகிரிக்குச் சுழற்று</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3838931309141338733">பார்கோடை ஸ்கேன் செய்</translation>
@@ -77,6 +78,7 @@
         கேமரா சரியாக இணைக்கப்பட்டுள்ளதா எனப் பார்க்கவும்.</translation>
 <translation id="5152121255775685072">கேலரிக்குச் செல்</translation>
 <translation id="520537883758714667">இப்போது ஆவணத்தை ஸ்கேன் செய்யலாம்</translation>
+<translation id="5266635337630551423">ஆவணத்தின் மேல் இடது மூலை</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5444515100983837161">ஃபிரேமிற்குள் இருக்கும் வகையில் ஆவணத்தைச் சரிசெய்யவும். ஆவணமும் அதன் பின்புலமும் வெவ்வேறு வண்ணங்களாக இருந்தால் நன்றாக ஸ்கேன் செய்யலாம்.</translation>
 <translation id="5671277269877808209">சதுரம்</translation>
@@ -96,6 +98,7 @@
 படம் அல்லது வீடியோ தரம் குறித்து கருத்து தெரிவித்திருந்தால் மாதிரிப் படத்தையோ வீடியோவையோ இணைத்து என்ன தவறு உள்ளது என்பதை விளக்கவும். (உதாரணம்: படம் மிகவும் டார்க்காக உள்ளது/சப்ஜெக்ட் ஃபோகஸ் செய்யப்படவில்லை.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> மெகா பிக்சல்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
+<translation id="6652737148136672975">மூலைகளை நகர்த்த அம்புக்குறி விசைகளைப் பயன்படுத்தவும்</translation>
 <translation id="667999046851023355">ஆவணம்</translation>
 <translation id="6681668084120808868">புகைப்படம் எடு</translation>
 <translation id="6778482348691154169">படம் எடுக்க முடியவில்லை</translation>
@@ -116,7 +119,9 @@
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7671804233658741790">ஆவணத்தின் கீழ் வலது மூலை</translation>
 <translation id="7726641833034062494">சாதாரண வீடியோவை ரெக்கார்டு செய்யும்</translation>
+<translation id="7748344063862150053">ஆவணத்தின் மேல் வலது மூலை</translation>
 <translation id="7983668134180549431">உரை கண்டறியப்பட்டது.</translation>
 <translation id="8067883171444229417">வீடியோவை பிளே செய்</translation>
 <translation id="8120146556401698679">நகர்வு சாய்வு அளவை மாற்று</translation>

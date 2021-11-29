@@ -1,85 +1,50 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1018939186200882850">menü öğesi</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> cihazına gönderiliyor...</translation>
-<translation id="10623998915015855">geçiş düğmesi</translation>
 <translation id="111910763555783249">Bildirim ayarları</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 gün önce}other{# gün önce}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 dakika önce}other{# dakika önce}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 dk.}other{# dk.}}</translation>
-<translation id="1181037720776840403">Kaldır</translation>
-<translation id="1188858454923323853">tamamlayıcı</translation>
-<translation id="1201402288615127009">İleri</translation>
-<translation id="1206619573307042055">marquee</translation>
-<translation id="1206693055195146388">kaydırma çubuğu</translation>
-<translation id="1211441953136645838">son not</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" /> Play Store uygulaması</translation>
 <translation id="1243314992276662751">Yükle</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1281252709823657822">iletişim kutusu</translation>
-<translation id="1290982764014248209"><ph name="DRAGGED_APP" /> uygulaması <ph name="FOLDER_NAME" /> klasörüne taşınıyor.</translation>
 <translation id="1291104554099683393">Metni daha küçük parçalar halinde paylaşmayı deneyin.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">ÖNERİLEN UYGULAMALAR</translation>
-<translation id="1335095011850992622">katkıda bulunanlar</translation>
-<translation id="1342835525016946179">article</translation>
-<translation id="1359897965706325498">banner</translation>
 <translation id="1368832886055348810">Soldan Sağa</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1398853756734560583">Büyüt</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, Yüklü Uygulama</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşılamıyor</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" /> ile değiştirildi</translation>
-<translation id="1498028757988366001">Bunu daha önce aradınız. "<ph name="QUERY" />" sorgusunu geçmişinizden sildiğinizde bu sorgu tüm cihazlarınızda hesabınızdan kalıcı olarak kaldırılır.</translation>
-<translation id="1510238584712386396">Başlatıcı</translation>
-<translation id="1589122976691792535">bölge</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 dakika ve }other{# dakika ve }}</translation>
 <translation id="1643823602425662293">Bildirim</translation>
-<translation id="1650423536718072820">alıntı</translation>
 <translation id="169515659049020177">ÜstKrktr</translation>
 <translation id="1710340000377843106">şu an</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 dakika}other{# dakika}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
-<translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
 <translation id="1801827354178857021">Dönem</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 ay}other{# ay}}</translation>
-<translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/sn</translation>
-<translation id="1821985195704844674">ağaç tablo</translation>
-<translation id="1823704031293214298">sayfa alt bilgisi</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 saat }other{# saat ve }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
-<translation id="1842960171412779397">seç</translation>
 <translation id="1859234291848436338">Yazma Yönü</translation>
 <translation id="1860796786778352021">Bildirimi kapat</translation>
 <translation id="186476001994626254">Web Smart Paste İçeriği</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652">%<ph name="NUMBER" /></translation>
 <translation id="1901303067676059328">Tümünü &amp;seç</translation>
-<translation id="190587075670221089">silme</translation>
-<translation id="1907737156431278478">örnek</translation>
 <translation id="19085484004813472">Bu yeni bir özelliktir</translation>
-<translation id="1930711995431081526">durum</translation>
 <translation id="2006524834898217237">Bu cihazın internete bağlı olduğundan emin olun.</translation>
 <translation id="208586643495776849">Lütfen tekrar deneyin</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 gün}other{# gün}}</translation>
 <translation id="2148716181193084225">Bugün</translation>
-<translation id="2158401438286456825">sayfa listesi</translation>
 <translation id="2161656808144014275">Metin</translation>
 <translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(boş)</translation>
 <translation id="2192232475740621500">Düşük yoğunluk kullan</translation>
-<translation id="219905428774326614">Launcher, tüm uygulamalar</translation>
 <translation id="2267918077332197517">Bu siteden gelen tüm bildirimleri engelle</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Ekranınızda dokunma hedeflerine dokunun.</translation>
-<translation id="2291999235780842123">onay kutusu</translation>
 <translation id="2295140143284145483">Anket</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sn</translation>
-<translation id="2311842470354187719">sayfa sonu</translation>
-<translation id="2335594187091864976">tarih ve saat seçici</translation>
 <translation id="2353636109065292463">İnternet bağlantınızı kontrol etme</translation>
 <translation id="2388990488038464401">Bu numara telefonunuzdan aransın mı?</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
@@ -87,46 +52,27 @@
 <translation id="2445449901874883781">Yüksek yoğunluk kullan</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2497284189126895209">Tüm Dosyalar</translation>
-<translation id="2508569020611168319">sekme listesi</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibrasyon tamamlandı</translation>
 <translation id="252373100621549798">Bilinmeyen Görünüm</translation>
 <translation id="2545651323591713692">Ertele</translation>
-<translation id="2570734079541893434">Ayarları yönet</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{1 saat içinde}other{# saat içinde}}</translation>
 <translation id="2583543531130364912">Dokunmatik ekranınızı ayarlayın</translation>
 <translation id="2586657967955657006">Pano</translation>
-<translation id="2657045182931379222">grafik nesnesi</translation>
 <translation id="2666092431469916601">Üst</translation>
-<translation id="2674318244760992338">altbilgi</translation>
 <translation id="2701330563083355633">Paylaşan: <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Yeni</translation>
-<translation id="2723001399770238859">ses</translation>
 <translation id="2743387203779672305">Panoya kopyala</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2759744352195237655">pop-up düğmesi</translation>
-<translation id="2803313416453193357">Klasörü aç</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 yıl önce}other{# yıl önce}}</translation>
-<translation id="2844350028562914727">ayrıntılar</translation>
 <translation id="2878511608894704031">Tümünü Sil</translation>
-<translation id="2896972712917208084">radyo düğmesi grubu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 gün içinde}other{# gün içinde}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> sütunu azalan düzende sıralandı.</translation>
-<translation id="2931838996092594335">tıklama</translation>
-<translation id="2940813599313844715">nesne</translation>
-<translation id="2981684127883932071">Öneriler gösteriliyor</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
-<translation id="3040011195152428237">bağlantı</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">Raf, ekranın sol tarafında</translation>
-<translation id="3078740164268491126">tablo</translation>
-<translation id="3086746722712840547">note</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
-<translation id="3175736971608411871">zamanlayıcı</translation>
 <translation id="3183922693828471536">Buraya Kaydır</translation>
-<translation id="3199563858620722075">birleşik kutu</translation>
 <translation id="3234408098842461169">Aşağı Ok</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 gün}other{# gün}}</translation>
 <translation id="3295886253693811851">Aramayı şununla yap:</translation>
@@ -134,10 +80,6 @@
 <translation id="335581015389089642">Konuşma</translation>
 <translation id="3389286852084373014">Metin çok büyük</translation>
 <translation id="3406306243914553062">HTML İçeriği</translation>
-<translation id="3486220673238053218">tanım</translation>
-<translation id="348799646910989694">Raf otomatik olarak gizlenecek</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> sabitlendi</translation>
-<translation id="3557673793733683882">başlık <ph name="HEADING_LEVEL" /></translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 gün kaldı}other{# gün kaldı}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> Dosya</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" /> +</translation>
@@ -146,277 +88,128 @@
 <translation id="364720409959344976">Yüklenecek Klasörü Seçin</translation>
 <translation id="3660179305079774227">Yukarı Ok</translation>
 <translation id="3670030362669914947">Numara</translation>
-<translation id="3670698553867754311">hafta seçici</translation>
-<translation id="3706100364254443312">anahtar</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/sn</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3808586225841795776">terim</translation>
-<translation id="3842239759367498783"><ph name="TITLE" /> adlı mobil cihazınızdan okumaya devam edin</translation>
-<translation id="385051799172605136">Geri</translation>
 <translation id="3889424535448813030">Sağ Ok</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3909791450649380159">&amp;Kes</translation>
-<translation id="3920932319529768807">sonuç</translation>
-<translation id="3924558731517983934">uygulama</translation>
-<translation id="3944740393230681990">prolog</translation>
-<translation id="3960700977367013758">kaydırma çubuğu</translation>
 <translation id="3990502903496589789">Sağ Kenar</translation>
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> sütunu artan düzende sıralandı.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Okunmamış Bildirim}other{# Okunmamış Bildirim}}</translation>
-<translation id="4151657705144244502">grafik</translation>
-<translation id="4160057747563657758">telefon</translation>
-<translation id="4193965531860883258">önsöz</translation>
-<translation id="4202807286478387388">git</translation>
-<translation id="421884353938374759">renk seçici</translation>
-<translation id="4248100235867064564">menü çubuğu</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ay önce}other{# ay önce}}</translation>
 <translation id="4289300219472526559">Konuşmaya Başla</translation>
-<translation id="4293574643247337246">sayfa üstbilgisi</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" />, <ph name="FOLDER_NAME" />klasörüne taşındı</translation>
 <translation id="4306392492252714209">Panodan kaldır.</translation>
-<translation id="4316910396681052118">TÜM UYGULAMALAR</translation>
-<translation id="4384583879834880242">Soru-Cevap</translation>
-<translation id="4446524499724042288">terimler sözlüğü referansı</translation>
 <translation id="4491109536499578614">Resim</translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4588090240171750605">Sağa Kaydır</translation>
-<translation id="4597532268155981612">form</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> Yıldız puanı</translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, Uygulama önerisi</translation>
-<translation id="4661075872484491155">tree</translation>
-<translation id="4668956016107839909">ek</translation>
-<translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
-<translation id="4698212723196775569">kod</translation>
 <translation id="4724120544754982507">Bildirim Merkezi, <ph name="UNREAD_NOTIFICATION_COUNT" /> okunmamış bildirim</translation>
-<translation id="4730374152663651037">SIK KULLANILANLAR</translation>
-<translation id="4742539557769756338">kapak</translation>
-<translation id="4757246831282535685">sekme paneli</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ay kaldı}other{# ay kaldı}}</translation>
-<translation id="479989351350248267">ara</translation>
 <translation id="4888938634149558681">Telefon et</translation>
-<translation id="4912536737030637138">kaynakça girişi</translation>
-<translation id="492244087561876220">yorum</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 saniye}other{# saniye}}</translation>
 <translation id="4971687151119236543">Medya Önceki Parça</translation>
-<translation id="5022314756875057021">satır grubu</translation>
-<translation id="5034860022980953847">ilerleme durumu göstergesi</translation>
 <translation id="5046499563572181734">Buraya dokunun</translation>
 <translation id="5076340679995252485">&amp;Yapıştır</translation>
-<translation id="5093189678851173835">yazıt</translation>
-<translation id="512758898067543763">satır başlığı</translation>
-<translation id="5143125788380636750">son söz</translation>
-<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ile <ph name="IN_PLACE_APP" /> birleştirilerek yeni bir klasör oluşturuldu.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Gönderilemedi</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="528468243742722775">Son</translation>
 <translation id="5329858601952122676">&amp;Sil</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> uygulaması <ph name="IN_PLACE_APP" /> uygulamasının üzerinde, klasör oluşturmak için serbest bırakın.</translation>
-<translation id="5406322316791861025">figür</translation>
-<translation id="5453733299334684579">ağaç öğesi</translation>
 <translation id="5463830097259460683">Emoji ve Semboller</translation>
-<translation id="546643433018805598">alt simge</translation>
-<translation id="5476505524087279545">işareti kaldır</translation>
-<translation id="547979256943495781">Raf, ekranın sağ tarafında</translation>
-<translation id="5516424706154626233">tarih seçici</translation>
 <translation id="5528053674512161860">Geliştirici UI modülü (dev_ui) yüklü olmadığından sayfa yükleme başarısız oldu</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> sistemi</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
-<translation id="5608153257855394627">vurgula</translation>
 <translation id="5613020302032141669">Sol Ok</translation>
-<translation id="561939826962581046">time</translation>
-<translation id="5631759159893697722">özet</translation>
-<translation id="5643186887447432888">düğme</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ilgilenmenizi gerektiriyor.</translation>
-<translation id="5675363643668471212">Raf öğesi</translation>
-<translation id="5693537480074347398">üst simge</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 dk.}other{# dk.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Bugün etkin}=1{1 gün önce etkindi}other{# gün önce etkindi}}</translation>
-<translation id="576709008726043716">giriş</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 gün ve }other{# gün ve }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Resim.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 yıl içinde}other{# yıl içinde}}</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 saniye kaldı}other{# saniye kaldı}}</translation>
-<translation id="591047860372322273">arama kutusu</translation>
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 saat}other{# saat}}</translation>
-<translation id="5987525920412732405">dönme düğmesi</translation>
-<translation id="6012623610530968780">Sayfa <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6022924867608035986">Arama kutusu metnini temizle</translation>
-<translation id="6023896073578205740">liste kutusu</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6117103120090651229">Orta düğme</translation>
-<translation id="6119846243427417423">etkinleştir</translation>
 <translation id="6129953537138746214">Boşluk</translation>
-<translation id="6134259848159370930">Cihazınızda, uygulamalarda, ayarlarda ve web'de arama yapın.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/sn</translation>
-<translation id="6150588977291308318">kaynakça</translation>
-<translation id="6156262341071374681">Tüm uygulamalara genişlet</translation>
-<translation id="6164829606128959761">ölçüm aracı</translation>
-<translation id="6165508094623778733">Daha fazla bilgi</translation>
-<translation id="6166809985690652833">sonsöz</translation>
-<translation id="6166852626429024716">Cihazınızda, uygulamalarda, ayarlarda, web'de arama yapın</translation>
-<translation id="6213469881011901533">terimler sözlüğü</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> seçildi.</translation>
 <translation id="6264365405983206840">&amp;Tümünü Seç</translation>
-<translation id="6281763101136022427">URL</translation>
-<translation id="6351032674660237738">UYGULAMA ÖNERİLERİ</translation>
 <translation id="6364916375976753737">Sola Kaydır</translation>
 <translation id="6394627529324717982">Virgül</translation>
 <translation id="6397363302884558537">Konuşmayı Durdur</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 sn. önce}other{# sn. önce}}</translation>
-<translation id="6417265370957905582">Google Asistan</translation>
 <translation id="6430678249303439055">Bu uygulamadan gelen tüm bildirimleri engelle</translation>
-<translation id="6453774872122745852">teşekkür</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 saniye önce}other{# saniye önce}}</translation>
-<translation id="648732519525291180">zaman seçici</translation>
 <translation id="6503257047630241175">RTF İçeriği</translation>
 <translation id="6539092367496845964">Bir sorun oldu. Daha sonra tekrar deneyin.</translation>
 <translation id="654149438358937226">Tüm bildirimleri engelle</translation>
-<translation id="6567071839949112727">üst öğeyi tıkla</translation>
-<translation id="6578407462441924264">Adsız</translation>
 <translation id="6612467943526193239">Kalibrasyondan çıkmak için Esc tuşuna basın.</translation>
 <translation id="6620110761915583480">Dosyayı Kaydet</translation>
-<translation id="663493177488814956">kartlar</translation>
-<translation id="6637586476836377253">log</translation>
-<translation id="6692633176391053278">stepper (adımlayıcı)</translation>
-<translation id="6696580792574109116">ay seçici</translation>
 <translation id="6699343763173986273">Medya Sonraki Parça</translation>
-<translation id="6710213216561001401">Önceki</translation>
-<translation id="6755330956360078551">ipucu</translation>
-<translation id="6786750046913594791">Klasörü kapat</translation>
 <translation id="6808150112686056157">Medyayı Durdur</translation>
-<translation id="6820615603175220800">kaynakça referansı</translation>
 <translation id="6845383723252244143">Klasörü Seçin</translation>
-<translation id="6845533974506654842">bas</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 saat kaldı}other{# saat kaldı}}</translation>
-<translation id="6885760532393684712">dizin</translation>
 <translation id="688711909580084195">Başlıksız Web Sayfası</translation>
-<translation id="689129560213475294">künye</translation>
 <translation id="6902419395050653510">HTML içeriği.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/sn</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 yıl kaldı}other{# yıl kaldı}}</translation>
-<translation id="6934078000481955284">blok alıntı</translation>
-<translation id="693476918119313863">üst bilgi</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6974053822202609517">Sağdan Sola</translation>
-<translation id="6981594929165378967">ekleme</translation>
-<translation id="7034405885550056553">öneri</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">BÜYÜK İHTİMALLE</translation>
-<translation id="7139483182332611405">önsöz</translation>
 <translation id="7170202025028120564">Uygulamanız yeniden başlatıldığında ekran ayarları devreye girecek.</translation>
-<translation id="7198226213493847604">menü pop-up düğmesi</translation>
-<translation id="7214187073215825913">içerik bilgisi</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238347055216017155">vurgu</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 dk. kaldı}other{# dk. kaldı}}</translation>
-<translation id="727747134524199931">sütun başlığı</translation>
-<translation id="7319740667687257810">Launcher, kısmi görünüm</translation>
-<translation id="7353453495576941748">katkıda bulunan</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 dk. önce}other{# dk. önce}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7405738980073107433">son notlar</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 dakika kaldı}other{# dakika kaldı}}</translation>
-<translation id="7430878839542012341">Bu arama, geçmişinizden silinsin mi?</translation>
 <translation id="7437971918971306061"><ph name="COLUMN_NAME" /> sütunu sıralı değil.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
-<translation id="7491962110804786152">tab</translation>
 <translation id="7507604095951736240">Emoji</translation>
-<translation id="7529102961911894712">geri bağlantı</translation>
 <translation id="7620655452534002301">Kaldırıldı.</translation>
-<translation id="7647456547678091388">ipucu</translation>
 <translation id="7658239707568436148">İptal</translation>
-<translation id="7661956066982048809">grafik dokümanı</translation>
-<translation id="7681220483256441252">dizin</translation>
-<translation id="7740050170769002709">HTML içeriği</translation>
 <translation id="7781829728241885113">Dün</translation>
-<translation id="7802800022689234070">açıklama üçgeni</translation>
 <translation id="7814458197256864873">K&amp;opyala</translation>
-<translation id="7848989271541991537"><ph name="PAGE_NUMBER" />. sayfa, <ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
 <translation id="7879499977785298635">Engelleme</translation>
-<translation id="7891486169920085145">ayırıcı</translation>
 <translation id="7907591526440419938">Dosya Aç</translation>
-<translation id="7952747673138230804">Chrome OS, keşfedilecek yeni içerik önerileri sunar. Yalnızca kullanım verilerini paylaşmayı seçtiyseniz önerileri iyileştirmek için istatistikleri gönderir. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Komut</translation>
-<translation id="8034303206267677282">önemli</translation>
-<translation id="8053789581856978548">arama metni alanı</translation>
-<translation id="8057695513531652401">bildirim</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 taneden fazla okunmamış bildirim var}other{# taneden fazla okunmamış bildirim var}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 dakika içinde}other{# dakika içinde}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> arasında bir sayı</translation>
-<translation id="8105797009065549151">not referansı</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 saat önce}other{# saat önce}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sn. kaldı}other{# sn. kaldı}}</translation>
 <translation id="8134065097954893699">Bu sayfa yeniden yükleniyor</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, Otomatik tamamlama</translation>
 <translation id="815598010540052116">Aşağı Kaydır</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8208673686607688524">yerel tarih ve zaman seçici</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Sekme</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, Uygulama</translation>
 <translation id="8259556432390118667">Onaltılık renk değeri</translation>
 <translation id="8328145009876646418">Sol Kenar</translation>
 <translation id="8331626408530291785">Yukarı Kaydır</translation>
-<translation id="8346634859695247203">bölüm</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 yıl}other{# yıl}}</translation>
-<translation id="838869780401515933">işaretle</translation>
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8394908167088220973">Medyayı Oynat/Duraklat</translation>
-<translation id="8415319359811155763">bölüm</translation>
-<translation id="8433900881053900389">araç çubuğu</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 yıl}other{# yıl}}</translation>
-<translation id="8461852803063341183">radyo düğmesi</translation>
-<translation id="8474886197722836894">ithaf</translation>
-<translation id="8531739829932800271">yazım hataları</translation>
-<translation id="8550857728288566671">grafik sembolü</translation>
-<translation id="8583702881314752957">tanım listesi</translation>
-<translation id="8597182159515967513">başlık</translation>
 <translation id="8602707065186045623">Dosyayı <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="860475260694818407">içindekiler</translation>
-<translation id="862370744433916922">alt başlık</translation>
-<translation id="8649597172973390955">Raf her zaman gösteriliyor</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/sn</translation>
-<translation id="8685326675965865247">Cihazınızda, uygulamalarınızda, ayarlarınızda ve web'de arama yapın. Uygulamalarınız arasında gezinmek için ok tuşlarını kullanın.</translation>
-<translation id="8711688047404765493">çıkış</translation>
 <translation id="8725488761726303204"><ph name="NUMBER" /> öğe daha</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 sa.}other{# sa.}}</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
-<translation id="8806053966018712535"><ph name="FOLDER_NAME" /> klasörü</translation>
-<translation id="8808573423886751634">bölüm</translation>
 <translation id="883911313571074303">Resme açıklama ekle</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
-<translation id="8851136666856101339">main</translation>
-<translation id="8861621546968757188">iletişim kutusu pop-up düğmesi</translation>
 <translation id="8867568208303837180">Gönderiliyor...</translation>
 <translation id="8876215549894133151">Biçim:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="8926951137623668982">Raf her zaman gizleniyor</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> cihazının internete bağlı olduğundan emin olun.</translation>
-<translation id="9002566407876343676">açma</translation>
-<translation id="901834265349196618">e-posta</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sn.}other{# sn.}}</translation>
-<translation id="9048119486235211610">gezinme</translation>
 <translation id="9059834730836941392">Bildirimi daralt</translation>
-<translation id="9062295712474918030">doküman</translation>
-<translation id="9108370397979208512">math</translation>
-<translation id="9138385573473225930">uyarı</translation>
-<translation id="9161053988251441839">ÖNERİLEN UYGULAMALAR</translation>
-<translation id="9168329111483466115">dipnot</translation>
 <translation id="9170848237812810038">&amp;Geri al</translation>
-<translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
 <translation id="944069440740578670">Okunmamış Bildirimler</translation>
-<translation id="966787709310836684">menü</translation>
-<translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 </translationbundle>

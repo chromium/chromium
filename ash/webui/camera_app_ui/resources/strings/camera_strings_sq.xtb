@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1113173431709655881">Modaliteti i kamerës</translation>
 <translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
 <translation id="1276998909102132017">Imazhet e galerisë</translation>
 <translation id="1300209025925956156">Skano dokumentin tënd</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
@@ -54,6 +55,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
 <translation id="3569311554794739032">Vërtet dëshiron të heqësh <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Kalo te modaliteti i skanimit</translation>
+<translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skano bardkodin</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="102360288709523007">Ajuda a millorar Chromium enviant estadístiques d'ús i informes d'error a Google.</translation>
+<translation id="1047130070405668746">Selecciona Chromium.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
 <translation id="1289216811211435351">Canvia a Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
 <translation id="1843424232666537147">Chromium té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què es carreguen les pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Selecciona Chromium.</translation>
 <translation id="2006345422933397527">Chromium no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="2054703085270098503">Protegeix-te amb Chromium</translation>
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>

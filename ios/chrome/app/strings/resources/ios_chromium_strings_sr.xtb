@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="102360288709523007">Побољшајте Chromium слањем статистике коришћења и извештаја о отказивању Google-у.</translation>
+<translation id="1047130070405668746">Изаберите Chromium</translation>
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1257458525759135959">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chromium-у да додаје слике</translation>
 <translation id="1289216811211435351">Пређите на Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Приказује упите за пријављивање у Chromium.</translation>
 <translation id="1584569488888892906">Chromium је једноставан, безбедан и бржи него икад пре</translation>
 <translation id="1617663976202781617">Подаци из Chromium синхронизације</translation>
+<translation id="1722370509450468186">Лозинка се чува на вашем налогу (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium подаци су обрисани</translation>
 <translation id="1838412507805038478">Chromium је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="1843424232666537147">Chromium има функције које вам помажу да управљате интернет подацима и брзином учитавања веб-страница.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Изаберите Chromium</translation>
 <translation id="2006345422933397527">Chromium не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="2054703085270098503">Останите безбедни уз Chromium</translation>
 <translation id="2168108852149185974">Неки програмски додаци изазивају отказивање Chromium-а. Деинсталирајте:</translation>

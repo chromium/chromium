@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
+<translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
 <translation id="2323506179655536734">OMÈS</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2789486458103222910">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
+<translation id="2859243502336719778">Actualització crítica</translation>
 <translation id="2860473693272905224">Col·loca una altra pàgina a l'escàner</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">S'està escanejant la pàgina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completat.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
+<translation id="3462187165860821523">S'està actualitzant <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
+<translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
 <translation id="3966286471246132217">Per obtenir uns resultats més precisos, tanca totes les aplicacions fins que la prova hagi finalitzat.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4378551569595875038">Connectant...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Actualitza els perifèrics</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4428374560396076622">La xarxa <ph name="NETWORK_NAME" /> està desactivada</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">Contrasenya antiga</translation>
 <translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
+<translation id="4472575034687746823">Comença</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">Intensitat del senyal</translation>
 <translation id="4707579418881001319">L2TP/IPsec + certificat d'usuari</translation>
 <translation id="4731797938093519117">Accés parental</translation>
+<translation id="473775607612524610">Actualitza</translation>
 <translation id="475869545581454722">S'ha actualitzat la contrasenya de Chrome OS</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4794140124556169553">Executar una prova de CPU pot afectar el rendiment del sistema</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4950314376641394653">El microprogramari del dispositiu <ph name="DEVICE_NAME" /> s'ha actualitzat a la versió <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
 <translation id="5051044138948155788">Aquesta és l'única pàgina. Se't dirigirà a la pantalla d'inici per escanejar.</translation>
-<translation id="5061169534910302641">Actualitza la versió i reinicia</translation>
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5142961317498132443">Autenticació</translation>
@@ -400,6 +407,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
+<translation id="7068619307603204412">Prepara el dispositiu</translation>
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
@@ -413,6 +421,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
+<translation id="7240035910874241640">Tots els perifèrics estan actualitzats</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
@@ -454,6 +463,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7763470514545477072">Sufix de domini coincident</translation>
 <translation id="7769672763586021400">Identificador del model</translation>
 <translation id="7784116172884276937">No hi ha cap servidor DNS configurat</translation>
+<translation id="7786540085520432425">Mentre s'actualitza, pots minimitzar la finestra però no pots desconnectar el dispositiu. Aquest procés pot tardar uns minuts i és possible que el dispositiu no funcioni durant l'actualització.</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">Instal·la CloudReady</translation>
@@ -487,6 +497,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8217675307824400706">Connecta't</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
+<translation id="8281886186245836920">Omet</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>
 <translation id="8291967909914612644">País del proveïdor domèstic</translation>
 <translation id="8294431847097064396">Font</translation>
@@ -511,6 +522,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
+<translation id="8520963233738002436">El dispositiu <ph name="DEVICE_NAME" /> està actualitzat</translation>
 <translation id="8521021929829989041">Utilitza com a dispositiu personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
@@ -550,6 +562,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
+<translation id="8994273342647807496">S'està instal·lant (<ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="9003704114456258138">Freqüència</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La resolució de DNS té una latència alta</translation>

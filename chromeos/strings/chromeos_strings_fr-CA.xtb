@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
+<translation id="1857850044054738019">Sélectionnez cette option si l'appareil est de nouveau en stock ou s'il est remis à neuf pour 
+        être distribué à un nouveau client.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
@@ -88,6 +90,7 @@
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">État de l'activation</translation>
+<translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Utiliser la biclé actuelle</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -115,6 +118,7 @@
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
@@ -149,6 +153,7 @@
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
@@ -156,6 +161,8 @@
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
+<translation id="360089215033199597">Il est recommandé de se connecter au réseau Wi-Fi pour faciliter le processus de réparation.
+        Votre réseau sera enregistré.</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -171,6 +178,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
+<translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3966286471246132217">Pour obtenir des résultats plus précis, fermez toutes les applications jusqu'à la fin du test.</translation>
@@ -197,11 +205,13 @@
 <translation id="4244962993387259361">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de l'espace, accédez à Paramètres &gt; Gestionnaire de stockage.</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4271957103967917607">Afficher en plein écran</translation>
+<translation id="4275799948641988986">Après la réparation de l'appareil, qui l'utilisera?</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Mettre à jour les périphériques</translation>
 <translation id="4425149324548788773">Mon disque</translation>
 <translation id="4428374560396076622">Le réseau <ph name="NETWORK_NAME" /> est désactivé</translation>
 <translation id="4429881212383817840">Le ticket Kerberos expire bientôt</translation>
@@ -209,6 +219,7 @@
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Numériser vers</translation>
+<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4511264077854731334">Portail</translation>
@@ -231,6 +242,7 @@
 <translation id="469379815867856270">Puissance du signal</translation>
 <translation id="4707579418881001319">L2TP/IPSec et certificat utilisateur</translation>
 <translation id="4731797938093519117">Accès parental</translation>
+<translation id="473775607612524610">Mise à jour</translation>
 <translation id="475869545581454722">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
@@ -239,6 +251,7 @@
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
+<translation id="4839698083503556542">Créez votre propre film</translation>
 <translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
@@ -251,6 +264,7 @@
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4950314376641394653">Le micrologiciel <ph name="DEVICE_NAME" /> a été mis à jour vers la version <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
@@ -260,7 +274,6 @@
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Cette action vous redirigera vers l'écran du lancement de la numérisation.</translation>
-<translation id="5061169534910302641">Mettre à jour la version et redémarrer</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État/province</translation>
 <translation id="5142961317498132443">Authentification</translation>
@@ -393,6 +406,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
+<translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec – Échec de l'autorisation</translation>
@@ -406,12 +420,14 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
+<translation id="7240035910874241640">Tous les périphériques sont à jour</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
 <translation id="7297226631177386107">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">L'appareil appartiendra à un propriétaire différent</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
@@ -419,6 +435,9 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
+<translation id="7451112128070628323">Sélectionnez cette option si la propriété de l'appareil demeure la même.
+        Par exemple, l'appareil est transféré à une autre personne
+        au sein de l'organisation.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
@@ -443,6 +462,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
 <translation id="7784116172884276937">Aucun serveur DNS n'est configuré</translation>
+<translation id="7786540085520432425">Pendant la mise à jour, vous pouvez réduire la fenêtre, mais ne débranchez pas votre appareil. Cette opération peut prendre quelques minutes, et votre appareil peut ne pas fonctionner pendant cette mise à jour</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Installer CloudReady</translation>
@@ -473,8 +493,10 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="816013303019725643">Entrez le code de déverrouillage :</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
+<translation id="8217675307824400706">Se connecter</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8281886186245836920">Passer</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -499,6 +521,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
+<translation id="8520963233738002436">Votre <ph name="DEVICE_NAME" /> est à jour</translation>
 <translation id="8521021929829989041">Utiliser comme appareil personnel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
@@ -538,12 +561,14 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Installation en cours… <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
+<translation id="9095415590198785865">L'appareil appartiendra au même propriétaire</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>

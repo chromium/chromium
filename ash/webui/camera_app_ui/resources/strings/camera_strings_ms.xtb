@@ -6,11 +6,11 @@
 <translation id="1258009455399840361">Putar 90 darjah mengikut arah jam</translation>
 <translation id="1276998909102132017">Imej galeri</translation>
 <translation id="1300209025925956156">Imbas dokumen anda</translation>
-<translation id="1303487788671416818">Dayakan gambar video bersaiz penuh</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Carian + Anak panah ke kiri untuk mengakses.</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1467231725790366244">Palam <ph name="CAMERA" /> dicabut.</translation>
 <translation id="1473110567575736769">Pemasa 3 saat</translation>
+<translation id="148783771699678004">Bergerak ke arah kanan sebelah atas</translation>
 <translation id="1545749641540134597">Imbas Kod QR</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Biasa</translation>
@@ -28,6 +28,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
 <translation id="2144806332417375165">Sesuaikan parameter video</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2271433936731426666">Dayakan gambar video bersaiz penuh</translation>
 <translation id="229579744168541441">Eksport ke cakera</translation>
 <translation id="2320741269052147773">Sorot ke kiri</translation>
 <translation id="2501278716633472235">Kembali</translation>
@@ -54,6 +55,7 @@
 <translation id="3448774564454087943">Video tidak disimpan kerana terlalu pendek</translation>
 <translation id="346539236881580388">Ambil semula</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
+<translation id="3566302376254083266">Bergerak ke arah kiri sebelah atas</translation>
 <translation id="3569311554794739032">Adakah anda benar-benar mahu mengalih keluar <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Beralih kepada mod imbas</translation>
 <translation id="3583444040776960729">Penjuru kiri sebelah bawah dokumen</translation>
@@ -72,14 +74,17 @@
 <translation id="4570032796877367747">Kamera hadapan</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Tidak dapat menyimpan fail</translation>
+<translation id="4695379108709712600">Bergerak ke arah atas</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Rakaman video berbilang strim</translation>
 <translation id="5057360777601936059">Kamera anda tidak tersedia pada masa ini.
         Sila periksa sama ada kamera telah disambungkan dengan betul.</translation>
 <translation id="5152121255775685072">Pergi ke galeri</translation>
+<translation id="5163387177077603948">Bergerak ke arah kanan</translation>
 <translation id="520537883758714667">Kini pengimbasan dokumen tersedia</translation>
 <translation id="5266635337630551423">Penjuru kiri sebelah atas dokumen</translation>
 <translation id="5317780077021120954">Simpan</translation>
+<translation id="5320594929574852403">Bergerak ke arah kiri</translation>
 <translation id="5444515100983837161">Pastikan keempat-empat sisi dokumen berada dalam bingkai. Pengimbasan berfungsi pada tahap terbaik jika warna dokumen dan latar belakang adalah berbeza.</translation>
 <translation id="5671277269877808209">Segi empat sama</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
@@ -102,6 +107,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6681668084120808868">Ambil foto</translation>
 <translation id="6778482348691154169">Tidak dapat mengambil foto</translation>
+<translation id="6888362557094394345">Bergerak ke arah bawah</translation>
 <translation id="695140971690006676">Tetapkan semula semua</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 saat</translation>
@@ -116,12 +122,14 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="7557677699350329807">Beralih kepada kamera seterusnya</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7608223098072244877">4 kali 4</translation>
+<translation id="761421184377987513">Bergerak ke arah kiri sebelah bawah</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Penjuru kanan sebelah bawah dokumen</translation>
 <translation id="7726641833034062494">Rakam video biasa</translation>
 <translation id="7748344063862150053">Penjuru kanan sebelah atas dokumen</translation>
+<translation id="7933675232020478311">Bergerak ke arah kanan sebelah bawah</translation>
 <translation id="7983668134180549431">Teks dikesan.</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8120146556401698679">Sorot/condong/zum</translation>

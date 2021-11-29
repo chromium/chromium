@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
+<translation id="2287186687001756809">Nav pieejams neviens attēls. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Izmantot pašreizējo atslēgu pāri</translation>
 <translation id="2323506179655536734">IZLAISTA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">NOKĀRTOTS</translation>
 <translation id="2789486458103222910">Labi</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
+<translation id="2859243502336719778">Svarīgs atjauninājums</translation>
 <translation id="2860473693272905224">Novietojiet vēl vienu lapu uz skenera.</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">Izdrukāto lapu skaits: <ph name="PRINTED_PAGES" /> no<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Notiek <ph name="PAGE_NUM" />. lapas skenēšana. Pabeigti: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
+<translation id="3462187165860821523">Notiek ierīces <ph name="DEVICE_NAME" /> atjaunināšana</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
+<translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3966286471246132217">Lai iegūtu precīzākus rezultātus, līdz pārbaudes beigām aizveriet visas lietotnes.</translation>
@@ -188,6 +192,7 @@
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="4111761024568264522">USB skārienpaliktnis</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
+<translation id="4140251671072434548">RMA servera atbloķēšana</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
@@ -206,6 +211,7 @@
 <translation id="4378373042927530923">Nav veikta izpilde</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Perifērijas ierīču atjaunināšana</translation>
 <translation id="4425149324548788773">Mans disks</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ir izslēgts</translation>
 <translation id="4429881212383817840">Kerberos biļetes termiņš drīz beigsies</translation>
@@ -213,6 +219,7 @@
 <translation id="445059817448385655">Iepriekšējā parole</translation>
 <translation id="4453205916657964690">Apakštīkla maska</translation>
 <translation id="4454245904991689773">Skenēto attēlu saglabāšanas vieta</translation>
+<translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
 <translation id="4511264077854731334">Portāls</translation>
@@ -235,6 +242,7 @@
 <translation id="469379815867856270">Signāla stiprums</translation>
 <translation id="4707579418881001319">L2TP/IPSec + lietotāja sertifikāts</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
+<translation id="473775607612524610">Atjaunināt</translation>
 <translation id="475869545581454722">Chrome OS parole ir atjaunināta</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
@@ -256,6 +264,7 @@
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4930320165497208503">Lai iestatītu vai atjauninātu savienojumu, pārejiet uz <ph name="BEGIN_LINK" />iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datums</translation>
+<translation id="4950314376641394653">Ierīces <ph name="DEVICE_NAME" /> aparātprogrammatūra tika atjaunināta uz versiju <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
 <translation id="4987769320337599931">Ugunsmūris</translation>
@@ -265,7 +274,6 @@
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupas nosaukums</translation>
 <translation id="5051044138948155788">Šī ir vienīgā lapa. Tiks atvērts skenēšanas sākuma ekrāns.</translation>
-<translation id="5061169534910302641">Atjaunināt versiju un restartēt</translation>
 <translation id="5088172560898466307">Servera nosaukums</translation>
 <translation id="5089810972385038852">Štats</translation>
 <translation id="5142961317498132443">Autentifikācija</translation>
@@ -398,6 +406,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
 <translation id="7058278511608979688">Beigt un saglabāt</translation>
 <translation id="7059230779847288458">Notiek uzlāde. Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Ierīces sagatavošana</translation>
 <translation id="708426984172631313">APTURĒTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
@@ -411,6 +420,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
+<translation id="7240035910874241640">Visas perifērijas ierīces ir atjauninātas</translation>
 <translation id="7271040990581020067">Skeneris pašlaik tiek izmantots. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Fona tapešu kolekcijas</translation>
@@ -451,6 +461,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
+<translation id="7786540085520432425">Atjaunināšanas laikā varat minimizēt logu, taču neatvienojiet ierīci. Atjaunināšana var ilgt dažas minūtes, un ierīce tās laikā var nedarboties.</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7819857487979277519">PSK (WPA vai RSN)</translation>
 <translation id="7835501727204647447">Instalēt CloudReady</translation>
@@ -478,11 +489,13 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Ievadiet atbloķēšanas kodu:</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8217675307824400706">Savienojuma izveide</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
+<translation id="8281886186245836920">Izlaist</translation>
 <translation id="8286154143153872371">Izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu, lai skatītu fona tapeti.</translation>
 <translation id="8291967909914612644">Mājas pakalpojumu sniedzēja valsts</translation>
 <translation id="8294431847097064396">Avots</translation>
@@ -507,6 +520,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8498220429738806196">Datplūsmas skaitītāji</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8503836310948963452">Vēl tikai dažas minūtes...</translation>
+<translation id="8520963233738002436">Ierīce <ph name="DEVICE_NAME" /> ir atjaunināta</translation>
 <translation id="8521021929829989041">Izmantot kā personīgo ierīci</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
@@ -546,6 +560,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenēt}=1{Skenēt {NUMBER_OF_PAGES}. lapu}zero{Skenēt {NUMBER_OF_PAGES}. lapu}one{Skenēt {NUMBER_OF_PAGES}. lapu}other{Skenēt {NUMBER_OF_PAGES}. lapu}}</translation>
+<translation id="8994273342647807496">Notiek instalēšana — <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>

@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
+<translation id="1857850044054738019">Выберите этот вариант, если устройство будет возвращено на склад или восстановлено и передано новому клиенту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версия оборудования</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
@@ -116,6 +117,7 @@
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2789486458103222910">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
+<translation id="2859243502336719778">Важное обновление</translation>
 <translation id="2860473693272905224">Положите другую страницу в сканер.</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
@@ -150,6 +152,7 @@
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканирование страницы <ph name="PAGE_NUM" />. Выполнено <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Печать</translation>
+<translation id="3462187165860821523">Обновление встроенного ПО для устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
@@ -174,6 +177,7 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="3865414814144988605">Разрешение</translation>
 <translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
+<translation id="3932043219784172185">Нет подключенных устройств</translation>
 <translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3966286471246132217">Чтобы получить более точные результаты, закройте все приложения и не запускайте их до завершения проверки.</translation>
@@ -200,11 +204,13 @@
 <translation id="4244962993387259361">Для запуска проверки памяти вам нужно не менее 500 МБ незанятого пространства. Чтобы освободить место, выберите "Настройки &gt; Управление хранилищем".</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
+<translation id="4275799948641988986">Кто будет пользоваться устройством после ремонта?</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не проверено</translation>
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Обновление встроенного ПО для периферийных устройств</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4428374560396076622">Сеть "<ph name="NETWORK_NAME" />" отключена.</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
@@ -212,6 +218,7 @@
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
+<translation id="4472575034687746823">Начать</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -234,6 +241,7 @@
 <translation id="469379815867856270">Уровень сигнала</translation>
 <translation id="4707579418881001319">L2TP/IPsec + сертификат пользователя</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
+<translation id="473775607612524610">Обновить</translation>
 <translation id="475869545581454722">Пароль Chrome OS изменен</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4794140124556169553">Выполнение тестирования процессора может повлиять на производительность системы.</translation>
@@ -255,6 +263,7 @@
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4930320165497208503">Чтобы задать или изменить параметры подключения, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
@@ -396,6 +405,7 @@
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Завершить и сохранить</translation>
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Подготовьте устройство</translation>
 <translation id="708426984172631313">ОСТАНОВЛЕН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Сбой: ошибка авторизации</translation>
@@ -409,12 +419,14 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
+<translation id="7240035910874241640">Встроенное ПО для всех периферийных устройств уже обновлено.</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>
 <translation id="7297226631177386107">Не удается подключиться к HTTPS-сайтам через брандмауэр.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Устройство будет передано новому владельцу</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7359657277149375382">Тип файла</translation>
@@ -422,6 +434,8 @@
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
+<translation id="7451112128070628323">Выберите этот вариант, если владелец устройства не изменится.
+        Например, оно будет передано другому человеку в той же организации.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
@@ -446,6 +460,7 @@
 <translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7784116172884276937">Нет настроенных DNS-серверов.</translation>
+<translation id="7786540085520432425">Не отключайте устройство. Вы можете свернуть окно, пока выполняется обновление. Операция выполняется несколько минут. Не исключено, что в это время устройство перестанет работать.</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Установить CloudReady</translation>
@@ -479,6 +494,7 @@
 <translation id="8217675307824400706">Подключение</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
+<translation id="8281886186245836920">Пропустить</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>
 <translation id="8294431847097064396">Источник</translation>
@@ -503,6 +519,7 @@
 <translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
+<translation id="8520963233738002436">Обновление для устройства "<ph name="DEVICE_NAME" />" установлено</translation>
 <translation id="8521021929829989041">Использовать как личное устройство</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
@@ -542,12 +559,14 @@
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
+<translation id="8994273342647807496">Установка: <ph name="PERCENTAGE_VALUE" /> %…</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-преобразование происходит с высокой задержкой.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Используется</translation>
+<translation id="9095415590198785865">Устройство будет возвращено прежнему владельцу</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>

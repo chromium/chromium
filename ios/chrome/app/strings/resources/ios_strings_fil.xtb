@@ -138,6 +138,7 @@
 <translation id="225943865679747347">Code ng error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Magdagdag ng Account</translation>
 <translation id="2268044343513325586">Pinuhin</translation>
+<translation id="2271351792809375263">Gamitin ang mga password na na-save mo sa iba pang app sa iyong device</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
 <translation id="2302742851632557585">Palitan ang Password sa Website</translation>
 <translation id="2316709634732130529">Gamitin ang Iminumungkahing Password</translation>
@@ -258,6 +259,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3393920035788932672">Pinapayagan ang Mga Pop-up</translation>
 <translation id="3399930248910934354">Buksan ang Mga Setting ng Chrome</translation>
 <translation id="3404744938087714423">Mao-off ang pag-sync kung magsa-sign out.</translation>
+<translation id="3414451675185661089">2. Mag-tap sa Mga Password</translation>
 <translation id="3425644765244388016">Nickname ng Card</translation>
 <translation id="3433057996795775706">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="WEBSITE" />. Palitan ang iyong password sa <ph name="WEBSITE" /> para mapanatili itong ligtas mula sa iba.</translation>
 <translation id="3443810440409579745">Natanggap ang tab.</translation>
@@ -331,6 +333,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4121993058175073134">Upang makapagpadala ng net-export data, paki-configure ang iyong email account sa app ng Mga Setting.</translation>
 <translation id="4124987746317609294">Sakop na Oras</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
+<translation id="4153925727916232411">Nagbibigay-daan ito sa iyong kumuha at mag-upload ng mga larawan, pati na rin mag-scan ng mga QR code.</translation>
 <translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="418156467088430727">Tingnan ang Offline na Bersyon sa Bagong Tab</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
@@ -378,6 +381,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4666531726415300315">Naka-sign in bilang <ph name="EMAIL" />.
 
 Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
+<translation id="4682686630151240767">1. Buksan ang Mga Setting ng iPhone</translation>
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
 <translation id="473775607612524610">I-update</translation>
@@ -458,6 +462,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5489208564673669003">Para pamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="BEGIN_LINK" />Mga Setting ng Cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">I-block ang Lahat ng Cookies (Hindi Inirerekomenda)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
+<translation id="5523579157975978438">Para i-off, buksan ang <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /> at pumunta sa Mga Password.</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
 <translation id="5532698011560297095">Hindi Makapag-sign In</translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
@@ -547,7 +552,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6255097610484507482">I-edit ang Credit Card</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
-<translation id="6308436439357671616">Binibigyang-daan ka nito upang makakuha at makapag-upload ng mga larawan.</translation>
 <translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
 <translation id="6324528485781869530">Magpalit ng Account sa Pag-sync</translation>
 <translation id="6324669097367352121">Mga setting sa pag-sign in</translation>
@@ -740,6 +744,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad.</translation>
 <translation id="7971521879845308059">I-block ang Mga Pop-up</translation>
 <translation id="797413074872316787">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
+<translation id="7978018860671536736">3. I-tap ang I-autofill ang Mga Password</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7993619969781047893">Posibleng masira ang mga feature sa ilang site</translation>
 <translation id="800361585186029508">Binubuksan ang mga inilagay na URL sa Google Chrome.</translation>
@@ -765,6 +770,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8205564605687841303">Kanselahin</translation>
 <translation id="8206354486702514201">Ipinapatupad ng iyong administrator ang setting na ito.</translation>
 <translation id="8225985093977202398">Mga Naka-cache na Larawan at File</translation>
+<translation id="8237382152611443140">Buksan ang Mga Setting ng Pag-autofill ng Password</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8271720166617117963">Tanggapin at Mag-sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8917490105272468696">Oo, Tinatanggap Ko</translation>
 <translation id="8952559610785099500">Magdagdag ng Password</translation>
 <translation id="895541991026785598">Mag-ulat ng Isyu</translation>
+<translation id="8974714402877957201">1. Buksan ang Mga Setting ng iPad</translation>
 <translation id="8976382372951310360">Tulong</translation>
 <translation id="8976414606286374109">Naka-save ang mga card sa iyong Google Account.</translation>
 <translation id="8981454092730389528">Mga Kontrol ng Aktibidad ng Google</translation>

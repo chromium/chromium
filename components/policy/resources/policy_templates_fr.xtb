@@ -212,6 +212,7 @@
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
+<translation id="1272798957154751008">Activez la migration des appareils Chromad vers la gestion dans le cloud</translation>
 <translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="128059397544257017">Si vous activez cette règle et que <ph name="CHROME_CLEANUP_NAME" /> détecte un logiciel indésirable, il peut, conformément à la règle définie par <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />, transmettre le rapport d'analyse à Google. <ph name="CHROME_CLEANUP_NAME" /> demande aux utilisateurs s'ils souhaitent qu'un nettoyage soit effectué. Les résultats sont envoyés à Google.
 
@@ -270,9 +271,17 @@
 
       Si vous désactivez ce paramètre ou ne définissez pas de valeur, SafeSearch n'est pas activé dans la recherche, et le mode restreint modéré n'est pas appliqué sur YouTube.</translation>
 <translation id="134745581157553029">Si la règle "DeviceArcDataSnapshotHours" est définie, le mécanisme de capture des données ARC est activé. La mise à jour de l'instantané des données ARC peut être lancée automatiquement pendant les intervalles de temps définis. Au démarrage d'un intervalle, lorsque cette mise à jour est requise et qu'aucun utilisateur n'est connecté, elle est lancée sans que l'utilisateur en soit averti. Si la session utilisateur est active, la notification s'affiche dans l'UI. Cette notification doit être validée pour redémarrer l'appareil et lancer le processus de mise à jour de l'instantané des données ARC. Remarque : durant le processus de mise à jour de l'instantané des données ARC, l'appareil est bloqué et ne peut pas être utilisé.</translation>
+<translation id="1348603614848418219">Désactivez la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud.</translation>
 <translation id="1352799151662469739">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur secteur).</translation>
 <translation id="1353416417709895349">Désactiver les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="1354424209129232709">Plage maximale :</translation>
+<translation id="1355050231181289439"> Cette règle permet d'activer ou non le mappage amélioré des raccourcis clavier internationaux.
+      Le but est d'assurer une cohérence entre les raccourcis clavier et les dispositions de clavier internationales, et d'éliminer les anciens raccourcis.
+
+      Si cette règle est désactivée, les raccourcis clavier internationaux améliorés le sont aussi.
+      Inversement, si elle est activée, ils le sont aussi.
+      Si elle n'est pas configurée, elle est désactivée pour les appareils gérés et activée pour les appareils non gérés.
+      Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
 <translation id="1359553908012294236">Si cette règle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> autorisera les connexions en tant qu'invité. Les connexions en tant qu'invité correspondent à des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
 
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'autorisera pas la création de profils d'invités.</translation>
@@ -1679,6 +1688,10 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas configurée, la règle <ph name="ASK_GEOLOCATION_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2922511125678964398">Autoriser l'authentification du portail captif à ignorer les paramètres proxy</translation>
+<translation id="2931888116345994552">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si la règle n'est pas configurée ou qu'elle est activée.
+
+      Si elle est désactivée, la mise à jour des composants l'est aussi. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable et qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
+      Ces composants peuvent inclure les listes de révocation de certificats et les filtres de sous-ressource.</translation>
 <translation id="2939988360019366928">Autoriser l'affichage des résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> les plus récents dans le panneau latéral du navigateur</translation>
 <translation id="2940127076681735544">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="SITELIST_POLICY_NAME" />.
 
@@ -2156,6 +2169,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si vous la désactivez, ou si vous ne la configurez pas, le dispositif est désactivé. Dans ce cas, les données de diagnostic et de télémétrie provenant de l'appareil ne peuvent pas être collectées, traitées ni signalées.</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
+<translation id="3451422488938880786"> Permet d'autoriser ou non le remappage des raccourcis clavier internationaux</translation>
 <translation id="3451901387456196887">Permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ou en scannant un code QR.</translation>
 <translation id="3456292544936505775">Cette règle permet de définir les périodes durant lesquelles l'appareil <ph name="PRODUCT_OS_NAME" /> n'est pas autorisé à rechercher automatiquement des mises à jour.
       Si des périodes sont définies lors de la configuration de cette règle :
@@ -2193,6 +2207,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
        Si vous saisissez la valeur "<ph name="ALL_EXTENSIONS" />" dans la liste de blocage, toutes les extensions sont bloquées, et les utilisateurs ne peuvent alors installer que les extensions figurant dans la liste d'autorisation.
 
        Par défaut, toutes les extensions sont autorisées. Toutefois, si vous avez interdit les extensions via une règle, utilisez la liste des extensions autorisées pour modifier cette règle.</translation>
+<translation id="3501606938635483637">Les raccourcis clavier internationaux sont associés au glyphe et non à l'emplacement des touches du clavier.</translation>
 <translation id="3502555714327823858">Autoriser tous les modes recto verso</translation>
 <translation id="350443680860256679">Configurer ARC</translation>
 <translation id="350797926066071931">Activer Google Traduction</translation>
@@ -2587,6 +2602,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est définie sur False, <ph name="PRODUCT_OS_NAME" /> n'affiche pas les utilisateurs existants sur l'écran de connexion. L'écran de connexion habituel (demandant l'e-mail et le mot de passe ou le numéro de téléphone de l'utilisateur) ou l'écran interstitiel SAML (si autorisé via la règle <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) s'affiche, à moins qu'une session gérée ne soit configurée. Lorsqu'une session gérée est configurée, seuls les comptes de la session gérée s'affichent, et permettent d'en choisir un.
 
       Cette règle ne change en rien le stockage ou la suppression des informations sur l'utilisateur par l'appareil.</translation>
+<translation id="4009741515395221389">Activez la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud.</translation>
 <translation id="4010738624545340900">Autoriser l'appel des boîtes de dialogue de sélection de fichiers</translation>
 <translation id="401260868452018796">Placer l'étagère au bas de l'écran</translation>
 <translation id="4012737788880122133">Désactive les mises à jour automatiques lorsque cette règle est définie sur "True".
@@ -2728,6 +2744,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.</translation>
 <translation id="4203879074082863035">Seules les imprimantes répertoriées dans la liste blanche sont présentées aux utilisateurs</translation>
+<translation id="4204327073692415353">Ne pas inviter l'utilisateur à sélectionner un certificat client sur l'écran de connexion</translation>
 <translation id="4205316772333487392">Forcez l'utilisation de SafeSearch dans la recherche Google</translation>
 <translation id="4209297478239988291">Active la fonctionnalité d'accessibilité de clic automatique.
 
@@ -4191,6 +4208,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
+<translation id="6052730367191220066">Activez la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud. Cette règle permet de démarrer à distance la migration sans contact de plusieurs appareils d'une même entreprise. De plus, la migration sera aussi discrète que possible pour les utilisateurs finaux.
+
+      Si la règle est activée et que l'identifiant d'enregistrement a déjà été importé dans le DMServer, un Powerwash de l'appareil sera déclenché à distance.
+
+      Si la règle est désactivée ou si elle n'est pas définie, le Powerwash à distance ne sera pas déclenché, que l'identifiant d'enregistrement ait été importé ou non.
+
+      Cette vérification est déclenchée dès que l'écran de connexion est chargé, puis retentée toutes les heures (si l'écran de connexion reste affiché). Cela empêche le démarrage d'une migration lors d'une session utilisateur, ce qui risquerait de poser problème aux utilisateurs finaux.</translation>
 <translation id="6053681087509103368">Autoriser WebRTC à utiliser des versions obsolètes du protocole TLD/DTLS</translation>
 <translation id="605543517695935623">Liste des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un événement lié à la sécurité se produit dans Chrome. Cela inclut les verdicts négatifs lors de l'analyse par les connecteurs Enterprise, la réutilisation de mots de passe, la navigation sur des pages dangereuses et d'autres activités sensibles des utilisateurs.
 
@@ -4415,6 +4439,43 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="6331943515692769234">Forcez l'utilisation de l'algorithme GREASE user-agent précédent.</translation>
+<translation id="6332489309596092806">Cette règle permet de lister les applications Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de définir quels utilisateurs ne peuvent pas les désinstaller ni les désactiver.
+
+      Chaque élément de cette liste est un objet constitué d'un membre obligatoire :
+      <ph name="URL_LABEL" /> (URL de l'application Web à installer)
+
+      et de cinq membres facultatifs :
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (indiquant où s'ouvre l'application Web ; par défaut, dans un nouvel onglet)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      ("True" si vous voulez créer des raccourcis sur un bureau <ph name="LINUX_OS_NAME" /> ou
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer le nom de l'appli,
+      sauf pour les progressive web apps (PWA) –
+      dans le cas d'une PWA avec authentification requise pour l'installation,
+      le nom de l'appli temporaire peut être remplacé. Si les règles
+      <ph name="CUSTOM_NAME_LABEL" /> et
+      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
+      cette dernière sera ignorée.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Disponible depuis la version 96 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer définitivement le nom d'une appli pour toutes les applications Web et les PWA. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Disponible depuis la version 96 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer l'icône des applis installées. Les
+      icônes doivent être carrées, faire 1 Mo au maximum, dans l'un des formats
+      suivants : jpeg, png, gif, webp, ico. La valeur de hachage doit être un hachage SHA256
+      du fichier d'icône. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Bloquer l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="6334330017384340264">Cette règle détermine les applications et URL qui doivent être autorisées pour les restrictions d'utilisation spécifiques pour chaque application.
         La liste d'autorisation configurée est destinée aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné avec des limites de temps spécifiques à chaque application.
@@ -4950,9 +5011,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="6929746927224321095">Désactiver la saisie automatique</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
 <translation id="6940243892299228102">Ne pas autoriser les utilisateurs à se servir de modèles de bureau</translation>
-<translation id="694071740172924905">Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE des indications du client user-agent aligne l'algorithme GREASE user-agent sur les dernières spécifications.
-      La spécification mise à jour peut entraîner un dysfonctionnement de certains sites qui appliquent des restrictions concernant les caractères que peuvent contenir les requêtes. Pour en savoir plus, consultez les spécifications : https://wicg.github.io/ua-client-hints/#grease
-      Si cette règle est désactivée ou n'est pas définie, la fonctionnalité de mise à jour GREASE des indications du client user-agent est activée. Si cette règle est désactivée, l'algorithme GREASE user-agent précédent est utilisé.</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="6946652757373377924">
       Cette règle a été supprimée dans M77.
@@ -5377,6 +5435,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
        Si cette règle est désactivée ou qu'elle n'est pas configurée, les images tierces ne sont pas autorisées à afficher une commande d'authentification.
 
       Cette règle est habituellement désactivée pour protéger les utilisateurs contre l'hameçonnage.</translation>
+<translation id="7403217961820363141">Afficher les parcours sur la page de l'historique de Chrome.</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
 <translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
 
@@ -5418,6 +5477,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
 <translation id="7477239290070847560">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
+<translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
@@ -5515,6 +5575,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si elle est activée ou si elle n'est pas configurée, la conversion d'unités pour Réponses rapides est activée.
       Si elle est désactivée, la conversion d'unités pour Réponses rapides est désactivée.</translation>
+<translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7590188804371204512">Permet de contrôler l'installation d'extensions externes.
 
       Lorsque ce paramètre est activé, l'installation d'extensions externes est bloquée.
@@ -5855,6 +5916,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 
       Si elle est activée, l'utilisateur peut se servir du navigateur <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
+<translation id="8025620823136567878">Les raccourcis clavier internationaux sont associés à l'emplacement et non au glyphe des touches du clavier.</translation>
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="102360288709523007">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chromium ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
+<translation id="1047130070405668746">Chromium বাছনি কৰক</translation>
 <translation id="1185134272377778587">Chromiumৰ বিষয়ে</translation>
 <translation id="1257458525759135959">প্ৰতিচ্ছবিসমূহ ছেভ কৰিবলৈ Chromiumক আপোনাৰ ফট’সমূহত যোগ দিয়াৰ অনুমতি দিবলৈ ছেটিংসমূহত টিপক</translation>
 <translation id="1289216811211435351">Chromiumলৈ সলনি কৰক</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Chromiumত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে।</translation>
 <translation id="1584569488888892906">Chromium সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ</translation>
 <translation id="1617663976202781617">Chromium ছিংকৰ ডেটা</translation>
+<translation id="1722370509450468186">আপোনাৰ পাছৱৰ্ডটো আপোনাৰ একাউণ্ট (<ph name="EMAIL" />)ত ছেভ কৰা হ’ব।</translation>
 <translation id="1736662517232558588">Chromium ডেটা মচা হ’ল</translation>
 <translation id="1838412507805038478">Chromiumএ সত্যাপন কৰিলে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰে।</translation>
 <translation id="1843424232666537147">আপোনাক Chromiumত থকা সুবিধাসমূহে নিজৰ ইণ্টাৰনেট ডেটা আৰু কিমান ক্ষিপ্ৰতাৰে আপুনি ৱেবপৃষ্ঠাসমূহ ল’ড কৰিব পাৰে সেইয়া পৰিচালনা কৰাত সহায় কৰিব।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">৪) Chromium বাছনি কৰক</translation>
 <translation id="2006345422933397527">Chromiumএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="2054703085270098503">Chromiumৰ সৈতে সুৰক্ষিত হৈ থাকক</translation>
 <translation id="2168108852149185974">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>

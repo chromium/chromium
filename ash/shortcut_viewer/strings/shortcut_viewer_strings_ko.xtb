@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">시크릿 모드로 새 창 열기</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="ESC" /></translation>
+<translation id="1586324912145647027">데스크 1~8로 이동</translation>
 <translation id="1652741121070700329">이전 단어의 시작으로 이동</translation>
 <translation id="1679841710523778799">밝게</translation>
 <translation id="168356808214100546"><ph name="ALT" />를 길게 누르고 열려는 창으로 이동할 때까지 <ph name="TAB" />을 탭한 후 놓습니다.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1부터 8</translation>
 <translation id="3837047332182291558">키보드 밝게(백라이트 키보드만 해당)</translation>
 <translation id="3949671998904569433">쉼표</translation>
-<translation id="3976707995992061296">모든 데스크에 활성 창 할당 여부 전환</translation>
 <translation id="3976863468609830880">실행기의 마지막 아이콘 클릭</translation>
 <translation id="3994783594793697310">확대/축소 레벨 재설정</translation>
 <translation id="4026843240379844265">디스플레이 간 활성 창 이동</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />를 누르고 링크를 클릭</translation>
 <translation id="561814908794220892">새 탭에서 웹페이지 열기</translation>
 <translation id="5620219513321115856">활성 창을 오른쪽 데스크로 옮깁니다.</translation>
+<translation id="5699366815052349604">활성 창을 모든 데스크에 할당</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> 또는 <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">탭에서 링크 열기</translation>
 <translation id="5757474750054631686">키보드 어둡게(백라이트 키보드만 해당)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">화면 확대</translation>
 <translation id="634687982629734605">상태 영역(계정 사진이 표시되는 곳), 런처, 주소 표시줄, 북마크바(표시된 경우), 열려 있는 웹페이지, 다운로드바(표시된 경우) 사이에 포커스를 전환합니다. 포커스 가능한 대화상자가 표시되면 그곳으로 포커스를 대신 이동합니다.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1번~8번 데스크 활성화</translation>
 <translation id="6395172954772765143">텍스트 행 끝부분까지 선택</translation>
 <translation id="6425378783626925378">실행기의 아이콘 1~8 클릭</translation>
 <translation id="6435207348963613811">실행기의 이전 항목 강조표시</translation>

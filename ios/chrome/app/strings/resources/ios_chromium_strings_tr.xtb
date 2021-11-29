@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="102360288709523007">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chromium'u iyileştirmemize yardımcı olun.</translation>
+<translation id="1047130070405668746">Chromium'u seçin</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
 <translation id="1289216811211435351">Chromium'a geçin</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="1843424232666537147">Chromium İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Chromium'u seçin</translation>
 <translation id="2006345422933397527">Chromium, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2054703085270098503">Chromium ile Güvende Kalın</translation>
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>

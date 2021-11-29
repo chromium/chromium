@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1851218745569890714">Rozmowy wideo</translation>
+<translation id="1857850044054738019">Wybierz tę opcję, jeśli urządzenie zostało przywrócone do użytku lub odnowione w celu przekazania nowemu klientowi.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
@@ -89,6 +90,7 @@
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
+<translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2323506179655536734">POMINIĘTO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -116,6 +118,7 @@
 <translation id="2783010256799387990">ZALICZONY</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
+<translation id="2859243502336719778">Krytyczna aktualizacja</translation>
 <translation id="2860473693272905224">Umieść następną stronę na skanerze</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
@@ -150,6 +153,7 @@
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
+<translation id="3462187165860821523">Aktualizuję urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
@@ -174,6 +178,7 @@
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
+<translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
 <translation id="3966286471246132217">Aby uzyskać dokładniejsze wyniki, zamknij wszystkie aplikacje do czasu ukończenia testu.</translation>
@@ -200,11 +205,13 @@
 <translation id="4244962993387259361">Aby można było uruchomić test pamięci, co najmniej 500 MB pamięci musi być wolne. Aby zwolnić miejsce, otwórz Ustawienia &gt; Zarządzanie pamięcią.</translation>
 <translation id="4258281355379922695">Opóźnienie HTTP</translation>
 <translation id="4271957103967917607">Wyświetl na pełnym ekranie</translation>
+<translation id="4275799948641988986">Kto będzie używał urządzenia po naprawie?</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nie wykonano</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Aktualizowanie urządzeń peryferyjnych</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4428374560396076622">Sieć <ph name="NETWORK_NAME" /> jest wyłączona</translation>
 <translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
@@ -212,6 +219,7 @@
 <translation id="445059817448385655">Stare hasło</translation>
 <translation id="4453205916657964690">Maska podsieci</translation>
 <translation id="4454245904991689773">Skanuj do</translation>
+<translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -234,6 +242,7 @@
 <translation id="469379815867856270">Siła sygnału</translation>
 <translation id="4707579418881001319">L2TP/IPSec + certyfikat użytkownika</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
+<translation id="473775607612524610">Aktualizuj</translation>
 <translation id="475869545581454722">Hasło do Chrome OS zostało zaktualizowane</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4794140124556169553">Uruchomienie testu procesora może wpłynąć na wydajność systemu</translation>
@@ -255,6 +264,7 @@
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Aby skonfigurować lub zaktualizować połączenie, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4950314376641394653">Oprogramowanie urządzenia <ph name="DEVICE_NAME" /> zostało zaktualizowane do wersji <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4985509611418653372">Uruchom</translation>
 <translation id="4987769320337599931">Zapora sieciowa</translation>
@@ -264,7 +274,6 @@
 <translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
 <translation id="5051044138948155788">To jedyna strona. Pojawi się ekran rozpoczęcia skanowania.</translation>
-<translation id="5061169534910302641">Aktualizuj wersję i uruchom ponownie</translation>
 <translation id="5088172560898466307">Nazwa hosta serwera</translation>
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5142961317498132443">Uwierzytelnianie</translation>
@@ -397,6 +406,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Zakończ i zapisz</translation>
 <translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
+<translation id="7068619307603204412">Przygotowanie urządzenia</translation>
 <translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
@@ -410,12 +420,14 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
+<translation id="7240035910874241640">Wszystkie urządzenia peryferyjne używają aktualnej wersji oprogramowania</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcje tapet</translation>
 <translation id="7297226631177386107">Nie można połączyć się z witrynami HTTPS przez zaporę sieciową</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Właściciel urządzenia się zmienia</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
 <translation id="7359657277149375382">Typ pliku</translation>
@@ -423,6 +435,8 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
+<translation id="7451112128070628323">Wybierz tę opcję, jeśli nie zmienia się właściciel urządzenia.
+        Na przykład: kiedy urządzenie zostaje przekazane innemu członkowi organizacji.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7487067081878637334">Technologia</translation>
 <translation id="7490813197707563893">Adres MAC</translation>
@@ -447,6 +461,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
+<translation id="7786540085520432425">Na czas przeprowadzania aktualizacji możesz zminimalizować okno, ale nie odłączaj urządzenia. Aktualizacja potrwa kilka minut – w tym czasie urządzenie może nie działać</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>
 <translation id="7835501727204647447">Zainstaluj CloudReady</translation>
@@ -480,6 +495,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8217675307824400706">Połącz się</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
+<translation id="8281886186245836920">Pomiń</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
 <translation id="8294431847097064396">Źródło</translation>
@@ -504,6 +520,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> używa aktualnej wersji oprogramowania</translation>
 <translation id="8521021929829989041">Użyj jako urządzenia osobistego</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
@@ -543,12 +560,14 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
+<translation id="8994273342647807496">Instaluję – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Długi czas oczekiwania na rozpoznanie nazw DNS</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
+<translation id="9095415590198785865">Właściciel urządzenia się nie zmienia</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>

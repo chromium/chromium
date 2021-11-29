@@ -28,7 +28,7 @@
 <translation id="1981611865800294956">重新啟動以更新 &amp;Chromium 作業系統</translation>
 <translation id="2008474315282236005">這會刪除此裝置上的 1 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="2020032459870799438">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
-<translation id="2049376729098081731">選擇是否要包含 Chromium 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
+<translation id="2049376729098081731">選擇是否包含 Chromium 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
 <translation id="2185166961232948079">Chromium - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
@@ -40,7 +40,7 @@
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
-<translation id="251127392410688874">瞭解 Chromium 打算採取哪些具體計畫，防止有心人士透過跨網站追蹤機制取得你的資料，同時保護開放網路</translation>
+<translation id="251127392410688874">查看 Chromium 如何計劃防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡</translation>
 <translation id="2535480412977113886">您的帳戶登入詳細資料尚未更新，因此 Chromium 作業系統無法同步處理您的數據。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間的存取權才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium 輔助工具</translation>
@@ -226,7 +226,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="734373864078049451">您瀏覽的網頁、書籤和其他 Chromium 內容都在這裡。</translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="7398989605938454041">你可以運用 Chromium 設定檔區隔各種 Chromium 資料，更輕鬆區分工作和娛樂。</translation>
+<translation id="7398989605938454041">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="7448255348454382571">重新啟動 Chromium 作業系統</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>
@@ -246,7 +246,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7828947555739565424">此裝置上已有此帳戶的 Chromium 設定檔</translation>
 <translation id="7857220146454061152">如要取得日後的 Chromium 更新，您將需要 OS X 10.11 或以上版本。此電腦正在使用 OS X 10.10。</translation>
 <translation id="7867198900892795913">由於 Chromium 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
-<translation id="788352880609666695">下列帳戶可用於這個 Chromium 設定檔</translation>
+<translation id="788352880609666695">可在此 Chromium 設定檔使用以下帳戶</translation>
 <translation id="7898472181347242998">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />Chromium 作業系統設定<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並行形式安裝的第二個 Chromium，因此無法設定為您的預設瀏覽器。</translation>
@@ -259,7 +259,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8290862415967981663">此檔案可能不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
-<translation id="8357820681460164151">如要透過所有裝置存取你的 Chromium 瀏覽器資料，請登入並開啟同步功能</translation>
+<translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>

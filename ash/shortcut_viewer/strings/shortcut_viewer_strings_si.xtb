@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">අප්‍රසිද්ධ ප්‍රකාරයේ නව කවුළුවක් විවෘත කරන්න</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, අනතුරුව <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
 <translation id="1652741121070700329">පෙර වචනයේ ආරම්භයට යන්න</translation>
 <translation id="1679841710523778799">දීප්තිය වැඩි කරන්න</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ඔබාගෙන සිට, ඔබට විවෘත කිරීමට අවශ්‍ය කවුළුව වෙත පැමිණෙන තෙක් <ph name="TAB" /> තට්ටු කර, අනතුරුව මුදා හරින්න.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 අතුරින් 8</translation>
 <translation id="3837047332182291558">යතුරු පුවරුව දීප්තිමත් කරන්න (පසු ආලෝකන යතුරු පුවරු සඳහා පමණි)</translation>
 <translation id="3949671998904569433">කොමාව</translation>
-<translation id="3976707995992061296">සක්‍රිය කවුළුව සියලු මේස සඳහා පවරා තිබේද යන්න ටොගල කරන්න</translation>
 <translation id="3976863468609830880">ඔබේ රාක්කයෙහි අන්තිම නිරූපකය ක්ලික් කරන්න</translation>
 <translation id="3994783594793697310">සංදර්ශකයේ විශාලන මට්ටම යළි පිහිටුවන්න</translation>
 <translation id="4026843240379844265">සංදර්ශක අතර සක්‍රිය කවුළුව ගෙන යන්න</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="561814908794220892">නව පටිත්තක වෙබ් පිටුව විවෘත කරන්න</translation>
 <translation id="5620219513321115856">ක්‍රියාකාරී කවුණු දකුණේ ඇති මේසයට ගෙන යන්න</translation>
+<translation id="5699366815052349604">සියලු මේසවලට සක්‍රිය කවුළුව පවරන්න</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> හෝ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">පටිත්තෙහි සබැඳිය විවෘත කරන්න</translation>
 <translation id="5757474750054631686">යතුරු පුවරුව අඳුරු කරන්න (පසු ආලෝකන යතුරු පුවරු සඳහා පමණි)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">සංදර්ශකයේ විශාලනය</translation>
 <translation id="634687982629734605">මේවා අතර නාභිගත කිරීම මාරු කරන්න: තත්ත්ව ප්‍රදේශය (ඔබගේ ගිණුමේ පින්තූරය දිස් වන) දියත්කරණය, ලිපින තීරුව, පිටුසන් තීරුව (දෘශ්‍යමාන නම්) විවෘත වෙබ් අඩවිය, සහ බාගැනීම් තීරුව (දෘශ්‍යමාන නම්) නාභිගත කළ හැකි සංවාදයක් සංදර්ශනය වන්නේ නම්, ඒ වෙනුවට නාභිගත කිරීම එතැනට ගෙන යන්න.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1 සිට 8 දක්වා මේසය සක්‍රිය කරන්න.</translation>
 <translation id="6395172954772765143">පේළියේ අවසානයට පෙළ තෝරන්න</translation>
 <translation id="6425378783626925378">ඔබේ රාක්කයෙහි නිරූපක 1-8 ක්ලික් කරන්න</translation>
 <translation id="6435207348963613811">ඔබේ රාක්කයෙහි පෙර අයිතමය උද්දීපනය කරන්න</translation>

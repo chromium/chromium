@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Öppna ett nytt fönster i inkognitoläge</translation>
 <translation id="152892567002884378">Höj volymen</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sedan <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
 <translation id="1652741121070700329">Placera markören först i föregående ord</translation>
 <translation id="1679841710523778799">Öka ljusstyrkan</translation>
 <translation id="168356808214100546">Tryck och håll <ph name="ALT" />, tryck på <ph name="TAB" /> tills du når fönstret som du vill öppna och släpp sedan tangenten.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 till 8</translation>
 <translation id="3837047332182291558">Starkare belysning (endast tangentbord med belysning underifrån)</translation>
 <translation id="3949671998904569433">komma</translation>
-<translation id="3976707995992061296">Ange om det aktiva fönstret ska tilldelas alla skrivbord</translation>
 <translation id="3976863468609830880">Klicka på den sista ikonen i översikten</translation>
 <translation id="3994783594793697310">Återställ zoomnivån</translation>
 <translation id="4026843240379844265">Flytta det aktiva fönstret mellan skärmar</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Tryck på <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> och klicka på en länk</translation>
 <translation id="561814908794220892">Öppna webbsidan på en ny flik</translation>
 <translation id="5620219513321115856">Flytta det aktiva fönstret till skrivbordet till höger</translation>
+<translation id="5699366815052349604">Tilldela det aktiva fönstret till alla skrivbord</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> eller <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Öppna länken på fliken</translation>
 <translation id="5757474750054631686">Svagare belysning (endast tangentbord med belysning underifrån)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Zooma in</translation>
 <translation id="634687982629734605">Flytta fokus mellan: statusfältet (där kontobilden visas), översikten, adressfältet, bokmärkesfältet (om det visas), webbsidan som är öppen, nedladdningsfältet (om det visas) Om en fokuserbar dialogruta visas flyttar du fokus dit i stället.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Aktivera skrivbord 1 till 8.</translation>
 <translation id="6395172954772765143">Markera text till radens slut</translation>
 <translation id="6425378783626925378">Klicka på ikonerna 1–8 på hyllan</translation>
 <translation id="6435207348963613811">Markera föregående objekt på hyllan</translation>

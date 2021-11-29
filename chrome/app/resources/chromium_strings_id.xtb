@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Luncurkan kembali untuk mengupdate &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Tindakan ini akan menghapus 1 item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Untuk memeriksa apakah sandi Anda yang lain aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2185166961232948079">Chromium - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="2483889755041906834">Di Chromium</translation>
 <translation id="2485422356828889247">Uninstal</translation>
+<translation id="251127392410688874">Lihat upaya Chromium dalam mengamankan Anda dari pelacakan lintas situs sekaligus mempertahankan web terbuka</translation>
 <translation id="2535480412977113886">Chromium OS tidak dapat menyinkronkan data karena detail ID masuk Anda belum diperbarui.</translation>
 <translation id="2560420686485554789">Chromium memerlukan akses penyimpanan untuk mendownload file</translation>
 <translation id="2572494885440352020">Pembantu Chromium</translation>
@@ -223,6 +225,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="734373864078049451">Web, bookmark, dan barang Chromium Anda lainnya tersedia di sini.</translation>
 <translation id="7349591376906416160">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7398989605938454041">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Hal ini mempermudah pemisahan antara aktivitas kerja dan hiburan.</translation>
 <translation id="7448255348454382571">Mulai ulang Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium memerlukan izin akses ke kamera untuk situs ini</translation>
@@ -243,6 +246,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7828947555739565424">Profil Chromium dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="7857220146454061152">Untuk mendapatkan update Chromium selanjutnya, Anda perlu OS X 10.11 atau yang lebih baru. Komputer ini menggunakan OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
+<translation id="788352880609666695">Akun berikut tersedia untuk profil Chromium ini</translation>
 <translation id="7898472181347242998">Untuk melihat apakah versi pada perangkat Anda adalah yang terbaru, buka <ph name="LINK_BEGIN" />Setelan Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Anda telah masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan Chromium sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
@@ -255,6 +259,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8290862415967981663">File ini mungkin berbahaya, jadi Chromium telah memblokirnya.</translation>
 <translation id="8330519371938183845">Login untuk menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> sebelumnya menggunakan Chromium</translation>
+<translation id="8357820681460164151">Untuk mengakses aktivitas browser Chromium di semua perangkat, login lalu aktifkan sinkronisasi</translation>
 <translation id="8417404458978023919">{0,plural, =1{Luncurkan ulang Chromium dalam 1 hari}other{Luncurkan ulang Chromium dalam # hari}}</translation>
 <translation id="8453117565092476964">Arsip pemasang rusak atau tidak valid. Download Chromium lagi.</translation>
 <translation id="8493179195440786826">Chromium Terlalu Lawas</translation>

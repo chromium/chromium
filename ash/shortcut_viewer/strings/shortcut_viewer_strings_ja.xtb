@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">新しいウィンドウをシークレット モードで開く</translation>
 <translation id="152892567002884378">音量を上げる</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="ESC" /> キーを押す</translation>
+<translation id="1586324912145647027">デスク 1～8 に移動する</translation>
 <translation id="1652741121070700329">前の単語の先頭に移動する</translation>
 <translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="168356808214100546"><ph name="ALT" /> キーを押したまま、目的のウィンドウが表示されるまで <ph name="TAB" /> キーを押し、表示されたらキーを放す</translation>
@@ -130,6 +131,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> キーを押しながらリンクをクリックする</translation>
 <translation id="561814908794220892">新しいタブでウェブページを開く</translation>
 <translation id="5620219513321115856">アクティブなウィンドウを右のデスクに移動する</translation>
+<translation id="5699366815052349604">すべてのデスクにアクティブなウィンドウを割り当てる</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> キーまたは <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /> キーを押す</translation>
 <translation id="5757111373163288447">ドラッグ先のタブでリンクを開く</translation>
 <translation id="5757474750054631686">キーボードの明るさを下げる（バックライト付きキーボードのみ）</translation>
@@ -205,6 +207,7 @@
 <translation id="8644639153978066712">ファイルアプリで隠しファイルを表示する</translation>
 <translation id="8717459106217102612">前の単語または文字を選択する</translation>
 <translation id="8727232706774971183">通知を表示する</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" />1〜8 キーを押す</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8881584919399569791">アクティブなウィンドウを左のデスクに移動する</translation>
 <translation id="88986195241502842">ページ内を下に移動</translation>

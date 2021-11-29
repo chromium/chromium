@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">છૂપા મોડમાં એક નવી વિન્ડો ખોલો</translation>
 <translation id="152892567002884378">વૉલ્યૂમ વધારો</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, પછી <ph name="ESC" /></translation>
+<translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
 <translation id="1652741121070700329">પાછલા શબ્દની શરૂઆત પર જાઓ</translation>
 <translation id="1679841710523778799">બ્રાઇટનેસ વધારો</translation>
 <translation id="168356808214100546"><ph name="ALT" />ને દબાવી રાખો, તમે જે વિંડોને ખોલવા માગો છો તે ખુલી જાય ત્યાં સુધી <ph name="TAB" />ને ટૅપ કરો, પછી રિલીઝ કરો.</translation>
@@ -44,7 +45,7 @@
 <translation id="2424073332829844142">Caps Lock ચાલુ અને બંધ કરો</translation>
 <translation id="2441202986792279177">વિંડોને ઝડપથી સ્વિચ કરો</translation>
 <translation id="2454251766545114447">ડિસ્પ્લે ઝૂમ ઘટાડો</translation>
-<translation id="2478303094958140141">ChromeVox (બોલાયેલ પ્રતિસાદ) ચાલુ અથવા બંધ કરો</translation>
+<translation id="2478303094958140141">ChromeVox (બોલાયેલો પ્રતિસાદ) ચાલુ અથવા બંધ કરો</translation>
 <translation id="2480851840841871861">Google Assistant ખોલો</translation>
 <translation id="2488661730534396940">ડાબી બાજુના ડેસ્કને સક્રિય કરો</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 થી 8</translation>
 <translation id="3837047332182291558">કીબોર્ડને બ્રાઇટ બનાવો (માત્ર બૅકલિટ કીબોર્ડ માટે)</translation>
 <translation id="3949671998904569433">અલ્પવિરામ</translation>
-<translation id="3976707995992061296">સક્રિય વિન્ડો તમામ ડેસ્કને સોંપવા આવી છે કે કેમ તે ટૉગલ કરો</translation>
 <translation id="3976863468609830880">તમારા શેલ્ફ પરના છેલ્લા આઇકન પર ક્લિક કરો</translation>
 <translation id="3994783594793697310">ડિસ્પ્લે ઝૂમ લેવલ રીસેટ કરો</translation>
 <translation id="4026843240379844265">સક્રિય વિંડોને ડિસ્પ્લેની વચ્ચે ખસેડો</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> દબાવો અને લિંક પર ક્લિક કરો</translation>
 <translation id="561814908794220892">વેબપેજ નવા ટૅબમાં ખોલો</translation>
 <translation id="5620219513321115856">વધુ સક્રિય વિંડોને જમણી બાજુએ ડેસ્ક પર ખસેડો</translation>
+<translation id="5699366815052349604">સક્રિય વિન્ડો તમામ ડેસ્કને સોંપો</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> અથવા <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">લિંકને ટૅબમાં ખોલો</translation>
 <translation id="5757474750054631686">ડિમ કીબોર્ડ (માત્ર બૅકલિટ કીબોર્ડ માટે)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">ઝૂમ વધારવાનું બતાવો</translation>
 <translation id="634687982629734605">આની વચ્ચે ફોકસ સ્વિચ કરો: સ્ટેટસ એરિયા (જ્યાં તમારા એકાઉન્ટનો ફોટો દેખાય છે), લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર (જો દેખાતી હોય, તો), ખુલ્લું છે તે વેબપેજ અને ડાઉનલોડ બાર (જો દેખાતી હોય, તો). તેના બદલે જો કોઈ ફોકસ કરી શકાય તેવો સંવાદ બતાવવામાં આવે, તો ફોકસને ત્યાં ખસેડો.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1લીથી 8મી ડેસ્કને સક્રિય કરો.</translation>
 <translation id="6395172954772765143">પંક્તિના અંતે આવેલી ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="6425378783626925378">તમારા શેલ્ફ પરના 1-8 આઇકન પર ક્લિક કરો</translation>
 <translation id="6435207348963613811">તમારા શેલ્ફ પરની પાછલી આઇટમને હાઇલાઇટ કરો</translation>

@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Перезапустить для обновления &amp;Chromium OS</translation>
 <translation id="2008474315282236005">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Чтобы проверить, защищены ли другие ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Укажите, нужно ли использовать историю Chromium для персонализации сервисов Google.</translation>
 <translation id="2174178932569897599">Настроить Chromium</translation>
 <translation id="2185166961232948079">Chromium – вход в сеть – "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2241627712206172106">Если, кроме вас, компьютером пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Браузер Chromium запрашивает доступ к камере и микрофону для этого сайта.</translation>
 <translation id="2483889755041906834">В Chromium</translation>
 <translation id="2485422356828889247">Удалить</translation>
+<translation id="251127392410688874">Узнайте, как в браузере Chromium планируется защитить пользователей от межсайтового отслеживания и при этом сохранить интернет открытым.</translation>
 <translation id="2535480412977113886">Не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="2560420686485554789">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
 <translation id="2572494885440352020">Помощник по Chromium</translation>
@@ -218,6 +220,7 @@
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="734373864078049451">Все веб-страницы, закладки и другие данные Chromium можно найти здесь.</translation>
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="7448255348454382571">Перезапуск Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
 <translation id="7451052299415159299">Для этого сайта Chromium запрашивает доступ к камере.</translation>
@@ -237,6 +240,7 @@
 <translation id="7828947555739565424">На данном устройстве уже есть профиль Chromium для этого аккаунта.</translation>
 <translation id="7857220146454061152">На вашем компьютере используется OS X 10.10. Чтобы получать обновления Chromium, установите на устройство OS X 10.11 или более поздней версии.</translation>
 <translation id="7867198900892795913">Не удалось установить последнюю версию Chromium, в которой добавлены новые функции и обновления системы безопасности.</translation>
+<translation id="788352880609666695">Для этого профиля Chromium доступны следующие аккаунты:</translation>
 <translation id="7898472181347242998">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chromium OS<ph name="LINK_END" />.</translation>
 <translation id="7937630085815544518">Ранее вы входили в Chromium как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
 <translation id="7975919845073681630">Это дополнительная установка Chromium. Его нельзя сделать браузером по умолчанию.</translation>
@@ -249,6 +253,7 @@
 <translation id="8290862415967981663">Chromium заблокировал этот файл как потенциально опасный.</translation>
 <translation id="8330519371938183845">Войдите, чтобы синхронизировать данные Chromium на всех устройствах</translation>
 <translation id="8340674089072921962">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chromium</translation>
+<translation id="8357820681460164151">Чтобы получить доступ к данным в браузере Chromium на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перезапустите Chromium в течение дня}one{Перезапустите Chromium в течение # дня}few{Перезапустите Chromium в течение # дней}many{Перезапустите Chromium в течение # дней}other{Перезапустите Chromium в течение # дня}}</translation>
 <translation id="8453117565092476964">Установочный архив поврежден. Скачайте Chromium ещё раз.</translation>
 <translation id="8493179195440786826">Версия Chromium устарела</translation>

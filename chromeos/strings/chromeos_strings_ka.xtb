@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">ინტერნეტ-კავშირი არ არის</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
+<translation id="2287186687001756809">სურათი მიუწვდომელია. ფოტოების დასამატებლად გადადით აქ: <ph name="LINK" /></translation>
 <translation id="2307344026739914387">ამჟამინდელი წყვილის გამოყენება</translation>
 <translation id="2323506179655536734">გამოტოვებულია</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">გავლილია</translation>
 <translation id="2789486458103222910">კარგი</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
+<translation id="2859243502336719778">კრიტიკულად მნიშვნელოვანი განახლება</translation>
 <translation id="2860473693272905224">მოათავსეთ სხვა გვერდი სკანერზე</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
 <translation id="345898999683440380">სკანირდება გვერდი <ph name="PAGE_NUM" />. დასრულებულია <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
+<translation id="3462187165860821523">მიმდინარეობს <ph name="DEVICE_NAME" />-ის განახლება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
+<translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
 <translation id="3966286471246132217">მაქსიმალურად ზუსტი შედეგები რომ მიიღოთ, დახურეთ ყველა აპი, სანამ ტესტი არ დასრულდება.</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">განაახლეთ პერიფერიული მოწყობილობები</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> გამორთულია</translation>
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
+<translation id="4472575034687746823">დაწყება</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4511264077854731334">პორტალი</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">სიგნალის სიძლიერე</translation>
 <translation id="4707579418881001319">L2TP/IPsec + მომხმარებლის სერტიფიკატი</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
+<translation id="473775607612524610">განახლება</translation>
 <translation id="475869545581454722">Chrome OS-ის პაროლი განახლდა</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
 <translation id="4794140124556169553">CPU-ს ტესტის გაშვება, შესაძლოა, აისახოს სისტემის წარმადობაზე</translation>
@@ -244,6 +251,7 @@
 <translation id="4813345808229079766">კავშირი</translation>
 <translation id="4832079907277790330">საქაღალდის არჩევა ფაილების აპიდან...</translation>
 <translation id="4835901797422965222">აქტიური ქსელები არ არის</translation>
+<translation id="4839698083503556542">შექმენით საკუთარი ფილმი</translation>
 <translation id="484790837831576105">(Android) DNS-ის დარეგულირება</translation>
 <translation id="4848429997038228357">გაშვებულია</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}other{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}}</translation>
@@ -256,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> დაიტენა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="4930320165497208503">კავშირის დასაყენებლად ან გასაახლებლად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">თარიღი</translation>
+<translation id="4950314376641394653">ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" /> განახლდა ვერსიამდე <ph name="VERSION" /></translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
@@ -265,7 +274,6 @@
 <translation id="5049856988445523908">SIM-ბარათი ჩაკეტილია (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ჯგუფის სახელი</translation>
 <translation id="5051044138948155788">ეს ერთადერთი გვერდია. ეს ქმედება სკანირების საწყის ეკრანზე გადაგიყვანთ.</translation>
-<translation id="5061169534910302641">ვერსიის განახლება და გადატვირთვა</translation>
 <translation id="5088172560898466307">სერვერის სახელი</translation>
 <translation id="5089810972385038852">შტატი</translation>
 <translation id="5142961317498132443">ავტორიზაცია</translation>
@@ -398,6 +406,7 @@
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7058278511608979688">დასრულება და შენახვა</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">მოამზადეთ თქვენი მოწყობილობა</translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">წარუმატებელია — ავტორიზაცია ვერ მოხერხდა</translation>
@@ -411,6 +420,7 @@
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
+<translation id="7240035910874241640">ყველა პერიფერიული მოწყობილობა განახლებულია</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ფონების კოლექციები</translation>
@@ -451,6 +461,7 @@
 <translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
 <translation id="7784116172884276937">DNS სერვერები არ არის დაყენებული</translation>
+<translation id="7786540085520432425">განახლების მსვლელობისას შეგიძლიათ ჩაკეცოთ ფანჯარა, თუმცა არ გამოაერთოთ მოწყობილობა ელკვების წყაროდან. აღნიშნულს რამდენიმე წუთი დასჭირდება, რა დროსაც თქვენმა მოწყობილობამ, შესაძლოა, არ იმუშაოს</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7819857487979277519">PSK (WPA ან RSN)</translation>
 <translation id="7835501727204647447">CloudReady-ს ინსტალაცია</translation>
@@ -484,6 +495,7 @@
 <translation id="8217675307824400706">დაამყარეთ კავშირი</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8246209727385807362">უცნობი ოპერატორი</translation>
+<translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8286154143153872371">ფონის სანახავად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
 <translation id="8291967909914612644">ადგილობრივი პროვაიდერის ქვეყანა</translation>
 <translation id="8294431847097064396">წყარო</translation>
@@ -508,6 +520,7 @@
 <translation id="8498220429738806196">ტრაფიკის მთვლელები</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8503836310948963452">კიდევ რამდენიმე წუთიც...</translation>
+<translation id="8520963233738002436">თქვენი <ph name="DEVICE_NAME" /> განახლებულია</translation>
 <translation id="8521021929829989041">პირად მოწყობილობად გამოყენება</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
@@ -547,6 +560,7 @@
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{სკანირება}=1{გვერდის {NUMBER_OF_PAGES} სკანირება}other{გვერდის {NUMBER_OF_PAGES} სკანირება}}</translation>
+<translation id="8994273342647807496">მიმდინარეობს ინსტალაცია — <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">სიხშირე</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-ის დარეგულირების რეაგირების დრო დიდია</translation>

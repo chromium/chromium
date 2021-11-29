@@ -1,85 +1,50 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
-<translation id="1018939186200882850">valmyndaratriði</translation>
 <translation id="1028699632127661925">Sendir í <ph name="DEVICE_NAME" />...</translation>
-<translation id="10623998915015855">rofi</translation>
 <translation id="111910763555783249">Tilkynningastillingar</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Fyrir 1 degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Fyrir einni mínútu}one{Fyrir # mínútu}other{Fyrir # mínútum}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}one{#m}other{#m}}</translation>
-<translation id="1181037720776840403">Fjarlægja</translation>
-<translation id="1188858454923323853">til viðbótar</translation>
-<translation id="1201402288615127009">Áfram</translation>
-<translation id="1206619573307042055">marquee</translation>
-<translation id="1206693055195146388">sleði</translation>
-<translation id="1211441953136645838">aftanmálsgrein</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, forrit úr Play Store</translation>
 <translation id="1243314992276662751">Hlaða inn</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1281252709823657822">gluggi</translation>
-<translation id="1290982764014248209">Færa <ph name="DRAGGED_APP" /> í möppuna <ph name="FOLDER_NAME" />.</translation>
 <translation id="1291104554099683393">Prófaðu að deila textanum í smærri hluta.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">FORRIT SEM MÆLT ER MEÐ</translation>
-<translation id="1335095011850992622">samstarfsaðilar</translation>
-<translation id="1342835525016946179">grein</translation>
-<translation id="1359897965706325498">borði</translation>
 <translation id="1368832886055348810">Frá vinstri til hægri</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1398853756734560583">Stækka</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, uppsett forrit</translation>
 <translation id="1450753235335490080">Ekki er hægt að deila <ph name="CONTENT_TYPE" /></translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> skipt út fyrir <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Þú hefur leitað að þessu áður. Ef þú eyðir „<ph name="QUERY" />“ úr ferlinum þínum verður það fjarlægt varanlega af reikningnum þínum í öllum tækjunum þínum.</translation>
-<translation id="1510238584712386396">Ræsiforrit</translation>
-<translation id="1589122976691792535">svæði</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 mínúta og }one{# mínúta og }other{# mínútur og }}</translation>
 <translation id="1643823602425662293">Tilkynning</translation>
-<translation id="1650423536718072820">útdregin tilvitnun</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">núna</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 mínúta}one{# mínúta}other{# mínútur}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
-<translation id="1770726142253415363">Fært í línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1801827354178857021">Punktur</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{Einn mánuður}one{# mánuður}other{# mánuðir}}</translation>
-<translation id="1806710327868736751">viðvörunargluggi</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/sek.</translation>
-<translation id="1821985195704844674">trjátafla</translation>
-<translation id="1823704031293214298">síðufótur</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 klukkustund og }one{# klukkustund og }other{# klukkustundir og }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> var losað</translation>
-<translation id="1842960171412779397">velja</translation>
 <translation id="1859234291848436338">Ritunarstefna</translation>
 <translation id="1860796786778352021">Loka tilkynningu</translation>
 <translation id="186476001994626254">Snjalllíming efnis fyrir vefinn</translation>
 <translation id="1871244248791675517">Insert</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Velja &amp;allt</translation>
-<translation id="190587075670221089">eyðing</translation>
-<translation id="1907737156431278478">dæmi</translation>
 <translation id="19085484004813472">Þetta er nýr eiginleiki</translation>
-<translation id="1930711995431081526">staða</translation>
 <translation id="2006524834898217237">Gakktu úr skugga um að tækið sé tengt við internetið.</translation>
 <translation id="208586643495776849">Reyndu aftur</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">Í dag</translation>
-<translation id="2158401438286456825">síðulisti</translation>
 <translation id="2161656808144014275">Texti</translation>
 <translation id="2168039046890040389">Upp um síðu</translation>
 <translation id="2190355936436201913">(autt)</translation>
 <translation id="2192232475740621500">Nota lítinn þéttleika</translation>
-<translation id="219905428774326614">Ræsiforrit, öll forrit</translation>
 <translation id="2267918077332197517">Loka á allar tilkynningar frá þessu svæði</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Ýttu á snertipunktana á skjánum.</translation>
-<translation id="2291999235780842123">gátreitur</translation>
 <translation id="2295140143284145483">Könnun</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sek.</translation>
-<translation id="2311842470354187719">síðuskil</translation>
-<translation id="2335594187091864976">val á dagsetningu og tíma</translation>
 <translation id="2353636109065292463">Verið er að athuga nettenginguna</translation>
 <translation id="2388990488038464401">Viltu hringja í þetta númer úr símanum þínum?</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
@@ -87,46 +52,27 @@
 <translation id="2445449901874883781">Nota mikinn þéttleika</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2497284189126895209">Allar skrár</translation>
-<translation id="2508569020611168319">flipalisti</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kvörðun er lokið</translation>
 <translation id="252373100621549798">Óþekktur skjár</translation>
 <translation id="2545651323591713692">Þagga tímabundið</translation>
-<translation id="2570734079541893434">Stjórna stillingum</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{eftir 1 klst.}one{eftir # klst.}other{eftir # klst.}}</translation>
 <translation id="2583543531130364912">Kvarðaðu snertiskjáinn</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
-<translation id="2657045182931379222">myndrænn hlutur</translation>
 <translation id="2666092431469916601">Efst</translation>
-<translation id="2674318244760992338">fótur</translation>
 <translation id="2701330563083355633">Deilt úr <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nýtt</translation>
-<translation id="2723001399770238859">hljóð</translation>
 <translation id="2743387203779672305">Afrita á klippiborð</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2759744352195237655">sprettihnappur</translation>
-<translation id="2803313416453193357">Opna möppu</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Fyrir einu ári}one{Fyrir # ári}other{Fyrir # árum}}</translation>
-<translation id="2844350028562914727">upplýsingar</translation>
 <translation id="2878511608894704031">Eyða öllu</translation>
-<translation id="2896972712917208084">valhnappahópur</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{eftir einn dag}one{eftir # dag}other{eftir # daga}}</translation>
 <translation id="2922712708897119705">Dálknum <ph name="COLUMN_NAME" /> raðað í lækkandi röð.</translation>
-<translation id="2931838996092594335">smella</translation>
-<translation id="2940813599313844715">hlutur</translation>
-<translation id="2981684127883932071">Birtir tillögur</translation>
 <translation id="3036649622769666520">Opna skrár</translation>
-<translation id="3040011195152428237">tengill</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">Hilla til vinstri</translation>
-<translation id="3078740164268491126">tafla</translation>
-<translation id="3086746722712840547">glósa</translation>
 <translation id="3087734570205094154">Neðst</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
-<translation id="3175736971608411871">teljari</translation>
 <translation id="3183922693828471536">Fletta hingað</translation>
-<translation id="3199563858620722075">fellivalmynd</translation>
 <translation id="3234408098842461169">Ör niður</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dagur}one{# dagur}other{# dagar}}</translation>
 <translation id="3295886253693811851">Hringja úr</translation>
@@ -134,10 +80,6 @@
 <translation id="335581015389089642">Tal</translation>
 <translation id="3389286852084373014">Textinn er of stór</translation>
 <translation id="3406306243914553062">HTML-efni</translation>
-<translation id="3486220673238053218">skilgreining</translation>
-<translation id="348799646910989694">Hilla falin sjálfkrafa</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> var fest</translation>
-<translation id="3557673793733683882">fyrirsögn <ph name="HEADING_LEVEL" /></translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dagur eftir}one{# dagur eftir}other{# dagar eftir}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-skrá</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -146,277 +88,128 @@
 <translation id="364720409959344976">Veldu möppu til að hlaða inn</translation>
 <translation id="3660179305079774227">Ör upp</translation>
 <translation id="3670030362669914947">Númer</translation>
-<translation id="3670698553867754311">vikuval</translation>
-<translation id="3706100364254443312">rofi</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/sek.</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3808586225841795776">hugtak</translation>
-<translation id="3842239759367498783">Haltu áfram að lesa í fartækinu <ph name="TITLE" /></translation>
-<translation id="385051799172605136">Til baka</translation>
 <translation id="3889424535448813030">Ör til hægri</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3909791450649380159">Klippa</translation>
-<translation id="3920932319529768807">samantekt</translation>
-<translation id="3924558731517983934">forrit</translation>
-<translation id="3944740393230681990">formáli</translation>
-<translation id="3960700977367013758">flettistika</translation>
 <translation id="3990502903496589789">Hægri brún</translation>
 <translation id="3994749195054421561">Dálknum <ph name="COLUMN_NAME" /> raðað í hækkandi röð.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Ein ólesin tilkynning}one{# ólesin tilkynning}other{# ólesnar tilkynningar}}</translation>
-<translation id="4151657705144244502">myndefni</translation>
-<translation id="4160057747563657758">sími</translation>
-<translation id="4193965531860883258">inngangsorð</translation>
-<translation id="4202807286478387388">stökk</translation>
-<translation id="421884353938374759">litaval</translation>
-<translation id="4248100235867064564">valmyndarstika</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fyrir einum mánuði}one{Fyrir # mánuði}other{Fyrir # mánuðum}}</translation>
 <translation id="4289300219472526559">Byrja að tala</translation>
-<translation id="4293574643247337246">síðuhaus</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> var fært í möppuna <ph name="FOLDER_NAME" />.</translation>
 <translation id="4306392492252714209">Fjarlægja af klippiborði</translation>
-<translation id="4316910396681052118">ÖLL FORRIT</translation>
-<translation id="4384583879834880242">Spurt og svarað</translation>
-<translation id="4446524499724042288">tilvísun í orðalista</translation>
 <translation id="4491109536499578614">Mynd</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4588090240171750605">Fletta til hægri</translation>
-<translation id="4597532268155981612">eyðublað</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, stjörnur: <ph name="RATING_SCORE" /></translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, tillaga að forriti</translation>
-<translation id="4661075872484491155">tree</translation>
-<translation id="4668956016107839909">viðbætir</translation>
-<translation id="4690510401873698237">Hilla neðst</translation>
-<translation id="4698212723196775569">kóði</translation>
 <translation id="4724120544754982507">Tilkynningamiðstöð, <ph name="UNREAD_NOTIFICATION_COUNT" /> ólesnar tilkynningar</translation>
-<translation id="4730374152663651037">OFT NOTUÐ</translation>
-<translation id="4742539557769756338">forsíða</translation>
-<translation id="4757246831282535685">flipasvæði</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Einn mánuður eftir}one{# mánuður eftir}other{# mánuðir eftir}}</translation>
-<translation id="479989351350248267">leita</translation>
 <translation id="4888938634149558681">Hringja</translation>
-<translation id="4912536737030637138">færsla í heimildaskrá</translation>
-<translation id="492244087561876220">athugasemd</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekúnda}one{# sekúnda}other{# sekúndur}}</translation>
 <translation id="4971687151119236543">Fyrra lag</translation>
-<translation id="5022314756875057021">línuhópur</translation>
-<translation id="5034860022980953847">framvinduvísir</translation>
 <translation id="5046499563572181734">Ýttu hér</translation>
 <translation id="5076340679995252485">Líma</translation>
-<translation id="5093189678851173835">upphafstilvitnun</translation>
-<translation id="512758898067543763">línuhaus</translation>
-<translation id="5143125788380636750">lokaorð</translation>
-<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> var sameinað við <ph name="IN_PLACE_APP" /> til að búa til nýja möppu.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Sending mistókst</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vill ná athygli þinni.</translation>
 <translation id="528468243742722775">Ljúka</translation>
 <translation id="5329858601952122676">Eyða</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
-<translation id="5406322316791861025">mynd</translation>
-<translation id="5453733299334684579">trjáatriði</translation>
 <translation id="5463830097259460683">Emoji og tákn</translation>
-<translation id="546643433018805598">hnéletur</translation>
-<translation id="5476505524087279545">ekki velja</translation>
-<translation id="547979256943495781">Hilla til hægri</translation>
-<translation id="5516424706154626233">dagsetningarval</translation>
 <translation id="5528053674512161860">Ekki tókst að hlaða síðu þar sem notendaviðmót forritara (dev_ui) er ekki uppsett</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> stýrikerfi</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
-<translation id="5608153257855394627">auðkennt</translation>
 <translation id="5613020302032141669">Ör til vinstri</translation>
-<translation id="561939826962581046">time</translation>
-<translation id="5631759159893697722">ágrip</translation>
-<translation id="5643186887447432888">hnappur</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vill ná athygli þinni.</translation>
-<translation id="5675363643668471212">Hilluatriði</translation>
-<translation id="5693537480074347398">brjóstletur</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 mín.}one{# mín.}other{# mín.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Virkt í dag}=1{Virkt fyrir 1 degi}one{Virkt fyrir # degi}other{Virkt fyrir # dögum}}</translation>
-<translation id="576709008726043716">inngangur</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dagur og }one{# dagur og }other{# dagar og }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Mynd.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{eftir eitt ár}one{eftir # ár}other{eftir # ár}}</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekúnda eftir}one{# sekúnda eftir}other{# sekúndur eftir}}</translation>
-<translation id="591047860372322273">leitarreitur</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 klukkustund}one{# klukkustund}other{# klukkustundir}}</translation>
-<translation id="5987525920412732405">snúningshnappur</translation>
-<translation id="6012623610530968780">Síða <ph name="SELECTED_PAGE" /> af <ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6022924867608035986">Hreinsa texta leitarreitsins</translation>
-<translation id="6023896073578205740">listareitur</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6117103120090651229">Miðhnappur</translation>
-<translation id="6119846243427417423">virkja</translation>
 <translation id="6129953537138746214">Bil</translation>
-<translation id="6134259848159370930">Leitaðu í tækinu þínu, forritum, stillingum og á netinu.</translation>
 <translation id="6135826906199951471">Delete</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> b/sek.</translation>
-<translation id="6150588977291308318">heimildaskrá</translation>
-<translation id="6156262341071374681">Fara í öll forrit</translation>
-<translation id="6164829606128959761">mælir</translation>
-<translation id="6165508094623778733">Frekari upplýsingar</translation>
-<translation id="6166809985690652833">eftirmáli</translation>
-<translation id="6166852626429024716">Leitaðu í tækinu þínu, forritum, stillingum, á vefnum...</translation>
-<translation id="6213469881011901533">orðalisti</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> er valin.</translation>
 <translation id="6264365405983206840">Velja &amp;allt</translation>
-<translation id="6281763101136022427">vefslóð</translation>
-<translation id="6351032674660237738">TILLÖGUR AÐ FORRITUM</translation>
 <translation id="6364916375976753737">Fletta til vinstri</translation>
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Hætta að tala</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Fyrir 1 sek.}one{Fyrir # sek.}other{Fyrir # sek.}}</translation>
-<translation id="6417265370957905582">Google hjálpari</translation>
 <translation id="6430678249303439055">Loka á allar tilkynningar frá þessu forriti</translation>
-<translation id="6453774872122745852">þakkir</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{fyrir einni sekúndu}one{fyrir # sekúndu}other{fyrir # sekúndum}}</translation>
-<translation id="648732519525291180">tímaval</translation>
 <translation id="6503257047630241175">RTF-efni</translation>
 <translation id="6539092367496845964">Eitthvað fór úrskeiðis. Reyndu aftur síðar.</translation>
 <translation id="654149438358937226">Loka á allar tilkynningar</translation>
-<translation id="6567071839949112727">smella á forvera</translation>
-<translation id="6578407462441924264">Án heitis</translation>
 <translation id="6612467943526193239">Ýttu á Esc til að hætta kvörðun.</translation>
 <translation id="6620110761915583480">Vista skrá</translation>
-<translation id="663493177488814956">straumur</translation>
-<translation id="6637586476836377253">annáll</translation>
-<translation id="6692633176391053278">skrefastýring</translation>
-<translation id="6696580792574109116">mánaðarval</translation>
 <translation id="6699343763173986273">Næsta lag í efnisspilun</translation>
-<translation id="6710213216561001401">Til baka</translation>
-<translation id="6755330956360078551">ábending</translation>
-<translation id="6786750046913594791">Loka möppu</translation>
 <translation id="6808150112686056157">Stöðva spilun efnis</translation>
-<translation id="6820615603175220800">tilvísun í heimildaskrá</translation>
 <translation id="6845383723252244143">Veldu möppu</translation>
-<translation id="6845533974506654842">ýta</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 klukkustund eftir}one{# klukkustund eftir}other{# klukkustundir eftir}}</translation>
-<translation id="6885760532393684712">skráasafn</translation>
 <translation id="688711909580084195">Ónefnd vefsíða</translation>
-<translation id="689129560213475294">baktitill</translation>
 <translation id="6902419395050653510">HTML-efni.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/sek.</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Eitt ár eftir}one{# ár eftir}other{# ár eftir}}</translation>
-<translation id="6934078000481955284">tilvitnun</translation>
-<translation id="693476918119313863">haus</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6974053822202609517">Frá hægri til vinstri</translation>
-<translation id="6981594929165378967">innsetning</translation>
-<translation id="7034405885550056553">tillaga</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">LÍKLEGAST</translation>
-<translation id="7139483182332611405">formáli</translation>
 <translation id="7170202025028120564">Skjástillingar forritsins þíns taka gildi við næstu endurræsingu.</translation>
-<translation id="7198226213493847604">sprettigluggahnappur valmyndar</translation>
-<translation id="7214187073215825913">upplýsingar um efni</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238347055216017155">áhersla</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 mín. eftir}one{# mín. eftir}other{# mín. eftir}}</translation>
-<translation id="727747134524199931">dálkhaus</translation>
-<translation id="7319740667687257810">Ræsiforrit, lítið yfirlit</translation>
-<translation id="7353453495576941748">þakkir</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Fyrir 1 mín.}one{Fyrir # mín.}other{Fyrir # mín.}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7405738980073107433">aftanmálsgreinar</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 mínúta eftir}one{# mínúta eftir}other{# mínútur eftir}}</translation>
-<translation id="7430878839542012341">Eyða þessari leit úr ferlinum?</translation>
 <translation id="7437971918971306061">Dálknum <ph name="COLUMN_NAME" /> óraðað.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
-<translation id="7491962110804786152">flipi</translation>
 <translation id="7507604095951736240">Emoji</translation>
-<translation id="7529102961911894712">baktengill</translation>
 <translation id="7620655452534002301">Fjarlægt.</translation>
-<translation id="7647456547678091388">ábending</translation>
 <translation id="7658239707568436148">Hætta við</translation>
-<translation id="7661956066982048809">myndefnisskjal</translation>
-<translation id="7681220483256441252">atriðisorðaskrá</translation>
-<translation id="7740050170769002709">HTML-efni</translation>
 <translation id="7781829728241885113">Í gær</translation>
-<translation id="7802800022689234070">upplýsingaþríhyrningur</translation>
 <translation id="7814458197256864873">Afrita</translation>
-<translation id="7848989271541991537">Fært á síðu <ph name="PAGE_NUMBER" />, línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7879499977785298635">Ekki útiloka</translation>
-<translation id="7891486169920085145">skiptir</translation>
 <translation id="7907591526440419938">Opna skrá</translation>
-<translation id="7952747673138230804">Chrome OS birtir tillögur að nýju efni sem hægt er að skoða. Sendir aðeins tölfræðiupplýsingar sem eru notaðar til að auka gæði ef þú hefur valið að deila notkunarupplýsingum. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Skipun</translation>
-<translation id="8034303206267677282">mikill</translation>
-<translation id="8053789581856978548">textareitur fyrir leit</translation>
-<translation id="8057695513531652401">tilkynning</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Fleiri en 1 ólesin tilkynning}one{Fleiri en # ólesin tilkynning}other{Fleiri en # ólesnar tilkynningar}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{eftir 1 mín.}one{eftir # mín.}other{eftir # mín.}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Númer frá <ph name="ORIGIN" /></translation>
-<translation id="8105797009065549151">tilvísun í athugasemd</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Fyrir 1 klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek. eftir}one{# sek. eftir}other{# sek. eftir}}</translation>
 <translation id="8134065097954893699">Endurhleður þessari síðu</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, sjálfvirk útfylling</translation>
 <translation id="815598010540052116">Fletta niður</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8208673686607688524">val á staðbundinni dagsetningu og tíma</translation>
 <translation id="8210608804940886430">Niður um síðu</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Flipi</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
 <translation id="8259556432390118667">Litagildi fyrir sextándakerfi</translation>
 <translation id="8328145009876646418">Vinstri brún</translation>
 <translation id="8331626408530291785">Fletta upp</translation>
-<translation id="8346634859695247203">hluti</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{Eitt ár}one{# ár}other{# ár}}</translation>
-<translation id="838869780401515933">haka við</translation>
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8394908167088220973">Spila/gera hlé á margmiðlunarefni</translation>
-<translation id="8415319359811155763">hluti</translation>
-<translation id="8433900881053900389">tækjastika</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1á}one{#á}other{#á}}</translation>
-<translation id="8461852803063341183">valhnappur</translation>
-<translation id="8474886197722836894">tileinkun</translation>
-<translation id="8531739829932800271">leiðréttingar</translation>
-<translation id="8550857728288566671">myndtákn</translation>
-<translation id="8583702881314752957">hugtakalisti</translation>
-<translation id="8597182159515967513">fyrirsögn</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> skrá (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="860475260694818407">efnisyfirlit</translation>
-<translation id="862370744433916922">undirtitill</translation>
-<translation id="8649597172973390955">Hilla alltaf sýnileg</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/sek.</translation>
-<translation id="8685326675965865247">Leitaðu í tækinu þínu, forritum, stillingum og á vefnum. Notaðu örvatakkana til að fletta í gegnum forritin þín.</translation>
-<translation id="8711688047404765493">úttak</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> í viðbót</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1k}one{#k}other{#k}}</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
-<translation id="8806053966018712535">Mappan <ph name="FOLDER_NAME" /></translation>
-<translation id="8808573423886751634">kafli</translation>
 <translation id="883911313571074303">Skrifa skýringu við mynd</translation>
 <translation id="8841375032071747811">Bakkhnappur</translation>
-<translation id="8851136666856101339">aðal</translation>
-<translation id="8861621546968757188">sprettigluggahnappur</translation>
 <translation id="8867568208303837180">Sendir...</translation>
 <translation id="8876215549894133151">Snið:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8926951137623668982">Hilla alltaf falin</translation>
 <translation id="8996630695507351249">Gakktu úr skugga um að <ph name="TARGET_DEVICE_NAME" /> sé tengt við internetið.</translation>
-<translation id="9002566407876343676">opna</translation>
-<translation id="901834265349196618">tölvupóstur</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}other{# sek.}}</translation>
-<translation id="9048119486235211610">yfirlit</translation>
 <translation id="9059834730836941392">Draga tilkynningu saman</translation>
-<translation id="9062295712474918030">skjal</translation>
-<translation id="9108370397979208512">stærðfræði</translation>
-<translation id="9138385573473225930">tilkynning</translation>
-<translation id="9161053988251441839">TILLÖGUR AÐ FORRITUM</translation>
-<translation id="9168329111483466115">neðanmálsgrein</translation>
 <translation id="9170848237812810038">Aft&amp;urkalla</translation>
-<translation id="9178475906033259337">Birtir eina niðurstöðu fyrir „<ph name="QUERY" />“</translation>
 <translation id="932327136139879170">Heim</translation>
 <translation id="944069440740578670">Ólesnar tilkynningar</translation>
-<translation id="966787709310836684">valmynd</translation>
-<translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="102360288709523007">Pomognite nam da poboljšamo Chromium slanjem statistike o upotrebi i izvješća o padu programa Googleu.</translation>
+<translation id="1047130070405668746">Odaberite Chromium</translation>
 <translation id="1185134272377778587">O pregledniku Chromium</translation>
 <translation id="1257458525759135959">Da bi se slike spremale, dodirnite Postavke kako biste dopustili Chromiumu da dodaje vašim fotografijama</translation>
 <translation id="1289216811211435351">Prelazak na Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Prikazuje obavijesti za prijavu u Chromium.</translation>
 <translation id="1584569488888892906">Chromium je jednostavniji, sigurniji i brži nego ikad</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
+<translation id="1722370509450468186">Zaporka će se spremiti na vaš račun (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podaci Chromiuma izbrisani su</translation>
 <translation id="1838412507805038478">Chromium je potvrdio da je <ph name="ISSUER" /> izdao certifikat web-lokacije.</translation>
 <translation id="1843424232666537147">Chromium ima značajke koje vam pomažu u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Odaberite Chromium</translation>
 <translation id="2006345422933397527">Chromium nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="2054703085270098503">Ostanite sigurni uz Chromium</translation>
 <translation id="2168108852149185974">Neki programski dodaci uzrokuju rušenje Chromiuma. Deinstalirajte:</translation>

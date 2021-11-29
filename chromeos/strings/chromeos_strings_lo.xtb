@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
+<translation id="2287186687001756809">ບໍ່ມີຮູບທີ່ສາມາດໃຊ້ໄດ້. ເພື່ອເພີ່ມຮູບ, ກະລຸນາເຂົ້າໄປ <ph name="LINK" /></translation>
 <translation id="2307344026739914387">ໃຊ້ຄູ່ກະແຈປັດຈຸບັນ</translation>
 <translation id="2323506179655536734">ຂ້າມແລ້ວ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">ຜ່ານແລ້ວ</translation>
 <translation id="2789486458103222910">ຕົກລົງ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
+<translation id="2859243502336719778">ອັບເດດວິກິດ</translation>
 <translation id="2860473693272905224">ວາງໜ້າອື່ນໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUM" />. ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
+<translation id="3462187165860821523">ກຳລັງອັບເດດ <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
@@ -159,6 +162,8 @@
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3583278742022654445">ຄວາມແຮງສັນຍານອ່ອນ. ໃຫ້ລອງຍ້າຍໄປໃກ້ແຫຼ່ງສັນຍານ Wi-Fi ຫຼາຍຂຶ້ນ.</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
+<translation id="360089215033199597">ແນະນຳໃຫ້ເຊື່ອມຕໍ່ຫາ Wi-Fi ເພື່ອເຮັດໃຫ້ຂັ້ນຕອນການສ້ອມແປງງ່າຍຂຶ້ນ.
+        ລະບົບຈະບັນທຶກເຄືອຂ່າຍຂອງທ່ານໄວ້.</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
@@ -174,6 +179,7 @@
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
+<translation id="3932043219784172185">ບໍ່ມີການເຊື່ອມຕໍ່ອຸປະກອນ</translation>
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
 <translation id="3966286471246132217">ເພື່ອຮັບຜົນການຊອກຫາທີ່ມີຄວາມຖືກຕ້ອງຍິ່ງຂຶ້ນ, ໃຫ້ປິດແອັບທັງໝົດຈົນກວ່າການທົດສອບຈະສຳເລັດ.</translation>
@@ -206,6 +212,7 @@
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">ອັບເດດອຸປະກອນຕໍ່ພ່ວງ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ປິດຢູ່</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
@@ -213,6 +220,7 @@
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
 <translation id="4453205916657964690">Subnet Mask</translation>
 <translation id="4454245904991689773">ສະແກນເພື່ອ</translation>
+<translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="4511264077854731334">ໜ້າເວັບ</translation>
@@ -235,6 +243,7 @@
 <translation id="469379815867856270">ຄວາມແຮງສັນຍານ</translation>
 <translation id="4707579418881001319">L2TP/IPsec + ໃບຢັ້ງຢືນຜູ້ໃຊ້</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
+<translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="475869545581454722">ອັບເດດລະຫັດຜ່ານ Chrome OS ແລ້ວ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4794140124556169553">ການທົດສອບ CPU ອາດກະທົບກັບປະສິດທິພາບລະບົບຂອງທ່ານໄດ້</translation>
@@ -256,6 +265,7 @@
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="4930320165497208503">ເພື່ອຕັ້ງຄ່າ ຫຼື ອັບເດດການເຊື່ອມຕໍ່, ໃຫ້ເຂົ້າໄປຫາ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
+<translation id="4950314376641394653">ອັບເດດເຟີມແວ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ແລ້ວ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -265,7 +275,6 @@
 <translation id="5049856988445523908">ລັອກຊິມແລ້ວ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ຊື່​ກຸ່ມ​</translation>
 <translation id="5051044138948155788">ນີ້ແມ່ນໜ້າດຽວເທົ່ານັ້ນ. ນີ້ຈະພາທ່ານໄປໜ້າຈໍເລີ່ມຕົ້ນການສະແກນ.</translation>
-<translation id="5061169534910302641">ອັບເດດເວີຊັນ ແລະ ຣີສະຕາດ</translation>
 <translation id="5088172560898466307">ຊື່ໂຮ​ສເຊີບເວີ</translation>
 <translation id="5089810972385038852">ລັດ</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
@@ -399,6 +408,7 @@
 <translation id="7058278511608979688">ສິ້ນສຸດ ແລະ ບັນທຶກ</translation>
 <translation id="7059230779847288458">ກໍາລັງສາກ
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
+<translation id="7068619307603204412">ກະກຽມອຸປະກອນຂອງທ່ານ</translation>
 <translation id="708426984172631313">ຢຸດແລ້ວ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ບໍ່ສຳເລັດ, ການມອບສິດບໍ່ສຳເລັດ</translation>
@@ -412,6 +422,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
+<translation id="7240035910874241640">ອັບເດດອຸປະກອນຕໍ່ພ່ວງທັງໝົດແລ້ວ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
@@ -453,6 +464,7 @@
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
 <translation id="7784116172884276937">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
+<translation id="7786540085520432425">ໃນຂະນະທີ່ກຳລັງອັບເດດ, ທ່ານສາມາດຫຍໍ້ໜ້າຈໍລົງໄດ້ແຕ່ຢ່າຖອດສາຍອຸປະກອນຂອງທ່ານ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນຂອງທ່ານຈະບໍ່ສາມາດເຮັດວຽກໄດ້ໃນລະຫວ່າງການອັບເດດນີ້</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7819857487979277519">PSK (WPA ຫຼື RSN)</translation>
 <translation id="7835501727204647447">ຕິດຕັ້ງ CloudReady</translation>
@@ -483,8 +495,10 @@
 <translation id="816013303019725643">ໃສ່ລະຫັດປົດລັອກ:</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
+<translation id="8217675307824400706">ເລີ່ມການເຊື່ອມຕໍ່</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8246209727385807362">ຜູ້ໃຫ້ບໍລິການທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="8281886186245836920">ຂ້າມ</translation>
 <translation id="8286154143153872371">ກະລຸນາເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍແລ້ວໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຮູບພື້ນຫຼັງ.</translation>
 <translation id="8291967909914612644">ປະເທດຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
@@ -509,6 +523,7 @@
 <translation id="8498220429738806196">ຕົວນັບທຣາບຟິກ</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> ຂອງທ່ານເປັນເວີຊັນຫຼ້າສຸດແລ້ວ</translation>
 <translation id="8521021929829989041">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
@@ -548,6 +563,7 @@
 <translation id="8970109610781093811">ເອີ້ນໃຊ້ອີກຄັ້ງ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ສະແກນ}=1{ສະແກນໜ້າ {NUMBER_OF_PAGES}}other{ສະແກນໜ້າ {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">ກໍາລັງຕິດຕັ້ງ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>

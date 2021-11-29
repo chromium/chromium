@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">沒有網際網路連線</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">啟用狀態</translation>
+<translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用目前的金鑰組</translation>
 <translation id="2323506179655536734">已略過</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">已通過</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
+<translation id="2859243502336719778">重大更新</translation>
 <translation id="2860473693272905224">將另一頁放入掃描機</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">已列印 <ph name="PRINTED_PAGES" /> 頁 (共 <ph name="TOTAL_PAGES" /> 頁)。</translation>
 <translation id="345898999683440380">正在掃描第 <ph name="PAGE_NUM" /> 頁，目前已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
+<translation id="3462187165860821523">正在更新「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3527036260304016759">失敗 - 不明的錯誤</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
+<translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
 <translation id="3966286471246132217">如要獲得更準確的結果，請關閉所有應用程式，直到測試完成為止。</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">更新周邊裝置</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 已停用</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4453205916657964690">子網路遮罩</translation>
 <translation id="4454245904991689773">掃描檔案儲存位置</translation>
+<translation id="4472575034687746823">開始使用</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
 <translation id="4511264077854731334">入口網站</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">訊號強度</translation>
 <translation id="4707579418881001319">L2TP/IPsec + 使用者憑證</translation>
 <translation id="4731797938093519117">家長存取</translation>
+<translation id="473775607612524610">更新</translation>
 <translation id="475869545581454722">已更新 Chrome OS 密碼</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="4950314376641394653">「<ph name="DEVICE_NAME" />」的韌體已更新至版本 <ph name="VERSION" /></translation>
 <translation id="498186245079027698">請檢查掃描器，然後再試一次。另請確認本機有足夠空間可以儲存掃描的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">SIM 卡已鎖定 (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">群組名稱</translation>
 <translation id="5051044138948155788">這是唯一的頁面。系統會將你導向掃描開始畫面。</translation>
-<translation id="5061169534910302641">更新版本及重新啟動</translation>
 <translation id="5088172560898466307">伺服器主機名稱</translation>
 <translation id="5089810972385038852">州</translation>
 <translation id="5142961317498132443">驗證</translation>
@@ -399,6 +406,7 @@
 <translation id="7040230719604914234">電信業者</translation>
 <translation id="7058278511608979688">結束並儲存</translation>
 <translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後充飽</translation>
+<translation id="7068619307603204412">準備好你的裝置</translation>
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
@@ -412,6 +420,7 @@
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
+<translation id="7240035910874241640">所有周邊裝置均為最新版本</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">桌布集錦</translation>
@@ -452,6 +461,7 @@
 <translation id="7763470514545477072">網域字尾比對</translation>
 <translation id="7769672763586021400">型號 ID</translation>
 <translation id="7784116172884276937">尚未設定任何 DNS 伺服器</translation>
+<translation id="7786540085520432425">在更新期間，你可以將視窗縮到最小，但不要拔除裝置的插頭。更新作業可能需要幾分鐘才會完成，這段期間裝置可能無法正常運作</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
 <translation id="7835501727204647447">安裝 CloudReady</translation>
@@ -485,6 +495,7 @@
 <translation id="8217675307824400706">連上網路</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
+<translation id="8281886186245836920">略過</translation>
 <translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>
 <translation id="8291967909914612644">家用提供者國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
@@ -509,6 +520,7 @@
 <translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
+<translation id="8520963233738002436">「<ph name="DEVICE_NAME" />」已更新為最新版本</translation>
 <translation id="8521021929829989041">做為個人裝置使用</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>
@@ -548,6 +560,7 @@
 <translation id="8970109610781093811">再執行一次</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{掃描}=1{掃描第 {NUMBER_OF_PAGES} 頁}other{掃描第 {NUMBER_OF_PAGES} 頁}}</translation>
+<translation id="8994273342647807496">安裝中 - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>

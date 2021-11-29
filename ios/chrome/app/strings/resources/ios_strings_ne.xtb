@@ -138,6 +138,7 @@
 <translation id="225943865679747347">त्रुटि कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाता थप्नुहोस्...</translation>
 <translation id="2268044343513325586">परिशुद्ध</translation>
+<translation id="2271351792809375263">आफ्नो डिभाइसमा भएका अन्य एपमा आफूले Chrome मा सेभ गरेका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
 <translation id="2302742851632557585">वेबसाइटमा गई पासवर्ड बदल्नुहोस्</translation>
 <translation id="2316709634732130529">सुझाव दिइएको पासवर्ड प्रयोग गर्नुहोस्</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">पप-अपहरूलाई अनुमति दिइयो</translation>
 <translation id="3399930248910934354">Chrome का सेटिङ खोल्नुहोस्</translation>
 <translation id="3404744938087714423">साइन आउट गर्नुभयो भने सिंक गर्ने सुविधा अफ हुने छ।</translation>
+<translation id="3414451675185661089">२. "पासवर्डहरू" मा ट्याप गर्नुहोस्</translation>
 <translation id="3425644765244388016">कार्डको उपनाम</translation>
 <translation id="3433057996795775706">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="WEBSITE" /> मा रहेको तपाईंको खाता मेटिने छैन। यो खाता अन्य मान्छेहरूबाट सुरक्षित राख्न <ph name="WEBSITE" /> मा गई आफ्नो पासवर्ड परिवर्तन गर्नुहोस्।</translation>
 <translation id="3443810440409579745">ट्याब प्राप्त गरियो।</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको एपमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
 <translation id="4124987746317609294">समय दायरा</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
+<translation id="4153925727916232411">तपाईंले क्यामेरा प्रयोग गर्न दिनुभयो भने तपाईं फोटो खिच्न र अपलोड गर्न तथा QR कोड स्क्यान गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
 <translation id="418156467088430727">नयाँ ट्याबमा अफलाइन संस्करण हेर्नुहोस्</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315"><ph name="EMAIL" /> को रूपमा साइन इन गरिएको छ।
 
 तपाईँको डेटालाई तपाईँको सिंकको पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
+<translation id="4682686630151240767">१. iPhone का सेटिङ खोल्नुहोस्</translation>
 <translation id="4689564913179979534">भुक्तानी विधिहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="470966556546083668">सिंक गर्ने सुविधा अन नगरियोस्</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">सबै साइटका कुकीहरू व्यवस्थापन गर्न, <ph name="BEGIN_LINK" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5490005495580364134">सबै कुकीलाई रोक लगाइयोस् (सिफारिस गरिँदैन)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> घन्टाअघि</translation>
+<translation id="5523579157975978438">स्वतः भर्ने सुविधा अफ गर्न <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" /> खोल्नुहोस् अनि "पासवर्डहरू" मा जानुहोस्।</translation>
 <translation id="5525269841082836315">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="5532698011560297095">साइन इन गर्न सकिएन</translation>
 <translation id="5548760955356983418">ह्यानडअफले तपाईंलाई यस यन्त्रमा ब्राउजिङ सुरु गर्न र तपाईंको Mac मा सजिलै जारी गर्न दिन्छ। हाल खोलिएको वेबसाइट तपाईंको Mac को डकमा प्रकट हुनेछ।
@@ -547,7 +552,6 @@
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
-<translation id="6308436439357671616">यसले तपाईँलाई तस्बिरहरू लिन र अपलोड गर्न दिन्छ।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324528485781869530">सिंक गरिने खाता बदल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
@@ -740,6 +744,7 @@
 साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरू प्रयोग गर्न सक्छन्।</translation>
 <translation id="7971521879845308059">पप-अपहरूलाई रोक्नुहोस्</translation>
 <translation id="797413074872316787">सबै डिभाइसमा सिंक गर्न र आफू अनुकूल बनाउन सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
+<translation id="7978018860671536736">३. "पासवर्ड स्वतः भरियोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7993619969781047893">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="800361585186029508">Google Chrome मा प्रविष्टि गरिएका URL हरू खोल्छ।</translation>
@@ -765,6 +770,7 @@
 <translation id="8205564605687841303">रद्द गर्नुहोस्</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
 <translation id="8225985093977202398">क्यास गरिएका छवि र फाइलहरू</translation>
+<translation id="8237382152611443140">पासवर्ड स्वतः भर्ने सुविधासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8271720166617117963">स्वीकार गर्नुहोस् र साइन इन गर्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="895541991026785598">समस्या रिपोर्ट गर्नुहोस्</translation>
+<translation id="8974714402877957201">१. iPad का सेटिङ खोल्नुहोस्</translation>
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8976414606286374109">कार्डहरू तपाईंको Google खातामा सेभ गरिन्छन्।</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>

@@ -15,6 +15,7 @@
 <translation id="1030706264415084469">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει δεδομένα μεγάλου όγκου μόνιμα στη συσκευή σας</translation>
 <translation id="1032854598605920125">Περιστροφή προς τα δεξιά</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
+<translation id="1036982837258183574">Πατήστε το |<ph name="ACCELERATOR" />| για να εξέλθετε από την πλήρη οθόνη</translation>
 <translation id="1038106730571050514">Εμφάνιση προτάσεων</translation>
 <translation id="1038842779957582377">άγνωστο όνομα</translation>
 <translation id="1041998700806130099">Μήνυμα φύλλου εργασίας</translation>
@@ -414,7 +415,6 @@
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
 <translation id="2248949050832152960">Χρήση WebAuthn</translation>
 <translation id="2250931979407627383">Ραφή στο αριστερό άκρο</translation>
-<translation id="2251943122176102076">Ο διαχειριστής δεν συνιστά τη λήψη στιγμιότυπων οθόνης ή εγγραφών λόγω λήψης εμπιστευτικού περιεχομένου:</translation>
 <translation id="225207911366869382">Αυτή η πολιτική έχει καταργηθεί για τη συγκεκριμένη πολιτική.</translation>
 <translation id="2258928405015593961">Εισαγάγετε μια ημερομηνία λήξης στο μέλλον και δοκιμάστε ξανά.</translation>
 <translation id="225943865679747347">Κωδικός σφάλματος: <ph name="ERROR_CODE" /></translation>
@@ -685,6 +685,7 @@
 <translation id="3215092763954878852">Δεν ήταν δυνατή η χρήση του WebAuthn</translation>
 <translation id="3218181027817787318">Σχετική</translation>
 <translation id="3223287115535306850">Ένδειξη εκκίνησης εφαρμογής</translation>
+<translation id="3225347164936328585">Χειροκρότημα</translation>
 <translation id="3225919329040284222">Ο διακομιστής παρουσίασε ένα πιστοποιητικό που δεν αντιστοιχεί στις ενσωματωμένες προϋποθέσεις. Αυτές οι προϋποθέσεις συμπεριλαμβάνονται σε συγκεκριμένους ιστότοπους υψηλής ασφάλειας για την προστασία σας.</translation>
 <translation id="3226128629678568754">Πατήστε το κουμπί της επανάληψης φόρτωσης για να υποβάλετε ξανά τα δεδομένα που απαιτούνται για τη φόρτωση της σελίδας.</translation>
 <translation id="3226387218769101247">Μικρογραφίες</translation>
@@ -722,6 +723,7 @@
 <translation id="3333762389743153920">Δεν είναι κατάλληλη για έκδοση εικονικής κάρτας</translation>
 <translation id="3338095232262050444">Ασφαλές</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
+<translation id="3345782426586609320">Μάτια</translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
 <translation id="3360103848165129075">Φύλλο δείκτη χειρισμού πληρωμών</translation>
 <translation id="3361596688432910856">Το Chrome <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" /> τις παρακάτω πληροφορίες:
@@ -870,7 +872,6 @@
 <translation id="3760561303380396507">Χρήση Windows Hello αντί του CVC;</translation>
 <translation id="3761171036307311438">Όνομα στην κάρτα:</translation>
 <translation id="3761718714832595332">Απόκρυψη κατάστασης</translation>
-<translation id="3765032636089507299">Η σελίδα Ασφαλούς περιήγησης είναι υπό κατασκευή.</translation>
 <translation id="3765588406864124894">Γραμματοκιβώτιο 9</translation>
 <translation id="3767485424735936570">Η αντιγραφή και η επικόλληση αυτού του περιεχομένου στο <ph name="VM_NAME" /> δεν συνιστάται από την πολιτική διαχειριστή.</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα μια νέα σημείωση στο Google Keep</translation>
@@ -1079,6 +1080,7 @@
 <translation id="4390472908992056574">Χείλος</translation>
 <translation id="4406883609789734330">Ζωντανοί υπότιτλοι</translation>
 <translation id="4406896451731180161">αποτελέσματα αναζήτησης</translation>
+<translation id="4407755609041463909">Φωτιά</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4414515549596849729">cookie και δεδομένα ιστοτόπου</translation>
 <translation id="4415426530740016218">Διεύθυνση παραλαβής</translation>
@@ -1092,14 +1094,13 @@
 <translation id="443673843213245140">Η χρήση ενός διακομιστή μεσολάβησης είναι απενεργοποιημένη, αλλά έχει καθοριστεί μια ρητή διαμόρφωση διακομιστή μεσολάβησης.</translation>
 <translation id="4450893287417543264">Να μην εμφανιστεί ξανά</translation>
 <translation id="4451135742916150903">Μπορεί να ζητά να συνδεθεί σε συσκευές HID.</translation>
+<translation id="4455222631300069614">Αλλάξτε τον κωδικό πρόσβασης τώρα</translation>
 <translation id="4460315069258617173">Επιτρέπεται μέχρι να κλείσετε τις καρτέλες για αυτόν τον ιστότοπο</translation>
 <translation id="4464826014807964867">Ιστότοποι με πληροφορίες από τον οργανισμό σας</translation>
-<translation id="4465818729556336129">Αυτό το έγγραφο είναι εμπιστευτικό και η εκτύπωσή του δεν συνιστάται από τον διαχειριστή σας.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Αυτή η φόρμα δεν είναι ασφαλής. Η αυτόματη συμπλήρωση έχει απενεργοποιηθεί.</translation>
 <translation id="4477350412780666475">Επόμενο κομμάτι</translation>
 <translation id="4481251927743463293">Τι κάνει η Ανώνυμη περιήγηση</translation>
-<translation id="4481394504112738036">Εμπιστευτικό αρχείο</translation>
 <translation id="4482953324121162758">Αυτός ο ιστότοπος δεν θα μεταφραστεί.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Κρυπτογραφήστε συγχρονισμένους κωδικούς πρόσβασης με τον Λογαριασμό σας Google</translation>
@@ -1213,7 +1214,6 @@
           <ph name="LIST_ITEM" />Οι πάροχοι υπηρεσιών διαδικτύου μπορούν να παρακολουθούν την επισκεψιμότητα στον ιστό.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
-<translation id="4834718916855725099">Ο διαχειριστής δεν συνιστά τη λήψη στιγμιότυπων οθόνης ή εγγραφών λόγω εμπιστευτικού περιεχομένου στην οθόνη:</translation>
 <translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
@@ -1334,6 +1334,7 @@
 <translation id="51918995459521422">Ο ιστότοπος <ph name="ORIGIN" /> θέλει να κατεβάσει πολλά αρχεία</translation>
 <translation id="519422657042045905">Ο σχολιασμός δεν διατίθεται</translation>
 <translation id="5201306358585911203">Μια ενσωματωμένη σελίδα σε αυτήν τη σελίδα λέει</translation>
+<translation id="5204468114771111727">Το Chrome εντόπισε σε μια παραβίαση δεδομένων τον κωδικό πρόσβασης που μόλις χρησιμοποιήσατε. Ο Βοηθός Google μπορεί να αλλάξει αυτόματα τον κωδικό πρόσβασής σας.</translation>
 <translation id="5205222826937269299">Απαιτείται όνομα</translation>
 <translation id="5209518306177824490">Αποτύπωμα SHA-1</translation>
 <translation id="5209670883520018268">Τροφοδότης χαρτιού 20</translation>
@@ -1388,6 +1389,7 @@
 <translation id="5344579389779391559">Αυτή η σελίδα μπορεί να προσπαθήσει να σας χρεώσει</translation>
 <translation id="5347645913823149105">Κουμπί Προσαρμογή γραμματοσειρών στο Chrome, πατήστε Enter για να προσαρμόσετε τα μεγέθη των γραμματοσειρών και τις οικογένειες χαρακτήρων στο Chrome.</translation>
 <translation id="5355557959165512791">Δεν μπορείτε να επισκεφτείτε τον ιστότοπο <ph name="SITE" /> αυτήν τη στιγμή επειδή το πιστοποιητικό έχει ανακληθεί. Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
+<translation id="5356837363448394805">Αναψοκοκκίνισμα</translation>
 <translation id="536296301121032821">Αποτυχία αποθήκευσης ρυθμίσεων πολιτικής</translation>
 <translation id="5363309033720083897">Σειριακή θύρα που επιτρέπεται από τον διαχειριστή σας</translation>
 <translation id="5371425731340848620">Ενημέρωση κάρτας</translation>
@@ -1505,7 +1507,6 @@
 <translation id="5786044859038896871">Θέλετε να συμπληρωθούν τα στοιχεία της κάρτας σας;</translation>
 <translation id="578633867165174378">Το Chrome εντόπισε σε μια παραβίαση δεδομένων τον κωδικό πρόσβασης που μόλις χρησιμοποιήσατε. Συνιστούμε να αλλάξετε άμεσα αυτόν τον κωδικό πρόσβασης.</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5797429178165847917">Λήψη εμπιστευτικού περιεχομένου</translation>
 <translation id="5803412860119678065">Θέλετε να συμπληρωθούν τα στοιχεία της κάρτας <ph name="CARD_DETAIL" />;</translation>
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5810442152076338065">Η σύνδεσή σας στο <ph name="DOMAIN" /> κρυπτογραφείται χρησιμοποιώντας ένα απαρχαιωμένο πρόγραμμα κρυπτογράφησης.</translation>
@@ -1532,7 +1533,6 @@
 <translation id="5903264686717710770">Τίτλος:</translation>
 <translation id="5905445707201418379">Αποκλείστηκε σύμφωνα με την πολιτική προέλευσης του <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (συγχρονισμένο)</translation>
-<translation id="5913377024445952699">Η καταγραφή οθόνης τέθηκε σε παύση</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 σε χρήση}other{# σε χρήση}}</translation>
@@ -1621,6 +1621,7 @@
 <translation id="622039917539443112">Παράλληλη δίπλωση</translation>
 <translation id="6221345481584921695">Πρόσφατα η Ασφαλής περιήγηση Google <ph name="BEGIN_LINK" />εντόπισε κακόβουλο λογισμικό<ph name="END_LINK" /> στον ιστότοπο <ph name="SITE" />. Οι ιστότοποι που είναι ασφαλείς υπό φυσιολογικές συνθήκες μερικές φορές προσβάλλονται από κακόβουλα λογισμικά. Το κακόβουλο περιεχόμενο προέρχεται από το <ph name="SUBRESOURCE_HOST" />, έναν γνωστό διανομέα κακόβουλου λογισμικού.</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome</translation>
+<translation id="6233160458685643793">Χαμόγελο</translation>
 <translation id="6234122620015464377">Περικοπή μετά από κάθε έγγραφο</translation>
 <translation id="6240447795304464094">Λογότυπο Google Pay</translation>
 <translation id="6241121617266208201">Απόκρυψη προτάσεων</translation>
@@ -1672,6 +1673,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Έχει κλείσει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="6393956493820063117">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
+<translation id="6398277657359595425">Δυνατό κλάμα</translation>
 <translation id="6398765197997659313">Έξοδος από πλήρη οθόνη</translation>
 <translation id="6401136357288658127">Αυτή η πολιτική έχει καταργηθεί. Θα πρέπει να χρησιμοποιήσετε εναλλακτικά την πολιτική <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
@@ -1746,6 +1748,7 @@
 <translation id="6660413144148052430">τοποθεσία</translation>
 <translation id="6662457027866368246">Πρώτο ρολό</translation>
 <translation id="666259744093848177">(x86_64 μεταφρασμένο)</translation>
+<translation id="6663846344464066639">Σταυρωμένα χέρια</translation>
 <translation id="6665553082534466207">Τριπλό τρύπημα στα δεξιά</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6685834062052613830">Αποσυνδεθείτε και ολοκληρώστε την εγκατάσταση</translation>
@@ -1814,6 +1817,7 @@
 <translation id="6934672428414710184">Αυτό το όνομα προέρχεται από τον Λογαριασμό σας Google</translation>
 <translation id="6944692733090228304">Καταχωρίσατε τον κωδικό πρόσβασής σας σε έναν ιστότοπο τον οποίο δεν διαχειρίζεται ο οργανισμός <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Για να προστατεύσετε τον λογαριασμό σας, μην χρησιμοποιήσετε ξανά αυτόν τον κωδικό πρόσβασης σε άλλες εφαρμογές και ιστότοπους.</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
+<translation id="6946722113367118030">Σκέψη</translation>
 <translation id="6948051842255602737">Το παιχνίδι τελείωσε. Η βαθμολογία σας είναι <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Για να δείτε τρόπους και απαιτήσεις παραλαβής, επιλέξτε μια διεύθυνση</translation>
 <translation id="6949872517221025916">Επαναφορά κωδικού πρόσβασης</translation>
@@ -1886,7 +1890,6 @@
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
-<translation id="7173920250514487165">Λήψη εμπιστευτικού περιεχομένου στην οθόνη σας</translation>
 <translation id="7174545416324379297">Έγινε συγχώνευση</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="7179323680825933600">Αποθήκευση και συμπλήρωση τρόπων πληρωμής</translation>
@@ -2338,7 +2341,6 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Δεν αντιστοιχούν κωδικοί πρόσβασης. Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης.</translation>
 <translation id="8625384913736129811">Αποθήκευση αυτής της κάρτας στη συγκεκριμένη συσκευή</translation>
-<translation id="8627040765059109009">Η καταγραφή οθόνης συνεχίζεται</translation>
 <translation id="865032292777205197">αισθητήρες κίνησης</translation>
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="8666678546361132282">Αγγλικά

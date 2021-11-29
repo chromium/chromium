@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="102360288709523007">Améliorer Chromium en envoyant des statistiques d'utilisation et des rapports d'erreur.</translation>
+<translation id="1047130070405668746">Sélectionnez Chromium</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium a vérifié que <ph name="ISSUER" /> a émis le certificat de ce site Web.</translation>
 <translation id="1843424232666537147">Chromium comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Sélectionnez Chromium</translation>
 <translation id="2006345422933397527">Chromium n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2054703085270098503">Demeurez en sécurité grâce à Chromium</translation>
 <translation id="2168108852149185974">Certains modules complémentaires provoquent le plantage de Chromium. Veuillez désinstaller :</translation>

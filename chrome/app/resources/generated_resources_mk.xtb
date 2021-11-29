@@ -35,7 +35,6 @@
 <translation id="1034484273907870301">Лента за картички за сликички за режим на таблет</translation>
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1036511912703768636">Пристапувајте до кој било од овие USB-уреди</translation>
-<translation id="1036982837258183574">Притиснете |<ph name="ACCELERATOR" />| за да излезете од цел екран</translation>
 <translation id="1038168778161626396">Само шифрирање</translation>
 <translation id="1038462104119736705">За Linux, се препорачува најмалку <ph name="INSTALL_SIZE" /> слободен простор. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="1039337018183941703">Невалидна или оштетена датотека</translation>
@@ -200,7 +199,6 @@
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.}one{Автоматски ќе ве одјавиме по # секунда.
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.}other{Автоматски ќе ве одјавиме по # секунди.
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.}}</translation>
-<translation id="1193273168751563528">Влези во управувана сесија</translation>
 <translation id="1193927020065025187">Сајтов можеби се обидува да ве измами да дозволите нападни известувања</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1195558154361252544">Известувањата се автоматски блокирани за сите сајтови, освен за оние за коишто сте ги дозволиле</translation>
@@ -275,7 +273,6 @@
 <translation id="1272978324304772054">Корисничката сметка не му припаѓа на доменот за кој е запишан овој уред. Доколку сакате да го запишете на друг домен, потребно е прво да ја поминете обновата на уредот.</translation>
 <translation id="1274997165432133392">Колачиња и други податоци за сајтовите</translation>
 <translation id="1275718070701477396">Избран</translation>
-<translation id="1276242130531808236">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1276994519141842946">Не може да се деинсталира <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Создајте нов PIN што е различен од вашиот тековен PIN</translation>
 <translation id="1278859221870828664">Прегледајте ги апликациите и услугите на Google Play</translation>
@@ -405,6 +402,7 @@
 <translation id="1418954524306642206">Прелистувајте за да ја одредите PPD-датотеката на вашиот печатач</translation>
 <translation id="1420834118113404499">Дозволи за аудио-визуелни содржини</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
+<translation id="1421934779300263861">Помогнете да се подобрат функциите и изведбата на Chrome и ChromeOS со автоматско испраќање извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google. Некои збирни податоци ќе им помогнат и на апликациите на Android и на партнерите на Google. Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google.</translation>
 <translation id="1422159345171879700">Вчитај ги небезбедните скрипти</translation>
 <translation id="1423716227250567100">Ова дејство:
           <ph name="LINE_BREAKS" />
@@ -486,13 +484,11 @@
 <translation id="1494349716233667318">Сајтовите може да прашуваат дали да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="1495677929897281669">Назад на картичката</translation>
 <translation id="1500297251995790841">Непознат уред [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
-<translation id="1503394326855300303">Оваа сметка на сопственик треба да биде првата пријавена сметка во сесија со повеќекратно пријавување.</translation>
 <translation id="150411034776756821">Отстрани <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Споделените папки се достапни во Windows на <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1507170440449692343">Страницата е блокирана да не пристапува до фотоапаратот.</translation>
 <translation id="1507246803636407672">&amp;Отфрли</translation>
-<translation id="1508491105858779599">Поставете го прстот на сензорот за отпечатоци за да го отклучите уредот.</translation>
 <translation id="1509163368529404530">&amp;Врати ја групата</translation>
 <translation id="1509281256533087115">Пристапи на секој <ph name="DEVICE_NAME_AND_VENDOR" /> преку USB</translation>
 <translation id="1510238584712386396">Стартер</translation>
@@ -527,6 +523,7 @@
 <translation id="15373452373711364">Голем курсор на глувчето</translation>
 <translation id="1540605929960647700">Демо-режим</translation>
 <translation id="1541346352678737112">Не е најдена мрежа</translation>
+<translation id="1542137295869176367">Не може да се ажурираат податоците за најавување</translation>
 <translation id="1542514202066550870">Картичкава прикажува VR-содржини преку слушалки.</translation>
 <translation id="1543284117603151572">Увезенo од Edge</translation>
 <translation id="1545177026077493356">Автоматски режим Киоск</translation>
@@ -595,7 +592,6 @@
 <translation id="1606077700029460857">Променете ги поставките за глувчето</translation>
 <translation id="1607139524282324606">Исчисти го записот</translation>
 <translation id="1607499585984539560">Корисникот не е поврзан со доменот</translation>
-<translation id="1608626060424371292">Отстрани го овој корисник</translation>
 <translation id="1608668830839595724">Повеќе дејства за избраните ставки</translation>
 <translation id="161042844686301425">Тиркизна</translation>
 <translation id="1611432201750675208">Уредот е заклучен</translation>
@@ -605,6 +601,7 @@
 <translation id="161460670679785907">Не може да се открие вашиот телефон</translation>
 <translation id="1615337439947999338">Зачувајте во вашата сметка на Google (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
+<translation id="1615433306336820465">Управувајте со податоците за најавување зачувани на вашиот безбедносен клуч</translation>
 <translation id="1616206807336925449">Оваа наставка не бара специјални дозволи.</translation>
 <translation id="1616298854599875024">Екстензијата „<ph name="IMPORT_NAME" />" не може да се увезе бидејќи не е споделен модул</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ги проверуваме податоциве согласно безбедносните правила на организацијата…}=1{Ја проверуваме датотекава согласно безбедносните правила на организацијата…}one{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}other{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}}</translation>
@@ -634,6 +631,8 @@
 <translation id="163309982320328737">Почетната ширина на знак е Полна</translation>
 <translation id="1633947793238301227">Оневозможување на „Помошникот на Google“</translation>
 <translation id="1634783886312010422">Дали веќе ја променивте лозинкава на <ph name="WEBSITE" />?</translation>
+<translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />„Податоци од апликација“ се сите податоци што ги зачувала некоја апликација (според поставките на програмерот), вклучувајќи податоци како што се контакти, пораки и фотографии. Податоците од бекапот нема да се вбројуваат во квотата за складирање на Drive.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Преземете го обележувачов на вашиот iPhone</translation>
 <translation id="1637350598157233081">Вашата лозинка е зачувана на уредов</translation>
 <translation id="1637765355341780467">Нешто тргна наопаку при отворањето на профилот. Некои функции може да бидат недостапни.</translation>
@@ -666,6 +665,7 @@
 <translation id="16620462294541761">Не може да се провери вашата лозинка. Обидете се повторно.</translation>
 <translation id="1662777896967868795">Вклучено/Ќе се исклучи автоматски на изгрејсонце</translation>
 <translation id="166278006618318542">Алгоритам на јавен клуч на субјект</translation>
+<translation id="1662801900924515589"><ph name="APP" /> е инсталирана</translation>
 <translation id="1666232093776384142">Оневозможете ја заштитата на пристапот до податоци за перфиферните уреди</translation>
 <translation id="1668435968811469751">Регистрирајте рачно</translation>
 <translation id="1668979692599483141">Дознајте повеќе за предлозите</translation>
@@ -696,7 +696,6 @@
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотека</translation>
 <translation id="1700079447639026019">Сајтови што никогаш не може да користат колачиња</translation>
-<translation id="1701062906490865540">Отстрани го ова лице</translation>
 <translation id="1703331064825191675">Не грижете се за своите лозинки</translation>
 <translation id="1703666494654169921">Не им дозволувај на сајтовите да ги користат уредите за виртуелна реалност или мобилниот интернет</translation>
 <translation id="1704230497453185209">Не им дозволувај на сајтовите да пуштаат звук</translation>
@@ -742,7 +741,6 @@
 <translation id="1739684185846730053">Пробната верзија на Privacy Sandbox сѐ уште активно се развива и таа е достапна само во одредени региони. Засега, сајтовите може да ја испробаат Privacy Sandbox, а притоа да продолжат да ги користат тековните веб-технологии, како што се колачињата од трети страни.</translation>
 <translation id="174123615272205933">Приспособени</translation>
 <translation id="1741314857973421784">Продолжи</translation>
-<translation id="1743570585616704562">Не е препознаен</translation>
 <translation id="1743970419083351269">Затвори ја лентата за преземања</translation>
 <translation id="1744060673522309905">Уредот не може да се приклучи на доменот. Уверете се дека не сте го надминале максималниот број уреди што може да се додадат.</translation>
 <translation id="1744108098763830590">страница на заднина</translation>
@@ -773,6 +771,7 @@
 <translation id="1768212860412467516">Испратете повратни информации за <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Упс! Се појави проблем при контактирањето со серверот за најавување. Проверете ја мрежната врска и името на доменот и обидете се повторно.</translation>
 <translation id="1769104665586091481">Отвори ја врската во нов &amp;прозорец</translation>
+<translation id="177053719077591686">Направете бекап од апликациите на Android во Google Drive.</translation>
 <translation id="177336675152937177">Вдомени податоци на апликација</translation>
 <translation id="1775706469381199282">Не им дозволувај на сајтовите да користат JavaScript</translation>
 <translation id="1776712937009046120">Додај корисник</translation>
@@ -796,6 +795,7 @@
 <translation id="1787350673646245458">Слика на корисникот</translation>
 <translation id="1790194216133135334">Испрати линк до <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
+<translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
 <translation id="1793625608969726781">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, компјутер , ниво на батерија <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1794051631868188691">Никогаш не прикажувај ја кошничката на <ph name="MERCHANT" /></translation>
@@ -850,7 +850,6 @@
 <translation id="1835261175655098052">Се надградува Linux</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1839540115464516994">Прикажи во <ph name="LOCATION" /></translation>
-<translation id="1841545962859478868">Администраторот на уредот може да го следи следново:</translation>
 <translation id="1841616161104323629">Недостасува запис за уредот.</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> е оневозможена</translation>
 <translation id="184183613002882946">Не, остани на 1 прекинувач</translation>
@@ -880,6 +879,7 @@
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ може да чита слики, видео и аудиодатотеки на означените локации.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> е подготвен да ја комплетира инсталацијата</translation>
 <translation id="1868553836791672080">Проверката на лозинки не е достапна во Chromium</translation>
+<translation id="1868617395637139709">Користете локација за апликациите и услугите на Android.</translation>
 <translation id="1869433484041798909">Копче за обележувач</translation>
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
 <translation id="187145082678092583">Помалку апликации</translation>
@@ -928,7 +928,6 @@
 <translation id="1916502483199172559">Стандарден црвен аватар</translation>
 <translation id="1918141783557917887">&amp;Помал</translation>
 <translation id="1920390473494685033">Контакти</translation>
-<translation id="1921050530041573580">Спарете го телефонот со Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Сајтовите на Google како Gmail, Drive и YouTube го користат јазикот на вашата сметка на Google, освен ако не сте го промениле јазикот на конкретниот производ</translation>
 <translation id="192494336144674234">Отвори со</translation>
@@ -1093,6 +1092,7 @@
 <translation id="2100273922101894616">Автоматско најавување</translation>
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102396546234652240">Не им дозволувај на сајтовите да го користат микрофонот</translation>
+<translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е сокриен</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
@@ -1304,7 +1304,6 @@
 <translation id="2301402091755573488">Споделена картичка</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ побара дополнителни дозволи.</translation>
 <translation id="23055578400314116">Изберете корисничко име</translation>
-<translation id="2306366691914573029">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, непознат тип уред</translation>
 <translation id="2307462900900812319">Конфигурирај мрежа</translation>
 <translation id="2307553512430195144">Ако се согласите, „Помошникот на Google“ ќе чека во режим на подготвеност за да слушне „Ok Google”, а преку Voice Match може да препознае дека зборува <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -1339,7 +1338,9 @@
 <translation id="2329597144923131178">Најавете се за да ги добиете обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
 <translation id="2332131598580221120">Прикажи во продавница</translation>
 <translation id="2332192922827071008">Отвори ги „Поставките“</translation>
+<translation id="2332515770639153015">„Подобреното безбедно прелистување“ е вклучено</translation>
 <translation id="2332742915001411729">Ресетирај на стандардна вредност</translation>
+<translation id="2332948465534020594">„Не вознемирувај“ е овозможено</translation>
 <translation id="2335111415680198280">{0,plural, =1{Затвори # прозорец}one{Затвори # прозорец}other{Затвори # прозорци}}</translation>
 <translation id="2335122562899522968">Страницата постави колачиња.</translation>
 <translation id="2336228925368920074">Обележи ги сите картички...</translation>
@@ -1360,7 +1361,6 @@
 <translation id="2350133097354918058">Повторно вчитана</translation>
 <translation id="2350182423316644347">Се иницијализира апликација...</translation>
 <translation id="2350796302381711542">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" />?</translation>
-<translation id="2351266942280602854">Јазик и внесување</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 ставка}one{{NUM_ITEMS} ставка}other{{NUM_ITEMS} ставки}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Белешките на заклучениот екран се зачувуваат автоматски во <ph name="LOCK_SCREEN_APP_NAME" />. Последната белешка ќе остане на заклучениот екран.</translation>
@@ -1486,6 +1486,7 @@
 <translation id="2484959914739448251">За да ги избришете податоците од прелистувањето од сите ваши синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />внесете ја лозинката<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Најдобар избор за вас</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
+<translation id="2485681265915754872">Услови за користење на Google Play</translation>
 <translation id="2487067538648443797">Додај нов обележувач</translation>
 <translation id="2487268545026948104">За да ги вратите податоците, поврзете се на интернет</translation>
 <translation id="2489686758589235262">Додели уште 2 прекинувачи</translation>
@@ -1599,7 +1600,6 @@
 <translation id="2606568927909309675">Автоматски создава титлови за англиски аудио и видеосодржини. Аудиото и титловите никогаш не го напуштаат уредот.</translation>
 <translation id="2607101320794533334">Информации за јавен клуч на субјект</translation>
 <translation id="2609896558069604090">Направи кратенки...</translation>
-<translation id="2609902589050805912">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, аудиоуред</translation>
 <translation id="2609980095400624569">Не можеше да се воспостави врска</translation>
 <translation id="2610157865375787051">Режим во мирување</translation>
 <translation id="2610260699262139870">В&amp;истинска големина</translation>
@@ -1688,6 +1688,7 @@
 <translation id="270358213449696159">Содржина на Условите за користење на Google Chrome OS</translation>
 <translation id="270414148003105978">Мобилни мрежи</translation>
 <translation id="2704184184447774363">Потпишување документ на Microsoft</translation>
+<translation id="2704606927547763573">Копирано</translation>
 <translation id="270516211545221798">Брзина на подлогата за допир</translation>
 <translation id="2705736684557713153">Одете до дното на екранот и вклучете го инстант врзувањето ако се појави. Ако не, веќе сте спремни.</translation>
 <translation id="2707024448553392710">Се презема компонента</translation>
@@ -1710,6 +1711,7 @@
 <translation id="2721037002783622288">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Администраторот ги оневозможил надгледуваните корисници.</translation>
+<translation id="2722540561488096675">Вашиот уред ќе се исклучи по <ph name="TIME_LEFT" />. Отстранете го USB-уредот пред повторно да го вклучите вашиот уред. Потоа може да започнете да користите <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">WebRTC-дневници</translation>
 <translation id="272488616838512378">Конверзија на валути</translation>
 <translation id="2725200716980197196">Обновена мрежна поврзливост</translation>
@@ -1857,7 +1859,6 @@
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
 <translation id="2861941300086904918">Управник за безбедност на матичен клиент</translation>
 <translation id="2862815659905780618">Отстранете ја Linux-околината за програмирање</translation>
-<translation id="2864272167277395865">Изберете уред:</translation>
 <translation id="2864601841139725659">Поставете ја сликата на профилот</translation>
 <translation id="2865919525181940183">Слика од екранот со прикажаните програми</translation>
 <translation id="286674810810214575">Се проверуваат изворите за напојување…</translation>
@@ -1870,7 +1871,6 @@
 <translation id="287205682142673348">Проследување порта</translation>
 <translation id="287286579981869940">Додај <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Исклучи</translation>
-<translation id="2872966656309879564">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, компјутер</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
 <translation id="2875698561019555027">(Страници со грешка на Chrome)</translation>
 <translation id="2876336351874743617">Прст 2</translation>
@@ -1931,7 +1931,6 @@
 <translation id="2928795416630981206">Дозволено им е да ја следат позицијата на камерата</translation>
 <translation id="2931157624143513983">Приспособи според областа за печатење</translation>
 <translation id="2932085390869194046">Предложете лозинка…</translation>
-<translation id="2932330436172705843"><ph name="PROFILE_DISPLAY_NAME" /> (Сметка за деца)</translation>
 <translation id="2932483646085333864">Одјавете се, па повторно најавете се за да започнете со синхронизација</translation>
 <translation id="2932883381142163287">Пријави злоупотреба</translation>
 <translation id="2933632078076743449">Последно ажурирање</translation>
@@ -1940,7 +1939,6 @@
 <translation id="2935654492420446828">Додајте училишна сметка подоцна</translation>
 <translation id="2936851848721175671">Бекап и обнова</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
-<translation id="2938845886082362843">Прегледајте ги и избришете ги податоците за најавување складирани во вашиот безбедносен клуч</translation>
 <translation id="2939938020978911855">Покажи достапни уреди со Bluetooth</translation>
 <translation id="2941112035454246133">Низок</translation>
 <translation id="2942279350258725020">Пораки на Android</translation>
@@ -2065,7 +2063,6 @@
 <translation id="3067198360141518313">Стартувај го приклучокот</translation>
 <translation id="3071624960923923138">Може да кликнете тука за да отворите нова картичка</translation>
 <translation id="3072775339180057696">Да се дозволи сајтот да прикажува <ph name="FILE_NAME" />?</translation>
-<translation id="3074799113165994093">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, телефон</translation>
 <translation id="3075874217500066906">Потребно е рестартирање за да започне процесот на фабричко ресетирање. По рестартирањето ќе бидете прашани за потврда дали сакате да продолжите.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Зачувај само на уредов</translation>
@@ -2142,7 +2139,6 @@
 <translation id="3151562827395986343">Исчистете ги историјата, колачињата, кешот и друго</translation>
 <translation id="3151616662954589507">Камера за селфи</translation>
 <translation id="3151786313568798007">Ориентација</translation>
-<translation id="3154351730702813399">Администраторот на уредот може да ви го следи прелистувањето.</translation>
 <translation id="3154429428035006212">Исклучен повеќе од еден месец</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157665603750177985">Кога не сте во режимот „Инкогнито“, сајтовите може да користат колачиња за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами</translation>
@@ -2157,6 +2153,7 @@
 <translation id="3162899666601560689">Сајтовите може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
 <translation id="3163201441334626963">Непознат производ <ph name="PRODUCT_ID" /> од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Следниве услуги помагаат чувањето на вашите податоци да биде безбедно и сигурно. Функцииве може да ги исклучите во секое време.</translation>
+<translation id="3163511056918491211">Лесно вратете ги податоците или променете го уредот во секое време Вашите бекапи се прикачуваат во Google и се шифрираат со помош на лозинката за сметката на Google.</translation>
 <translation id="3164329792803560526">Картичкава се споделува на <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Некои оператори може да ја блокираат функцијава.</translation>
 <translation id="316652501498554287">Сметки на G Suite for Education</translation>
@@ -2226,7 +2223,6 @@
 <translation id="3266274118485960573">Се извршува безбедносната проверка.</translation>
 <translation id="3267726687589094446">Продолжи со дозволување автоматски преземања на повеќе датотеки</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
-<translation id="3269069891205016797">Вашите информации ќе бидат отстранети од уредот кога ќе се одјавите.</translation>
 <translation id="3269093882174072735">Вчитај слика</translation>
 <translation id="326911502853238749">Не прикажувај <ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">Светла синозелена и бела</translation>
@@ -2360,11 +2356,11 @@
 <translation id="3406396172897554194">Пребарувајте по јазик или по име на методот за внесување</translation>
 <translation id="3406605057700382950">&amp;Покажи лента со обележувачи</translation>
 <translation id="3409785640040772790">Карти</translation>
-<translation id="3410832398355316179">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување. <ph name="USER_EMAIL" /> сепак ќе може да се најави подоцна.</translation>
 <translation id="3412265149091626468">Скокни до Избор</translation>
 <translation id="3413122095806433232">Издавачи на ЦА: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />управува со прелистувачот<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">Автоматски титлови - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Секогаш прикажувај ги целосните URL-адреси</translation>
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
 <translation id="3417836307470882032">24-часовно време</translation>
@@ -2433,7 +2429,6 @@
 <translation id="346431825526753">Ова е сметка за деца управувана од <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Телефон со Android</translation>
-<translation id="3470442499439619530">Отстрани го овој корисник</translation>
 <translation id="3471876058939596279">HDMI-портата и USB-портата од типот C не може да се користат за видео истовремено. Користете друга видеопорта.</translation>
 <translation id="3473241910002674503">Одете на почетен екран, вратете се назад и префрлајте меѓу апликации со копчиња во режим на таблет.</translation>
 <translation id="3473479545200714844">Лупа за екран</translation>
@@ -2531,7 +2526,6 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да ги прегледува следниве датотеки и папки</translation>
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3575121482199441727">Дозволи за овој сајт</translation>
-<translation id="3576324189521867626">Успешно е инсталирана</translation>
 <translation id="3578594933904494462">Содржината на картичкава се споделува.</translation>
 <translation id="3581605050355435601">Автоматско конфигурирање IP-адреса</translation>
 <translation id="3582057310199111521">Внесена на измамнички сајт и откриена при упад во податоци</translation>
@@ -2544,7 +2538,6 @@
 <translation id="3590194807845837023">Отклучи профил и рестартирај</translation>
 <translation id="3590295622232282437">Се влегува во управувана сесија.</translation>
 <translation id="3592260987370335752">&amp;Дознај повеќе</translation>
-<translation id="359283478042092570">Влези</translation>
 <translation id="3593152357631900254">Овозможи режим за нејасен Пин Јин</translation>
 <translation id="3593965109698325041">Ограничувања на име на сертификат</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
@@ -2573,6 +2566,7 @@
 <translation id="3616741288025931835">&amp;Исчисти податоци од прелистување...</translation>
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619962278978697442">Изберете некое секојпат кога се најавувате</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
@@ -2682,7 +2676,6 @@
 <translation id="3732078975418297900">Грешка во редот <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-кодот мора да има најмногу 63 знаци</translation>
 <translation id="3732857534841813090">Прикажување поврзани информации од „Помошникот на Google“</translation>
-<translation id="3733127536501031542">ССЛ-сервер со покачување</translation>
 <translation id="3733296813637058299">Ќе ги инсталираме тие апликации за вас. Може да најдете уште апликации за вашиот <ph name="DEVICE_TYPE" /> во Play Store.</translation>
 <translation id="3735740477244556633">Подреди по</translation>
 <translation id="3738632186060045350">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат по 24 часа</translation>
@@ -2718,6 +2711,7 @@
 <translation id="3771290962915251154">Поставкава е оневозможена бидејќи се вклучени родителските контроли</translation>
 <translation id="3771294271822695279">Видеодатотеки</translation>
 <translation id="3771851622616482156">Ќе ве одјавиме од сајтов, вклучително и од отворените картички</translation>
+<translation id="3772046291955677288">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3775432569830822555">Сертификат на SSL-сервер</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
@@ -2750,6 +2744,7 @@
 <translation id="3798449238516105146">Верзија</translation>
 <translation id="3799128412641261490">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="3800806661949714323">Прикажи ги сите (се препорачува)</translation>
+<translation id="3800828618615365228">Дополнителни услови на Google Chrome и ChromeOS</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Квалитет на видеото</translation>
 <translation id="380408572480438692">Со овозможување собирање податоци за учинок, му се помага на Google со време да го подобри системот. Не се испраќаат податоци додека не поднесете извештај со повратни информации (Alt-Shift-I) и не ги опфатите податоците за учинок. Во секое време може да се вратите на екранов за да оневозможите собирање податоци.</translation>
@@ -2782,10 +2777,10 @@
 <translation id="3826440694796503677">Администраторот оневозможил додавање повеќе сметки на Google</translation>
 <translation id="3827774300009121996">&amp;Цел екран</translation>
 <translation id="3828029223314399057">Пребарувај обележувачи</translation>
+<translation id="3828953470056652895">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условите за користење на Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">SMB-споделување</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Администраторот повторно вклучи 1 потенцијално штетна екстензија}one{Администраторот повторно вклучи {NUM_EXTENSIONS} потенцијално штетна екстензија}other{Администраторот повторно вклучи {NUM_EXTENSIONS} потенцијално штетни екстензии}}</translation>
 <translation id="3831436149286513437">Предлози за пребарување на Google Drive</translation>
-<translation id="383161972796689579">Сопственикот на уредов оневозможи додавање нови корисници</translation>
 <translation id="3834728400518755610">Промената на поставките за микрофон бара исклучување на Linux. Исклучете го Linux за да продолжите.</translation>
 <translation id="3834775135533257713">Не може да се додаде апликацијата „<ph name="TO_INSTALL_APP_NAME" />“, бидејќи противречи на „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="383669374481694771">Ова се општи податоци за уредов и неговото користење (како нивото на батеријата, активноста на системот и апликациите и грешките). Податоците ќе се користат за подобрување на Android, а некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android, да ги подобрат нивните апликации и производи.</translation>
@@ -2961,6 +2956,9 @@
 <translation id="3984431586879874039">Дали дозволувате сајтов да го види вашиот безбедносен клуч?</translation>
 <translation id="398477389655464998">Копирај го линкот до нагласената ставка</translation>
 <translation id="3984862166739904574">Дефиниција на „Брзи одговори“</translation>
+<translation id="3986164906089840270"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите на ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции биле користени и колку меморија типично била користена.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките на уредот на Chrome. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ако ја исклучите функцијава, тоа нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3987544746655539083">Продолжи да го блокираш пристапот на сајтов до локацијата</translation>
 <translation id="3987938432087324095">Извинете, не го разбрав тоа.</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
@@ -2972,7 +2970,6 @@
 <translation id="4002329649066944389">Управувајте со исклучоците за конкретни сајтови</translation>
 <translation id="4002440992267487163">Закачи го поставувањето</translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
-<translation id="400645326027787740">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, контролер за игри</translation>
 <translation id="4007856537951125667">Сокриј ги кратенките</translation>
 <translation id="4008291085758151621">Информациите за сајтот не се достапни во VR</translation>
 <translation id="4010917659463429001">За да ги добиете обележувачите на мобилниот уред, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -2990,6 +2987,7 @@
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
+<translation id="4031308539321678562">Ова трајно ќе ги избрише податоците од прелистувањето на уредов. Сметките на Google во профилов може да се користат од други апликации на вашиот Chromebook. Може да ги отстраните сметкиве во <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Сензорите се блокирани</translation>
 <translation id="4033471457476425443">Додај нова папка</translation>
 <translation id="4033963223187371752">Безбедните сајтови може да вметнуваат содржини како слики или веб-рамки што не се безбедни</translation>
@@ -3027,7 +3025,6 @@
 <translation id="4068776064906523561">Зачувани отпечатоци</translation>
 <translation id="407173827865827707">На клик</translation>
 <translation id="4072701974556190758">Лозинката ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" />. Нема да треба да ја помните.</translation>
-<translation id="4074900173531346617">Сертификат на потписник на е-пошта</translation>
 <translation id="407520071244661467">Размер</translation>
 <translation id="407543464472585404">Профилот на <ph name="NAME" /> е поврзан со <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Не може да се емитува <ph name="FILE_NAME" />.</translation>
@@ -3097,6 +3094,7 @@
 <translation id="4138267921960073861">Прикажи кориснички имиња и фотографии на екранот за најавување</translation>
 <translation id="4138598238327913711">Проверка на граматиката е достапна само за англиски во моментов</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - поврзан е HID-уред</translation>
+<translation id="4139326893730851150">Ажурирања на фирмвер</translation>
 <translation id="4142052906269098341">Отклучете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Зачувајте ги откриените печатачи во вашиот профил или додајте нов печатач. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Добијте подобар квалитет на видео и продолжете го траењето на батеријата. Видеото ќе се пушта само на екранот овозможен за Cast.</translation>
@@ -3121,13 +3119,13 @@
 <translation id="4175137578744761569">Светловиолеотова и бела</translation>
 <translation id="4175737294868205930">Постојана меморија</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
-<translation id="417971315778328003">Поставете PIN или лозинка за да продолжите</translation>
 <translation id="4180788401304023883">Да се избрише ЦА сертификатот „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4184885522552335684">Повлечете за да поместите екран</translation>
 <translation id="4187424053537113647">Се поставува <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Нагласи го фокусот на тастатурата</translation>
+<translation id="4193836101014293726">Не може да се избрише профилов</translation>
 <translation id="419427585139779713">Внесувај слог по слог</translation>
 <translation id="4194570336751258953">Овозможи допри и кликни</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
@@ -3218,12 +3216,16 @@
 <translation id="4297219207642690536">Рестартирај и ресетирај</translation>
 <translation id="4297813521149011456">Ротирање на екранот</translation>
 <translation id="4299022904780065004">Нов &amp;прозорец „Инкогнито“</translation>
+<translation id="4301011537467809690"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите на ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции биле користени и колку меморија типично била користена.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот на ChromeOS на вашето дете. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ако ја исклучите функцијава, тоа нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Страницава има дозвола да изменува датотеки</translation>
 <translation id="4303079906735388947">Поставете нов PIN-код за вашиот безбедносен клуч</translation>
 <translation id="4305402730127028764">Копирај во <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Префрли</translation>
 <translation id="4306119971288449206">Апликациите мора да се послужат со типот содржина „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4307992518367153382">Основи</translation>
+<translation id="4309165024397827958">Дозволете апликациите и услугите на Android со дозвола за локација да ја користат локацијата на уредот. Google може повремено да собира податоци за локацијата и да ги користи на анонимен начин за подобрување на прецизноста на локацијата и услугите според локација.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />К (<ph name="NUM_KILOBYTES_LIVE" />К во живо)</translation>
 <translation id="4310139701823742692">Погрешен формат на датотека. Проверете ја PPD-датотеката и обидете се повторно.</translation>
 <translation id="431076611119798497">&amp;Детали</translation>
@@ -3253,6 +3255,7 @@
 <translation id="434404122609091467">Со тековниот оператор</translation>
 <translation id="4345587454538109430">Конфигурирај…</translation>
 <translation id="4345732373643853732">Корисничкото име не му е познато на серверот</translation>
+<translation id="4348426576195894795">Ако ја отстраните сметкава, ќе се избришат и профилите на Chrome најавени со сметкава</translation>
 <translation id="4348766275249686434">Собирај грешки</translation>
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Секогаш блокирај го пристапот на <ph name="HOST" /> до локацијата</translation>
@@ -3302,6 +3305,7 @@
 <translation id="4400632832271803360">Држете го копчето „Стартер“ за да го промените однесувањето на копчињата во најгорниот ред</translation>
 <translation id="4400963414856942668">Може да кликнете на ѕвездата за да обележите картичка</translation>
 <translation id="4402755511846832236">Не дозволувај сајтовите да знаат кога активно го користам уредов</translation>
+<translation id="4403266582403435904">Лесно вратете ги податоците или променете го уредот во секое време. Бекапите се прикачуваат во Google и се шифрираат со помош на лозинката за сметката на Google на вашето дете.</translation>
 <translation id="4403775189117163360">Одберете друга папка</translation>
 <translation id="4404136731284211429">Скенирај пак</translation>
 <translation id="4404843640767531781">Твојот родител ја блокирал <ph name="APP_NAME" />. Побарај дозвола од родителот за користење на апликацијава.</translation>
@@ -3583,6 +3587,7 @@
 <translation id="4684471265911890182"><ph name="APP_NAME" /> се обидува да пристапи до камерата. Исклучете го копчето за приватност на камерата за да дозволите пристап.</translation>
 <translation id="4687613760714619596">Непознат уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID на локална евиденција: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
+<translation id="4688176403504673761"><ph name="MANAGER" /> го враќа уредов на претходна верзија (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Изберете ги поставките за демо-режим</translation>
 <translation id="4689421377817139245">Синхронизирајте го обележувачов со вашиот iPhone</translation>
 <translation id="4690091457710545971">&lt;Генерирани се четири датотеки од фирмверот за Wi-Fi на Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Првите три се бинарни датотеки што содржат складови од регистарот за коишто Intel тврди дека не содржат информации за лична идентификација или идентификација на уред. Последната датотека е трага за извршувањето од фирмверот на Intel од којашто се исчистени сите информации за лична идентификација или идентификација на уред, но е преголема за да се прикаже тука. Овие датотеки беа генерирани како одговор на неодамнешните Wi-Fi проблеми на вашиот уред и ќе се споделат со Intel за помош при нивното решавање.&gt;</translation>
@@ -3638,9 +3643,9 @@
 <translation id="4768332406694066911">Имате сертификати од овие организации што ве идентификуваат</translation>
 <translation id="4770119228883592393">Побарана е дозвола. Притиснете ⌘ + „Опција“ + „Стрелка надолу“ за да одговорите</translation>
 <translation id="4773112038801431077">Надградете го Linux</translation>
+<translation id="4775142426314270551">Помогнете да се подобрат функциите и изведбата на Chrome и ChromeOS со автоматско испраќање извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google. Некои збирни податоци ќе им помогнат и на апликациите на Android и на партнерите на Google. Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google од вашето дете, податоците на Android од вашето дете може да се зачувуваат во неговата сметка на Google.</translation>
 <translation id="477647109558161443">Создајте кратенка за работна површина</translation>
 <translation id="4776594120007763294">За да додадете страница за читање подоцна, кликнете на копчето</translation>
-<translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">Другите корисници на уредов може да ја користат мрежава</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Конфигурирање сервери за име на мрежа</translation>
@@ -3649,6 +3654,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4779766576531456629">Преименувајте ја мобилната мрежа на eSIM</translation>
 <translation id="4780321648949301421">Зачувај страница како...</translation>
+<translation id="4781443161433589743">Сега сте заштитени со највисокото ниво на безбедност на Chrome</translation>
 <translation id="4784559565779618838">За да пребарувате одреден сајт или дел од Chrome, може да ги напишете кратенките тука во лентата за адреси, а потоа да притиснете го копчето Tab или копчето за празно место.</translation>
 <translation id="4785719467058219317">Користите безбедносен клуч што не е регистриран на веб-сајтов</translation>
 <translation id="478708757211772586">Користете „Следно“ за да се движите нанапред на екранот</translation>
@@ -3666,6 +3672,7 @@
 <translation id="4801512016965057443">Дозволи роаминг на мобилен интернет</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
 <translation id="4804827417948292437">Авокадо</translation>
+<translation id="4806457879608775995">Прегледајте ги условиве и контролирајте ги вашите податоци</translation>
 <translation id="4807098396393229769">Име на картичка</translation>
 <translation id="4808024018088054533">Chrome не најде штетен софтвер на вашиот компјутер • Штотуку проверено</translation>
 <translation id="4808667324955055115">Блокирани скокачки прозорци:</translation>
@@ -3723,7 +3730,6 @@
 <translation id="4858913220355269194">Фудбалер</translation>
 <translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
 <translation id="4863769717153320198">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандардна)</translation>
-<translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4864805589453749318">Изберете го родителот што дава дозвола за да додадете училишна сметка.</translation>
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -3754,7 +3760,6 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Отвори со Прикажувач на систем</translation>
 <translation id="488785315393301722">Прикажи детали</translation>
-<translation id="4889450157778777235">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, видеокамера</translation>
 <translation id="4890773143211625964">Покажи ги напредните опции за печатач</translation>
 <translation id="4891089016822695758">Форум за Beta Chrome</translation>
 <translation id="4892229439761351791">Сајтот може да користи Bluetooth</translation>
@@ -3797,7 +3802,6 @@
 <translation id="4924002401726507608">Испратете повратни информации</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Вашите порти ќе се појават тука</translation>
-<translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4927753642311223124">Овде нема што да се види, продолжи.</translation>
 <translation id="4929386379796360314">Дестинации за печатење</translation>
 <translation id="4930447554870711875">Програмери</translation>
@@ -4036,6 +4040,8 @@
 <translation id="5192652123103143854">да чита податоци за уред со Chrome OS, податоци за уред и да извршува дијагностички тестови</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
 <translation id="5194256020863090856">Ова влијае само на прозорците „Инкогнито“</translation>
+<translation id="5195863934285556588"><ph name="BEGIN_PARAGRAPH1" />Услугата според локација на Google користи извори како што се Wi-Fi, мобилни мрежи и сензори за да помогне да се процени локацијата на уредов.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ја исклучите локацијата на Android на уредов во секое време, така што ќе појдете во Поставки &gt; Апликации &gt; Google Play Store &gt; Управувајте со поставките на Android &gt; Безбедност и локација &gt; Локација. Може да го исклучите и користењето на Wi-Fi, мобилните мрежи и сензорите за локацијата на Android ако ја исклучите опцијата „Прецизност на локацијата на Google“ во истото мени.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198430103906431024">Испраќајте податоци за користење и дијагностика. Уредов во моментов автоматски испраќа дијагностички и податоци за користењето на уредот и апликациите до Google. Податоциве ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, податоциве може да се зачувуваат во вашата сметка на Google.</translation>
 <translation id="5199729219167945352">Експерименти</translation>
@@ -4057,6 +4063,7 @@
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
 <translation id="5215502535566372932">Изберете држава</translation>
 <translation id="521582610500777512">Се отфрли фотографијата</translation>
+<translation id="522155068793322853">Не може да се отвори <ph name="APP_NAME" /></translation>
 <translation id="5222403284441421673">Блокирано е небезбедно преземање</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5225324770654022472">Покажи кратенка за апликации</translation>
@@ -4155,6 +4162,7 @@
 <translation id="532247166573571973">Серверот може да е недостапен. Обидете се повторно подоцна.</translation>
 <translation id="5324300749339591280">Список со апликации</translation>
 <translation id="5324780743567488672">Автоматско поставување на часовната зона преку вашата локација</translation>
+<translation id="5327248766486351172">Име</translation>
 <translation id="5327570636534774768">Уредов е означен за управување од друг домен. Отстранете го од тој домен пред да поставите демо-режим.</translation>
 <translation id="5327912693242073631">Функциите на коишто им требаат известувања нема да работат</translation>
 <translation id="532943162177641444">Допрете на известувањето на вашиот <ph name="PHONE_NAME" /> за да ја поставите мобилната точка на пристап што може да ја користи уредов.</translation>
@@ -4162,6 +4170,7 @@
 <translation id="5331069282670671859">Немате сертификати во категоријава</translation>
 <translation id="5331425616433531170">„<ph name="CHROME_EXTENSION_NAME" />“ сака да се спари</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
+<translation id="5333896723098573627">За да отстраните апликации, одете во Поставки &gt; Апликации &gt; Google Play Store &gt; Управувајте со поставките за Android &gt; Апликации или Управник со апликации. Потоа допрете ја апликацијата што сакате да ја деинсталирате (можеби ќе треба да повлечете надесно или налево за да ја најдете). Потоа допрете на „Деинсталирај“ или „Оневозможи“.</translation>
 <translation id="5334142896108694079">Кеш на скрипта</translation>
 <translation id="5336126339807372270">Не дозволувај ниту еден сајт да пристапува до USB-уредите</translation>
 <translation id="5336688142483283574">Страницава исто така ќе се отстрани од вашата историја и активноста на <ph name="SEARCH_ENGINE" />.</translation>
@@ -4241,6 +4250,7 @@
 <translation id="5425863515030416387">Најавете се лесно на уредите</translation>
 <translation id="5427278936122846523">Секогаш преведувај</translation>
 <translation id="5427459444770871191">Ротирај &amp;надесно</translation>
+<translation id="542750953150239272">Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и од производителот на уредот, веројатно со користење мобилен интернет. Некои од овие апликации може да нудат купувања во апликациите.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Достапно е ажурирање)</translation>
 <translation id="5429373054983029602">Пребарајте го екранот со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Треба да се инсталира ажурирање за фирмверот на Trusted Platform Module. Видете <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
@@ -4284,6 +4294,7 @@
 <translation id="5471768120198416576">Здраво! Јас сум вашиот глас за функцијата „Од текст до говор“.</translation>
 <translation id="5472627187093107397">Зачувувај лозинки за сајтов</translation>
 <translation id="5473075389972733037">IBM</translation>
+<translation id="5473099001878321374">Ако продолжите, се согласувате дека уредов може автоматски да презема и инсталира ажурирања и апликации од Google, од операторот на детето и од производителот на уредов, веројатно со користење мобилен интернет. Некои од апликацииве може да нудат купувања во апликација.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-кодот мора да содржи најмалку еден знак}one{PIN-кодот мора да содржи најмалку # знак}other{PIN-кодот мора да содржи најмалку # знака}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
@@ -4342,7 +4353,6 @@
 <translation id="5517304475148761050">Апликацијава бара пристап до Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Прашај кога некој сајт сака да гледа текст и слики копирани на привремената меморија</translation>
-<translation id="5518584115117143805">Сертификат за шифрирање е-пошта</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Дали е ова почетната страница што ја очекувавте?</translation>
 <translation id="5522156646677899028">Наставката содржи сериозни слаби страни на безбедноста.</translation>
@@ -4358,7 +4368,6 @@
 <translation id="5534304873398226603">Отфрли фотографија или видео</translation>
 <translation id="5535941515421698170">Исто така, отстранете ги постојните податоци од уредов</translation>
 <translation id="5539221284352502426">Серверот ја одби лозинката што ја внесовте. Можни причини за тоа се: лозинката е премногу кратка; лозинката мора да содржи броеви или симболи; лозинката мора да се разликува од претходните лозинки.</translation>
-<translation id="5539467723438368868">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, таблет</translation>
 <translation id="5541694225089836610">Дејството е оневозможено од администраторот</translation>
 <translation id="5542132724887566711">Профил</translation>
 <translation id="5542750926112347543">Колачињата од <ph name="DOMAIN" /> се блокирани</translation>
@@ -4388,7 +4397,6 @@
 <translation id="556321030400250233">локална или споделена датотека</translation>
 <translation id="5563234215388768762">Пребарајте на Google или напишете URL</translation>
 <translation id="5565735124758917034">Активно</translation>
-<translation id="5567989639534621706">Кешови на апликација</translation>
 <translation id="5568069709869097550">Не може да се најавите</translation>
 <translation id="5571092938913434726">Глобални контроли за аудиовизуелни содржини</translation>
 <translation id="5571832155627049070">Приспособете го вашиот профил</translation>
@@ -4422,7 +4430,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Не им е дозволено да се поврзуваат со MIDI-уредите</translation>
 <translation id="5602765853043467355">Исчисти обележувачи, историја, лозинки и друго од уредов</translation>
-<translation id="5604884720628869833">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, тастатура</translation>
 <translation id="5605623530403479164">Други пребарувачи</translation>
 <translation id="5605758115928394442">Испратено ви е известување на телефонот за потврда на вашиот идентитет.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Екстензијава е блокирана}one{Екстензииве се блокирани}other{Екстензииве се блокирани}}</translation>
@@ -4466,6 +4473,10 @@
 <translation id="5642508497713047">CRL-пријавувач</translation>
 <translation id="5643321261065707929">Мрежа со мерен сообраќај</translation>
 <translation id="5643620609347735571">Исчисти и продолжи</translation>
+<translation id="5644722238761632789"><ph name="BEGIN_PARAGRAPH1" />Помогнете да се подобрат функциите и изведбата на Chrome и ChromeOS со автоматско испраќање извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот на ChromeOS. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ако ја исклучите функцијава, тоа нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
@@ -4548,6 +4559,7 @@
 <translation id="5739235828260127894">Се чека потврда. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Многу голем</translation>
 <translation id="5740328398383587084">Споделување во близина</translation>
+<translation id="5740709157181662145">Хардверска поддршка и стабилност за <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Отсликување на екранот</translation>
 <translation id="574209121243317957">Висина</translation>
 <translation id="5746169159649715125">Зачувај како ПДФ</translation>
@@ -4689,6 +4701,7 @@
 <translation id="5906732635754427568">Податоците поврзани со оваа апликација ќе бидат отстранети од уредов.</translation>
 <translation id="5908474332780919512">Стартувај ја апликацијата кога ќе се најавам</translation>
 <translation id="5908695239556627796">Брзина на лизгање на глувчето</translation>
+<translation id="5909379458939060601">Да се избрише профилов и податоците од прелистувањето?</translation>
 <translation id="5910363049092958439">Сни&amp;ми слика како…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлајн</translation>
 <translation id="5911533659001334206">Прикажувач на кратенки</translation>
@@ -4794,6 +4807,7 @@
 <translation id="6016178549409952427">Одете на дополнителните содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потврди фабричко ресетирање со враќање на претходната верзија</translation>
 <translation id="6016972670657536680">Изберете јазик и копче на тастатурата. Моментално е избран <ph name="LANGUAGE" /> јазик.</translation>
+<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> е стандардната сметка за вашиот Chromebook</translation>
 <translation id="6017514345406065928">Зелена</translation>
 <translation id="6019851026059441029">Одлично - HD</translation>
 <translation id="6020431688553761150">Серверот не ве овласти за пристап на ресурсот.</translation>
@@ -4824,6 +4838,10 @@
 <translation id="6047632800149092791">Синхронизацијата не функционира. Обидете се да се одјавите и да се најавите повторно.</translation>
 <translation id="6049797270917061226">Датотекава може да дозволи напаѓачи да ги украдат вашите лични податоци.</translation>
 <translation id="6051354611314852653">Системот не успеа да овласти пристап до АПИ за овој уред.</translation>
+<translation id="6051638103735819069"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите на ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Овие извештаи може да содржат информации за падовите на ChromeOS, кои карактеристики биле користени и колку меморија типично била користена, како и дијагностика за апликацијата на Android и податоци за користењето. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот на ChromeOS на вашето дете. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ако ја исклучите функцијава, тоа нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google од вашето дете, податоците од детето може да се зачувуваат во неговата сметка на Google. Дознајте повеќе за поставкиве и за тоа како да ги приспособите на families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052976518993719690">Орган за сертифицирање на ССЛ</translation>
 <translation id="6053401458108962351">&amp;Исчисти податоци од прелистување…</translation>
 <translation id="6054284857788651331">Неодамна затворена група картички</translation>
@@ -4865,7 +4883,6 @@
 <translation id="6085886413119427067">Определува како да се поврзуваат веб-сајтовите преку безбедна врска</translation>
 <translation id="6086004606538989567">Сметката што ја потврдивте нема овластување за пристап до уредов.</translation>
 <translation id="6086846494333236931">Инсталирано од вашиот администратор</translation>
-<translation id="6086898065659145625">Smart Lock автоматски ќе ве најави ако телефонот ви е во близина.</translation>
 <translation id="6087960857463881712">Прекрасно лице</translation>
 <translation id="608912389580139775">За да ја додадете страницава во списокот за читање, допрете на иконата за обележувач</translation>
 <translation id="6091761513005122595">Споделувањето е успешно монтирано.</translation>
@@ -4929,7 +4946,6 @@
 <translation id="6151771661215463137">Датотеката веќе постои во папката со преземања.</translation>
 <translation id="6154240335466762404">Отстрани ги сите порти</translation>
 <translation id="615436196126345398">Протокол</translation>
-<translation id="6154697846084421647">Моментално пријавено</translation>
 <translation id="6155141482566063812">Картичка во заднина го споделува вашиот екран</translation>
 <translation id="6156323911414505561">Покажи лента со обележувачи</translation>
 <translation id="6156863943908443225">Кеш на скрипта</translation>
@@ -4949,10 +4965,12 @@
 <translation id="6175314957787328458">ГУИД на домен на Microsoft</translation>
 <translation id="6176043333338857209">Bluetooth ќе се вклучи привремено за да комуницира со вашиот безбедносен клуч</translation>
 <translation id="6178664161104547336">Избери сертификат</translation>
+<translation id="6178682841350631965">Податоците за најавување се ажурирани</translation>
 <translation id="6181431612547969857">Преземањето е блокирано</translation>
 <translation id="6184099524311454384">Пребарајте ги картичките</translation>
 <translation id="6185132558746749656">Локација на уредот</translation>
 <translation id="6186394437969115158">Сајтовите обично прикажуваат реклами за да понудат бесплатни содржини или услуги. Но, за некои сајтови е познато дека прикажуваат нападни или лажни реклами.</translation>
+<translation id="6188346519670155113">Синхронизацијата на Chrome е вклучена</translation>
 <translation id="6190953336330058278">Апликации на Phone Hub</translation>
 <translation id="6195005504600220730">Читање информации за вашиот прелистувач, оперативниот систем и уредот</translation>
 <translation id="6195693561221576702">Уредов не може да се постави во офлајн демо-режим.</translation>
@@ -4962,6 +4980,7 @@
 <translation id="6198102561359457428">Одјавете се, па повторно најавете се...</translation>
 <translation id="6198252989419008588">Промена на PIN</translation>
 <translation id="6200047250927636406">Отфрли ја датотеката</translation>
+<translation id="6201608810045805374">Да се отстрани сметкава?</translation>
 <translation id="6202304368170870640">PIN-кодот може да го користите за да се најавите или да го отклучите уредот.</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слика</translation>
 <translation id="6207200176136643843">Ресетирај на стандардно ниво на зумирање</translation>
@@ -5088,7 +5107,6 @@
 <translation id="6318944945640833942">Не може да се открие печатач. Внесете ја адресата на печатачот повторно.</translation>
 <translation id="6321407676395378991">Вклучете го заштитникот на екранот</translation>
 <translation id="6322370287306604163">Отклучувајте побрзо со отпечаток</translation>
-<translation id="6322653941595359182">Испраќајте и примајте текстуални пораки од вашиот Chromebook</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6325191661371220117">Оневозможи автоматско стартување</translation>
 <translation id="6326175484149238433">Отстрани од Chrome</translation>
@@ -5292,6 +5310,8 @@
 <translation id="6545665334409411530">Стапка на повторување</translation>
 <translation id="6545867563032584178">Микрофонот е исклучен во поставките за системот Mac</translation>
 <translation id="6547354035488017500">Ослободете најмалку 512 MB простор или уредот веќе нема да реагира. За да ослободите простор, избришете датотеки од меморијата на уредот.</translation>
+<translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Услугата според локација на Google користи извори како што се Wi-Fi, мобилни мрежи и сензори за да помогне да се процени локацијата на вашиот уред.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да ја исклучите локацијата на Android на вашиот уред во секое време, така што ќе појдете во Поставки &gt; Апликации &gt; Google Play Store &gt; Управувајте со поставките на Android &gt; Безбедност и локација &gt; Локација. Може да го исклучите и користењето на Wi-Fi, мобилните мрежи и сензорите за локацијата на Android ако ја исклучите опцијата „Прецизност на локацијата на Google“ во истото мени.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Да се вклучи „Прелистување со курсор“?</translation>
 <translation id="6549038875972762904">Повтори го поставувањето</translation>
 <translation id="6550675742724504774">Опции</translation>
@@ -5302,6 +5322,7 @@
 <translation id="655483977608336153">Обиди се пак</translation>
 <translation id="6555432686520421228">Отстранете ги сите кориснички сметки и ресетирајте го својот уред на <ph name="IDS_SHORT_PRODUCT_NAME" /> да биде исто како нов.</translation>
 <translation id="6555810572223193255">Чистењето во моментов не е достапно</translation>
+<translation id="6556477848444788999">Овој PIN или лозинка ги штити вашите податоци на <ph name="DEVICE_TYPE" />, вклучително содржините што ги стримувате од вашиот телефон.</translation>
 <translation id="6556866813142980365">Повтори</translation>
 <translation id="6556903358015358733">Тема и тапет</translation>
 <translation id="6557290421156335491">Мои кратенки</translation>
@@ -5313,6 +5334,7 @@
 <translation id="6563469144985748109">Управникот уште не го одобрил</translation>
 <translation id="6568283005472142698">Пребарување картички</translation>
 <translation id="6569911211938664415">Лозинките се зачувуваат во вашата сметка на Google (<ph name="ACCOUNT" />) за да може да ги користите на кој било уред</translation>
+<translation id="6571772921213691236">Изменете ги податоците за најавување</translation>
 <translation id="6573497332121198392">Не може да се отстрани кратенката</translation>
 <translation id="657402800789773160">&amp;Пак вчитај страница</translation>
 <translation id="6577284282025554716">Преземањето е откажано: <ph name="FILE_NAME" /></translation>
@@ -5468,10 +5490,12 @@
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Вашиот администратор<ph name="END_LINK" /> го исклучил „Безбедното прелистување“</translation>
 <translation id="6742339027238151589">Достапно за скриптата</translation>
 <translation id="6742629250739345159">Автоматски создава титлови за аудиовизуелни содржини во прелистувачот Chrome. Аудиото и титловите се обработуваат локално и никогаш не го напуштаат уредот.</translation>
+<translation id="6743841972744298686">Поставки за синхронизација</translation>
 <translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="674632704103926902">Овозможи влечење картичка</translation>
 <translation id="6748465660675848252">Може да продолжите, но ќе се обноват само синхронизираните податоци и поставки. Сите локални податоци ќе се загубат.</translation>
+<translation id="6748980958975836188">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6750757184909117990">Оневозможување мобилна мрежа</translation>
 <translation id="6750946710563435348">Користете друго корисничко име</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Инкогнито)</translation>
@@ -5493,6 +5517,8 @@
 <translation id="677965093459947883">Многу мал</translation>
 <translation id="6781005693196527806">&amp;Управувајте со пребарувачите…</translation>
 <translation id="6781284683813954823">Линк за Doodle</translation>
+<translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />„Податоци од апликација“ се сите податоци што ги зачувала некоја апликација (според поставките на програмерот), вклучувајќи податоци како што се контакти, пораки и фотографии. Податоците од бекапот нема да се вбројуваат во квотата за складирање на Drive на вашето дете.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Бекапот на Linux е откажан</translation>
 <translation id="6782067259631821405">Погрешен PIN</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
@@ -5582,7 +5608,6 @@
 <translation id="6853388645642883916">Ажурирањето е во режим на мирување</translation>
 <translation id="68541483639528434">Затвори други картички</translation>
 <translation id="6855892664589459354">Бекап и враќање на Crostini</translation>
-<translation id="6856210255562079267">Не можеше да се отвори апликацијата</translation>
 <translation id="6856348640027512653">Не им е дозволено да ги користат уредите за виртуелна реалност или мобилниот интернет</translation>
 <translation id="6856623341093082836">Поставете и приспособете ја прецизноста на екранот на допир</translation>
 <translation id="6856850379840757744">Кога е вклучено, сите известувања ќе бидат стишени</translation>
@@ -5608,6 +5633,7 @@
 <translation id="6880587130513028875">Сликите на страницата се блокирани.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="6883319974225028188">Системот не успеа да ја зачува конфигурацијата на уредот.</translation>
+<translation id="6884474387073389421">Дали сте сигурни дека сакате да ги избришете избраните податоци за најавување?</translation>
 <translation id="6885771755599377173">Преглед на информациите за системот</translation>
 <translation id="6886871292305414135">Отвори ја врската во нова &amp;картичка</translation>
 <translation id="6889957081990109136">Сѐ уште не е доделен прекинувач</translation>
@@ -5755,6 +5781,7 @@
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030304022046916278">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Поврзана е сериска порта</translation>
+<translation id="7033616203784997570">Внесениот текст мора да биде најмногу 62 знаци</translation>
 <translation id="7034692021407794547">Администраторот со привилегии за „Управување со наплати“ мора прво да ги прифати „Условите за користење хардвер на Google Meet “ во делот „Хардвер на Google Meet“ на администраторската конзола.</translation>
 <translation id="7036706669646341689">За Linux, се препорачува <ph name="DISK_SIZE" /> слободен простор. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="7037509989619051237">Текст за проба</translation>
@@ -5797,10 +5824,8 @@
 <translation id="7070269827082111569">Не е дозволено да отвора типови датотеки</translation>
 <translation id="7070484045139057854">Може да ги чита и изменува податоците за сајтот</translation>
 <translation id="7072010813301522126">Име на кратенка</translation>
-<translation id="707392107419594760">Изберете тастатура:</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Со шифрирање РСА</translation>
 <translation id="7075625805486468288">Управувајте со сертификатите и поставките на HTTPS/SSL</translation>
-<translation id="7076293881109082629">Пријавување</translation>
 <translation id="7077829361966535409">Страницата за пријавување не успеа да се вчита со користење на тековните поставки за прокси. <ph name="GAIA_RELOAD_LINK_START" />Обидете се да се пријавите повторно<ph name="GAIA_RELOAD_LINK_END" /> или користете поинакви <ph name="PROXY_SETTINGS_LINK_START" />поставки за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Сите мрежи</translation>
 <translation id="708060913198414444">К&amp;опирај ја адресата на аудиото</translation>
@@ -5844,9 +5869,9 @@
 <translation id="7125148293026877011">Бришење на Crostini</translation>
 <translation id="7127980134843952133">Историја на преземања</translation>
 <translation id="7128151990937044829">Прикажувај индикатор во лентата за адреси кога известувањата се блокирани</translation>
+<translation id="7130890260487814974">Испраќајте податоци за користење и дијагностика.</translation>
 <translation id="7131040479572660648">Читајте ги вашите податоци на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Додај стра&amp;ница...</translation>
-<translation id="7133578150266914903">Администраторот го враќа уредов на фабричките поставки (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">Направи го текстот помал</translation>
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
@@ -5916,7 +5941,6 @@
 <translation id="7222232353993864120">Адреса на е-пошта</translation>
 <translation id="7225179976675429563">Недостасува тип мрежа</translation>
 <translation id="7227458944009118910">Апликациите наведени подолу може да ракуваат и со линкови за протоколи. Другите апликации ќе побараат дозвола.</translation>
-<translation id="7228479291753472782">Управувајте со поставки што назначуваат дали веб-сајтовите може да користат функции како што се геолокација, микрофон, камера и др.</translation>
 <translation id="7228523857728654909">Заклучување на екранот и најавување</translation>
 <translation id="7230222852462421043">&amp;Врати го прозорецот</translation>
 <translation id="7230787553283372882">Приспособете ја големината на текстот</translation>
@@ -6094,10 +6118,12 @@
 <translation id="7409735910987429903">Сајтовите може да испраќаат скокачки прозорци за да прикажуваат реклами или да користат пренасочувања за да ве одведат на веб-сајтови што можеби не сакате да ги посетите</translation>
 <translation id="7409854300652085600">Обележувачите се увезени.</translation>
 <translation id="7410344089573941623">Прашај дали <ph name="HOST" /> сака да пристапи до вашите фотоапарат и микрофон</translation>
+<translation id="7410852728357935715">Емитувај на уред</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7412226954991670867">ГПУ-меморија</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Поставувањето заврши</translation>
+<translation id="7416263748877373774">Не може да се вчитаат „Условите за користење“. Проверете ја мрежната врска и обидете се повторно.</translation>
 <translation id="7416362041876611053">Непозната мрежна грешка.</translation>
 <translation id="741906494724992817">Апликацијата не бара посебни дозволи.</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
@@ -6180,6 +6206,7 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Ја заборавивте вашата стара лозинка?</translation>
 <translation id="7497981768003291373">Немате неодамна снимена текстуална евиденција на WebRTC.</translation>
+<translation id="7501957181231305652">или</translation>
 <translation id="7503191893372251637">Тип сертификат за Netscape</translation>
 <translation id="7503985202154027481">Запис за вашата посета на сајтов ќе се чува на вашиот безбедносен клуч.</translation>
 <translation id="750509436279396091">Отвори папка на преземања</translation>
@@ -6189,7 +6216,6 @@
 <translation id="7506242536428928412">За да го користите новиот безбедносен клуч, поставете нов PIN</translation>
 <translation id="7506541170099744506">Вашиот <ph name="DEVICE_TYPE" /> е успешно запишан за управување на компанијата.</translation>
 <translation id="7507207699631365376">Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на операторов</translation>
-<translation id="7507930499305566459">Сертификат за статус на одговарач</translation>
 <translation id="7509097596023256288">Се поставува управување</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7509539379068593709">Деинсталирај ја апликацијата</translation>
@@ -6198,6 +6224,7 @@
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7514417110442087199">Додајте назначување</translation>
 <translation id="751523031290522286">Администраторот ја блокирал <ph name="APP_NAME" />. Побарајте дозвола од администраторот за користење на апликацијава.</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> е паузирана</translation>
 <translation id="7520766081042531487">Инкогнито портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Кажете „Ok Google“</translation>
@@ -6219,6 +6246,7 @@
 <translation id="7537451260744431038">Сајтовите не може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
 <translation id="753769905878158714">Во лентата за адреси, внесете го клучниот збор за веб-сајтот што сакате да го пребарате. Потоа, користете кратенка од тастатура за да продолжите.</translation>
 <translation id="7540972813190816353">Настана грешка при проверка за ажурирања: <ph name="ERROR" /></translation>
+<translation id="7541076351905098232"><ph name="MANAGER" /> го врати уредов на претходна верзија. Зачувајте ги важните датотеки, а потоа рестартирајте. Ќе се избришат сите податоци на уредот.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> со апликацијата <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Синхронизирано со други уреди на вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Овозможете функции за отстранување грешки на овој уред со <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
@@ -6279,7 +6307,6 @@
 <translation id="7602079150116086782">Нема картички од други уреди</translation>
 <translation id="7602173054665172958">Управување со налозите за печатење</translation>
 <translation id="7603785829538808504">Сајтовите наведени подолу следат приспособена поставка</translation>
-<translation id="7604942372593434070">Пристап до вашите прелистувања</translation>
 <translation id="7605594153474022051">Синхронизацијата не функционира</translation>
 <translation id="7606992457248886637">Органи</translation>
 <translation id="7607002721634913082">Паузирано</translation>
@@ -6536,6 +6563,7 @@
     <ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> системот ќе се рестартира во текот на процесот.</translation>
 <translation id="7828731929332799387">Ова ќе ги избрише сите колачиња и податоците за сајтовите што се достапни во контексти на трета страна. Дали сакате да продолжите?</translation>
 <translation id="7829877209233347340">Побарај од родителот да се најави за да даде дозвола за додавање училишна сметка</translation>
+<translation id="7830594666202422257">Поврзи се со Linux</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Време на завршување</translation>
 <translation id="783229689197954457">Ако Google најде попуст, ќе го видите на страницава</translation>
@@ -6602,13 +6630,11 @@
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
 <translation id="7897900149154324287">Во иднина, погрижете се да го извадите преносливиот уред во апликацијата Датотеки пред да го исклучите. Во спротивно, може да изгубите податоци.</translation>
 <translation id="7898725031477653577">Секогаш преведувај</translation>
-<translation id="790040513076446191">Манипулирај со поставки поврзани со приватноста</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Подобрен Chrome со метрика на страница</translation>
 <translation id="7903345046358933331">Страницата не реагира. Може да почекате да реагира или да ја затворите.</translation>
 <translation id="7903742244674067440">Имате сертификати што ги идентификуваат овие органи за сертификати</translation>
 <translation id="7903925330883316394">Услужна програма: <ph name="UTILITY_TYPE" /></translation>
-<translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
 <translation id="7904526211178107182">Направете ги портите за Linux достапни на други уреди на вашата мрежа.</translation>
 <translation id="7907837847548254634">Нагласи го накратко предметот што е во фокус</translation>
 <translation id="7908378463497120834">Извинете, најмалку една партиција на надворешниот уред не може да се постави.</translation>
@@ -6696,6 +6722,7 @@
 <translation id="7984068253310542383">Отсликај <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Прочитајте ги и променете ги зачуваните поставки за лозинката</translation>
 <translation id="7987814697832569482">Секогаш поврзувај преку оваа VPN</translation>
+<translation id="7987932397583333141">Поставете PIN или лозинка</translation>
 <translation id="7988355189918024273">Овозможете ги функциите за пристапност</translation>
 <translation id="7988805580376093356">Задржете го вашиот OS и извршете го <ph name="DEVICE_OS" /> од USB.</translation>
 <translation id="7991296728590311172">Поставки за „Пристап со прекинувачи“</translation>
@@ -6773,10 +6800,8 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартија}one{{COUNT} лист хартија}other{{COUNT} листови хартија}}</translation>
 <translation id="8063235345342641131">Стандарден зелен аватар</translation>
 <translation id="8063535366119089408">Прикажи датотека</translation>
-<translation id="8064269957688233720">Заштитете ги податоците на телефонот кога овој Chromebook се буди од спиење.</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Прозорец за врската</translation>
-<translation id="8068253693380742035">Допрете за да се најавите</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Отпечати како слика</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Податоците за апликации може да се секакви податоци што ги зачувала одредена апликација (според поставките на програмерот), вклучувајќи податоци како што се контактите, пораките и фотографиите.<ph name="END_PARAGRAPH1" />
@@ -6856,6 +6881,7 @@
 <translation id="8146177459103116374">Доколку веќе се регистриравте на овој уред, може да се <ph name="LINK2_START" />пријавите како постоечки корисник<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Додавајте и рангирајте ги омилените јазици. Кога е можно, веб-сајтовите ќе се прикажуваат на вашиот претпочитан јазик. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Најавувањето не успеа. Контактирајте го администраторот или обидете се повторно.</translation>
+<translation id="8147346945017130012">Помогнете да се подобрат функциите и изведбата на Chrome и ChromeOS со автоматско испраќање извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google.</translation>
 <translation id="8147900440966275470">Најдена е <ph name="NUM" /> картичка</translation>
 <translation id="8148760431881541277">Ограничи најавување</translation>
 <translation id="8149564499626272569">Потврдете преку телефонот со USB-кабел</translation>
@@ -6877,6 +6903,7 @@
 <translation id="8165997195302308593">Проследување порти на Crostini</translation>
 <translation id="8166081708154635403">Да се отвори датотеката?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
+<translation id="8168071266284693455">Обележувачите, лозинките, историјата и другите работи се синхронизирани на сите ваши уреди</translation>
 <translation id="8168435359814927499">Содржина</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додај ја картичката во списокот за читање}one{Додај ги картичките во списокот за читање}other{Додај ги картичките во списокот за читање}}</translation>
 <translation id="8171334254070436367">Сокриј ги сите картички</translation>
@@ -7048,7 +7075,6 @@
 <translation id="8351419472474436977">Наставката ја презеде контролата врз поставките за прокси, што значи дека може да менува, прекинува или прислушкува сѐ што правите на интернет. Доколку не сте сигурни зошто се случила промената, веројатно не ја сакате.</translation>
 <translation id="8351630282875799764">Батеријата не се полни</translation>
 <translation id="835238322900896202">Грешка при деинсталирањето. Деинсталирајте преку терминалот.</translation>
-<translation id="8352772353338965963">Додајте сметка за повеќекратно најавување. Сите најавени сметки се достапни без лозинка, така што оваа можност треба да се користи само со сметки на кои им се верува.</translation>
 <translation id="8353683614194668312">Тоа може:</translation>
 <translation id="8354034204605718473">PIN-бројот на детето е додаден</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
@@ -7081,7 +7107,6 @@
 <translation id="8390449457866780408">Серверот не е достапен.</translation>
 <translation id="8391218455464584335">Грамофонска плоча</translation>
 <translation id="8392364544846746346">Прашувај кога некој сајт сака да изменува датотеки или папки на уредот</translation>
-<translation id="8392451568018454956">Мени со опции за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Запри приклучок</translation>
 <translation id="839363317075970734">Детали за уредот со Bluetooth</translation>
 <translation id="8393700583063109961">Испрати порака</translation>
@@ -7091,6 +7116,7 @@
 <translation id="8404893580027489425">Сензорот за отпечатоци е на десната страна од вашиот <ph name="DEVICE_TYPE" />. Допрете го нежно со кој било прст.</translation>
 <translation id="8405046151008197676">Дознајте ги најдобрите карактеристики од најновото ажурирање</translation>
 <translation id="8407199357649073301">Ниво на евиденција:</translation>
+<translation id="8408270600235826886">Може да контролирате кои податоци да се споделуваат со Google. Ова може да го промените во секое време во „Поставки“. Податоците ќе се користат во согласност со <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на Google.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Прашај прво (препорачано)</translation>
@@ -7136,7 +7162,6 @@
 <translation id="84613761564611563">Го побаравме корисничкиот интерфејс за конфигурација на мрежата, ве молиме почекајте…</translation>
 <translation id="8461914792118322307">Прокси</translation>
 <translation id="8463001014623882202">Овластувањето не успеа</translation>
-<translation id="8463215747450521436">Надгледуваниов корисник можеби управникот го избришал или го оневозможил. Контактирајте го управникот ако сакате да продолжите со најавување како овој корисник.</translation>
 <translation id="846374874681391779">Лента за преземања</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> е оневозможен.</translation>
 <translation id="8464132254133862871">Корисничката сметка нема право на оваа услуга.</translation>
@@ -7202,6 +7227,7 @@
 <translation id="8540136935098276800">Внесете правилно форматирана URL-адреса</translation>
 <translation id="8540503336857689453">Користењето сокриена мрежа не се препорачува од безбедносни причини.</translation>
 <translation id="854071720451629801">Означи како прочитано</translation>
+<translation id="8540942859441851323">Потребен е роаминг од операторот</translation>
 <translation id="8541462173655894684">Не се најдени печатачи од серверот за печатење</translation>
 <translation id="8541838361296720865">Притиснете прекинувач или копче од тастатурата за да го доделите на „<ph name="ACTION" />“</translation>
 <translation id="8542618328173222274">Прашувај кога некој сајт ќе сака да ги користи уредите и податоците за виртуелна реалност</translation>
@@ -7218,7 +7244,6 @@
 <translation id="8554899698005018844">Нема јазик</translation>
 <translation id="8557022314818157177">Допирајте го безбедносниот клуч додека не се сними вашиот отпечаток</translation>
 <translation id="8557180006508471423">Вклучете „Google Chrome“ во „Услуги според локација“ на вашиот Mac</translation>
-<translation id="8557930019681227453">Манифест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8561565784790166472">Продолжете внимателно</translation>
@@ -7274,6 +7299,7 @@
 <translation id="862727964348362408">Суспендирано</translation>
 <translation id="862750493060684461">CSS кеш</translation>
 <translation id="8627795981664801467">Само безбедни врски</translation>
+<translation id="8627804903623428808">Прегледајте ги условиве и контролирајте ги податоците на вашето дете</translation>
 <translation id="8630338733867813168">Во режим во мирување додека се полни</translation>
 <translation id="8631032106121706562">Цвеќе</translation>
 <translation id="863109444997383731">Сајтовите ќе бидат спречени да ве прашуваат дали да ви прикажуваат известувања. Ако сајтот побара известувања, ќе се појави индикатор за блокирано во лентата за адреси.</translation>
@@ -7309,6 +7335,7 @@
 <translation id="8658645149275195032"><ph name="APP_NAME" /> ги споделува вашиот екран и аудио со <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
+<translation id="8662733268723715832">Ова трае подолго од очекуваното, може да прескокнете или да почекате да заврши.</translation>
 <translation id="8662795692588422978">Луѓе</translation>
 <translation id="8662811608048051533">Ќе ве одјави од повеќето сајтови.</translation>
 <translation id="8662911384982557515">Промени Почетна страница на: <ph name="HOME_PAGE" /></translation>
@@ -7418,7 +7445,6 @@
 <translation id="8757203080302669031">Картичкава активно бара уреди со Bluetooth.</translation>
 <translation id="8757368836647541092">Контактот <ph name="USER_NAME_OR_EMAIL" /> е отстранет</translation>
 <translation id="8758418656925882523">Овозможи диктирање (зборувајте за да напишете)</translation>
-<translation id="8759408218731716181">Не може да се постават повеќе најави</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
@@ -7441,7 +7467,6 @@
 <translation id="8778328560035799409">Ќе се избришат моментално доделените прекинувачи</translation>
 <translation id="8780123805589053431">Добивајте описи за слики од Google</translation>
 <translation id="8780443667474968681">Гласовното пребарување е исклучено.</translation>
-<translation id="878069093594050299">Овој сертификат е проверен за следниве примени:</translation>
 <translation id="8781834595282316166">Нова картичка во групата</translation>
 <translation id="8782565991310229362">Откажано е стартувањето на апликацијата Киоск.</translation>
 <translation id="8783834180813871000">Напишете го кодот за спарување преку Bluetooth, а потоа притиснете Return или Enter.</translation>
@@ -7485,7 +7510,6 @@
 <translation id="8823559166155093873">Блокирај колачиња</translation>
 <translation id="8823704566850948458">Предложи лозинка…</translation>
 <translation id="8824701697284169214">Додај стра&amp;ница...</translation>
-<translation id="8826773185686617320">Отстранете го USB-дискот и рестартирајте го уредот за да започне да се користи <ph name="DEVICE_OS" />. Во спротивно, вашиот уред ќе се исклучи за <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">Блокирани: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закачи екстензија</translation>
 <translation id="8827752199525959199">Повеќе дејства, лозинка за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
@@ -7518,7 +7542,6 @@
 <translation id="8855977033756560989">Овој уред Chromebook Enterprise доаѓа во комплет со ажурирање на Chrome Enterprise. За да ги искористите можностите за претпријатие, регистрирајте го уредов со администраторска сметка на Google.</translation>
 <translation id="8856028055086294840">Враќање на апликациите и страниците</translation>
 <translation id="885701979325669005">Склад</translation>
-<translation id="8859057652521303089">Изберете го вашиот јазик:</translation>
 <translation id="8859174528519900719">Подрамка: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">„Условите за користење“ не може да се вчитаат</translation>
 <translation id="8859662783913000679">Сметка на родител</translation>
@@ -7541,6 +7564,7 @@
 <translation id="8872155268274985541">Пронајдена е погрешна надворешна манифест-датотека за ажурирање на Киоск. Не успеа да ја ажурира апликацијата Киоск. Отстранете ја USB-меморијата.</translation>
 <translation id="8872777911145321141">Прашувај кога некој сајт ќе сака да ги користи уредите и податоците за виртуелна реалност (препорачано)</translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
+<translation id="8874341931345877644">Емитувај на уред:</translation>
 <translation id="8875520811099717934">Надградба на Linux</translation>
 <translation id="8875736897340638404">Изберете поставка за видливоста</translation>
 <translation id="8876307312329369159">Поставкава не може да се промени во демо-сесија.</translation>
@@ -7548,7 +7572,6 @@
 <translation id="8879284080359814990">&amp;Прикажи како картичка</translation>
 <translation id="8879921471468674457">Запомни ги информациите за најавување</translation>
 <translation id="8880054210564666174">Не може да се преземе списокот со контакти. Проверете ја мрежната врска или <ph name="LINK_BEGIN" />обидете се повторно<ph name="LINK_END" />.</translation>
-<translation id="8880344290593529089">Отворете „Поставки“ за да го поврзете <ph name="USB_DEVICE_NAME" /> со Linux или Parallels Desktop</translation>
 <translation id="8881020143150461183">Обидете се повторно. За техничка поддршка, контактирајте со <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Овозможи забрзување на подлогата за допир</translation>
 <translation id="8884570509232205463">Твојот уред сега се заклучува во <ph name="UNLOCK_TIME" />.</translation>
@@ -7571,6 +7594,7 @@
 <translation id="8902667442496790482">Отвори ги поставките за „Изберете за говор“</translation>
 <translation id="8903263458134414071">Изберете сметка за да се најавите</translation>
 <translation id="890616557918890486">Промени го изворот</translation>
+<translation id="8907701755790961703">Изберете држава</translation>
 <translation id="8907787635362884532">Издавач: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може да проверува дали има штетен софтвер на вашиот компјутер</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> е деинсталиран</translation>
@@ -7639,7 +7663,6 @@
 <translation id="8975396729541388937">Отпишете се во секое време со кликнување на линкот во е-пораките што ги добивате.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и уште 1 картичка}one{„<ph name="TAB_TITLE" />“ и уште # картичка}other{„<ph name="TAB_TITLE" />“ и уште # картички}}</translation>
 <translation id="897659847306974642">Сесијата на прелистување може да ја продолжите на кој било од синхронизираните уреди</translation>
-<translation id="8977175149983066223">Уредот <ph name="DEVICE_INDEX" /> од <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, глувче</translation>
 <translation id="8977811652087512276">Неточна лозинка или оштетена датотека</translation>
 <translation id="8978154919215542464">Вклучено - синхронизирај сѐ</translation>
 <translation id="897939795688207351">На <ph name="ORIGIN" /></translation>
@@ -7673,7 +7696,6 @@
 <translation id="9011393886518328654">Белешки за верзијата</translation>
 <translation id="9012122671773859802">Движи го екранот континуирано кога се движи глувчето</translation>
 <translation id="9013037634206938463">Потребни се <ph name="INSTALL_SIZE" /> слободен простор за инсталирање на Linux. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
-<translation id="9013707997379828817">Администраторот го врати уредов на фабричките поставки. Зачувајте ги важните датотеки, а потоа рестартирајте. Ќе се избришат сите податоци на уредот.</translation>
 <translation id="901668144954885282">Направете бекап на Google Drive</translation>
 <translation id="9018218886431812662">Инсталирањето заврши</translation>
 <translation id="901834265349196618">е-пошта</translation>
@@ -7734,6 +7756,7 @@
         Дознајте повеќе за податоците што Google ги прибира и зошто на <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
 <translation id="9066777626153702300">Неактивни сајтови</translation>
 <translation id="9066782832737749352">Од текст во говор</translation>
+<translation id="9068298336633421551">Дозволете апликациите и услугите на Android со дозвола за локација да ја користат локацијата на уредов. Google може повремено да собира податоци за локацијата и да ги користи на анонимен начин за подобрување на прецизноста на локацијата и услугите според локација.</translation>
 <translation id="9068878141610261315">Неподдржан тип датотека</translation>
 <translation id="9070342919388027491">Картичката е преместена налево</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -7851,6 +7874,7 @@
 <translation id="9179524979050048593">Корисничко име на екранот за најавување</translation>
 <translation id="9180281769944411366">Овој процес можеби ќе потрае неколку минути. Се стартува контејнерот за Linux.</translation>
 <translation id="9180380851667544951">Сајтот може да го споделува вашиот екран</translation>
+<translation id="918224512343736195">Поврзете со SSH</translation>
 <translation id="9182556968660520230">Не им дозволувај на сајтовите да пуштаат заштитени содржини</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
@@ -7864,7 +7888,6 @@
 <translation id="9201842707396338580">Нешто тргна наопаку. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профилирањето е овозможено</translation>
 <translation id="9203904171912129171">Изберете уред</translation>
-<translation id="9203962528777363226">Администраторот на уредов оневозможи додавање нови корисници</translation>
 <translation id="9206889157914079472">Земање белешки со пенкало од заклучен екран</translation>
 <translation id="9209563766569767417">Се проверува поставувањето на контејнерот за Linux</translation>
 <translation id="9209689095351280025">Сајтовите не можe да користат колачиња што ве следат на интернет</translation>
@@ -7921,7 +7944,6 @@
 <translation id="96774243435178359">Управувани печатачи</translation>
 <translation id="968000525894980488">Вклучете ги услугите на Google Play.</translation>
 <translation id="968037381421390582">&amp;Залепи и пребарај „<ph name="SEARCH_TERMS" />“</translation>
-<translation id="968174221497644223">Кеш на апликација</translation>
 <translation id="969096075394517431">Промени јазици</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
 <translation id="971510864672937292">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" /> и сите сајтови под него?</translation>

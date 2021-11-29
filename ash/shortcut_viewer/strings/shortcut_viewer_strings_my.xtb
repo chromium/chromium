@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ဝင်းဒိုးအသစ်ကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ရန်</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> ပြီးနောက် <ph name="ESC" /></translation>
+<translation id="1586324912145647027">မျက်နှာပြင်နေရာ ၁ မှ ၈ သို့သွားနိုင်သည်</translation>
 <translation id="1652741121070700329">ယခင်စကားလုံး၏ အစသို့ ရွှေ့ရန်</translation>
 <translation id="1679841710523778799">တောက်ပမှုကို မြှင့်တင်ရန်</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ကို ဖိထား၍ သင်ဖွင့်လိုသည့် ဝင်းဒိုးရောက်သည်အထိ <ph name="TAB" /> ကို တို့ပြီး လွှတ်လိုက်ပါ။</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> ၁ မှ ၈</translation>
 <translation id="3837047332182291558">ကီးဘုတ်ကို ပိုလင်းလာအောင် ပြုလုပ်ရန် (နောက်ခံမီးပါသည့် ကီးဘုတ်များသာ)</translation>
 <translation id="3949671998904569433">ကော်မာ</translation>
-<translation id="3976707995992061296">ဖွင့်ထားသောဝင်းဒိုးကို မျက်နှာပြင်နေရာအားလုံးသို့ သတ်မှတ်ထားခြင်း ရှိ၊ မရှိ ပြောင်းနိုင်သည်</translation>
 <translation id="3976863468609830880">သင်၏ စင်ပေါ်ရှိ နောက်ဆုံးသင်္ကေတကို နှိပ်ရန်</translation>
 <translation id="3994783594793697310">မျက်နှာပြင် ဇူးမ်ချဲ့ချုံ့အဆင့်ကို ပြန်ညှိရန်</translation>
 <translation id="4026843240379844265">လက်ရှိဝင်းဒိုးကို မျက်နှာပြင်ပြသမှုများအကြား ရွှေ့ရန်</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို နှိပ်ပါ</translation>
 <translation id="561814908794220892">ဝဘ်စာမျက်နှာကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5620219513321115856">လက်ရှိဖွင့်ထားသည့် ဝင်းဒိုးကို စားပွဲ၏ ညာဘက်သို့ ရွှေ့ပါ</translation>
+<translation id="5699366815052349604">ဖွင့်ထားသောဝင်းဒိုးကို မျက်နှာပြင်နေရာအားလုံးသို့ သတ်မှတ်နိုင်သည်</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> သို့မဟုတ် <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">လင့်ခ်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5757474750054631686">ကီးဘုတ်ကို မှိန်အောင် ပြုလုပ်ရန် (နောက်ခံမီးပါသည့် ကီးဘုတ်များသာ)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">မျက်နှာပြင် ဇူးမ်ဆွဲရန်</translation>
 <translation id="634687982629734605">အောက်ပါတို့အကြား ရွှေ့ရန်− အခြေအနေပြ နေရာ (သင့်အကောင့်ပုံ ပြမည့်နေရာ)၊ Launcher၊ လိပ်စာ ဘား၊ ဝဘ်လိပ်စာ ဘား (မြင်ရလျှင်)၊ ပွင့်နေသည့် ဝဘ်စာမျက်နှာနှင့် ဒေါင်းလုဒ်များ ဘား (မြင်ရလျှင်)။ ရွှေ့နိုင်သော ဒိုင်ယာလော့ကို ပြထားလျှင် ထိုနေရာသို့ ရွှေ့ပြီး ပြသပါ။</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">ပထမမှ ရှစ်ခုမြောက် မျက်နှာပြင်နေရာအထိ ဖွင့်နိုင်သည်။</translation>
 <translation id="6395172954772765143">စာကြောင်း၏ အဆုံးကို ရွေးချယ်ရန်</translation>
 <translation id="6425378783626925378">သင်၏ စင်ပေါ်ရှိ သင်္ကေတ ၁−၈ ကို နှိပ်ရန်</translation>
 <translation id="6435207348963613811">သင်၏ စင်ပေါ်ရှိ ယခင်အကြောင်းအရာကို ထင်သာအောင် ပြုလုပ်ရန်</translation>

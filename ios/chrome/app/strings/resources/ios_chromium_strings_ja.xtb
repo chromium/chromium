@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="102360288709523007">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる。</translation>
+<translation id="1047130070405668746">[Chromium] を選択する</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1289216811211435351">Chromium に切り替え</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであることが Chromium で確認されました。</translation>
 <translation id="1843424232666537147">Chromium には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. [Chromium] を選択する</translation>
 <translation id="2006345422933397527">Chromium でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="2054703085270098503">Chromium でいつでも安全にブラウジング</translation>
 <translation id="2168108852149185974">アドオンが原因で Chromium がクラッシュしました。次をアンインストールしてください:</translation>

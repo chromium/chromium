@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="102360288709523007">Хэрэглээний статистик мэдээлэл, алдааны тайланг Google-д автоматаар илгээж, Google Chrome-г сайжруулахад тусална уу.</translation>
+<translation id="1047130070405668746">Chromium-г сонгоно уу</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
 <translation id="1289216811211435351">Chromium руу сэлгэх</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Chromium-д нэвтрэх сануулгыг харуулна.</translation>
 <translation id="1584569488888892906">Chromium нь хялбар, аюулгүй бас урьд өмнөхөөсөө илүү хурдан</translation>
 <translation id="1617663976202781617">Chromium синкийн өгөгдөл</translation>
+<translation id="1722370509450468186">Таны нууц үгийг Бүртгэлд (<ph name="EMAIL" />) тань хадгална.</translation>
 <translation id="1736662517232558588">Chromium-н өгөгдлийг устгасан</translation>
 <translation id="1838412507805038478">Энэ вебсайтын сертификатыг <ph name="ISSUER" /> олгосон болохыг Chromium баталж байна.</translation>
 <translation id="1843424232666537147">Та Chromium-н онцлогийн тусламжтайгаар интернэт өгөгдлөө удирдах, веб хуудсыг богино хугацаанд ачаалах боломжтой.
 <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Chromium-г сонгоно уу</translation>
 <translation id="2006345422933397527">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2054703085270098503">Chromium-н тусламжтай аюулгүй байгаарай</translation>
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>

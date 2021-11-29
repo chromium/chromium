@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
+<translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
 <translation id="2323506179655536734">OVERGESLAGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">GESLAAGD</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2859243502336719778">Kritieke update</translation>
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
+<translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3966286471246132217">Sluit voor nauwkeurigere resultaten alle apps totdat de test is afgerond.</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
+<translation id="4418498623216225764">Randapparaten updaten</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> staat uit</translation>
 <translation id="4429881212383817840">Kerberos-ticket verloopt binnenkort</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">Oud wachtwoord</translation>
 <translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Scannen naar</translation>
+<translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">Signaalsterkte</translation>
 <translation id="4707579418881001319">L2TP/IPsec + gebruikerscertificaat</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
+<translation id="473775607612524610">Updaten</translation>
 <translation id="475869545581454722">Wachtwoord voor Chrome OS geüpdatet</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4930320165497208503">Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> als je een verbinding wilt instellen of updaten.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4950314376641394653">Firmware voor <ph name="DEVICE_NAME" /> is geüpdatet naar versie <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
 <translation id="5051044138948155788">Dit is de enige pagina. Hierna kom je op het startscherm voor scannen.</translation>
-<translation id="5061169534910302641">Versie updaten en opnieuw opstarten</translation>
 <translation id="5088172560898466307">Hostnaam van server</translation>
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5142961317498132443">Verificatie</translation>
@@ -399,6 +406,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Stoppen en opslaan</translation>
 <translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Je apparaat voorbereiden</translation>
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
@@ -412,6 +420,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
+<translation id="7240035910874241640">Alle randapparaten zijn up-to-date</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
@@ -452,6 +461,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
+<translation id="7786540085520432425">TIjdens de update kun je het scherm minimaliseren, maar je mag je apparaat niet loskoppelen. De update kan een paar minuten duren. Je apparaat werkt mogelijk niet tijdens de update.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
 <translation id="7835501727204647447">CloudReady installeren</translation>
@@ -485,6 +495,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8217675307824400706">Verbinding maken</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
+<translation id="8281886186245836920">Overslaan</translation>
 <translation id="8286154143153872371">Maak verbinding met een netwerk en laad de pagina opnieuw om de achtergrond te bekijken.</translation>
 <translation id="8291967909914612644">Land thuisprovider</translation>
 <translation id="8294431847097064396">Bron</translation>
@@ -509,6 +520,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8498220429738806196">Verkeerstellers</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
+<translation id="8520963233738002436">Je <ph name="DEVICE_NAME" /> is up-to-date.</translation>
 <translation id="8521021929829989041">Gebruiken als persoonlijk apparaat</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
@@ -548,6 +560,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>
+<translation id="8994273342647807496">Installeren: <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>

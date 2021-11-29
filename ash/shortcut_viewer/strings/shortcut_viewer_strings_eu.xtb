@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Ireki beste leiho bat ezkutuko moduan</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Zortzi leihoetatik, joan lehenengora</translation>
 <translation id="1652741121070700329">Eraman aurreko hitzaren hasierara</translation>
 <translation id="1679841710523778799">Handitu distira</translation>
 <translation id="168356808214100546">Eduki sakatuta <ph name="ALT" />, sakatu <ph name="TAB" /> ireki nahi duzun leihoa agertzen den arte eta, gero, askatu.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1-8</translation>
 <translation id="3837047332182291558">Handitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
 <translation id="3949671998904569433">koma</translation>
-<translation id="3976707995992061296">Aldatu leiho aktiboa lan-eremu guztiei esleituta egoteko aukera</translation>
 <translation id="3976863468609830880">Egin klik apaleko azken ikonoan</translation>
 <translation id="3994783594793697310">Berrezarri bistaratzearen zoom-maila</translation>
 <translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Sakatu <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> eta egin klik esteka batean</translation>
 <translation id="561814908794220892">Ireki web-orria beste fitxa batean</translation>
 <translation id="5620219513321115856">Eraman leiho aktiboa eskuineko lan-eremura</translation>
+<translation id="5699366815052349604">Esleitu leiho aktiboa lan-eremu guztiei</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> edo <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Ireki esteka fitxan</translation>
 <translation id="5757474750054631686">Txikitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Bistaratzea handitzea</translation>
 <translation id="634687982629734605">Aldatu fokua hauetako batetik bestera: egoeraren eremua (kontuko irudia agertzen den tokia), Abiarazlea, helbide-barra, laster-marken barra (ikusgai badago), irekita dagoen web-orria eta deskargen barra (ikusgai badago). Fokura daitekeen leiho bat bistaratzen bada, eraman fokuratzea hara.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Aktibatu 1-8 lan-eremuak.</translation>
 <translation id="6395172954772765143">Hautatu lerroaren amaierako testua</translation>
 <translation id="6425378783626925378">Egin klik apaleko 1-8 ikonoetan</translation>
 <translation id="6435207348963613811">Nabarmendu apaleko aurreko elementua</translation>

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Atvērt jaunu logu inkognito režīmā</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pēc tam <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Pāriet uz pirmo no astoņām darbvirsmām</translation>
 <translation id="1652741121070700329">Pāriet uz iepriekšējā vārda sākumu</translation>
 <translation id="1679841710523778799">Palielināt spilgtumu</translation>
 <translation id="168356808214100546">Nospiediet un turiet taustiņu <ph name="ALT" />, pieskarieties taustiņam <ph name="TAB" />, kamēr ieraugāt atveramo logu, pēc tam atlaidiet.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> no 1 līdz 8</translation>
 <translation id="3837047332182291558">Paspilgtināt tastatūras apgaismojumu (tikai tastatūrām ar aizmugures apgaismojumu)</translation>
 <translation id="3949671998904569433">komats</translation>
-<translation id="3976707995992061296">Pārslēdziet, vai aktīvais logs tiek piešķirts visām darbvietām.</translation>
 <translation id="3976863468609830880">Noklikšķināt uz pēdējās plaukta ikonas</translation>
 <translation id="3994783594793697310">Atiestatīt displeja tālummaiņas līmeni</translation>
 <translation id="4026843240379844265">Aktīvā loga pārvietošana starp attēlojumiem</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Nospiediet <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> un noklikšķiniet uz saites</translation>
 <translation id="561814908794220892">Atvērt tīmekļa lapu jaunā cilnē</translation>
 <translation id="5620219513321115856">Pārvietot aktīvo logu uz darbvietu labajā pusē</translation>
+<translation id="5699366815052349604">Piešķirt aktīvo logu visām darbvirsmām</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> vai <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Atvērt saiti cilnē</translation>
 <translation id="5757474750054631686">Izslēgt tastatūras apgaismojumu (tikai tastatūrām ar aizmugures apgaismojumu)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Tuvināt displeja attēlu</translation>
 <translation id="634687982629734605">Pārslēgties starp statusa apgabalu (kurā redzams jūsu konta attēls), palaidēju, adreses joslu, grāmatzīmju joslu (ja tā tiek rādīta), atvērto tīmekļa lapu un lejupielāžu joslu (ja tā tiek rādīta). Ja tiek rādīts izceļams dialoglodziņš, pāriet uz to.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Aktivizējiet 1.–8. darbvietu.</translation>
 <translation id="6395172954772765143">Atlasīt tekstu līdz rindiņas beigām</translation>
 <translation id="6425378783626925378">Noklikšķināt uz 1.–8. ikonas plauktā</translation>
 <translation id="6435207348963613811">Izcelt iepriekšējo plauktā esošo vienumu</translation>

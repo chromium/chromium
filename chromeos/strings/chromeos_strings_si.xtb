@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">අන්තර්ජාලය නැත</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
+<translation id="2287186687001756809">රූප නැත. ඡායාරූප එක් කිරීමට, <ph name="LINK" /> වෙත යන්න</translation>
 <translation id="2307344026739914387">වත්මන් යතුරු යුගල භාවිත කරන්න</translation>
 <translation id="2323506179655536734">මග හැරී ඇත</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">සමත් විය</translation>
 <translation id="2789486458103222910">හරි</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
+<translation id="2859243502336719778">තීරණාත්මක යාවත්කාලීනය</translation>
 <translation id="2860473693272905224">ස්කෑනරය මත තව පිටුවක් තබන්න</translation>
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> න් මුද්‍රණය කළ පිටුව <ph name="PRINTED_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> පිටුව ස්කෑන් කරමින්. <ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි.</translation>
 <translation id="3459509316159669723">මුද්‍රණය කරමින්</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> යාවත්කාලීන කරමින්</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
 <translation id="3532980081107202182">මිනිත්තු <ph name="MIN_REMAINING" />ක් පමණ ඉතිරිය</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">නම</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
 <translation id="387301095347517405">ඔබගේ බැටරිය පූර්ණ ආරෝපණ චක්‍රයක් හරහා ගිය වාර ගණන</translation>
+<translation id="3932043219784172185">උපාංගයක් සම්බන්ධ නැත</translation>
 <translation id="3941014780699102620">සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="3942420633017001071">දෝෂ විනිශ්චය</translation>
 <translation id="3966286471246132217">වඩාත් නිවැරදි ප්‍රතිඵල සඳහා, පරීක්ෂණය අවසන් වන තුරු සියලු යෙදුම් වසන්න.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">ධාවනය නොවේ</translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">උපාංග යාවත්කාලීන කරන්න</translation>
 <translation id="4425149324548788773">මගේ Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ක්‍රියාවිරහිතයි</translation>
 <translation id="4429881212383817840">Kerberos ප්‍රවේශපත්‍රය ඉක්මනින් කල් ඉකුත් වෙයි</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">පැරණි මුරපදය</translation>
 <translation id="4453205916657964690">අනුජාල ආවරණය</translation>
 <translation id="4454245904991689773">ස්කෑන් කරන්න</translation>
+<translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="4511264077854731334">ද්වාරය</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">සංඥා ප්‍රබලතාව</translation>
 <translation id="4707579418881001319">L2TP/IPsec + භාවිත සහතිකය</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
+<translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="475869545581454722">Chrome OS මුරපදය යාවත්කාලීන කරන ලදි</translation>
 <translation id="4773299976671772492">නවත්වන ලදි</translation>
 <translation id="4794140124556169553">CPU පරීක්ෂණයක් ධාවනය කිරීම ඔබගේ පද්ධතියේ කාර්ය සාධනයට බලපායි</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> ආරෝපණය විය.</translation>
 <translation id="4930320165497208503">සම්බන්ධතාවක් පිහිටුවීමට හෝ යාවත්කාලීන කිරීමට, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="4932733599132424254">දිනය</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> නිත්‍ය මෘදුකාංගය <ph name="VERSION" /> අනුවාදයට යාවත්කාලීන කර ඇත</translation>
 <translation id="498186245079027698">ස්කෑනරය පරීක්ෂා කර නැවත උත්සාහ කරන්න. ස්කෑන් කළ ගොනු සුරැකීමට ප්‍රමාණවත් ස්ථානීය ඉඩක් ඇති බවට සහතික කර ගන්න.</translation>
 <translation id="4985509611418653372">ධාවනය කරන්න</translation>
 <translation id="4987769320337599931">ෆයර් වෝලය</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM අගුලු දමන ලදි (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">සමූහ නම</translation>
 <translation id="5051044138948155788">මෙය එකම පිටුව වේ. මෙය ඔබව ස්කෑන් කිරීමේ ආරම්භක තිරය වෙත ගෙන යනු ඇත.</translation>
-<translation id="5061169534910302641">අනුවාදය යාවත්කාලීන කර යළි අරඹන්න</translation>
 <translation id="5088172560898466307">සේවාදායක ධාරක නම</translation>
 <translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5142961317498132443">සත්‍යාපනය</translation>
@@ -400,6 +407,7 @@
 <translation id="7040230719604914234">මෙහෙයවනය</translation>
 <translation id="7058278511608979688">අවසන් කර සුරකින්න</translation>
 <translation id="7059230779847288458">ආරෝපණය වෙමින්, සම්පූර්ණ වන තෙක් <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">ඔබගේ උපාංගය සූදානම් කරන්න</translation>
 <translation id="708426984172631313">නවත්වන ලදි</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">අසාර්ථක විය - අනුමැතිය දීම අසාර්ථක විය</translation>
@@ -413,6 +421,7 @@
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
+<translation id="7240035910874241640">සියලු උපාංග යාවත්කාලීනයි</translation>
 <translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
@@ -454,6 +463,7 @@
 <translation id="7763470514545477072">වසම් ප්‍රත්‍ය ගැළපීම</translation>
 <translation id="7769672763586021400">ආදර්ශ ID</translation>
 <translation id="7784116172884276937">DNS සේවාදායක පිහිටුවා නැත</translation>
+<translation id="7786540085520432425">යාවත්කාලීන කරන අතරතුර, ඔබට කවුළුව කුඩා කළ හැකි නමුත් ඔබගේ උපාංගය පේනුවෙන් ඉවත් නොකරන්න. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම යාවත්කාලීනය අතරතුර ඔබගේ උපාංගය ක්‍රියා නොකිරීමට ඉඩ ඇත</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7819857487979277519">PSK (WPA හෝ RSN)</translation>
 <translation id="7835501727204647447">CloudReady ස්ථාපනය කරන්න</translation>
@@ -487,6 +497,7 @@
 <translation id="8217675307824400706">සම්බන්ධ කර ගන්න</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="8246209727385807362">නොදන්නා වාහකයෙකි</translation>
+<translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8286154143153872371">වෝල්පේපරය බැලීමට කරුණාකර ජාලයකට සම්බන්ධ වී පිටුව නැවත පූරණය කරන්න.</translation>
 <translation id="8291967909914612644">නිවෙස් සපයන්නාගේ රට</translation>
 <translation id="8294431847097064396">මූලාශ්‍රය</translation>
@@ -511,6 +522,7 @@
 <translation id="8498220429738806196">තදබදය ගණනය කිරීම්</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8503836310948963452">හුදෙක් තව මිනිත්තු කීපයකි...</translation>
+<translation id="8520963233738002436">ඔබගේ <ph name="DEVICE_NAME" /> යාවත්කාලීනයි</translation>
 <translation id="8521021929829989041">පුද්ගලික උපාංගයක් භාවිත කරන්න</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ඔබගේ වාහකයට ඔවුන්ගේ ජාලයට සම්බන්ධ වීමට මෙම විකල්පය අවශ්‍ය විය හැකිය. විස්තර සඳහා ඔබගේ වාහකය අමතන්න.</translation>
@@ -550,6 +562,7 @@
 <translation id="8970109610781093811">නැවත ධාවනය කරන්න</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ස්කෑන් කරන්න}=1{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}one{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}other{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}}</translation>
+<translation id="8994273342647807496">ස්ථාපනය කරමින් - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS විභේදනයට ඉහළ පමාවක් ඇත</translation>

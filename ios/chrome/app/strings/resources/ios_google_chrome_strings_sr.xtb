@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="2199719347983604670">Подаци из Chrome синхронизације</translation>
 <translation id="2313070403598893276">Google Chrome је једноставан, безбедан и бржи него икад пре</translation>
+<translation id="2339201583852607431">Лозинка се чува на вашем Google налогу (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome дели локацију са сајтовима које дозволите.</translation>
 <translation id="2347208864470321755">Када је ова функција укључена, Chrome ће нудити да преведе странице написане на другим језицима помоћу Google преводиоца. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome има функције које вам помажу да управљате интернет подацима и брзином учитавања веб-страница.
@@ -54,8 +55,10 @@
 <translation id="4698415050768537821">Chrome није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Није подржано у верзији Chrome бета</translation>
 <translation id="5030102366287574140">Chrome може да вас штити од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
+<translation id="5119391094379141756">Изаберите Chrome</translation>
 <translation id="5162467219239570114">Chrome је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chrome-а.</translation>
 <translation id="5389212809648216794">Google Chrome не може да користи камеру зато што је већ користи друга апликација</translation>
+<translation id="5460571915754665838">4. Изаберите Chrome</translation>
 <translation id="5639704535586432836">Отворите Подешавања &gt; Приватност &gt; Камера &gt; Google Chrome и укључите камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не може да користи камеру у режиму подељеног приказа</translation>
 <translation id="5690427481109656848">Google LLC</translation>

@@ -138,6 +138,7 @@
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додати обліковий запис</translation>
 <translation id="2268044343513325586">Уточнити</translation>
+<translation id="2271351792809375263">Використовуйте паролі, які зберегли в Chrome, в інших додатках на своєму пристрої</translation>
 <translation id="2273327106802955778">Більше опцій</translation>
 <translation id="2302742851632557585">Змінити пароль на веб-сайті</translation>
 <translation id="2316709634732130529">Використати запропонований пароль</translation>
@@ -226,6 +227,7 @@
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
 <translation id="3081338492074632642">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Позначити…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Які дані можна синхронізувати<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
@@ -257,6 +259,7 @@
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
 <translation id="3399930248910934354">Відкрити налаштування Chrome</translation>
 <translation id="3404744938087714423">Якщо вийти з облікового запису, синхронізацію буде вимкнено.</translation>
+<translation id="3414451675185661089">2. Натисніть "Паролі"</translation>
 <translation id="3425644765244388016">Псевдонім картки</translation>
 <translation id="3433057996795775706">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться. Змініть пароль на сайті <ph name="WEBSITE" />, щоб захистити свій обліковий запис.</translation>
 <translation id="3443810440409579745">Вкладку отримано.</translation>
@@ -330,6 +333,7 @@
 <translation id="4121993058175073134">Щоб надсил. дані про чистий експорт, налашт. обл. запис у програмі Налаштування.</translation>
 <translation id="4124987746317609294">Період часу</translation>
 <translation id="4152011295694446843">Тут відображатимуться ваші закладки</translation>
+<translation id="4153925727916232411">Ви зможете робити й завантажувати фотографії, а також сканувати QR-коди.</translation>
 <translation id="4172051516777682613">Завжди показувати</translation>
 <translation id="418156467088430727">Переглянути офлайн-версію в новій вкладці</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -377,6 +381,7 @@
 <translation id="4666531726415300315">Ви ввійшли як <ph name="EMAIL" />.
 
 Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб почати синхронізацію.</translation>
+<translation id="4682686630151240767">1. Відкрийте Параметри на iPhone</translation>
 <translation id="4689564913179979534">Керувати способами оплати…</translation>
 <translation id="470966556546083668">Не вмикати синхронізацію</translation>
 <translation id="473775607612524610">Оновити</translation>
@@ -457,6 +462,7 @@
 <translation id="5489208564673669003">Щоб керувати файлами cookie для всіх сайтів, перегляньте <ph name="BEGIN_LINK" />Налаштування файлів cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> год тому</translation>
+<translation id="5523579157975978438">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" /> та перейдіть у розділ "Паролі".</translation>
 <translation id="5525269841082836315">Створити парол.фразу</translation>
 <translation id="5532698011560297095">Не можна ввійти</translation>
 <translation id="5548760955356983418">За допомогою Handoff можна почати переглядати веб-сайт на цьому пристрої, а потім легко продовжити на пристрої Mac. Відкритий веб-сайт з’явиться на панелі Dock на пристрої Mac.
@@ -546,7 +552,6 @@
 <translation id="6255097610484507482">Редагувати дані кредитної картки</translation>
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
-<translation id="6308436439357671616">Ви зможете робити й завантажувати фотографії.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324528485781869530">Змінити обліковий запис для синхронізації</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
@@ -739,6 +744,7 @@
 Також сайти можуть використовувати ці файли для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу.</translation>
 <translation id="7971521879845308059">Блок.сплив.вікна</translation>
 <translation id="797413074872316787">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
+<translation id="7978018860671536736">3. Натисніть "Автозаповнення паролів"</translation>
 <translation id="7982789257301363584">Мережа</translation>
 <translation id="7993619969781047893">Функції на деяких сайтах можуть не працювати</translation>
 <translation id="800361585186029508">Відкриває введені URL-адреси в Google Chrome.</translation>
@@ -764,6 +770,7 @@
 <translation id="8205564605687841303">Скасувати</translation>
 <translation id="8206354486702514201">Це налаштування застосовується вашим адміністратором.</translation>
 <translation id="8225985093977202398">Кешовані зображення й файли</translation>
+<translation id="8237382152611443140">Відкрийте налаштування автозаповнення паролів</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8271720166617117963">Прийняти й увійти</translation>
 <translation id="8281781826761538115">За умовчанням – <ph name="DEFAULT_LOCALE" /></translation>
@@ -832,6 +839,7 @@
 <translation id="8917490105272468696">Так</translation>
 <translation id="8952559610785099500">Додайте пароль</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
+<translation id="8974714402877957201">1. Відкрийте Параметри на iPad</translation>
 <translation id="8976382372951310360">Довідка</translation>
 <translation id="8976414606286374109">Картки зберігаються у вашому обліковому записі Google.</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>

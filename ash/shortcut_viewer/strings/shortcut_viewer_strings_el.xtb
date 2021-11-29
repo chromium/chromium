@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Άνοιγμα νέου παραθύρου στην κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> και έπειτα <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Μετάβαση στο γραφείο 1 έως 8</translation>
 <translation id="1652741121070700329">Μετακίνηση στην αρχή της προηγούμενης λέξης</translation>
 <translation id="1679841710523778799">Αύξηση φωτεινότητας</translation>
 <translation id="168356808214100546">Πατώντας παρατεταμένα το <ph name="ALT" />, πατήστε το <ph name="TAB" /> μέχρι να φτάσετε στο παράθυρο που θέλετε να ανοίξετε και έπειτα αφήστε τα πλήκτρα.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 έως 8</translation>
 <translation id="3837047332182291558">Αύξηση φωτεινότητας πληκτρολογίου (μόνο για πληκτρολόγια με οπίσθιο φωτισμό)</translation>
 <translation id="3949671998904569433">κόμμα</translation>
-<translation id="3976707995992061296">Εναλλαγή της ανάθεσης του ενεργού παραθύρου σε όλα τα γραφεία</translation>
 <translation id="3976863468609830880">Κλικ στο τελευταίο εικονίδιο στο ράφι σας</translation>
 <translation id="3994783594793697310">Επαναφορά επιπέδου εστίασης οθόνης</translation>
 <translation id="4026843240379844265">Μετακίνηση ενεργού παραθύρου μεταξύ οθονών</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Πατήστε <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> και κάντε κλικ σε έναν σύνδεσμο</translation>
 <translation id="561814908794220892">Άνοιγμα της ιστοσελίδας σε νέα καρτέλα</translation>
 <translation id="5620219513321115856">Μετακινήστε το ενεργό παράθυρο στο γραφείο στα δεξιά</translation>
+<translation id="5699366815052349604">Εκχώρηση ενεργού παραθύρου σε όλα τα γραφεία</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ή <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Άνοιγμα του συνδέσμου στην καρτέλα</translation>
 <translation id="5757474750054631686">Μείωση φωτεινότητας πληκτρολογίου (μόνο για πληκτρολόγια με οπίσθιο φωτισμό)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Μεγέθυνση οθόνης</translation>
 <translation id="634687982629734605">Εναλλαγή εστίασης μεταξύ: περιοχής κατάστασης (όπου εμφανίζεται η εικόνα του λογαριασμού σας), εφαρμογής εκκίνησης, γραμμής διευθύνσεων, γραμμής σελιδοδεικτών (εάν είναι ορατή), της ανοικτής ιστοσελίδας και της γραμμής λήψεων (εάν είναι ορατή). Αν προβάλλεται παράθυρο διαλόγου με δυνατότητα εστίασης, η εστίαση μετακινείται σε αυτό.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Ενεργοποίηση του 1ου έως 8ου γραφείου.</translation>
 <translation id="6395172954772765143">Επιλογή κειμένου έως το τέλος της γραμμής</translation>
 <translation id="6425378783626925378">Κλικ στα εικονίδια 1-8 στο ράφι σας</translation>
 <translation id="6435207348963613811">Επισήμανση του προηγούμενου στοιχείου στο ράφι σας</translation>

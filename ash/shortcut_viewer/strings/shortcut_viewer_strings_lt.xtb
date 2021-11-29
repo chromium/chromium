@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Atidaryti naują langą inkognito režimu</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, tada <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="1652741121070700329">Pereiti į ankstesnio žodžio pradžią</translation>
 <translation id="1679841710523778799">Padidinti šviesumą</translation>
 <translation id="168356808214100546">Paspauskite ir palaikykite <ph name="ALT" />, palieskite <ph name="TAB" />, kol pateksite į norimą atidaryti langą, tada atleiskite.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> nuo 1 iki 8</translation>
 <translation id="3837047332182291558">Pašviesinti klaviatūrą (skirta tik klaviatūroms su foniniu apšvietimu)</translation>
 <translation id="3949671998904569433">kablelis</translation>
-<translation id="3976707995992061296">Perjunkite, ar aktyvus langas priskiriamas visiems darbalaukiams</translation>
 <translation id="3976863468609830880">Spustelėti paskutinę piktogramą lentynoje</translation>
 <translation id="3994783594793697310">Iš naujo nustatyti ekrano mastelio keitimo lygį</translation>
 <translation id="4026843240379844265">Aktyvaus lango perkėlimas iš vieno ekrano į kitą</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Paspauskite <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ir spustelėkite nuorodą</translation>
 <translation id="561814908794220892">Atidaryti tinklalapį naujame skirtuke</translation>
 <translation id="5620219513321115856">Aktyvus langas perkeliamas į pultą dešinėje</translation>
+<translation id="5699366815052349604">Priskirti aktyvų langą visiems darbalaukiams</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> arba <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Atidaryti nuorodą skirtuke</translation>
 <translation id="5757474750054631686">Pritemdyti klaviatūrą (skirta tik klaviatūroms su foniniu apšvietimu)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Artinti ekraną</translation>
 <translation id="634687982629734605">Suaktyvinti šiuos elementus: būsenos sritį (kur rodoma paskyros nuotrauka), Paleidimo priemonės adreso juostą, žymių juostą (jei rodoma), atidarytą tinklalapį ir atsisiuntimų juostą (jei rodoma). Jei rodomas suaktyvinamas dialogo langas, suaktyvinkite jį.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Suaktyvinkite pirmą–aštuntą darbalaukius.</translation>
 <translation id="6395172954772765143">Pasirinkti tekstą iki eilutės pabaigos</translation>
 <translation id="6425378783626925378">Spustelėti 1–8 piktogramas lentynoje</translation>
 <translation id="6435207348963613811">Paryškinti ankstesnį elementą lentynoje</translation>

@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
 <translation id="2199719347983604670">從 Chrome 同步的資料</translation>
 <translation id="2313070403598893276">Google Chrome 不但簡便安全，速度更勝從前</translation>
+<translation id="2339201583852607431">密碼將會儲存在您的 Google 帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="2342919707875585281">Chrome 會與您允許的網站分享您的位置資訊。</translation>
 <translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
@@ -54,8 +55,10 @@
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="484033449593719797">Chrome Beta 版本上不支援此功能</translation>
 <translation id="5030102366287574140">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
+<translation id="5119391094379141756">選取 [Chrome]</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chrome。</translation>
 <translation id="5389212809648216794">由於另一個應用程式正在使用相機，因此 Google Chrome 暫時無法使用</translation>
+<translation id="5460571915754665838">4. 選取 [Chrome]</translation>
 <translation id="5639704535586432836">開啟 [設定] &gt; [私隱權] &gt; [相機] &gt; [Google Chrome]，然後開啟相機。</translation>
 <translation id="5642200033778930880">Google Chrome 無法在「分割檢視」模式中使用相機</translation>
 <translation id="5690427481109656848">Google LLC</translation>

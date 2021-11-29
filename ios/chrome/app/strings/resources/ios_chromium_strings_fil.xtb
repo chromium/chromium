@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="102360288709523007">Pahusayin ang Chromium, magpadala sa Google ng istatistika ng paggamit at ulat ng crash.</translation>
+<translation id="1047130070405668746">Piliin ang Chromium</translation>
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1257458525759135959">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chromium na magdagdag sa iyong mga larawan</translation>
 <translation id="1289216811211435351">Lumipat sa Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Na-verify ng Chromium na ang <ph name="ISSUER" /> ang nag-isyu ng certificate ng website na ito.</translation>
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Piliin ang Chromium</translation>
 <translation id="2006345422933397527">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2054703085270098503">Manatiling Ligtas sa Chromium</translation>
 <translation id="2168108852149185974">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Paki-uninstall.</translation>

@@ -138,6 +138,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="225943865679747347">Mã lỗi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Thêm tài khoản</translation>
 <translation id="2268044343513325586">Tinh chỉnh</translation>
+<translation id="2271351792809375263">Sử dụng mật khẩu bạn đã lưu vào Chrome cho các ứng dụng khác trên thiết bị của bạn</translation>
 <translation id="2273327106802955778">Menu khác</translation>
 <translation id="2302742851632557585">Đổi mật khẩu trên trang web</translation>
 <translation id="2316709634732130529">Sử dụng mật khẩu đề xuất</translation>
@@ -226,6 +227,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3080525922482950719">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng</translation>
 <translation id="3081338492074632642">Đảm bảo mật khẩu bạn đang lưu khớp với mật khẩu dùng cho <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Đánh dấu...</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Xem những nội dung bạn có thể đồng bộ hoá<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Chặn tất cả</translation>
 <translation id="313283613037595347">Tạo thẻ Ẩn danh mới.</translation>
 <translation id="3153862085237805241">Lưu thẻ</translation>
@@ -257,6 +259,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3393920035788932672">Cửa sổ bật lên được cho phép</translation>
 <translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
 <translation id="3404744938087714423">Thao tác đăng xuất sẽ tắt tính năng đồng bộ hóa.</translation>
+<translation id="3414451675185661089">2. Nhấn vào Mật khẩu</translation>
 <translation id="3425644765244388016">Biệt hiệu của thẻ</translation>
 <translation id="3433057996795775706">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />. Hãy đổi mật khẩu của bạn trên <ph name="WEBSITE" /> để giữ an toàn cho tài khoản của bạn.</translation>
 <translation id="3443810440409579745">Đã nhận thẻ.</translation>
@@ -330,6 +333,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4121993058175073134">Để gửi dữ liệu đã xuất, hãy định cấu hình tài khoản email trong ứng dụng Cài đặt.</translation>
 <translation id="4124987746317609294">Phạm vi thời gian</translation>
 <translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
+<translation id="4153925727916232411">Điều này cho phép bạn chụp và tải ảnh lên, cũng như quét mã QR.</translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
 <translation id="418156467088430727">Xem phiên bản ngoại tuyến trong thẻ mới</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
@@ -377,6 +381,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4666531726415300315">Đã đăng nhập bằng <ph name="EMAIL" />.
 
 Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa của bạn. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
+<translation id="4682686630151240767">1. Mở phần Cài đặt iPhone</translation>
 <translation id="4689564913179979534">Quản lý phương thức thanh toán...</translation>
 <translation id="470966556546083668">Không bật tính năng đồng bộ hóa</translation>
 <translation id="473775607612524610">Cập nhật</translation>
@@ -457,6 +462,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5489208564673669003">Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Chặn tất cả cookie (Không khuyến nghị)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> giờ trước</translation>
+<translation id="5523579157975978438">Để tắt, hãy mở phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> và chuyển đến mục Mật khẩu.</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
 <translation id="5532698011560297095">Không thể Đăng nhập</translation>
 <translation id="5548760955356983418">Tính năng tiếp nối cho phép bạn bắt đầu duyệt web trên thiết bị này và sau đó dễ dàng tiếp tục trên máy Mac của mình. Trang web hiện đang mở sẽ xuất hiện trong thanh Dock trên máy Mac của bạn.
@@ -546,7 +552,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6255097610484507482">Chỉnh sửa thẻ tín dụng</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
-<translation id="6308436439357671616">Điều này cho phép bạn chụp và tải ảnh lên.</translation>
 <translation id="6321526113093607004">Thêm vào Dấu trang</translation>
 <translation id="6324528485781869530">Chuyển đổi tài khoản đồng bộ hóa</translation>
 <translation id="6324669097367352121">Cài đặt đăng nhập</translation>
@@ -739,6 +744,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn.</translation>
 <translation id="7971521879845308059">Chặn cửa sổ bật lên</translation>
 <translation id="797413074872316787">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy bật tính năng đồng bộ hóa.</translation>
+<translation id="7978018860671536736">3. Nhấn vào Tự động điền mật khẩu</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7993619969781047893">Các tính năng trên một số trang web có thể hoạt động không đúng cách</translation>
 <translation id="800361585186029508">Mở URL đã nhập trong Google Chrome.</translation>
@@ -764,6 +770,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8205564605687841303">Hủy</translation>
 <translation id="8206354486702514201">Cài đặt này được quản trị viên của bạn thực thi.</translation>
 <translation id="8225985093977202398">Tệp và hình ảnh được lưu vào bộ nhớ đệm</translation>
+<translation id="8237382152611443140">Mở chế độ Cài đặt tự động điền mật khẩu</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="8271720166617117963">Chấp nhận và Đăng nhập</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>
@@ -832,6 +839,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8917490105272468696">Có, tôi đồng ý</translation>
 <translation id="8952559610785099500">Thêm mật khẩu</translation>
 <translation id="895541991026785598">Báo cáo sự cố</translation>
+<translation id="8974714402877957201">1. Mở phần Cài đặt iPad</translation>
 <translation id="8976382372951310360">Trợ giúp</translation>
 <translation id="8976414606286374109">Các thẻ sẽ được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="8981454092730389528">Kiểm soát hoạt động trên Google</translation>

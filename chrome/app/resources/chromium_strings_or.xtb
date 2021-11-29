@@ -28,6 +28,7 @@
 <translation id="1981611865800294956">&amp;Chromium OS ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2008474315282236005">ଏହାଦ୍ବାରା ଏହି ଡିଭାଇସ୍‌ରୁ 1ଟି ଆଇଟମ୍ ଡିଲିଟ୍ ହୋଇଯିବ। ପରେ ଆପଣଙ୍କ ଡାଟାକୁ ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromiumକୁ <ph name="USER_EMAIL" />ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2020032459870799438">ଆପଣଙ୍କ ଅନ୍ୟ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡାଟା ଚୋରି ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛି ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ, <ph name="BEGIN_LINK" />Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="2049376729098081731">Google ସେବାଗୁଡ଼ିକରେ ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ଅଧିକ ଅନୁଭୂତି ପାଇଁ Chromium ଇତିହାସକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବେ ନା ନାହିଁ ବାଛନ୍ତୁ</translation>
 <translation id="2174178932569897599">Chromiumକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="2185166961232948079">Chromium - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">ଯଦି ଆପଣ ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍‍କୁ ସେୟାର୍ କରିବେ, ବନ୍ଧୁମାନେ ଓ ପରିବାର ଲୋକେ ଅଲଗା ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସରେ Chromiumକୁ ସେଟ୍-ଅପ୍ କରନ୍ତୁ।</translation>
@@ -39,6 +40,7 @@
 <translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2483889755041906834">Chromiumରେ</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
+<translation id="251127392410688874">ଓପନ ୱେବକୁ ସଂରକ୍ଷିତ କରିବା ସମୟରେ କ୍ରସ-ସାଇଟ ଟ୍ରାକିଂରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromium କିପରି ପ୍ଲାନ କରେ ଦେଖନ୍ତୁ</translation>
 <translation id="2535480412977113886">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସାଇନ୍ ଇନ୍ ବିବରଣୀ ପୁରୁଣା ହୋଇଥିବା ଯୋଗୁଁ Chromium OS ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2560420686485554789">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍‍ କରିବାକୁ Chromium ଷ୍ଟୋରେଜ୍‍ ଆକ୍ସେସ୍‌ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2572494885440352020">Chromium ସାହାଯ୍ୟକାରୀ</translation>
@@ -224,6 +226,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="734373864078049451">ଆପଣଙ୍କର ୱେବ୍, ବୁକ୍‍ମାର୍କ ଓ ଅନ୍ୟାନ୍ୟ Chromium ଷ୍ଟଫ୍ ଏଠାରେ ଅଛି।</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" /> ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="ALTERNATIVE_BROWSER_NAME" />ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ Chromium କନ୍‌ଫିଗର୍ କରିଛନ୍ତି।</translation>
+<translation id="7398989605938454041">Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ Chromium ଷ୍ଟଫକୁ ଅଲଗା କରିପାରିବେ। କାର୍ଯ୍ୟ ଏବଂ ମଜା ମଧ୍ୟରେ ସ୍ପ୍ଲିଟ କରିବାକୁ ଏହା ସହଜ କରିଥାଏ।</translation>
 <translation id="7448255348454382571">Chromium OS ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ଡେଭ୍‌ଲପର୍‌</translation>
 <translation id="7451052299415159299">ଏହି ସାଇଟ୍‌ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରାକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ Chromium ଆପଣଙ୍କ ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି।</translation>
@@ -243,6 +246,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7828947555739565424">ଏହି ଡିଭାଇସରେ ଏହି ଆକାଉଣ୍ଟ ସହ ଏକ Chromium ପ୍ରୋଫାଇଲ୍ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="7857220146454061152">Chromiumର ଭବିଷ୍ୟତର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ OS X 10.11 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ OS X 10.10 ସଂସ୍କରଣ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="7867198900892795913">Chromium ନବୀନତମ ସଂସ୍କରଣକୁ ଅପ୍‌ଡେଟ୍ ହୋଇପାରିବନାହିଁ, ତେଣୁ ଆପଣ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଏବଂ ସୁରକ୍ଷା ସମାଧାନରୁ ବଞ୍ଚିତ ହୋଇଛନ୍ତି।</translation>
+<translation id="788352880609666695">ଏହି Chromium ପ୍ରୋଫାଇଲ ପାଇଁ ନିମ୍ନୋକ୍ତ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଟେ</translation>
 <translation id="7898472181347242998">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି କି ନାହିଁ, ତାହା ଦେଖିବାକୁ <ph name="LINK_BEGIN" />Chromium OS ସେଟିଂସ୍‌<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7937630085815544518">ଆପଣ <ph name="USER_EMAIL_ADDRESS" />ରେ Chromiumକୁ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ଦୟାକରି ସାଇନ୍ ଇନ୍ କରିବା ଏହି ସମାନ ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7975919845073681630">ଏହା Chromiumର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -255,6 +259,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8290862415967981663">ଏହି ଫାଇଲ୍‌ଟି ହୁଏତ ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ ଏହାକୁ Chromium ବ୍ଲକ୍ କରିଛି।</translation>
 <translation id="8330519371938183845">ସିଙ୍କରେ ସାଇନ୍‌ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ Chromiumକୁ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="8340674089072921962">ପୂର୍ବରୁ <ph name="USER_EMAIL_ADDRESS" /> Chromium ବ୍ୟବହାର କରୁଥିଲା</translation>
+<translation id="8357820681460164151">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର Chromium ବ୍ରାଉଜର ଷ୍ଟଫଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ସାଇନ ଇନ କରି ତା’ପରେ ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8417404458978023919">{0,plural, =1{ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}other{# ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}}</translation>
 <translation id="8453117565092476964">ଇନ୍‌ଷ୍ଟଲର୍‌ ଆର୍କାଇଭ୍‍ ଖରାପ ହୋ‍ଇଯାଇଛି କିମ୍ବା ଅବୈଧ ଅଟେ। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ।</translation>
 <translation id="8493179195440786826">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>

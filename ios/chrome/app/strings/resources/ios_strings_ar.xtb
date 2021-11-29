@@ -138,6 +138,7 @@
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
 <translation id="2268044343513325586">تحسين</translation>
+<translation id="2271351792809375263">‏يمكنك استخدام كلمات المرور المحفوظة على Chrome في التطبيقات الأخرى على جهازك.</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
 <translation id="2302742851632557585">تغيير كلمة المرور على الموقع الإلكتروني</translation>
 <translation id="2316709634732130529">استخدام كلمة المرور المقترحة</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">النوافذ المنبثقة المسموح بها</translation>
 <translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
 <translation id="3404744938087714423">يؤدي تسجيل الخروج إلى إيقاف المزامنة.</translation>
+<translation id="3414451675185661089">‏2. النقر على Passwords (كلمات المرور)</translation>
 <translation id="3425644765244388016">لقب البطاقة</translation>
 <translation id="3433057996795775706">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />. يُرجى تغيير كلمة مرورك على <ph name="WEBSITE" /> لحمايته من الآخرين.</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">لإرسال بيانات تصدير الشبكة، يُرجى إعداد حساب بريدك الإلكتروني في التطبيق "الإعدادات".</translation>
 <translation id="4124987746317609294">النطاق الزمني</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
+<translation id="4153925727916232411">يتيح لك هذا الإجراء التقاط الصور وتحميلها بالإضافة إلى مسح رموز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="4172051516777682613">الإظهار دائمًا</translation>
 <translation id="418156467088430727">عرض إصدار بلا إنترنت في علامة تبويب جديدة</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315">تم تسجيل الدخول كحساب <ph name="EMAIL" />
 
 تم ترميز بياناتك باستخدام عبارة مرور المزامنة. أدخلها لبدء المزامنة.</translation>
+<translation id="4682686630151240767">‏1- فتح iPhone Settings (إعدادات iPhone)</translation>
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
 <translation id="470966556546083668">عدم تفعيل المزامنة</translation>
 <translation id="473775607612524610">تحديث</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
+<translation id="5523579157975978438">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings (الإعدادات)<ph name="END_LINK" /> ثم انتقِل إلى Passwords (كلمات المرور).</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
 <translation id="5532698011560297095">تعذر تسجيل الدخول</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
@@ -547,7 +552,6 @@
 <translation id="6255097610484507482">تعديل بطاقة الائتمان</translation>
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
-<translation id="6308436439357671616">هذا يتيح لك التقاط الصور وتحميلها.</translation>
 <translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324528485781869530">تبديل حساب المزامنة</translation>
 <translation id="6324669097367352121">إعدادات تسجيل الدخول</translation>
@@ -740,6 +744,7 @@
 يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
 <translation id="7971521879845308059">حظر النوافذ المنبثقة</translation>
 <translation id="797413074872316787">للمزامنة والتخصيص على جميع الأجهزة، عليك تفعيل المزامنة.</translation>
+<translation id="7978018860671536736">‏3. النقر على AutoFill Passwords (الملء التلقائي لكلمات المرور)</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
@@ -765,6 +770,7 @@
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
+<translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8271720166617117963">القبول وتسجيل الدخول</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@
 <translation id="8917490105272468696">نعم، أنا موافق</translation>
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
 <translation id="895541991026785598">الإبلاغ عن مشكلة</translation>
+<translation id="8974714402877957201">‏1- فتح iPad Settings (إعدادات iPad)</translation>
 <translation id="8976382372951310360">مساعدة</translation>
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>

@@ -107,6 +107,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1894205589103145703">Une erreur s'est produite lors de la connexion.</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
+<translation id="1930989359703290198">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
@@ -330,6 +331,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4121993058175073134">Configurez compte mess. dans appli Paramètres pour envoyer données net-export.</translation>
 <translation id="4124987746317609294">Période</translation>
 <translation id="4152011295694446843">Vos favoris s'afficheront ici</translation>
+<translation id="4153925727916232411">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR.</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher version hors connexion dans nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
@@ -387,6 +389,8 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Géré par votre organisation.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numéro de carte non valide</translation>
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
@@ -544,7 +548,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
-<translation id="6308436439357671616">Cela vous permet de prendre et d'importer des photos.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324528485781869530">Changer de compte pour synchro</translation>
 <translation id="6324669097367352121">Paramètres connexion</translation>

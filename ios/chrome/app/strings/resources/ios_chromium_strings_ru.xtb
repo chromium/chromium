@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="102360288709523007">Отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="1047130070405668746">Выберите Chromium.</translation>
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1257458525759135959">Чтобы сохранять изображения, нажмите "Настройки" и предоставьте Chromium доступ к вашим фото.</translation>
 <translation id="1289216811211435351">Переходите на Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Данные Chromium подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">В Chromium можно устанавливать параметры обработки данных в Интернете и скорости загрузки веб-страниц.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Выберите Chromium.</translation>
 <translation id="2006345422933397527">Браузеру Chromium не удалось проверить наличие обновлений. Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="2054703085270098503">Безопасная работа с Chromium</translation>
 <translation id="2168108852149185974">Некоторые дополнения вызывают сбой Chromium. Необходимо удалить:</translation>

@@ -117,6 +117,7 @@
 <translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Праграмы</translation>
+<translation id="2859243502336719778">Важнае абнаўленне</translation>
 <translation id="2860473693272905224">Палажыце чарговую старонку ў сканер</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878387241690264070">Разраджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
@@ -151,6 +152,7 @@
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканіруецца старонка <ph name="PAGE_NUM" />. Выканана <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Друк</translation>
+<translation id="3462187165860821523">Ідзе абнаўленне прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
@@ -175,6 +177,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
+<translation id="3932043219784172185">Няма падключаных прылад</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="3966286471246132217">Каб атрымаць больш дакладныя вынікі, закрыйце ўсе ўкладкі, пакуль праверка не будзе завершана.</translation>
@@ -207,6 +210,7 @@
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Абнаўленне ўбудаванага ПЗ перыферыйных прылад</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />: выключана</translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
@@ -214,6 +218,7 @@
 <translation id="445059817448385655">Стары пароль</translation>
 <translation id="4453205916657964690">Маска падсеткі</translation>
 <translation id="4454245904991689773">Сканіраваць у</translation>
+<translation id="4472575034687746823">Пачаць</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
 <translation id="4511264077854731334">Партал</translation>
@@ -236,6 +241,7 @@
 <translation id="469379815867856270">Магутнасць сігналу</translation>
 <translation id="4707579418881001319">L2TP/IPsec + сертыфікат карыстальніка</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
+<translation id="473775607612524610">Абнавіць</translation>
 <translation id="475869545581454722">Пароль Chrome OS зменены</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4794140124556169553">Выкананне праверкі ЦП можа паўплываць на прадукцыйнасць сістэмы</translation>
@@ -257,6 +263,7 @@
 <translation id="4921665434385737356">Зараджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Каб наладзіць або абнавіць падключэнне, перайдзіце ў <ph name="BEGIN_LINK" />Налады<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4950314376641394653">Убудаванае праграмнае забеспячэнне прылады "<ph name="DEVICE_NAME" />" абноўлена да версіі <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Праверце сканер і паўтарыце спробу. Упэўніцеся, што на прыладзе дастаткова месца для захавання файлаў адсканіраваных відарысаў.</translation>
 <translation id="4985509611418653372">Запусціць</translation>
 <translation id="4987769320337599931">Брандмаўар</translation>
@@ -266,7 +273,6 @@
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5051044138948155788">Гэта адзіная старонка. Вы будзеце перанакіраваны на пачатковы экран сканіравання.</translation>
-<translation id="5061169534910302641">Абнавіць версію і перазапусціць</translation>
 <translation id="5088172560898466307">Назва хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5142961317498132443">Аўтэнтыфікацыя</translation>
@@ -399,6 +405,7 @@
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7058278511608979688">Завяршыць і захаваць</translation>
 <translation id="7059230779847288458">Ідзе зарадка, <ph name="TIME_VALUE" /> да поўнай зарадкі</translation>
+<translation id="7068619307603204412">Падрыхтоўка прылады</translation>
 <translation id="708426984172631313">СПЫНЕНА</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Збой: памылка аўтарызацыі</translation>
@@ -412,6 +419,7 @@
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
+<translation id="7240035910874241640">Убудаванае ПЗ перыферыйных прылад ужо абноўлена</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Калекцыі шпалер</translation>
@@ -452,6 +460,7 @@
 <translation id="7763470514545477072">Супадзенне па суфіксе дамена</translation>
 <translation id="7769672763586021400">Ідэнтыфікатар мадэлі</translation>
 <translation id="7784116172884276937">DNS-серверы не наладжаны</translation>
+<translation id="7786540085520432425">Падчас працэсу абнаўлення акно можна згарнуць, але не адключайце прыладу ад сілкавання. Абнаўленне можа заняць некалькі хвілін, і на працягу гэтага часу прылада можа не працаваць.</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7835501727204647447">Усталяваць CloudReady</translation>
@@ -485,6 +494,7 @@
 <translation id="8217675307824400706">Устанавіце падключэнне</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8246209727385807362">Невядомы аператар</translation>
+<translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8286154143153872371">Каб праглядаць шпалеры, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>
 <translation id="8291967909914612644">Родная краіна аператара</translation>
 <translation id="8294431847097064396">Крыніца</translation>
@@ -509,6 +519,7 @@
 <translation id="8498220429738806196">Лічыльнікі трафіка</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8503836310948963452">Яшчэ пару хвілін…</translation>
+<translation id="8520963233738002436">Прылада "<ph name="DEVICE_NAME" />" абноўлена</translation>
 <translation id="8521021929829989041">Выкарыстоўваць прыладу як асабістую</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
@@ -548,6 +559,7 @@
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Ідзе ўсталяванне (<ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="9003704114456258138">Частата</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-пераўтварэнне мае вялікую затрымку</translation>

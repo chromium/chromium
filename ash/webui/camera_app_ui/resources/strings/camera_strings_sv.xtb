@@ -6,11 +6,11 @@
 <translation id="1258009455399840361">Rotera 90 grader medurs</translation>
 <translation id="1276998909102132017">Bilder i galleriet</translation>
 <translation id="1300209025925956156">Skanna dokumentet</translation>
-<translation id="1303487788671416818">Aktivera ögonblicksvideo i full storlek</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sök + vänsterpil för att få åtkomst.</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
+<translation id="148783771699678004">Flyttas uppåt åt höger</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -28,6 +28,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2144806332417375165">Anpassade videoparametrar</translation>
 <translation id="2175927920773552910">QR-kod</translation>
+<translation id="2271433936731426666">Aktivera ögonblicksvideo i full storlek</translation>
 <translation id="229579744168541441">Exportera till disk</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2501278716633472235">Föregående</translation>
@@ -54,6 +55,7 @@
 <translation id="3448774564454087943">Videon sparas inte eftersom den är för kort</translation>
 <translation id="346539236881580388">Ta om</translation>
 <translation id="3517926952904427380">Det gick inte att ta porträttfoto</translation>
+<translation id="3566302376254083266">Flyttas uppåt åt vänster</translation>
 <translation id="3569311554794739032">Vill du ta bort <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Byt till skanningsläge</translation>
 <translation id="3583444040776960729">Nedre vänstra hörnet på dokumentet</translation>
@@ -72,14 +74,17 @@
 <translation id="4570032796877367747">Främre kamera</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Det gick inte att spara filen</translation>
+<translation id="4695379108709712600">Flyttas uppåt</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Multistream-videoinspelning</translation>
 <translation id="5057360777601936059">Kameran är inte tillgänglig.
         Kontrollera kameraanslutningen.</translation>
 <translation id="5152121255775685072">Besök galleriet</translation>
+<translation id="5163387177077603948">Flyttas åt höger</translation>
 <translation id="520537883758714667">Dokumentskanning är nu tillgängligt</translation>
 <translation id="5266635337630551423">Övre vänstra hörnet på dokumentet</translation>
 <translation id="5317780077021120954">Spara</translation>
+<translation id="5320594929574852403">Flyttas åt vänster</translation>
 <translation id="5444515100983837161">Placera dokumentets kanter i ramen. Skanning fungerar bäst om dokumentet och bakgrunden har olika färger.</translation>
 <translation id="5671277269877808209">Kvadratiskt</translation>
 <translation id="5746169159649715125">Spara som PDF</translation>
@@ -102,6 +107,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Ta foto</translation>
 <translation id="6778482348691154169">Det gick inte att ta ett foto</translation>
+<translation id="6888362557094394345">Flyttas nedåt</translation>
 <translation id="695140971690006676">Återställ alla</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">Tre sekunder</translation>
@@ -116,12 +122,14 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7557677699350329807">Byt till nästa kamera</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7608223098072244877">Fyra gånger fyra</translation>
+<translation id="761421184377987513">Flyttas nedåt åt vänster</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Nedre högra hörnet på dokumentet</translation>
 <translation id="7726641833034062494">Spela in normal video</translation>
 <translation id="7748344063862150053">Övre högra hörnet på dokumentet</translation>
+<translation id="7933675232020478311">Flyttas nedåt åt höger</translation>
 <translation id="7983668134180549431">Text har identifierats.</translation>
 <translation id="8067883171444229417">Spela upp video</translation>
 <translation id="8120146556401698679">Panorera, luta och zooma</translation>

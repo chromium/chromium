@@ -138,6 +138,7 @@
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
+<translation id="2271351792809375263">Използвайте паролите, които сте запазили в Chrome, в други приложения на устройството си</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
 <translation id="2302742851632557585">Промяна на паролата на уебсайта</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">Изск. прозорци са разр.</translation>
 <translation id="3399930248910934354">Отваряне на настройките на Chrome</translation>
 <translation id="3404744938087714423">Излизането от профила ще изключи синхронизирането.</translation>
+<translation id="3414451675185661089">2. Докоснете „Пароли“.</translation>
 <translation id="3425644765244388016">Псевдоним на картата</translation>
 <translation id="3433057996795775706">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />. За да го защитите от други хора, променете паролата си за <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Получен раздел.</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">За изпращане на експ. данни от мрежата конфиг. имейла си в Настройки.</translation>
 <translation id="4124987746317609294">Период от време</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
+<translation id="4153925727916232411">Това ви позволява да правите и качвате снимки, както и да сканирате QR кодове.</translation>
 <translation id="4172051516777682613">Показване винаги</translation>
 <translation id="418156467088430727">Преглед на офлайн версията в нов раздел</translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315">Влезли сте като <ph name="EMAIL" />.
 
 Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
+<translation id="4682686630151240767">1. Отворете настройките на iPhone.</translation>
 <translation id="4689564913179979534">Управление на начините на плащане...</translation>
 <translation id="470966556546083668">Без включване на синхронизирането</translation>
 <translation id="473775607612524610">Актуализиране</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="5513681519188741830">Преди <ph name="TIME" /> ч</translation>
+<translation id="5523579157975978438">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и след това „Пароли“.</translation>
 <translation id="5525269841082836315">Създаване на пропуск</translation>
 <translation id="5532698011560297095">Не може да се влезе</translation>
 <translation id="5548760955356983418">С Handoff можете да започнете да разглеждате уебсайт на това устройство, след което лесно да продължите сърфирането от своя Mac. Отвореният сайт ще се покаже в лентата Dock.
@@ -547,7 +552,6 @@
 <translation id="6255097610484507482">Редактиране на кредитната карта</translation>
 <translation id="6284652193729350524">Предлагане на превод от <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">За да включите „Безопасно сърфиране“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и докоснете съответната опция.</translation>
-<translation id="6308436439357671616">Това ви позволява да правите и качвате снимки.</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6324528485781869530">Превключване на профила за синхронизиране</translation>
 <translation id="6324669097367352121">Настройки за вход</translation>
@@ -740,6 +744,7 @@
 Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами.</translation>
 <translation id="7971521879845308059">Изск. прозорци: Блокиране</translation>
 <translation id="797413074872316787">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
+<translation id="7978018860671536736">3. Докоснете „Автоматично попълване на паролите“.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>
 <translation id="800361585186029508">Въведените URL адреси се отварят в Google Chrome.</translation>
@@ -765,6 +770,7 @@
 <translation id="8205564605687841303">Отказ</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
 <translation id="8225985093977202398">Кеширани изображения и файлове</translation>
+<translation id="8237382152611443140">Отворете настройките за автоматично попълване на паролите.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8271720166617117963">Приемане и вход</translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@
 <translation id="8917490105272468696">Да, ще участвам</translation>
 <translation id="8952559610785099500">Добавяне на парола</translation>
 <translation id="895541991026785598">Подаване на сигнал за проблем</translation>
+<translation id="8974714402877957201">1. Отворете настройките на iPad.</translation>
 <translation id="8976382372951310360">Помощ</translation>
 <translation id="8976414606286374109">Данните за картите се запазват в профила ви в Google.</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>

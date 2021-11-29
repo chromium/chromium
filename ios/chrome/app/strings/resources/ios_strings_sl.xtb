@@ -138,6 +138,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="225943865679747347">Koda napake: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Izboljšaj iskanje</translation>
+<translation id="2271351792809375263">Gesla, ki ste jih shranili v Chromu, lahko uporabljate v drugih aplikacijah v napravi.</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2302742851632557585">Spremeni geslo na spletnem mestu</translation>
 <translation id="2316709634732130529">Uporabi predlagano geslo</translation>
@@ -258,6 +259,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3393920035788932672">Pojavna okna so dovoljena</translation>
 <translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
 <translation id="3404744938087714423">Če se odjavite, se izklopi sinhronizacija.</translation>
+<translation id="3414451675185661089">2. Dotaknite se »Gesla«.</translation>
 <translation id="3425644765244388016">Vzdevek za kartico</translation>
 <translation id="3433057996795775706">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />. Če želite račun zaščititi pred drugimi, spremenite geslo na <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Prejet zavihek.</translation>
@@ -331,6 +333,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
+<translation id="4153925727916232411">S tem je mogoče fotografirati in nalagati fotografije ter optično brati kode QR.</translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
 <translation id="418156467088430727">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="4181841719683918333">Jeziki</translation>
@@ -378,6 +381,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4666531726415300315">Prijavljeni ste kot <ph name="EMAIL" />.
 
 Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
+<translation id="4682686630151240767">1. Odprite nastavitve za iPhone.</translation>
 <translation id="4689564913179979534">Upravljanje plačilnih sredstev ...</translation>
 <translation id="470966556546083668">Ne vklopi sinhroniziranja</translation>
 <translation id="473775607612524610">Posodobi</translation>
@@ -458,6 +462,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5489208564673669003">Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="BEGIN_LINK" />Nastavitve piškotkov<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj vse piškotke (ni priporočljivo)</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
+<translation id="5523579157975978438">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> in nato »Gesla«.</translation>
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
 <translation id="5532698011560297095">Vpis ni mogoč</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
@@ -547,7 +552,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>
-<translation id="6308436439357671616">S tem je mogoče fotografirati in nalagati fotografije.</translation>
 <translation id="6321526113093607004">Dodaj med zaznamke</translation>
 <translation id="6324528485781869530">Preklop med računi za sinhronizacijo</translation>
 <translation id="6324669097367352121">Nastavitve za prijavo</translation>
@@ -740,6 +744,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="7971521879845308059">Blokiraj pojavna okna</translation>
 <translation id="797413074872316787">Če želite sinhronizirati in prilagajati v vseh napravah, vklopite sinhronizacijo.</translation>
+<translation id="7978018860671536736">3. Dotaknite se »Samodejno izpolnjevanje gesel«.</translation>
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
@@ -765,6 +770,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8205564605687841303">Prekliči</translation>
 <translation id="8206354486702514201">To nastavitev je uveljavil skrbnik.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
+<translation id="8237382152611443140">Odprite nastavitve za samodejno izpolnjevanje gesel.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8271720166617117963">Sprejem in prijava</translation>
 <translation id="8281781826761538115">Privzeto - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8917490105272468696">Da, sem za</translation>
 <translation id="8952559610785099500">Dodajanje gesla</translation>
 <translation id="895541991026785598">Prijavite težavo</translation>
+<translation id="8974714402877957201">1. Odprite nastavitve za iPad.</translation>
 <translation id="8976382372951310360">Pomoč</translation>
 <translation id="8976414606286374109">Kartice se shranijo v račun Google.</translation>
 <translation id="8981454092730389528">Googlovi kontrolniki za dejavnost</translation>

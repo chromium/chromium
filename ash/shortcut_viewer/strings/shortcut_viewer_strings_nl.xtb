@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="152892567002884378">Volume omhoog</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, en dan <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1652741121070700329">Naar het begin van het vorige woord gaan</translation>
 <translation id="1679841710523778799">Helderheid verhogen</translation>
 <translation id="168356808214100546">Houd <ph name="ALT" /> ingedrukt en tik op <ph name="TAB" /> totdat het venster verschijnt dat je wilt openen. Laat de toetsen vervolgens los.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 tot en met 8</translation>
 <translation id="3837047332182291558">Toetsenbord helderder maken (alleen voor toetsenborden met achtergrondverlichting)</translation>
 <translation id="3949671998904569433">komma</translation>
-<translation id="3976707995992061296">Schakelen of het actieve venster wordt toegewezen aan alle bureaus</translation>
 <translation id="3976863468609830880">Klikken op het laatste icoon op de plank</translation>
 <translation id="3994783594793697310">Zoomniveau scherm resetten</translation>
 <translation id="4026843240379844265">Actief venster verplaatsen tussen schermen</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Druk op <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> en klik op een link</translation>
 <translation id="561814908794220892">De webpagina openen op een nieuw tabblad</translation>
 <translation id="5620219513321115856">Actief venster verplaatsen naar het bureaublad aan de rechterkant</translation>
+<translation id="5699366815052349604">Actief venster toewijzen aan alle bureaus</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> of <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">De link openen op het tabblad</translation>
 <translation id="5757474750054631686">Toetsenbord dimmen (alleen voor toetsenborden met achtergrondverlichting)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Inzoomen scherm</translation>
 <translation id="634687982629734605">Focus schakelen tussen: statusgedeelte (waar je je accountafbeelding ziet), Launcher, adresbalk, bookmarkbalk (indien zichtbaar), de geopende webpagina en de downloadbalk (indien zichtbaar). Als een dialoogvenster wordt getoond waarop de focus kan worden gezet, wordt de focus daar naartoe verplaatst.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1e tot en met 8e bureau activeren.</translation>
 <translation id="6395172954772765143">Tekst tot het einde van de regel selecteren</translation>
 <translation id="6425378783626925378">Klikken op icoon 1-8 op de plank</translation>
 <translation id="6435207348963613811">Het vorige item op de plank markeren</translation>

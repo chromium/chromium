@@ -117,6 +117,7 @@
 <translation id="2783010256799387990">통과</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2805756323405976993">앱</translation>
+<translation id="2859243502336719778">중요 업데이트</translation>
 <translation id="2860473693272905224">스캐너에 다른 페이지를 올리세요.</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
@@ -151,6 +152,7 @@
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />페이지를 스캔 중입니다. <ph name="PERCENTAGE_VALUE" />% 완료되었습니다.</translation>
 <translation id="3459509316159669723">인쇄</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> 업데이트 중</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
@@ -175,6 +177,7 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
+<translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
 <translation id="3966286471246132217">더욱 정확한 결과를 위해 테스트가 완료될 때까지 모든 앱을 닫으세요.</translation>
@@ -207,6 +210,7 @@
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">주변기기 업데이트</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 꺼짐</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
@@ -214,6 +218,7 @@
 <translation id="445059817448385655">이전 비밀번호</translation>
 <translation id="4453205916657964690">서브넷 마스크</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
+<translation id="4472575034687746823">시작하기</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="4511264077854731334">포털</translation>
@@ -236,6 +241,7 @@
 <translation id="469379815867856270">신호 강도</translation>
 <translation id="4707579418881001319">L2TP/IPSec + 사용자 인증서</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
+<translation id="473775607612524610">업데이트</translation>
 <translation id="475869545581454722">Chrome OS 비밀번호 업데이트됨</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
@@ -257,6 +263,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> 펌웨어가 <ph name="VERSION" /> 버전으로 업데이트되었습니다</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
 <translation id="4987769320337599931">방화벽</translation>
@@ -266,7 +273,6 @@
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
 <translation id="5051044138948155788">이 페이지만 삭제합니다. 스캔 시작 화면으로 이동합니다.</translation>
-<translation id="5061169534910302641">버전 업데이트 및 다시 시작</translation>
 <translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5142961317498132443">인증</translation>
@@ -399,6 +405,7 @@
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7058278511608979688">종료 및 저장</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
+<translation id="7068619307603204412">기기 준비</translation>
 <translation id="708426984172631313">중지됨</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">실패 - 승인 실패</translation>
@@ -412,6 +419,7 @@
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7216409898977639127">이동통신사</translation>
+<translation id="7240035910874241640">모든 주변기기가 최신 버전입니다</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">배경화면 컬렉션</translation>
@@ -452,6 +460,7 @@
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
 <translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
+<translation id="7786540085520432425">업데이트 중에 창을 최소화할 수 있지만 기기를 전원에서 분리하면 안 됩니다. 몇 분 정도 소요될 수 있으며 업데이트 중에 기기가 작동하지 않을 수 있습니다</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
 <translation id="7835501727204647447">CloudReady 설치</translation>
@@ -485,6 +494,7 @@
 <translation id="8217675307824400706">연결</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
+<translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="8291967909914612644">홈 공급자 국가</translation>
 <translation id="8294431847097064396">출처</translation>
@@ -509,6 +519,7 @@
 <translation id="8498220429738806196">트래픽 카운터</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> 기기가 최신 버전입니다</translation>
 <translation id="8521021929829989041">개인 기기로 사용</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
@@ -548,6 +559,7 @@
 <translation id="8970109610781093811">다시 실행</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{스캔}=1{{NUMBER_OF_PAGES}페이지 스캔}other{{NUMBER_OF_PAGES}페이지 스캔}}</translation>
+<translation id="8994273342647807496">설치 중 - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 변환 지연 시간이 깁니다.</translation>

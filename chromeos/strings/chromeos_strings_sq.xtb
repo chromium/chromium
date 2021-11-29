@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
+<translation id="1857850044054738019">Zgjidh këtë opsion nëse pajisja do të jetë sërish në gjendje ose do të rinovohet
+        për t'u dërguar te një klient i ri.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
@@ -76,6 +78,7 @@
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
+<translation id="2104796393919810494">Riparimi përfundoi</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -171,6 +174,7 @@
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
+<translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
 <translation id="3966286471246132217">Për rezultate më të sakta, mbylli të gjitha aplikacionet derisa të përfundojë testi.</translation>
@@ -196,6 +200,7 @@
 <translation id="4244962993387259361">Të duhen të paktën 500 MB hapësirë e lirë për ekzekutimin e një testi të memories. Për të liruar hapësirën, shko te Cilësimet &gt; Menaxhimi i hapësirës ruajtëse.</translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
 <translation id="4271957103967917607">Shiko në ekranin e plotë</translation>
+<translation id="4275799948641988986">Pas riparimit, kush do ta përdorë pajisjen?</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
@@ -208,6 +213,7 @@
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
 <translation id="4453205916657964690">Maska e nënrrjetit</translation>
 <translation id="4454245904991689773">Skano te</translation>
+<translation id="4472575034687746823">Fillo</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -230,6 +236,7 @@
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
 <translation id="4707579418881001319">L2TP/IPsec + certifikatë përdoruesi</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
+<translation id="473775607612524610">Përditësoje</translation>
 <translation id="475869545581454722">Fjalëkalimi i Chrome OS u përditësua</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4794140124556169553">Ekzekutimi i një testimi të CPU-së mund të ketë ndikim te cilësia e funksionimit të sistemit</translation>
@@ -238,6 +245,7 @@
 <translation id="4813345808229079766">Lidhja</translation>
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
+<translation id="4839698083503556542">Krijo filmin tënd</translation>
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
@@ -409,6 +417,7 @@
 <translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Pajisja do të kalojë te një zotërues tjetër</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
@@ -416,6 +425,9 @@
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
+<translation id="7451112128070628323">Zgjidh këtë opsion nëse zotërimi i pajisjes nuk do të ndryshojë.
+        Për shembull, pajisja po transferohet te një person tjetër
+        brenda një organizate.</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7487067081878637334">Teknologjia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -471,6 +483,7 @@
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
+<translation id="8281886186245836920">Kapërceje</translation>
 <translation id="8286154143153872371">Lidhu në një rrjet dhe ringarko faqen për të parë imazhin e sfondit.</translation>
 <translation id="8291967909914612644">Shteti i ofruesit të rrjetit bazë</translation>
 <translation id="8294431847097064396">Burimi</translation>
@@ -540,6 +553,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
+<translation id="9095415590198785865">Pajisja do të kalojë tek i njëjti zotërues</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>

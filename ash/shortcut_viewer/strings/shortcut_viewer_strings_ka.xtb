@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ახალი ფანჯრის გახსნა ინკოგნიტო რეჟიმში</translation>
 <translation id="152892567002884378">ხმის აწევა</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, შემდეგ კი — <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1-ლიდან მე-8 სამუშაო მაგიდებს შორის გადასვლა</translation>
 <translation id="1652741121070700329">წინა სიტყვის დასაწყისზე გადასვლა</translation>
 <translation id="1679841710523778799">სიკაშკაშის მომატება</translation>
 <translation id="168356808214100546">ხანგრძლივად დააჭირეთ <ph name="ALT" />-ს და შეეხეთ <ph name="TAB" />-ს, სანამ სასურველი ფანჯარა გაიხსნება, შემდეგ კი აუშვით.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1-დან 8-მდე</translation>
 <translation id="3837047332182291558">კლავიატურის სიკაშკაშის მომატება (მხოლოდ ფონური განათების მქონე კლავიატურებისთვის)</translation>
 <translation id="3949671998904569433">მძიმე</translation>
-<translation id="3976707995992061296">აქტიური ფანჯრის ყველა სამუშაო დაფაზე მიმაგრების გადართვა</translation>
 <translation id="3976863468609830880">თაროზე ბოლო ხატულაზე დაწკაპუნება</translation>
 <translation id="3994783594793697310">ეკრანის მასშტაბის დონის გადაყენება</translation>
 <translation id="4026843240379844265">აქტიური ფანჯრის გადატანა ეკრანებს შორის</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">დააჭირეთ <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />-ს და დააწკაპუნეთ ბმულზე</translation>
 <translation id="561814908794220892">ვებგვერდის გახსნა ახალ ჩანართში</translation>
 <translation id="5620219513321115856">აქტიური ფანჯრის გადატანა სამუშაო მაგიდის მარჯვნივ</translation>
+<translation id="5699366815052349604">აქტიური ფანჯრების მიმაგრება ყველა სამუშაო მაგიდაზე</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ან <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ბმულის გახსნა ჩანართში</translation>
 <translation id="5757474750054631686">კლავიატურის გამქრქალება (მხოლოდ ფონური განათების მქონე კლავიატურებისთვის)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">ეკრანის მასშტაბის გადიდება</translation>
 <translation id="634687982629734605">ფოკუსირების შეცვლა შემდეგ არეებს შორის: სტატუსის არე (სადაც თქვენი ანგარიშის სურათი ჩანს), გამშვები, მისამართთა ზოლი, სანიშნეების ზოლი (თუ ხილულია), გახსნილი ვებგვერდი, ჩამოტვირთვების ზოლი (თუ ხილულია). ფოკუსირებადი დიალოგის ჩვენების შემთხვევაში, ფოკუსში ის მოექცეს.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1-ლიდან მე-8 სამუშაო მაგიდამდე ყველას გააქტიურება.</translation>
 <translation id="6395172954772765143">ტექსტის არჩევა ხაზის ბოლოში</translation>
 <translation id="6425378783626925378">თაროზე 1-დან 8-მდე ხატულებზე დაწკაპუნება</translation>
 <translation id="6435207348963613811">თაროზე წინა ერთეულის გამოყოფა</translation>

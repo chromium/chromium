@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="102360288709523007">Forbedre Chromium ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
+<translation id="1047130070405668746">Velg Chromium</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium har funksjoner som hjelper deg med å administrere Internett-dataene dine og hvor fort du kan laste inn nettsider.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Velg Chromium</translation>
 <translation id="2006345422933397527">Chromium kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="2054703085270098503">Hold deg trygg med Chromium</translation>
 <translation id="2168108852149185974">Noen tillegg fører til at Chrome krasjer. Avinstaller dette:</translation>

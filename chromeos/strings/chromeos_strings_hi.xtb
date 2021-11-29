@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
+<translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
@@ -176,6 +177,7 @@
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
+<translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3966286471246132217">ज़्यादा सटीक नतीजों के लिए, टेस्ट पूरा होने तक सभी ऐप्लिकेशन बंद रखें.</translation>
@@ -215,6 +217,7 @@
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
+<translation id="4472575034687746823">शुरू करें</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
@@ -237,6 +240,7 @@
 <translation id="469379815867856270">सिग्नल की क्षमता</translation>
 <translation id="4707579418881001319">L2TP/IPsec + उपयोगकर्ता प्रमाणपत्र</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
+<translation id="473775607612524610">अपडेट करें</translation>
 <translation id="475869545581454722">Chrome OS का पासवर्ड बदला गया</translation>
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
@@ -267,7 +271,6 @@
 <translation id="5049856988445523908">सिम लॉक है (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">समूह नाम</translation>
 <translation id="5051044138948155788">सिर्फ़ यह पेज है. यह आपको उस स्क्रीन पर ले जाएगा जहां स्कैनिंग शुरू होती है.</translation>
-<translation id="5061169534910302641">वर्शन को अपडेट करके, रीस्टार्ट करें</translation>
 <translation id="5088172560898466307">सर्वर होस्‍टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5142961317498132443">पहचान करना</translation>
@@ -487,6 +490,7 @@
 <translation id="8217675307824400706">वाई-फ़ाई से कनेक्ट हों</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
+<translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8286154143153872371">वॉलपेपर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="8291967909914612644">'होम' पर काम करने वाली सेवाएं देने वाला देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>

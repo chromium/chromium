@@ -138,6 +138,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="225943865679747347">Cod de eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adaugă un cont</translation>
 <translation id="2268044343513325586">Rafinează</translation>
+<translation id="2271351792809375263">Folosește parolele salvate în Chrome în alte aplicații de pe dispozitiv.</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
 <translation id="2302742851632557585">Schimbă parola pentru site</translation>
 <translation id="2316709634732130529">Folosește parola sugerată</translation>
@@ -258,6 +259,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3393920035788932672">Pop-upuri permise</translation>
 <translation id="3399930248910934354">Deschide setările Chrome</translation>
 <translation id="3404744938087714423">Deconectarea dezactivează sincronizarea.</translation>
+<translation id="3414451675185661089">2. Atinge Parole.</translation>
 <translation id="3425644765244388016">Pseudonimul cardului</translation>
 <translation id="3433057996795775706">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />. Schimbă-ți parola de pe <ph name="WEBSITE" /> ca să-l păstrezi în siguranță.</translation>
 <translation id="3443810440409579745">Fila a fost primită.</translation>
@@ -331,6 +333,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4121993058175073134">Pentru trimitere date de export în rețea, configurați e-mailul în Setări.</translation>
 <translation id="4124987746317609294">Interval de timp</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
+<translation id="4153925727916232411">Astfel, poți să fotografiezi, să încarci fotografiile și să scanezi coduri QR.</translation>
 <translation id="4172051516777682613">Afișați întotdeauna</translation>
 <translation id="418156467088430727">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="4181841719683918333">Limbi</translation>
@@ -378,6 +381,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4666531726415300315">Te-ai conectat ca <ph name="EMAIL" />.
 
 Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
+<translation id="4682686630151240767">1. Deschide Setările dispozitivului iPhone.</translation>
 <translation id="4689564913179979534">Gestionează metodele de plată…</translation>
 <translation id="470966556546083668">Nu activa sincronizarea</translation>
 <translation id="473775607612524610">Actualizează</translation>
@@ -458,6 +462,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5489208564673669003">Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări pentru cookie-uri<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
+<translation id="5523579157975978438">Pentru dezactivare, deschide <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> și accesează Parole.</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="5532698011560297095">Nu se poate conecta</translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.
@@ -547,7 +552,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6255097610484507482">Editați cardul de credit</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pentru a activa Navigarea sigură, deschide <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /> și atinge Navigare sigură.</translation>
-<translation id="6308436439357671616">Astfel, poți să fotografiezi și să încarci fotografiile.</translation>
 <translation id="6321526113093607004">Adaugă în Marcaje</translation>
 <translation id="6324528485781869530">Schimbă contul de sincronizare</translation>
 <translation id="6324669097367352121">Setări de conectare</translation>
@@ -637,6 +641,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>
+<translation id="6897187120838603299">Parola se va salva pe dispozitivul tău.</translation>
 <translation id="6914583639806229067">Caută imaginea pe care ai copiat-o</translation>
 <translation id="6914783257214138813">Parolele vor fi vizibile pentru toți cei care pot vedea fișierul exportat.</translation>
 <translation id="6930799952781667037">Atinge ca să schimbi limba.</translation>
@@ -740,6 +745,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="7971521879845308059">Blochează pop-upurile</translation>
 <translation id="797413074872316787">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
+<translation id="7978018860671536736">3. Atinge Completează automat parolele.</translation>
 <translation id="7982789257301363584">Rețea</translation>
 <translation id="7993619969781047893">Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte</translation>
 <translation id="800361585186029508">Deschide adresele URL introduse în Google Chrome.</translation>
@@ -765,6 +771,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8205564605687841303">Anulează</translation>
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
 <translation id="8225985093977202398">Imaginile și fișierele memorate în cache</translation>
+<translation id="8237382152611443140">Deschide Setările pentru completarea automată a parolei.</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8271720166617117963">Acceptă și conectează-te</translation>
 <translation id="8281781826761538115">Prestabilit – <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +840,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8917490105272468696">Da, accept</translation>
 <translation id="8952559610785099500">Adaugă parola</translation>
 <translation id="895541991026785598">Raportați o problemă</translation>
+<translation id="8974714402877957201">1. Deschide Setările dispozitivului iPad.</translation>
 <translation id="8976382372951310360">Ajutor</translation>
 <translation id="8976414606286374109">Cardurile se salvează în Contul Google.</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>

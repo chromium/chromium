@@ -138,6 +138,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
 <translation id="2268044343513325586">Restringir</translation>
+<translation id="2271351792809375263">Usa las contraseñas que has guardado en Chrome en otras aplicaciones de tu dispositivo</translation>
 <translation id="2273327106802955778">Menú más</translation>
 <translation id="2302742851632557585">Cambiar contraseña en el sitio web</translation>
 <translation id="2316709634732130529">Usar contraseña sugerida</translation>
@@ -258,6 +259,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3393920035788932672">Pop-ups permitidos</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3404744938087714423">La sincronización se desactivará al cerrar sesión.</translation>
+<translation id="3414451675185661089">2. Toca Contraseñas</translation>
 <translation id="3425644765244388016">Nombre de la tarjeta</translation>
 <translation id="3433057996795775706">Eliminar esta contraseña no hará que se elimine tu cuenta de <ph name="WEBSITE" />. Cambia la contraseña de <ph name="WEBSITE" /> para protegerla de otras personas.</translation>
 <translation id="3443810440409579745">Se ha recibido una pestaña.</translation>
@@ -331,6 +333,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4121993058175073134">Configura tu correo en Configuración para enviar datos de exportaciones netas.</translation>
 <translation id="4124987746317609294">Tiempo</translation>
 <translation id="4152011295694446843">Aquí verás tus marcadores</translation>
+<translation id="4153925727916232411">Esto te permite hacer fotos y subirlas, así como escanear códigos QR.</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="418156467088430727">Ver versión sin conexión en una nueva pestaña</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -378,6 +381,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4666531726415300315">Has iniciado sesión como <ph name="EMAIL" />.
 
 Tus datos se han cifrado con tu frase de contraseña de sincronización. Introdúcela para iniciar la sincronización.</translation>
+<translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4689564913179979534">Gestionar métodos de pago...</translation>
 <translation id="470966556546083668">No activar la sincronización</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -458,6 +462,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
+<translation id="5523579157975978438">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> y ve a Contraseñas.</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
 <translation id="5532698011560297095">No se puede acceder.</translation>
 <translation id="5548760955356983418">Handoff te permite empezar a navegar en un sitio web en este dispositivo y continuar fácilmente en tu Mac más tarde. El sitio web abierto actualmente aparecerá en el Dock de tu Mac.
@@ -547,7 +552,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6255097610484507482">Editar tarjeta de crédito</translation>
 <translation id="6284652193729350524">Ofrecer traducir del <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y toca Navegación segura.</translation>
-<translation id="6308436439357671616">Esto te permite hacer fotos y subirlas.</translation>
 <translation id="6321526113093607004">Añadir a Marcadores</translation>
 <translation id="6324528485781869530">Cambiar cuenta de sincronización</translation>
 <translation id="6324669097367352121">Configuración de inicio de sesión</translation>
@@ -740,6 +744,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 Los sitios pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="7971521879845308059">Bloquear pop-ups</translation>
 <translation id="797413074872316787">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
+<translation id="7978018860671536736">3. Toca Autorrellenar contraseñas</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>
 <translation id="800361585186029508">Abre las URL introducidas en Google Chrome.</translation>
@@ -765,6 +770,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">El administrador aplica esta opción.</translation>
 <translation id="8225985093977202398">Archivos e imágenes en caché</translation>
+<translation id="8237382152611443140">Abre los ajustes de Autorrellenar contraseñas</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8281781826761538115">Predeterminada: <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8917490105272468696">Sí, acepto</translation>
 <translation id="8952559610785099500">Añadir contraseña</translation>
 <translation id="895541991026785598">Notificar un problema</translation>
+<translation id="8974714402877957201">1. Abre los ajustes del iPad</translation>
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu cuenta de Google.</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>

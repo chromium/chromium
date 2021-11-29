@@ -77,6 +77,7 @@
 <translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
+<translation id="2104796393919810494">Remont on lõpetatud</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB <ph name="TOTAL_MEMORY" />-st on saadaval</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -89,6 +90,7 @@
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveerimise olek</translation>
+<translation id="2287186687001756809">Pilte pole saadaval. Fotode lisamiseks minge saidile <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Kasuta praegust võtmepaari</translation>
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
@@ -116,6 +118,7 @@
 <translation id="2783010256799387990">LÄBITUD</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2805756323405976993">Rakendused</translation>
+<translation id="2859243502336719778">Tähtis värskendus</translation>
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
@@ -150,6 +153,7 @@
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="345898999683440380">Lehe <ph name="PAGE_NUM" /> skannimine. <ph name="PERCENTAGE_VALUE" />% on lõpetatud.</translation>
 <translation id="3459509316159669723">Printimine</translation>
+<translation id="3462187165860821523">Seadme <ph name="DEVICE_NAME" /> värskendamine</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
@@ -174,6 +178,7 @@
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
+<translation id="3932043219784172185">Ükski seade ei ole ühendatud</translation>
 <translation id="3941014780699102620">Hosti lahendamine ebaõnnestus</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3966286471246132217">Täpsemate tulemuste saamiseks sulgege kõik rakendused, kuni test on lõpetatud.</translation>
@@ -206,6 +211,7 @@
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Välisseadmete värskendamine</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> on välja lülitatud</translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
@@ -213,6 +219,7 @@
 <translation id="445059817448385655">Vana parool</translation>
 <translation id="4453205916657964690">Alamvõrgu mask</translation>
 <translation id="4454245904991689773">Skanni asukohta</translation>
+<translation id="4472575034687746823">Alustage</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="4511264077854731334">Portaal</translation>
@@ -235,6 +242,7 @@
 <translation id="469379815867856270">Signaali tugevus</translation>
 <translation id="4707579418881001319">L2TP/IPSec + kasutaja sertifikaat</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
+<translation id="473775607612524610">Värskenda</translation>
 <translation id="475869545581454722">Chrome OS-i parooli värskendati</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4794140124556169553">Protsessori testi käitamine võib mõjutada teie süsteemi jõudlust</translation>
@@ -256,6 +264,7 @@
 <translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
 <translation id="4930320165497208503">Ühenduse seadistamiseks või värskendamiseks avage leht <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
+<translation id="4950314376641394653">Seadme <ph name="DEVICE_NAME" /> püsivara on värskendatud versioonile <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="4987769320337599931">Tulemüür</translation>
@@ -265,7 +274,6 @@
 <translation id="5049856988445523908">SIM on lukus (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupi nimi</translation>
 <translation id="5051044138948155788">See on ainus leht. See suunab teid skannimise avakuvale.</translation>
-<translation id="5061169534910302641">Värskenda versiooni ja taaskäivita</translation>
 <translation id="5088172560898466307">Serveri hosti nimi</translation>
 <translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5142961317498132443">Autentimine</translation>
@@ -398,6 +406,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7040230719604914234">Operaator</translation>
 <translation id="7058278511608979688">Lõpeta ja salvesta</translation>
 <translation id="7059230779847288458">Laadimine, täislaadimiseks kulub <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Seadme ettevalmistamine</translation>
 <translation id="708426984172631313">PEATATUD</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
@@ -411,6 +420,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
+<translation id="7240035910874241640">Kõik välisseadmed on ajakohased</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
@@ -451,6 +461,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7784116172884276937">Seadistatud pole ühtegi DNS-serverit</translation>
+<translation id="7786540085520432425">Võite värskendamise ajal akna minimeerida, kuid ärge eemaldage seadet. See võib võtta mõne minuti ja teie seade ei pruugi värskendamise ajal toimida.</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
 <translation id="7835501727204647447">Installi CloudReady</translation>
@@ -484,6 +495,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8217675307824400706">Looge ühendus</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
+<translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8286154143153872371">Taustapildi vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="8291967909914612644">Koduteenuse pakkuja riik</translation>
 <translation id="8294431847097064396">Allikas</translation>
@@ -508,6 +520,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8498220429738806196">Liiklusloendurid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
+<translation id="8520963233738002436">Teie <ph name="DEVICE_NAME" /> on ajakohane</translation>
 <translation id="8521021929829989041">Kasuta isikliku seadmena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
@@ -547,6 +560,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanni}=1{Skanni {NUMBER_OF_PAGES}. lehte}other{Skanni {NUMBER_OF_PAGES}. lehte}}</translation>
+<translation id="8994273342647807496">Installimine – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Sagedus</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-i eraldusvõimel on pikk latentsusaeg</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="102360288709523007">Pomóż ulepszyć Chromium, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
+<translation id="1047130070405668746">Wybierz Chromium.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1257458525759135959">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chromium na dodanie ich do Twoich zdjęć</translation>
 <translation id="1289216811211435351">Przejdź na Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium sprawdził, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">W Chromium są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Wybierz Chromium.</translation>
 <translation id="2006345422933397527">Chromium nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2054703085270098503">Dbaj o swoje bezpieczeństwo, używając Chromium</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>

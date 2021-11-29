@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="ESC" /></translation>
+<translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1652741121070700329">ย้ายไปยังจุดเริ่มต้นของคำก่อนหน้า</translation>
 <translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="168356808214100546">กด <ph name="ALT" /> ค้างไว้แล้วแตะ <ph name="TAB" /> จนกว่าคุณจะไปถึงหน้าต่างที่ต้องการเปิดแล้วจึงปล่อย</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 จนถึง 8</translation>
 <translation id="3837047332182291558">เพิ่มแสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
 <translation id="3949671998904569433">จุลภาค</translation>
-<translation id="3976707995992061296">สลับปุ่มเพื่อระบุว่าจะกำหนดหน้าต่างที่ใช้งานอยู่ให้กับเดสก์ทั้งหมดหรือไม่</translation>
 <translation id="3976863468609830880">คลิกไอคอนสุดท้ายบนชั้นวาง</translation>
 <translation id="3994783594793697310">รีเซ็ตระดับการซูมหน้าจอ</translation>
 <translation id="4026843240379844265">ย้ายหน้าต่างที่ใช้งานไปยังหน้าจอต่างๆ</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">กด <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> และคลิกลิงก์</translation>
 <translation id="561814908794220892">เปิดหน้าเว็บในแท็บใหม่</translation>
 <translation id="5620219513321115856">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านขวา</translation>
+<translation id="5699366815052349604">กำหนดหน้าต่างที่ใช้งานอยู่ให้กับเดสก์ทั้งหมด</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> หรือ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="5757474750054631686">หรี่แสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">ซูมหน้าจอเข้า</translation>
 <translation id="634687982629734605">สลับโฟกัสระหว่างพื้นที่แสดงสถานะ (ตำแหน่งที่รูปสำหรับบัญชีของคุณปรากฏ), Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก (ถ้ามองเห็นได้), หน้าเว็บที่เปิด และแถบดาวน์โหลด (ถ้ามองเห็นได้) หากกล่องโต้ตอบที่โฟกัสได้แสดงขึ้น ให้ย้ายไปโฟกัสตรงนั้นแทน</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">เปิดใช้งานเดสก์ที่ 1 ถึง 8</translation>
 <translation id="6395172954772765143">เลือกข้อความไปจนสุดบรรทัด</translation>
 <translation id="6425378783626925378">คลิกไอคอน 1-8 บนชั้นวาง</translation>
 <translation id="6435207348963613811">ไฮไลต์รายการก่อนหน้านี้บนชั้นวาง</translation>

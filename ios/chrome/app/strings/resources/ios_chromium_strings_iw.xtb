@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="102360288709523007">‏עזרה בשיפור Chromium על-ידי שליחה של סטטיסטיקת שימוש ודוחות קריסה אל Google.</translation>
+<translation id="1047130070405668746">‏בוחרים באפשרות Chromium</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1289216811211435351">‏החלפה ל-Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="1843424232666537147">‏Chromium כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט ואת המהירות שבה אפשר לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">‏4. בוחרים באפשרות Chromium</translation>
 <translation id="2006345422933397527">‏Chromium לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2054703085270098503">‏פשוט לשמור על הבטיחות בעזרת Chromium</translation>
 <translation id="2168108852149185974">‏תוספים מסוימים גורמים ל-Chromium לקרוס. יש להסיר אותם:</translation>

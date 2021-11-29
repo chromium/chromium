@@ -6,11 +6,11 @@
 <translation id="1012173283529841972">સૂચિ આઇટમ</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">બે આંગળી જમણી બાજુ સ્વાઇપ કરો</translation>
-<translation id="1022586497894531524">શું તમે ChromeVoxના બોલાયેલ પ્રતિસાદનો પહેલી વાર ઉપયોગ કરી રહ્યા છો? આ ઝડપી ટ્યૂટૉરિઅલ ChromeVox શરૂ કરવા માટેની જરૂરી બાબતો સમજાવે છે.</translation>
+<translation id="1022586497894531524">શું તમે ChromeVoxના બોલાયેલા પ્રતિસાદનો પહેલી વાર ઉપયોગ કરી રહ્યા છો? આ ઝડપી ટ્યૂટૉરિઅલ ChromeVox શરૂ કરવા માટેની જરૂરી બાબતો સમજાવે છે.</translation>
 <translation id="1025074108959230262">સ્ટીકી મોડ અક્ષમ કર્યો</translation>
 <translation id="1031961866430398710">પછી</translation>
 <translation id="1038643060055067718">લાઇનો:</translation>
-<translation id="1038795173450935438">કોઈ પેજ પરની આઇટમમાં આગળ જવા માટે, Search + જમણી Arrow કી અથવા પાછળ જવા માટે Search + ડાબી Arrow કી દબાવો. આગળની લાઇન પર જવા માટે, Search + નીચલી Arrow કી દબાવો. પાછળની લાઇન પર જવા માટે, Search + ઉપલી Arrow કીનો ઉપયોગ કરો. જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચી ગયા હો, તો Search + Space કી દબાવો.</translation>
+<translation id="1038795173450935438">કોઈ પેજ પરની આઇટમમાં આગળ જવા માટે, Search + જમણી ઍરો કી અથવા પાછળ જવા માટે Search + ડાબી ઍરો કી દબાવો. આગળની લાઇન પર જવા માટે, Search + નીચલી ઍરો કી દબાવો. પાછળની લાઇન પર જવા માટે, Search + ઉપલી ઍરો કીનો ઉપયોગ કરો. જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચી ગયા હો, તો Search + Space કી દબાવો.</translation>
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">અમાન્ય ઇનપુટ</translation>
 <translation id="1066085461259044485">વન જેવો લીલો</translation>
@@ -70,7 +70,7 @@
 <translation id="135978014023467274">તમને ChromeVox 63 પર અપડેટ કરવામાં આવ્યા છે!</translation>
 <translation id="1360699455582016846">રૂટિંગ કી <ph name="ROUTING_KEY_NUMBER" /> હેઠળની આઇટમને ક્લિક કરો</translation>
 <translation id="1376703628032300005">આગલા અક્ષર પર ખસેડો</translation>
-<translation id="1377925789329510816">આ છેલ્લું મથાળું છે. આ પેજ પર સીધા જ પ્રથમ મથાળા પર જવા માટે શોધ+H, અથવા બીજા મથાળા પર જવા માટે શોધ+Shift+H દબાવો.</translation>
+<translation id="1377925789329510816">આ છેલ્લું મથાળું છે. આ પેજ પર સીધા જ પહેલા મથાળા પર જવા માટે Search+H, અથવા બીજા મથાળા પર જવા માટે Search+Shift+H દબાવો.</translation>
 <translation id="138218114945450791">આછો વાદળી</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1396114365388024581">tablst</translation>
@@ -84,7 +84,7 @@
 <translation id="146450394670219700">ગ્રાફિક્સ ઑબ્જેક્ટ</translation>
 <translation id="1465097259579587977">ઝડપી ઓરિએન્ટેશન ફરી શરૂ કરો</translation>
 <translation id="1480046233931937785">ક્રેડિટ્સ</translation>
-<translation id="1487494366197411587">Chromebook પર, શોધ કી એ ડાબી Shift કીની એકદમ ઉપરની કી છે.</translation>
+<translation id="1487494366197411587">Chromebook પર, Search કી એ ડાબી Shift કીની એકદમ ઉપરની કી છે.</translation>
 <translation id="1498498210836053409">ટેક્સ્ટમાં ફેરફાર કરતી વખતે સ્ટીકી મોડ બંધ કરો (સ્માર્ટ સ્ટીકી મોડ)</translation>
 <translation id="1499041187027566160">વૉલ્યૂમ વધારો</translation>
 <translation id="1502086903961450562">પાછલા ગ્રાફિક પર જાઓ</translation>
@@ -199,7 +199,7 @@
 <translation id="2365384324219615024">આઇટમ સક્રિય કરવા માટે તમે Enter પણ દબાવી શકો છો. ઉદાહરણ તરીકે, ફોર્મમાં ટેક્સ્ટ સબમિટ કરવા માટે Enterનો ઉપયોગ કરી શકાય છે. આગળ વધવા માટે, Enter દબાવો.</translation>
 <translation id="2381733276052567791">વાણી ચાલુ અથવા બંધ કરવાનું ટૉગલ કરો</translation>
 <translation id="2390264819538553347">આગળ જવા માટે, enter દબાવો, પાછળ જવા માટે backspace દબાવો.</translation>
-<translation id="2398579267367951220">પેજ શોધવા માટે ટાઇપ કરો. પરિણામ પર જવા માટે enter, પરિણામો બ્રાઉઝ કરવા માટે ઉપર અથવા નીચે એરો દબાવો, તમારી શોધમાં ફેરફાર કરવા માટે ટાઇપ કરવાનું ચાલુ રાખો અથવા રદ કરવા માટે escape દબાવો.</translation>
+<translation id="2398579267367951220">પેજ શોધવા માટે ટાઇપ કરો. પરિણામ પર જવા માટે Enter, પરિણામો બ્રાઉઝ કરવા માટે ઉપર અથવા નીચેનો ઍરો દબાવો, તમારી શોધમાં ફેરફાર કરવા માટે ટાઇપ કરવાનું ચાલુ રાખો અથવા રદ કરવા માટે Escape દબાવો.</translation>
 <translation id="240709722712693803">ભૂરો જાંબલી</translation>
 <translation id="2410298923485357543">જ્યારે ડિવાઇસ ઑનલાઇન હોય, ત્યારે નૈસર્ગિક અવાજનો ઉપયોગ કરો</translation>
 <translation id="2416512023405990736">અનચેક કરેલુંં ચેકબોક્સ</translation>
@@ -278,7 +278,7 @@
 <translation id="2873259058405069099">કોષ્ટકની શરૂઆત પર જાઓ</translation>
 <translation id="287383510823843610">ઘાટો નારંગી</translation>
 <translation id="2879867157561757640">ત્રણ આંગળી નીચેની બાજુ સ્વાઇપ કરો</translation>
-<translation id="288178314850623291">ચોક્કસ પ્રકારના ઘટકો પર જવા માટે જમ્પ આદેશોનો ઉપયોગ કરો. મથાળામાં આગળ જવા માટે, શોધ + H દબાવો અથવા પાછળ જવા માટે, શોધ + Shift + H દબાવો.</translation>
+<translation id="288178314850623291">ચોક્કસ પ્રકારના ઘટકો પર જવા માટે જમ્પ આદેશોનો ઉપયોગ કરો. મથાળામાં આગળ જવા માટે, Search + H દબાવો અથવા પાછળ જવા માટે, Search + Shift + H દબાવો.</translation>
 <translation id="2885764457467528513">{COUNT,plural, =1{મિનિટ}one{મિનિટ}other{મિનિટ}}</translation>
 <translation id="2894654529758326923">માહિતી</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{ડાબો છગડિયો કૌંસ}one{# ડાબા છગડિયા કૌંસ}other{# ડાબા છગડિયા કૌંસ}}</translation>
@@ -313,7 +313,7 @@
 <translation id="3082249673510793544">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="3084806535845658316">કોઈ લખાણ પડઘો નથી</translation>
 <translation id="3086746722712840547">નોંધ</translation>
-<translation id="308736057934395497">આમ કરવાથી તમારી સ્ક્રીન બંધ થઈ જશે જેથી તે અન્ય કોઈને દેખાઈ શકશે નહીં અને સરવાળે તમારી પ્રાઇવસીનું રક્ષણ થશે. તમે શોધ + બ્રાઇટનેસ વધારવાની કી દબાવીને હંમેશાં સ્ક્રીન ફરી ચાલુ કરી શકો છો.</translation>
+<translation id="308736057934395497">આમ કરવાથી તમારી સ્ક્રીન બંધ થઈ જશે જેથી તે અન્ય કોઈને દેખાઈ શકશે નહીં અને સરવાળે તમારી પ્રાઇવસીનું રક્ષણ થશે. તમે Search + બ્રાઇટનેસ વધારવાની કી દબાવીને હંમેશાં સ્ક્રીન ફરી ચાલુ કરી શકો છો.</translation>
 <translation id="3090227230165225418">ડાઉનલોડ નોટિફિકેશનની ઘોષણા કરો</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">આગલી સ્થળનિશાની</translation>
@@ -404,7 +404,7 @@
 <translation id="3594207934078151302">મધ્યમ દરિયાઈ લીલો</translation>
 <translation id="3599054940393788245">ગણિતમાં નહીં</translation>
 <translation id="360241989769010433">સ્વીકૃતિઓ</translation>
-<translation id="3616016838842055984">જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચો, તો શોધ + સ્પેસ દબાવો. આગળ વધવા માટે, હમણાં જ અજમાવી જુઓ.</translation>
+<translation id="3616016838842055984">જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચો, તો Search + Space દબાવો. આગળ વધવા માટે, હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622350485154495700">એક આંગળી વડે બે વાર ટૅપ કરો</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{બેકટિક}one{# બેકટિક}other{# બેકટિક}}</translation>
@@ -412,7 +412,7 @@
 <translation id="3655855170848725876">{COUNT,plural, =1{ડૉલર}one{# ડૉલરની નિશાની}other{# ડૉલરની નિશાની}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">હિન્ટ: જો તમે આ ટ્યૂટૉરિઅલમાંથી બહાર નીકળવા માગો, તો Escape દબાવો.</translation>
-<translation id="3676062394766691318">તમે તમારા ડિવાઇસનું સેટઅપ કરી લો તે પછી તમે પાછા આવીને શોધ + O અને ત્યાર બાદ T દબાવીને વધુ ટ્યૂટૉરિઅલ જોઈ શકો છો.</translation>
+<translation id="3676062394766691318">તમે તમારા ડિવાઇસનું સેટઅપ કરી લો તે પછી તમે પાછા આવીને Search + O અને ત્યાર બાદ T દબાવીને વધુ ટ્યૂટૉરિઅલ જોઈ શકો છો.</translation>
 <translation id="3681531118904532409">પપાયા વ્હિપ</translation>
 <translation id="3692274950075847560">S:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">લાઇન મુજબ</translation>
@@ -465,7 +465,7 @@
 <translation id="4053520724192563562">લીંબુ જેવો લીલો</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">પેજ લોડ થાય છે</translation>
-<translation id="4065205963140826639">આગલું બટન શોધવા માટે હમણાં શોધ + જમણા તીરનો ઉપયોગ કરવાનો પ્રયાસ કરો, પછી તેને ક્લિક કરવા માટે શોધ + Space દબાવો.</translation>
+<translation id="4065205963140826639">આગલું બટન શોધવા માટે હમણાં Search + જમણા ઍરોનો ઉપયોગ કરવાનો પ્રયાસ કરો, પછી તેને ક્લિક કરવા માટે Search + Space દબાવો.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{ટિલ્ડ}one{# ટિલ્ડ}other{# ટિલ્ડ}}</translation>
 <translation id="409334809956508737">પાછલો ઑબ્જેક્ટ</translation>
 <translation id="4099274309791143834">સબમેનૂ સા</translation>
@@ -475,7 +475,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{જમણો છગડિયો કૌંસ}one{# જમણા છગડિયા કૌંસ}other{# જમણા છગડિયા કૌંસ}}</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{સેકન્ડ}one{સેકન્ડ}other{સેકન્ડ}}</translation>
-<translation id="4161663686871496107">ChromeVox બોલાયેલ પ્રતિસાદ તૈયાર છે</translation>
+<translation id="4161663686871496107">ChromeVox બોલાયેલો પ્રતિસાદ તૈયાર છે</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4187322598335821254">પંક્તિ દર પંક્તિ ઉપર અથવા નીચે કરવા માટે સ્વાઇપ કરો</translation>
 <translation id="4188530942454211480">પાછલું વાક્ય</translation>
@@ -516,7 +516,7 @@
 <translation id="4406249099130339147">વિરામચિહ્નનો પડઘો:</translation>
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
-<translation id="4437615272777527928">મેનુ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે એરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા એરોનો ઉપયોગ કરો.</translation>
+<translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
 <translation id="4457472090507035117">વર્તમાન વૉઇસ પસંદ કરો:</translation>
 <translation id="4476183483923481720">નવી લાઇન</translation>
 <translation id="4479068155583208887">આગમાંની ઈંટ જેવો</translation>
@@ -684,7 +684,7 @@
 <translation id="5653397561111110475">Chromebook ટચ સ્ક્રીન ઍક્સેસિબિલિટી સુવિધાઓનો ઉપયોગ કરો</translation>
 <translation id="5655682562155942719">જંપ આદેશો</translation>
 <translation id="56637627897541303">ટેક્સ્ટ ક્ષેત્ર</translation>
-<translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, શોધ + જમણો એરો અથવા શોધ + ડાબો એરો દબાવો</translation>
+<translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, Search + જમણો ઍરો અથવા Search + ડાબો ઍરો દબાવો</translation>
 <translation id="5677240841070992068">હાલનું સ્થાન</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
@@ -696,7 +696,7 @@
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5712889723513495267">આગળના કે પાછળના વિભાગ પર જાઓ</translation>
 <translation id="5725079927589231571">આછો રાખોડી ભૂરો</translation>
-<translation id="5732189279857692565">આ બીજું મથાળું છે. ચાલુ રાખો અથવા શોધ+H અથવા શોધ+Shift+H દબાવો.</translation>
+<translation id="5732189279857692565">આ બીજું મથાળું છે. ચાલુ રાખો અથવા Search+H અથવા Search+Shift+H દબાવો.</translation>
 <translation id="5748623122140342504">પાછલું લેવલ 5 શીર્ષક</translation>
 <translation id="5760594853119905566">જોડાણ</translation>
 <translation id="5761219715606611783">વાહ! તમે ChromeVox ટચની મૂળભૂત બાબતો શીખી લીધી છે. તમે ફરીથી ટ્યૂટૉરિઅલ જોઈ શકો છો અથવા નીચેના બટનનો ઉપયોગ કરીને આ ટ્યૂટૉરિઅલમાંથી બહાર નીકળી શકો છો.</translation>
@@ -712,11 +712,11 @@
 <translation id="5850707923114094062">પાછળની તરફ પેન કરો</translation>
 <translation id="5851548754964597211">ટેબ સૂચિ</translation>
 <translation id="5866042630553435010">આંશિક રૂપે તપાસેલું</translation>
-<translation id="5866210856231860256">આ વિષય માટેના પાઠ બ્રાઉઝ કરવા માટે, શોધ + જમણો એરો અથવા શોધ + ડાબો એરો દબાવો</translation>
+<translation id="5866210856231860256">આ વિષય માટેના પાઠ બ્રાઉઝ કરવા માટે, Search + જમણો ઍરો અથવા Search + ડાબો ઍરો દબાવો</translation>
 <translation id="5867591286054666064">આ ટ્યૂટોરિઅલ દરમિયાન, કોઈપણ કીને તેનું નામ સાંભળવા માટે દબાવો.</translation>
 <translation id="5869546221129391014">ગ્રિડ</translation>
 <translation id="5876817486144482042">ભાષણનો અવાજ ધીમો કરો</translation>
-<translation id="5878206664863390311">વિષયો બ્રાઉઝ કરવા માટે, શોધ + જમણો એરો અથવા શોધ + ડાબો એરો દબાવો</translation>
+<translation id="5878206664863390311">વિષયો બ્રાઉઝ કરવા માટે, Search + જમણો ઍરો અથવા Search + ડાબો ઍરો દબાવો</translation>
 <translation id="5878908838135392163">પાઉડર ભૂરો</translation>
 <translation id="588108970619830498">ટેક્સ્ટ ટૂ સ્પીચ સેટિંગને ડિફૉલ્ટ મૂલ્યો પર રીસેટ કરો</translation>
 <translation id="5891934789323004067">ટેબલ</translation>
@@ -766,7 +766,7 @@
 <translation id="6254901459154107917">આગલું સંપાદનયોગ્ય ટેક્સ્ટ ક્ષેત્ર</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> થી બહાર નીકળ્યાં છે.</translation>
 <translation id="6282062888058716985">nav</translation>
-<translation id="6295699829709583154">આવશ્યક કી: શોધ</translation>
+<translation id="6295699829709583154">આવશ્યક કી: Search</translation>
 <translation id="6305702903308659374">ChromeVox બોલી રહ્યું હોય ત્યારે પણ સામાન્ય અવાજે ચલાવો</translation>
 <translation id="6307969636681130414">દબાયેલું</translation>
 <translation id="6315652249189065725">કીબોર્ડ શૉર્ટકટ મેનૂ ખોલો</translation>
@@ -798,7 +798,7 @@
 <translation id="6508059270146105198">બ્રેઇલ ડિસ્પ્લેને પેજમાં સૌથી નીચે ખસેડો</translation>
 <translation id="6521550811716689390">ઘાટો જાંબુડિયો</translation>
 <translation id="6536157907112457272">લિનન</translation>
-<translation id="6540201937398578274">ChromeVoxમાં, શોધ કી એ પરિવર્તનકારી કી છે. મોટાભાગના ChromeVox શૉર્ટકટ શોધ કી વડે શરૂ થાય છે. તમે નૅવિગેશન માટે તીર કીનો ઉપયોગ પણ કરશો.</translation>
+<translation id="6540201937398578274">ChromeVoxમાં, Search કી એ મૉડિફાયર કી છે. મોટાભાગના ChromeVox શૉર્ટકટ Search કી વડે શરૂ થાય છે. તમે નૅવિગેશન માટે ઍરો કીનો ઉપયોગ પણ કરશો.</translation>
 <translation id="6544923685317771506">છીપલું</translation>
 <translation id="6551185905438378412">આઇવરી</translation>
 <translation id="6561818612645211875">ચાલુ પંક્તિની શરૂઆત પર જાઓ</translation>
@@ -839,7 +839,7 @@
 <translation id="6858047746862060282">પ્રસ્તાવના</translation>
 <translation id="6859876496651143278">એક આંગળી ડાબી બાજુ સ્વાઇપ કરો</translation>
 <translation id="6865519907510167493">ખોટી જોડણીવાળો</translation>
-<translation id="6873188295213080042">હિન્ટ: નૅવિગેટ કરવા માટે, શોધ કી દબાવી રાખીને એરો કી દબાવો.</translation>
+<translation id="6873188295213080042">હિન્ટ: નૅવિગેટ કરવા માટે, Search કી દબાવી રાખીને ઍરો કી દબાવો.</translation>
 <translation id="6894148351896207544">વર્તમાન સમય અને તારીખ બોલો</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6897341342232909480">ડાબે ખસેડો</translation>
@@ -910,7 +910,7 @@
 <translation id="7313717760367325059">સહાય</translation>
 <translation id="7317017974771324508">આંશિકરૂપે પસંદ કરેલ</translation>
 <translation id="7322442671176251901">ટચ કરીને શોધખોળ કરો</translation>
-<translation id="7344012264516629579">જમ્પ આદેશોના થોડા નામ આપીએ, તો તેમાં લિંક, બટન અને ચેકબૉક્સ મુજબ જમ્પ કરવાના આદેશો શામેલ છે. ChromeVox મેનૂમાં જમ્પ આદેશોની સંપૂર્ણ સૂચિ મળી શકશે, જેને શોધ + પૂર્ણવિરામ દબાવીને ખોલી શકાશે.</translation>
+<translation id="7344012264516629579">જમ્પ આદેશોના થોડા નામ આપીએ, તો તેમાં લિંક, બટન અને ચેકબૉક્સ મુજબ જમ્પ કરવાના આદેશો શામેલ છે. ChromeVox મેનૂમાં જમ્પ આદેશોની સંપૂર્ણ સૂચિ મળી શકશે, જેને Search + પૂર્ણવિરામ દબાવીને ખોલી શકાશે.</translation>
 <translation id="7356165926712028380">8 ડોટ બ્રેઇલ પર સ્વિચ કરો</translation>
 <translation id="7356610683936413584">વર્ણનની સૂચિની વિગત</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{એમ્પરસેંડ}one{# એમ્પરસેંડ્સ}other{# એમ્પરસેંડ્સ}}</translation>
@@ -948,7 +948,7 @@
 <translation id="762020119231868829">વર્તમાનમાં ચાલી રહેલા બધા મીડિયા વિજેટ્સને થોભાવે છે</translation>
 <translation id="7625690649919402823">આગલું કોષ્ટક</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ગ્રેડ <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">અભ્યાસ ક્ષેત્ર અથવા 'આગલો પાઠ' બટન શોધવા માટે, શોધ + જમણો એરો દબાવો. પછી તેને સક્રિય કરવા માટે શોધ + સ્પેસ દબાવો.</translation>
+<translation id="7637342083105831460">અભ્યાસ ક્ષેત્ર અથવા 'આગલો પાઠ' બટન શોધવા માટે, Search + જમણો ઍરો દબાવો. પછી તેને સક્રિય કરવા માટે Search + Space દબાવો.</translation>
 <translation id="7639968568612851608">ઘાટો ગ્રે</translation>
 <translation id="7663318257180412551">મથાળું 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{કલાક}one{કલાક}other{કલાક}}</translation>
@@ -1026,9 +1026,9 @@
 <translation id="8129445297241948503">ઉપર કોઈ સેલ નથી</translation>
 <translation id="8132248161074464367">પાછલી અમાન્ય આઇટમ</translation>
 <translation id="8138880386467279117">ટચ કરો</translation>
-<translation id="8146613869421949343">આગળ, તમે શોધ કી વિશે જાણકારી મેળવશો. ChromeVox આદેશો માટે શોધ કીને અન્ય કી સાથે ઉપયોગમાં લેવા આવે છે. શોધ કી એ ડાબી Shift કીની એકદમ ઉપર આવેલી છે. આગળ વધવા માટે, શોધ કી દબાવો.</translation>
+<translation id="8146613869421949343">આગળ, તમે Search કી વિશે જાણકારી મેળવશો. ChromeVox આદેશો માટે Search કીને અન્ય કી સાથે ઉપયોગમાં લેવા આવે છે. Search કી એ ડાબી Shift કીની એકદમ ઉપર આવેલી છે. આગળ વધવા માટે, Search કી દબાવો.</translation>
 <translation id="8158033275290782295">તમામ પસંદ કરો</translation>
-<translation id="816818801578874684">આ પહેલું મથાળું છે. આગલા મથાળા પર જવા માટે શોધ + H દબાવો.</translation>
+<translation id="816818801578874684">આ પહેલું મથાળું છે. આગલા મથાળા પર જવા માટે Search + H દબાવો.</translation>
 <translation id="8173092779156526980">ચાર આંગળીઓ વડે ડાબે સ્વાઇપ કરો</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{અંડરસ્કોર}one{# અંડરસ્કોર}other{# અંડરસ્કોર}}</translation>
 <translation id="817529114347680055">સ્ક્રીન ચાલુ કરો</translation>
@@ -1071,11 +1071,11 @@
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
 <translation id="8476508772960940536">વિંડોનું વિહંગાવલોકન</translation>
-<translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે શોધ કી દબાવી રાખીને એરો કી દબાવી શકો છો. આગળ વધવા માટે, શોધ + જમણો એરો દબાવો.</translation>
+<translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે Search કી દબાવી રાખીને ઍરો કી દબાવી શકો છો. આગળ વધવા માટે, Search + જમણો ઍરો દબાવો.</translation>
 <translation id="8503360654911991865">નેવિગેશન ગ્રેન્યુલેરિટી ઘટાડો</translation>
 <translation id="8520472399088452386">સ્પિન બટન</translation>
 <translation id="8534394844575788431">ફોર્મેટિંગ</translation>
-<translation id="8542271685829952264">તમામ ChromeVox આદેશો અને શોર્ટકટ વિશે વધુ જાણવા માટે, Search + Period દબાવો, પછી મેનૂઝ નૅવિગેટ કરવા માટે એરો કીનો, અને આદેશને સક્રિય કરવા માટે Enterનો ઉપયોગ કરો. Search+o પછી t દબાવીને અહીં પાછા ફરો.</translation>
+<translation id="8542271685829952264">તમામ ChromeVox આદેશો અને શૉર્ટકટ વિશે વધુ જાણવા માટે, Search + Period દબાવો, પછી મેનૂ નૅવિગેટ કરવા માટે ઍરો કીનો, અને આદેશને સક્રિય કરવા માટે Enterનો ઉપયોગ કરો. Search+o પછી t દબાવીને અહીં પાછા ફરો.</translation>
 <translation id="8548973727659841685">અક્ષર</translation>
 <translation id="8561322612995434619">તેમાં પૉપ-અપ છે</translation>
 <translation id="8571096049907249734">multsel</translation>
@@ -1100,14 +1100,14 @@
 <translation id="8693391540059827073">મારી મનપસંદ ઋતુ</translation>
 <translation id="8696284982970258155">હનીડ્યૂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{પાઇપ}one{# વર્ટિકલ પાઇપ}other{# વર્ટિકલ પાઇપ}}</translation>
-<translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે શોધ + Space દબાવો.</translation>
+<translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે Search + Space દબાવો.</translation>
 <translation id="8743786158317878347">ગણિત કે ટેબલ જેવું કન્ટેન્ટ દાખલ કરો</translation>
 <translation id="8747966237988593539">ક્રમાંકિત સૂચિ</translation>
 <translation id="8749988712346667988">સિલ્વર</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" />નું ડાઉનલોડ પૂરું શરૂ થયું</translation>
 <translation id="8767968232364267681">આગલા સ્તર 4 નું મથાળું</translation>
 <translation id="8770473310765924354">ગણિત કે ટેબલ જેવા કન્ટેન્ટમાંથી બહાર નીકળો</translation>
-<translation id="8775203254697638994">ક્યારેક તમને ડ્રૉપ-ડાઉન સૂચિમાંથી કોઈ આઇટમ પસંદ કરવાની જરૂર પડશે. તેમ કરવા માટે, પહેલાં શોધ + સ્પેસ દબાવીને સૂચિ મોટી કરો. પછી 'ઉપર અને નીચે એરો' કી દબાવીને આઇટમ પસંદ કરો. અંતમાં, શોધ + સ્પેસ દબાવીને સૂચિ નાની કરો.</translation>
+<translation id="8775203254697638994">ક્યારેક તમને ડ્રૉપ-ડાઉન સૂચિમાંથી કોઈ આઇટમ પસંદ કરવાની જરૂર પડશે. તેમ કરવા માટે, પહેલાં Search + Space દબાવીને સૂચિ મોટી કરો. પછી 'ઉપર અને નીચે ઍરો' કી દબાવીને આઇટમ પસંદ કરો. અંતમાં, Search + Space દબાવીને સૂચિ નાની કરો.</translation>
 <translation id="8779057862865475116">કોઈ પાછલી લિંક નથી</translation>
 <translation id="8796411681063377102">આગલા સ્તર 3 નું મથાળું</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />માંથી <ph name="CURRENTPAGE" /> પેજ</translation>

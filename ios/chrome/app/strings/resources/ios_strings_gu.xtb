@@ -87,7 +87,7 @@
 <translation id="1657641691196698092">બ્લૉક કરેલી કુકી</translation>
 <translation id="165877110639533037">કોઈ ખુલ્લા ટેબ્સ નથી</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="168715261339224929">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
+<translation id="168715261339224929">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="1690731385917361335">કોઈ આઇટમ નથી</translation>
@@ -138,6 +138,7 @@
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">એકાઉન્ટ ઉમેરો</translation>
 <translation id="2268044343513325586">સુધારો</translation>
+<translation id="2271351792809375263">તમે Chromeમાં સાચવેલા પાસવર્ડનો તમારા ડિવાઇસની અન્ય ઍપમાં ઉપયોગ કરો</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
 <translation id="2302742851632557585">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -201,7 +202,7 @@
 <translation id="2871695793448672541">છુપાયેલ, પાસવર્ડ</translation>
 <translation id="2876369937070532032">તમારી સુરક્ષા જોખમમાં હોય ત્યારે, તમે મુલાકાત લેતા હો તે કેટલાક પેજના URLs Googleને મોકલે છે</translation>
 <translation id="288655811176831528">ટૅબ બંધ કરો</translation>
-<translation id="2893180576842394309">Google, શોધ અને અન્ય Google સેવાઓને વ્યક્તિગત કરવા માટે તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે</translation>
+<translation id="2893180576842394309">Google, Search અને અન્ય Google સેવાઓને વ્યક્તિગત કરવા માટે તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2898963176829412617">નવું ફોલ્ડર…</translation>
 <translation id="2916171785467530738">શોધ અને URLsને ઑટોમૅટિક રીતે પૂર્ણ કરો</translation>
 <translation id="291754862089661335">QR કોડ અથવા બારકોડને આ ફ્રેમમાં મૂકો</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">પૉપ-અપ્સ મંજૂર છે</translation>
 <translation id="3399930248910934354">Chrome સેટિંગ ખોલો</translation>
 <translation id="3404744938087714423">સાઇન આઉટ કરવાથી સિંકની સુવિધા બંધ થઈ જાય છે.</translation>
+<translation id="3414451675185661089">2. પાસવર્ડ પર ટૅપ કરો</translation>
 <translation id="3425644765244388016">કાર્ડનું ઉપનામ</translation>
 <translation id="3433057996795775706">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં. અન્ય લોકોથી તમારો પાસવર્ડ સુરક્ષિત રાખવા માટે, તેને <ph name="WEBSITE" /> પર બદલો.</translation>
 <translation id="3443810440409579745">ટૅબ પ્રાપ્ત થયું.</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">ચોખ્ખો-નિકાસ ડેટા મોકલવા માટે, કૃપા કરીને સેટિંગ એપ્લિકેશનમાં તમારા ઇમેઇલ એકાઉન્ટને ગોઠવો.</translation>
 <translation id="4124987746317609294">સમય શ્રેણી</translation>
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
+<translation id="4153925727916232411">આ તમને ફોટા લેવા અને અપલોડ કરવા તેમજ QR કોડ સ્કૅન કરવા દે છે.</translation>
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="418156467088430727">ઑફલાઇન વર્ઝન નવા ટૅબમાં જુઓ</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
 
 તમારો ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
+<translation id="4682686630151240767">1. iPhone સેટિંગ ખોલો</translation>
 <translation id="4689564913179979534">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
 <translation id="470966556546083668">સિંક કરવાની સુવિધા ચાલુ કરશો નહીં</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
+<translation id="5523579157975978438">બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> ખોલો અને પાસવર્ડ પર જાઓ.</translation>
 <translation id="5525269841082836315">પાસફ્રેઝ બનાવો</translation>
 <translation id="5532698011560297095">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
@@ -541,13 +546,12 @@
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
-<translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ અન્ય સેટિંગ મેળવો.</translation>
+<translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવો.</translation>
 <translation id="6232329973559504466">છૂપી શોધ</translation>
 <translation id="6254066287920239840">બ્રાઉઝરને બદલે ઍપ્લિકેશનમાં લિંક્સ ખોલો.</translation>
 <translation id="6255097610484507482">ક્રેડિટ કાર્ડમાં ફેરફાર કરો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
 <translation id="6293101329759844770">Safe Browsingની સુવિધા ચાલુ કરવા માટે, <ph name="BEGIN_LINK" />Google સેવાઓ<ph name="END_LINK" /> ખોલો અને Safe Browsing પર ટૅપ કરો.</translation>
-<translation id="6308436439357671616">આ તમને ફોટો લેવા અને અપલોડ કરવા દે છે.</translation>
 <translation id="6321526113093607004">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="6324528485781869530">સિંક એકાઉન્ટ સ્વિચ કરો</translation>
 <translation id="6324669097367352121">સાઇન ઇન સેટિંગ</translation>
@@ -688,7 +692,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> વાંચ્યા વગરના લેખ.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
-<translation id="7425346204213733349">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગમાં ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહિ. જોકે, તમારો અસ્તિત્વમાંનો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
+<translation id="7425346204213733349">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગમાં ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહીં. જોકે, તમારો હાલનો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
@@ -740,6 +744,7 @@
 સાઇટ વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે કુકીનો ઉપયોગ કરી શકે છે, ઉદાહરણ તરીકે, મનગમતી જાહેરાતો બનાવવા માટે.</translation>
 <translation id="7971521879845308059">પૉપ-અપ્સ અવરોધિત કરો</translation>
 <translation id="797413074872316787">એકથી વધુ ડિવાઇસને સિંક અને મનગમતા બનાવવા માટે, સિંકની સુવિધા ચાલુ કરો.</translation>
+<translation id="7978018860671536736">3. પાસવર્ડ માટે ઑટોમૅટિક રીતે ભરવાની સુવિધા પર ટૅપ કરો</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="800361585186029508">ઇનપુટ કરેલા URLsને Google Chromeમાં ખોલે છે.</translation>
@@ -764,7 +769,8 @@
 <translation id="8197543752516192074">પેજનો અનુવાદ કરો</translation>
 <translation id="8205564605687841303">રદ કરો</translation>
 <translation id="8206354486702514201">આ સેટિંગ તમારા વહીવટકર્તા દ્વારા લાગુ કરેલી છે.</translation>
-<translation id="8225985093977202398">કૅશ કરેલ છબીઓ અને ફાઇલો</translation>
+<translation id="8225985093977202398">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
+<translation id="8237382152611443140">પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધાનાં સેટિંગ ખોલો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8271720166617117963">સ્વીકારો અને સાઇન ઇન કરો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
 <translation id="8952559610785099500">પાસવર્ડ ઉમેરો</translation>
 <translation id="895541991026785598">સમસ્યાની જાણ કરો</translation>
+<translation id="8974714402877957201">1. iPad સેટિંગ ખોલો</translation>
 <translation id="8976382372951310360">સહાય</translation>
 <translation id="8976414606286374109">કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે.</translation>
 <translation id="8981454092730389528">Google પ્રવૃત્તિ નિયંત્રણો</translation>

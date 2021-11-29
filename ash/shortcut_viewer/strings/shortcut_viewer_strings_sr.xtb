@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Отворите нови прозор у режиму без архивирања</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, па <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1652741121070700329">Померите на почетак претходне речи</translation>
 <translation id="1679841710523778799">Повећајте осветљеност</translation>
 <translation id="168356808214100546">Притисните и задржите <ph name="ALT" />, додирујте <ph name="TAB" /> док не дођете до прозора који желите да отворите, па отпустите.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> од 1 до 8</translation>
 <translation id="3837047332182291558">Повећајте осветљеност тастатуре (само за тастатуре са позадинским осветљењем)</translation>
 <translation id="3949671998904569433">зарез</translation>
-<translation id="3976707995992061296">Укључите/искључите да ли се активни прозор додељује свим радним површинама</translation>
 <translation id="3976863468609830880">Кликните на последњу икону на полици</translation>
 <translation id="3994783594793697310">Ресетујте ниво зумирања приказа</translation>
 <translation id="4026843240379844265">Помера активан прозор на различите екране</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Притисните <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и кликните на линк</translation>
 <translation id="561814908794220892">Отворите веб-страницу на новој картици</translation>
 <translation id="5620219513321115856">Преместите активни прозор на радну површину на десној страни</translation>
+<translation id="5699366815052349604">Доделите активни прозор свим радним површинама</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Отворите линк на картици</translation>
 <translation id="5757474750054631686">Смањите осветљеност тастатуре (само за тастатуре са позадинским осветљењем)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Увећајте приказ</translation>
 <translation id="634687982629734605">Пребацујте фокус између: области статуса (где се приказује слика налога), Покретача, траке за адресу, траке са обележивачима (ако је видљива), веб-странице која је отворена и траке са преузимањима (ако је видљива). Ако се приказује дијалог који може да се фокусира, померите фокус на њега.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Активирајте од 1. до 8. радне површине</translation>
 <translation id="6395172954772765143">Изаберите текст до краја реда</translation>
 <translation id="6425378783626925378">Кликните на иконе од 1. до 8. на полици</translation>
 <translation id="6435207348963613811">Истакните претходну ставку на полици</translation>

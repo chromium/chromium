@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус на активирање</translation>
+<translation id="2287186687001756809">Нема достапна слика. За да додадете фотографии, одете на <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Користи го тековниот пар клучеви</translation>
 <translation id="2323506179655536734">ПРЕСКОКНАТО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">УСПЕШЕН</translation>
 <translation id="2789486458103222910">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
+<translation id="2859243502336719778">Важно ажурирање</translation>
 <translation id="2860473693272905224">Ставете друга страница на скенерот</translation>
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="2878387241690264070">Испразнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">Отпечатена страница <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Се скенира страницата <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % завршено.</translation>
 <translation id="3459509316159669723">Се печати</translation>
+<translation id="3462187165860821523">Се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
+<translation id="3932043219784172185">Нема поврзан уред</translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
 <translation id="3966286471246132217">За попрецизни резултати, затворете ги сите апликации додека не заврши тестот.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">Не е извршена</translation>
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Ажурирајте ги периферните уреди</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Подмрежна маска</translation>
 <translation id="4454245904991689773">Скенирај во</translation>
+<translation id="4472575034687746823">Започнете</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">Јачина на сигналот</translation>
 <translation id="4707579418881001319">L2TP/IPsec + сертификат на корисник</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
+<translation id="473775607612524610">Ажурирај</translation>
 <translation id="475869545581454722">Лозинката за Chrome OS е ажурирана</translation>
 <translation id="4773299976671772492">Сопрено</translation>
 <translation id="4794140124556169553">Извршувањето CPU-тест може да влијае врз изведбата на системот</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="4930320165497208503">За да поставите или ажурирате врска, одете во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="4950314376641394653">Фирмверот на <ph name="DEVICE_NAME" /> е ажуриран на верзијата <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="4987769320337599931">Заштитен ѕид</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM-картичката е заклучена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
 <translation id="5051044138948155788">Ова е единствената страница. Ќе бидете пренасочени на екранот за започнување на скенирањето.</translation>
-<translation id="5061169534910302641">Ажурирајте ја верзијата и рестартирајте</translation>
 <translation id="5088172560898466307">Име на хостот на серверот</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5142961317498132443">Проверка</translation>
@@ -400,6 +407,7 @@
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Заврши и зачувај</translation>
 <translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
+<translation id="7068619307603204412">Подгответе го уредот</translation>
 <translation id="708426984172631313">СОПРЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно - Авторизацијата не успеа</translation>
@@ -413,6 +421,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7240035910874241640">Сите периферни уреди се ажурирани</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Збирки тапети</translation>
@@ -454,6 +463,7 @@
 <translation id="7763470514545477072">Совпаѓање на суфиксот на доменот</translation>
 <translation id="7769672763586021400">ID на модел</translation>
 <translation id="7784116172884276937">Нема поставени DNS-сервери</translation>
+<translation id="7786540085520432425">Додека се ажурира, може да го минимизирате прозорецот, но не исклучувајте го уредот од струја. Ова може да потрае неколку минути и уредот може да не функционира за време на ажурирањето</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Инсталирајте CloudReady</translation>
@@ -487,6 +497,7 @@
 <translation id="8217675307824400706">Поврзете се</translation>
 <translation id="8230672074305416752">Не успеа да се пингува стандардниот мрежен портал</translation>
 <translation id="8246209727385807362">Непознат оператор</translation>
+<translation id="8281886186245836920">Прескокни</translation>
 <translation id="8286154143153872371">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже тапетот.</translation>
 <translation id="8291967909914612644">Земја на оператор на почетна страница</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -511,6 +522,7 @@
 <translation id="8498220429738806196">Бројачи на сообраќај</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
+<translation id="8520963233738002436">Вашиот <ph name="DEVICE_NAME" /> е ажуриран</translation>
 <translation id="8521021929829989041">Користете како личен уред</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
@@ -550,6 +562,7 @@
 <translation id="8970109610781093811">Изврши повторно</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES} страница}one{Скенирај {NUMBER_OF_PAGES} страница}other{Скенирај {NUMBER_OF_PAGES} страници}}</translation>
+<translation id="8994273342647807496">Се инсталира - <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="9003704114456258138">Зачестеност</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Одредување со DNS има висока латенција</translation>

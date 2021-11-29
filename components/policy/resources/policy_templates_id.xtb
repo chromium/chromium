@@ -212,6 +212,7 @@
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
+<translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
 <translation id="1274997165432133392">Cookie dan data situs lainnya</translation>
 <translation id="128059397544257017">Jika kebijakan disetel ke Aktif dan <ph name="CHROME_CLEANUP_NAME" /> mendeteksi software yang tidak diinginkan, kebijakan dapat melaporkan pemindaian software tersebut ke Google, sesuai dengan kebijakan yang disetel oleh <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> akan meminta izin pengguna untuk melakukan pembersihan. Kemudian hasilnya dikirimkan ke Google.
 
@@ -269,6 +270,7 @@
 
       Jika setelan ini dinonaktifkan atau tidak ditetapkan ke suatu nilai, SafeSearch di Google Penelusuran dan Mode Terbatas di YouTube tidak akan diberlakukan.</translation>
 <translation id="134745581157553029">Jika kebijakan "DeviceArcDataSnapshotHours" disetel, mekanisme pembuatan snapshot data ARC akan diaktifkan. Dengan begitu, pembaruan snapshot data ARC dapat otomatis dimulai selama interval waktu yang ditentukan. Jika interval dimulai, pembaruan snapshot data ARC akan diperlukan dan tidak ada pengguna yang login. Pada saat itu, proses pembaruan snapshot data ARC akan dimulai tanpa notifikasi pengguna. Jika sesi pengguna aktif, notifikasi UI akan ditampilkan dan harus diterima untuk memulai ulang perangkat dan memulai proses pembaruan snapshot data ARC. Catatan: penggunaan perangkat akan diblokir selama proses pembaruan snapshot data ARC.</translation>
+<translation id="1348603614848418219">Nonaktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud.</translation>
 <translation id="1352799151662469739">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan daya AC, dalam milidetik.</translation>
 <translation id="1353416417709895349">Nonaktifkan pemeriksaan intersepsi DNS dan infobar "Mungkin maksud Anda http://intranetsite/".</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
@@ -2516,6 +2518,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Menonaktifkan kebijakan ini akan memungkinkan penggunaan SPDY.
 
       Jika kebijakan ini tidak disetel, SPDY akan tersedia.</translation>
+<translation id="3887529334667818189">Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.</translation>
 <translation id="3891357445869647828">Mengaktifkan JavaScript</translation>
 <translation id="3891769546914233112">Mencetak PDF sebagai Gambar Tersedia</translation>
 <translation id="3897218615484393758">Membatasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat login secara offline di layar kunci</translation>
@@ -2595,11 +2598,13 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini disetel ke Benar (True), notifikasi peringatan privasi akan ditutup setelah beberapa detik.
 
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, notifikasi peringatan privasi akan terus ditampilkan hingga pengguna menutupnya.</translation>
+<translation id="4008395195135046807">Perjalanan akan dapat dilihat di chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Jika kebijakan ini ditetapkan ke true atau tidak dikonfigurasi, <ph name="PRODUCT_OS_NAME" /> akan menampilkan pengguna yang ada di layar login dan diizinkan untuk memilih salah satu.
 
       Jika kebijakan ini ditetapkan ke false, <ph name="PRODUCT_OS_NAME" /> tidak akan menampilkan pengguna yang ada di layar login. Layar login normal (yang meminta email dan sandi atau ponsel pengguna) atau layar interstisial SAML (jika diaktifkan melalui kebijakan <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) akan ditampilkan, kecuali jika Sesi Terkelola dikonfigurasi. Jika Sesi Terkelola dikonfigurasi, hanya akun Sesi Terkelola yang akan ditampilkan, sehingga memungkinkan untuk memilih salah satu akun.
 
       Perhatikan bahwa kebijakan ini tidak memengaruhi apakah perangkat menyimpan atau menghapus data pengguna lokal.</translation>
+<translation id="4009741515395221389">Aktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud.</translation>
 <translation id="4010738624545340900">Izinkan permintaan dialog pemilihan file</translation>
 <translation id="401260868452018796">Posisikan rak di bagian bawah layar</translation>
 <translation id="4012737788880122133">Menonaktifkan update otomatis saat disetel ke True.
@@ -2948,6 +2953,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
 <translation id="450080746522343150">Blokir semua download.</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
+<translation id="4512407512989846472">Memungkinkan pemblokiran penyalinan ke papan klip pada URL tertentu</translation>
 <translation id="4513691822411041977">Jangan terapkan penggunaan SafeSearch di Google Penelusuran atau Mode Terbatas YouTube</translation>
 <translation id="4515404363392014383">Aktifkan Safe Browsing untuk sumber tepercaya</translation>
 <translation id="4518251772179446575">Tanyakan setiap kali situs ingin melacak lokasi fisik pengguna</translation>
@@ -3407,6 +3413,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="5143258831402123447">Perjalanan tidak akan dapat dilihat di chrome://history/journeys.</translation>
 <translation id="514870861066611127">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi pengguna akan dilaporkan atau tidak, misalnya login OS, login Profil <ph name="PRODUCT_NAME" />, nama Profil <ph name="PRODUCT_NAME" />, jalur Profil <ph name="PRODUCT_NAME" />, dan jalur eksekusi <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -3865,6 +3872,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5620392548325769024">Mengaktifkan kebijakan yang menampilkan halaman sambutan saat browser pertama kali diluncurkan setelah upgrade OS</translation>
 <translation id="5622924058222112599">Aktifkan proses peluncuran CECPQ2 default</translation>
+<translation id="5623304306796942802">Permintaan saat ada beberapa sertifikat yang cocok</translation>
 <translation id="5625771176514429288">Aplikasi Chrome akan diizinkan berjalan di platform berikut.</translation>
 <translation id="5630352020869108293">Mengembalikan sesi terakhir</translation>
 <translation id="5633871703004128675">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan</translation>
@@ -4209,6 +4217,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
 <translation id="6046615715547751255">Jangan izinkan kontrol pelaporan terperinci</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
+<translation id="6052730367191220066">Aktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud. Kebijakan ini memungkinkan migrasi nirsentuh beberapa perangkat di perusahaan untuk dimulai dari jarak jauh. Selain itu, proses migrasi akan dibuat setransparan mungkin bagi pengguna akhir.
+
+      Jika kebijakan ini disetel ke aktif dan ID pendaftaran telah diupload ke DMServer, powerwash di perangkat akan diaktifkan dari jarak jauh.
+
+      Jika kebijakan ini disetel ke nonaktif, powerwash di perangkat tidak akan dimulai dari jarak jauh, terlepas dari status upload ID pendaftaran.
+
+      Pemeriksaan ini dipicu setiap kali layar login dimuat, lalu dicoba lagi setiap jam (jika perangkat tetap berada di layar login). Tindakan ini mencegah migrasi dimulai di tengah-tengah sesi pengguna, yang akan menyebabkan potensi masalah bagi pengguna akhir.</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
 <translation id="605543517695935623">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat terjadi peristiwa keamanan di Chrome. Ini termasuk keputusan negatif dari analisis Enterprise Connector, penggunaan ulang sandi, navigasi ke halaman yang tidak aman, dan tindakan pengguna lainnya yang sensitif terhadap keamanan.
 
@@ -4971,9 +4986,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6929746927224321095">Nonaktifkan Isi Otomatis</translation>
 <translation id="6931242315485576290">Nonaktifkan sinkronisasi data dengan Google</translation>
 <translation id="6940243892299228102">Jangan izinkan pengguna menggunakan template desktop</translation>
-<translation id="694071740172924905">Jika disetel ke aktif, fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna menyesuaikan algoritme GREASE Agen Pengguna dengan spesifikasi terbaru.
-      Spesifikasi terbaru dapat menyebabkan error pada beberapa situs yang membatasi karakter yang dimuat oleh permintaan. Lihat spesifikasi untuk mendapatkan informasi selengkapnya: https://wicg.github.io/ua-client-hints/#grease
-      Jika kebijakan ini disetel ke aktif atau tidak disetel, fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna akan diaktifkan. Jika kebijakan ini disetel ke nonaktif, algoritme GREASE Agen Pengguna sebelumnya akan digunakan.</translation>
 <translation id="6943577887654905793">Nama preferensi Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Kebijakan ini dihapus di M77.
@@ -5316,6 +5328,14 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7266471712301230894">Kebijakan ini telah dihapus mulai <ph name="PRODUCT_NAME" /> 64.
 
       Penelusuran dan penginstalan otomatis untuk plugin yang tidak ada, tidak didukung lagi.</translation>
+<translation id="7266868915753562724">Kebijakan ini mengontrol visibilitas Perjalanan di halaman histori Chrome.
+
+      Jika kebijakan disetel ke Aktif, Perjalanan akan dapat dilihat di chrome://history/journeys.
+
+      Jika kebijakan disetel ke Nonaktif, Perjalanan tidak akan dapat dilihat di chrome://history/journeys.
+
+      Jika kebijakan tidak disetel, Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.
+      </translation>
 <translation id="7267809745244694722">Default tombol media ke tombol fungsi</translation>
 <translation id="7269263983506766969">Gunakan prioritas default untuk proses audio</translation>
 <translation id="7270001383428188269">ID untuk sertifikat klien ini.</translation>
@@ -5396,6 +5416,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
        Jika kebijakan disetel ke Nonaktif atau tidak disetel, gambar pihak ketiga tidak dapat menampilkan permintaan autentikasi.
 
       Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</translation>
+<translation id="7403217961820363141">Menampilkan Perjalanan di halaman histori Chrome</translation>
 <translation id="7406039009275722824">Menonaktifkan <ph name="CHROME_SYNC_NAME" /> akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
 <translation id="7407441173422042771">Kebijakan ini mengontrol prediksi jaringan di <ph name="PRODUCT_NAME" />. Kebijakan ini mengontrol pengambilan data DNS, prakoneksi TCP dan SSL, serta pra-rendering halaman.
 
@@ -5873,6 +5894,14 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
 <translation id="8029607810986641704">Kunci perangkat saat tidak ada aktivitas atau saat ditangguhkan</translation>
+<translation id="8032201191311129122">Kebijakan ini memblokir penyalinan data ke papan klip pada URL tertentu.
+
+      Daftar URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> mengontrol situs mana yang diizinkan untuk menulis ke papan klip. Penulisan di papan klip diblokir jika URL cocok dengan pola di daftar 'aktifkan' dan tidak cocok dengan pola di daftar 'nonaktifkan'. Penyalinan tidak diblokir jika URL tidak cocok dengan pola apa pun.
+
+      Pola yang cocok dengan asal akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di http://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
+      </translation>
 <translation id="8036964468882248070">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware untuk perangkat penyimpanan.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik penyimpanan.</translation>

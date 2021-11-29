@@ -52,6 +52,7 @@
 <translation id="2123055963409958220">Дапамажыце палепшыць Chrome, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Перазапусціце Chrome</translation>
 <translation id="2189289170880510015">Наладзьце некаторыя найбольш важныя параметры прыватнасці Chrome</translation>
+<translation id="2258103955319320201">Каб мець доступ да даных Chrome на ўсіх сваіх прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю</translation>
 <translation id="2290014774651636340">Адсутнічаюць ключы Google API. Некаторыя функцыі Google Chrome будуць выключаны.</translation>
 <translation id="2290095356545025170">Сапраўды выдаліць Google Chrome?</translation>
 <translation id="2309047409763057870">Гэта другасны ўсталяваны экзэмпляр Google Chrome – яго нельга зрабіць стандартным браўзерам.</translation>
@@ -216,6 +217,7 @@
 <translation id="6506909944137591434">Каб стварыць 3D-карту наваколля, Chrome запытвае дазвол на доступ да камеры</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
 <translation id="6568793831116033768">Сістэма Chrome OS</translation>
+<translation id="6594121454516132231">Даведайцеся, як Chrome збіраецца абараняць вас ад механізмаў адсочвання паводзін на розных сайтах, захоўваючы адкрытасць інтэрнэту</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="6679975945624592337">Дазволіць браўзеру Google Chrome працаваць у фонавым рэжыме</translation>
 <translation id="6696915334902295848">Chrome запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
@@ -230,6 +232,7 @@
 <translation id="6989339256997917931">Google Chrome быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
 <translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
 <translation id="7062128746136194023">Вашы бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chrome. Дадаванне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
+<translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
 <translation id="7098166902387133879">Google Chrome выкарыстоўвае ваш мікрафон.</translation>
 <translation id="7106741999175697885">Менеджар заданняў – Google Chrome</translation>
@@ -254,6 +257,7 @@
 <translation id="7651907282515937834">Лагатып Chrome Enterprise</translation>
 <translation id="7665553140559834626">Перазапусціць, каб абнавіць &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Усталёўшчыку не ўдалося стварыць часовы каталог. Праверце, ці ёсць вольнае месца на дыску і дазвол на ўсталяванне праграмнага забеспячэння.</translation>
+<translation id="7748512868279796735">Для дадзенага профілю Chrome даступныя гэтыя ўліковыя запісы:</translation>
 <translation id="7761834446675418963">Каб адкрыць Chrome і пачаць прагляд вэб-старонак, націсніце на сваё імя.</translation>
 <translation id="7777080907402804672">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>
 <translation id="7781002470561365167">Даступная новая версія Google Chrome.</translation>
@@ -285,6 +289,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>
 <translation id="8556340503434111824">Даступная новая версія Google Chrome. Яшчэ хутчэйшая.</translation>
+<translation id="8571790202382503603">Профілі Chrome патрэбны для раздзельнага выкарыстання браўзера рознымі людзьмі або ў розных мэтах. Выкарыстоўваючы іх, прасцей раздзяляць работу і забавы.</translation>
 <translation id="8614913330719544658">Google Chrome не адказвае. Перазапусціць?</translation>
 <translation id="861702415419836452">Chrome запытвае дазвол на доступ да камеры, каб стварыць 3D-карту асяроддзя</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome будзе перазапушчаны праз 1 хвіліну}one{Chrome будзе перазапушчаны праз # хвіліну}few{Chrome будзе перазапушчаны праз # хвіліны}many{Chrome будзе перазапушчаны праз # хвілін}other{Chrome будзе перазапушчаны праз # хвіліны}}</translation>

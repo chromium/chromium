@@ -212,6 +212,7 @@
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
+<translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
 <translation id="128059397544257017">Als je het beleid toepast en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software detecteert, kan dit beleid (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) de resultaten van de scan sturen naar Google. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden naar Google gestuurd.
 
@@ -270,6 +271,7 @@
 
       Als je deze instelling uitzet of geen waarde instelt, worden SafeSearch in Google Zoeken en de Beperkte modus op YouTube niet afgedwongen.</translation>
 <translation id="134745581157553029">Als je het beleid DeviceArcDataSnapshotHours instelt, wordt het mechanisme voor momentopnamen van ARC-gegevens aangezet. De update voor momentopnamen van ARC-gegevens kan automatisch worden gestart gedurende de gedefinieerde tijdsintervallen. Wanneer een interval start, is de update voor momentopnamen van ARC-gegevens vereist. Als er geen gebruiker is ingelogd, wordt het updateproces voor momentopnamen van ARC-gegevens gestart zonder melding aan de gebruiker. Als de gebruikerssessie actief is, wordt de UI-melding getoond en moet deze worden geaccepteerd om een apparaat opnieuw op te starten en het updateproces voor momentopnamen van ARC-gegevens te starten. Opmerking: Een apparaat is geblokkeerd voor gebruik tijdens het updateproces voor momentopnamen van ARC-gegevens.</translation>
+<translation id="1348603614848418219">De migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer uitzetten.</translation>
 <translation id="1352799151662469739">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op netvoeding wordt gewerkt (in milliseconden)</translation>
 <translation id="1353416417709895349">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' uitzetten.</translation>
 <translation id="1354424209129232709">Maximum:</translation>
@@ -305,6 +307,10 @@
 <translation id="1413936351612032792">Informatie over gebruik van Linux-apps rapporteren</translation>
 <translation id="1417888712677507140">JavaScript-dialoogvensters blokkeren als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="1418387035898607074">Safe Browsing-checks overslaan voor bestanden die worden gedownload van vertrouwde bronnen</translation>
+<translation id="1419945463533552043">Als deze functie aanstaat, brengt de GREASE-updatefunctie voor User-Agent Client Hints het User-Agent GREASE-algoritme in lijn met de nieuwste specificaties.
+De geüpdatete specificaties kunnen ervoor zorgen dat sommige websites niet meer werken die het aantal tekens beperken dat een verzoek mag bevatten. Bekijk de specificaties voor meer informatie: https://wicg.github.io/ua-client-hints/#grease
+Als dit beleid wordt toegepast of niet is ingesteld, bepaalt de browser welk User-Agent GREASE-algoritme wordt gebruikt. Als het beleid niet wordt toegepast, wordt het eerdere User-Agent GREASE-algoritme gebruikt.
+      Dit beleid is een tijdelijke maatregel en wordt verwijderd in een toekomstige release.</translation>
 <translation id="142346659686073702">Toestaan dat niet-gelieerde gebruikers Crostini gebruiken</translation>
 <translation id="1425551776320718592">Voorkomen dat gebruikers van dit apparaat ADB-sideloading gebruiken zonder een Powerwash af te dwingen, waardoor het apparaat een twijfelachtige beveiligingsstatus kan krijgen</translation>
 <translation id="1426170570389588560">De periode in dagen instellen voor het opslaan van metadata van afdruktaken</translation>
@@ -332,7 +338,7 @@
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
 
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, worden de toegankelijkheidsopties niet weergegeven in het menu, maar kunnen gebruikers ze weergeven via de pagina Instellingen.
+      Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, worden de toegankelijkheidsopties niet weergegeven in het menu, maar kunnen gebruikers ze tonen via de pagina Instellingen.
 
       Als je toegankelijkheidsfuncties op een andere manier aanzet (bijvoorbeeld door een toetsencombinatie), worden de toegankelijkheidsopties altijd weergegeven in het systeemvakmenu.</translation>
 <translation id="1449777485284610883">Installatie en updates van buiten de Chrome Web Store gehoste extensies toestaan</translation>
@@ -2499,6 +2505,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid niet toepast, kan het SPDY-protocol worden gebruikt.
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
+<translation id="3887529334667818189">Trajecten zijn standaard zichtbaar op chrome://history/journeys en gebruikers kunnen de zichtbaarheid van trajecten wijzigen.</translation>
 <translation id="3891357445869647828">JavaScript aanzetten</translation>
 <translation id="3891769546914233112">'Pdf afdrukken als afbeelding' beschikbaar</translation>
 <translation id="3897218615484393758">Beperken hoelang een gebruiker die via SAML is geverifieerd offline kan inloggen op het vergrendelscherm</translation>
@@ -2577,11 +2584,13 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid instelt op True, wordt de privacywaarschuwing na een paar seconden gesloten.
 
       Als je het beleid instelt op False of niet instelt, blijft de privacywaarschuwing in beeld tot de gebruiker deze sluit.</translation>
+<translation id="4008395195135046807">Trajecten zijn zichtbaar op chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Als dit beleid is ingesteld op True of niet is geconfigureerd, worden op het inlogscherm van <ph name="PRODUCT_OS_NAME" /> bestaande gebruikers getoond die kunnen worden geselecteerd.
 
       Als dit beleid is ingesteld op False, worden op het inlogscherm van <ph name="PRODUCT_OS_NAME" /> geen bestaande gebruikers getoond. In dat geval wordt het normale inlogscherm (waar de gebruiker om een e-mailadres en wachtwoord of telefoonnummer wordt gevraagd) of het SAML-interstitial-scherm (indien aangezet via het <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />-beleid) getoond, tenzij er een beheerde sessie is ingesteld. Wanneer er een beheerde sessie is ingesteld, worden alleen de accounts voor de beheerde sessie getoond en kun je alleen een van deze accounts selecteren.
 
       Dit beleid heeft geen invloed op het bewaren of verwijderen van de lokale gebruikersgegevens door het apparaat.</translation>
+<translation id="4009741515395221389">De migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer aanzetten.</translation>
 <translation id="4010738624545340900">Activering van dialoogvensters voor het selecteren van bestanden toestaan</translation>
 <translation id="401260868452018796">De plank onderaan het scherm plaatsen</translation>
 <translation id="4012737788880122133">Als dit is ingesteld op True, zet je hiermee automatische updates uit.
@@ -2928,6 +2937,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="450080746522343150">Alle downloads blokkeren.</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
+<translation id="4512407512989846472">Staat toe dat het kopiëren naar het klembord voor gespecificeerde URL's wordt geblokkeerd</translation>
 <translation id="4513691822411041977">Het gebruik van SafeSearch op Google Zoeken of de beperkte modus van YouTube niet afdwingen</translation>
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
@@ -3134,7 +3144,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4802905909524200151">Updategedrag voor <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware configureren</translation>
 <translation id="4804828344300125154">Altijd opnieuw opstarten na uitloggen gebruiker.</translation>
 <translation id="4807950475297505572">De gebruikers die het langst geleden gebruikt zijn, worden verwijderd totdat er voldoende vrije ruimte is</translation>
-<translation id="4811210934875253713">Geschiedenisclusters zijn zichtbaar op chrome://history/journeys.</translation>
 <translation id="4812270373673968774">Als je het beleid instelt op 'Always', wordt de <ph name="PRODUCT_OS_NAME" />-plank automatisch verborgen. Als je het beleid instelt op 'Never', wordt de plank nooit automatisch verborgen.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers zelf aangeven of de plank automatisch moet worden verborgen.</translation>
@@ -3385,6 +3394,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5141670636904227950">Standaardtype van vergrootglas voor inlogscherm instellen</translation>
 <translation id="5142301680741828703">De volgende URL-patronen altijd verwerken in <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="5143258831402123447">Trajecten zijn niet zichtbaar op chrome://history/journeys.</translation>
 <translation id="514870861066611127">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om gebruikers te identificeren, zoals de OS-inloggegevens, de inloggegevens voor het <ph name="PRODUCT_NAME" />-profiel, de profielnaam voor <ph name="PRODUCT_NAME" />, het profielpad voor <ph name="PRODUCT_NAME" /> en het uitvoerbare pad voor <ph name="PRODUCT_NAME" />.
 
       Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of niet is toegepast, wordt dit beleid genegeerd.
@@ -4175,6 +4185,13 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je het beleid niet toepast, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
 <translation id="6046615715547751255">Opties voor gedetailleerde rapportage niet toestaan</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren aanzetten</translation>
+<translation id="6052730367191220066">Hiermee zet je de migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer aan. Met dit beleid kun je op afstand een contactloze migratie van meerdere apparaten in een bedrijf starten. Bovendien is de migratie zo transparant mogelijk voor de eindgebruikers.
+
+      Als je dit beleid toepast en de inschrijvings-ID al is geüpload naar de DMServer, wordt de powerwash-functie van een apparaat op afstand geactiveerd.
+
+      Als je dit beleid niet toepast of niet instelt, wordt de powerwash-functie van een apparaat niet op afstand geactiveerd, onafhankelijk van de uploadstatus van de inschrijvings-ID.
+
+      Deze check wordt geactiveerd als het inlogscherm wordt geladen en wordt daarna elk uur opnieuw geprobeerd (als het inlogscherm actief blijft op het apparaat). Hierdoor wordt voorkomen dat de migratie middenin een gebruikerssessie start, wat problemen kan veroorzaken voor eindgebruikers.</translation>
 <translation id="6053681087509103368">Toestaan dat WebRTC verouderde versies van het TLD-/DTLS-protocol gebruikt</translation>
 <translation id="605543517695935623">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een beveiligingsgebeurtenis plaatsvindt in Chrome. Dit omvat onder meer negatieve analyseresultaten van Enterprise Connectors, hergebruik van wachtwoorden, navigatie naar onveilige pagina's en andere beveiligingsgevoelige gebruikersacties.
 
@@ -4397,7 +4414,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
 <translation id="6331943515692769234">Afdwingen dat het eerdere User-Agent GREASE-algoritme wordt gebruikt.</translation>
-<translation id="6332192586629642626">Geschiedenisclusters zijn niet zichtbaar op chrome://history/journeys.</translation>
 <translation id="6332489309596092806">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
 
 Elk lijstitem van het beleid is een object met een verplicht lid:
@@ -4680,7 +4696,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6658245400435704251">Bepaalt het maximaal aantal seconden dat een apparaat willekeurig de download van een update mag uitstellen vanaf het moment dat de update voor het eerst naar de server werd gepusht. Het apparaat kan een deel van deze tijd wachten in termen van kloktijd en het resterende deel in termen van het aantal updatecontroles. De maximale spreiding is in elk geval begrensd door een constante periode zodat een apparaat nooit vastloopt tijdens het wachten tot een update kan worden gedownload.</translation>
 <translation id="6659537776197644458">Geen verificatieprocessen voor wachtwoordsynchronisatie activeren</translation>
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
-<translation id="6667586534922258705">Knop 'Wachtwoord weergeven' tonen op het inlog- en vergrendelscherm.</translation>
+<translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
 <translation id="6669700740683748046">Met deze functie is de volledige URL in de adresbalk zichtbaar.
       Als je dit beleid instelt op True, is de volledige URL zichtbaar in de adresbalk, inclusief schema's en subdomeinen.
       Als je dit beleid instelt op False, wordt de standaard URL-weergave toegepast.
@@ -4948,9 +4964,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
-<translation id="694071740172924905">Als deze functie aanstaat, brengt de GREASE-updatefunctie voor User-Agent Client Hints het User-Agent GREASE-algoritme in lijn met de nieuwste specificaties.
-De geüpdatete specificaties kunnen ervoor zorgen dat sommige websites niet meer werken die het aantal tekens beperken dat een verzoek mag bevatten. Bekijk de specificaties voor meer informatie: https://wicg.github.io/ua-client-hints/#grease
-Als dit beleid wordt toegepast of niet is ingesteld, staat de GREASE-updatefunctie voor User-Agent Client Hints aan. Als het beleid niet wordt toegepast, wordt het eerdere User-Agent GREASE-algoritme gebruikt.</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
       Dit beleid is van toepassing op het inlogscherm. Zie ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie.
@@ -5292,6 +5305,14 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7266471712301230894">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> 64.
 
       Er wordt geen ondersteuning meer geboden voor het automatisch zoeken en installeren van ontbrekende plug-ins.</translation>
+<translation id="7266868915753562724">Dit beleid bepaalt de zichtbaarheid van Trajecten op de Chrome-geschiedenispagina.
+
+      Als je het beleid toepast, zijn Trajecten zichtbaar op chrome://history/journeys.
+
+      Als je het beleid niet toepast, zijn Trajecten niet zichtbaar op chrome://history/journeys.
+
+      Als je het beleid niet instelt, zijn trajecten standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van trajecten wijzigen.
+      </translation>
 <translation id="7267809745244694722">Mediatoetsen worden standaard ingesteld op functietoetsen</translation>
 <translation id="7269263983506766969">Standaardprioriteit gebruiken voor audioproces</translation>
 <translation id="7270001383428188269">De ID voor dit clientcertificaat.</translation>
@@ -5374,6 +5395,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
        Als je het beleid niet toepast of niet instelt, kunnen afbeeldingen van derden geen verificatieprompt tonen.
 
       Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</translation>
+<translation id="7403217961820363141">Trajecten tonen op de Chrome-geschiedenispagina</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
 
@@ -5855,6 +5877,14 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
 <translation id="8029607810986641704">Het apparaat vergrendelen als het inactief of opgeschort wordt</translation>
+<translation id="8032201191311129122">Met dit beleid blokkeer je het kopiëren van gegevens naar het klembord voor specifieke URL's.
+
+De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> bepalen welke sites naar het klembord mogen schrijven. Een schrijfactie naar het klembord wordt geblokkeerd als de URL overeenkomt met een patroon in 'enable' en niet overeenkomt met een patroon in 'disable'. Een kopieeractie wordt niet geblokkeerd als de URL met geen enkel patroon overeenkomt.
+
+      De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze worden gedocumenteerd op http://www.chromium.org/administrators/url-blocklist-filter-format).
+
+      De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.
+      </translation>
 <translation id="8036964468882248070">Als je dit beleid toepast, rapporteren ingeschreven apparaten hardwarestatistieken en ID's voor opslagapparaten.
 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten geen opslagstatistieken.</translation>
@@ -6631,7 +6661,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8931555638815157255">Als je dit beleid toepast of niet instelt, rapporteren ingeschreven apparaten periodiek hun OS- en firmwareversie.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de versiegegevens niet.</translation>
-<translation id="8934618237639919190">Geschiedenisclusters zijn standaard zichtbaar op chrome://history/journeys en gebruikers kunnen de zichtbaarheid van geschiedenisclusters wijzigen.</translation>
 <translation id="8937282917198525844">Vanaf M81 hebben de standaard formulierbesturingselementen (bijv. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) een nieuw uiterlijk met verbeterde toegankelijkheid en betere platformuniformiteit. Met dit beleid worden de 'verouderde' formulierbesturingselementen hersteld tot M84.
 
       Als dit beleid is ingesteld op True, worden de 'verouderde' formulierbesturingselementen gebruikt voor alle sites.
@@ -6890,7 +6919,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="93985900824506396">3DES cipher suites worden uitgezet in TLS</translation>
 <translation id="940706688964479124">Lijst met bestandstypen die automatisch moeten worden geopend nadat ze zijn gedownload</translation>
 <translation id="943865157632139008">Hiermee kun je het standaard HTML-weergaveprogramma configureren wanneer <ph name="PRODUCT_FRAME_NAME" /> is geïnstalleerd.
-      De standaardinstelling is om de hostbrowser de weergave te laten regelen, maar je kunt dit aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard laten weergeven.</translation>
+      De standaardinstelling is om de hostbrowser de weergave te laten regelen, maar je kunt dit aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard tonen.</translation>
 <translation id="944817693306670849">Grootte voor schijfcache instellen</translation>
 <translation id="947333773406819973">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 

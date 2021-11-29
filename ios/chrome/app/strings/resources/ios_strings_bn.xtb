@@ -138,6 +138,7 @@
 <translation id="225943865679747347">ত্রুটি কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
+<translation id="2271351792809375263">Chrome-এ সেভ করা পাসওয়ার্ড আপনার ডিভাইসের অন্যান্য অ্যাপে ব্যবহার করুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
 <translation id="2302742851632557585">ওয়েবসাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="2316709634732130529">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">মঞ্জুরিপ্রাপ্ত পপ-আপ</translation>
 <translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
 <translation id="3404744938087714423">সাইন-আউট করলে সিঙ্ক করা বন্ধ হয়ে যাবে।</translation>
+<translation id="3414451675185661089">২. পাসওয়ার্ড বিকল্পে ট্যাপ করুন</translation>
 <translation id="3425644765244388016">কার্ডের বিশেষ নাম</translation>
 <translation id="3433057996795775706">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ থাকা আপনার অ্যাকাউন্ট মুছে যাবে না। অন্যদের থেকে এটি নিরাপদে রাখতে, <ph name="WEBSITE" />-এ আপনার দেওয়া পাসওয়ার্ড পরিবর্তন করুন।</translation>
 <translation id="3443810440409579745">ট্যাব পাওয়া গেছে।</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">নেট-রপ্তানি ডেটা পাঠানোর জন্য, অনুগ্রহ করে সিস্টেম অ্যাপে আপনার ইমেল অ্যাকাউন্ট কনফিগার করুন৷</translation>
 <translation id="4124987746317609294">সময় সীমা</translation>
 <translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
+<translation id="4153925727916232411">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন।</translation>
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
 <translation id="418156467088430727">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315"><ph name="EMAIL" /> হিসেবে প্রবেশ করেছেন।
 
 আপনার সিঙ্ক পাসফ্রেজের মাধ্যমে আপনার ডেটা এনক্রিপটেড হয়েছে। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
+<translation id="4682686630151240767">১. iPhone সেটিংস খুলুন</translation>
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
 <translation id="470966556546083668">সিঙ্ক চালু করবেন না</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
+<translation id="5523579157975978438">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে পাসওয়ার্ড বিকল্পে যান।</translation>
 <translation id="5525269841082836315">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="5532698011560297095">প্রবেশ করুন করা যচ্ছে না</translation>
 <translation id="5548760955356983418">Handoff এই ডিভাইসে একটি ওয়েবসাইট ব্রাউজ করা শুরু করতে দেয় এবং পরে সহজেই আপনার Mac-এ অবিরত করতে দেয়৷ সাম্প্রতিক খোলা ওয়েবসাইটটি আপনার Mac-এ ডক-এ প্রদর্শিত হবে৷
@@ -548,7 +553,6 @@
 <translation id="6255097610484507482">ক্রেডিট কার্ড সম্পাদনা করুন</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>
-<translation id="6308436439357671616">এটি আপনাকে ফটো তুলতে এবং আপলোড করতে দেয়।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6324528485781869530">সিঙ্ক অ্যাকাউন্ট পাল্টান</translation>
 <translation id="6324669097367352121">সাইন-ইন সেটিংস</translation>
@@ -741,6 +745,7 @@
 আপনার জন্য পছন্দমতো বিজ্ঞাপন বেছে নেওয়ার মতো বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারবে।</translation>
 <translation id="7971521879845308059">পপ-আপগুলি অবরুদ্ধ করুন</translation>
 <translation id="797413074872316787">ডিভাইস জুড়ে সিঙ্ক করতে এবং নিজের মতো সাজিয়ে নিতে সিঙ্ক বিকল্পটি চালু করুন।</translation>
+<translation id="7978018860671536736">৩. অটোফিল পাসওয়ার্ড বিকল্পে ট্যাপ করুন</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7993619969781047893">কিছু কিছু সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="800361585186029508">Google Chrome-এ ইনপুট করা ইউআরএলগুলি খোলে।</translation>
@@ -766,6 +771,7 @@
 <translation id="8205564605687841303">বাতিল করুন</translation>
 <translation id="8206354486702514201">এই সেটিংটি আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে৷</translation>
 <translation id="8225985093977202398">ক্যাশ করা ছবি এবং ফাইল</translation>
+<translation id="8237382152611443140">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8271720166617117963">অ্যাক্সেপ্ট করে সাইন-ইন করুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
@@ -834,6 +840,7 @@
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
 <translation id="8952559610785099500">পাসওয়ার্ড যোগ করুন</translation>
 <translation id="895541991026785598">কোনও সমস্যা অভিযোগ করুন</translation>
+<translation id="8974714402877957201">১. iPad সেটিংস খুলুন</translation>
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>

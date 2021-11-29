@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Opna nýjan glugga í huliðsstillingu</translation>
 <translation id="152892567002884378">Hækka hljóð</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og svo <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
 <translation id="1652741121070700329">Fara að byrjun fyrra orðs</translation>
 <translation id="1679841710523778799">Auka birtustig</translation>
 <translation id="168356808214100546">Haltu inni <ph name="ALT" />, ýttu á <ph name="TAB" /> þar til glugginn sem þú vilt opna birtist og slepptu svo.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 til 8</translation>
 <translation id="3837047332182291558">Gera lyklaborðið bjartara (aðeins fyrir lyklaborð með baklýsingu)</translation>
 <translation id="3949671998904569433">komma</translation>
-<translation id="3976707995992061296">Breyta því hvort virka glugganum sé úthlutað á öll skrifborð</translation>
 <translation id="3976863468609830880">Smella á síðasta táknið á hillunni</translation>
 <translation id="3994783594793697310">Endurstilla aðdrátt skjás</translation>
 <translation id="4026843240379844265">Færa virkan glugga á milli skjáa</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Ýttu á <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> og smelltu á tengil</translation>
 <translation id="561814908794220892">Opna vefsíðuna í nýjum flipa</translation>
 <translation id="5620219513321115856">Færa virkan glugga á skjáborð til hægri</translation>
+<translation id="5699366815052349604">Úthluta virkum glugga á öll skrifborð</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> eða <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Opna tengilinn í flipanum</translation>
 <translation id="5757474750054631686">Gera lyklaborðið dimmara (aðeins fyrir lyklaborð með baklýsingu)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Stækka skjá</translation>
 <translation id="634687982629734605">Færa fókus á milli: stöðusvæðis (þar sem reikningsmyndin er sýnd), ræsiforrits, veffangastiku, bókamerkjastiku (ef hún sést), vefsíðunnar sem er opin og niðurhalsstikunnar (ef hún sést). Færa fókus í glugga ef hægt er að setja gluggann í fókus.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Virkja skrifborð 1 til 8.</translation>
 <translation id="6395172954772765143">Velja texta að enda línunnar</translation>
 <translation id="6425378783626925378">Smella á tákn 1–8 á hillu</translation>
 <translation id="6435207348963613811">Auðkenna fyrra atriði á hillu</translation>

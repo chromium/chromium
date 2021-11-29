@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="102360288709523007">ຊ່ວຍເຮັດໃຫ້ Chromium ດີກ່ວາໂດຍການສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງຫາ Google.</translation>
+<translation id="1047130070405668746">ເລືອກ Chromium</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
 <translation id="1289216811211435351">ປ່ຽນເປັນ Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium ໄດ້ພິສູດຢືນຢັນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້.</translation>
 <translation id="1843424232666537147">Chromium ມີຄຸນສົມບັດທີ່ຊ່ວຍໃຫ້ທ່ານຈັດການຂໍ້ມູນອິນເຕີເນັດຂອງທ່ານ ແລະ ຈັດການວ່າທ່ານສາມາດໂຫຼດໜ້າເວັບຕ່າງໆໄດ້ໄວສໍ່າໃດ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. ເລືອກ Chromium</translation>
 <translation id="2006345422933397527">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="2054703085270098503">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Chromium</translation>
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>

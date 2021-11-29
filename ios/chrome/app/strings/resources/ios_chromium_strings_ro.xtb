@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="102360288709523007">Contribuie la îmbunătățirea Chromium trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
+<translation id="1047130070405668746">Selectează Chromium.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1257458525759135959">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chromium să adauge fotografiile</translation>
 <translation id="1289216811211435351">Treci la Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Afișează solicitări pentru conectarea la Chromium.</translation>
 <translation id="1584569488888892906">Chromium este simplu, sigur și mai rapid ca oricând</translation>
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
+<translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Selectează Chromium.</translation>
 <translation id="2006345422933397527">Chromium nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="2054703085270098503">Protejează-te cu Chromium</translation>
 <translation id="2168108852149185974">Unele suplimente blochează Chromium. Dezinstalează:</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="102360288709523007">Hobetu Chromium Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
+<translation id="1047130070405668746">Hautatu Chromium.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
 <translation id="1289216811211435351">Aldatu Chromium-era</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Chromium-en saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="1584569488888892906">Sinplea, segurua eta inoiz baino bizkorragoa da Chromium</translation>
 <translation id="1617663976202781617">Chromium-en sinkronizazioaren datuak</translation>
+<translation id="1722370509450468186">Pasahitza kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Garbitu dira Chromium datuak</translation>
 <translation id="1838412507805038478">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chromium-ek.</translation>
 <translation id="1843424232666537147">Interneteko datuak eta web-orriak kargatzeko abiadura kudeatzeko eginbideak ditu Chromium-ek.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Hautatu Chromium.</translation>
 <translation id="2006345422933397527">Chromium-ek ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2054703085270098503">Egon babestuta Chromium-ekin</translation>
 <translation id="2168108852149185974">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>

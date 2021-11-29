@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
+<translation id="2287186687001756809">Δεν υπάρχει διαθέσιμη εικόνα. Για προσθήκη φωτογραφιών, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Χρήση τρέχοντος ζεύγους κλειδιών</translation>
 <translation id="2323506179655536734">ΠΑΡΑΒΛΕΦΘΗΚΕ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
+<translation id="2859243502336719778">Σημαντική ενημέρωση</translation>
 <translation id="2860473693272905224">Τοποθετήστε μια άλλη σελίδα στον σαρωτή</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">Εκτυπώθηκε η σελίδα <ph name="PRINTED_PAGES" /> από <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Σάρωση σελίδας <ph name="PAGE_NUM" />. Ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
+<translation id="3462187165860821523">Ενημέρωση <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3865414814144988605">Ανάλυση</translation>
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
+<translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
 <translation id="3966286471246132217">Για πιο ακριβή αποτελέσματα, κλείστε όλες τις εφαρμογές έως ότου ολοκληρωθεί ο έλεγχος.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
 <translation id="4378551569595875038">Σύνδεση…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Ενημέρωση περιφερειακών</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4428374560396076622">Το δίκτυο <ph name="NETWORK_NAME" /> είναι εκτός λειτουργίας.</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
 <translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
+<translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="4511264077854731334">Πύλη</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">Ισχύς σήματος</translation>
 <translation id="4707579418881001319">L2TP/IPsec + πιστοποιητικό χρήστη</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
+<translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="475869545581454722">Ο κωδικός πρόσβασης του Chrome OS ενημερώθηκε</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4794140124556169553">Η εκτέλεση μιας δοκιμής CPU μπορεί να επηρεάσει την απόδοση του συστήματος</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4930320165497208503">Για να ρυθμίσετε ή να ενημερώσετε μια σύνδεση, μεταβείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
+<translation id="4950314376641394653">Το υλικολογισμικό της συσκευής <ph name="DEVICE_NAME" /> έχει ενημερωθεί στην έκδοση <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
 <translation id="5051044138948155788">Αυτή είναι η μοναδική σελίδα. Θα μεταβείτε στην οθόνη έναρξης σάρωσης.</translation>
-<translation id="5061169534910302641">Ενημέρωση έκδοσης και επανεκκίνηση</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5142961317498132443">Έλεγχος ταυτότητας</translation>
@@ -400,6 +407,7 @@
 <translation id="7040230719604914234">Χειριστής</translation>
 <translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
+<translation id="7068619307603204412">Προετοιμασία της συσκευής</translation>
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
@@ -413,6 +421,7 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
+<translation id="7240035910874241640">Όλα τα περιφερειακά είναι ενημερωμένα</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Συλλογές ταπετσαρίας</translation>
@@ -454,6 +463,7 @@
 <translation id="7763470514545477072">Αντιστοιχία επιθήματος τομέα</translation>
 <translation id="7769672763586021400">Αναγνωριστικό μοντέλου</translation>
 <translation id="7784116172884276937">Δεν έχουν ρυθμιστεί διακομιστές DNS.</translation>
+<translation id="7786540085520432425">Κατά την ενημέρωση, μπορείτε να ελαχιστοποιήσετε το παράθυρο αλλά μην αποσυνδέετε τη συσκευή σας. Αυτό μπορεί να διαρκέσει μερικά λεπτά και η συσκευή σας ενδέχεται να μην λειτουργεί κατά τη διάρκεια αυτής της ενημέρωσης</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
 <translation id="7835501727204647447">Εγκατάσταση CloudReady</translation>
@@ -487,6 +497,7 @@
 <translation id="8217675307824400706">Συνδεθείτε</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
+<translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>
 <translation id="8291967909914612644">Χώρα παρόχου αρχικής σελίδας</translation>
 <translation id="8294431847097064396">Πηγή</translation>
@@ -511,6 +522,7 @@
 <translation id="8498220429738806196">Μετρητές επισκεψιμότητας</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
+<translation id="8520963233738002436">Η συσκευή <ph name="DEVICE_NAME" /> είναι ενημερωμένη</translation>
 <translation id="8521021929829989041">Χρήση ως προσωπικής συσκευής</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
@@ -550,6 +562,7 @@
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Γίνεται εγκατάσταση - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Η επίλυση DNS έχει υψηλό λανθάνοντα χρόνο</translation>

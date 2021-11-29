@@ -138,6 +138,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj konto</translation>
 <translation id="2268044343513325586">Zawęź</translation>
+<translation id="2271351792809375263">Korzystaj z haseł zapisanych w Chrome w innych aplikacjach na urządzeniu</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
 <translation id="2302742851632557585">Zmień hasło na stronie</translation>
 <translation id="2316709634732130529">Użyj proponowanego hasła</translation>
@@ -258,6 +259,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3393920035788932672">Pop-upy akceptowane</translation>
 <translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3404744938087714423">Wylogowanie spowoduje wyłączenie synchronizacji.</translation>
+<translation id="3414451675185661089">2. Kliknij Hasła.</translation>
 <translation id="3425644765244388016">Nazwa karty</translation>
 <translation id="3433057996795775706">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="WEBSITE" />, zmień do niego hasło.</translation>
 <translation id="3443810440409579745">Odebrano kartę.</translation>
@@ -329,6 +331,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
 <translation id="4124987746317609294">Zakres czasowy</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
+<translation id="4153925727916232411">Umożliwia robienie i przesyłanie zdjęć oraz skanowanie kodów QR.</translation>
 <translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="418156467088430727">Wyświetl wersję offline w nowej karcie</translation>
 <translation id="4181841719683918333">Języki</translation>
@@ -376,6 +379,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4666531726415300315">Jesteś zalogowany jako <ph name="EMAIL" />.
 
 Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
+<translation id="4682686630151240767">1. Otwórz Ustawienia na iPhonie.</translation>
 <translation id="4689564913179979534">Zarządzaj formami płatności…</translation>
 <translation id="470966556546083668">Nie włączaj synchronizacji</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
@@ -456,6 +460,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5489208564673669003">Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> g temu</translation>
+<translation id="5523579157975978438">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Hasła.</translation>
 <translation id="5525269841082836315">Utwórz hasło</translation>
 <translation id="5532698011560297095">Nie można się zalogować</translation>
 <translation id="5548760955356983418">Dzięki funkcji Handoff możesz rozpocząć przeglądanie strony na tym urządzeniu, a następnie płynnie kontynuować na Macu. Aktualnie otwarta strona internetowa wyświetli się w Docku na Macu.
@@ -545,7 +550,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6255097610484507482">Edytuj kartę kredytową</translation>
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Aby włączyć Bezpieczne przeglądanie, otwórz <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" /> i kliknij Bezpieczne przeglądanie.</translation>
-<translation id="6308436439357671616">Umożliwia robienie i przesyłanie zdjęć.</translation>
 <translation id="6321526113093607004">Dodaj do Zakładek</translation>
 <translation id="6324528485781869530">Zmień konto synchronizacji</translation>
 <translation id="6324669097367352121">Ustawienia logowania</translation>
@@ -738,6 +742,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 Witryny mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="7971521879845308059">Blokuj wyskakujące okienka</translation>
 <translation id="797413074872316787">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
+<translation id="7978018860671536736">3. Kliknij Automatyczne wypełnianie haseł.</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
@@ -763,6 +768,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8205564605687841303">Anuluj</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
 <translation id="8225985093977202398">Obrazy i pliki w pamięci podręcznej</translation>
+<translation id="8237382152611443140">Otwórz Automatyczne wypełnianie haseł w Ustawieniach.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8271720166617117963">Zaakceptuj i zaloguj się</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>
@@ -831,6 +837,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
 <translation id="8952559610785099500">Dodaj hasło</translation>
 <translation id="895541991026785598">Zgłaszanie problemu</translation>
+<translation id="8974714402877957201">1. Otwórz Ustawienia na iPadzie.</translation>
 <translation id="8976382372951310360">Pomoc</translation>
 <translation id="8976414606286374109">Karty zostały zapisane na koncie Google.</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>

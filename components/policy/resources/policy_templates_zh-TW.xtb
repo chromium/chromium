@@ -211,6 +211,7 @@
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
+<translation id="1272798957154751008">允許將 Chromad 裝置遷移至雲端管理服務</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
 <translation id="128059397544257017">如果將這項政策設為啟用，當 <ph name="CHROME_CLEANUP_NAME" />偵測到垃圾軟體時，可按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 所設定的政策，向 Google 回報掃描作業相關資訊。<ph name="CHROME_CLEANUP_NAME" />會詢問使用者是否要進行清理，並將掃描結果傳送給 Google。
 
@@ -268,6 +269,7 @@
 
       如果停用這項設定或不設定，則系統不會強制執行 Google 搜尋的「安全搜尋」功能和 YouTube 嚴格篩選模式。</translation>
 <translation id="134745581157553029">如果設定「DeviceArcDataSnapshotHours」政策，則系統會開啟 ARC 資料數據匯報機制，而且 ARC 資料數據匯報更新將可在自訂的時間間隔自動開始。當間隔開始時，如果需要執行 ARC 資料數據匯報更新，且沒有任何使用者處於登入狀態，系統會直接開始執行 ARC 資料數據匯報更新程序，不會通知使用者。如果使用者工作階段處於執行中狀態，系統會顯示使用者介面通知，使用者必須接受通知內容以重新啟動裝置，並開始執行 ARC 資料數據匯報更新程序。注意：ARC 資料數據匯報更新期間將無法使用裝置。</translation>
+<translation id="1348603614848418219">不允許將 <ph name="MS_AD_NAME" /> 管理的裝置遷移至雲端管理服務。</translation>
 <translation id="1352799151662469739">使用 AC 電源供電時的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會鎖定螢幕</translation>
 <translation id="1353416417709895349">停用 DNS 攔截檢查功能，以及你是不是要前往「http://intranetsite/」資訊列。</translation>
 <translation id="1354424209129232709">上限：</translation>
@@ -303,6 +305,10 @@
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
 <translation id="1417888712677507140">封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="1418387035898607074">針對從信任的來源下載的檔案略過安全瀏覽檢查</translation>
+<translation id="1419945463533552043">啟用 User-Agent Client Hints GREASE Update 功能後，瀏覽器會依照最新的規格採用適當的 User-Agent GREASE 演算法。
+      如果網站會限制要求中可包含的字元，更新的規格可能會導致某些網站無法正常運作。詳情請參閱規格說明：https://wicg.github.io/ua-client-hints/#grease
+      如果將這項政策設為啟用或不設定，瀏覽器會判斷要使用的 User-Agent GREASE 演算法。如果停用這項政策，則會採用舊版 User-Agent GREASE 演算法。
+      這項政策僅是暫時性措施，我們會在未來版本中予以移除。</translation>
 <translation id="142346659686073702">允許無關聯的使用者使用 Crostini</translation>
 <translation id="1425551776320718592">禁止這部裝置的使用者採用 ADB 側載，且不強制執行 Powerwash (這可能會讓裝置處於不安全的狀態)</translation>
 <translation id="1426170570389588560">設定儲存列印工作中繼資料的時間範圍 (以天為單位)</translation>
@@ -677,14 +683,6 @@
 
       如果不設定這項政策，所有使用者均可登入裝置。請注意，如要建立新使用者，仍然需要妥善設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
       如果已啟用 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />，除了這項政策中定義的帳戶以外，系統也會允許 Family Link 使用者登入裝置。</translation>
-<translation id="1815669850943987108">這項政策可控管 Chrome 歷史記錄頁面上的瀏覽歷程顯示設定。
-
-      如果將這項政策設為啟用，瀏覽歷程會顯示在 chrome://history/journeys 頁面上。
-
-      如果將這項政策設為停用，瀏覽歷程就不會顯示在 chrome://history/journeys 頁面上。
-
-      如果不設定這項政策，系統預設會在 chrome://history/journeys 頁面上顯示瀏覽歷程，且使用者可以變更叢集記錄的顯示設定。
-      </translation>
 <translation id="1819272352048746487">啟用或停用螢幕小鍵盤上的多項功能</translation>
 <translation id="1823974945066396306">定義可登入裝置的使用者清單。輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
 
@@ -2499,6 +2497,7 @@
       將這項政策設為停用表示允許使用 SPDY。
 
       如果未設定這項政策，則可使用 SPDY。</translation>
+<translation id="3887529334667818189">系統預設會在 chrome://history/journeys 頁面上顯示瀏覽歷程，且使用者可以變更瀏覽歷程的顯示設定。</translation>
 <translation id="3891357445869647828">啟用 JavaScript</translation>
 <translation id="3891769546914233112">提供「以圖片形式列印 PDF」</translation>
 <translation id="3897218615484393758">限制透過 SAML 驗證的使用者可以在螢幕鎖定畫面離線登入的時間</translation>
@@ -2577,11 +2576,13 @@
       如果將這項政策設為 True，系統會在數秒後關閉隱私權警告通知。
 
       如果將這項政策設為 False 或不予設定，系統會持續顯示隱私權警告通知，直到使用者關閉為止。</translation>
+<translation id="4008395195135046807">瀏覽歷程會顯示在 chrome://history/journeys 頁面上。</translation>
 <translation id="4008507541867797979">如果將這項政策設為 true 或不予設定，<ph name="PRODUCT_OS_NAME" /> 會在登入畫面上顯示現有使用者並允許從中擇一登入。
 
       如果這項政策設為 false，除非已設定受管理工作階段，否則 <ph name="PRODUCT_OS_NAME" /> 不會在登入畫面上顯示現有使用者，而是顯示一般登入畫面 (提示輸入使用者電子郵件地址，以及密碼或電話號碼) 或 SAML 插頁式畫面 (如果透過 <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" /> 政策啟用的話)。設定受管理工作階段後，系統便只會顯示受管理工作階段帳戶並允許從中擇一登入。
 
       請注意，這項政策不會影響裝置保留或捨棄本機使用者資料。</translation>
+<translation id="4009741515395221389">允許將 <ph name="MS_AD_NAME" /> 管理的裝置遷移至雲端管理服務。</translation>
 <translation id="4010738624545340900">允許調用檔案選項對話方塊</translation>
 <translation id="401260868452018796">將檔案櫃放在畫面底部</translation>
 <translation id="4012737788880122133">在設為 True 時，停用自動更新。
@@ -2760,6 +2761,9 @@
 
       注意：對於 Android 裝置，請改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="4261820385751181068">裝置登入畫面語言代碼</translation>
+<translation id="4261964161337162399">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
+
+      如果未設定，系統會套用 10 分鐘的預設頻率。</translation>
 <translation id="4266547484666068234">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blocklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
 
       這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
@@ -2928,6 +2932,7 @@
 <translation id="449784980858429908">自動授權網站連線至所有序列埠。</translation>
 <translation id="450080746522343150">封鎖所有下載作業。</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
+<translation id="4512407512989846472">允許禁止在特定網址上將資料複製到剪貼簿</translation>
 <translation id="4513691822411041977">不強制啟用 Google 搜尋的安全搜尋功能和中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="4515404363392014383">針對信任的來源啟用「安全瀏覽」</translation>
 <translation id="4518251772179446575">詢問網站何時要追蹤使用者的實際位置</translation>
@@ -3133,7 +3138,6 @@
 <translation id="4802905909524200151">設定 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新行為</translation>
 <translation id="4804828344300125154">�在使用者登出時一律重新啟動。</translation>
 <translation id="4807950475297505572">移除近期登入次數最少的使用者，直到有足夠的可用空間</translation>
-<translation id="4811210934875253713">叢集記錄會顯示在 chrome://history/journeys 頁面上。</translation>
 <translation id="4812270373673968774">如果將這項政策設為 Always，系統會自動隱藏 <ph name="PRODUCT_OS_NAME" />檔案櫃。如果將這項政策設為 Never，系統一律不會自動隱藏檔案櫃。
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可自行決定是否要自動隱藏檔案櫃。</translation>
@@ -3383,6 +3387,7 @@
 <translation id="5130213897914754028">禁止網站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
 <translation id="5142301680741828703">一律算繪下列 <ph name="PRODUCT_FRAME_NAME" /> 中的網址模式</translation>
+<translation id="5143258831402123447">瀏覽歷程不會顯示在 chrome://history/journeys 頁面上。</translation>
 <translation id="514870861066611127">這項政策可控管系統是否要回報能用於辨識使用者身分的資訊，例如 OS 登入資訊、<ph name="PRODUCT_NAME" /> 設定檔登入資訊、<ph name="PRODUCT_NAME" /> 設定檔名稱、<ph name="PRODUCT_NAME" /> 設定檔路徑和 <ph name="PRODUCT_NAME" /> 執行檔路徑。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。
@@ -4157,6 +4162,13 @@
       如果將這項政策設為停用，使用者將無法兌換這類優惠。</translation>
 <translation id="6046615715547751255">禁止使用精細回報控制項</translation>
 <translation id="6048199181629830227">開啟用電尖峰轉移電源管理功能</translation>
+<translation id="6052730367191220066">允許將 <ph name="MS_AD_NAME" /> 管理的裝置遷移至雲端管理服務。這項政策允許遠端遷移公司中的多部裝置，不用實際接觸即可開始遷移。此外，遷移作業會盡可能提供充足資訊，方便使用者掌握進度。
+
+      如果啟用這項政策，且註冊 ID 已上傳至 DMServer，系統會觸發遠端裝置的 Powerwash 功能。
+
+      如果將這項政策設為停用或不設定，無論註冊 ID 的上傳狀態為何，系統都不會觸發遠端裝置的 Powerwash 功能。
+
+      每次載入登入畫面時，系統都會觸發這項檢查作業；如果裝置持續停留在登入畫面上，系統會每小時觸發一次。這樣可以避免遷移作業在使用者工作階段期間啟動，進而造成使用者遇到潛在問題。</translation>
 <translation id="6053681087509103368">允許 WebRTC 使用過時的 TLD/DTLS 通訊協定版本</translation>
 <translation id="605543517695935623">指定要套用至 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在 Chrome 中發生安全性事件時觸發。安全性事件包含分析 Enterprise 連接器指出的負面結果、重複使用密碼、瀏覽不安全的頁面，以及其他攸關安全性的使用者動作。
 
@@ -4380,7 +4392,6 @@
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
 <translation id="6331943515692769234">強制採用舊版 User-Agent GREASE 演算法。</translation>
-<translation id="6332192586629642626">叢集記錄不會顯示在 chrome://history/journeys 頁面上。</translation>
 <translation id="6332489309596092806">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
 
       這項政策的每個清單項目都是一個物件，由下列必要元素組成：
@@ -4939,9 +4950,6 @@
 <translation id="6929746927224321095">停用自動填入功能</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
-<translation id="694071740172924905">啟用 User-Agent Client Hints GREASE Update 功能後，這項功能會採用最新的 User-Agent GREASE 演算法規格。
-      如果網站會限制要求中可包含的字元，更新的規格可能會導致這類網站無法正常運作。詳情請參閱規格：https://wicg.github.io/ua-client-hints/#grease
-      如果將這項政策設為啟用或不設定，系統會啟用 User-Agent Client Hints GREASE Update 功能。如果停用這項政策，則會採用舊版 User-Agent GREASE 演算法。</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
 <translation id="6946652757373377924">
       這項政策已在 M77 版中移除。
@@ -5284,6 +5292,14 @@
 <translation id="7266471712301230894">自 <ph name="PRODUCT_NAME" /> 64 起，我們已移除這項政策。
 
       系統不會再自動搜尋並安裝缺少的外掛程式。</translation>
+<translation id="7266868915753562724">這項政策可控管 Chrome 歷史記錄頁面上的瀏覽歷程顯示設定。
+
+      如果將這項政策設為啟用，瀏覽歷程會顯示在 chrome://history/journeys 頁面上。
+
+      如果將這項政策設為停用，瀏覽歷程就不會顯示在 chrome://history/journeys 頁面上。
+
+      如果不設定這項政策，系統預設會在 chrome://history/journeys 頁面上顯示瀏覽歷程，且使用者可以變更瀏覽歷程的顯示設定。
+      </translation>
 <translation id="7267809745244694722">媒體鍵預設為功能鍵</translation>
 <translation id="7269263983506766969">以預設優先順序執行音訊程序</translation>
 <translation id="7270001383428188269">這個用戶端憑證的 ID。</translation>
@@ -5837,6 +5853,14 @@
 <translation id="8028814157747157754">啟用預設搜尋引擎，並允許使用者修改搜尋引擎清單</translation>
 <translation id="8029201909194194377">遠端存取連線所允許的工作階段持續時間上限</translation>
 <translation id="8029607810986641704">當裝置進入閒置或暫停狀態時鎖定裝置</translation>
+<translation id="8032201191311129122">這項規則設定可禁止在特定網址上將資料複製到剪貼簿。
+
+      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 網址清單會控管哪些網站允許寫入剪貼簿。如果網址符合「啟用」中的模式，且不符合「停用」中的模式，系統會禁止剪貼簿寫入功能。當網址不符合任何模式時，系統則不會禁止複製功能。
+
+      來源比對模式與「<ph name="URL_BLOCKLIST_POLICY_NAME" />」規則設定使用的格式類似，請參考以下頁面說明：http://www.chromium.org/administrators/url-blocklist-filter-format。
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 代表可觸發模式比對的最低資料量 (以位元組為單位)。也就是說，如果複製的資料大小小於這個欄位中指定的值，系統就會允許已封鎖的網址寫入剪貼簿。如果不設定這個欄位，預設值為 100 個位元組。
+      </translation>
 <translation id="8036964468882248070">如果將這項政策設為啟用，已註冊的裝置會回報儲存裝置的硬體統計資料和 ID。
 
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報儲存裝置統計資料。</translation>
@@ -6607,7 +6631,6 @@
 <translation id="8931555638815157255">如果將這項政策設為啟用或不設定，已註冊的裝置會定期回報其 OS 版本和韌體版本。
 
       如果將這項政策設為停用，已註冊的裝置不會回報版本資訊。</translation>
-<translation id="8934618237639919190">根據預設，叢集記錄會顯示在 chrome://history/journeys 頁面上，且使用者可以變更叢集記錄的顯示設定。</translation>
 <translation id="8937282917198525844"> 自 M81 版起，我們為標準表單控制項元素 (例如 &lt;select&gt;、&lt;button&gt; 和 &lt;input type=date&gt;) 提供煥然一新的外觀和風格，不但強化了無障礙使用設計，在各種作業系統平台操作時，效果也能更一致。這項政策恢復納入了「舊版」表單控制項元素做為使用選項，並且一路提供到 M84 版。
 
       如果將這項政策設為 True，系統會針對所有網站使用「舊版」表單控制項元素。
@@ -6678,6 +6701,7 @@
       這項政策只會影響採用 SAML 進行驗證的使用者。
 
       指定政策值時，請以秒為單位進行設定。</translation>
+<translation id="9015578113567730893">以毫秒為單位的音訊遙測收集率。</translation>
 <translation id="9035086760683255833">啟用鍵盤焦點醒目顯示無障礙功能。
 
           這項功能可以醒目顯示鍵盤聚焦的物件。

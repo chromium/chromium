@@ -138,6 +138,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesab Əlavə edin</translation>
 <translation id="2268044343513325586">Silin</translation>
+<translation id="2271351792809375263">Chrome'da saxladığınız parolları cihazınızdaki digər tətbiqlərdə istifadə edin</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2302742851632557585">Vebsaytda parolu dəyişin</translation>
 <translation id="2316709634732130529">Təklif Edilmiş Paroldan İstifadə Edin</translation>
@@ -258,6 +259,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3393920035788932672">Popuplara icazə verilir</translation>
 <translation id="3399930248910934354">Chrome Ayarlarını açın</translation>
 <translation id="3404744938087714423">Çıxış etdikdə sinxronlaşdırma deaktiv olacaq.</translation>
+<translation id="3414451675185661089">2. Parollara toxunun</translation>
 <translation id="3425644765244388016">Kart Ləqəbi</translation>
 <translation id="3433057996795775706">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək. Hesabınızı başqalarından qorumaq üçün <ph name="WEBSITE" /> saytında parolunuzu dəyişin.</translation>
 <translation id="3443810440409579745">Tab qəbul edildi.</translation>
@@ -331,6 +333,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4121993058175073134">Növbəti raport datasını göndərmək üçün Ayarlar tətbiqində e-poçt hesabınızı sazlayın.</translation>
 <translation id="4124987746317609294">Vaxt Aralığı</translation>
 <translation id="4152011295694446843">Əlfəcinləri burada tapa bilərsiniz</translation>
+<translation id="4153925727916232411">Bu, foto çəkməyə və yükləməyə, həmçinin QR kodları skan etməyə imkan verir.</translation>
 <translation id="4172051516777682613">Həmişə göstərin</translation>
 <translation id="418156467088430727">Oflayn versiyaya yeni tabda baxın</translation>
 <translation id="4181841719683918333">Dillər</translation>
@@ -378,6 +381,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> kimi giriş edilib.
 
 Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
+<translation id="4682686630151240767">1. iPhone Ayarlarını açın</translation>
 <translation id="4689564913179979534">Ödəniş Metodlarını İdarə Edin...</translation>
 <translation id="470966556546083668">Sinxronizasiyanı aktiv etməyin</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
@@ -458,6 +462,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5489208564673669003">Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="5490005495580364134">Bütün kukiləri bloklayın (Tövsiyə edilmir)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> s əvvəl</translation>
+<translation id="5523579157975978438">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parollara keçin.</translation>
 <translation id="5525269841082836315">Parol söz yaradın</translation>
 <translation id="5532698011560297095">Daxil olmaq mümkün deyil</translation>
 <translation id="5548760955356983418">Handoff bu cihazda asanlıqla veb sayt açıb Mac cihazınızda davam etməyə imkan verir. Cari açıq veb sayt Mac cihazınızda görünəcək.
@@ -547,7 +552,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6255097610484507482">Kredit Kartına Düzəliş edin</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>
-<translation id="6308436439357671616">Foto çəkməyə və yükləməyə icazə verir.</translation>
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
 <translation id="6324528485781869530">Sinxronizasiya Hesabına keçin</translation>
 <translation id="6324669097367352121">Daxil olma ayarları</translation>
@@ -740,6 +744,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="7971521879845308059">Popupları bloklayın</translation>
 <translation id="797413074872316787">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin.</translation>
+<translation id="7978018860671536736">3. Parolların Avtomatik Doldurulmasına toxunun</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7993619969781047893">Bəzi saytlardakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="800361585186029508">Google Chrome'da daxil edilən keçidləri açır.</translation>
@@ -765,6 +770,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8205564605687841303">Ləğv edin</translation>
 <translation id="8206354486702514201">Bu ayar administratorunuz tərəfindən icra olunur.</translation>
 <translation id="8225985093977202398">Keşlənmiş Şəkillər və Fayllar</translation>
+<translation id="8237382152611443140">Parolların Avtomatik Doldurulması Ayarlarını açın</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8271720166617117963">Qəbul edin və daxil olun</translation>
 <translation id="8281781826761538115">Defolt - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +839,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8917490105272468696">Bəli, razıyam</translation>
 <translation id="8952559610785099500">Parol əlavə edin</translation>
 <translation id="895541991026785598">Problemi Xəbər verin</translation>
+<translation id="8974714402877957201">1. iPad Ayarlarını açın</translation>
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8976414606286374109">Kartlar Google Hesabınızda saxlanılır.</translation>
 <translation id="8981454092730389528">Google Fəaliyyət Nəzarəti</translation>

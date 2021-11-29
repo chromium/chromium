@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
+<translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2323506179655536734">ବାଦ୍ ଦିଆଯାଇଛି</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
+<translation id="2859243502336719778">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅପଡେଟ</translation>
 <translation id="2860473693272905224">ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="345898999683440380">ପୃଷ୍ଠା <ph name="PAGE_NUM" />କୁ ସ୍କାନ୍ କରାଯାଉଛି। <ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3459509316159669723">ପ୍ରିଣ୍ଟିଂ</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
+<translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
 <translation id="3941014780699102620">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="3942420633017001071">ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
 <translation id="3966286471246132217">ଅଧିକ ସଠିକ୍ ଫଳାଫଳ ପାଇଁ, ଟେଷ୍ଟ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ସମସ୍ତ ଆପକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">ପେରିଫେରାଲଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ବନ୍ଦ ଅଛି</translation>
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">ପୁରୁଣା ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="4453205916657964690">ସବନେଟ୍ ମାସ୍କ</translation>
 <translation id="4454245904991689773">ସ୍କାନ୍ କରି ଏଠାରେ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">ସିଗନାଲର କ୍ଷମତା</translation>
 <translation id="4707579418881001319">L2TP/IPsec + ଉପଯୋଗକର୍ତ୍ତା ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
+<translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="475869545581454722">Chrome OSର ପାସୱାର୍ଡ ଅପଡେଟ୍ ହୋଇଛି</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4794140124556169553">ଏକ CPU ଟେଷ୍ଟ ଚଲାଇବା ଫଳରେ ଏହା ଆପଣଙ୍କ ସିଷ୍ଟମର ପରଫରମାନ୍ସକୁ ପ୍ରଭାବିତ କରିପାରେ</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4930320165497208503">ଏକ ସଂଯୋଗ ସେଟ ଅପ କିମ୍ବା ଅପଡେଟ କରିବାକୁ, <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ଫାର୍ମୱେରକୁ ସଂସ୍କରଣ <ph name="VERSION" />ରେ ଅପଡେଟ କରାଯାଇଛି</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
-<translation id="5061169534910302641">ସଂସ୍କରଣ ଅପଡେଟ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
 <translation id="5089810972385038852">ରାଜ୍ୟ</translation>
 <translation id="5142961317498132443">ପ୍ରମାଣିକରଣ</translation>
@@ -399,6 +406,7 @@
 <translation id="7040230719604914234">ଅପରେଟର୍</translation>
 <translation id="7058278511608979688">ସମ୍ପୂର୍ଣ୍ଣ କରି ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="7059230779847288458">ଚାର୍ଜ କରାଯାଉଛି, ପୂର୍ଣ୍ଣ ହେବାକୁ <ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
+<translation id="7068619307603204412">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="708426984172631313">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ବିଫଳ ହୋଇଛି - ଅଥୋରାଇଜେସନ ବିଫଳ ହୋଇଛି</translation>
@@ -412,6 +420,7 @@
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
+<translation id="7240035910874241640">ସମସ୍ତ ପେରିଫେରାଲ ଅପ ଟୁ ଡେଟ ଅଛି</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
@@ -452,6 +461,7 @@
 <translation id="7763470514545477072">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ</translation>
 <translation id="7769672763586021400">ମଡେଲ୍ ID</translation>
 <translation id="7784116172884276937">କୌଣସି DNS ସର୍ଭର ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
+<translation id="7786540085520432425">ଅପଡେଟ କରିବା ସମୟରେ, ଆପଣ ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ କିନ୍ତୁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଆପଣଙ୍କ ଡିଭାଇସ ଏହି ଅପଡେଟ ସମୟରେ କାମ କରିନପାରେ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7835501727204647447">CloudReady ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
@@ -485,6 +495,7 @@
 <translation id="8217675307824400706">ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
+<translation id="8281886186245836920">ଛାଡ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="8286154143153872371">ୱାଲପେପର୍ ଦେଖିବାକୁ ଦୟାକରି ଏକ ନେଟୱାର୍କରେ ସଂଯୋଗ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ।</translation>
 <translation id="8291967909914612644">ମୂଳ ପ୍ରଦାତା ଦେଶ</translation>
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
@@ -509,6 +520,7 @@
 <translation id="8498220429738806196">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
+<translation id="8520963233738002436">ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ଅପ ଟୁ ଡେଟ ଅଛି</translation>
 <translation id="8521021929829989041">ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ୍ ପରି ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
@@ -548,6 +560,7 @@
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
+<translation id="8994273342647807496">ଇନଷ୍ଟଲ ହେଉଛି - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ରିଜୋଲ୍ୟୁସନର ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>

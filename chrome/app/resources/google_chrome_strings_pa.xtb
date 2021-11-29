@@ -53,6 +53,7 @@
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />ਵਰਤਮਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਦੀ ਰਿਪੋਰਟ ਕਰਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="2151406531797534936">ਕਿਰਪਾ ਕਰਕੇ ਹੁਣੇ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2189289170880510015">Chrome ਦੇ ਕੁਝ ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਪਰਦੇਦਾਰੀ ਵਿਕਲਪਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="2258103955319320201">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਆਪਣੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ, ਫਿਰ ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2290014774651636340">Google API ਕੁੰਜੀਆਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ। Google Chrome ਦੀ ਕੁਝ ਫੰਕਸ਼ਨੈਲਿਟੀ ਬੰਦ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="2290095356545025170">ਕੀ ਤੁਸੀਂ ਪੱਕਾ Google Chrome ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2309047409763057870">ਇਹ Google Chrome ਦੀ ਇੱਕ ਸੈਕੰਡਰੀ ਸਥਾਪਨਾ ਹੈ, ਅਤੇ ਇਸਨੂੰ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -217,6 +218,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6506909944137591434">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਲਈ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS ਸਿਸਟਮ</translation>
+<translation id="6594121454516132231">ਦੇਖੋ ਕਿ Chrome ਖੁੱਲੇ ਵੈੱਬ ਨੂੰ ਕਾਇਮ ਰੱਖਦੇ ਹੋਏ ਤੁਹਾਨੂੰ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਤੋਂ ਬਚਾਉਣ ਦੀ ਯੋਜਨਾ ਕਿਵੇਂ ਬਣਾਉਂਦਾ ਹੈ</translation>
 <translation id="6676384891291319759">ਇੰਟਰਨੈਟ ਤੱਕ ਪਹੁੰਚੋ</translation>
 <translation id="6679975945624592337">Google Chrome ਨੂੰ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲਣ ਦਿਓ</translation>
 <translation id="6696915334902295848">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -231,6 +233,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6989339256997917931">Google Chrome ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਪਰ ਤੁਸੀਂ ਇਸਨੂੰ ਘੱਟੋ-ਘੱਟ ਪਿਛਲੇ 30 ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ ਹੈ।</translation>
 <translation id="7025800014283535195">ਤੁਸੀਂ ਇੱਥੇ Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="7062128746136194023">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ Chrome ਲਈ "ਸਾਈਟਾਂ, ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ" ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਸ <ph name="EXTENSION_TYPE_PARAMETER" /> ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।</translation>
+<translation id="7085332316435785646">ਚੁਣੋ ਕਿ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਜ਼ਿਆਦਾ ਵਿਅਕਤੀਗਤ ਅਨੁਭਵਾਂ ਲਈ Chrome ਇਤਿਹਾਸ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="7088681679121566888">Chrome ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="7098166902387133879">Google Chrome ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7106741999175697885">ਕਾਰਜ ਪ੍ਰਬੰਧਕ - Google Chrome</translation>
@@ -255,6 +258,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7651907282515937834">Chrome Enterprise ਲੋਗੋ</translation>
 <translation id="7665553140559834626">&amp;Chrome OS ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="7747138024166251722">ਸਥਾਪਨਾਕਾਰ ਇੱਕ ਅਸਥਾਈ ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਬਣਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਖਾਲੀ ਡਿਸਕ ਸਪੇਸ ਅਤੇ ਇਜਾਜ਼ਤ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
+<translation id="7748512868279796735">ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਖਾਤੇ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="7761834446675418963">Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਆਪਣੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="7777080907402804672">ਜੇ ਕਿਸੇ ਚਿੱਤਰ ਦਾ ਲਾਭਕਾਰੀ ਵਰਣਨ ਨਹੀਂ ਹੈ, ਤਾਂ Chrome ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਵਰਣਨ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੇਗਾ। ਵਰਣਨ ਬਣਾਉਣ ਲਈ, ਚਿੱਤਰ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ। ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7781002470561365167">Google Chrome ਦਾ ਇੱਕ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ।</translation>
@@ -286,6 +290,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ਇਹ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਤੁਹਾਡੀ ਨਿੱਜੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖ ਹੈ।</translation>
 <translation id="8556340503434111824">Google Chrome ਦਾ ਇੱਕ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ ਅਤੇ ਇਹ ਪਹਿਲਾਂ ਨਾਲੋਂ ਵੱਧ ਤੇਜ਼ ਹੈ।</translation>
+<translation id="8571790202382503603">Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਨਾਲ ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ Chrome ਸਮੱਗਰੀ ਨੂੰ ਵੱਖ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕਾਰਜ ਅਤੇ ਮੌਜ-ਮਸਤੀ ਵਿਚਕਾਰ ਵੰਡਣ ਲਈ ਇਸਨੂੰ ਆਸਾਨ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="8614913330719544658">Google Chrome ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ। ਕੀ ਹੁਣੇ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="861702415419836452">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}one{Chrome # ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}other{Chrome # ਮਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}}</translation>

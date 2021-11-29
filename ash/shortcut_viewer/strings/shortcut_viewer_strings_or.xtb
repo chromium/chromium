@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ତା’ପରେ <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଡେସ୍କକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1652741121070700329">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦର ଆରମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1679841710523778799">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="168356808214100546">ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ ଖୋଲିବାକୁ ଚାହୁଁଥିବା ୱିଣ୍ଡୋରେ ପହଞ୍ଚି ନାହାନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ <ph name="ALT" /> ଦାବି ଧରନ୍ତୁ, <ph name="TAB" />ରେ ଟାପ୍‍ କରନ୍ତୁ, ତା’ପରେ ଛାଡିଦିଅନ୍ତୁ।</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ</translation>
 <translation id="3837047332182291558">କୀବୋର୍ଡକୁ ଉଜ୍ବଳ କରନ୍ତୁ (କେବଳ ବ୍ୟାକ୍‍ଲିଟ୍‍ କୀବୋର୍ଡ ପାଇଁ)</translation>
 <translation id="3949671998904569433">କମା</translation>
-<translation id="3976707995992061296">ସବୁ ଡେସ୍କ ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋ ଆସାଇନ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="3976863468609830880">ଆପଣଙ୍କର ସେଲ୍ଫର ଶେଷ ଆଇକନ୍‌ରେ କ୍ଲିକ୍‌ କରନ୍ତୁ</translation>
 <translation id="3994783594793697310">ଡିସ୍‌ପ୍ଲେ ଜୁମ୍ ସ୍ତର ପୁନଃସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="4026843240379844265">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡିସ୍‌ପ୍ଲେଗୁଡ଼ିକ ମଧ୍ୟକୁ ନିଅନ୍ତୁ</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ଦାବନ୍ତୁ ଏବଂ ଗୋଟିଏ ଲିଙ୍କ୍‌ରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="561814908794220892">ଏକ୍‌ ନୂଆ ଟାବ୍‌ରେ ୱେବ୍‌ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="5620219513321115856">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣ ପଟ ଡେସ୍କକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
+<translation id="5699366815052349604">ସମସ୍ତ ଡେସ୍କ ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋ ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> କିମ୍ବା <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5757474750054631686">ନିଷ୍ପ୍ରଭ କୀବୋର୍ଡ (କେବଳ ବ୍ୟାକ୍‍ଲିଟ୍‍ କୀବୋର୍ଡ ପାଇଁ)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">ଜୁମ୍ ଇନ୍ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="634687982629734605">ଏସବୁ ମଧ୍ୟରେ ଫୋକସ୍ ସ୍ୱିଚ୍ କରନ୍ତୁ: ସ୍ଥିତି କ୍ଷେତ୍ର (ଯେଉଁଠାରେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଛବି ଦେଖାଯାଏ), ଲଞ୍ଚର୍, ଠିକଣା ବାର୍, ବୁକମାର୍କ ବାର୍ (ଯଦି ଦେଖାଯାଏ), ଖୋଲାଥିବା ୱେବପୃଷ୍ଠା ଏବଂ ଡାଉନଲୋଡ୍ ବାର୍ (ଯଦି ଦେଖାଯାଏ)। ଯଦି ଫୋକସ୍ କରିବା ଯୋଗ୍ୟ ଏକ ଡାଏଲଗ୍ ଡିସପ୍ଲେ ହୁଏ ତେବେ ଏହା ପରିବର୍ତ୍ତେ ଫୋକସକୁ ସେଠାକୁ ମୁଭ୍ କରନ୍ତୁ।</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1ମରୁ 8ମ ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ।</translation>
 <translation id="6395172954772765143">ଲାଇନ୍‌ର ଶେଷକୁ ଟେକ୍ସଟ୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6425378783626925378">ଆପଣଙ୍କର ସେଲ୍ଫରେ 1-8 ମଧ୍ୟରେ ଥିବା ଆଇକନ୍‌ଗୁଡ଼ିକୁ କ୍ଲିକ୍‌ କରନ୍ତୁ</translation>
 <translation id="6435207348963613811">ଆପଣଙ୍କର ସେଲ୍ଫରେ ପୂର୍ବବର୍ତ୍ତୀ ଆଇଟମ୍‌ ହାଇଲାଇଟ୍‌ କରନ୍ତୁ</translation>

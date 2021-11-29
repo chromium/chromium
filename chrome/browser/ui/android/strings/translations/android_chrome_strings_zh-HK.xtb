@@ -94,6 +94,7 @@
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
+<translation id="1518421282666914498">表情符號 GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="1538801903729528855">獲得更佳的網上語音體驗</translation>
 <translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
@@ -116,6 +117,7 @@
 <translation id="1702543251015153180">要變更深色主題背景設定嗎？</translation>
 <translation id="1718835860248848330">過去一小時</translation>
 <translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
+<translation id="1726477445370128854">Chrome 會預先載入您可能瀏覽的網頁，加快瀏覽及搜尋速度</translation>
 <translation id="173522743738009831">關於 Privacy Sandbox</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的書籤</translation>
@@ -217,7 +219,6 @@
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
-<translation id="2337236196941929873">預先載入 Chrome 認為您可能會瀏覽的頁面。為此，Chrome 可能會使用 Cookie (如果您允許的話)，亦可能加密網頁並透過 Google 傳送，以便向網站隱藏您的身分。</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
@@ -277,6 +278,7 @@
 <translation id="2649068648233607930">您的瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="2650751991977523696">要重新下載檔案嗎？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
+<translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2689830683995595741">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶私隱聲明<ph name="END_LINK3" />》約束。</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
@@ -312,6 +314,7 @@
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2870560284913253234">網站</translation>
+<translation id="2871733351037274014">預先載入網頁</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
 <translation id="2892647708214602204">此檔案可供下載時，系統會顯示通知</translation>
@@ -329,7 +332,6 @@
 <translation id="2942036813789421260">預覽分頁閂咗</translation>
 <translation id="2946420957526726953">正在更新 Chrome 以連接其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
-<translation id="2956410042958133412">這個帳戶是由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
 <translation id="2961210776189273067">標題</translation>
 <translation id="2979025552038692506">已選取無痕式分頁</translation>
@@ -342,10 +344,12 @@
 <translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立密碼短語</translation>
 <translation id="2996809686854298943">請提供網址</translation>
+<translation id="2997081575621687554">當 Google 網站要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器對該連結加密並預先載入網頁，且不會使用 Cookie。這麼做可在預先載入網站中隱藏您的身分。</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="301080557829842765">私隱權指南</translation>
 <translation id="3016635187733453316">請確保此裝置已連接互聯網</translation>
 <translation id="3026955690410463085">加入連結</translation>
+<translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
 <translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
@@ -379,6 +383,7 @@
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3234978181857588512">儲存至裝置</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
+<translation id="3237087289225714896">標準預先載入模式：</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3250563604907490871">圖片描述功能將會在連線至 Wi-Fi 時恢復運作</translation>
@@ -412,6 +417,7 @@
 <translation id="3389286852084373014">文字過多</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="3398320232533725830">開啟書籤管理員</translation>
+<translation id="3407392651057365886">預先載入更多網頁。當其他網站要求連結網頁時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
@@ -468,7 +474,6 @@
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3778956594442850293">已新增至主畫面</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
-<translation id="3803783897442799486">繼續即表示您同意《<ph name="BEGIN_LINK1" />服務條款<ph name="END_LINK1" />》。\nChrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK2" />管理<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">管理自動播放方式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -535,6 +540,7 @@
 <translation id="4196597275619698563">建立資訊卡</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4209895695669353772">如要接收 Google 建議的個人化內容，請開啟同步處理功能</translation>
+<translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
@@ -584,6 +590,7 @@
 <translation id="4532845899244822526">選擇資料夾</translation>
 <translation id="4538018662093857852">開啟精簡模式</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">如要在此查看或複製您的密碼，請為此裝置設定螢幕鎖定功能。</translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
 <translation id="4557685098773234337">如要迅速開啟此網頁，請將此網頁新增至主畫面</translation>
@@ -614,6 +621,7 @@
 <translation id="4696983787092045100">將文字傳送至您的裝置</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4714588616299687897">節省高達 60% 數據用量</translation>
+<translation id="471759387343966120">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》和《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》。\nChrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
 <translation id="4720982865791209136">協助改善 Chrome。<ph name="BEGIN_LINK" />請填寫我們的問卷調查<ph name="END_LINK" /></translation>
@@ -725,6 +733,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
 <translation id="5324858694974489420">家長設定</translation>
+<translation id="5326921373682845375">由於預先載入的網頁已經過加密，且連至這些網頁的網站為 Google 網站，因此以私密方式預先載入這些網頁時，Google 伺服器不會接收新資料。</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
@@ -751,7 +760,6 @@
 <translation id="5483197086164197190">導覽 Chrome</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="549025011754480756">如何使用語音搜尋</translation>
-<translation id="5512137114520586844">這個帳戶是由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>
@@ -805,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="5810864297166300463">網絡協助</translation>
+<translation id="5813552293717797987">此瀏覽器由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
 <translation id="5814749351757353073">緊貼最喜愛網站的最新動態</translation>
 <translation id="583281660410589416">不明</translation>
@@ -876,6 +885,7 @@
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6159335304067198720">節省 <ph name="PERCENT" /> 的數據用量</translation>
 <translation id="6159729262978459665">清除所有已同步裝置上的記錄。</translation>
+<translation id="6162892189396105610">預先載入 Chrome 認為您可能瀏覽的網頁。</translation>
 <translation id="6186394685773237175">找不到被盜用的密碼</translation>
 <translation id="6192907950379606605">取得圖片說明</translation>
 <translation id="6203593061661911168">使用 Wi-Fi 時將開始下載</translation>
@@ -910,6 +920,7 @@
 <translation id="6364438453358674297">從記錄中移除建議項目嗎？</translation>
 <translation id="6378173571450987352">詳情：依使用數據量排序</translation>
 <translation id="6379829913050047669">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
+<translation id="6380100320871303656">Chrome 會較頻密地預先載入 Chrome 您可能會瀏覽的頁面。此設定可能會提高數據用量。</translation>
 <translation id="6395288395575013217">連結</translation>
 <translation id="6397616442223433927">已重新連線</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> (<ph name="VIOLATED_URL" />)</translation>
@@ -943,6 +954,7 @@
 <translation id="6532866250404780454">系統不會顯示您在 Chrome 上瀏覽的網站。所有網站計時器將會被刪除。</translation>
 <translation id="6534565668554028783">Google 的回應時間過長</translation>
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
+<translation id="6541042852576515209">調整大小同旋轉</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{曾在 1 小時前檢查}other{曾在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
@@ -1016,6 +1028,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
+<translation id="6909589135458168665">預先載入網頁</translation>
 <translation id="6929699136511445623">啟用 Android 系統同步</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
@@ -1047,6 +1060,7 @@
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
 <translation id="7121362699166175603">清除記錄和網址列中的自動完成資料。您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7143462160780459030">無法擷取螢幕擷圖。請再試一次。</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對您很重要：</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7155317020660659215">如要掃瞄 QR 碼，請將設定變更為允許 Chrome 使用攝錄機</translation>
@@ -1064,6 +1078,7 @@
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
 <translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
+<translation id="7286703216224610554">只分享反應</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
 <translation id="7291910923717764901">已為此頁面新增圖片描述</translation>
 <translation id="7293429513719260019">選取語言</translation>
@@ -1098,6 +1113,8 @@
 <translation id="7444811645081526538">更多類別</translation>
 <translation id="7453467225369441013">您會登出大部分的網站，但不會因此登出 Google 帳戶。</translation>
 <translation id="7454641608352164238">空間不足</translation>
+<translation id="7456774706094330779">延伸預先載入模式</translation>
+<translation id="7468819939926272717">揀表情符號</translation>
 <translation id="7474822150871987353">無需離開網頁即可瞭解網站上的主題。選取網頁上的一個或多個字詞，即可進行搜尋。</translation>
 <translation id="7475192538862203634">如果網頁經常當機，請嘗試這些<ph name="BEGIN_LINK" />建議<ph name="END_LINK" />。</translation>
 <translation id="7475688122056506577">找不到 SD 卡，您的部分檔案可能會遺失。</translation>
@@ -1142,9 +1159,11 @@
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7655900163790317559">正在開啟藍牙…</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7663313374500954251">此瀏覽器由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
+<translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
 <translation id="7704317875155739195">自動完成搜尋和網址</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
@@ -1180,6 +1199,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個未讀頁面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個未讀頁面}}</translation>
 <translation id="7882131421121961860">找不到任何記錄</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
+<translation id="7887334752153342268">複製</translation>
 <translation id="789763218334337857">如何使用 Chrome</translation>
 <translation id="7903184275147100332">請稍候片刻</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
@@ -1197,7 +1217,6 @@
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
-<translation id="7981313251711023384">預先載入網頁，以加快瀏覽和搜尋速度</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
@@ -1217,6 +1236,7 @@
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8058746566562539958">在 Chrome 新分頁中開啟</translation>
+<translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
@@ -1227,6 +1247,7 @@
 <translation id="808747664143081553">已連接裝置</translation>
 <translation id="8088176524274673045">如要與附近的使用者分享，請讓對方掃瞄此 QR 碼</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
+<translation id="8105613260829665809">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。\nChrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
 <translation id="8110024788458304985">協助改善 Chrome\u2019s 的功能和效能</translation>
@@ -1251,6 +1272,7 @@
 <translation id="8250920743982581267">文件</translation>
 <translation id="825412236959742607">這個網頁使用過多記憶體，因此 Chrome 已移除部分內容。</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
+<translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="82619448491672958">查看其他分頁</translation>
@@ -1264,6 +1286,7 @@
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>
+<translation id="8352996530981010042">無法載入回應，請再試一次。</translation>
 <translation id="8354977102499939946">透過語音快速搜尋。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
@@ -1308,6 +1331,7 @@
 <translation id="8551513938758868521">離開 Chrome 時鎖定無痕式分頁</translation>
 <translation id="8555836665334561807">使用 Wi-Fi 時</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
+<translation id="8560560256644480257">正在建立 GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
 <translation id="856481929701340285">切換至電腦版網站</translation>
@@ -1326,6 +1350,7 @@
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8641930654639604085">嘗試封鎖成人網站</translation>
 <translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
+<translation id="8646467750715887511">在您開啟網頁後才載入網頁。</translation>
 <translation id="8655129584991699539">您可以在 Chrome 設定中清除資料</translation>
 <translation id="8656747343598256512">使用您的 Google 帳戶登入此網站和 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
@@ -1422,6 +1447,7 @@
 <translation id="9209888181064652401">無法撥打電話</translation>
 <translation id="9212845824145208577">無法再往下移動。請嘗試從下一頁開始。</translation>
 <translation id="9219103736887031265">圖片</translation>
+<translation id="92381315203627188">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器對該連結加密並預先載入網頁，且不會使用 Cookie。這麼做可在預先載入網站中隱藏您的身分。</translation>
 <translation id="926205370408745186">從「健康數碼生活」中移除您的 Chrome 活動記錄</translation>
 <translation id="927968626442779827">使用 Google Chrome 的「精簡模式」</translation>
 <translation id="928550791203542716">正在追蹤「<ph name="SITE_NAME" />」</translation>

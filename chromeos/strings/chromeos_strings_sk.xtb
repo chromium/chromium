@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivácie</translation>
+<translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">ÚSPEŠNÉ</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
+<translation id="2859243502336719778">Kľúčová aktualizácia</translation>
 <translation id="2860473693272905224">Položte na skener ďalšiu stranu</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
+<translation id="3462187165860821523">Aktualizuje sa zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
+<translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">Nebolo spustené</translation>
 <translation id="4378551569595875038">Pripája sa...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Aktualizácia periférií</translation>
 <translation id="4425149324548788773">Môj disk</translation>
 <translation id="4428374560396076622">Sieť <ph name="NETWORK_NAME" /> je vypnutá</translation>
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsiete</translation>
 <translation id="4454245904991689773">Adresár na skenovanie</translation>
+<translation id="4472575034687746823">Začíname</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="4511264077854731334">Portál</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">Intenzita signálu</translation>
 <translation id="4707579418881001319">L2TP/IPSec + certifikát používateľa</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
+<translation id="473775607612524610">Aktualizovať</translation>
 <translation id="475869545581454722">Heslo systému Chrome OS bolo aktualizované</translation>
 <translation id="4773299976671772492">Zastavené</translation>
 <translation id="4794140124556169553">Spustenie testu procesora môže ovplyvniť výkon systému</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="4950314376641394653">Firmvér zariadenia <ph name="DEVICE_NAME" /> bol aktualizovaný na verziu <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">SIM karta je uzamknutá (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Názov skupiny</translation>
 <translation id="5051044138948155788">Toto je jediná strana. Prejdete na úvodnú obrazovku skenovania.</translation>
-<translation id="5061169534910302641">Aktualizovať verziu a reštartovať</translation>
 <translation id="5088172560898466307">Názov hostiteľského servera</translation>
 <translation id="5089810972385038852">Štát</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
@@ -399,6 +406,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7058278511608979688">Ukončiť a uložiť</translation>
 <translation id="7059230779847288458">Nabíja sa (úplné nabitie o <ph name="TIME_VALUE" />)</translation>
+<translation id="7068619307603204412">Príprava zariadenia</translation>
 <translation id="708426984172631313">ZASTAVENÉ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nepodarilo sa – nepodarilo sa autorizovať</translation>
@@ -412,6 +420,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
+<translation id="7240035910874241640">Všetky periférie sú aktuálne</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbierky tapiet</translation>
@@ -452,6 +461,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7763470514545477072">Zhoda prípony domény</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7784116172884276937">Nie sú nastavené žiadne servery DNS</translation>
+<translation id="7786540085520432425">Počas aktualizácie môžete minimalizovať okno, ale zariadenie neodpájajte. Aktualizácia môže chvíľu trvať a zariadenie počas nej nemusí fungovať.</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7819857487979277519">PSK (WPA alebo RSN)</translation>
 <translation id="7835501727204647447">Inštalovať CloudReady</translation>
@@ -485,6 +495,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8217675307824400706">Pripojte sa</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
+<translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8286154143153872371">Pripojte sa k sieti a opätovným načítaním stránky zobrazte tapetu.</translation>
 <translation id="8291967909914612644">Krajina poskytovateľa domácej siete</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -509,6 +520,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8498220429738806196">Počítadlá návštevnosti</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
+<translation id="8520963233738002436">Vaše zariadenie <ph name="DEVICE_NAME" /> je aktuálne</translation>
 <translation id="8521021929829989041">Použiť osobné zariadenie</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
@@ -548,6 +560,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES} stránku}few{Skenovať {NUMBER_OF_PAGES} stránky}many{Skenovať {NUMBER_OF_PAGES} stránky}other{Skenovať {NUMBER_OF_PAGES} stránok}}</translation>
+<translation id="8994273342647807496">Inštaluje sa – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Preklad DNS má vysokú latenciu</translation>

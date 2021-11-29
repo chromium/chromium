@@ -15,6 +15,7 @@
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1032854598605920125">Girar a la derecha</translation>
 <translation id="1036348656032585052">Desactivar</translation>
+<translation id="1036982837258183574">Presiona |<ph name="ACCELERATOR" />| para salir de la pantalla completa</translation>
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
 <translation id="1041998700806130099">Mensaje de la hoja del trabajo</translation>
@@ -410,7 +411,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2241693394036365668">Se descargó un archivo</translation>
 <translation id="2248949050832152960">Usar WebAuthn</translation>
 <translation id="2250931979407627383">Costura de borde a la izquierda</translation>
-<translation id="2251943122176102076">El administrador no recomienda realizar capturas de pantalla o grabaciones debido a que se capturó contenido confidencial:</translation>
 <translation id="225207911366869382">Este valor ya no se utiliza para esta política.</translation>
 <translation id="2258928405015593961">Ingresa una fecha de vencimiento futura y vuelve a intentarlo</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
@@ -866,7 +866,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3760561303380396507">¿Deseas usar Windows Hello en lugar de CVC?</translation>
 <translation id="3761171036307311438">Nombre en la tarjeta:</translation>
 <translation id="3761718714832595332">Ocultar estado</translation>
-<translation id="3765032636089507299">La página de Navegación segura está en construcción.</translation>
 <translation id="3765588406864124894">Buzón 9</translation>
 <translation id="3767485424735936570">La política del administrador no recomienda copiar y pegar este contenido en <ph name="VM_NAME" />.</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva nota en Google Keep rápidamente</translation>
@@ -1082,14 +1081,13 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
+<translation id="4455222631300069614">Cambiar la contraseña ahora</translation>
 <translation id="4460315069258617173">Se permite hasta que cierres las pestañas para este sitio.</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
-<translation id="4465818729556336129">Este documento es confidencial, y tu administrador no recomienda que lo imprimas.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
 <translation id="4481251927743463293">Qué hace el modo Incógnito</translation>
-<translation id="4481394504112738036">Archivo confidencial</translation>
 <translation id="4482953324121162758">Este sitio no se traducirá.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
@@ -1203,7 +1201,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="LIST_ITEM" />Los proveedores de servicios de Internet pueden supervisar el tráfico web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Activar advertencias</translation>
-<translation id="4834718916855725099">El administrador no recomienda realizar capturas de pantalla o grabaciones debido a la presencia de contenido confidencial en la pantalla:</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
@@ -1323,6 +1320,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="51918995459521422"><ph name="ORIGIN" /> quiere descargar varios archivos</translation>
 <translation id="519422657042045905">La anotación no está disponible</translation>
 <translation id="5201306358585911203">Una página incorporada en esta página dice</translation>
+<translation id="5204468114771111727">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Asistente de Google puede cambiar tu contraseña automáticamente.</translation>
 <translation id="5205222826937269299">Nombre (obligatorio)</translation>
 <translation id="5209518306177824490">Huella digital SHA-1</translation>
 <translation id="5209670883520018268">Bandeja 20</translation>
@@ -1493,7 +1491,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5786044859038896871">¿Deseas llenar los campos con la información de tu tarjeta?</translation>
 <translation id="578633867165174378">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Te recomendamos cambiar la contraseña ahora.</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5797429178165847917">Captura contenido confidencial</translation>
 <translation id="5803412860119678065">¿Deseas llenar los campos con la información de tu tarjeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5810442152076338065">Tu conexión a <ph name="DOMAIN" /> está encriptada con un conjunto de cifrado obsoleto.</translation>
@@ -1520,7 +1517,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5905445707201418379">Se bloqueó conforme a la política de origen de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
-<translation id="5913377024445952699">Se pausó la captura de pantalla</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en uso}other{# en uso}}</translation>
@@ -1874,7 +1870,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o versiones posteriores.</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
-<translation id="7173920250514487165">Captura de contenido confidencial en la pantalla</translation>
 <translation id="7174545416324379297">Combinados</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="7179323680825933600">Guardar y completar formas de pago</translation>
@@ -2325,7 +2320,6 @@ Detalles adicionales:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8625384913736129811">Guardar esta tarjeta para este dispositivo</translation>
-<translation id="8627040765059109009">Se reanudó la captura de pantalla</translation>
 <translation id="865032292777205197">sensores de movimiento</translation>
 <translation id="8663226718884576429">Resumen del pedido, <ph name="TOTAL_LABEL" />, Más detalles</translation>
 <translation id="8666678546361132282">English</translation>

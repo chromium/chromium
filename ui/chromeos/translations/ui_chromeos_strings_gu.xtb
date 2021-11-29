@@ -5,7 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> આઇટમ્સ કાઢી નાખી રહ્યું છે...</translation>
 <translation id="1049926623896334335">Word દસ્તાવેજ</translation>
 <translation id="1056775291175587022">કોઈ નેટવર્ક નથી</translation>
-<translation id="1060368002126861100"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં ખસેડો.</translation>
+<translation id="1060368002126861100"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલો ફોલ્ડરમાં ખસેડો.</translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1119069657431255176">Bzip2 સંકુચિત તાર આર્કાઇવ</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
@@ -50,7 +50,7 @@
 <translation id="1395262318152388157">સ્લાઇડર શોધો</translation>
 <translation id="1399511500114202393">કોઈ વપરાશકર્તા પ્રમાણપત્ર નથી</translation>
 <translation id="1404323374378969387">નૉર્વેજીયન</translation>
-<translation id="1433628812591023318">ડેસ્કટૉપની સમાંતર ફાઇલો છોડવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
+<translation id="1433628812591023318">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439919885608649279">ફૂલો લઈને ઉભેલી વ્યક્તિ</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
@@ -92,7 +92,7 @@
 <translation id="174937106936716857">કુલ ફાઇલની સંખ્યા</translation>
 <translation id="1773212559869067373">પ્રમાણીકરણ પ્રમાણપત્રને સ્થાનિક રૂપે નકારવામાં આવ્યું છે</translation>
 <translation id="1775381402323441512">વીડિયોની માહિતી</translation>
-<translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોું જરૂરી છે.</translation>
+<translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોવું જરૂરી છે.</translation>
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
 <translation id="1812302367230252929">એમ્હારિક લિપ્યંતર</translation>
@@ -113,7 +113,7 @@
 <translation id="1936717151811561466">ફિનિશ</translation>
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
-<translation id="1984456723671657197">આ પ્રકારની ફાઇલ ચાલતી નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
+<translation id="1984456723671657197">આ પ્રકારની ફાઇલ સપોર્ટેડ નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
@@ -158,7 +158,7 @@
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
-<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ફાઇલો પસંદ કરી</translation>
+<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ફાઇલ પસંદ કરી</translation>
 <translation id="2387458720915042159">પ્રૉક્સી કનેક્શનનો પ્રકાર</translation>
 <translation id="2389832672041313158">બર્મીઝ/મ્યાનમાર</translation>
 <translation id="2392369802118427583">સક્રિય કરો</translation>
@@ -234,7 +234,7 @@
 <translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
-<translation id="3057861065630527966">તમારા ફોટો અને વિડિઓઝનો બેકઅપ લો</translation>
+<translation id="3057861065630527966">તમારા ફોટા અને વીડિયોનો બૅકઅપ લો</translation>
 <translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> સાથે શેર કરો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -256,7 +256,7 @@
 <translation id="3248185426436836442">બાકી</translation>
 <translation id="3252266817569339921">ફ્રેન્ચ</translation>
 <translation id="3253225298092156258">ઉપલબ્ધ નથી</translation>
-<translation id="3254434849914415189"><ph name="FILE_TYPE" /> ફાઇલો માટે ડિફૉલ્ટ ઍપ્લિકેશન પસંદ કરો:</translation>
+<translation id="3254434849914415189"><ph name="FILE_TYPE" /> ફાઇલો માટે ડિફૉલ્ટ ઍપ પસંદ કરો:</translation>
 <translation id="3255159654094949700">અરબી</translation>
 <translation id="3264582393905923483">સંદર્ભ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ખોલી શક્યા નથી</translation>
@@ -282,7 +282,7 @@
 <translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
-<translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
+<translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બૅકઅપ લેવાયો</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
@@ -312,7 +312,7 @@
 <translation id="3691184985318546178">સિંહાલા</translation>
 <translation id="3726463242007121105">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમને સપોર્ટ નથી.</translation>
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
-<translation id="3741243925913727067">Google ડ્રાઇવ પર તમારા મીડિયા ડિવાઇસના ફોટા અને વીડિયોનો બૅકઅપ લો.</translation>
+<translation id="3741243925913727067">Google Drive પર તમારા મીડિયા ડિવાઇસના ફોટા અને વીડિયોનો બૅકઅપ લો.</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="3780536599611287598">તમને ફાઇલોને '<ph name="FOLDER_NAME" />'માં ખસેડવાની પરવાનગી નથી.</translation>
 <translation id="3786301125658655746">તમે ઑફલાઇન છો</translation>
@@ -476,9 +476,9 @@
 <translation id="5145331109270917438">સંશોધિત કર્યાની તારીખ</translation>
 <translation id="515594325917491223">ચેસ</translation>
 <translation id="5158983316805876233">બધા પ્રોટોકૉલ માટે એક સરખી પ્રૉક્સીનો ઉપયોગ કરો</translation>
-<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />તમારા ઉપકરણને હમણાં જ દૂર કરશો નહીં!<ph name="END_BOLD" />
+<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />તમારા ડિવાઇસને હમણાં જ દૂર કરશો નહીં!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
-       ઉપયોગમાં રહેલા તમારા ઉપકરણને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી ફાઇલ્સ એપ્લિકેશનનો ઉપયોગ કરીને ઉપકરણને કાઢી નાખો.</translation>
+       ઉપયોગમાં રહેલા તમારા ડિવાઇસને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી Files ઍપનો ઉપયોગ કરીને ડિવાઇસને કાઢી નાખો.</translation>
 <translation id="5159560892333415631">ટ્રેશ ખાલી કરો</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
@@ -490,13 +490,13 @@
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5253070652067921974">આના દ્વારા બનાવેલ</translation>
 <translation id="5257456363153333584">વાણિયો</translation>
-<translation id="5262311848634918433"><ph name="MARKUP_1" />ફાઇલને ગમે ત્યાંથી ઍક્સેસ કરો, ઑફલાઇનથી પણ.<ph name="MARKUP_2" />
-    Google ડ્રાઇવમાં ફાઇલ અપ ટૂ ડેટ છે અને કોઈ ડિવાઇસમાંથી ઉપલબ્ધ છે.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />તમારી ફાઇલને સલામત રાખો.<ph name="MARKUP_5" />
-    તમારા ડિવાઇસને શું થયું છે એનાથી કોઈ ફેર પડતો નથી, તમારી ફાઇલને સલામત રીતે Google ડ્રાઇવમાં સ્ટોર કરવામાં આવે છે.<ph name="MARKUP_6" />
-    <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલ શેર કરો, બનાવો<ph name="MARKUP_8" />
+<translation id="5262311848634918433"><ph name="MARKUP_1" />ફાઇલોને ગમે ત્યાંથી ઍક્સેસ કરો, ઑફલાઇન હો ત્યારે પણ.<ph name="MARKUP_2" />
+    Google Driveમાં ફાઇલો અપ ટૂ ડેટ છે અને કોઈ પણ ડિવાઇસમાંથી ઉપલબ્ધ છે.<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />તમારી ફાઇલોને સલામત રાખો.<ph name="MARKUP_5" />
+    તમારા ડિવાઇસને શું થયું છે એનાથી કોઈ ફેર પડતો નથી, તમારી ફાઇલોને સલામત રીતે Google Driveમાં સ્ટોર કરવામાં આવે છે.<ph name="MARKUP_6" />
+    <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલો શેર કરો, બનાવો<ph name="MARKUP_8" />
     અને અન્ય લોકો સાથે તેના પર સહયોગ કરો.<ph name="MARKUP_9" /></translation>
-<translation id="5275973617553375938">Google ડ્રાઇવમાંથી પુનર્પ્રાપ્ત ફાઇલો</translation>
+<translation id="5275973617553375938">Google Driveમાંથી રિકવર કરેલી ફાઇલો</translation>
 <translation id="5288441970121584418">બર્ગર</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">શું તમે ખરેખર ટ્રેશ ખાલી કરવા માગો છો?</translation>
@@ -616,7 +616,7 @@
 <translation id="6327785803543103246">વેબ પ્રૉક્સીની ઑટોમૅટિક ખોજ</translation>
 <translation id="6339145975392024142">US આંતરરાષ્ટ્રીય (PC)</translation>
 <translation id="6346310558342052870">ઍક્સેસ પ્રતિબંધિત</translation>
-<translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિંડો</translation>
+<translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિન્ડો</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
 <translation id="636254897931573416">ડોમેન સફિક્સના મૂલ્યનો અમાન્ય મેળ</translation>
 <translation id="6367976544441405720">વેન</translation>
@@ -686,7 +686,7 @@
 <translation id="6970230597523682626">બલ્ગેરિયન</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6976795442547527108">સિંહ</translation>
-<translation id="6978611942794658017">આ ફાઇલ Windows સોફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. આ તમારું ડિવાઇસ જે Chrome OS પર ચાલે છે તેની સાથે સુસંગત નથી. કૃપા કરીને યોગ્ય અવેજી ઍપ્લિકેશન માટે Chrome વેબ સ્ટોરમાં શોધો.</translation>
+<translation id="6978611942794658017">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. આ તમારું ડિવાઇસ જે Chrome OS પર ચાલે છે તેની સાથે સુસંગત નથી. કૃપા કરીને યોગ્ય અવેજી ઍપ માટે Chrome વેબ સ્ટોરમાં શોધો.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">સ્વીડિશ</translation>
 <translation id="6990081529015358884">તમારી પાસે સ્થાન નથી</translation>
@@ -702,7 +702,7 @@
 <translation id="7086590977277044826">તમિળ, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="7103992300314999525">મેસિડોનિયન</translation>
 <translation id="7106346894903675391">વધુ સ્ટોરેજ ખરીદો...</translation>
-<translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ડ્રાઇવમાં શોધો&lt;/em&gt;</translation>
+<translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Driveમાં શોધો&lt;/em&gt;</translation>
 <translation id="7135561821015524160">કન્નડ ફોનેટિક</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7165320105431587207">નેટવર્ક ગોઠવવામાં નિષ્ફળ</translation>
@@ -731,7 +731,7 @@
 <translation id="7417705661718309329">Google નકશો</translation>
 <translation id="7460898608667578234">યુક્રેનિયન</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
-<translation id="7486315294984620427">ડેસ્કટૉપની સમાંતર ફાઇલો છોડવા માટે, ફાઇલને Windows ફાઇલોમાં કૉપિ કરવી આવશ્યક છે.</translation>
+<translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> મળ્યા
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર બૅકઅપ માટે તૈયાર</translation>
@@ -746,7 +746,7 @@
 <translation id="7547780573915868306">લિથુએનિયન</translation>
 <translation id="7547811415869834682">ડચ</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
-<translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગીઓ આપો</translation>
+<translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="7575645593344061397">"<ph name="FILENAME" />" રિસ્ટોર કરી રહ્યાં છીએ…</translation>
 <translation id="7589661784326793847">ક્ષણભર રોકાવ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
@@ -771,21 +771,21 @@
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7774365994322694683">પક્ષી</translation>
-<translation id="7788080748068240085">"<ph name="FILE_NAME" />"ને ઓફલાઇન સાચવવા માટે તમારે વધુ<ph name="TOTAL_FILE_SIZE" /> સ્થાન ખાલી કરવું જરૂરી છે:<ph name="MARKUP_1" /><ph name="MARKUP_2" />તમને હવે ઓફલાઇન ઍક્સેસ કરવાની જરૂર ન હોય એવી ફાઇલોને અનપિન કરો<ph name="MARKUP_3" /><ph name="MARKUP_4" />તમારા ડાઉનલોડ ફોલ્ડરમાંથી ફાઇલો ડિલીટ કરો<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">"<ph name="FILE_NAME" />"ને ઑફલાઇન સાચવવા માટે તમારે વધુ <ph name="TOTAL_FILE_SIZE" /> સ્પેસ ખાલી કરવી જરૂરી છે:<ph name="MARKUP_1" /><ph name="MARKUP_2" />તમારે હવે ઑફલાઇન ઍક્સેસ કરવાની જરૂર ન હોય એવી ફાઇલોને અનપિન કરો<ph name="MARKUP_3" /><ph name="MARKUP_4" />તમારા ડાઉનલોડ ફોલ્ડરમાંથી ફાઇલો ડિલીટ કરો<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ઉપકરણને ફોર્મેટ કરો</translation>
 <translation id="7799329977874311193">HTML દસ્તાવેજ</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7806708061868529807">હીબ્રુ</translation>
 <translation id="78104721049218340">થાઇ, Kedmanee કીબોર્ડ સાથે</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> મળી.
+<translation id="7821462174190887129"><ph name="FILE_COUNT" /> મળ્યા.
     <ph name="LINE_BREAK1" />
-    તમારો Google ડ્રાઇવ ક્વોટા પૂરતો મોટો નથી. વધારાની <ph name="FILE_SIZE" /> જરૂર છે.
+    તમારો Google Drive ક્વોટા પૂરતો મોટો નથી. વધારાની <ph name="FILE_SIZE" />ની જરૂર છે.
     <ph name="LINE_BREAK2" />
     ઓછા ફોટા પસંદ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
-<translation id="7839804798877833423">આ ફાઇલોને આનયન કરવું લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
+<translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7847617962681804761">મોબાઇલ ડેટાનો ઉપયોગ કરવા માટે પિન જરૂરી છે</translation>
 <translation id="7853966320808728790">ફ્રેંચ BÉPO</translation>
@@ -827,7 +827,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ઉપકરણ મૉડેલ</translation>
 <translation id="8208580316430297579">આર્ટવર્ક</translation>
-<translation id="8223479393428528563">ઑફલાઇન વપરાશ માટે આ ફાઇલો સાચવવા, પાછા ઓનલાઇન થાઓ, ફાઇલો પર જમણી ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
+<translation id="8223479393428528563">ઑફલાઇન ઉપયોગ કરવા માટે આ ફાઇલો સાચવવા, પાછા ઑફલાઇન થાઓ, ફાઇલો પર રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8261561378965667560">ચાઇનીઝ અરે</translation>
@@ -854,7 +854,7 @@
 <translation id="8452135315243592079">SIM કાર્ડ ખૂટે છે</translation>
 <translation id="8456681095658380701">અમાન્ય નામ</translation>
 <translation id="8459404855768962328">આ આઇટમ કૉપિ કરવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
-<translation id="8461467696380332069">કોઈ ફાઇલને રાઇટ ક્લિક કરો અને શેલ્ફમાં તમારી ફાઇલોને ઝડપથી ઍક્સેસ કરવા માટે "શેલ્ફ પર પિન કરો" પસંદ કરો.</translation>
+<translation id="8461467696380332069">ફાઇલ પર રાઇટ-ક્લિક કરો અને શેલ્ફમાં તમારી ફાઇલોને ઝડપથી ઍક્સેસ કરવા માટે "શેલ્ફ પર પિન કરો" પસંદ કરો.</translation>
 <translation id="8461914792118322307">પ્રૉક્સી</translation>
 <translation id="8463494891489624050">વિયેતનામીઝ VIQR</translation>
 <translation id="8466234950814670489">તાર આર્કાઇવ</translation>
@@ -929,7 +929,7 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'ના સભ્યો આ આઇટમનો ઍક્સેસ મેળવશે.</translation>
 <translation id="9131598836763251128">એક અથવા વધુ ફાઇલ પસંદ કરો</translation>
 <translation id="9133055936679483811">ઝિપ કરવાનું નિષ્ફળ: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">આ ફાઇલની રચના Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલા કમ્પ્યુટર માટે કરી છે. આ Chrome OS ચલાવે છે તેવા તમારા ડિવાઇસ સાથે સુસંગત નથી. કૃપા કરીને અનુકૂળ અવેજી ઍપ્લિકેશન માટે Chrome વેબ સ્ટોર પર શોધ કરો.</translation>
+<translation id="9134524245363717059">આ ફાઇલની રચના Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલા કમ્પ્યુટર માટે કરી છે. આ Chrome OS ચલાવે છે તેવા તમારા ડિવાઇસ સાથે સુસંગત નથી. કૃપા કરીને અનુકૂળ અવેજી ઍપ માટે Chrome વેબ સ્ટોર પર શોધો.</translation>
 <translation id="9144340019284012223">કૅટલેન</translation>
 <translation id="914873105831852105">અમાન્ય પિન. તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="9153934054460603056">ઓળખાણ અને પાસવર્ડ સાચવો</translation>

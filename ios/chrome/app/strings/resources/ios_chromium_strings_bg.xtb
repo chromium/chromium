@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="102360288709523007">Помогнете за подобряването на Chromium, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
+<translation id="1047130070405668746">Изберете Chromium.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
 <translation id="1289216811211435351">Превключване към Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium разполага с функции, които ви помагат да управлявате данните си в интернет и бързината на зареждане на уеб страници.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Изберете Chromium.</translation>
 <translation id="2006345422933397527">Chromium не можа да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="2054703085270098503">Сърфирайте безопасно с Chromium</translation>
 <translation id="2168108852149185974">Някои добавки водят до срив на Chromium. Моля, деинсталирайте:</translation>

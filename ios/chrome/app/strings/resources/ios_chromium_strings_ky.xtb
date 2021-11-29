@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="102360288709523007">Google'га колдонуу статистикасын жана ката жөнүндө кабарды жиберип туруу</translation>
+<translation id="1047130070405668746">Chromium'ду тандаңыз</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1257458525759135959">Сүрөттөрдү сактоо үчүн, Жөндөөлөрдү таптап, Chromium'га сүрөттөрүңүздү кошууга уруксат бериңиз.</translation>
 <translation id="1289216811211435351">Chromium'га которулуу</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium бул вебсайттын тастыктамасын <ph name="ISSUER" /> басып чыгарганын ырастады.</translation>
 <translation id="1843424232666537147">Chromium'да Интернет дайын-даректериңизди башкарып, веб-баракчаларды тез жүктөөгө жардам берген функциялар бар.
 <ph name="BEGIN_LINK" />Көбүрөөк маалымат<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Chromium'ду тандаңыз</translation>
 <translation id="2006345422933397527">Chromium жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="2054703085270098503">Chromium менен коопсуз болуңуз</translation>
 <translation id="2168108852149185974">Айрым көмөкчү жөндөөлөрдөн улам Chromium бузулуп калды. Төмөндөгүлөрдү өчүрүү керек:</translation>
@@ -34,7 +36,7 @@
 <translation id="2915596697727466327">Сырсөздөрүңүзгө уруксатсыз кирүүгө жол бербөө үчүн, Chromium кызматы Face ID функциясын колдонот.</translation>
 <translation id="2918709798697875261">Уюмуңуз Chromium'га кирбей турууңузду талап кылууда.</translation>
 <translation id="2942241131342758843">Шилтемелерди ачуу, виджеттерде издөө жана башка колдонмолордун сырсөздөрүн автоматтык түрдө толтуруу үчүн Chromium'ду демейки серепчи катары колдонуңуз</translation>
-<translation id="2977470724722393594">Chromium жаңыртылган</translation>
+<translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="3256316712990552818">Chromium'га көчүрүлдү</translation>
 <translation id="3344973607274501920">Chromium сырсөздөрүңүздү текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="3472200483164753384">Chromium Canary'де колдоого алынбайт</translation>

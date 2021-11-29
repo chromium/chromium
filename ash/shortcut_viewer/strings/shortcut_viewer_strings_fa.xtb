@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">باز کردن پنجره جدید در حالت ناشناس</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> و سپس <ph name="ESC" /></translation>
+<translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="1652741121070700329">رفتن به ابتدای کلمه قبل</translation>
 <translation id="1679841710523778799">زیاد کردن روشنایی</translation>
 <translation id="168356808214100546"><ph name="ALT" /> را فشار دهید و نگه‌دارید، روی <ph name="TAB" /> ضربه بزنید تا به پنجره‌ای که می‌خواهید باز شود برسید، سپس آن را رها کنید.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> ۱ تا ۸</translation>
 <translation id="3837047332182291558">روشن‌تر کردن صفحه‌کلید (فقط برای صفحه‌کلیدهایی که نور پس‌زمینه دارند)</translation>
 <translation id="3949671998904569433">کاما</translation>
-<translation id="3976707995992061296">تغییر وضعیت اختصاص پنجره فعال به همه میزکارها</translation>
 <translation id="3976863468609830880">کلیک کردن آخرین نماد در قفسه</translation>
 <translation id="3994783594793697310">بازنشانی میزان بزرگ‌نمایی صفحه‌نمایش</translation>
 <translation id="4026843240379844265">جابه‌جایی پنجره فعال بین نمایشگرها</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> را فشار دهید و روی پیوندی کلیک کنید</translation>
 <translation id="561814908794220892">بازکردن صفحه وب در یک برگه جدید</translation>
 <translation id="5620219513321115856">پنجره فعال را به میز سمت چپ ببرید</translation>
+<translation id="5699366815052349604">واگذاری پنجره فعال به همه میزکارها</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> یا <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">بازکردن پیوند در برگه</translation>
 <translation id="5757474750054631686">کم کردن نور صفحه‌کلید (فقط برای صفحه‌کلیدهایی که نور پس‌زمینه دارند)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">بزرگ‌نمایی صفحه‌نمایش</translation>
 <translation id="634687982629734605">جابه‌جایی تمرکز بین: ناحیه نشانگر وضعیت (جایی که تصویر حسابتان نشان داده می‌شود)، راه‌انداز، نوار نشانی، نوار نشانک‌ها (اگر نمایان باشد)، صفحه وبی که باز است، و نوار بارگیری‌ها (اگر نمایان باشد). اگر کادر گفتگوی قابل‌تمرکزی نمایش داده شود، تمرکز به آنجا منتقل می‌شود.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">فعال کردن میزکار اول تا هشتم.</translation>
 <translation id="6395172954772765143">انتخاب نوشتار تا انتهای خط</translation>
 <translation id="6425378783626925378">کلیک کردن نمادهای ۱ تا ۸ در قفسه</translation>
 <translation id="6435207348963613811">برجسته‌سازی مورد قبلی روی قفسه شما</translation>

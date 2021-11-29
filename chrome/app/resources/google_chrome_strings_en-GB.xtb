@@ -52,6 +52,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
 <translation id="2189289170880510015">Customise some of Chrome’s most important privacy choices</translation>
+<translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
@@ -216,6 +217,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
+<translation id="6594121454516132231">See how Chrome plans to safeguard you from cross-site tracking while preserving the open web</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
 <translation id="6696915334902295848">Chrome needs microphone permission for this site</translation>
@@ -230,6 +232,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
 <translation id="7025800014283535195">You can switch between Chrome profiles here</translation>
 <translation id="7062128746136194023">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Adding this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
+<translation id="7085332316435785646">Choose whether to include Chrome history for more personalised experiences in Google services</translation>
 <translation id="7088681679121566888">Chrome is up to date</translation>
 <translation id="7098166902387133879">Google Chrome is using your microphone.</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
@@ -254,6 +257,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="7665553140559834626">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
+<translation id="7748512868279796735">The following accounts are available for this Chrome profile</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="7781002470561365167">There is a new version of Google Chrome available.</translation>
@@ -285,6 +289,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8556340503434111824">There's a new version of Google Chrome available and it's faster than ever.</translation>
+<translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>

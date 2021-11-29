@@ -138,6 +138,7 @@
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
+<translation id="2271351792809375263">तुम्ही Chrome मध्ये सेव्‍ह केलेले पासवर्ड तुमच्‍या डिव्हाइसवरील इतर ॲप्‍समध्ये वापरा</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
 <translation id="2302742851632557585">वेबसाइट वर पासवर्ड बदला</translation>
 <translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">पॉप-अपला अनुमती</translation>
 <translation id="3399930248910934354">Chrome सेटिंग्ज उघडा</translation>
 <translation id="3404744938087714423">साइन आउट केल्यामुळे सिंक करणे बंद होईल.</translation>
+<translation id="3414451675185661089">२. पासवर्ड वर टॅप करा</translation>
 <translation id="3425644765244388016">कार्डाचे टोपणनाव</translation>
 <translation id="3433057996795775706">हा पासवर्ड हटवल्याने तुमचे <ph name="WEBSITE" /> वरील खाते हटवले जाणार नाही. इतरांपासून ते सुरक्षित ठेवण्यासाठी, <ph name="WEBSITE" /> वर तुमचा पासवर्ड बदला.</translation>
 <translation id="3443810440409579745">टॅब मिळाला.</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">निव्वळ-एक्सपोर्ट डेटा पाठविण्यासाठी, कृपया सेटिंग्ज ॲप मध्ये तुमचे ईमेल खाते कॉंफिगर करा.</translation>
 <translation id="4124987746317609294">वेळ वर्गवारी</translation>
 <translation id="4152011295694446843">तुमचे बुकमार्क तुम्हाला येथे सापडतील</translation>
+<translation id="4153925727916232411">यामुळे तुम्हाला फोटो काढता आणि अपलोड करता येतो तसेच, QR कोड स्कॅन करता येतात.</translation>
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="418156467088430727">नवीन टॅबमध्‍ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="4181841719683918333">भाषा</translation>
@@ -379,6 +382,7 @@
 <translation id="4666531726415300315"><ph name="EMAIL" /> म्हणून साइन इन केले.
 
 तुमचा डेटा तुमच्या सिंक पासफ्रेझासह एंक्रिप्ट केलेला केला आहे. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
+<translation id="4682686630151240767">१. iPhone सेटिंग्ज उघडा</translation>
 <translation id="4689564913179979534">पेमेंट पद्धती व्यवस्थापित करा...</translation>
 <translation id="470966556546083668">सिंक करा हे सुरू करू नका</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
@@ -459,6 +463,7 @@
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
+<translation id="5523579157975978438">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि पासवर्डवर जा.</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="5532698011560297095">साइन इन करणे शक्य नाही</translation>
 <translation id="5548760955356983418">Handoff तुम्हाला या डिव्हाइसवर ब्राउझिंग सुरू करू आणि त्यानंतर आपल्या Mac वर सहजपणे सुरू ठेऊ देते. वर्तमान उघडलेली वेबसाइट आपल्या Mac च्या डॉकवर दिसून येईल.
@@ -549,7 +554,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप
 करा.</translation>
-<translation id="6308436439357671616">हे तुम्हाला फोटो घेऊ आणि अपलोड करू देते.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
 <translation id="6324528485781869530">सिंक खाते स्विच करा</translation>
 <translation id="6324669097367352121">साइन इन सेटिंग्ज</translation>
@@ -742,6 +746,7 @@
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="7971521879845308059">पॉप-अप अवरोधित करा</translation>
 <translation id="797413074872316787">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
+<translation id="7978018860671536736">३. AutoFill पासवर्ड वर टॅप करा</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>
@@ -767,6 +772,7 @@
 <translation id="8205564605687841303">रद्द करा</translation>
 <translation id="8206354486702514201">या सेटिंगची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते.</translation>
 <translation id="8225985093977202398">कॅशे   इमेज आणि फाइल</translation>
+<translation id="8237382152611443140">AutoFill पासवर्ड सेटिंग्ज उघडा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8271720166617117963">स्वीकार करा आणि साइन इन करा</translation>
 <translation id="8281781826761538115">डीफॉल्ट - <ph name="DEFAULT_LOCALE" /></translation>
@@ -835,6 +841,7 @@
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
 <translation id="8952559610785099500">पासवर्ड जोडा</translation>
 <translation id="895541991026785598">समस्या नोंदवा</translation>
+<translation id="8974714402877957201">१. iPad सेटिंग्ज उघडा</translation>
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>

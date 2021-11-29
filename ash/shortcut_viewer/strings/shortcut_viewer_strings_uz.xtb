@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, keyin <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 — 8 ish stollarini ochish</translation>
 <translation id="1652741121070700329">Avvalgi so‘z boshiga o‘tish</translation>
 <translation id="1679841710523778799">Yorqinlikni ko‘tarish</translation>
 <translation id="168356808214100546"><ph name="ALT" /> tugmasini bosib turib <ph name="TAB" /> orqali oynalarni almashtiring va kerakli oynada qo‘yib yuboring.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 va 8 orasida</translation>
 <translation id="3837047332182291558">Klaviaturani yorqinlashtirish (faqat chiroqli klaviaturalar uchun)</translation>
 <translation id="3949671998904569433">vergul</translation>
-<translation id="3976707995992061296">Barcha ish stollaridagi faol oyna tugmasi</translation>
 <translation id="3976863468609830880">Javondagi oxirgi ikonkani bosish</translation>
 <translation id="3994783594793697310">Ekranning asl masshtabini tiklash</translation>
 <translation id="4026843240379844265">Faol oynani ekranlararo almashtirish</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> tugmalari bilan havola ustiga bosing</translation>
 <translation id="561814908794220892">Sahifani yangi varaqda ochish</translation>
 <translation id="5620219513321115856">Faol oynani ish stolining oʻng tomoniga joylash</translation>
+<translation id="5699366815052349604">Faol oynani barcha ish stollariga biriktirish</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> yoki <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Havolani yangi varaqda ochish</translation>
 <translation id="5757474750054631686">Klaviaturani xiralashtirish (faqat chiroqli klaviaturalar uchun)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Ekran masshtabini kattalashtirish</translation>
 <translation id="634687982629734605">Panelni faollashtirish: Holat qatori (hisob rasmi ko‘rinadigan), launcher, manzil qatori, xatcho‘plar (agar ko‘rinsa), yuklanmalar panelini ochuvchi sahifa (agar ko‘rinsa) Agar fokuslanadigan oyna chiqsa, fokusni unga oʻtkazing.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">Barcha (1-8) ish stollarida faollashtirish.</translation>
 <translation id="6395172954772765143">Matnni qator oxirigacha belgilash</translation>
 <translation id="6425378783626925378">Javondagi ikonkalarni bosish (1 va 8 orasida)</translation>
 <translation id="6435207348963613811">Javondagi avvalgi elementni belgilash</translation>

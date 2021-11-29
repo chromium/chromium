@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="2199719347983604670">Податоци од „Синхронизација на Chrome“</translation>
 <translation id="2313070403598893276">Google Chrome е едноставен, безбеден и побрз од кога било</translation>
+<translation id="2339201583852607431">Лозинката ќе се зачува во вашата сметка на Google (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Изберете дали дозволувате Chrome ја споделува вашата локација со сајтов.</translation>
 <translation id="2347208864470321755">Кога оваа функција е вклучена, Chrome ќе нуди да преведува страници што се напишани на други јазици користејќи Google Translate. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chromium има функции што помагаат во управувањето со интернет-сообраќајот и со брзината на вчитување веб-страници.
@@ -54,8 +55,10 @@
 <translation id="4698415050768537821">Chrome не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не е поддржана на Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>
+<translation id="5119391094379141756">Изберете Chrome</translation>
 <translation id="5162467219239570114">Chrome е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome не може да ја користи камерата затоа што друга апликација ја користи во моментов</translation>
+<translation id="5460571915754665838">4. Изберете Chrome</translation>
 <translation id="5639704535586432836">Отворете „Поставки“ &gt; „Приватност“ &gt; „Камера“ &gt; Google Chrome и вклучете ја камерата.</translation>
 <translation id="5642200033778930880">Google Chrome не може да ја користи камерата во режимот „Поделен приказ“</translation>
 <translation id="5690427481109656848">Google LLC</translation>

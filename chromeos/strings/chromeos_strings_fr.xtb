@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">État d'activation</translation>
+<translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">Wi-Fi facturé à l'usage</translation>
 <translation id="3583278742022654445">Signal faible. Rapprochez-vous de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
+<translation id="360089215033199597">Il est recommandé de se connecter au Wi-Fi pour faciliter le processus de réparation.
+        Votre réseau sera enregistré.</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
@@ -173,6 +176,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
+<translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3966286471246132217">Pour obtenir des résultats plus précis, gardez toutes les applis fermées jusqu'à la fin du test.</translation>
@@ -186,6 +190,7 @@
 <translation id="409427325554347132">Enregistrer les résultats du test</translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
+<translation id="4140251671072434548">Effectuer un déverrouillage de serveur RMA</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Assurez-vous que le scanner est allumé et disponible pour la connexion réseau ou filaire.</translation>
@@ -211,6 +216,7 @@
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Enregistrer dans</translation>
+<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
 <translation id="4511264077854731334">Portail</translation>
@@ -233,6 +239,7 @@
 <translation id="469379815867856270">Force du signal</translation>
 <translation id="4707579418881001319">L2TP/IPSec + Certificat utilisateur</translation>
 <translation id="4731797938093519117">Accès parental</translation>
+<translation id="473775607612524610">Mettre à jour</translation>
 <translation id="475869545581454722">Le mot de passe de Chrome OS a été mis à jour</translation>
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4794140124556169553">Tester le processeur peut affecter les performances système</translation>
@@ -263,7 +270,6 @@
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Vous allez revenir à l'écran où commencer à scanner.</translation>
-<translation id="5061169534910302641">Mettre à jour la version et redémarrer</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État</translation>
 <translation id="5142961317498132443">Authentification</translation>
@@ -476,10 +482,13 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander les compteurs de trafic</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
+<translation id="816013303019725643">Saisissez le code de déverrouillage :</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Avantages</translation>
+<translation id="8217675307824400706">Se connecter</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8281886186245836920">Passer</translation>
 <translation id="8286154143153872371">Connectez-vous à un réseau et actualisez la page pour voir le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du fournisseur personnel</translation>
 <translation id="8294431847097064396">Source</translation>

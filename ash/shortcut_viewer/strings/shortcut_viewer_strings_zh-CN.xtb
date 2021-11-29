@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">在无痕模式下打开新窗口</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />，然后按 <ph name="ESC" /> 键</translation>
+<translation id="1586324912145647027">转至桌面 1 到 8</translation>
 <translation id="1652741121070700329">移到上一个字词的开头</translation>
 <translation id="1679841710523778799">调高亮度</translation>
 <translation id="168356808214100546">在按住 <ph name="ALT" /> 键的同时，多次点按 <ph name="TAB" /> 键直到切换至您要打开的窗口，然后松开手指。</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 至 8</translation>
 <translation id="3837047332182291558">调亮键盘（仅适用于背光键盘）</translation>
 <translation id="3949671998904569433">逗号</translation>
-<translation id="3976707995992061296">切换是否将使用中的窗口分配到所有桌面</translation>
 <translation id="3976863468609830880">点击任务栏中的最后一个图标</translation>
 <translation id="3994783594793697310">重置显示内容的缩放级别</translation>
 <translation id="4026843240379844265">在各个显示屏之间移动活动窗口</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">在按 <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> 的同时点击链接</translation>
 <translation id="561814908794220892">在新标签页中打开网页</translation>
 <translation id="5620219513321115856">将活动窗口移至右侧的桌面</translation>
+<translation id="5699366815052349604">将使用中的窗口分配至所有桌面</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> 或 <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">在标签页中打开链接</translation>
 <translation id="5757474750054631686">调暗键盘（仅适用于背光键盘）</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">放大显示内容</translation>
 <translation id="634687982629734605">在以下元素之间切换焦点：状态区（其中显示了您的帐号头像）、启动器、地址栏、书签栏（若显示）、打开的网页、下载内容栏（若显示）。如果屏幕上显示了一个可聚焦的对话框，该命令会改为将焦点移至那里。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">启用第 1-8 个桌面</translation>
 <translation id="6395172954772765143">选择直到行尾的文字</translation>
 <translation id="6425378783626925378">点击任务栏中的第 1-8 个图标</translation>
 <translation id="6435207348963613811">突出显示任务栏中的上一项</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="102360288709523007">將使用情況統計資料及當機報告傳送給 Google，協助我們改善 Chromium 的功能。</translation>
+<translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1289216811211435351">切換至 Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">顯示登入 Chromium 的指示。</translation>
 <translation id="1584569488888892906">Chromium 不但簡便安全，速度更勝從前</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
+<translation id="1722370509450468186">密碼將會儲存在您的帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 的資料</translation>
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
 <translation id="1843424232666537147">Chromium 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. 選取 [Chromium]</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2054703085270098503">讓 Chromium 確保您的安全</translation>
 <translation id="2168108852149185974">部份外掛程式造成 Chromium 當機。請解除安裝以下程式：</translation>

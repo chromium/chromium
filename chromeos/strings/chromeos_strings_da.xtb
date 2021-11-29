@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
+<translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Brug aktuelt nøglepar</translation>
 <translation id="2323506179655536734">SPRUNGET OVER</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2859243502336719778">Kritisk opdatering</translation>
 <translation id="2860473693272905224">Placer en ny side i scanneren</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> ud af <ph name="TOTAL_PAGES" /> er blevet udskrevet.</translation>
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
+<translation id="3462187165860821523">Opdaterer <ph name="DEVICE_NAME" /></translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Opløsning</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
+<translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">Kørte ikke</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Opdater eksterne enheder</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">Gammel adgangskode</translation>
 <translation id="4453205916657964690">Undernetmaske</translation>
 <translation id="4454245904991689773">Scan til</translation>
+<translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4707579418881001319">L2TP/IPSec + brugercertifikat</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
+<translation id="473775607612524610">Opdater</translation>
 <translation id="475869545581454722">Chrome OS-adgangskoden er opdateret</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4794140124556169553">Systemets ydeevne kan blive påvirket under kørsel af en CPU-test</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at konfigurere eller opdatere en forbindelse.</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="4950314376641394653">Firmwaren på <ph name="DEVICE_NAME" /> er opdateret til version <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
-<translation id="5061169534910302641">Opdater version, og genstart</translation>
 <translation id="5088172560898466307">Serverens hostname</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
@@ -399,6 +406,7 @@
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7058278511608979688">Afslut, og gem</translation>
 <translation id="7059230779847288458">Oplader, fuldt opladet om <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Gør enheden klar</translation>
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
@@ -412,6 +420,7 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
+<translation id="7240035910874241640">Alle eksterne enheder er opdateret</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>
@@ -453,6 +462,7 @@
 <translation id="7763470514545477072">Match af domænesuffiks</translation>
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7784116172884276937">Der er ikke konfigureret nogen DNS-servere</translation>
+<translation id="7786540085520432425">Du kan minimere vinduet under opdateringen, men du må ikke frakoble din enhed. Dette kan tage nogle få minutter, og din enhed fungerer muligvis ikke under opdateringen</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7835501727204647447">Installer CloudReady</translation>
@@ -486,6 +496,7 @@
 <translation id="8217675307824400706">Få forbindelse</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
+<translation id="8281886186245836920">Spring over</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>
 <translation id="8291967909914612644">Land for udbyder til hjem</translation>
 <translation id="8294431847097064396">Kilde</translation>
@@ -510,6 +521,7 @@
 <translation id="8498220429738806196">Trafiktællere</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
+<translation id="8520963233738002436">Din <ph name="DEVICE_NAME" /> er opdateret</translation>
 <translation id="8521021929829989041">Brug som personlig enhed</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
@@ -549,6 +561,7 @@
 <translation id="8970109610781093811">Kør igen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan side {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Scan siderne {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Installerer – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Der er stor forsinkelse på DNS-oversættelse</translation>

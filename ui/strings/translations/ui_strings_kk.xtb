@@ -1,85 +1,50 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
-<translation id="1018939186200882850">мəзір элементі</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> құрылғысына жіберілуде…</translation>
-<translation id="10623998915015855">ауыстыру түймесі</translation>
 <translation id="111910763555783249">Хабарлама параметрлері</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 күн бұрын}other{# күн бұрын}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 минут бұрын}other{# минут бұрын}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
-<translation id="1181037720776840403">Өшіру</translation>
-<translation id="1188858454923323853">қосымша</translation>
-<translation id="1201402288615127009">Келесі</translation>
-<translation id="1206619573307042055">marquee</translation>
-<translation id="1206693055195146388">сырғытпа</translation>
-<translation id="1211441953136645838">түсіндірме</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> бөлісу мүмкін болмады.</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1281252709823657822">диалогтық терезе</translation>
-<translation id="1290982764014248209"><ph name="DRAGGED_APP" /> қолданбасын <ph name="FOLDER_NAME" /> қалтасына жылжыту.</translation>
 <translation id="1291104554099683393">Мәтін тым үлкен, аз-аздан бөлісіп көріңіз.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">ҰСЫНЫЛАТЫН ҚОЛДАНБАЛАР</translation>
-<translation id="1335095011850992622">рұқсаттар</translation>
-<translation id="1342835525016946179">мақала</translation>
-<translation id="1359897965706325498">баннер</translation>
 <translation id="1368832886055348810">Солдан оңға</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1398853756734560583">Жаю</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, орнатылған қолданба</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> бөлісу мүмкін емес</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> және <ph name="SECOND_ITEM_TITLE" /> өзара ауыстырылды.</translation>
-<translation id="1498028757988366001">Оны бұған дейін іздегенсіз. Тарихтан "<ph name="QUERY" />" сұрауын жойып тастасаңыз, ол барлық құрылғыңыздағы аккаунтыңыздан өшіп қалады.</translation>
-<translation id="1510238584712386396">Іске қосу құрылғысы</translation>
-<translation id="1589122976691792535">аймақ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут және }other{# минут және }}</translation>
 <translation id="1643823602425662293">Хабарландыру</translation>
-<translation id="1650423536718072820">ендірілген дәйексөз</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">қазір</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 минут}other{# минут}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> Б</translation>
-<translation id="1770726142253415363"><ph name="ROW_NUMBER" />-жолға, <ph name="COLUMN_NUMBER" />-бағанға жылжытылды.</translation>
 <translation id="1801827354178857021">Кезең</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 ай}other{# ай}}</translation>
-<translation id="1806710327868736751">ескерту диалогтық терезесі</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> МБ/с</translation>
-<translation id="1821985195704844674">ағаш тәрізді тор</translation>
-<translation id="1823704031293214298">беттің төменгі деректемесі</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 сағат және }other{# сағат және }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> босатылды.</translation>
-<translation id="1842960171412779397">таңдау</translation>
 <translation id="1859234291848436338">Жазу бағыты</translation>
 <translation id="1860796786778352021">Хабарландыруды жабу</translation>
 <translation id="186476001994626254">Web Smart Paste мазмұны</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Барлығын &amp;таңдау</translation>
-<translation id="190587075670221089">жою</translation>
-<translation id="1907737156431278478">мысал</translation>
 <translation id="19085484004813472">Бұл – жаңа функция.</translation>
-<translation id="1930711995431081526">күй</translation>
 <translation id="2006524834898217237">Бұл құрылғы интернетке қосулы екеніне көз жеткізіңіз.</translation>
 <translation id="208586643495776849">Қайталап көріңіз</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 күн}other{# күн}}</translation>
 <translation id="2148716181193084225">Бүгін</translation>
-<translation id="2158401438286456825">беттер тізімі</translation>
 <translation id="2161656808144014275">Мәтін</translation>
 <translation id="2168039046890040389">Жоғарғы бетке өту</translation>
 <translation id="2190355936436201913">(бос)</translation>
 <translation id="2192232475740621500">Төмен тығыздықты пайдалану</translation>
-<translation id="219905428774326614">Launcher, барлық қолданбалар</translation>
 <translation id="2267918077332197517">Бұл сайттан келетін барлық хабарландыруларды бөгеу</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Экрандағы сенсорлық нысандарды түртіңіз.</translation>
-<translation id="2291999235780842123">құсбелгі ұяшығы</translation>
 <translation id="2295140143284145483">Сауалнама</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
-<translation id="2311842470354187719">бетті үзу</translation>
-<translation id="2335594187091864976">күн мен уақыт таңдағышы</translation>
 <translation id="2353636109065292463">Интернет байланысы тексерілуде.</translation>
 <translation id="2388990488038464401">Осы нөмірге телефоныңыздан қоңырау шалынсын ба?</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
@@ -87,46 +52,27 @@
 <translation id="2445449901874883781">Жоғары тығыздықты пайдалану</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2497284189126895209">Барлық файлдар</translation>
-<translation id="2508569020611168319">қойындылар тізімі</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Калибрлеу аяқталды</translation>
 <translation id="252373100621549798">Белгісіз дисплей</translation>
 <translation id="2545651323591713692">Кідірту</translation>
-<translation id="2570734079541893434">Параметрлерді басқару</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{1 сағатта}other{# сағатта}}</translation>
 <translation id="2583543531130364912">Сенсорлық экранды калибрлеңіз</translation>
 <translation id="2586657967955657006">Буфер</translation>
-<translation id="2657045182931379222">графикалық нысан</translation>
 <translation id="2666092431469916601">Жоғары</translation>
-<translation id="2674318244760992338">төменгі деректеме</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
 <translation id="271033894570825754">Жаңа</translation>
-<translation id="2723001399770238859">аудио</translation>
 <translation id="2743387203779672305">Буферге көшіру</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2759744352195237655">қалқымалы терезе түймесі</translation>
-<translation id="2803313416453193357">Қалтаны ашу</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 жыл бұрын}other{# жыл бұрын}}</translation>
-<translation id="2844350028562914727">мәліметтер</translation>
 <translation id="2878511608894704031">Барлығын жою</translation>
-<translation id="2896972712917208084">ауыстырғыш түймелер тобы</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 күнде}other{# күнде}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> бағаны кему реті бойынша сұрыпталған.</translation>
-<translation id="2931838996092594335">басады</translation>
-<translation id="2940813599313844715">нысан</translation>
-<translation id="2981684127883932071">Ұсыныстарды көрсету</translation>
 <translation id="3036649622769666520">Файлдарды ашу</translation>
-<translation id="3040011195152428237">сілтеме</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
-<translation id="3068711042108640621">Сол жақтағы сөре</translation>
-<translation id="3078740164268491126">кесте</translation>
-<translation id="3086746722712840547">ескертпе</translation>
 <translation id="3087734570205094154">Астына</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
-<translation id="3175736971608411871">таймер</translation>
 <translation id="3183922693828471536">Мына жерге айналдыру</translation>
-<translation id="3199563858620722075">ашылмалы тізімді терезе</translation>
 <translation id="3234408098842461169">Төмен көрсеткісі</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 күн}other{# күн}}</translation>
 <translation id="3295886253693811851">Қоңырау шалу құрылғысы:</translation>
@@ -134,10 +80,6 @@
 <translation id="335581015389089642">Сөйлеу</translation>
 <translation id="3389286852084373014">Мәтін өте үлкен</translation>
 <translation id="3406306243914553062">HTML мазмұны</translation>
-<translation id="3486220673238053218">анықтама</translation>
-<translation id="348799646910989694">Сөре автоматты түрде жасырылған.</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> бекітілді</translation>
-<translation id="3557673793733683882"><ph name="HEADING_LEVEL" />-тақырып</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 күн қалды}other{# күн қалды}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> файлы</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -146,277 +88,128 @@
 <translation id="364720409959344976">Жүктеп салу үшін қалта таңдау</translation>
 <translation id="3660179305079774227">Жоғары көрсеткісі</translation>
 <translation id="3670030362669914947">Нөмір</translation>
-<translation id="3670698553867754311">апта таңдағышы</translation>
-<translation id="3706100364254443312">ауыстыру</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> ГБ/с</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> ГБ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3808586225841795776">термин</translation>
-<translation id="3842239759367498783"><ph name="TITLE" /> мобильдік құрылғысынан оқи беру</translation>
-<translation id="385051799172605136">Артқа</translation>
 <translation id="3889424535448813030">Оң жақ көрсеткісі</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3909791450649380159">Қи&amp;ып алу</translation>
-<translation id="3920932319529768807">қорытынды</translation>
-<translation id="3924558731517983934">қолданба</translation>
-<translation id="3944740393230681990">пролог</translation>
-<translation id="3960700977367013758">жылжыту жолағы</translation>
 <translation id="3990502903496589789">Оң жақ шеті</translation>
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> бағаны өсу реті бойынша сұрыпталған.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 хабарландыру оқылмаған}other{# хабарландыру оқылмаған}}</translation>
-<translation id="4151657705144244502">кескін</translation>
-<translation id="4160057747563657758">телефон</translation>
-<translation id="4193965531860883258">сөз басы</translation>
-<translation id="4202807286478387388">секіру</translation>
-<translation id="421884353938374759">түс таңдағыш</translation>
-<translation id="4248100235867064564">мәзір жолағы</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай бұрын}other{# ай бұрын}}</translation>
 <translation id="4289300219472526559">Сөйлеуді бастау</translation>
-<translation id="4293574643247337246">беттің үстіңгі деректемесі</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> қолданбасы <ph name="FOLDER_NAME" /> қалтасына ауысты.</translation>
 <translation id="4306392492252714209">Буферден өшіру.</translation>
-<translation id="4316910396681052118">БАРЛЫҚ ҚОЛДАНБАЛАР</translation>
-<translation id="4384583879834880242">Сұрақ-жауап</translation>
-<translation id="4446524499724042288">глоссарий анықтамасы</translation>
 <translation id="4491109536499578614">Кескін</translation>
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
 <translation id="4588090240171750605">Оңға айналдыру</translation>
-<translation id="4597532268155981612">пішім</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтингісі: <ph name="RATING_SCORE" /></translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, қолданба ұсынысы</translation>
-<translation id="4661075872484491155">tree</translation>
-<translation id="4668956016107839909">қосымша</translation>
-<translation id="4690510401873698237">Төмен жақтағы сөре</translation>
-<translation id="4698212723196775569">код</translation>
 <translation id="4724120544754982507">Хабарландыру орталығы, <ph name="UNREAD_NOTIFICATION_COUNT" /> жаңа хабарландыру</translation>
-<translation id="4730374152663651037">ЖИІ ПАЙДАЛАНЫЛАТЫНДАР</translation>
-<translation id="4742539557769756338">мұқаба</translation>
-<translation id="4757246831282535685">қойынды панелі</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ай қалды}other{# ай қалды}}</translation>
-<translation id="479989351350248267">іздеу</translation>
 <translation id="4888938634149558681">Қоңырау шалу</translation>
-<translation id="4912536737030637138">әдебиет жазбасы</translation>
-<translation id="492244087561876220">пікір</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунд}other{# секунд}}</translation>
 <translation id="4971687151119236543">Алдыңғы медиатрек</translation>
-<translation id="5022314756875057021">жолдар тобы</translation>
-<translation id="5034860022980953847">орындалу көрсеткіші</translation>
 <translation id="5046499563572181734">Осы жерді түртіңіз</translation>
 <translation id="5076340679995252485">&amp;Қою</translation>
-<translation id="5093189678851173835">эпиграф</translation>
-<translation id="512758898067543763">жол тақырыбы</translation>
-<translation id="5143125788380636750">эпилог</translation>
-<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> және <ph name="IN_PLACE_APP" /> қолданбалары қосылып, бір қалта жасалды.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5278860589123563674">Жіберілмеді</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5329858601952122676">&amp;Жою</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> қолданбасын <ph name="IN_PLACE_APP" /> үстіне сүйреп әкеліп қойсаңыз, қалта жасалады.</translation>
-<translation id="5406322316791861025">пішін</translation>
-<translation id="5453733299334684579">ағаш тәрізді элемент</translation>
 <translation id="5463830097259460683">Эмоджи және таңбалар</translation>
-<translation id="546643433018805598">төменгі индекс</translation>
-<translation id="5476505524087279545">құсбелгіні алу</translation>
-<translation id="547979256943495781">Оң жақтағы сөре</translation>
-<translation id="5516424706154626233">күн таңдағышы</translation>
 <translation id="5528053674512161860">Бет жүктелмеді, себебі әзірлеуші интерфейсінің модулі (dev_ui) орнатылмаған</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> жүйесі</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5608153257855394627">бөлектеу</translation>
 <translation id="5613020302032141669">Сол жақ көрсеткісі</translation>
-<translation id="561939826962581046">time</translation>
-<translation id="5631759159893697722">аннотация</translation>
-<translation id="5643186887447432888">түйме</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> қолданбасы назар аударуыңызды сұрайды.</translation>
-<translation id="5675363643668471212">Сөредегі элемент</translation>
-<translation id="5693537480074347398">жоғарғы индекс</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Бүгін қосылды.}=1{1 күн бұрын қосылды.}other{# күн бұрын қосылды.}}</translation>
-<translation id="576709008726043716">кіріспе</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 күн және }other{# күн және }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Сурет.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 жылда}other{# жылда}}</translation>
 <translation id="588258955323874662">Толық экран</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 секунд қалды}other{# секунд қалды}}</translation>
-<translation id="591047860372322273">іздеу өрісі</translation>
 <translation id="5941711191222866238">Жию</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 сағат}other{# сағат}}</translation>
-<translation id="5987525920412732405">айналдыру түймесі</translation>
-<translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /> бет</translation>
-<translation id="6022924867608035986">Іздеу жолағының мәтінін өшіру</translation>
-<translation id="6023896073578205740">тізім терезесі</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6117103120090651229">Ортадағы түйме</translation>
-<translation id="6119846243427417423">белсендіру</translation>
 <translation id="6129953537138746214">Бос орын</translation>
-<translation id="6134259848159370930">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> Б/с</translation>
-<translation id="6150588977291308318">пайдаланылған әдебиеттер</translation>
-<translation id="6156262341071374681">Барлық қолданбаларды көрсету</translation>
-<translation id="6164829606128959761">өлшегіш құрал</translation>
-<translation id="6165508094623778733">Толығырақ</translation>
-<translation id="6166809985690652833">соңғы сөз</translation>
-<translation id="6166852626429024716">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеу...</translation>
-<translation id="6213469881011901533">глоссарий</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> таңдалды.</translation>
 <translation id="6264365405983206840">&amp;Барлығын таңдау</translation>
-<translation id="6281763101136022427">URL</translation>
-<translation id="6351032674660237738">ҚОЛДАНБА ҰСЫНЫСТАРЫ</translation>
 <translation id="6364916375976753737">Солға айналдыру</translation>
 <translation id="6394627529324717982">Үтір</translation>
 <translation id="6397363302884558537">Сөйлеуді тоқтату</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 сек бұрын}other{# сек бұрын}}</translation>
-<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6430678249303439055">Бұл қолданбадан келетін барлық хабарландыруларды бөгеу</translation>
-<translation id="6453774872122745852">автордың алғысы</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 секунд бұрын}other{# секунд бұрын}}</translation>
-<translation id="648732519525291180">уақыт таңдағышы</translation>
 <translation id="6503257047630241175">RTF мазмұны</translation>
 <translation id="6539092367496845964">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="654149438358937226">Барлық хабарландыруларды бөгеу</translation>
-<translation id="6567071839949112727">жоғары деңгейлі элементті басу</translation>
-<translation id="6578407462441924264">Атауы жоқ</translation>
 <translation id="6612467943526193239">Калибрлеуден шығу үшін "Esc" пернесін басыңыз.</translation>
 <translation id="6620110761915583480">Файлды сақтау</translation>
-<translation id="663493177488814956">арна</translation>
-<translation id="6637586476836377253">журнал</translation>
-<translation id="6692633176391053278">санағыш</translation>
-<translation id="6696580792574109116">ай таңдағыш</translation>
 <translation id="6699343763173986273">Келесі медиатрек</translation>
-<translation id="6710213216561001401">Алдыңғы</translation>
-<translation id="6755330956360078551">қалқымалы сөзкөмек</translation>
-<translation id="6786750046913594791">Қалтаны жабу</translation>
 <translation id="6808150112686056157">Медианы тоқтату</translation>
-<translation id="6820615603175220800">пайдаланылған әдебиет сілтемесі</translation>
 <translation id="6845383723252244143">Қалта таңдау</translation>
-<translation id="6845533974506654842">басу</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 сағат қалды}other{# сағат қалды}}</translation>
-<translation id="6885760532393684712">каталог</translation>
 <translation id="688711909580084195">Атаусыз веб-бет</translation>
-<translation id="689129560213475294">баспа белгісі</translation>
 <translation id="6902419395050653510">HTML мазмұны.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ПБ/с</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 жыл қалды}other{# жыл қалды}}</translation>
-<translation id="6934078000481955284">дәйексөз</translation>
-<translation id="693476918119313863">тақырып</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6974053822202609517">Оңнан солға</translation>
-<translation id="6981594929165378967">енгізу</translation>
-<translation id="7034405885550056553">ұсыныс</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">ЕҢ ЫҚТИМАЛ</translation>
-<translation id="7139483182332611405">алғысөз</translation>
 <translation id="7170202025028120564">Қолданбаңыз келесі рет іске қосылғанда, оның дисплей параметрлері күшіне енеді.</translation>
-<translation id="7198226213493847604">мәзірді ашатын қалқымалы түйме</translation>
-<translation id="7214187073215825913">мазмұн туралы ақпарат</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238347055216017155">бөлектеу</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 мин қалды}other{# мин қалды}}</translation>
-<translation id="727747134524199931">баған тақырыбы</translation>
-<translation id="7319740667687257810">Launcher, жартылай көрініс</translation>
-<translation id="7353453495576941748">алғыс сөз</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 мин бұрын}other{# мин бұрын}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7405738980073107433">түсіндірмелер</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 минут қалды}other{# минут қалды}}</translation>
-<translation id="7430878839542012341">Бұл іздеу шартын тарихтан өшіру керек пе?</translation>
 <translation id="7437971918971306061"><ph name="COLUMN_NAME" /> бағаны сұрыпталмаған.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
-<translation id="7491962110804786152">қойынды</translation>
 <translation id="7507604095951736240">Эмоджи</translation>
-<translation id="7529102961911894712">кері сілтеме</translation>
 <translation id="7620655452534002301">Жойылды.</translation>
-<translation id="7647456547678091388">кеңес</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
-<translation id="7661956066982048809">графикалық құжат</translation>
-<translation id="7681220483256441252">индекс</translation>
-<translation id="7740050170769002709">HTML мазмұны</translation>
 <translation id="7781829728241885113">Кеше</translation>
-<translation id="7802800022689234070">ашу үшбұрышы</translation>
 <translation id="7814458197256864873">&amp;Көшіру</translation>
-<translation id="7848989271541991537">Мына жерге жылжытылды: <ph name="PAGE_NUMBER" />-бет, <ph name="ROW_NUMBER" />-жол, <ph name="COLUMN_NUMBER" />-баған.</translation>
 <translation id="7879499977785298635">Бөгемеу</translation>
-<translation id="7891486169920085145">бөлгіш</translation>
 <translation id="7907591526440419938">Файлды ашу</translation>
-<translation id="7952747673138230804">Қарап шығуыңыз үшін, Chrome OS браузері жаңа мазмұнды ұсынады. Пайдаланылуы туралы деректерді бөлісуді таңдасаңыз ғана, ұсыныстарды жақсарту үшін статистиканы жібереді. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Пәрмен</translation>
-<translation id="8034303206267677282">маңызды</translation>
-<translation id="8053789581856978548">мәтіндік іздеу өрісі</translation>
-<translation id="8057695513531652401">ескерту</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1-ден аса хабарландыру оқылмаған}other{#-ден аса хабарландыру оқылмаған}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 минутта}other{# минутта}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> сайтынан алынатын нөмір</translation>
-<translation id="8105797009065549151">ескертпе сілтемесі</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 сағат бұрын}other{# сағат бұрын}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 сек. қалды}other{# сек. қалды}}</translation>
 <translation id="8134065097954893699">Осы бетті қайта жүктеу</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, Автоматты толтыру</translation>
 <translation id="815598010540052116">Төменге айналдыру</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8208673686607688524">жергілікті күн мен уақыт таңдағышы</translation>
 <translation id="8210608804940886430">Төменгі бетке өту</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Tab</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, қолданба</translation>
 <translation id="8259556432390118667">Түстің он алтылық коды</translation>
 <translation id="8328145009876646418">Сол жақ жиегі</translation>
 <translation id="8331626408530291785">Жоғарыға айналдыру</translation>
-<translation id="8346634859695247203">бөлім</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 жыл}other{# жыл}}</translation>
-<translation id="838869780401515933">белгілеу</translation>
 <translation id="8393700583063109961">Хабар жіберу</translation>
 <translation id="8394908167088220973">Медиа ойнату/кідірту</translation>
-<translation id="8415319359811155763">бөлім</translation>
-<translation id="8433900881053900389">құралдар тақтасы</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 жыл}other{# жыл}}</translation>
-<translation id="8461852803063341183">ауыстырғыш түйме</translation>
-<translation id="8474886197722836894">арнау</translation>
-<translation id="8531739829932800271">емле қателері</translation>
-<translation id="8550857728288566671">графикалық таңба</translation>
-<translation id="8583702881314752957">анықтамалар тізімі</translation>
-<translation id="8597182159515967513">тақырып</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> файлы (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="860475260694818407">мазмұны</translation>
-<translation id="862370744433916922">тақырыпша</translation>
-<translation id="8649597172973390955">Сөре әрдайым көрсетіліп тұрады.</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
-<translation id="8685326675965865247">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз. Қолданбадан қолданбаға өту үшін көрсеткі пернелерін пайдаланыңыз.</translation>
-<translation id="8711688047404765493">шығыс</translation>
 <translation id="8725488761726303204">+ тағы <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 сағ}other{# сағ}}</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
-<translation id="8806053966018712535"><ph name="FOLDER_NAME" /> қалтасы</translation>
-<translation id="8808573423886751634">тарау</translation>
 <translation id="883911313571074303">Кескінді аннотациялау</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
-<translation id="8851136666856101339">басты</translation>
-<translation id="8861621546968757188">диалогтік терезені ашатын қалқымалы түйме</translation>
 <translation id="8867568208303837180">Жіберілуде…</translation>
 <translation id="8876215549894133151">Пішім:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
-<translation id="8926951137623668982">Сөре үнемі жасырын тұрады.</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> құрылғысы интернетке қосулы екеніне көз жеткізіңіз.</translation>
-<translation id="9002566407876343676">ашады</translation>
-<translation id="901834265349196618">электрондық пошта</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}other{# сек.}}</translation>
-<translation id="9048119486235211610">навигация</translation>
 <translation id="9059834730836941392">Хабарландыруды жию</translation>
-<translation id="9062295712474918030">құжат</translation>
-<translation id="9108370397979208512">math</translation>
-<translation id="9138385573473225930">ескерту</translation>
-<translation id="9161053988251441839">ҰСЫНЫЛҒАН ҚОЛДАНБАЛАР</translation>
-<translation id="9168329111483466115">төменгі түсіндірме</translation>
 <translation id="9170848237812810038">&amp;Болдырмау</translation>
-<translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="932327136139879170">Негізгі бет</translation>
 <translation id="944069440740578670">Оқылмаған хабарландырулар</translation>
-<translation id="966787709310836684">мәзір</translation>
-<translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 </translationbundle>

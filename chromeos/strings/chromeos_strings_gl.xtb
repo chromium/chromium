@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estado de activación</translation>
+<translation id="2287186687001756809">Non hai ningunha imaxe dispoñible. Para engadir fotos, vai a <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Usar par de claves actual</translation>
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">PROBA SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
+<translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
 <translation id="345898999683440380">Escaneando páxina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Impresión</translation>
+<translation id="3462187165860821523">Actualizando dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
@@ -175,6 +178,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
+<translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3966286471246132217">Para obter resultados máis precisos, pecha todas as aplicacións ata que remate a proba.</translation>
@@ -207,6 +211,7 @@
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Actualizar os periféricos</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desactivada</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
@@ -214,6 +219,7 @@
 <translation id="445059817448385655">Contrasinal antigo</translation>
 <translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
+<translation id="4472575034687746823">Comezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -236,6 +242,7 @@
 <translation id="469379815867856270">Intensidade do sinal</translation>
 <translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
+<translation id="473775607612524610">Actualizar</translation>
 <translation id="475869545581454722">Modificouse o contrasinal de Chrome OS</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
@@ -257,6 +264,7 @@
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para axustar ou actualizar unha conexión, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4950314376641394653">O firmware do dispositivo (<ph name="DEVICE_NAME" />) actualizouse coa versión <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -266,7 +274,6 @@
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única páxina. Ao realizar esta acción, redirixirásete á pantalla de inicio da función do escáner.</translation>
-<translation id="5061169534910302641">Actualizar versión e reiniciar</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticación</translation>
@@ -399,6 +406,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Finalizar e gardar</translation>
 <translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar a carga)</translation>
+<translation id="7068619307603204412">Prepara o dispositivo</translation>
 <translation id="708426984172631313">PROBA DETIDA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Produciuse un erro de autorización</translation>
@@ -412,6 +420,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
+<translation id="7240035910874241640">Todos os periféricos están actualizados</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
@@ -451,6 +460,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7763470514545477072">Coincidencia do sufixo de dominio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
+<translation id="7786540085520432425">Mentres se realiza a actualización, podes minimizar a ventá, pero non desconectes o dispositivo. O proceso da actualización pode tardar uns minutos, durante os cales pode que non funcione o dispositivo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
@@ -484,6 +494,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8217675307824400706">Conéctate</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>
+<translation id="8281886186245836920">Omitir</translation>
 <translation id="8286154143153872371">Para ver o fondo de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="8291967909914612644">País do fornecedor de orixe</translation>
 <translation id="8294431847097064396">Fonte</translation>
@@ -508,6 +519,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
+<translation id="8520963233738002436">O teu dispositivo (<ph name="DEVICE_NAME" />) está actualizado</translation>
 <translation id="8521021929829989041">Utilizar como dispositivo persoal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
@@ -547,6 +559,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear páxina {NUMBER_OF_PAGES}}other{Escanear páxina {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Instalando (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolución de DNS ten latencia alta</translation>

@@ -211,6 +211,7 @@
 <translation id="1257550411839719984">设置默认下载目录</translation>
 <translation id="1265053460044691532">限制通过SAML验证身份的用户可离线登录的时长</translation>
 <translation id="127264587838521316">启用 <ph name="PRODUCT_NAME" /> 扩展程序安装请求</translation>
+<translation id="1272798957154751008">允许将 Chromad 设备迁移到云管理服务</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
 <translation id="128059397544257017">如果此政策已启用，当 <ph name="CHROME_CLEANUP_NAME" />检测到垃圾软件时，它可以按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 设置的政策向 Google 报告与此项扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，并会将扫描结果发送给 Google。
 
@@ -268,6 +269,7 @@
 
       如果您停用此设置或未设置值，则系统不会在 Google 搜索中强制启用安全搜索功能，也不会在 YouTube 中强制启用受限模式。</translation>
 <translation id="134745581157553029">如果您设置了“DeviceArcDataSnapshotHours”政策，系统会开启 ARC 数据快照机制，并可在指定的时间间隔内自动启动 ARC 数据快照更新。当某个时间间隔已开始且 ARC 数据快照需要更新时，如果任何用户均未登录，系统会直接启动 ARC 数据快照更新过程，而不通知用户；如果用户会话正在进行中，系统会显示界面通知，且会等到用户接受通知后才重启设备并启动 ARC 数据快照更新过程。注意：在 ARC 数据快照更新过程中，用户无法使用设备。</translation>
+<translation id="1348603614848418219">禁止将 <ph name="MS_AD_NAME" /> 管理的设备迁移到云管理服务。</translation>
 <translation id="1352799151662469739">当使用交流电源供电时系统应在设备闲置多久（以毫秒为单位）后锁定屏幕</translation>
 <translation id="1353416417709895349">停用 DNS 拦截检查功能和“您是不是要前往 http://intranetsite/？”信息栏。</translation>
 <translation id="1354424209129232709">上限：</translation>
@@ -303,6 +305,10 @@
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
 <translation id="1417888712677507140">屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="1418387035898607074">不对从可信来源下载的文件执行安全浏览检查</translation>
+<translation id="1419945463533552043">User-Agent Client Hints GREASE 更新功能（若已启用）会按照最新规范来更新 User-Agent GREASE 算法。
+      如果某些网站限制了请求中可包含的字符，更新后的规范可能会导致这些网站无法正常运作。如需了解详情，请查看规范：https://wicg.github.io/ua-client-hints/#grease
+      如果此政策已启用或未设置，浏览器会决定要使用哪种 User-Agent GREASE 算法。如果此政策已停用，系统会使用旧版 User-Agent GREASE 算法。
+      此政策只是一项暂时性措施，会在某个未来版本中移除。</translation>
 <translation id="142346659686073702">允许独立用户使用 Crostini</translation>
 <translation id="1425551776320718592">禁止此设备的用户使用 ADB 旁加载，但不对设备强制执行 Powerwash。使用此设置可能会导致设备处于不安全的状态。</translation>
 <translation id="1426170570389588560">设置打印任务元数据的存储时间段（天）</translation>
@@ -2492,6 +2498,7 @@
       如果停用此政策，将可以使用 SPDY 协议。
 
       如果未设置此政策，将可以使用 SPDY 协议。</translation>
+<translation id="3887529334667818189">历程将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的可见性设置。</translation>
 <translation id="3891357445869647828">启用 JavaScript</translation>
 <translation id="3891769546914233112">提供“以图片形式打印 PDF 文件”选项</translation>
 <translation id="3897218615484393758">限制通过 SAML 验证身份的用户可在锁定屏幕上离线登录的时长</translation>
@@ -2570,11 +2577,13 @@
       如果此政策设为 True，系统会在隐私权警告通知显示了数秒后关闭它。
 
       如果此政策设为 False 或未设置，系统则会将隐私权警告通知固定在屏幕上，直到用户关闭它为止。</translation>
+<translation id="4008395195135046807">将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="4008507541867797979">如果此政策设为 true 或未配置，<ph name="PRODUCT_OS_NAME" />将会在登录屏幕上显示现有用户并允许选择其一。
 
       如果此政策设为 false，<ph name="PRODUCT_OS_NAME" />将不会在登录屏幕上显示现有用户。除非配置了受管理自助服务终端，否则系统将会显示标准登录屏幕（提示用户输入电子邮件地址和密码/手机号码）或 SAML 插页式屏幕（若已通过 <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" /> 政策启用的话）。如果配置了受管理自助服务终端，系统将仅会显示受管理自助服务终端帐号并允许选择其一。
 
       请注意，此政策不会影响设备对本地用户数据的保留或舍弃。</translation>
+<translation id="4009741515395221389">允许将 <ph name="MS_AD_NAME" /> 管理的设备迁移到云管理服务。</translation>
 <translation id="4010738624545340900">允许调用文件选择对话框</translation>
 <translation id="401260868452018796">将文件架放置在屏幕底部</translation>
 <translation id="4012737788880122133">将此政策设为 true 即可停用自动更新功能。
@@ -2922,6 +2931,7 @@
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
 <translation id="450080746522343150">拦截所有下载内容。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
+<translation id="4512407512989846472">允许禁止指定网址向剪贴板中复制数据</translation>
 <translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
 <translation id="4518251772179446575">每次网站尝试跟踪用户的地理位置时都询问我</translation>
@@ -3128,7 +3138,6 @@
 <translation id="4802905909524200151">配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新行为</translation>
 <translation id="4804828344300125154">在用户退出后一律重新启动。</translation>
 <translation id="4807950475297505572">删除最近使用最少的用户，直到有足够的可用空间</translation>
-<translation id="4811210934875253713">将历史记录集群显示在 chrome://history/journeys 页面上。</translation>
 <translation id="4812270373673968774">将此政策设为“始终”会自动隐藏 <ph name="PRODUCT_OS_NAME" />工具栏。将此政策设为“永不”可确保工具栏一律不会自动隐藏。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否让工具栏自动隐藏。</translation>
@@ -3378,6 +3387,7 @@
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
+<translation id="5143258831402123447">不将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -4167,6 +4177,13 @@
       如果此政策已停用，用户将无法兑换这类优惠。</translation>
 <translation id="6046615715547751255">不允许使用精细报告控件</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
+<translation id="6052730367191220066">借助此政策，您可允许将 <ph name="MS_AD_NAME" /> 管理的设备迁移到云管理服务。此政策允许从远程启动对公司中多部设备的无接触式迁移，还会尽可能提供充足的信息以便最终用户随时掌握迁移进度。
+
+      如果此政策已启用，而且注册 ID 已上传到 DMServer，系统就会对相应的远程设备执行 Powerwash。
+
+      如果此政策已停用或未设置，则不会致使系统对相应的远程设备执行 Powerwash，无论注册 ID 是否已上传到 DMServer。
+
+      此项检查会在系统每次加载登录屏幕时触发，然后每小时重试一次（如果相应设备停留在登录屏幕上）。这会阻止从用户会话期间开始迁移，进而给最终用户带来潜在问题。</translation>
 <translation id="6053681087509103368">允许 WebRTC 使用已过时的 TLD/DTLS 协议版本</translation>
 <translation id="605543517695935623">让您能够指定一系列要应用于 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在 Chrome 中发生安全性事件时调用。安全性事件包括分析类企业版接口给出的否定结果、密码重用、导航到不安全的网页，以及其他关乎安全性的用户操作。
 
@@ -4391,7 +4408,6 @@
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
 <translation id="6331943515692769234">强制使用旧版 User-Agent GREASE 算法。</translation>
-<translation id="6332192586629642626">不将历史记录集群显示在 chrome://history/journeys 页面上。</translation>
 <translation id="6332489309596092806">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
 
       此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
@@ -4948,9 +4964,6 @@
 <translation id="6929746927224321095">停用“自动填充”功能</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
-<translation id="694071740172924905">如果此政策已启用，User-Agent Client Hints GREASE Update 功能会使 User-Agent GREASE 算法与最新规范保持一致。
-      如果某些网站限制了请求中可包含的字符，更新后的规范可能会导致这些网站无法正常响应。如需了解详情，请参阅以下规范：https://wicg.github.io/ua-client-hints/#grease
-      如果此政策已启用或未设置，User-Agent Client Hints GREASE Update 功能会处于启用状态。如果此政策已停用，系统会使用旧版 User-Agent GREASE 算法。</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
 <translation id="6946652757373377924">
       此政策已从 M77 中移除。
@@ -5293,6 +5306,14 @@
 <translation id="7266471712301230894">自 <ph name="PRODUCT_NAME" /> 64 起，此政策已被撤消。
 
       系统不再支持自动搜索和安装缺失插件。</translation>
+<translation id="7266868915753562724">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
+
+      如果此政策已启用，历程将会显示在 chrome://history/journeys 页面上。
+
+      如果此政策已停用，历程将不会显示在 chrome://history/journeys 页面上。
+
+      如果此政策未设置，历程将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的可见性设置。
+      </translation>
 <translation id="7267809745244694722">媒体键默认为功能键</translation>
 <translation id="7269263983506766969">对音频进程使用默认优先级</translation>
 <translation id="7270001383428188269">此客户端证书的标识符。</translation>
@@ -5373,6 +5394,7 @@
        如果此政策已停用或未设置，第三方图片将无法显示身份验证提示。
 
       通常，为防御网上诱骗攻击，此政策将被停用。</translation>
+<translation id="7403217961820363141">将历程显示在“Chrome 历史记录”页面上</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
 
@@ -5850,6 +5872,14 @@
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
 <translation id="8029607810986641704">在设备进入空闲或暂停状态时将其锁定</translation>
+<translation id="8032201191311129122">此政策用于禁止特定网址向剪贴板中复制数据。
+
+      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 网址列表用于控制允许哪些网站向剪贴板中写入内容。如果相应网址与“enable”中的格式相匹配，但不与“disable”中的格式相匹配，系统将会禁止该网址向剪贴板中写入内容。如果相应网址不与任何格式相匹配，系统将不会禁止该网址向剪贴板中复制内容。
+
+      用于与来源进行匹配的网址格式和“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式类似，详见 http://www.chromium.org/administrators/url-blocklist-filter-format。
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果该字段未设置，默认值为 100 字节。
+      </translation>
 <translation id="8036964468882248070">如果此政策已启用，已注册的设备将会报告存储设备的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告存储统计信息。</translation>
@@ -6622,7 +6652,6 @@
 <translation id="8931555638815157255">如果此政策已启用或未设置，已注册的设备将会定期报告其操作系统和固件版本。
 
       如果此政策已停用，已注册的设备将不会报告版本信息。</translation>
-<translation id="8934618237639919190">历史记录集群默认显示在 chrome://history/journeys 页面上，但用户可以更改历史记录集群的可见性设置。</translation>
 <translation id="8937282917198525844"> 从 M81 开始，我们不仅更新了标准表单控件元素（例如 &lt;select&gt;、&lt;button&gt;、&lt;input type=date&gt;）的外观和风格，还改进了无障碍功能并提升了平台统一性。此政策用于在 M84 之前的版本中恢复“旧版”表单控件元素。
 
       如果此政策设为 True，系统将会为所有网站使用“旧版”表单控件元素。

@@ -90,6 +90,7 @@
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">起動状態</translation>
+<translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
 <translation id="2323506179655536734">スキップ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -117,6 +118,7 @@
 <translation id="2783010256799387990">合格</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
+<translation id="2859243502336719778">重要なアップデート</translation>
 <translation id="2860473693272905224">スキャナに次のページを置いてください</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
@@ -151,6 +153,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ページ目をスキャンしています。<ph name="PERCENTAGE_VALUE" />% 完了。</translation>
 <translation id="3459509316159669723">印刷</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> を更新しています</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
@@ -158,6 +161,8 @@
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
+<translation id="360089215033199597">修理手続きをスムーズに進めるため、Wi-Fi に接続することをおすすめします。
+        ネットワークは保存されます。</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
@@ -173,6 +178,7 @@
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
+<translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
 <translation id="3942420633017001071">診断</translation>
 <translation id="3966286471246132217">より正確な結果を得るには、テストが完了するまですべてのアプリを閉じてください。</translation>
@@ -205,6 +211,7 @@
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">周辺機器のアップデート</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> はオフになっています</translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
@@ -212,6 +219,7 @@
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
+<translation id="4472575034687746823">始める</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4511264077854731334">ポータル</translation>
@@ -234,6 +242,7 @@
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4707579418881001319">L2TP/IPSec + ユーザー証明書</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
+<translation id="473775607612524610">更新</translation>
 <translation id="475869545581454722">Chrome OS のパスワードが更新されました</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
@@ -255,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="4987769320337599931">ファイアウォール</translation>
@@ -264,7 +274,6 @@
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
-<translation id="5061169534910302641">バージョンを更新して再起動</translation>
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5142961317498132443">認証</translation>
@@ -397,6 +406,7 @@
 <translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7058278511608979688">終了して保存</translation>
 <translation id="7059230779847288458">充電中、フル充電まで <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">デバイスの準備</translation>
 <translation id="708426984172631313">停止中</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 認証に失敗しました</translation>
@@ -410,6 +420,7 @@
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
+<translation id="7240035910874241640">周辺機器はすべて最新の状態です</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">壁紙のコレクション</translation>
@@ -450,6 +461,7 @@
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
+<translation id="7786540085520432425">更新中はウィンドウを最小化できますが、デバイスを電源から外さないようにしてください。この処理には数分かかることがあります。更新中、デバイスは動作しない可能性があります</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
 <translation id="7835501727204647447">CloudReady をインストール</translation>
@@ -480,8 +492,10 @@
 <translation id="816013303019725643">ロック解除コードを入力:</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
+<translation id="8217675307824400706">接続</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8246209727385807362">不明な携帯通信会社</translation>
+<translation id="8281886186245836920">スキップ</translation>
 <translation id="8286154143153872371">壁紙を表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="8291967909914612644">ホーム プロバイダの国</translation>
 <translation id="8294431847097064396">ソース</translation>
@@ -506,6 +520,7 @@
 <translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> は最新の状態です</translation>
 <translation id="8521021929829989041">個人のデバイスとして使用</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
@@ -545,6 +560,7 @@
 <translation id="8970109610781093811">再実行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{{NUMBER_OF_PAGES} ページをスキャン}}</translation>
+<translation id="8994273342647807496">インストールしています - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">周波数</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS の解決のレイテンシが高くなっています</translation>

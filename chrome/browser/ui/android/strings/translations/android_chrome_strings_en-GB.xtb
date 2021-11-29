@@ -94,6 +94,7 @@
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
 <translation id="1513858653616922153">Delete password</translation>
+<translation id="1518421282666914498">Emotion GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="1538801903729528855">Get a better voice experience on the web</translation>
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
@@ -116,6 +117,7 @@
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1724977129262658800">Unlock to edit your password</translation>
+<translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
 <translation id="173522743738009831">About Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explore</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
@@ -217,7 +219,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2321958826496381788">Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328985652426384049">Can’t sign in</translation>
-<translation id="2337236196941929873">Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.</translation>
 <translation id="234265804618409743">Can't open your camera. Something went wrong.</translation>
 <translation id="2345671828921229300">To search, touch &amp; hold a word</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
@@ -277,6 +278,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2649068648233607930">Your browser is managed by <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">Download file again?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
+<translation id="265156376773362237">Standard preloading</translation>
 <translation id="2656405586795711023">Web apps</translation>
 <translation id="2689830683995595741">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
@@ -312,6 +314,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="2870560284913253234">Site</translation>
+<translation id="2871733351037274014">Preload pages</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2891154217021530873">Stop page loading</translation>
 <translation id="2892647708214602204">You'll see a notification when this file is ready</translation>
@@ -329,7 +332,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2946420957526726953">Updating Chrome to connect to other devices</translation>
 <translation id="2951071800649516099">Add pages to your reading list for later</translation>
-<translation id="2956410042958133412">This account is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
 <translation id="2961210776189273067">Title</translation>
 <translation id="2979025552038692506">Selected Incognito Tab</translation>
@@ -342,10 +344,12 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2992473221983447149">Image descriptions</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
+<translation id="2997081575621687554">When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="301080557829842765">Privacy guide</translation>
 <translation id="3016635187733453316">Make sure that this device is connected to the Internet</translation>
 <translation id="3026955690410463085">Include link</translation>
+<translation id="3029276696788198026">No preloading</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
 <translation id="3031225630520268969">Assistant voice search consent UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
@@ -379,6 +383,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3234978181857588512">Save to device</translation>
 <translation id="3236059992281584593">1 min left</translation>
+<translation id="3237087289225714896">Standard preloading:</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3250563604907490871">Image descriptions will resume when you connect to Wi-Fi</translation>
@@ -412,6 +417,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3389286852084373014">Text is too large</translation>
 <translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="3398320232533725830">Open the bookmarks manager</translation>
+<translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3421726884497337397">Choose when to block third-party cookies</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
@@ -468,7 +474,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3778956594442850293">Added to Home screen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
-<translation id="3803783897442799486">By continuing, you agree to the <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_LINK2" />Manage<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Manage auto-play</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
@@ -535,6 +540,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4196597275619698563">Create card</translation>
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4209895695669353772">To get personalised content suggested by Google, turn on sync</translation>
+<translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
@@ -584,6 +590,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4532845899244822526">Choose folder</translation>
 <translation id="4538018662093857852">Turn on Lite mode</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
+<translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">To view or copy your password here, set screen lock on this device.</translation>
 <translation id="4554077758708533499">Connected with USB cable</translation>
 <translation id="4557685098773234337">To get here quicker, add this page to your home screen</translation>
@@ -614,6 +621,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4696983787092045100">Send text to Your Devices</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4714588616299687897">Save up to 60% of your data</translation>
+<translation id="471759387343966120">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" /> and <ph name="BEGIN_PRIVACY_LINK" />Privacy\u00A0Policy<ph name="END_PRIVACY_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Help improve Chrome. <ph name="BEGIN_LINK" />Take survey<ph name="END_LINK" /></translation>
@@ -725,6 +733,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
 <translation id="5324858694974489420">Parental Settings</translation>
+<translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
@@ -751,7 +760,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Clear data</translation>
 <translation id="549025011754480756">How to search with your voice</translation>
-<translation id="5512137114520586844">This account is managed by <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
 <translation id="5515439363601853141">Unlock to view your password</translation>
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
@@ -876,6 +884,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
 <translation id="6159729262978459665">Clears history from all synced devices.</translation>
+<translation id="6162892189396105610">Preloads pages that Chrome thinks that you are likely to visit.</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
 <translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
@@ -910,6 +919,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
 <translation id="6378173571450987352">Details: Sorted by amount of data used</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
+<translation id="6380100320871303656">More frequently preloads pages that Chrome thinks you are likely to visit. This setting may result in increased data use.</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Back online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> on <ph name="VIOLATED_URL" /></translation>
@@ -943,6 +953,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6532866250404780454">Sites that you visit in Chrome won't show. All site timers will be deleted.</translation>
 <translation id="6534565668554028783">Google took too long to respond</translation>
 <translation id="6539092367496845964">Something went wrong. Try again later.</translation>
+<translation id="6541042852576515209">Resize and rotate</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Checked 1 hour ago}other{Checked # hours ago}}</translation>
 <translation id="6545017243486555795">Clear All Data</translation>
 <translation id="6546511553472444032">File might be harmful</translation>
@@ -1016,6 +1027,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
+<translation id="6909589135458168665">Preload pages</translation>
 <translation id="6929699136511445623">Enable Android system sync</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
@@ -1047,6 +1059,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7121362699166175603">Clears history and auto-completions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Other</translation>
+<translation id="7143462160780459030">Can’t take a screenshot. Try again.</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7155317020660659215">To scan a QR code, change your settings so that Chrome can use your camera</translation>
@@ -1098,6 +1111,8 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7444811645081526538">More categories</translation>
 <translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7454641608352164238">Not enough space</translation>
+<translation id="7456774706094330779">Extended preloading</translation>
+<translation id="7468819939926272717">Choose an emotion</translation>
 <translation id="7474822150871987353">Learn about topics on websites without leaving the page. Select one or more words on the page to search for them.</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
@@ -1145,6 +1160,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7665369617277396874">Add account</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>
 <translation id="7682724950699840886">Try the following tips: make sure that there is enough space on your device; try to export again.</translation>
+<translation id="768618399695552958">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.</translation>
 <translation id="7698359219371678927">Create email in <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
@@ -1180,6 +1196,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> unread page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> unread pages}}</translation>
 <translation id="7882131421121961860">No history found</translation>
 <translation id="7886917304091689118">Running in Chrome</translation>
+<translation id="7887334752153342268">Duplicate</translation>
 <translation id="789763218334337857">How to use Chrome</translation>
 <translation id="7903184275147100332">This may take a minute</translation>
 <translation id="7919123827536834358">Automatically translate these languages</translation>
@@ -1197,7 +1214,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
-<translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
 <translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
@@ -1217,6 +1233,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8058746566562539958">Open in new Chrome tab</translation>
+<translation id="8062594758852531064">Extended preloading:</translation>
 <translation id="8063895661287329888">Failed to add bookmark.</translation>
 <translation id="806745655614357130">Keep my data separate</translation>
 <translation id="8073388330009372546">Open image in new tab</translation>
@@ -1227,6 +1244,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="808747664143081553">Connected to device</translation>
 <translation id="8088176524274673045">To share with people nearby, let them scan this QR code</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
+<translation id="8105613260829665809">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
@@ -1251,6 +1269,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8255617931166444521">Sites can only use your cookies to see your browsing activity only on their own site</translation>
+<translation id="8259179246279078674">Because the preloaded pages are encrypted, Google will not learn anything about the preloaded page content. Google servers will learn which sites are privately preloaded. This information is only used to preload the pages and is not linked to other information from your Google Account.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="82619448491672958">See other tabs</translation>
@@ -1264,6 +1283,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8349013245300336738">Sort by amount of data used</translation>
+<translation id="8352996530981010042">Can’t download reactions. Try again.</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
 <translation id="8364299278605033898">See popular websites</translation>
@@ -1308,6 +1328,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8551513938758868521">Lock incognito tabs when you leave Chrome</translation>
 <translation id="8555836665334561807">On Wi-Fi</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
+<translation id="8560560256644480257">Creating GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Find your reading list in Bookmarks</translation>
 <translation id="8562452229998620586">Your saved passwords will appear here.</translation>
 <translation id="856481929701340285">Request desktop site</translation>
@@ -1326,6 +1347,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8641930654639604085">Try to block mature sites</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8646467750715887511">Pages load only after you open them.</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
 <translation id="8656747343598256512">Sign in to this site and Chrome with your Google Account. You can turn on sync later.</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
@@ -1422,6 +1444,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9209888181064652401">Can't make calls</translation>
 <translation id="9212845824145208577">Can\u2019t go lower. Try starting from further down the page.</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="92381315203627188">When a site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
 <translation id="926205370408745186">Remove your Chrome activity from Digital Wellbeing</translation>
 <translation id="927968626442779827">Use lite mode on Google Chrome</translation>
 <translation id="928550791203542716">Following <ph name="SITE_NAME" /></translation>

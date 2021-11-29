@@ -1,85 +1,50 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
-<translation id="1018939186200882850">മെനു ഇനം</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയ‌യ്‌ക്കുന്നു...</translation>
-<translation id="10623998915015855">ടോഗിൾ ബട്ടൺ</translation>
 <translation id="111910763555783249">അറിയിപ്പ് ക്രമീകരണം</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{ഒരു ദിവസം മുമ്പ്}other{# ദിവസം മുമ്പ്}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{ഒരു മിനിറ്റിന് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{ 1 മീറ്റര്‍}other{# മീറ്റർ}}</translation>
-<translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
-<translation id="1188858454923323853">കോംപ്ലിമെന്ററി</translation>
-<translation id="1201402288615127009">അടുത്തത്</translation>
-<translation id="1206619573307042055">മാർക്യൂ</translation>
-<translation id="1206693055195146388">സ്ലൈഡർ</translation>
-<translation id="1211441953136645838">അന്തിമ കുറിപ്പ്</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ആപ്പ്</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡുചെയ്യുക</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1281252709823657822">ഡയലോഗ്</translation>
-<translation id="1290982764014248209"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="DRAGGED_APP" /> നീക്കുക.</translation>
 <translation id="1291104554099683393">ചെറിയ ഭാഗങ്ങളായി ടെക്‌സ്‌റ്റ് പങ്കിടാൻ ശ്രമിക്കൂ.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">ശുപാർശിത ആപ്പുകൾ</translation>
-<translation id="1335095011850992622">ക്രെഡിറ്റുകൾ</translation>
-<translation id="1342835525016946179">ലേഖനം</translation>
-<translation id="1359897965706325498">ബാനർ</translation>
 <translation id="1368832886055348810">ഇടതുനിന്ന് വലത്തേക്ക്</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1398853756734560583">വലുതാക്കുക</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> പങ്കിടാനാവുന്നില്ല</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />-മായി സ്വാപ്പ് ചെയ്‌തു</translation>
-<translation id="1498028757988366001">നിങ്ങൾ ഇതിനായി മുമ്പ് തിരഞ്ഞിട്ടുണ്ട്. ചരിത്രത്തിൽ നിന്ന് "<ph name="QUERY" />" ഇല്ലാതാക്കുന്നത്, നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലുമുടനീളമുള്ള അക്കൗണ്ടിൽ നിന്ന് അതിനെ ശാശ്വതമായി ഇല്ലാതാക്കും.</translation>
-<translation id="1510238584712386396">ലോഞ്ചർ</translation>
-<translation id="1589122976691792535">പ്രദേശം</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{ഒരു മിനിറ്റും }other{# മിനിറ്റും }}</translation>
 <translation id="1643823602425662293">അറിയിപ്പ്</translation>
-<translation id="1650423536718072820">പുൾക്വോട്ട്</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">ഇപ്പോള്‍</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{ഒരു മിനിറ്റ്}other{# മിനിറ്റ്}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
-<translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
 <translation id="1801827354178857021">കാലയളവ്</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{ഒരു മാസം}other{# മാസം}}</translation>
-<translation id="1806710327868736751">അലേർട്ട്_ഡയലോഗ്</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
-<translation id="1821985195704844674">ട്രീ ഗ്രിഡ്</translation>
-<translation id="1823704031293214298">പേജിന്റെ അടിക്കുറിപ്പ്</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{ഒരു മണിക്കൂറും }other{# മണിക്കൂറും }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>
-<translation id="1842960171412779397">തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="1859234291848436338">എഴുതേണ്ട ദിശ</translation>
 <translation id="1860796786778352021">അറിയിപ്പ് അടയ്‌ക്കൽ</translation>
 <translation id="186476001994626254">വെബ് സ്‌മാർട്ട് ഒട്ടിക്കൽ ഉള്ളടക്കം</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">എല്ലാം &amp;തിരഞ്ഞെടുക്കൂ</translation>
-<translation id="190587075670221089">ഇല്ലാതാക്കൽ</translation>
-<translation id="1907737156431278478">ഉദാഹരണം</translation>
 <translation id="19085484004813472">ഇതൊരു പുതിയ ഫീച്ചറാണ്</translation>
-<translation id="1930711995431081526">നില</translation>
 <translation id="2006524834898217237">ഈ ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ദിവസം}other{# ദിവസം}}</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
-<translation id="2158401438286456825">പേജ് ലിസ്റ്റ്</translation>
 <translation id="2161656808144014275">വാചകം</translation>
 <translation id="2168039046890040389">പേജ് മുകളിലേയ്ക്ക്</translation>
 <translation id="2190355936436201913">(ശൂന്യം)</translation>
 <translation id="2192232475740621500">കുറഞ്ഞ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
-<translation id="219905428774326614">ലോഞ്ചർ, എല്ലാ ആപ്പുകളും</translation>
 <translation id="2267918077332197517">ഈ സൈറ്റിൽ നിന്നുള്ള എല്ലാ അറിയിപ്പുകളും ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">സ്‌ക്രീനിലുള്ള 'ടാർഗെറ്റുകൾ സ്‌പർശിക്കുക' ടാപ്പുചെയ്യുക.</translation>
-<translation id="2291999235780842123">ചെക്ക്‌ ബോക്‌സ്</translation>
 <translation id="2295140143284145483">സർവ്വേ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
-<translation id="2311842470354187719">പേജ് ബ്രേക്ക്</translation>
-<translation id="2335594187091864976">തീയതിയും സമയ പിക്കറും</translation>
 <translation id="2353636109065292463">നിങ്ങളുടെ ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="2388990488038464401">നിങ്ങളുടെ ഫോണിൽ നിന്ന് ഈ നമ്പറിലേക്ക് വിളിക്കണോ?</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
@@ -87,46 +52,27 @@
 <translation id="2445449901874883781">കൂടിയ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2497284189126895209">എല്ലാ ഫയലുകളും</translation>
-<translation id="2508569020611168319">ടാബ് ലിസ്റ്റ്</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">കാലിബറേഷൻ പൂർത്തിയായി</translation>
 <translation id="252373100621549798">അജ്ഞാത പ്രദർശനം</translation>
 <translation id="2545651323591713692">സ്‌നൂസ് ചെയ്യുക</translation>
-<translation id="2570734079541893434">ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ}other{# മണിക്കൂറിനുള്ളിൽ}}</translation>
 <translation id="2583543531130364912">നിങ്ങളുടെ ടച്ച്സ്‌ക്രീൻ കാലിബറേറ്റ് ചെയ്യുക</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
-<translation id="2657045182931379222">ഗ്രാഫിക്‌സ് ഒബ്‌ജക്‌റ്റ്</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
-<translation id="2674318244760992338">അടിക്കുറിപ്പ്</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ടു</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
-<translation id="2723001399770238859">ഓഡിയോ</translation>
 <translation id="2743387203779672305">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2759744352195237655">പോപ്പ് അപ്പ് ബട്ടൺ</translation>
-<translation id="2803313416453193357">ഫോൾഡർ തുറക്കുക</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ഒരു വർഷം മുമ്പ്}other{# വർഷം മുമ്പ്}}</translation>
-<translation id="2844350028562914727">വിശദാംശങ്ങൾ</translation>
 <translation id="2878511608894704031">എല്ലാം ഇല്ലാതാക്കൂ</translation>
-<translation id="2896972712917208084">റേഡിയോ ഗ്രൂപ്പ്</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ഒരു ദിവസത്തിൽ}other{# ദിവസത്തിൽ}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> എന്ന കോളം അവരോഹണക്രമത്തിൽ അടുക്കി.</translation>
-<translation id="2931838996092594335">ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="2940813599313844715">ഒബ്‌ജക്‌റ്റ്</translation>
-<translation id="2981684127883932071">നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
-<translation id="3040011195152428237">ലിങ്ക്</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">സ്‌ക്രീനിൻ്റെ ഇടതുഭാഗത്താണ് ഷെൽഫ്</translation>
-<translation id="3078740164268491126">പട്ടിക</translation>
-<translation id="3086746722712840547">note</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
-<translation id="3175736971608411871">ടൈമർ</translation>
 <translation id="3183922693828471536">ഇവിടെ സ്ക്രോള്‍ ചെയ്യുക</translation>
-<translation id="3199563858620722075">കോമ്പോ ബോക്‌സ്</translation>
 <translation id="3234408098842461169">താഴേക്കുള്ള ആരോ അടയാളം</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{ഒരു ദിവസം}other{# ദിവസം}}</translation>
 <translation id="3295886253693811851">ഇതുപയോഗിച്ച് കോൾ ചെയ്യുക</translation>
@@ -134,10 +80,6 @@
 <translation id="335581015389089642">സംഭാഷണം</translation>
 <translation id="3389286852084373014">ടെക്‌സ്‌റ്റ് വളരെ വലുതാണ്</translation>
 <translation id="3406306243914553062">HTML ഉള്ളടക്കം</translation>
-<translation id="3486220673238053218">നിർവചനം</translation>
-<translation id="348799646910989694">ഷെൽഫ് സ്വയമേവ മറച്ചു</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> പിൻ ചെയ്‌തു</translation>
-<translation id="3557673793733683882">തലക്കെട്ട് <ph name="HEADING_LEVEL" /></translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ഒരു ദിവസം ശേഷിക്കുന്നു}other{# ദിവസം ശേഷിക്കുന്നു}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> ഫയൽ</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -146,277 +88,128 @@
 <translation id="364720409959344976">അപ്‌ലോഡ് ചെയ്യുന്നതിന് ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3660179305079774227">മുകളിലേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="3670030362669914947">നമ്പർ</translation>
-<translation id="3670698553867754311">ആഴ്‌ച പിക്കർ</translation>
-<translation id="3706100364254443312">സ്വിച്ച്</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3808586225841795776">പദം</translation>
-<translation id="3842239759367498783">നിങ്ങളുടെ <ph name="TITLE" /> എന്ന മൊബൈലിൽ നിന്ന് വായന തുടരുക</translation>
-<translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3889424535448813030">വലതുഭാഗത്തെ അമ്പടയാളം</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3909791450649380159">&amp;മുറിക്കുക</translation>
-<translation id="3920932319529768807">ഉപസംഹാരം</translation>
-<translation id="3924558731517983934">ആപ്പ്</translation>
-<translation id="3944740393230681990">ആമുഖം</translation>
-<translation id="3960700977367013758">സ്‌ക്രോൾ ബാർ</translation>
 <translation id="3990502903496589789">വലത് അഗ്രം</translation>
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{വായിക്കാത്ത ഒരു അറിയിപ്പ്}other{വായിക്കാത്ത # അറിയിപ്പുകൾ}}</translation>
-<translation id="4151657705144244502">ഗ്രാഫിക്</translation>
-<translation id="4160057747563657758">ടെലിഫോൺ</translation>
-<translation id="4193965531860883258">മുഖവുര</translation>
-<translation id="4202807286478387388">jump</translation>
-<translation id="421884353938374759">വർണ്ണ പിക്കർ</translation>
-<translation id="4248100235867064564">മെനു ബാർ</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ഒരു മാസം മുമ്പ്}other{# മാസം മുമ്പ്}}</translation>
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>
-<translation id="4293574643247337246">പേജിന്റെ തലക്കെട്ട്</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> എന്ന ആപ്പിനെ <ph name="FOLDER_NAME" /> എന്ന ഫോൾഡറിലേക്ക് നീക്കി.</translation>
 <translation id="4306392492252714209">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നീക്കം ചെയ്യുക.</translation>
-<translation id="4316910396681052118">എല്ലാ ആപ്പുകളും</translation>
-<translation id="4384583879834880242">ചോദ്യോത്തരം</translation>
-<translation id="4446524499724042288">പദസഞ്ചയ റെഫറൻസ്</translation>
 <translation id="4491109536499578614">ചിത്രം</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4588090240171750605">വലത്തോട്ട് സ്ക്രോള്‍ ചെയ്യുക</translation>
-<translation id="4597532268155981612">ഫോം</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> നക്ഷത്ര റേറ്റിംഗ്</translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, ആപ്പ് നിർദ്ദേശം</translation>
-<translation id="4661075872484491155">ട്രീ</translation>
-<translation id="4668956016107839909">അനുബന്ധം</translation>
-<translation id="4690510401873698237">സ്‌ക്രീനിൻ്റെ ചുവടെയാണ് ഷെൽഫ്</translation>
-<translation id="4698212723196775569">കോഡ്</translation>
 <translation id="4724120544754982507">അറിയിപ്പ് കേന്ദ്രം, <ph name="UNREAD_NOTIFICATION_COUNT" /> വായിക്കാത്ത അറിയിപ്പുകൾ</translation>
-<translation id="4730374152663651037">പതിവായി ഉപയോഗിക്കുന്നത്</translation>
-<translation id="4742539557769756338">കവർ</translation>
-<translation id="4757246831282535685">ടാബ് പാനൽ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ഒരു മാസം ശേഷിക്കുന്നു}other{# മാസം ശേഷിക്കുന്നു}}</translation>
-<translation id="479989351350248267">തിരയുക</translation>
 <translation id="4888938634149558681">കോൾ ചെയ്യുക</translation>
-<translation id="4912536737030637138">ഗ്രന്ഥസൂചി എൻട്രി</translation>
-<translation id="492244087561876220">കമന്റ്</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ഒരു സെക്കന്‍ഡ്}other{# സെക്കൻഡ്}}</translation>
 <translation id="4971687151119236543">മുമ്പത്തെ മീഡിയാ ട്രാക്ക്</translation>
-<translation id="5022314756875057021">വരി ഗ്രൂപ്പ്</translation>
-<translation id="5034860022980953847">'പ്രോഗ്രസ്' ഇൻഡിക്കേറ്റർ</translation>
 <translation id="5046499563572181734">ഇവിടെ ടാപ്പുചെയ്യുക</translation>
 <translation id="5076340679995252485">&amp;ഒട്ടിക്കുക</translation>
-<translation id="5093189678851173835">ശിലാലേഖ</translation>
-<translation id="512758898067543763">വരി ശീർഷകം</translation>
-<translation id="5143125788380636750">ഉപസംഹാരം</translation>
-<translation id="5198715732953550718">പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുന്നതിനായി <ph name="MOVED_APP_NAME" /> എന്നതിനെ <ph name="IN_PLACE_APP" /> എന്നതുമായി സംയോജിപ്പിച്ചു.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">അയയ്ക്കാനായില്ല</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
 <translation id="5329858601952122676">&amp;ഇല്ലാതാക്കൂ</translation>
-<translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> എന്നതിന് മുകളിലാണ് <ph name="DRAGGED_APP_NAME" />, ഫോൾഡർ സൃഷ്‌ടിക്കാൻ റിലീസ് ചെയ്യുക.</translation>
-<translation id="5406322316791861025">ആകാരം</translation>
-<translation id="5453733299334684579">ട്രീ ഇനം</translation>
 <translation id="5463830097259460683">ഇമോജിയും ചിഹ്നങ്ങളും</translation>
-<translation id="546643433018805598">സബ്‌സ്ക്രിപ്റ്റ്</translation>
-<translation id="5476505524087279545">അണ്‍ചെക്ക് ചെയ്യുക</translation>
-<translation id="547979256943495781">സ്‌ക്രീനിൻ്റെ വലതുഭാഗത്താണ് ഷെൽഫ്</translation>
-<translation id="5516424706154626233">തീയതി പിക്കർ</translation>
 <translation id="5528053674512161860">ഡെവലപ്പര്‍ UI മൊഡ്യൂള്‍ (dev_ui) ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ലാത്തതിനാൽ, പേജ് ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> സിസ്‌റ്റം</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
-<translation id="5608153257855394627">ഹൈലൈറ്റ് ചെയ്‌തത്</translation>
 <translation id="5613020302032141669">ഇടത് ആരോ അടയാളം</translation>
-<translation id="561939826962581046">സമയം</translation>
-<translation id="5631759159893697722">സംക്ഷേപം</translation>
-<translation id="5643186887447432888">ബട്ടൺ</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
-<translation id="5675363643668471212">ഷെൽഫ് ഇനം</translation>
-<translation id="5693537480074347398">സൂപ്പർസ്ക്രിപ്റ്റ്</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ഒരു മിനിറ്റ്}other{# മിനിറ്റ്}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ഇന്ന് സജീവമായിരുന്നു}=1{ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു}other{# ദിവസം മുമ്പ് സജീവമായിരുന്നു}}</translation>
-<translation id="576709008726043716">ആമുഖം</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{ഒരു ദിവസവും }other{# ദിവസവും }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">ചിത്രം.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{ഒരു വർഷത്തിൽ}other{# വർഷത്തിൽ}}</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു}other{# സെക്കൻഡ് ശേഷിക്കുന്നു}}</translation>
-<translation id="591047860372322273">സെർച്ച് ബോക്‌സ്</translation>
 <translation id="5941711191222866238">ചെറുതാക്കുക</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{ഒരു മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
-<translation id="5987525920412732405">സ്‌പിൻ ബട്ടൺ</translation>
-<translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6022924867608035986">തിരയൽ ബോക്‌സ് ടെക്‌സ്‌റ്റ് മായ്‌ക്കുക</translation>
-<translation id="6023896073578205740">ലിസ്റ്റ് ബോക്‌സ്</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6117103120090651229">നടുവിലുള്ള ബട്ടൺ</translation>
-<translation id="6119846243427417423">ആക്റ്റിവേറ്റ് ചെയ്യുക</translation>
 <translation id="6129953537138746214">സ്പെയ്സ്</translation>
-<translation id="6134259848159370930">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
-<translation id="6150588977291308318">ഗ്രന്ഥസൂചി</translation>
-<translation id="6156262341071374681">എല്ലാ ആപ്പുകളിലേക്കും വികസിപ്പിക്കുക</translation>
-<translation id="6164829606128959761">മീറ്റർ</translation>
-<translation id="6165508094623778733">കൂടുതലറിയുക</translation>
-<translation id="6166809985690652833">പിൻ കുറിപ്പ്</translation>
-<translation id="6166852626429024716">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക...</translation>
-<translation id="6213469881011901533">പദസഞ്ചയം</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="6264365405983206840">എല്ലാം &amp;തിരഞ്ഞെടുക്കുക</translation>
-<translation id="6281763101136022427">URL</translation>
-<translation id="6351032674660237738">ആപ്പ് നിർദ്ദേശങ്ങൾ</translation>
 <translation id="6364916375976753737">ഇടത്തേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="6394627529324717982">കോമ</translation>
 <translation id="6397363302884558537">സംഭാഷണം നിർത്തുക</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് മുമ്പ്}other{# സെക്കൻഡ് മുമ്പ്}}</translation>
-<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6430678249303439055">ഈ ആപ്പിൽ നിന്നുള്ള എല്ലാ അറിയിപ്പുകളും ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="6453774872122745852">കടപ്പാട്</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 സെക്കൻഡ് മുമ്പ്}other{# സെക്കൻഡ് മുമ്പ്}}</translation>
-<translation id="648732519525291180">സമയ പിക്കർ</translation>
 <translation id="6503257047630241175">RTF ഉള്ളടക്കം</translation>
 <translation id="6539092367496845964">എന്തോ കുഴപ്പം സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="654149438358937226">എല്ലാ അറിയിപ്പുകളും ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="6567071839949112727">ആൻസിസ്റ്ററിൽ ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="6578407462441924264">പേരില്ലാത്തത്</translation>
 <translation id="6612467943526193239">കാലിബറേഷനിൽ നിന്ന് പുറത്തുകടക്കാൻ Esc അമർത്തുക.</translation>
 <translation id="6620110761915583480">ഫയല്‍‌ സംരക്ഷിക്കുക</translation>
-<translation id="663493177488814956">ഫീഡ്</translation>
-<translation id="6637586476836377253">ലോഗ്</translation>
-<translation id="6692633176391053278">സ്റ്റെപ്പർ</translation>
-<translation id="6696580792574109116">മാസ പിക്കർ</translation>
 <translation id="6699343763173986273">അടുത്ത മീഡിയാ ട്രാക്ക്</translation>
-<translation id="6710213216561001401">മുമ്പത്തേത്</translation>
-<translation id="6755330956360078551">ടൂൾടിപ്പ്</translation>
-<translation id="6786750046913594791">ഫോൾഡർ അടയ്ക്കുക</translation>
 <translation id="6808150112686056157">മീഡിയ ‌നിർത്തുക</translation>
-<translation id="6820615603175220800">ഗ്രന്ഥസൂചി റെഫറൻസ്</translation>
 <translation id="6845383723252244143">ഫോള്‍ഡര്‍ തിരഞ്ഞെടുക്കുക</translation>
-<translation id="6845533974506654842">അമര്‍ത്തുക</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{ഒരു മണിക്കൂർ ശേഷിക്കുന്നു}other{# മണിക്കൂർ ശേഷിക്കുന്നു}}</translation>
-<translation id="6885760532393684712">ഡയറക്‌റ്ററി</translation>
 <translation id="688711909580084195">ശീർഷകമില്ലാത്ത വെബ്‌പേജ്</translation>
-<translation id="689129560213475294">അച്ചടിമുദ്ര</translation>
 <translation id="6902419395050653510">HTML ഉള്ളടക്കം.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{ഒരു വർഷം ശേഷിക്കുന്നു}other{# വർഷം ശേഷിക്കുന്നു}}</translation>
-<translation id="6934078000481955284">ബ്ലോക്ക്‌കോട്ട്</translation>
-<translation id="693476918119313863">തലക്കെട്ട്</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6974053822202609517">വലത്ത് നിന്ന് ഇടത്തേക്ക്</translation>
-<translation id="6981594929165378967">ചേർക്കൽ</translation>
-<translation id="7034405885550056553">നിർദ്ദേശം</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">ഏറ്റവും കൂടുതൽ പേർ ലൈക്കുചെയ്‌‌തത്</translation>
-<translation id="7139483182332611405">പീഠിക</translation>
 <translation id="7170202025028120564">അടുത്ത തവണ റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ആപ്പിന്റെ ഡിസ്‌പ്ലേ ക്രമീകരണം പ്രാബല്യത്തിൽ വരും.</translation>
-<translation id="7198226213493847604">മെനു പോപ്പ് അപ്പ് ബട്ടൺ</translation>
-<translation id="7214187073215825913">ഉള്ളടക്ക വിവരങ്ങൾ</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238347055216017155">പ്രാധാന്യം</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
-<translation id="727747134524199931">കോളം പേര്</translation>
-<translation id="7319740667687257810">ലോഞ്ചർ, ഭാഗിക കാഴ്ച</translation>
-<translation id="7353453495576941748">ക്രെഡിറ്റ്</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ഒരു മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7405738980073107433">അന്തിമ കുറിപ്പുകൾ</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
-<translation id="7430878839542012341">നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് ഈ തിരയൽ ഇല്ലാതാക്കണോ?</translation>
 <translation id="7437971918971306061"><ph name="COLUMN_NAME" /> എന്ന കോളം അടുക്കിയത് മാറ്റി.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
-<translation id="7491962110804786152">ടാബ്</translation>
 <translation id="7507604095951736240">ഇമോജി</translation>
-<translation id="7529102961911894712">ബാക്ക്‌ ലിങ്ക്</translation>
 <translation id="7620655452534002301">നീക്കം ചെയ്തു.</translation>
-<translation id="7647456547678091388">നുറുങ്ങ്</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
-<translation id="7661956066982048809">ഗ്രാഫിക്‌സ് ഡോക്യുമെന്റ്</translation>
-<translation id="7681220483256441252">സൂചിക</translation>
-<translation id="7740050170769002709">HTML ഉള്ളടക്കം</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
-<translation id="7802800022689234070">ഡിസ്‌ക്ലോഷർ ത്രികോണം</translation>
 <translation id="7814458197256864873">&amp;പകര്‍ത്തൂ</translation>
-<translation id="7848989271541991537">പേജ് <ph name="PAGE_NUMBER" />, വരി <ph name="ROW_NUMBER" />, കോളം <ph name="COLUMN_NUMBER" /> എന്നതിലേക്ക് നീക്കി.</translation>
 <translation id="7879499977785298635">ബ്ലോക്ക് ചെയ്യരുത്</translation>
-<translation id="7891486169920085145">സ്‌പ്ലിറ്റർ</translation>
 <translation id="7907591526440419938">ഫയല്‍ തുറക്കുക</translation>
-<translation id="7952747673138230804">പുതിയ ഉള്ളടക്കം അടുത്തറിയുന്നതിനായി Chrome OS നിർദേശങ്ങൾ കാണിക്കുന്നു. ഉപയോഗ ഡാറ്റ പങ്കിടാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം, നിലവാരം മെച്ചപ്പെടുത്താനായി സ്ഥിതിവിവരക്കണക്കുകൾ അയയ്ക്കുന്നു. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">കമാൻഡ്</translation>
-<translation id="8034303206267677282">ശക്തം</translation>
-<translation id="8053789581856978548">തിരയൽ ടെക്‌സ്റ്റ് ഫീൽഡ്</translation>
-<translation id="8057695513531652401">അറിയിപ്പ്</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{ഒന്നിലധികം വായിക്കാത്ത അറിയിപ്പ് ഉണ്ട്}other{#-ലധികം വായിക്കാത്ത അറിയിപ്പുകൾ ഉണ്ട്}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{ഒരു മിനിറ്റിൽ}other{# മിനിറ്റിൽ}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> എന്നതിൽ നിന്നുള്ള നമ്പർ</translation>
-<translation id="8105797009065549151">കുറിപ്പ് റെഫറൻസ്</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{ഒരു മണിക്കൂര്‍ മുമ്പ്}other{# മണിക്കൂർ മുമ്പ്}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു}other{# സെക്കൻഡ് ശേഷിക്കുന്നു}}</translation>
 <translation id="8134065097954893699">ഈ പേജ് റീലോഡ് ചെയ്യുന്നു</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, സ്വയമേവ പൂർത്തിയാക്കുക</translation>
 <translation id="815598010540052116">താഴേയ്‌ക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8208673686607688524">പ്രാദേശിക തീയതിയും സമയ പിക്കറും</translation>
 <translation id="8210608804940886430">താഴെയുള്ള പേജുകള്‍</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">ടാബ്</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, ആപ്പ്</translation>
 <translation id="8259556432390118667">ഹെക്‌സ് വർണ മൂല്യം</translation>
 <translation id="8328145009876646418">ഇടത് അഗ്രം</translation>
 <translation id="8331626408530291785">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
-<translation id="8346634859695247203">വിഭാഗം</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{ഒരു വര്‍ഷം}other{# വർഷം}}</translation>
-<translation id="838869780401515933">പരിശോധിക്കൂ</translation>
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8394908167088220973">മീഡിയ പ്ലേ ചെയ്യുക/താൽക്കാലികമായി നിർത്തുക</translation>
-<translation id="8415319359811155763">ഭാഗം</translation>
-<translation id="8433900881053900389">ടൂൾബാർ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1വർഷം}other{#വർഷം}}</translation>
-<translation id="8461852803063341183">റേഡിയോ ബട്ടൺ</translation>
-<translation id="8474886197722836894">സമർപ്പണം</translation>
-<translation id="8531739829932800271">സംശോധന പട്ടിക</translation>
-<translation id="8550857728288566671">ഗ്രാഫിക്സ് ചിഹ്നം</translation>
-<translation id="8583702881314752957">നിർവചന ലിസ്റ്റ്</translation>
-<translation id="8597182159515967513">തലക്കെട്ട്</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ഫയല്‍ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="860475260694818407">ഉള്ളടക്ക പട്ടിക</translation>
-<translation id="862370744433916922">ഉപശീർഷകം</translation>
-<translation id="8649597172973390955">ഷെൽഫ് എപ്പോഴും ദൃശ്യമാക്കിയിരിക്കുന്നു</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
-<translation id="8685326675965865247">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക. നിങ്ങളുടെ ആപ്പുകൾ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
-<translation id="8711688047404765493">ഔട്ട്‌പുട്ട്</translation>
 <translation id="8725488761726303204"><ph name="NUMBER" /> എണ്ണം കൂടി</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
-<translation id="8806053966018712535">ഫോൾഡർ <ph name="FOLDER_NAME" /></translation>
-<translation id="8808573423886751634">അധ്യായം</translation>
 <translation id="883911313571074303">ചിത്രം വ്യാഖ്യാനിക്കുക</translation>
 <translation id="8841375032071747811">ബാക്ക് ബട്ടൺ</translation>
-<translation id="8851136666856101339">main</translation>
-<translation id="8861621546968757188">ഡയലോഗ് പോപ്പ്-അപ്പ് ബട്ടൺ</translation>
 <translation id="8867568208303837180">അയയ്‌ക്കുന്നു...</translation>
 <translation id="8876215549894133151">ഫോര്‍മാറ്റ്:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="8926951137623668982">ഷെൽഫ് എപ്പോഴും അദൃശ്യമാണ്</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> ഇന്റർ‌നെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
-<translation id="9002566407876343676">തുറക്കുക</translation>
-<translation id="901834265349196618">ഇമെയില്‍</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{ഒരു സെക്കൻഡ്}other{# സെക്കൻഡ്}}</translation>
-<translation id="9048119486235211610">നാവിഗേഷൻ</translation>
 <translation id="9059834730836941392">അറിയിപ്പ് ചുരുക്കുക</translation>
-<translation id="9062295712474918030">പ്രമാണം</translation>
-<translation id="9108370397979208512">മാത്ത്</translation>
-<translation id="9138385573473225930">അലേർട്ട്</translation>
-<translation id="9161053988251441839">നിർദ്ദേശിച്ചിരിക്കുന്ന ആപ്പുകൾ</translation>
-<translation id="9168329111483466115">അടിക്കുറിപ്പ്</translation>
 <translation id="9170848237812810038">‍&amp;പൂര്‍വാവസ്ഥയിലാക്കുക</translation>
-<translation id="9178475906033259337"><ph name="QUERY" /> എന്നതിനുള്ള ഒരു ഫലം കാണിക്കുന്നു</translation>
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="944069440740578670">വായിക്കാത്ത അറിയിപ്പുകൾ</translation>
-<translation id="966787709310836684">മെനു</translation>
-<translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 </translationbundle>

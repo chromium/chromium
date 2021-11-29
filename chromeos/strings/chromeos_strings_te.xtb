@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
+<translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
 <translation id="2323506179655536734">స్కిప్ చేయబడింది</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
 <translation id="2789486458103222910">సరే</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
+<translation id="2859243502336719778">ముఖ్యమైన అప్‌డేట్</translation>
 <translation id="2860473693272905224">స్కానర్ మీద మరొక పేజీని పెట్టండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />వ పేజీని స్కాన్ చేస్తోంది. <ph name="PERCENTAGE_VALUE" />% పూర్తయింది.</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> అప్‌డేట్ అవుతోంది</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చెయ్యబడింది</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
+<translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="3942420633017001071">నిర్ధారణలు</translation>
 <translation id="3966286471246132217">మరింత ఖచ్చితమైన ఫలితాల కోసం, టెస్ట్ పూర్తయ్యే వరకు అన్ని యాప్‌లను మూసివేయండి.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">పెరిఫెరల్స్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="4425149324548788773">నా డిస్క్</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ఆఫ్‌లో ఉంది</translation>
 <translation id="4429881212383817840">Kerberos టిక్కెట్ గడువు త్వరలో ముగుస్తుంది</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
 <translation id="4453205916657964690">సబ్‌నెట్ మాస్క్</translation>
 <translation id="4454245904991689773">స్కాన్ చేసి ఇక్కడ సేవ్ చేయండి</translation>
+<translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="4511264077854731334">పోర్టల్</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="4707579418881001319">L2TP/IPsec + వినియోగదారు ప్రమాణపత్రం</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
+<translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="475869545581454722">Chrome OS పాస్‌వర్డ్ అప్‌డేట్ చేయబడింది</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
 <translation id="4794140124556169553">CPU టెస్ట్‌ను రన్ చేయడం మీ సిస్టమ్ పనితీరుని ప్రభావితం చేయవచ్చు</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4930320165497208503">కనెక్షన్‌ను సెటప్ చేయడానికి లేదా అప్‌డేట్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
+<translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" />, <ph name="VERSION" /> వెర్షన్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="4987769320337599931">ఫైర్‌వాల్</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">సమూహం పేరు</translation>
 <translation id="5051044138948155788">ఈ పేజీ మాత్రమే ఉంది. ఇది మిమ్మల్ని స్కానింగ్ ప్రారంభ స్క్రీన్‌కు తీసుకువెళ్తుంది.</translation>
-<translation id="5061169534910302641">వెర్షన్‌ను అప్‌డేట్ చేసి &amp; రీస్టార్ట్ చేయండి</translation>
 <translation id="5088172560898466307">సర్వర్ హోస్ట్ పేరు</translation>
 <translation id="5089810972385038852">రాష్ట్రం</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
@@ -399,6 +406,7 @@
 <translation id="7040230719604914234">ఆపరేటర్</translation>
 <translation id="7058278511608979688">ఆపివేసి, సేవ్ చేయండి</translation>
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
+<translation id="7068619307603204412">మీ పరికరాన్ని సిద్ధం చేయండి</translation>
 <translation id="708426984172631313">ఆపివేయబడింది</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">విఫలమైంది - ప్రామాణీకరణ విఫలమైంది</translation>
@@ -412,6 +420,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
+<translation id="7240035910874241640">పెరిఫెరల్స్ అన్నీ అప్‌డేట్ అయ్యి ఉన్నాయి</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>
@@ -453,6 +462,7 @@
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
 <translation id="7784116172884276937">DNS సర్వర్‌లు ఏవీ సెటప్ చేయబడలేదు</translation>
+<translation id="7786540085520432425">అప్‌డేట్ చేసేటప్పుడు, మీరు విండోను చిన్నదిగా చేయవచ్చు, కానీ మీ పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు. దీనికి కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ అప్‌డేట్ జరుగుతున్నప్పుడు మీ పరికరం పని చేయకపోవచ్చు</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
 <translation id="7835501727204647447">CloudReadyని ఇన్‌స్టాల్ చేయండి</translation>
@@ -486,6 +496,7 @@
 <translation id="8217675307824400706">కనెక్ట్ అవ్వండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
+<translation id="8281886186245836920">దాటవేయి</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="8291967909914612644">స్వస్థల నెట్‌వర్క్ ప్రదాత దేశం</translation>
 <translation id="8294431847097064396">సోర్స్</translation>
@@ -510,6 +521,7 @@
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
+<translation id="8520963233738002436">మీ <ph name="DEVICE_NAME" /> అప్‌డేట్ అయ్యి ఉంది</translation>
 <translation id="8521021929829989041">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
@@ -549,6 +561,7 @@
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
+<translation id="8994273342647807496">ఇన్‌స్టాల్ అవుతోంది - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>

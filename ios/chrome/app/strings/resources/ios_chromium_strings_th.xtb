@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="102360288709523007">ช่วยให้ Chromium ทำงานได้ดีขึ้นโดยส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google</translation>
+<translation id="1047130070405668746">เลือก Chromium</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
 <translation id="1289216811211435351">เปลี่ยนไปใช้ Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1584569488888892906">Chromium ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
+<translation id="1722370509450468186">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี (<ph name="EMAIL" />)</translation>
 <translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
 <translation id="1838412507805038478">Chromium ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="1843424232666537147">Chromium มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. เลือก Chromium</translation>
 <translation id="2006345422933397527">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2054703085270098503">ปลอดภัยเสมอด้วย Chromium</translation>
 <translation id="2168108852149185974">ส่วนเสริมบางรายการทำให้ Chromium ขัดข้อง โปรดถอนการติดตั้ง:</translation>

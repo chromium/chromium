@@ -138,6 +138,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Pročišćavanje</translation>
+<translation id="2271351792809375263">Zaporke koje ste spremili u Chrome možete koristiti u drugim aplikacijama na uređaju</translation>
 <translation id="2273327106802955778">Izbornik Više</translation>
 <translation id="2302742851632557585">Promijenite zaporku na web-lokaciji</translation>
 <translation id="2316709634732130529">Upotrijebite predloženu zaporku</translation>
@@ -258,6 +259,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3393920035788932672">Dopušteni skočni</translation>
 <translation id="3399930248910934354">Otvorite postavke Chromea</translation>
 <translation id="3404744938087714423">Odjavljivanjem će se isključiti sinkronizacija.</translation>
+<translation id="3414451675185661089">2. Dodirnite Zaporke</translation>
 <translation id="3425644765244388016">Nadimak kartice</translation>
 <translation id="3433057996795775706">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="WEBSITE" />. Promijenite zaporku na <ph name="WEBSITE" /> da biste je zaštitili od drugih.</translation>
 <translation id="3443810440409579745">Primljena je kartica.</translation>
@@ -331,6 +333,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4121993058175073134">Za slanje neto izvezenih datoteka konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
+<translation id="4153925727916232411">To vam omogućuje snimanje i prijenos fotografija te skeniranje QR kodova.</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="418156467088430727">Prikaži offline verziju na novoj kartici</translation>
 <translation id="4181841719683918333">Jezici</translation>
@@ -378,6 +381,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4666531726415300315">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
+<translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="470966556546083668">Ne uključuj sinkronizaciju</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
@@ -458,6 +462,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5489208564673669003">Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiranje svih kolačića (ne preporučuje se)</translation>
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
+<translation id="5523579157975978438">Da biste isključili značajku, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />, a zatim Zaporke.</translation>
 <translation id="5525269841082836315">Stvaranje zaporke</translation>
 <translation id="5532698011560297095">Ne mogu se prijaviti</translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
@@ -547,7 +552,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6255097610484507482">Uredi kreditnu karticu</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
-<translation id="6308436439357671616">To vam omogućuje snimanje i prijenos fotografija.</translation>
 <translation id="6321526113093607004">Dodaj u Oznake</translation>
 <translation id="6324528485781869530">Promjena računa za sink.</translation>
 <translation id="6324669097367352121">Postavke prijave</translation>
@@ -637,6 +641,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6897187120838603299">Zaporka će se spremiti na vaš uređaj.</translation>
 <translation id="6914583639806229067">Pretraživanje slike koju ste kopirali</translation>
 <translation id="6914783257214138813">Vaše zaporke bit će vidljive svima koji vide izvezenu datoteku.</translation>
 <translation id="6930799952781667037">Dodirnite da biste promijenili jezik.</translation>
@@ -740,6 +745,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa.</translation>
 <translation id="7971521879845308059">Blokiraj skočne</translation>
 <translation id="797413074872316787">Da biste sinkronizirali i prilagodili više uređaja, uključite sinkronizaciju.</translation>
+<translation id="7978018860671536736">3. Dodirnite Automatsko popunjavanje zaporki</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7993619969781047893">Značajke na nekim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="800361585186029508">Otvara URL-ove unesene u Google Chrome.</translation>
@@ -765,6 +771,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8205564605687841303">Odustani</translation>
 <translation id="8206354486702514201">Ovu postavku nametnuo je vaš administrator.</translation>
 <translation id="8225985093977202398">Predmemorirane slike i datoteke</translation>
+<translation id="8237382152611443140">Otvorite postavke automatskog popunjavanja zaporki</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8271720166617117963">Prihvati i prijavi se</translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +840,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8917490105272468696">Da, pristajem</translation>
 <translation id="8952559610785099500">Dodavanje zaporke</translation>
 <translation id="895541991026785598">Prijavljivanje problema</translation>
+<translation id="8974714402877957201">1. Otvorite postavke iPada</translation>
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8976414606286374109">Kartice se spremaju na vaš Google račun.</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>

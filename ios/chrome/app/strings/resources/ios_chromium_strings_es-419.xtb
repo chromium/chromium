@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="102360288709523007">Envía estadísticas de uso e informes de fallos a Google para mejorar Chromium.</translation>
+<translation id="1047130070405668746">Selecciona Chromium.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
 <translation id="1289216811211435351">Cambia a Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="1843424232666537147">Ciertas funciones de Chromium te ayudan a administrar los datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Selecciona Chromium.</translation>
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="2054703085270098503">Aprovecha la seguridad de Chromium</translation>
 <translation id="2168108852149185974">Algunos complementos causan fallos en Chromium. Desinstala los siguientes elementos:</translation>

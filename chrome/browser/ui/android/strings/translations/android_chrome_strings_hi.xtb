@@ -217,7 +217,6 @@
 <translation id="2321958826496381788">इस टेक्स्ट को आसानी से पढ़ने लायक बनाने के लिए, स्‍लाइडर को आगे की ओर खींचें. पैराग्राफ़ पर डबल-टैप करने के बाद, टेक्स्ट को इतना बड़ा दिखाई देना चाहिए.</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
-<translation id="2337236196941929873">Chrome उन पेजों को पहले से लोड कर देता है जिनके बारे में उसे लगता है कि आप उन पर जा सकते हैं. अगर आप कुकी के लिए अनुमति देते हैं, तो Chrome ऐसा करने के लिए कुकी इस्तेमाल कर सकता है. साथ ही, साइटों से आपकी पहचान छिपाने के लिए, Chrome, पेजों को एनक्रिप्ट (सुरक्षित) करके Google के ज़रिए भेज सकता है.</translation>
 <translation id="234265804618409743">कैमरा खाेला नहीं जा सकता. कोई गड़बड़ी हुई.</translation>
 <translation id="2345671828921229300">किसी शब्द को खोजने के लिए, उसे दबाकर रखें</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
@@ -329,7 +328,6 @@
 <translation id="2942036813789421260">झलक टैब बंद है</translation>
 <translation id="2946420957526726953">Chrome को अन्य डिवाइसों से कनेक्ट करने के लिए, अपडेट किया जा रहा है</translation>
 <translation id="2951071800649516099">बाद के लिए, अपनी रीडिंग लिस्ट में पेज जोड़ें</translation>
-<translation id="2956410042958133412">यह खाता <ph name="PARENT_NAME_1" /> और <ph name="PARENT_NAME_2" /> के द्वारा प्रबंधित है.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
@@ -468,7 +466,6 @@
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
-<translation id="3803783897442799486">जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />सेवा की शर्तों<ph name="END_LINK1" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए, Chrome आपके इस्तेमाल के आंकड़े और ऐप्लिकेशन के बंद होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_LINK2" />मैनेज करें<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">अपने-आप चलने की सुविधा मैनेज करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
@@ -751,7 +748,6 @@
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">डेटा साफ़ करें</translation>
 <translation id="549025011754480756">बोलकर खोजने का तरीका</translation>
-<translation id="5512137114520586844">यह खाता <ph name="PARENT_NAME" /> द्वारा प्रबंधित है.</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
 <translation id="5517095782334947753">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग हैं.</translation>
@@ -1180,6 +1176,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
 <translation id="7882131421121961860">कोई इतिहास नहीं मिला</translation>
 <translation id="7886917304091689118">Chrome में चल रहा है</translation>
+<translation id="7887334752153342268">डुप्लीकेट</translation>
 <translation id="789763218334337857">Chrome को इस्तेमाल करने का तरीका</translation>
 <translation id="7903184275147100332">इसमें एक मिनट लग सकता है</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>
@@ -1197,7 +1194,6 @@
 <translation id="7968014550143838305">'पढ़ने की सूची' में जोड़ा गया</translation>
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
-<translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
 <translation id="7986497153528221272">पासवर्ड देखने के लिए, अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
 <translation id="799576009106109668">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए पेजों के हिसाब से लोड होता है</translation>
 <translation id="7998918019931843664">बंद टैब फिर से खोलें</translation>

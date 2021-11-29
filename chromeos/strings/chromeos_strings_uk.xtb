@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
+<translation id="1857850044054738019">Виберіть цей варіант, якщо пристрій знову в наявності або відновлений для
+        надання новому клієнту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
@@ -89,6 +91,7 @@
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активації</translation>
+<translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
@@ -116,6 +119,7 @@
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Додатки</translation>
+<translation id="2859243502336719778">Критичне оновлення</translation>
 <translation id="2860473693272905224">Розмістіть на сканері ще одну сторінку</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
@@ -150,6 +154,7 @@
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
+<translation id="3462187165860821523">Пристрій <ph name="DEVICE_NAME" /> оновлюється</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
@@ -174,6 +179,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
+<translation id="3932043219784172185">Немає підключених пристроїв</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3942420633017001071">Діагностика</translation>
 <translation id="3966286471246132217">Щоб отримати точніші результати, закрийте всі додатки, доки перевірка не завершиться.</translation>
@@ -200,11 +206,13 @@
 <translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
 <translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
+<translation id="4275799948641988986">Хто використовуватиме пристрій після ремонту?</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не виконано</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Оновіть периферійні пристрої</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4428374560396076622">Мережу <ph name="NETWORK_NAME" /> вимкнено</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
@@ -212,6 +220,7 @@
 <translation id="445059817448385655">Старий пароль</translation>
 <translation id="4453205916657964690">Маска підмережі</translation>
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
+<translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -234,6 +243,7 @@
 <translation id="469379815867856270">Потужність сигналу</translation>
 <translation id="4707579418881001319">L2TP/IPSec + Сертифікат користувача</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
+<translation id="473775607612524610">Оновити</translation>
 <translation id="475869545581454722">Пароль ОС Chrome оновлено</translation>
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4794140124556169553">Активна перевірка ЦП може вплинути на ефективність системи</translation>
@@ -255,6 +265,7 @@
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Щоб налаштувати або оновити з’єднання, перейдіть у <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" />: мікропрограму пристрою оновлено до версії <ph name="VERSION" /></translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
@@ -396,6 +407,7 @@
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Завершити та зберегти</translation>
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
+<translation id="7068619307603204412">Підготуйте пристрій</translation>
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
@@ -409,12 +421,14 @@
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
+<translation id="7240035910874241640">Усі периферійні пристрої оновлено</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>
 <translation id="7297226631177386107">Не вдається підключитися до веб-сайтів HTTPS через брандмауер</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Власник пристрою зміниться</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
@@ -422,6 +436,9 @@
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
+<translation id="7451112128070628323">Виберіть цей варіант, якщо власник пристрою не змінюється.
+        Наприклад, якщо пристрій передається іншій особі
+        в межах організації.</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7487067081878637334">Технології</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
@@ -446,6 +463,7 @@
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
+<translation id="7786540085520432425">Під час оновлення ви можете згорнути вікно, але не відключайте пристрій. Це може зайняти кілька хвилин. Можливо, пристрій не працюватиме</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7835501727204647447">Установити CloudReady</translation>
@@ -479,6 +497,7 @@
 <translation id="8217675307824400706">Підключіться до Інтернету</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>
 <translation id="8246209727385807362">Невідомий оператор</translation>
+<translation id="8281886186245836920">Пропустити</translation>
 <translation id="8286154143153872371">Щоб переглянути фоновий малюнок, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="8291967909914612644">Країна локального постачальника</translation>
 <translation id="8294431847097064396">Джерело</translation>
@@ -503,6 +522,7 @@
 <translation id="8498220429738806196">Лічильники трафіку</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
+<translation id="8520963233738002436">Ваш пристрій <ph name="DEVICE_NAME" /> оновлено</translation>
 <translation id="8521021929829989041">Використовувати як особистий пристрій</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
@@ -542,12 +562,14 @@
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
+<translation id="8994273342647807496">Встановлення – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Велика затримка перетворення DNS</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Використовується</translation>
+<translation id="9095415590198785865">Власник пристрою не зміниться</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>

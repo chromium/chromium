@@ -217,7 +217,6 @@
 <translation id="2321958826496381788">இதை வசதியாக படிப்பதற்கு, ஸ்லைடரை இழுக்கவும். பத்தியில் இரு முறை தட்டிய பிறகு, உரையானது குறைந்தது இந்த அளவு பெரியதாக தோன்ற வேண்டும்.</translation>
 <translation id="2323763861024343754">தளச் சேமிப்பகம்</translation>
 <translation id="2328985652426384049">உள்நுழைய முடியவில்லை</translation>
-<translation id="2337236196941929873">நீங்கள் பார்க்கக்கூடும் என நினைக்கும் பக்கங்களை Chrome முன்கூட்டியே ஏற்றும். குக்கீகளை நீங்கள் அனுமதித்தால் இதைச் செய்ய Chrome அவற்றைப் பயன்படுத்தக்கூடும், மேலும் தளங்களிலிருந்து உங்கள் அடையாளத்தை மறைக்க, பக்கங்களை என்கிரிப்ட் செய்து Google வழியாக அனுப்பக்கூடும்.</translation>
 <translation id="234265804618409743">கேமராவைத் திறக்க முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="2345671828921229300">தேட, சொல்லைத் தொட்டுப் பிடிக்கவும்</translation>
 <translation id="2349710944427398404">கணக்குகள், புக்மார்க்குகள், சேமித்த அமைப்புகள் உள்பட Chrome பயன்படுத்தும் மொத்தத் தரவு</translation>
@@ -329,7 +328,6 @@
 <translation id="2942036813789421260">மாதிரிக்காட்சித் தாவல் மூடப்பட்டுள்ளது</translation>
 <translation id="2946420957526726953">பிற சாதனங்களுடன் இணைப்பதற்காக Chromeமைப் புதுப்பிக்கிறது</translation>
 <translation id="2951071800649516099">பின்னர் படிக்க, வாசிப்புப் பட்டியலில் பக்கங்களைச் சேர்க்கலாம்</translation>
-<translation id="2956410042958133412">இந்தக் கணக்கு <ph name="PARENT_NAME_1" /> மற்றும் <ph name="PARENT_NAME_2" /> ஆல் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{படிக்காத பக்கம்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{படிக்காத பக்கங்கள்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
 <translation id="2961210776189273067">பெயரின் முன்னொட்டு</translation>
 <translation id="2979025552038692506">தேர்ந்தெடுத்த மறைநிலைத் தாவல்</translation>
@@ -468,7 +466,6 @@
 <translation id="3775705724665058594">என் சாதனங்களுக்கு அனுப்பு</translation>
 <translation id="3778956594442850293">முகப்புத் திரையில் சேர்க்கப்பட்டது</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 பக்கம்}other{# பக்கங்கள்}}</translation>
-<translation id="3803783897442799486">தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />சேவை விதிமுறைகளை<ph name="END_LINK1" /> ஏற்கிறீர்கள்.\nஆப்ஸை மேம்படுத்த உதவும் வகையில் உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_LINK2" />நிர்வகியுங்கள்<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">தானாகப் பிளேயாகும் ஊட்டத்தை நிர்வகிக்கலாம்</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -751,7 +748,6 @@
 <translation id="5483197086164197190">Chromeமிற்குச் செல்லுதல்</translation>
 <translation id="5487521232677179737">தரவை அழி</translation>
 <translation id="549025011754480756">குரலைப் பயன்படுத்தி எப்படித் தேடுவது?</translation>
-<translation id="5512137114520586844">இந்தக் கணக்கு <ph name="PARENT_NAME" /> ஆல் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="5514904542973294328">இந்தச் சாதனத்தின் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="5515439363601853141">கடவுச்சொல்லைப் பார்க்க, அன்லாக் செய்யவும்</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> இன் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உள்ளன.</translation>
@@ -1180,6 +1176,7 @@
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{படிக்காத பக்கம் <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> உள்ளது}other{படிக்காத பக்கங்கள் <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> உள்ளன}}</translation>
 <translation id="7882131421121961860">வரலாறு எதுவுமில்லை</translation>
 <translation id="7886917304091689118">Chrome இல் இயங்குகிறது</translation>
+<translation id="7887334752153342268">பிரதி எடு</translation>
 <translation id="789763218334337857">Chromeமை எப்படிப் பயன்படுத்துவது?</translation>
 <translation id="7903184275147100332">இதற்கு ஒரு நிமிடம் ஆகக்கூடும்</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>
@@ -1197,7 +1194,6 @@
 <translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7971136598759319605">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
-<translation id="7981313251711023384">மிக விரைவான உலாவலுக்காகவும் தேடலிற்காகவும் பக்கங்களை முன்னதாக ஏற்றும்</translation>
 <translation id="7986497153528221272">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் திரைப் பூட்டை அமைக்கவும்</translation>
 <translation id="799576009106109668">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>
 <translation id="7998918019931843664">மூடப்பட்ட தாவலை மீண்டும் திற</translation>

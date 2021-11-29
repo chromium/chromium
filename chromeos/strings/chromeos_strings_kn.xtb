@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ಸಕ್ರಿಯ ಸ್ಥಿತಿ</translation>
+<translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
 <translation id="2307344026739914387">ಪ್ರಸ್ತುತ ಕೀ ಜೋಡಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2323506179655536734">ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
+<translation id="2859243502336719778">ನಿರ್ಣಾಯಕ ಅಪ್‌ಡೇಟ್‌</translation>
 <translation id="2860473693272905224">ಸ್ಕ್ಯಾನರ್‌ನ ಮೇಲೆ ಮತ್ತೊಂದು ಪುಟವನ್ನು ಇರಿಸಿ</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="PRINTED_PAGES" /> ಪುಟವನ್ನು ಮುದ್ರಿಸಲಾಗಿದೆ.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ನೇ ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ. <ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
 <translation id="387301095347517405">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಮಾಡಿರುವ ಸಂಖ್ಯೆ</translation>
+<translation id="3932043219784172185">ಯಾವುದೇ ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="3941014780699102620">ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
 <translation id="3966286471246132217">ಇನ್ನಷ್ಟು ನಿಖರವಾದ ಫಲಿತಾಂಶಗಳಿಗಾಗಿ, ಪರೀಕ್ಷೆ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">ರನ್ ಆಗಲಿಲ್ಲ</translation>
 <translation id="4378551569595875038">ಕನೆಕ್ಟ್...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">ಪೆರಿಫೆರಲ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="4425149324548788773">ನನ್ನ ಡ್ರೈವ್</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4429881212383817840">Kerberos ಟಿಕೆಟ್ ಶೀಘ್ರದಲ್ಲೇ ಅವಧಿ ಮೀರಲಿದೆ</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌</translation>
 <translation id="4453205916657964690">ಸಬ್‌ನೆಟ್‌ ಮಾಸ್ಕ್‌</translation>
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="4707579418881001319">L2TP/IPSec + ಬಳಕೆದಾರರ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
+<translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="475869545581454722">Chrome OS ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4773299976671772492">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="4794140124556169553">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾರ್ಯಕ್ಷಮತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4930320165497208503">ಕನೆಕ್ಷನ್ ಸೆಟಪ್ ಮಾಡಲು ಅಥವಾ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
+<translation id="4950314376641394653">ಫರ್ಮ್‌‌ವೇರ್‌‌ <ph name="DEVICE_NAME" /> ಅನ್ನು <ph name="VERSION" /> ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
 <translation id="4987769320337599931">ಫೈರ್‌ವಾಲ್</translation>
@@ -267,7 +275,6 @@
 <translation id="5049856988445523908">ಸಿಮ್ ಲಾಕ್ ಆಗಿದೆ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ಗುಂಪು ಹೆಸರು</translation>
 <translation id="5051044138948155788">ತೆಗೆದುಹಾಕಲು ಇದೊಂದೇ ಪುಟ ಉಳಿದಿದೆ. ಇದು ನಿಮ್ಮನ್ನು ಸ್ಕ್ಯಾನಿಂಗ್ ಪ್ರಾರಂಭದ ಸ್ಕ್ರೀನ್‌ಗೆ ಕರೆದೊಯ್ಯುತ್ತದೆ.</translation>
-<translation id="5061169534910302641">ಆವೃತ್ತಿಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5088172560898466307">ಸರ್ವರ್ ಹೋಸ್ಟ್ ಹೆಸರು</translation>
 <translation id="5089810972385038852">ರಾಜ್ಯ</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
@@ -399,6 +406,7 @@
 <translation id="7040230719604914234">ಆಪರೇಟರ್</translation>
 <translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
+<translation id="7068619307603204412">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಿ</translation>
 <translation id="708426984172631313">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
@@ -412,6 +420,7 @@
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
+<translation id="7240035910874241640">ಎಲ್ಲಾ ಪೆರಿಫೆರಲ್‌ಗಳು ಅಪ್‌ ಟು ಡೇಟ್‌‌ ಆಗಿವೆ</translation>
 <translation id="7271040990581020067">ಸ್ಕ್ಯಾನರ್ ಅನ್ನು ಪ್ರಸ್ತುತವಾಗಿ ಬಳಸಲಾಗುತ್ತಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>
@@ -453,6 +462,7 @@
 <translation id="7763470514545477072">ಡೊಮೇನ್ ಸಫಿಕ್ಸ್ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="7769672763586021400">ಮಾಡೆಲ್ ಐಡಿ</translation>
 <translation id="7784116172884276937">ಯಾವುದೇ DNS ಸರ್ವರ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿಲ್ಲ</translation>
+<translation id="7786540085520432425">ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವಾಗ ನೀವು ವಿಂಡೋವನ್ನು ಕಡಿಮೆ ಮಾಡಬಹುದು, ಆದರೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ. ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಅಪ್‌ಡೇಟ್‌ನ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಸಾಧನವು ಕೆಲಸ ಮಾಡದೇ ಇರಬಹುದು</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7819857487979277519">PSK (WPA ಅಥವಾ RSN)</translation>
 <translation id="7835501727204647447">CloudReady ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -486,6 +496,7 @@
 <translation id="8217675307824400706">ಕನೆಕ್ಟ್ ಆಗಿರಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
+<translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
 <translation id="8286154143153872371">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ವಾಲ್‌ಪೇಪರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="8291967909914612644">Home ಪೂರೈಕೆದಾರರ ರಾಷ್ಟ್ರ</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
@@ -510,6 +521,7 @@
 <translation id="8498220429738806196">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8503836310948963452">ಕೇವಲ ಕೆಲವೇ ನಿಮಿಷಗಳು…</translation>
+<translation id="8520963233738002436">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಅಪ್‌ ಟು ಡೇಟ್‌ ಆಗಿದೆ</translation>
 <translation id="8521021929829989041">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ನಿಮ್ಮ ವಾಹಕವು ತಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಈ ಆಯ್ಕೆಯ ಅಗತ್ಯವಿರಬಹುದು. ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -549,6 +561,7 @@
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ಸ್ಕ್ಯಾನ್}=1{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">ಫ್ರೀಕ್ವೆನ್ಸಿ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ರೆಸಲ್ಯೂಷನ್ ಹೆಚ್ಚಿನ ಲೇಟೆನ್ಸಿಯನ್ನು ಹೊಂದಿದೆ</translation>

@@ -28,6 +28,7 @@
 <translation id="1981611865800294956">Перазапусціць, каб абнавіць &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Выберыце, ці выкарыстоўваць гісторыю Chromium для персаналізацыі сэрвісаў Google</translation>
 <translation id="2174178932569897599">Наладзіць Chromium</translation>
 <translation id="2185166961232948079">Chromium – Уваход у сетку – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Калі камп'ютар выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chromium для сябе і праглядаць старонкі асобна ад іншых.</translation>
@@ -39,6 +40,7 @@
 <translation id="2401032172288869980">Chromium запытвае дазвол на доступ да камеры і мікрафона для гэтага сайта</translation>
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
+<translation id="251127392410688874">Даведайцеся, як Chromium збіраецца абараняць вас ад механізмаў адсочвання паводзін на розных сайтах, захоўваючы адкрытасць інтэрнэту</translation>
 <translation id="2535480412977113886">Сінхранізаваць даныя ў сістэме Chromium OS не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="2560420686485554789">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>
 <translation id="2572494885440352020">Памочнік Chromium</translation>
@@ -224,6 +226,7 @@
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="734373864078049451">Тут знаходзяцца вашы вэб-старонкі, закладкі і іншыя даныя браўзера Chromium.</translation>
 <translation id="7349591376906416160">Ваш сістэмны адміністратар наладзіў Chromium так, каб для доступу да <ph name="TARGET_URL_HOSTNAME" /> адкрываўся браўзер <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7398989605938454041">Профілі Chromium патрэбныя для раздзельнага выкарыстання браўзера рознымі людзьмі або ў розных мэтах. Выкарыстоўваючы іх, прасцей раздзяляць работу і забавы.</translation>
 <translation id="7448255348454382571">Перазапусціце Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium запытвае дазвол на доступ да вашай камеры для гэтага сайта</translation>
@@ -244,6 +247,7 @@
 <translation id="7828947555739565424">Профіль Chromium з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="7857220146454061152">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбна версія OS X 10.11 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.10.</translation>
 <translation id="7867198900892795913">Браўзеру Chromium не ўдалося абнавіцца да апошняй версіі, таму ў ім няма новых функцый і выпраўленняў сістэмы бяспекі.</translation>
+<translation id="788352880609666695">Для дадзенага профілю Chromium даступныя гэтыя ўліковыя запісы:</translation>
 <translation id="7898472181347242998">Каб даведацца, ці абноўлена прылада, адкрыйце <ph name="LINK_BEGIN" />Налады Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Вы ўваходзілі ва ўліковы запіс Chromium як <ph name="USER_EMAIL_ADDRESS" />. Для паўторнага ўваходу выкарыстоўвайце той жа самы ўліковы запіс.</translation>
 <translation id="7975919845073681630">Гэта другасны ўсталяваны экзэмпляр Chromium – яго нельга зрабіць стандартным браўзерам.</translation>
@@ -256,6 +260,7 @@
 <translation id="8290862415967981663">Файл можа быць небяспечным, таму Chromium заблакіраваў яго.</translation>
 <translation id="8330519371938183845">Увайдзіце ў Chromium, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
 <translation id="8340674089072921962">Карыстальнік <ph name="USER_EMAIL_ADDRESS" /> раней выкарыстоўваў Chromium</translation>
+<translation id="8357820681460164151">Каб мець доступ да даных Chromium на ўсіх сваіх прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перазапусціце Chromium на працягу дня}one{Перазапусціце Chromium на працягу # дня}few{Перазапусціце Chromium на працягу # дзён}many{Перазапусціце Chromium на працягу # дзён}other{Перазапусціце Chromium на працягу # дня}}</translation>
 <translation id="8453117565092476964">Архіў усталёўшчыка пашкоджаны або мае няправільны фармат. Спампуйце Chromium зноў.</translation>
 <translation id="8493179195440786826">Chromium састарэў</translation>

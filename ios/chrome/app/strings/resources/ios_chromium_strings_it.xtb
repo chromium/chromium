@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
+<translation id="1047130070405668746">Seleziona Chromium</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium ha verificato che il certificato del sito web è stato emesso da <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium offre funzioni che consentono di gestire i dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Seleziona Chromium</translation>
 <translation id="2006345422933397527">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
 <translation id="2054703085270098503">Resta al sicuro con Chromium</translation>
 <translation id="2168108852149185974">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Disinstalla:</translation>

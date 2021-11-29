@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="1652741121070700329">ಹಿಂದಿನ ಪದದ ಆರಂಭಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1679841710523778799">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ, ನೀವು ತೆರೆಯಲು ಬಯಸುವ ವಿಂಡೋವನ್ನು ಪಡೆಯುವವರೆಗೂ <ph name="TAB" /> ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ, ನಂತರ ಬಿಡುಗಡೆಗೊಳಿಸಿ.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 ರಿಂದ 8 ರವರೆಗೆ</translation>
 <translation id="3837047332182291558">ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪ್ರಕಾಶಮಾನವಾಗಿ ಮಾಡಿ (ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಕೀಬೋರ್ಡ್‌ಗಳಿಗಾಗಿ ಮಾತ್ರ)</translation>
 <translation id="3949671998904569433">ಅಲ್ಪವಿರಾಮ</translation>
-<translation id="3976707995992061296">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="3976863468609830880">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಕೊನೆಯ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="3994783594793697310">ಡಿಸ್‌ಪ್ಲೇ ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="4026843240379844265">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಡಿಸ್‌ಪ್ಲೇಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="561814908794220892">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವೆಬ್‌ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5620219513321115856">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಬಲಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
+<translation id="5699366815052349604">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ಅಥವಾ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5757474750054631686">ಮಂದ ಕೀಬೋರ್ಡ್(ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಕೀಬೋರ್ಡ್‌ಗಳಿಗಾಗಿ ಮಾತ್ರ)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಝೂಮ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="634687982629734605">ಇವುಗಳ ನಡುವೆ ಫೋಕಸ್ ಅನ್ನು ಬದಲಾಯಿಸಿ: ಸ್ಥಿತಿ ಕ್ಷೇತ್ರ (ನಿಮ್ಮ ಖಾತೆಯ ಚಿತ್ರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಸ್ಥಳ), ಲಾಂಚರ್, ವಿಳಾಸ ಪಟ್ಟಿ, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ), ತೆರೆದಿರುವ ವೆಬ್‌ಪುಟ ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ). ಫೋಕಸ್ ಮಾಡಬಹುದಾದ ಡೈಲಾಗ್ ಕಾಣಿಸಿದರೆ, ಬದಲಾಗಿ ಫೋಕಸ್ ಅನ್ನು ಅಲ್ಲಿಗೆ ಸರಿಸಿ.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">1 ರಿಂದ 8ನೇ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="6395172954772765143">ಸಾಲಿನ ಕೊನೆಯವರೆಗಿನ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6425378783626925378">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ 1-8 ಐಟಂಗಳನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="6435207348963613811">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಹಿಂದಿನ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>

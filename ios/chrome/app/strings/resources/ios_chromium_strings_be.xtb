@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="102360288709523007">Дапамажыце палепшыць Chromium, адпраўляючы ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
+<translation id="1047130070405668746">Выберыце Chromium.</translation>
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1257458525759135959">Каб магчы захоўваць відарысы, націсніце "Налады" і дазвольце Chromium дадаваць вашы фота</translation>
 <translation id="1289216811211435351">Пераходзьце на Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium спраўдзіў, што сертыфікат гэтага вэб-сайта выдадзены <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">У браўзеры Chromium ёсць функцыі, якія дапамагаюць сачыць за інтэрнэт-трафікам і хуткасцю загрузкі вэб-старонак.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Выберыце Chromium.</translation>
 <translation id="2006345422933397527">Браўзеру Chromium не ўдалося праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="2054703085270098503">Падбайце аб бяспецы сваіх даных, выкарыстоўваючы Chromium</translation>
 <translation id="2168108852149185974">Некаторыя дадатковыя кампаненты выклікаюць збой у браўзеры Chromium. Выдаліце іх:</translation>

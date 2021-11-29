@@ -107,6 +107,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1894205589103145703">Un problème est survenu lors de la connexion.</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
+<translation id="1930989359703290198">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
@@ -137,6 +138,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
+<translation id="2271351792809375263">Utilisez les mots de passe enregistrés dans Chrome dans d'autres applications de votre appareil</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2302742851632557585">Changer le mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
@@ -257,6 +259,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3393920035788932672">Fenêtr context autor</translation>
 <translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3404744938087714423">La déconnexion désactive la synchronisation.</translation>
+<translation id="3414451675185661089">2. Touchez Mots de passe</translation>
 <translation id="3425644765244388016">Pseudo de la carte</translation>
 <translation id="3433057996795775706">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />. Changez votre mot de passe sur <ph name="WEBSITE" /> pour le protéger des autres.</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
@@ -330,6 +333,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
 <translation id="4124987746317609294">Intervalle de temps</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
+<translation id="4153925727916232411">Ceci vous permet de prendre des photos et de les téléverser ainsi que de numériser des codes QR.</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher la version hors ligne dans un nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
@@ -377,6 +381,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4666531726415300315">Connecté en tant que <ph name="EMAIL" />.
 
 Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour commencer la synchronisation.</translation>
+<translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
 <translation id="470966556546083668">Ne pas activer la synchronisation</translation>
 <translation id="473775607612524610">Mise à jour</translation>
@@ -387,6 +392,8 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Géré par votre organisation.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numéro de carte incorrect</translation>
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
@@ -455,6 +462,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
+<translation id="5523579157975978438">Pour désactiver le remplissage automatique, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" /> et accédez à Mots de passe.</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="5532698011560297095">Échec de connexion</translation>
 <translation id="5548760955356983418">La fonction de transfert vous permet de commencer à naviguer sur un site Web sur cet appareil et de continuer facilement sur votre Mac. Le site Web actuellement ouvert apparaîtra dans le Dock de votre Mac.
@@ -544,7 +552,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6255097610484507482">Modif. carte crédit</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
-<translation id="6308436439357671616">Ceci vous permet de prendre des photos et de les téléverser.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324528485781869530">Passer au compte synchronisé</translation>
 <translation id="6324669097367352121">Param. de connexion</translation>
@@ -737,6 +744,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 Les sites peuvent utiliser des témoins afin de voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="7971521879845308059">Bloq fen contex</translation>
 <translation id="797413074872316787">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation.</translation>
+<translation id="7978018860671536736">3. Touchez Remplir automatiquement les mots de passe</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL entrées dans Google Chrome.</translation>
@@ -762,6 +770,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Votre administrateur impose la valeur associée à ce paramètre.</translation>
 <translation id="8225985093977202398">Images/fich. en cache</translation>
+<translation id="8237382152611443140">Ouvrez Réglages du remplissage automatique des mots de passe</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
@@ -830,6 +839,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
+<translation id="8974714402877957201">1. Ouvrez Réglages de l'iPad</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes seront enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>

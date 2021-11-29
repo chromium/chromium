@@ -138,6 +138,7 @@
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
+<translation id="2271351792809375263">在裝置上的其他應用程式使用儲存在 Chrome 中的密碼</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2302742851632557585">變更網站上的密碼</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -258,6 +259,7 @@
 <translation id="3393920035788932672">已允許的彈出式視窗</translation>
 <translation id="3399930248910934354">開啟 Chrome 設定</translation>
 <translation id="3404744938087714423">登出會同時關閉同步功能。</translation>
+<translation id="3414451675185661089">2. 輕觸 [密碼]</translation>
 <translation id="3425644765244388016">卡片暱稱</translation>
 <translation id="3433057996795775706">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。請變更你的 <ph name="WEBSITE" /> 密碼，以避免遭到他人盜用。</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -331,6 +333,7 @@
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4124987746317609294">時間範圍</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
+<translation id="4153925727916232411">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼。</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="418156467088430727">在新分頁中檢視離線版本</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -378,6 +381,7 @@
 <translation id="4666531726415300315">目前登入的帳戶是 <ph name="EMAIL" />。
 
 您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
+<translation id="4682686630151240767">1. 開啟 iPhone 的 [設定]</translation>
 <translation id="4689564913179979534">管理付款方式...</translation>
 <translation id="470966556546083668">請勿開啟同步功能</translation>
 <translation id="473775607612524610">更新</translation>
@@ -458,6 +462,7 @@
 <translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
+<translation id="5523579157975978438">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往 [密碼] 部分。</translation>
 <translation id="5525269841082836315">建立通關密語</translation>
 <translation id="5532698011560297095">無法登入</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
@@ -547,7 +552,6 @@
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
-<translation id="6308436439357671616">可讓你拍照並上傳相片。</translation>
 <translation id="6321526113093607004">加入書籤</translation>
 <translation id="6324528485781869530">切換同步處理帳戶</translation>
 <translation id="6324669097367352121">登入設定</translation>
@@ -637,6 +641,7 @@
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
+<translation id="6897187120838603299">密碼會儲存至你的裝置。</translation>
 <translation id="6914583639806229067">搜尋你複製的圖片</translation>
 <translation id="6914783257214138813">凡是可查看匯出的檔案的使用者都能看到你的密碼。</translation>
 <translation id="6930799952781667037">輕觸即可變更為這個語言。</translation>
@@ -740,6 +745,7 @@
 網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務。</translation>
 <translation id="7971521879845308059">封鎖彈出式視窗</translation>
 <translation id="797413074872316787">如要在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
+<translation id="7978018860671536736">3. 輕觸 [自動填入密碼]</translation>
 <translation id="7982789257301363584">網路</translation>
 <translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟輸入的網址。</translation>
@@ -765,6 +771,7 @@
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
+<translation id="8237382152611443140">開啟 [自動填入密碼] 設定</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8271720166617117963">接受並登入</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -833,6 +840,7 @@
 <translation id="8917490105272468696">是，我同意</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="895541991026785598">回報問題</translation>
+<translation id="8974714402877957201">1. 開啟 iPad 的 [設定]</translation>
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>

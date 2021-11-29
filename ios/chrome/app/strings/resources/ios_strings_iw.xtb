@@ -138,6 +138,7 @@
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">חשבון חדש</translation>
 <translation id="2268044343513325586">צמצום</translation>
+<translation id="2271351792809375263">‏יש להשתמש בסיסמאות ששמרת ב-Chrome לאפליקציות אחרות במכשיר</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
 <translation id="2302742851632557585">שינוי הסיסמה באתר</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
@@ -226,6 +227,7 @@
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3081338492074632642">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">סימון…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">‏חסימת כל קובצי ה-cookie</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
 <translation id="3153862085237805241">שמירת כרטיס</translation>
@@ -257,6 +259,7 @@
 <translation id="3393920035788932672">חלונות קופצים מותרים</translation>
 <translation id="3399930248910934354">‏פתיחת ההגדרות של Chrome</translation>
 <translation id="3404744938087714423">היציאה תשבית את הסנכרון.</translation>
+<translation id="3414451675185661089">2. מקישים על 'סיסמאות'</translation>
 <translation id="3425644765244388016">כינוי הכרטיס</translation>
 <translation id="3433057996795775706">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />. יש לשנות את הסיסמה באתר <ph name="WEBSITE" /> כדי למנוע מאחרים גישה לחשבון שלך.</translation>
 <translation id="3443810440409579745">כרטיסייה התקבלה.</translation>
@@ -330,6 +333,7 @@
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
+<translation id="4153925727916232411">‏אישור הגישה יאפשר לך לצלם ולהעלות תמונות, וגם לסרוק קודי QR.</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="418156467088430727">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="4181841719683918333">שפות</translation>
@@ -377,6 +381,7 @@
 <translation id="4666531726415300315">החשבון המחובר: <ph name="EMAIL" />.
 
 הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
+<translation id="4682686630151240767">‏1. פותחים את הגדרות ה-iPhone</translation>
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
 <translation id="470966556546083668">אין להפעיל את הסנכרון</translation>
 <translation id="473775607612524610">עדכון</translation>
@@ -457,6 +462,7 @@
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="5513681519188741830">לפני <ph name="TIME" /> שעות</translation>
+<translation id="5523579157975978438">כדי להשבית, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'סיסמאות'.</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
 <translation id="5532698011560297095">לא מצליח להיכנס</translation>
 <translation id="5548760955356983418">‏Handoff מאפשר לך להתחיל לגלוש באתר מסוים במכשיר הזה ולאחר מכן להמשיך בקלות ב-Mac. האתר הפתוח הנוכחי יופיע ב-Dock של ה-Mac שלך.
@@ -546,7 +552,6 @@
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
-<translation id="6308436439357671616">אישור זה מאפשר לך לצלם ולעדכן תמונות.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
 <translation id="6324528485781869530">החלפת חשבון לסנכרון</translation>
 <translation id="6324669097367352121">הגדרות כניסה</translation>
@@ -739,6 +744,7 @@
 אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות.</translation>
 <translation id="7971521879845308059">חסימת חלונות קופצים</translation>
 <translation id="797413074872316787">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, צריך להפעיל את הסנכרון.</translation>
+<translation id="7978018860671536736">3. מקישים על 'מילוי אוטומטי של סיסמאות'</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
@@ -764,6 +770,7 @@
 <translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
+<translation id="8237382152611443140">פותחים את הגדרות המילוי האוטומטי של סיסמאות</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8271720166617117963">אישור וכניסה</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
@@ -832,6 +839,7 @@
 <translation id="8917490105272468696">כן, מקובל עלי.</translation>
 <translation id="8952559610785099500">הוספת סיסמה</translation>
 <translation id="895541991026785598">דיווח על בעיה</translation>
+<translation id="8974714402877957201">‏1. פותחים את הגדרות ה-iPad</translation>
 <translation id="8976382372951310360">עזרה</translation>
 <translation id="8976414606286374109">‏הכרטיסים נשמרים בחשבון Google.</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>

@@ -15,6 +15,7 @@
 <translation id="1030706264415084469">உங்கள் சாதனத்தில், அதிக அளவு தரவை நிரந்தரமாகச் சேமிக்க <ph name="URL" /> விரும்புகிறது</translation>
 <translation id="1032854598605920125">கடிகாரத்திசையில் சுழற்று</translation>
 <translation id="1036348656032585052">முடக்கு</translation>
+<translation id="1036982837258183574">முழுத்திரையிலிருந்து வெளியேற, |<ph name="ACCELERATOR" />|ஐ அழுத்தவும்</translation>
 <translation id="1038106730571050514">பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="1038842779957582377">அறியப்படாத பெயர்</translation>
 <translation id="1041998700806130099">பணித் தாள் மெசேஜ்</translation>
@@ -414,7 +415,6 @@
 <translation id="2241693394036365668">ஃபைல் பதிவிறக்கப்படும்போது</translation>
 <translation id="2248949050832152960">WebAuthnனைப் பயன்படுத்து</translation>
 <translation id="2250931979407627383">எட்ஜ் ஸ்டிட்ச் லெஃப்ட்</translation>
-<translation id="2251943122176102076">திரையில் ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் ஸ்கிரீன்ஷாட்டுகளை எடுப்பது, ரெக்கார்டிங் செய்வது போன்றவற்றை உங்கள் நிர்வாகி பரிந்துரைக்கவில்லை:</translation>
 <translation id="225207911366869382">இந்த கொள்கைக்கான மதிப்பு நிறுத்தப்பட்டது.</translation>
 <translation id="2258928405015593961">எதிர்காலத் தேதியில் காலாவதித் தேதியை உள்ளிட்டு மீண்டும் முயலவும்</translation>
 <translation id="225943865679747347">பிழைக் குறியீடு: <ph name="ERROR_CODE" /></translation>
@@ -865,7 +865,6 @@
 <translation id="3760561303380396507">CVCக்குப் பதிலாக Windows Helloவைப் பயன்படுத்தவா?</translation>
 <translation id="3761171036307311438">அட்டையிலுள்ள பெயர்:</translation>
 <translation id="3761718714832595332">நிலையை மறை</translation>
-<translation id="3765032636089507299">பாதுகாப்பு உலாவல் பக்கம் உருவாக்கப்படுகிறது.</translation>
 <translation id="3765588406864124894">அஞ்சல் பெட்டி 9</translation>
 <translation id="3767485424735936570">இந்த உள்ளடக்கத்தை நகலெடுத்து <ph name="VM_NAME" /> இல் ஒட்டுவது நிர்வாகக் கொள்கையின்படி பரிந்துரைக்கப்படவில்லை</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepபில் புதிய குறிப்பை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -1088,12 +1087,10 @@
 <translation id="4451135742916150903">HID சாதனங்களுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="4460315069258617173">இந்தத் தளத்திற்கான பிரிவுகளை மூடும் வரை இருப்பிட அணுகல் கிடைக்கும்</translation>
 <translation id="4464826014807964867">உங்கள் நிறுவனம் வழங்கிய தகவல்களைக் கொண்ட இணையதளங்கள்</translation>
-<translation id="4465818729556336129">இந்த ஆவணம் ரகசியமானது, இதைப் பிரிண்ட் செய்வதை நிர்வாகி பரிந்துரைக்கவில்லை.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">இந்தப் படிவம் பாதுகாப்பானதல்ல. ’தன்னிரப்பி’ அம்சம் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="4477350412780666475">அடுத்த டிராக்</translation>
 <translation id="4481251927743463293">மறைநிலையில் செய்யப்படுவை</translation>
-<translation id="4481394504112738036">ரகசியமான ஃபைல்</translation>
 <translation id="4482953324121162758">இந்தத் தளம் மொழிபெயர்க்கப்படாது.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">ஒத்திசைக்கப்பட்ட கடவுச்சொற்களை எனது Google கணக்கின் மூலம் என்க்ரிப்ட் செய்</translation>
@@ -1207,7 +1204,6 @@
           <ph name="LIST_ITEM" />இணைய டிராஃபிக்கை இணையச் சேவை வழங்குநர்கள் கண்காணிக்கக்கூடும்<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">எச்சரிக்கைகளை இயக்கு</translation>
-<translation id="4834718916855725099">திரையில் ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் ஸ்கிரீன்ஷாட்டுகளை எடுப்பது, ரெக்கார்டிங் செய்வது போன்றவற்றை உங்கள் நிர்வாகி பரிந்துரைக்கவில்லை.</translation>
 <translation id="4838327282952368871">ட்ரீமி</translation>
 <translation id="4840250757394056958">எனது Chrome செயல்பாடுகளைக் காட்டு</translation>
 <translation id="484462545196658690">தானியங்கு</translation>
@@ -1497,7 +1493,6 @@
 <translation id="5786044859038896871">கார்டு தகவலை நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="578633867165174378">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உட்பட்டது என Chrome கண்டறிந்துள்ளது. இந்தக் கடவுச்சொல்லை இப்போதே மாற்றவும்.</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5797429178165847917">ரகசிய உள்ளடக்கத்தைப் படமெடுத்தல்</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />ஐ நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />க்கான உங்கள் இணைப்பு, நடைமுறையில் இல்லாத சைபர் சூட்டைப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்பட்டது.</translation>
@@ -1524,7 +1519,6 @@
 <translation id="5903264686717710770">தலைப்பு:</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> இன் அசல் கொள்கையின்படி தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ஒத்திசைக்கப்பட்டது)</translation>
-<translation id="5913377024445952699">ஸ்கிரீன்ஷாட் எடுப்பது இடைநிறுத்தப்பட்டது</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{ஒரு குக்கீ பயன்படுத்தப்படுகிறது}other{# குக்கீகள் பயன்படுத்தப்படுகின்றன}}</translation>
@@ -1877,7 +1871,6 @@
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
-<translation id="7173920250514487165">திரையில் காட்டப்படும் ரகசியமான உள்ளடக்கத்தைப் படமெடுத்தல்</translation>
 <translation id="7174545416324379297">ஒன்றிணைக்கப்பட்டது</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">கட்டண முறைகளைச் சேமித்துத் தானாக நிரப்பு</translation>
@@ -2327,7 +2320,6 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">பொருந்தும் கடவுச்சொற்கள் எதுவுமில்லை. சேமித்த எல்லாக் கடவுச்சொற்களையும் பார்க்கவும்.</translation>
 <translation id="8625384913736129811">இந்தச் சாதனத்தில் கார்டைச் சேமி</translation>
-<translation id="8627040765059109009">ஸ்கிரீன்ஷாட் எடுப்பது மீண்டும் தொடங்கப்பட்டது</translation>
 <translation id="865032292777205197">மோஷன் சென்சார்கள்</translation>
 <translation id="8663226718884576429">ஆர்டர் சுருக்கம், <ph name="TOTAL_LABEL" />, மேலும் விவரங்கள்</translation>
 <translation id="8666678546361132282">ஆங்கிலம்</translation>

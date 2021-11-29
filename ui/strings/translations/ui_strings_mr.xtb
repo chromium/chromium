@@ -1,85 +1,50 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="1018939186200882850">मेनू आयटम</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
-<translation id="10623998915015855">टॉगल बटण</translation>
 <translation id="111910763555783249">सूचना सेटिंग्ज</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 दिवसापूर्वी}other{# दिवसांपूर्वी}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1मि}other{#मि}}</translation>
-<translation id="1181037720776840403">काढून टाका</translation>
-<translation id="1188858454923323853">पूरक</translation>
-<translation id="1201402288615127009">पुढील</translation>
-<translation id="1206619573307042055">marquee</translation>
-<translation id="1206693055195146388">स्लायडर</translation>
-<translation id="1211441953136645838">तळटीप</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1281252709823657822">डायलॉग</translation>
-<translation id="1290982764014248209"><ph name="DRAGGED_APP" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवा.</translation>
 <translation id="1291104554099683393">मजकूर लहान भागांमध्ये शेअर करून पहा.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">शिफारस केलेले अ‍ॅप्स</translation>
-<translation id="1335095011850992622">श्रेय</translation>
-<translation id="1342835525016946179">लेख</translation>
-<translation id="1359897965706325498">बॅनर</translation>
 <translation id="1368832886055348810">डावीकडून उजवीकडे</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1398853756734560583">वाढवा</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> हा <ph name="SECOND_ITEM_TITLE" /> सोबत स्वॅप केला</translation>
-<translation id="1498028757988366001">तुम्ही यापूर्वी याचा शोध घेतला होता. तुमच्या इतिहासामधून "<ph name="QUERY" />" हटवल्याने ती तुमच्या संपूर्ण डिव्हाइसवरील सर्व खात्यामधून कायमची काढून टाकली जाईल.</translation>
-<translation id="1510238584712386396">लाँचर</translation>
-<translation id="1589122976691792535">प्रदेश</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 मिनिट आणि }other{# मिनिटे आणि }}</translation>
 <translation id="1643823602425662293">सूचना</translation>
-<translation id="1650423536718072820">पुलकोट</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">आता</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 मिनिट}other{# मिनिटे}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
-<translation id="1770726142253415363"><ph name="ROW_NUMBER" /> पंक्ती, <ph name="COLUMN_NUMBER" /> स्तंभ वर हलवली.</translation>
 <translation id="1801827354178857021">पूर्णविराम</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 महिना}other{# महिने}}</translation>
-<translation id="1806710327868736751">सूचना_संवाद</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
-<translation id="1821985195704844674">ट्री ग्रीड</translation>
-<translation id="1823704031293214298">पेज फूटर</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 तास आणि }other{# तास आणि }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन केला गेला</translation>
-<translation id="1842960171412779397">निवडा</translation>
 <translation id="1859234291848436338">लिहिण्याची दिशा</translation>
 <translation id="1860796786778352021">सूचना बंद</translation>
 <translation id="186476001994626254">वेब स्‍मार्ट पेस्ट आशय</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">&amp;सर्व निवडा</translation>
-<translation id="190587075670221089">हटवणे</translation>
-<translation id="1907737156431278478">उदाहरण</translation>
 <translation id="19085484004813472">हे नवीन वैशिष्‍ट्य आहे</translation>
-<translation id="1930711995431081526">स्थिती</translation>
 <translation id="2006524834898217237">हे डिव्हाइस इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा.</translation>
 <translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1दि}other{#दि}}</translation>
 <translation id="2148716181193084225">आज</translation>
-<translation id="2158401438286456825">पेज सूची</translation>
 <translation id="2161656808144014275">मजकूर</translation>
 <translation id="2168039046890040389">पृष्ठ वर</translation>
 <translation id="2190355936436201913">(रिक्त)</translation>
 <translation id="2192232475740621500">कमी घनता वापरा</translation>
-<translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2267918077332197517">या साइटच्या सर्व सूचना ब्‍लॉक करा</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">आपल्या स्क्रीनवरील लक्ष्यांना स्पर्श करा टॅप करा.</translation>
-<translation id="2291999235780842123">चेकबॉक्‍स</translation>
 <translation id="2295140143284145483">सर्वेक्षण</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
-<translation id="2311842470354187719">पेज ब्रेक</translation>
-<translation id="2335594187091864976">तारीख आणि वेळ निवडक</translation>
 <translation id="2353636109065292463">तुमचे इंटरनेट कनेक्शन तपासत आहे</translation>
 <translation id="2388990488038464401">तुमच्या फोनवरून या नंबरवर कॉल करायचा का?</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
@@ -87,46 +52,27 @@
 <translation id="2445449901874883781">उच्च घनता वापरा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2497284189126895209">सर्व फाइल</translation>
-<translation id="2508569020611168319">टॅब सूची</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">कॅलिब्रेशन पूर्ण झाले</translation>
 <translation id="252373100621549798">अज्ञात डिस्प्ले</translation>
 <translation id="2545651323591713692">स्नूझ करा</translation>
-<translation id="2570734079541893434">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{१ता मध्ये}other{#ता मध्ये}}</translation>
 <translation id="2583543531130364912">तुमची टचस्क्रीन कॅलिब्रेट करा</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
-<translation id="2657045182931379222">ग्राफिक्स ऑब्जेक्ट</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
-<translation id="2674318244760992338">अधोलेख</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
 <translation id="271033894570825754">नवीन</translation>
-<translation id="2723001399770238859">ऑडिओ</translation>
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2759744352195237655">पॉप अप बटण</translation>
-<translation id="2803313416453193357">फोल्डर उघडा</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 वर्षापूर्वी}other{# वर्षांपूर्वी}}</translation>
-<translation id="2844350028562914727">तपशील</translation>
 <translation id="2878511608894704031">सर्व हटवा</translation>
-<translation id="2896972712917208084">रेडिओ गट</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१दि मध्ये}other{#दि मध्ये}}</translation>
 <translation id="2922712708897119705">स्तंभ <ph name="COLUMN_NAME" /> हा उतरत्या क्रमाने लावला आहे.</translation>
-<translation id="2931838996092594335">क्लिक करा</translation>
-<translation id="2940813599313844715">ऑब्जेक्ट</translation>
-<translation id="2981684127883932071">सूचना दाखवत आहे</translation>
 <translation id="3036649622769666520">फाइल उघडा</translation>
-<translation id="3040011195152428237">लिंक</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">शेल्फ डावीकडे आहे</translation>
-<translation id="3078740164268491126">सारणी</translation>
-<translation id="3086746722712840547">टीप</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
-<translation id="3175736971608411871">टायमर</translation>
 <translation id="3183922693828471536">येथे स्क्रोल करा</translation>
-<translation id="3199563858620722075">काँबो बॉक्स</translation>
 <translation id="3234408098842461169">Down Arrow</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 दिवस}other{# दिवस}}</translation>
 <translation id="3295886253693811851">यावरून कॉल करा</translation>
@@ -134,10 +80,6 @@
 <translation id="335581015389089642">भाषण</translation>
 <translation id="3389286852084373014">मजकूर खूप मोठा आहे</translation>
 <translation id="3406306243914553062">HTML आशय</translation>
-<translation id="3486220673238053218">परिभाषा</translation>
-<translation id="348799646910989694">शेल्फ आपोआप लपवले</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> पिन केला गेला</translation>
-<translation id="3557673793733683882">शीर्षक <ph name="HEADING_LEVEL" /></translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 दिवस शिल्लक}other{# दिवस शिल्लक}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> फाइल</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -146,277 +88,128 @@
 <translation id="364720409959344976">अपलोड करण्यासाठी फोल्डर निवडा</translation>
 <translation id="3660179305079774227">Up Arrow</translation>
 <translation id="3670030362669914947">नंबर</translation>
-<translation id="3670698553867754311">आठवडा पिकर</translation>
-<translation id="3706100364254443312">स्विच करा</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3808586225841795776">संज्ञा</translation>
-<translation id="3842239759367498783">तुमच्या मोबाइल डिव्हाइसवरून वाचणे सुरू ठेवा <ph name="TITLE" /></translation>
-<translation id="385051799172605136">मागील</translation>
 <translation id="3889424535448813030">Right Arrow</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3909791450649380159">क&amp;ट करा</translation>
-<translation id="3920932319529768807">निष्कर्ष</translation>
-<translation id="3924558731517983934">ॲप्लिकेशन</translation>
-<translation id="3944740393230681990">उपोद्घात</translation>
-<translation id="3960700977367013758">स्क्रोल बार</translation>
 <translation id="3990502903496589789">उजवा काठ</translation>
 <translation id="3994749195054421561">स्तंभ <ph name="COLUMN_NAME" /> हा चढत्या क्रमाने लावला आहे.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{एक न वाचलेली सूचना}other{# न वाचलेल्या सूचना}}</translation>
-<translation id="4151657705144244502">ग्राफिक</translation>
-<translation id="4160057747563657758">टेलिफोन</translation>
-<translation id="4193965531860883258">प्रस्तावना</translation>
-<translation id="4202807286478387388">जंप करा</translation>
-<translation id="421884353938374759">रंग निवडक</translation>
-<translation id="4248100235867064564">मेनू बार</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महिन्यापूर्वी}other{# महिन्यांपूर्वी}}</translation>
 <translation id="4289300219472526559">बोलणे सुरू करा</translation>
-<translation id="4293574643247337246">पेज हेडर</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवले.</translation>
 <translation id="4306392492252714209">क्लिपबोर्डवरून काढून टाका.</translation>
-<translation id="4316910396681052118">सर्व अ‍ॅप्स</translation>
-<translation id="4384583879834880242">प्रश्नोत्तरे</translation>
-<translation id="4446524499724042288">शब्दावली संदर्भ</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4588090240171750605">उजवे स्क्रोल करा</translation>
-<translation id="4597532268155981612">फॉर्म</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा रेटिंग <ph name="RATING_SCORE" /></translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, ॲप शिफारस</translation>
-<translation id="4661075872484491155">tree</translation>
-<translation id="4668956016107839909">परिशिष्ट</translation>
-<translation id="4690510401873698237">शेल्फ तळाशी आहे</translation>
-<translation id="4698212723196775569">कोड</translation>
 <translation id="4724120544754982507">सूचना केंद्र, <ph name="UNREAD_NOTIFICATION_COUNT" /> न वाचलेल्या सूचना</translation>
-<translation id="4730374152663651037">वारंवार वापरलेले</translation>
-<translation id="4742539557769756338">कव्हर</translation>
-<translation id="4757246831282535685">टॅब पॅनल</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 महिना राहिला}other{# महिने राहिले}}</translation>
-<translation id="479989351350248267">शोध</translation>
 <translation id="4888938634149558681">कॉल करा</translation>
-<translation id="4912536737030637138">ग्रंथसूची नोंद</translation>
-<translation id="492244087561876220">टिप्पणी</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 सेकंद}other{# सेकंद}}</translation>
 <translation id="4971687151119236543">मीडिया मागील ट्रॅक</translation>
-<translation id="5022314756875057021">पंक्तींचा गट</translation>
-<translation id="5034860022980953847">प्रगती सूचक</translation>
 <translation id="5046499563572181734">येथे टॅप करा</translation>
 <translation id="5076340679995252485">&amp;पेस्ट करा</translation>
-<translation id="5093189678851173835">बोधवाक्य</translation>
-<translation id="512758898067543763">पंक्ती शीर्षलेख</translation>
-<translation id="5143125788380636750">उपसंहार</translation>
-<translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">पाठवता आले नाही</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
 <translation id="528468243742722775">बंद करा</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>
-<translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
-<translation id="5406322316791861025">आकृती</translation>
-<translation id="5453733299334684579">ट्री आयटम</translation>
 <translation id="5463830097259460683">इमोजी &amp;&amp; चिन्हे</translation>
-<translation id="546643433018805598">सबस्क्रिप्ट</translation>
-<translation id="5476505524087279545">चौकटीतली खूण काढा</translation>
-<translation id="547979256943495781">शेल्फ उजवीकडे आहे</translation>
-<translation id="5516424706154626233">तारीख निवडक</translation>
 <translation id="5528053674512161860">डेव्हलपर UI मॉड्युल (dev_ui) इंस्टॉल केले नसल्यामुळे पेज लोड करता आले नाही</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> सिस्टम</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5608153257855394627">हायलाइट</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
-<translation id="561939826962581046">time</translation>
-<translation id="5631759159893697722">अमूर्त</translation>
-<translation id="5643186887447432888">बटण</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
-<translation id="5675363643668471212">शेल्‍फ आयटम</translation>
-<translation id="5693537480074347398">सुपरस्क्रिप्ट</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 मिनिट}other{# मिनिटे}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{आज ॲक्टिव्ह होते}=1{एका दिवसापूर्वी ॲक्टिव्ह होते}other{# दिवसांपूर्वी ॲक्टिव्ह होते}}</translation>
-<translation id="576709008726043716">परिचय</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 दिवस आणि }other{# दिवस आणि }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">इमेज.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{१व मध्ये}other{#व मध्ये}}</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 सेकंद शिल्लक}other{# सेकंद शिल्लक}}</translation>
-<translation id="591047860372322273">सर्च बॉक्स</translation>
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 तास}other{# तास}}</translation>
-<translation id="5987525920412732405">स्पिन बटण</translation>
-<translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> पैकी <ph name="SELECTED_PAGE" /> पेज</translation>
-<translation id="6022924867608035986">शोध बॉक्स मजकूर साफ करा</translation>
-<translation id="6023896073578205740">सूची बॉक्स</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6117103120090651229">मध्यभागी असलेले बटण</translation>
-<translation id="6119846243427417423">सक्रिय करा</translation>
 <translation id="6129953537138746214">जागा</translation>
-<translation id="6134259848159370930">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
-<translation id="6150588977291308318">ग्रंथसूची</translation>
-<translation id="6156262341071374681">सर्व अ‍ॅप्सवर विस्तार करा</translation>
-<translation id="6164829606128959761">मीटर</translation>
-<translation id="6165508094623778733">अधिक जाणून घ्या</translation>
-<translation id="6166809985690652833">अंतिम शब्द</translation>
-<translation id="6166852626429024716">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा...</translation>
-<translation id="6213469881011901533">शब्दावली</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> निवडली.</translation>
 <translation id="6264365405983206840">&amp;सर्व निवडा</translation>
-<translation id="6281763101136022427">url</translation>
-<translation id="6351032674660237738">ॲप सूचना</translation>
 <translation id="6364916375976753737">डावीकडे स्क्रोल करा</translation>
 <translation id="6394627529324717982">स्वल्पविराम</translation>
 <translation id="6397363302884558537">बोलणे थांबवा</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 सेकंदापूर्वी}other{# सेकंदांपूर्वी}}</translation>
-<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6430678249303439055">या अ‍ॅपच्या सर्व सूचना ब्‍लॉक करा</translation>
-<translation id="6453774872122745852">श्रेयनिर्देश</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 सेकंदापूर्वी}other{# सेकंदांपूर्वी}}</translation>
-<translation id="648732519525291180">वेळ निवडक</translation>
 <translation id="6503257047630241175">RTF आशय</translation>
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="654149438358937226">सर्व सूचना ब्लॉक करा</translation>
-<translation id="6567071839949112727">पूर्वजवर क्लिक करा</translation>
-<translation id="6578407462441924264">नाव नसलेले</translation>
 <translation id="6612467943526193239">कॅलिब्रेशनमधून बाहेर पडण्‍यासाठी Esc दाबा.</translation>
 <translation id="6620110761915583480">फाइल सेव्ह करा</translation>
-<translation id="663493177488814956">फीड</translation>
-<translation id="6637586476836377253">लॉग</translation>
-<translation id="6692633176391053278">stepper</translation>
-<translation id="6696580792574109116">मंथ पिकर</translation>
 <translation id="6699343763173986273">मीडिया पुढील ट्रॅक</translation>
-<translation id="6710213216561001401">मागील</translation>
-<translation id="6755330956360078551">टूलटिप</translation>
-<translation id="6786750046913594791">फोल्डर बंद करा</translation>
 <translation id="6808150112686056157">मीडिया थांबवा</translation>
-<translation id="6820615603175220800">ग्रंथसूची संदर्भ</translation>
 <translation id="6845383723252244143">फोल्डर निवडा</translation>
-<translation id="6845533974506654842">दाबा</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 तास शिल्लक}other{# तास शिल्लक}}</translation>
-<translation id="6885760532393684712">डिरेक्टरी</translation>
 <translation id="688711909580084195">शीर्षकरहित वेबपेज</translation>
-<translation id="689129560213475294">बोधचिन्ह</translation>
 <translation id="6902419395050653510">HTML आशय.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 वर्ष राहिले}other{# वर्षे राहिली}}</translation>
-<translation id="6934078000481955284">ब्लॉककोट</translation>
-<translation id="693476918119313863">हेडर</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6974053822202609517">उजवीकडून डावीकडे</translation>
-<translation id="6981594929165378967">घालणे</translation>
-<translation id="7034405885550056553">सूचना</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">सर्वाधिक शक्यता</translation>
-<translation id="7139483182332611405">प्रस्तावना</translation>
 <translation id="7170202025028120564">तुमच्या अ‍ॅप्लिकेशनची डिस्प्ले सेटिंग्ज ते पुढील वेळी रीस्टार्ट केल्यावर लागू होतील.</translation>
-<translation id="7198226213493847604">मेनू पॉप अप बटण</translation>
-<translation id="7214187073215825913">आशयाची माहिती</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238347055216017155">महत्त्व</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 मिनिट शिल्लक}other{# मिनिटे शिल्लक}}</translation>
-<translation id="727747134524199931">स्तंभ शीर्षलेख</translation>
-<translation id="7319740667687257810">लाँचर, आंशिक दृश्य</translation>
-<translation id="7353453495576941748">श्रेय</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7405738980073107433">अंतिम नोंदी</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 मिनिट शिल्लक}other{# मिनिटे शिल्लक}}</translation>
-<translation id="7430878839542012341">तुमच्या इतिहासातून हा शोध हटवायचा आहे का?</translation>
 <translation id="7437971918971306061">स्तंभ <ph name="COLUMN_NAME" /> हा क्रमाने लावला नाही.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
-<translation id="7491962110804786152">टॅब</translation>
 <translation id="7507604095951736240">इमोजी</translation>
-<translation id="7529102961911894712">मागील लिंक</translation>
 <translation id="7620655452534002301">काढला.</translation>
-<translation id="7647456547678091388">टीप</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
-<translation id="7661956066982048809">ग्राफिक्स दस्तऐवज</translation>
-<translation id="7681220483256441252">अनुक्रमणिका</translation>
-<translation id="7740050170769002709">HTML सामुग्री</translation>
 <translation id="7781829728241885113">काल</translation>
-<translation id="7802800022689234070">त्रिकोण प्रकटन</translation>
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
-<translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, पंक्ती <ph name="ROW_NUMBER" />, स्तंभ <ph name="COLUMN_NUMBER" /> वर हलवले.</translation>
 <translation id="7879499977785298635">ब्लॉक करू नका</translation>
-<translation id="7891486169920085145">विभाजक</translation>
 <translation id="7907591526440419938">फाइल उघडा</translation>
-<translation id="7952747673138230804">Chrome OS नवीन आशय एक्सप्लोर करण्यासाठी सूचना दाखवते. तुम्ही वापर डेटा शेअर करणे निवडले असेल तरच गुणवत्तेत सुधारणा करण्यासाठी आकडेवारी पाठवते. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">कमांड</translation>
-<translation id="8034303206267677282">महत्त्वाचा</translation>
-<translation id="8053789581856978548">मजकूर फील्ड दर्शवा</translation>
-<translation id="8057695513531652401">सूचना</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{एकापेक्षा जास्त न वाचलेली सूचना}other{# पेक्षा जास्त न वाचलेल्या सूचना}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{१मि मध्ये}other{#मि मध्ये}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> वरील नंबर</translation>
-<translation id="8105797009065549151">टीप संदर्भ</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 तासापूर्वी}other{# तासांपूर्वी}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 सेकंद शिल्लक}other{# सेकंद शिल्लक}}</translation>
 <translation id="8134065097954893699">हे पेज रीलोड करत आहे</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, ऑटोकंप्लीट</translation>
 <translation id="815598010540052116">खाली स्क्रोल करा</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8208673686607688524">स्थानिक तारीख आणि वेळ पिकर</translation>
 <translation id="8210608804940886430">पृष्ठ खाली</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">टॅब</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, ॲप</translation>
 <translation id="8259556432390118667">हेक्स रंग मूल्य</translation>
 <translation id="8328145009876646418">डावे काठ</translation>
 <translation id="8331626408530291785">वर स्क्रोल करा</translation>
-<translation id="8346634859695247203">विभाग</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 वर्ष}other{# वर्षे}}</translation>
-<translation id="838869780401515933">तपासा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8394908167088220973">मीडिया प्ले करा/विराम द्या</translation>
-<translation id="8415319359811155763">भाग</translation>
-<translation id="8433900881053900389">टूलबार</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1वर्ष}other{#वर्षे}}</translation>
-<translation id="8461852803063341183">रेडिओ बटण</translation>
-<translation id="8474886197722836894">अर्पणपत्रिका</translation>
-<translation id="8531739829932800271">शुद्धिपत्रक</translation>
-<translation id="8550857728288566671">ग्राफिक्स चिन्ह</translation>
-<translation id="8583702881314752957">परिभाषा सूची</translation>
-<translation id="8597182159515967513">शीर्षलेख</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> फाइल (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="860475260694818407">अनुक्रमणिका</translation>
-<translation id="862370744433916922">उपशीर्षक</translation>
-<translation id="8649597172973390955">शेल्फ नेहमी दाखवले जात आहे</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
-<translation id="8685326675965865247">तुमच्या डिव्हाइस, अ‍ॅप्स आणि वेबवर शोधा. तुमची अ‍ॅप्स नेव्हिगेट करण्यासाठी ॲरो की वापरा.</translation>
-<translation id="8711688047404765493">आउटपुट</translation>
 <translation id="8725488761726303204">+आणखी <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ता}other{#ता}}</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
-<translation id="8806053966018712535"><ph name="FOLDER_NAME" /> फोल्डर</translation>
-<translation id="8808573423886751634">प्रकरण</translation>
 <translation id="883911313571074303">इमेजवर भाष्य करा</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
-<translation id="8851136666856101339">मुख्य</translation>
-<translation id="8861621546968757188">डायलॉग पॉप अप बटण</translation>
 <translation id="8867568208303837180">पाठवित आहे...</translation>
 <translation id="8876215549894133151">स्वरूप:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" />इंटरनेटशी कनेक्ट केलेली असल्याची खात्री करा.</translation>
-<translation id="9002566407876343676">उघडा</translation>
-<translation id="901834265349196618">ईमेल</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 से}other{# से}}</translation>
-<translation id="9048119486235211610">नेव्हिगेशन</translation>
 <translation id="9059834730836941392">सूचना कोलॅप्स</translation>
-<translation id="9062295712474918030">दस्तऐवज</translation>
-<translation id="9108370397979208512">गणित</translation>
-<translation id="9138385573473225930">सूचना</translation>
-<translation id="9161053988251441839">सुचवलेले अ‍ॅप्स</translation>
-<translation id="9168329111483466115">तळटीप</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
-<translation id="9178475906033259337"><ph name="QUERY" /> साठी एक परिणाम दाखवत आहे</translation>
 <translation id="932327136139879170">होम</translation>
 <translation id="944069440740578670">न वाचलेल्या सूचना</translation>
-<translation id="966787709310836684">मेनू</translation>
-<translation id="974545358917229949"><ph name="QUERY" /> साठी <ph name="RESULT_COUNT" /> परिणाम दाखवत आहे</translation>
 </translationbundle>

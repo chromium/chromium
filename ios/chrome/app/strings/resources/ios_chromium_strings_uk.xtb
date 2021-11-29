@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="102360288709523007">Допоможіть покращити Chromium, надсилаючи в Google статистику використання та звіти про аварійне завершення роботи.</translation>
+<translation id="1047130070405668746">Виберіть Chromium</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1257458525759135959">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chromium додавати фотографії</translation>
 <translation id="1289216811211435351">Переходьте на Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Виберіть Chromium</translation>
 <translation id="2006345422933397527">Веб-переглядачу Chromium не вдалося перевірити наявність оновлень. Переконайтеся, що є інтернет-з'єднання.</translation>
 <translation id="2054703085270098503">Chromium дбає про безпеку ваших даних</translation>
 <translation id="2168108852149185974">Через деякі доповнення Chromium аварійно завершує роботу. Видаліть:</translation>

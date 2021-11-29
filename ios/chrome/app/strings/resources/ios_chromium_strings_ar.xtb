@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="102360288709523007">‏ساعد في تحسين Chromium بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
+<translation id="1047130070405668746">‏اختيار Chromium</translation>
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1257458525759135959">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chromium بأن يضيف إلى صورك.</translation>
 <translation id="1289216811211435351">‏التبديل إلى Chromium</translation>
@@ -17,6 +18,7 @@
 <translation id="1838412507805038478">‏لقد تحقق Chromium من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
 <translation id="1843424232666537147">‏يتمتع Chromium بميزات تساعدك على إدارة بياناتك على الإنترنت ومدى السرعة التي بمقدورك تحميل صفحات الويب من خلالها.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">‏4- اختيار Chromium</translation>
 <translation id="2006345422933397527">‏تعذّر على Chromium البحث عن تحديثات. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2054703085270098503">‏الحفاظ على أمانك باستخدام Chromium</translation>
 <translation id="2168108852149185974">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبيتها:</translation>

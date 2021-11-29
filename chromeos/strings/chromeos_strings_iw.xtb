@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
+<translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
@@ -118,6 +119,7 @@
 <translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
+<translation id="2859243502336719778">עדכון קריטי</translation>
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
@@ -152,6 +154,7 @@
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> בתהליך עדכון</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
@@ -176,6 +179,7 @@
 <translation id="3858860766373142691">שם</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
+<translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
 <translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
@@ -208,6 +212,7 @@
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4378551569595875038">התחברות...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">עדכון של הציוד ההיקפי</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> מושבת</translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
@@ -215,6 +220,7 @@
 <translation id="445059817448385655">סיסמה ישנה</translation>
 <translation id="4453205916657964690">מסכה של רשת משנה</translation>
 <translation id="4454245904991689773">מיקום שמירת הסריקה</translation>
+<translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
 <translation id="4511264077854731334">פורטל</translation>
@@ -237,6 +243,7 @@
 <translation id="469379815867856270">עוצמת אות</translation>
 <translation id="4707579418881001319">‏L2TP/‏IPSec + אישור משתמש</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
+<translation id="473775607612524610">עדכון</translation>
 <translation id="475869545581454722">‏הסיסמה של Chrome OS עודכנה</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4794140124556169553">‏הרצת בדיקה של יחידת עיבוד מרכזית (CPU) עלולה להשפיע על ביצועי המערכת</translation>
@@ -258,6 +265,7 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
+<translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="4987769320337599931">חומת אש</translation>
@@ -399,6 +407,7 @@
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
+<translation id="7068619307603204412">הכנת המכשיר</translation>
 <translation id="708426984172631313">הופסקה</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
@@ -412,6 +421,7 @@
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
+<translation id="7240035910874241640">כל הציוד ההיקפי עדכני</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">אוספים של טפטים</translation>
@@ -453,6 +463,7 @@
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
 <translation id="7784116172884276937">‏לא הוגדרו שרתי DNS</translation>
+<translation id="7786540085520432425">אפשר למזער את החלון במהלך העדכון, אבל אין לנתק את המכשיר. הפעולה עשויה להימשך מספר דקות ויכול להיות שהמכשיר לא יפעל במהלך העדכון.</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7835501727204647447">‏התקנה של CloudReady</translation>
@@ -486,6 +497,7 @@
 <translation id="8217675307824400706">התחברות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
+<translation id="8281886186245836920">דילוג</translation>
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>
 <translation id="8294431847097064396">מקור</translation>
@@ -510,6 +522,7 @@
 <translation id="8498220429738806196">מוני תנועה</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
+<translation id="8520963233738002436">ה-<ph name="DEVICE_NAME" /> מעודכן</translation>
 <translation id="8521021929829989041">שימוש כמכשיר אישי</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
@@ -549,6 +562,7 @@
 <translation id="8970109610781093811">הפעל שוב</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}many{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">בתהליך התקנה – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">תדר</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>

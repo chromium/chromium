@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Magbukas ng bagong window sa Incognito mode</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pagkatapos ay <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="1652741121070700329">Lumipat sa simula ng nakaraang salita</translation>
 <translation id="1679841710523778799">Taasan ang brightness</translation>
 <translation id="168356808214100546">Pindutin nang matagal ang <ph name="ALT" />, i-tap ang <ph name="TAB" /> hanggang sa mapunta ka sa window na gusto mong buksan, pagkatapos ay bitawan ito.</translation>
@@ -89,7 +90,6 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 hanggang 8</translation>
 <translation id="3837047332182291558">Gawing mas maliwanag ang keyboard (para lang sa mga keyboard na may backlight)</translation>
 <translation id="3949671998904569433">kuwit</translation>
-<translation id="3976707995992061296">I-toggle kung itatalaga ang aktibong window sa lahat ng desk</translation>
 <translation id="3976863468609830880">I-click ang huling icon sa iyong shelf</translation>
 <translation id="3994783594793697310">I-reset ang pagpapakita ng antas ng pag-zoom</translation>
 <translation id="4026843240379844265">Ilipat ang aktibong window sa pagitan ng mga display</translation>
@@ -130,6 +130,7 @@
 <translation id="5563050856984839829">Pindutin ang <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> at mag-click ng link</translation>
 <translation id="561814908794220892">Buksan ang webpage sa isang bagong tab</translation>
 <translation id="5620219513321115856">Ilipat ang aktibong window sa desk sa kanan</translation>
+<translation id="5699366815052349604">Magtalaga ng aktibong window sa lahat ng desk</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Buksan ang link sa tab</translation>
 <translation id="5757474750054631686">Padilimin ang keyboard (para lang sa mga keyboard na may backlight)</translation>
@@ -150,7 +151,6 @@
 <translation id="6340769215862220182">Ipakita ang Pag-zoom in</translation>
 <translation id="634687982629734605">Nililipat-lipat ang focus sa: Lugar ng status (kung saan lumalabas ang iyong larawan sa account), Launcher, Address bar, Bookmarks bar (kung nakikita), Webpage na nakabukas, at Bar ng mga download (kung nakikita). Kung ipinapakita ang isang nafo-focus na dialog, ilipat doon ang focus sa halip.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
-<translation id="6372960562287888784">I-activate ang ika-1 hanggang ika-8 desk.</translation>
 <translation id="6395172954772765143">Piliin ang text hanggang sa dulo ng linya</translation>
 <translation id="6425378783626925378">I-click ang icon 1-8 sa iyong shelf</translation>
 <translation id="6435207348963613811">I-highlight ang nakaraang item sa iyong shelf</translation>
