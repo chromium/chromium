@@ -7,6 +7,11 @@ import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
 viz_test("viz_unittests") {
+  configs = []
+  if (is_chromeos_lacros && is_chromeos_device) {
+    configs += [ "//build/lacros:optional_shared_libgcc" ]
+  }
+
   use_xvfb = use_xvfb_in_this_config
 
   sources = [ "test/run_all_unittests.cc" ]
