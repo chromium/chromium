@@ -3270,6 +3270,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/test/enrollment_helper_mixin.h",
         "../browser/ash/login/test/enrollment_ui_mixin.cc",
         "../browser/ash/login/test/enrollment_ui_mixin.h",
+        "../browser/ash/login/test/fake_arc_tos_mixin.cc",
+        "../browser/ash/login/test/fake_arc_tos_mixin.h",
         "../browser/ash/login/test/fake_eula_mixin.cc",
         "../browser/ash/login/test/fake_eula_mixin.h",
         "../browser/ash/login/test/guest_session_mixin.cc",
