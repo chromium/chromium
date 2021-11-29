@@ -259,10 +259,12 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kRequiredEventTypesKey, &list));
-    for (size_t i = 0; i < list->GetList().size(); ++i) {
-      std::string event_type;
-      if (list->GetString(i, &event_type))
-        required_event_types.insert(TtsEventTypeFromString(event_type.c_str()));
+    for (const base::Value& i : list->GetList()) {
+      const std::string* event_type = i.GetIfString();
+      if (event_type) {
+        required_event_types.insert(
+            TtsEventTypeFromString(event_type->c_str()));
+      }
     }
   }
 
@@ -271,10 +273,10 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kDesiredEventTypesKey, &list));
-    for (size_t i = 0; i < list->GetList().size(); ++i) {
-      std::string event_type;
-      if (list->GetString(i, &event_type))
-        desired_event_types.insert(TtsEventTypeFromString(event_type.c_str()));
+    for (const base::Value& i : list->GetList()) {
+      const std::string* event_type = i.GetIfString();
+      if (event_type)
+        desired_event_types.insert(TtsEventTypeFromString(event_type->c_str()));
     }
   }
 
