@@ -201,6 +201,16 @@ const base::Feature kBorealisBigGl{"BorealisBigGl",
 const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Force the client to be on its beta version. If not set, the client will be on
+// its stable version.
+const base::Feature kBorealisForceBetaClient{"BorealisForceBetaClient",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Prevent Borealis' client from exercising ChromeOS integrations, in this mode
+// it functions more like the linux client.
+const base::Feature kBorealisLinuxMode{"BorealisLinuxMode",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable TermsOfServiceURL policy for managed users.
 // https://crbug.com/1221342
 const base::Feature kManagedTermsOfService{"ManagedTermsOfService",

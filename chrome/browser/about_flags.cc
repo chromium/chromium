@@ -2522,6 +2522,9 @@ const FeatureEntry::FeatureVariation kPaintPreviewStartupVariations[] = {
 constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDiskManagementInternalName[] =
     "borealis-disk-management";
+constexpr char kBorealisForceBetaClientInternalName[] =
+    "borealis-force-beta-client";
+constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
@@ -7366,6 +7369,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisDiskManagementName,
      flag_descriptions::kBorealisDiskManagementDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisDiskManagement)},
+    {kBorealisForceBetaClientInternalName,
+     flag_descriptions::kBorealisForceBetaClientName,
+     flag_descriptions::kBorealisForceBetaClientDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisForceBetaClient)},
+    {kBorealisLinuxModeInternalName, flag_descriptions::kBorealisLinuxModeName,
+     flag_descriptions::kBorealisLinuxModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisLinuxMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,
@@ -7738,6 +7748,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisForceBetaClientInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisLinuxModeInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

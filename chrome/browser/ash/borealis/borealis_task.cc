@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -247,6 +249,63 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
     return;
   }
   context->set_container_name(container.value());
+  Complete(BorealisStartupResult::kSuccess, "");
+}
+
+namespace {
+
+// Helper for converting |feature| flags into name=bool args for the given
+// |out_command|.
+void PushFlag(const base::Feature& feature,
+              std::vector<std::string>& out_command) {
+  out_command.emplace_back(
+      std::string(feature.name) + "=" +
+      (base::FeatureList::IsEnabled(feature) ? "true" : "false"));
+}
+
+// Runs the update_flags script on the vm with the given |vm_name| and
+// |owner_id|, where the |flags| are <name, value> pairs. Returns "" on success,
+// otherwise returns an error message.
+//
+// TODO(b/207792847): avoid vsh and add a higher-level command to garcon.
+std::string SendFlagsToVm(const std::string& owner_id,
+                          const std::string& vm_name) {
+  std::vector<std::string> command{"/usr/bin/vsh", "--owner_id=" + owner_id,
+                                   "--vm_name=" + vm_name, "--",
+                                   "update_chrome_flags"};
+  PushFlag(chromeos::features::kBorealisLinuxMode, command);
+  PushFlag(chromeos::features::kBorealisForceBetaClient, command);
+
+  std::string output;
+  if (!base::GetAppOutput(command, &output)) {
+    return output;
+  }
+  return "";
+}
+
+}  // namespace
+
+UpdateChromeFlags::UpdateChromeFlags(Profile* profile)
+    : BorealisTask("UpdateChromeFlags"), profile_(profile) {}
+UpdateChromeFlags::~UpdateChromeFlags() = default;
+
+void UpdateChromeFlags::RunInternal(BorealisContext* context) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&SendFlagsToVm,
+                     ash::ProfileHelper::GetUserIdHashFromProfile(profile_),
+                     context->vm_name()),
+      base::BindOnce(&UpdateChromeFlags::OnFlagsUpdated,
+                     weak_factory_.GetWeakPtr(), context));
+}
+
+void UpdateChromeFlags::OnFlagsUpdated(BorealisContext* context,
+                                       std::string error) {
+  // This step should not block startup, so just log the error and declare
+  // success.
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to update chrome's flags in Borealis: " << error;
+  }
   Complete(BorealisStartupResult::kSuccess, "");
 }
 

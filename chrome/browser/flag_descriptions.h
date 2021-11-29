@@ -262,6 +262,12 @@ extern const char kBorealisBigGlDescription[];
 extern const char kBorealisDiskManagementName[];
 extern const char kBorealisDiskManagementDescription[];
 
+extern const char kBorealisForceBetaClientName[];
+extern const char kBorealisForceBetaClientDescription[];
+
+extern const char kBorealisLinuxModeName[];
+extern const char kBorealisLinuxModeDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 

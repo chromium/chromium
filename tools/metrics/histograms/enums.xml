@@ -50542,6 +50542,7 @@ from previous Chrome versions.
       label="OverrideUnsupportedPageLanguageForHrefTranslate:disabled"/>
   <int value="-790036192" label="overscroll-start-threshold"/>
   <int value="-787969387" label="HTTPSServerPreviewsUsingURLLoader:enabled"/>
+  <int value="-787885873" label="BorealisForceBetaClient:disabled"/>
   <int value="-787876637" label="HomeLauncherGestures:enabled"/>
   <int value="-787426248" label="ChromeHomeSurvey:disabled"/>
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
@@ -51893,6 +51894,7 @@ from previous Chrome versions.
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
   <int value="268794953" label="MessagesForAndroidSafetyTip:disabled"/>
+  <int value="269631838" label="BorealisLinuxMode:disabled"/>
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
@@ -52859,6 +52861,7 @@ from previous Chrome versions.
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
   <int value="989062160" label="ModuleScriptsImportMetaUrl:enabled"/>
+  <int value="993486662" label="BorealisForceBetaClient:enabled"/>
   <int value="994317727"
       label="AutofillSaveCreditCardUsesStrikeSystem:disabled"/>
   <int value="995112715" label="AutoDisableAccessibility:disabled"/>
@@ -54274,6 +54277,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDemo:enabled"/>
   <int value="2014331873" label="NTPDownloadSuggestions:disabled"/>
   <int value="2014629801" label="view-passwords:disabled"/>
+  <int value="2015300711" label="BorealisLinuxMode:enabled"/>
   <int value="2015335629" label="shelf-hover-previews"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2018661699"

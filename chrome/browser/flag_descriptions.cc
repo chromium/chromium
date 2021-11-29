@@ -458,6 +458,14 @@ const char kBorealisDiskManagementName[] = "Borealis Disk management";
 const char kBorealisDiskManagementDescription[] =
     "Enable experimental disk management settings.";
 
+const char kBorealisForceBetaClientName[] = "Borealis Force Beta Client";
+const char kBorealisForceBetaClientDescription[] =
+    "Force the client to run its beta version.";
+
+const char kBorealisLinuxModeName[] = "Borealis Linux Mode";
+const char kBorealisLinuxModeDescription[] =
+    "Do not run ChromeOS-specific code in the client.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =
