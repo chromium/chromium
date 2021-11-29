@@ -157,6 +157,10 @@ const char kFlashDeprecationLearnMoreURL[] =
 const char kGoogleAccountActivityControlsURL[] =
     "https://myaccount.google.com/activitycontrols/search";
 
+const char kGoogleAccountActivityControlsURLInPrivacyReview[] =
+    "https://myaccount.google.com/activitycontrols/"
+    "search&utm_source=chrome&utm_medium=privacy-guide";
+
 const char kGoogleAccountLanguagesURL[] =
     "https://myaccount.google.com/language";
 

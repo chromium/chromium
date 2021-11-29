@@ -160,6 +160,10 @@ extern const char kGoogleAccountLanguagesURL[];
 // URL of the 'Activity controls' section of the privacy settings page.
 extern const char kGoogleAccountActivityControlsURL[];
 
+// URL of the 'Activity controls' section of the privacy settings page, with
+// privacy review parameters and a link for users to manage data.
+extern const char kGoogleAccountActivityControlsURLInPrivacyReview[];
+
 // URL of the Google Account.
 extern const char kGoogleAccountURL[];
 

@@ -82,7 +82,7 @@ export class PrivacyReviewCompletionFragmentElement extends
 
   private onWaaClick_() {
     OpenWindowProxyImpl.getInstance().openURL(
-        loadTimeData.getString('activityControlsUrl'));
+        loadTimeData.getString('activityControlsUrlInPrivacyReview'));
   }
 }
 

@@ -313,6 +313,9 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
                                 base::ASCIIToUTF16(sync_dashboard_url)));
   html_source->AddString("activityControlsUrl",
                          chrome::kGoogleAccountActivityControlsURL);
+  html_source->AddString(
+      "activityControlsUrlInPrivacyReview",
+      chrome::kGoogleAccountActivityControlsURLInPrivacyReview);
   html_source->AddString("syncDashboardUrl", sync_dashboard_url);
   html_source->AddString(
       "passphraseExplanationText",
