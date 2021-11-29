@@ -2327,7 +2327,7 @@
     },
     {
       name: "UserAgentClientHintFullVersionList",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "UserAgentReduction",

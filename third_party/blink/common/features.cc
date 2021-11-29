@@ -145,7 +145,7 @@ const base::Feature kUserAgentClientHint{"UserAgentClientHint",
 
 // Enable `sec-ch-ua-full-version-list` client hint.
 const base::Feature kUserAgentClientHintFullVersionList{
-    "UserAgentClientHintFullVersionList", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UserAgentClientHintFullVersionList", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Handle prefers-color-scheme user preference media feature via client hints.
 const base::Feature kPrefersColorSchemeClientHintHeader{
