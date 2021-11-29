@@ -42,6 +42,7 @@ class ConsolidatedConsentScreen
    public:
     // Called when the user accepts terms of service.
     virtual void OnConsolidatedConsentAccept() = 0;
+    virtual void OnConsolidatedConsentScreenDestroyed() = 0;
   };
 
   using TView = ConsolidatedConsentScreenView;

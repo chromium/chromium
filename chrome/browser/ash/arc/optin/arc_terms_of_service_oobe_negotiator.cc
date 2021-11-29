@@ -96,4 +96,9 @@ void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentAccept() {
   HandleTermsAccepted(true);
 }
 
+void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentScreenDestroyed() {
+  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  HandleTermsAccepted(false);
+}
+
 }  // namespace arc

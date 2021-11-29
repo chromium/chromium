@@ -92,6 +92,9 @@ ConsolidatedConsentScreen::~ConsolidatedConsentScreen() {
   if (view_) {
     view_->Unbind();
   }
+
+  for (auto& observer : observer_list_)
+    observer.OnConsolidatedConsentScreenDestroyed();
 }
 
 void ConsolidatedConsentScreen::OnViewDestroyed(
