@@ -609,11 +609,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                         ? "InProductHelp.OutsideTouch"
                         : "InProductHelp.InsideTouch");
 
-        // Pass down the touch event to child views. If the content view has clickable children,
-        // make sure we give them the opportunity to trigger.
-        boolean touchInterceptedByChild = !touchInterceptedByClient
-                && mPopupWindow.getContentView().dispatchTouchEvent(event);
-        if (!touchInterceptedByChild && mDismissOnTouchInteraction) dismiss();
+        if (mDismissOnTouchInteraction) {
+            // Pass down the touch event to child views. If the content view has clickable children,
+            // make sure we give them the opportunity to trigger.
+            // TODO(crbug.com/1273021): Revisit handling touches on content when
+            // mDismissOnTouchInteraction is true.
+            boolean touchInterceptedByChild = !touchInterceptedByClient
+                    && mPopupWindow.getContentView().dispatchTouchEvent(event);
+            if (!touchInterceptedByChild) dismiss();
+        }
 
         return touchInterceptedByClient;
     }
