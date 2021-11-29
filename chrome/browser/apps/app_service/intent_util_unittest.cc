@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/arc/intent_helper/intent_constants.h"
@@ -679,8 +680,7 @@ class IntentUtilsFileTest : public ::testing::Test {
 
   // FileUtils explicitly relies on ChromeOS Files.app for files manipulation.
   const url::Origin GetFileManagerOrigin() {
-    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-        file_manager::kFileManagerAppId));
+    return url::Origin::Create(file_manager::util::GetFileManagerURL());
   }
 
   // For a given |root| converts the given virtual |path| to a GURL.
