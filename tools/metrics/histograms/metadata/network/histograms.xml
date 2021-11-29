@@ -271,6 +271,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.Policy.EuiccStatusUploadResult"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the result of an attempt to upload euicc status to DM server. This
+    metric provides the insights on how often ICCID/SM-DP+ get uploaded to the
+    DM server and whether the upload operation is successful or not.
+
+    Emitted once the euicc status upload operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.Policy.ResetEuicc.Duration" units="ms"
     expires_after="2022-09-01">
   <owner>azeemarshad@chromium.org</owner>

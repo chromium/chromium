@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -236,6 +237,8 @@ void EuiccStatusUploader::UploadStatus(base::Value status) {
 void EuiccStatusUploader::OnStatusUploaded(bool success) {
   currently_uploading_ = false;
   retry_entry_.InformOfRequest(/*succeeded=*/success);
+  base::UmaHistogramBoolean(
+      "Network.Cellular.ESim.Policy.EuiccStatusUploadResult", success);
 
   if (!success) {
     LOG(ERROR) << "Failed to upload EUICC status.";
