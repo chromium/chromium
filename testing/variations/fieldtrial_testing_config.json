@@ -1062,116 +1062,24 @@
             ],
             "experiments": [
                 {
-                    "name": "CombinedDevCanary_2021_11_05",
+                    "name": "AutofillUseAlternativeStateNameMap_2021-08-10",
                     "enable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers"
+                        "AutofillUseAlternativeStateNameMap"
                     ],
                     "disable_features": [
                         "AutofillEnableProfileDeduplication",
                         "AutofillEnableSupportForParsingWithSharedLabels",
                         "AutofillLabelAffixRemoval",
                         "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
+                        "AutofillShadowDOM"
                     ]
                 },
                 {
-                    "name": "BetaAndStableFeatures_2021-11-05",
-                    "enable_features": [
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers"
-                    ]
-                },
-                {
-                    "name": "Control_2021-11-05",
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillEnableProfileDeduplication_2021-11-05",
-                    "enable_features": [
-                        "AutofillEnableProfileDeduplication"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillEnableSupportForParsingWithSharedLabels_2021-11-05",
-                    "enable_features": [
-                        "AutofillEnableSupportForParsingWithSharedLabels"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillRetrieveOverallPredictionsFromCache_2021-11-05",
-                    "enable_features": [
-                        "AutofillRetrieveOverallPredictionsFromCache"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillLabelAffixRemoval_2021-11-05",
-                    "enable_features": [
-                        "AutofillLabelAffixRemoval"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillShadowDOM_2021-11-05",
+                    "name": "AutofillShadowDOM_2021-08-10",
                     "enable_features": [
                         "AutofillShadowDOM"
                     ],
                     "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
                         "AutofillEnableProfileDeduplication",
                         "AutofillEnableSupportForParsingWithSharedLabels",
                         "AutofillLabelAffixRemoval",
@@ -1180,13 +1088,11 @@
                     ]
                 },
                 {
-                    "name": "StableFeatures_2021-11-05",
+                    "name": "StableFeatures_2021-08-10",
                     "enable_features": [
                         "AutofillUseAlternativeStateNameMap"
                     ],
                     "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
                         "AutofillEnableProfileDeduplication",
                         "AutofillEnableSupportForParsingWithSharedLabels",
                         "AutofillLabelAffixRemoval",
