@@ -54,20 +54,12 @@ class WebLaunchFilesHelper
   static WebLaunchFilesHelper* GetForWebContents(
       content::WebContents* web_contents);
 
-  // `launch_dir` is only for system web apps, it gets prepended to
-  // `launch_entries_` and sent to the JavaScript side.
-  static void SetLaunchDirectoryAndLaunchPaths(
-      content::WebContents* web_contents,
-      const GURL& app_scope,
-      bool await_navigation,
-      GURL launch_url,
-      base::FilePath launch_dir,
-      std::vector<base::FilePath> launch_paths);
-
   // Enqueues a LaunchParams into the `web_contents` with the provided launch_*
   // params. Only enqueues into pages inside `app_scope`. Will enqueue
   // immediately unless `await_navigation` is set in which case it waits for the
   // next DidFinishNavigation event.
+  // Only system web apps may provide a |launch_dir|.
+  // TODO(crbug.com/1250225): DCHECK that only system web apps use launch_dir.
   static void EnqueueLaunchParams(content::WebContents* web_contents,
                                   const GURL& app_scope,
                                   bool await_navigation,

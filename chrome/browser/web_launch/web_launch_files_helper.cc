@@ -117,22 +117,6 @@ WebLaunchFilesHelper* WebLaunchFilesHelper::GetForWebContents(
 }
 
 // static
-void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-    content::WebContents* web_contents,
-    const GURL& app_scope,
-    bool await_navigation,
-    GURL launch_url,
-    base::FilePath launch_dir,
-    std::vector<base::FilePath> launch_paths) {
-  if (launch_dir.empty() && launch_paths.empty())
-    return;
-
-  EnqueueLaunchParams(web_contents, app_scope, await_navigation,
-                      std::move(launch_url), std::move(launch_dir),
-                      std::move(launch_paths));
-}
-
-// static
 void WebLaunchFilesHelper::EnqueueLaunchParams(
     content::WebContents* web_contents,
     const GURL& app_scope,

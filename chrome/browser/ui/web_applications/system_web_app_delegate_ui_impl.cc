@@ -105,12 +105,16 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
     GURL app_scope = provider->registrar().GetAppScope(params.app_id);
-    web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-        web_contents, app_scope,
-        /*await_navigation=*/navigating,
-        /*launch_url=*/web_contents->GetURL(),
-        GetLaunchDirectory(ShouldIncludeLaunchDirectory(), params.launch_files),
-        params.launch_files);
+    base::FilePath launch_dir =
+        GetLaunchDirectory(ShouldIncludeLaunchDirectory(), params.launch_files);
+
+    if (!launch_dir.empty() || !params.launch_files.empty()) {
+      web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
+          web_contents, app_scope,
+          /*await_navigation=*/navigating,
+          /*launch_url=*/web_contents->GetURL(), launch_dir,
+          params.launch_files);
+    }
   }
 
   return browser;

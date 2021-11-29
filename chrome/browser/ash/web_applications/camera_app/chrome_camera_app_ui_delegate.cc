@@ -172,19 +172,15 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   content::WebContents* web_contents = web_ui_->GetWebContents();
 
-  // Since launch paths does not accept empty vector, we put a placeholder file
-  // path in it.
-  base::FilePath empty_file_path("/dev/null");
-
   auto my_files_folder_path =
       file_manager::util::GetMyFilesFolderForProfile(profile);
 
-  web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
+  web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
       web_contents,
       /*app_scope=*/GURL(ash::kChromeUICameraAppScopeURL),
       /*await_navigation=*/true,
       /*launch_url=*/GURL(ash::kChromeUICameraAppMainURL), my_files_folder_path,
-      std::vector<base::FilePath>{empty_file_path});
+      /*launch_paths=*/{});
   web_app::WebAppTabHelper::CreateForWebContents(web_contents);
 }
 
