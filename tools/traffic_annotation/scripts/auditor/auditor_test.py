@@ -605,7 +605,7 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual([], errors)
 
     # The content of annotations.xml shouldn't change when writing it.
-    old_xml = exporter.annotations_xml_path.read_text(encoding="utf-8")
+    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text(encoding="utf-8")
     new_xml = exporter._generate_serialized_xml()
     self.assertEqual(old_xml, new_xml)
 

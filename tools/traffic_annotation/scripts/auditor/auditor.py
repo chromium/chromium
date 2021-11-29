@@ -62,9 +62,8 @@ SUPPORTED_PLATFORMS = ["linux", "windows", "android", "chromeos"]
 # These platforms populate the "os_list" field in annotations.xml for
 # newly-added annotations (i.e., assume they're present on these platforms).
 #
-# Android isn't completely supported yet, so exclude it for now.
-# TODO(crbug.com/1231780): Revisit this once Android support is complete.
-DEFAULT_OS_LIST = ["linux", "windows"]
+# ChromeOS isn't completely supported yet, so exclude it for now.
+DEFAULT_OS_LIST = ["linux", "windows", "android"]
 
 # Earliest valid milestone for added_in_milestone in annotations.xml.
 MIN_MILESTONE = 62
@@ -1177,7 +1176,8 @@ class Exporter:
 
   SUMMARY_DIR = SCRIPT_DIR.parent.parent / "summary"
 
-  GROUPING_XML_PATH = SCRIPT_DIR.parent.parent / "summary" / "grouping.xml"
+  ANNOTATIONS_XML_PATH = SUMMARY_DIR / "annotations.xml"
+  GROUPING_XML_PATH = SUMMARY_DIR / "grouping.xml"
 
   def __init__(self, current_platform: str):
     self.archive: Dict[UniqueId, ArchivedAnnotation] = {}
@@ -1192,26 +1192,15 @@ class Exporter:
           "Unable to extract MAJOR=... version from chrome/VERSION")
     self._current_milestone = int(m.group(1))
 
-    if self._current_platform == "android":
-      # Use a separate file for Android until the CQ/waterfall checks are stable
-      # enough, to avoid confusing CL authors.
-      #
-      # TODO(crbug.com/1231780): Merge this with annotations.xml once the
-      # checks are working well on Android.
-      self.annotations_xml_path = (Exporter.SUMMARY_DIR /
-                                   "annotations_android.xml")
-    else:
-      self.annotations_xml_path = Exporter.SUMMARY_DIR / "annotations.xml"
-
   def load_annotations_xml(self) -> None:
     """Loads annotations from annotations.xml into self.archive using
     ArchivedAnnotation objects."""
     logger.info("Parsing {}.".format(
-        self.annotations_xml_path.relative_to(SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
     self.archive = {}
 
-    tree = xml.etree.ElementTree.parse(self.annotations_xml_path)
+    tree = xml.etree.ElementTree.parse(Exporter.ANNOTATIONS_XML_PATH)
     root = tree.getroot()
 
     for item in root.iter("item"):
@@ -1417,14 +1406,14 @@ class Exporter:
         if os not in SUPPORTED_PLATFORMS:
           errors.append(
               AuditorError(AuditorError.Type.INVALID_OS, "",
-                           self.annotations_xml_path, 0, os, unique_id))
+                           Exporter.ANNOTATIONS_XML_PATH, 0, os, unique_id))
 
     # Check for consistency of "added_in_milestone" attribute.
     for unique_id, archived in self.archive.items():
       if archived.added_in_milestone < MIN_MILESTONE:
         errors.append(
             AuditorError(AuditorError.Type.INVALID_ADDED_IN, "",
-                         self.annotations_xml_path, 0,
+                         Exporter.ANNOTATIONS_XML_PATH, 0,
                          str(archived.added_in_milestone), unique_id))
 
     return errors
@@ -1432,9 +1421,9 @@ class Exporter:
   def save_annotations_xml(self) -> None:
     """Saves self._archive into annotations.xml"""
     logger.info("Saving annotations to {}.".format(
-        self.annotations_xml_path.relative_to(SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_xml()
-    self.annotations_xml_path.write_text(xml_str, encoding="utf-8")
+    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str, encoding="utf-8")
 
   def get_other_platforms_annotation_ids(self) -> List[UniqueId]:
     """Returns a list of annotations that are not defined on this platform."""
@@ -1466,9 +1455,9 @@ class Exporter:
     """Returns the required updates to go from one state to another in
     annotations.xml"""
     logger.info("Computing required updates for {}.".format(
-        self.annotations_xml_path.relative_to(SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
-    old_xml = self.annotations_xml_path.read_text(encoding="utf-8")
+    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text(encoding="utf-8")
     new_xml = self._generate_serialized_xml()
 
     return Exporter._get_xml_differences(old_xml, new_xml)

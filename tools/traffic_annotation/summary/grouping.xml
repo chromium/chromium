@@ -14,11 +14,30 @@ hidden="true" so that these annotations don't show up in the document.
 <groups>
   <group name="Mobile" hidden="true">
     <!-- Android-specific features -->
-    <sender name="Android">
+    <sender name="Android Unsorted">
       <traffic_annotation unique_id="android_device_manager_socket"/>
       <traffic_annotation unique_id="android_web_socket"/>
       <traffic_annotation unique_id="query_tiles_fetcher"/>
       <traffic_annotation unique_id="query_tiles_image_loader"/>
+      <traffic_annotation unique_id="autofill_service"/>
+      <traffic_annotation unique_id="cached_image_fetcher"/>
+      <traffic_annotation unique_id="chime_sdk"/>
+      <traffic_annotation unique_id="chrome_android_hats"/>
+      <traffic_annotation unique_id="contextual_search_resolve"/>
+      <traffic_annotation unique_id="customtabs_parallel_request"/>
+      <traffic_annotation unique_id="download_bitmap"/>
+      <traffic_annotation unique_id="download_manager_service_retry"/>
+      <traffic_annotation unique_id="explore_sites"/>
+      <traffic_annotation unique_id="explore_sites_catalog_fetcher"/>
+      <traffic_annotation unique_id="explore_sites_image_fetcher"/>
+      <traffic_annotation unique_id="family_info"/>
+      <traffic_annotation unique_id="gstatic_change_password_scripts"/>
+      <traffic_annotation unique_id="gstatic_onboarding_definition"/>
+      <traffic_annotation unique_id="kids_chrome_management_client_classify_url"/>
+      <traffic_annotation unique_id="partner_bookmarks_reader_get_favicon"/>
+      <traffic_annotation unique_id="permission_request_creator"/>
+      <traffic_annotation unique_id="publish_note_request"/>
+      <traffic_annotation unique_id="rlz"/>
     </sender>
     <sender name="Feed Library">
       <traffic_annotation unique_id="interest_feedv2_send"/>
