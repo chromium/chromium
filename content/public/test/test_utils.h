@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
@@ -484,6 +485,27 @@ class EffectiveURLContentBrowserClient : public ContentBrowserClient {
   std::map<GURL, GURL> urls_to_modify_;
 
   bool requires_dedicated_process_;
+};
+
+// Wrapper around `SetBrowserClientForTesting()` that ensures the
+// previous content browser client is restored upon destruction.
+class ScopedContentBrowserClientSetting final {
+ public:
+  explicit ScopedContentBrowserClientSetting(ContentBrowserClient* new_client);
+  ~ScopedContentBrowserClientSetting();
+
+  ScopedContentBrowserClientSetting(const ScopedContentBrowserClientSetting&) =
+      delete;
+  ScopedContentBrowserClientSetting(ScopedContentBrowserClientSetting&&) =
+      delete;
+
+  ScopedContentBrowserClientSetting& operator=(
+      const ScopedContentBrowserClientSetting&) = delete;
+  ScopedContentBrowserClientSetting& operator=(
+      ScopedContentBrowserClientSetting&&) = delete;
+
+ private:
+  const raw_ptr<ContentBrowserClient> old_client_;
 };
 
 }  // namespace content

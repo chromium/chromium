@@ -34,7 +34,6 @@
 
 namespace content {
 
-class ContentBrowserClient;
 class StorableTrigger;
 
 class AttributionDisallowingContentBrowserClient
@@ -80,25 +79,6 @@ class ConfigurableAttributionTestBrowserClient
   absl::optional<url::Origin> blocked_impression_origin_;
   absl::optional<url::Origin> blocked_conversion_origin_;
   absl::optional<url::Origin> blocked_reporting_origin_;
-};
-
-class ScopedContentBrowserClientSetting final {
- public:
-  explicit ScopedContentBrowserClientSetting(ContentBrowserClient* new_client);
-  ~ScopedContentBrowserClientSetting();
-
-  ScopedContentBrowserClientSetting(const ScopedContentBrowserClientSetting&) =
-      delete;
-  ScopedContentBrowserClientSetting(ScopedContentBrowserClientSetting&&) =
-      delete;
-
-  ScopedContentBrowserClientSetting& operator=(
-      const ScopedContentBrowserClientSetting&) = delete;
-  ScopedContentBrowserClientSetting& operator=(
-      ScopedContentBrowserClientSetting&&) = delete;
-
- private:
-  raw_ptr<ContentBrowserClient> old_client_;
 };
 
 base::GUID DefaultExternalReportID();

@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/public/common/content_client.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -87,14 +86,6 @@ void ConfigurableAttributionTestBrowserClient::
   blocked_impression_origin_ = impression_origin;
   blocked_conversion_origin_ = conversion_origin;
   blocked_reporting_origin_ = reporting_origin;
-}
-
-ScopedContentBrowserClientSetting::ScopedContentBrowserClientSetting(
-    ContentBrowserClient* new_client)
-    : old_client_(SetBrowserClientForTesting(new_client)) {}
-
-ScopedContentBrowserClientSetting::~ScopedContentBrowserClientSetting() {
-  SetBrowserClientForTesting(old_client_);
 }
 
 base::GUID DefaultExternalReportID() {

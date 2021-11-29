@@ -38,6 +38,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
@@ -605,6 +606,14 @@ bool EffectiveURLContentBrowserClient::DoesSiteRequireDedicatedProcess(
       return true;
   }
   return false;
+}
+
+ScopedContentBrowserClientSetting::ScopedContentBrowserClientSetting(
+    ContentBrowserClient* new_client)
+    : old_client_(SetBrowserClientForTesting(new_client)) {}
+
+ScopedContentBrowserClientSetting::~ScopedContentBrowserClientSetting() {
+  SetBrowserClientForTesting(old_client_);
 }
 
 }  // namespace content

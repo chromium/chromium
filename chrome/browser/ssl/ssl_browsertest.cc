@@ -314,29 +314,6 @@ class ChromeContentBrowserClientForMixedContentTest
   bool strictly_block_blockable_mixed_content_ = false;
 };
 
-// Wrapper around content::SetBrowserClientForTesting() that ensures the
-// previous content browser client is restored upon destruction.
-class ScopedContentBrowserClientSetting final {
- public:
-  // `client` must outlive this instance.
-  explicit ScopedContentBrowserClientSetting(
-      content::ContentBrowserClient& client)
-      : old_client_(content::SetBrowserClientForTesting(&client)) {}
-
-  // Instances of this class are neither copyable nor movable.
-  ScopedContentBrowserClientSetting(const ScopedContentBrowserClientSetting&) =
-      delete;
-  ScopedContentBrowserClientSetting& operator=(
-      const ScopedContentBrowserClientSetting&) = delete;
-
-  ~ScopedContentBrowserClientSetting() {
-    content::SetBrowserClientForTesting(old_client_);
-  }
-
- private:
-  const raw_ptr<content::ContentBrowserClient> old_client_;
-};
-
 std::string EncodeQuery(const std::string& query) {
   url::RawCanonOutputT<char> buffer;
   url::EncodeURIComponent(query.data(), query.size(), &buffer);
@@ -3750,7 +3727,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     DISABLED_MixedContentSettings_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3793,7 +3770,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     DISABLED_MixedContentSettings_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3845,7 +3822,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     MixedContentSettingsWithBlockingCSP_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3878,7 +3855,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     MixedContentSettingsWithBlockingCSP_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3912,7 +3889,7 @@ IN_PROC_BROWSER_TEST_P(
 // committed interstitials.
 IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest, DISABLED_MixedContentSubFrame) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -6248,7 +6225,7 @@ IN_PROC_BROWSER_TEST_F(
       false, /* allow_running_insecure_content */
       false, /* strict_mixed_content_checking */
       false /*strictly_block_blockable_mixed_content */);
-  ScopedContentBrowserClientSetting setting(browser_client);
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   tab->OnWebPreferencesChanged();
