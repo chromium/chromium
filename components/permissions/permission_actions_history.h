@@ -6,7 +6,6 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"

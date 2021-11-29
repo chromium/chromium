@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "content/common/child_process.mojom.h"

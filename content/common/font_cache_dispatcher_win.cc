@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/singleton.h"
 #include "base/numerics/checked_math.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

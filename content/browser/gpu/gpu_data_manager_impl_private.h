@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
