@@ -528,7 +528,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           # fact that adb doesn't use ipv6 for it's server, and so doesn't
           # listen on ipv6, but ssh remote forwarding does. 5037 is the port
           # number adb uses for its server.
-          if "[::1]:5037" in subprocess.check_output(
+          if b"[::1]:5037" in subprocess.check_output(
               "ss -o state listening 'sport = 5037'", shell=True):
             logging.error(
                 'Test Server cannot be started with a remote-forwarded adb '

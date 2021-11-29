@@ -88,7 +88,7 @@ def Dump(jar_path):
     would produce a very complex JSON.
   """
 
-  with tempfile.NamedTemporaryFile() as proguard_output:
+  with tempfile.NamedTemporaryFile('w+') as proguard_output:
     cmd_helper.GetCmdStatusAndOutput([
         'java',
         '-jar', _GetProguardPath(),

@@ -790,6 +790,10 @@ template("test_runner_script") {
       data += invoker.data
     }
 
+    if (defined(invoker.use_vpython3)) {
+      use_vpython3 = invoker.use_vpython3
+    }
+
     executable_args = [
       "@WrappedPath(" + rebase_path(_runner_script, root_build_dir) + ")",
       _test_type,

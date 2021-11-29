@@ -281,7 +281,8 @@ def get_current_xcode_info():
       'build': The Xcode build version.
   """
   try:
-    out = subprocess.check_output(['xcodebuild', '-version']).splitlines()
+    out = subprocess.check_output(['xcodebuild',
+                                   '-version']).decode('utf-8').splitlines()
     version, build_version = out[0].split(' ')[-1], out[1].split(' ')[-1]
     path = subprocess.check_output(['xcode-select',
                                     '--print-path']).decode('utf-8').rstrip()

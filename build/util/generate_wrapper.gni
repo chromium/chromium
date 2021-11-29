@@ -92,7 +92,7 @@ template("generate_wrapper") {
       _script_language,
     ]
 
-    if (defined(invoker.use_vpython3) && invoker.use_vpython3) {
+    if (!defined(invoker.use_vpython3) || invoker.use_vpython3) {
       args += [ "--use-vpython3" ]
       data += [ "//.vpython3" ]
     }

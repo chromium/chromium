@@ -270,7 +270,8 @@ def PrintProcessesStdout(procs):
 
 
 def _GetTestClasses(file_path):
-  test_jar_paths = subprocess.check_output([file_path, '--print-classpath'])
+  test_jar_paths = subprocess.check_output([file_path,
+                                            '--print-classpath']).decode()
   test_jar_paths = test_jar_paths.split(':')
 
   test_classes = []
