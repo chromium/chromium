@@ -19,9 +19,9 @@
 // enable or disable web usage for all the WebStates in a WebStateList.
 class WebUsageEnablerBrowserAgent
     : public BrowserUserData<WebUsageEnablerBrowserAgent>,
-      BrowserObserver,
-      web::WebStateObserver,
-      WebStateListObserver {
+      public BrowserObserver,
+      public web::WebStateObserver,
+      public WebStateListObserver {
  public:
   // Not copyable or moveable
   WebUsageEnablerBrowserAgent(const WebUsageEnablerBrowserAgent&) = delete;

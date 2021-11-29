@@ -63,6 +63,8 @@ void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
     web_state->SetWebUsageEnabled(web_usage_enabled_);
     if (web_usage_enabled_ && triggers_initial_load)
       web_state->GetNavigationManager()->LoadIfNecessary();
+  } else {
+    web_state_observations_.AddObservation(web_state);
   }
 }
 
@@ -77,7 +79,6 @@ void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  web_state_observations_.AddObservation(web_state);
   UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
 }
 
@@ -86,8 +87,10 @@ void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int index) {
-  web_state_observations_.RemoveObservation(old_web_state);
-  web_state_observations_.AddObservation(new_web_state);
+  if (web_state_observations_.IsObservingSource(old_web_state)) {
+    web_state_observations_.RemoveObservation(old_web_state);
+  }
+
   UpdateWebUsageForAddedWebState(new_web_state, triggers_initial_load_);
 }
 
@@ -95,11 +98,14 @@ void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
-  web_state_observations_.RemoveObservation(web_state);
+  if (web_state_observations_.IsObservingSource(web_state)) {
+    web_state_observations_.RemoveObservation(web_state);
+  }
 }
 
 void WebUsageEnablerBrowserAgent::WebStateRealized(web::WebState* web_state) {
   UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
+  web_state_observations_.RemoveObservation(web_state);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
