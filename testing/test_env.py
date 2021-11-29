@@ -228,7 +228,8 @@ def run_command(argv, env=None, cwd=None, log=True):
   process = _popen(argv, env=env, cwd=cwd, stderr=subprocess.STDOUT)
   forward_signals([process])
   exit_code = wait_with_signals(process)
-  print('Command returned exit code %d' % exit_code)
+  if log:
+    print('Command returned exit code %d' % exit_code)
   return exit_code
 
 
@@ -290,6 +291,7 @@ def forward_signals(procs):
       if sys.platform == 'win32' and sig == signal.SIGBREAK:
         p.send_signal(signal.CTRL_BREAK_EVENT)
       else:
+        print("Forwarding signal(%d) to process %d" % (sig, p.pid))
         p.send_signal(sig)
   if sys.platform == 'win32':
     signal.signal(signal.SIGBREAK, _sig_handler)
