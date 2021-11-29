@@ -772,10 +772,12 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   if (media_type_double.has_value())
     device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
 
-  base::ListValue* mount_paths = NULL;
-  if (properties->GetListWithoutPathExpansion(cros_disks::kDeviceMountPaths,
-                                              &mount_paths))
-    mount_paths->GetString(0, &mount_path_);
+  base::Value* mount_paths =
+      properties->FindListKey(cros_disks::kDeviceMountPaths);
+  if (mount_paths && !mount_paths->GetList().empty() &&
+      mount_paths->GetList()[0].is_string()) {
+    mount_path_ = mount_paths->GetList()[0].GetString();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

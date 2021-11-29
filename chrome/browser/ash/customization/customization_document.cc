@@ -734,7 +734,8 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
       std::string app_id;
       std::unique_ptr<base::DictionaryValue> entry;
       const base::Value& app_entry_value = apps_list->GetList()[i];
-      if (apps_list->GetString(i, &app_id)) {
+      if (app_entry_value.is_string()) {
+        app_id = app_entry_value.GetString();
         entry = std::make_unique<base::DictionaryValue>();
       } else if (app_entry_value.is_dict()) {
         const base::DictionaryValue& app_entry =

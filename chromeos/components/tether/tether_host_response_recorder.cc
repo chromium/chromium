@@ -78,9 +78,12 @@ bool TetherHostResponseRecorder::AddRecentResponse(
     const std::string& device_id,
     const std::string& pref_name) {
   const base::ListValue* ids = pref_service_->GetList(pref_name);
+  base::Value::ConstListView ids_list = ids->GetList();
 
   std::string first_device_id_in_list;
-  ids->GetString(0u, &first_device_id_in_list);
+  if (!ids_list.empty() && ids_list[0].is_string())
+    first_device_id_in_list = ids_list[0].GetString();
+
   if (device_id == first_device_id_in_list) {
     // If the device ID that is being inserted is already at the front of the
     // list, there is nothing to do.

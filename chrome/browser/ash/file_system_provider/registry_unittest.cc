@@ -245,10 +245,11 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   ASSERT_GT(fake_watcher_.subscribers.size(),
             persistent_origins->GetList().size());
   ASSERT_EQ(1u, persistent_origins->GetList().size());
-  std::string persistent_origin;
-  EXPECT_TRUE(persistent_origins->GetString(0, &persistent_origin));
+  const std::string* persistent_origin =
+      persistent_origins->GetList()[0].GetIfString();
+  ASSERT_TRUE(persistent_origin);
   const auto& fake_subscriber_it =
-      fake_watcher_.subscribers.find(GURL(persistent_origin));
+      fake_watcher_.subscribers.find(GURL(*persistent_origin));
   ASSERT_NE(fake_watcher_.subscribers.end(), fake_subscriber_it);
   EXPECT_TRUE(fake_subscriber_it->second.persistent);
 }

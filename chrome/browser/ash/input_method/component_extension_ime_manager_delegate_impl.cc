@@ -286,9 +286,11 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   if (!dict.GetList(extensions::manifest_keys::kLayouts, &layouts))
     return false;
 
-  if (layouts->GetList().empty() || !layouts->GetString(0, &out->layout)) {
+  base::Value::ConstListView layouts_list = layouts->GetList();
+  if (!layouts_list.empty() && layouts_list[0].is_string())
+    out->layout = layouts_list[0].GetString();
+  else
     out->layout = "us";
-  }
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
