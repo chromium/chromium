@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -191,6 +192,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
+
+  if (ash::features::IsFileManagerSwaEnabled()) {
+    // OpenItems() depends on the Files app. Install the Files SWA.
+    WaitForTestSystemAppInstall();
+  }
 
   // Verify no failures have yet been recorded.
   base::HistogramTester histogram_tester;
