@@ -272,8 +272,11 @@ Profiling should always be done on a build that represents the performance of of
     # Most profiling techniques on macOS will work with minimal symbols for local builds.
     # You should try and use minimal symbols when starting out because most tools will take
     # an incredibly long time to process the symbols and in some cases will freeze the application
-    # while doing so.
+    # while doing so. symbol_level sets the level for all parts of Chromium. The
+    # blink and v8 settings allow overriding this to set higher or lower levels
+    # for those components.
     blink_symbol_level = 0
+    v8_symbol_level = 0
     symbol_level = 0
 
 ## Viewing traces.

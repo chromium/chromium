@@ -216,6 +216,8 @@ support incremental linking for more targets. Note that if you set this but
 don't' set enable_nacl = false then build times may get worse.
 * `blink_symbol_level = 0` - turn off source-level debugging for
 blink to reduce build times, appropriate if you don't plan to debug blink.
+* `v8_symbol_level = 0` - turn off source-level debugging for v8 to reduce
+build times, appropriate if you don't plan to debug v8.
 
 In order to speed up linking you can set `symbol_level = 1` or
 `symbol_level = 0` - these options reduce the work the compiler and linker have

@@ -161,11 +161,12 @@ By default GN produces a build with all of the debug assertions enabled
 line-by-line debugging. Setting `symbol_level=0` will include no debug
 symbols at all. Either will speed up the build compared to full symbols.
 
-#### Disable debug symbols for Blink
+#### Disable debug symbols for Blink and v8
 
 Due to its extensive use of templates, the Blink code produces about half
 of our debug symbols. If you don't ever need to debug Blink, you can set
-the GN arg `blink_symbol_level=0`.
+the GN arg `blink_symbol_level=0`. Similarly, if you don't need to debug v8 you
+can improve build speeds by setting the GN arg `v8_symbol_level=0`.
 
 #### Use Icecc
 
