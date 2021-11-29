@@ -148,19 +148,19 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
+  base::Value::ConstListView args_list = args->GetList();
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetList().size());
-  if (args->GetList().size() != 2)
+  DCHECK_EQ(2u, args_list.size());
+  if (args_list.size() != 2)
     return;
 
-  std::string entry_internal_name;
-  std::string enable_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &enable_str))
+  const std::string* entry_internal_name = args_list[0].GetIfString();
+  const std::string* enable_str = args_list[1].GetIfString();
+  if (!entry_internal_name || !enable_str)
     return;
 
-  SetFeatureEntryEnabled(flags_storage_.get(), entry_internal_name,
-                         enable_str == "true");
+  SetFeatureEntryEnabled(flags_storage_.get(), *entry_internal_name,
+                         *enable_str == "true");
   flags_storage_->CommitPendingWrites();
 }
 

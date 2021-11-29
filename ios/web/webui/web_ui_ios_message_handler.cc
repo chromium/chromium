@@ -37,9 +37,9 @@ bool WebUIIOSMessageHandler::ExtractDoubleValue(const base::ListValue* value,
 
 std::u16string WebUIIOSMessageHandler::ExtractStringValue(
     const base::ListValue* value) {
-  std::u16string string16_value;
-  if (value->GetString(0, &string16_value))
-    return string16_value;
+  base::Value::ConstListView value_list = value->GetList();
+  if (!value_list.empty() && value_list[0].is_string())
+    return base::UTF8ToUTF16(value_list[0].GetString());
   NOTREACHED();
   return std::u16string();
 }

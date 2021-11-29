@@ -61,11 +61,14 @@ void UkmMessageHandler::RegisterMessages() {
 }
 
 void UkmMessageHandler::HandleRequestUkmData(const base::ListValue* args) {
+  base::Value::ConstListView args_list = args->GetList();
   base::Value ukm_debug_data =
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 
   std::string callback_id;
-  args->GetString(0, &callback_id);
+  if (!args_list.empty() && args_list[0].is_string())
+    callback_id = args_list[0].GetString();
+
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
                                       std::move(ukm_debug_data));
 }

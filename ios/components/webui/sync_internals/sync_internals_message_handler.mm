@@ -148,10 +148,13 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  base::Value::ConstListView args_list = args->GetList();
+  DCHECK_EQ(1U, args_list.size());
   std::string callback_id;
-  bool success = args->GetString(0, &callback_id);
-  DCHECK(success);
+  if (args_list[0].is_string())
+    callback_id = args_list[0].GetString();
+  else
+    DCHECK(false);
 
   syncer::SyncService* service = GetSyncService();
   if (service) {

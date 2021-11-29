@@ -386,19 +386,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:header forSectionWithIdentifier:SectionIdentifierExceptions];
 
   // Populate the exception items set by the user.
-  for (size_t i = 0; i < _exceptions.GetList().size(); ++i) {
+  for (const base::Value& exception : _exceptions.GetList()) {
     std::string allowed_url;
-    _exceptions.GetString(i, &allowed_url);
+    if (exception.is_string())
+      allowed_url = exception.GetString();
     TableViewDetailTextItem* item =
         [[TableViewDetailTextItem alloc] initWithType:ItemTypeException];
     item.text = base::SysUTF8ToNSString(allowed_url);
     [model addItem:item toSectionWithIdentifier:SectionIdentifierExceptions];
   }
 
-  // Populate the exception items set by the policy.
-  for (size_t l = 0; l < _allowPopupsByPolicy.GetList().size(); ++l) {
+  // Populate the allowed popup items set by the policy.
+  for (const base::Value& l : _allowPopupsByPolicy.GetList()) {
     std::string allowed_url_by_policy;
-    _allowPopupsByPolicy.GetString(l, &allowed_url_by_policy);
+    if (l.is_string())
+      allowed_url_by_policy = l.GetString();
     TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
         initWithType:ItemTypeExceptionByPolicy];
     item.text = base::SysUTF8ToNSString(allowed_url_by_policy);
