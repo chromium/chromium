@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "ash/components/arc/mojom/oemcrypto.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/mojo_channel.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
@@ -49,9 +51,7 @@
 #include "components/arc/mojom/midis.mojom.h"
 #include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/arc/mojom/net.mojom.h"
-#include "components/arc/mojom/notifications.mojom.h"
 #include "components/arc/mojom/obb_mounter.mojom.h"
-#include "components/arc/mojom/oemcrypto.mojom.h"
 #include "components/arc/mojom/payment_app.mojom.h"
 #include "components/arc/mojom/pip.mojom.h"
 #include "components/arc/mojom/policy.mojom.h"

@@ -6,7 +6,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/bitmap.mojom";
+import "ash/components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/gfx.mojom";
 
 // These values must be matched with the NOTIFICATION_EVENT_* constants in

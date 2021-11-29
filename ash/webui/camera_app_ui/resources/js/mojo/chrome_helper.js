@@ -22,7 +22,7 @@ import {
 /* eslint-enable max-len */
 import {
   CameraIntentAction,
-} from '/components/arc/mojom/camera_intent.mojom-webui.js';
+} from '/ash/components/arc/mojom/camera_intent.mojom-webui.js';
 import {
   PointF,  // eslint-disable-line no-unused-vars
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';

@@ -375,6 +375,7 @@ component("cpp") {
   ]
 
   public_deps = [
+    "//ash/components/arc/mojom:notifications",
     "//ash/components/security_token_pin",
     "//ash/public/mojom",
     "//ash/webui/personalization_app/proto",
@@ -385,7 +386,6 @@ component("cpp") {
     "//chromeos/services/cellular_setup/public/mojom",
     "//chromeos/services/network_config/public/mojom",
     "//components/app_restore",
-    "//components/arc/mojom:notifications",
     "//components/session_manager:base",
     "//components/user_manager",
     "//ui/base/ime/ash:ime_types",

@@ -276,8 +276,8 @@ static_library("notification_test_support") {
   ]
 
   public_deps = [
+    "//ash/components/arc/mojom:notifications",
     "//ash/components/arc/session:connection_holder",
-    "//components/arc/mojom:notifications",
   ]
 }
 

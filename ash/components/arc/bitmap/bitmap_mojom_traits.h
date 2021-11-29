@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
 
+#include "ash/components/arc/mojom/bitmap.mojom-shared.h"
 #include "base/containers/span.h"
-#include "components/arc/mojom/bitmap.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {
@@ -28,4 +28,4 @@ struct StructTraits<arc::mojom::ArcBitmapDataView, SkBitmap> {
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_BITMAP_BITMAP_MOJOM_TRAITS_H_

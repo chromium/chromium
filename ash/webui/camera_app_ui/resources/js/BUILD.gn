@@ -56,8 +56,8 @@ js_library("compile_resources") {
 
   deps = [
     ":preload_images",
+    "//ash/components/arc/mojom:camera_intent_webui_js",
     "//ash/webui/camera_app_ui:mojo_bindings_webui_js",
-    "//components/arc/mojom:camera_intent_webui_js",
     "//media/capture/mojom:image_capture_webui_js",
     "//media/capture/video/chromeos/mojom:cros_camera_common_webui_js",
   ]
