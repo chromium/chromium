@@ -631,11 +631,18 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesMigrated) {
   SpellcheckServiceFactory::GetForContext(GetContext());
 
   // Make sure the preferences have been migrated.
-  std::string new_pref;
-  EXPECT_TRUE(GetPrefs()
+  ASSERT_EQ(1u, GetPrefs()
+                    ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                    ->GetList()
+                    .size());
+  ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetString(0, &new_pref));
-  EXPECT_EQ("en-US", new_pref);
+                  ->GetList()[0]
+                  .is_string());
+  EXPECT_EQ("en-US", GetPrefs()
+                         ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                         ->GetList()[0]
+                         .GetString());
   EXPECT_TRUE(
       GetPrefs()->GetString(spellcheck::prefs::kSpellCheckDictionary).empty());
 }
@@ -651,11 +658,18 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
   SpellcheckServiceFactory::GetForContext(GetContext());
 
   // Make sure the preferences have not been migrated.
-  std::string new_pref;
-  EXPECT_TRUE(GetPrefs()
+  ASSERT_EQ(1u, GetPrefs()
+                    ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                    ->GetList()
+                    .size());
+  ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetString(0, &new_pref));
-  EXPECT_EQ("en-US", new_pref);
+                  ->GetList()[0]
+                  .is_string());
+  EXPECT_EQ("en-US", GetPrefs()
+                         ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                         ->GetList()[0]
+                         .GetString());
   EXPECT_TRUE(
       GetPrefs()->GetString(spellcheck::prefs::kSpellCheckDictionary).empty());
 }
@@ -696,15 +710,22 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
                     ->GetList()
                     .size());
-  std::string pref;
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetString(0, &pref));
-  EXPECT_EQ("en-US", pref);
+                  ->GetList()[0]
+                  .is_string());
+  EXPECT_EQ("en-US", GetPrefs()
+                         ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                         ->GetList()[0]
+                         .GetString());
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                  ->GetString(1, &pref));
-  EXPECT_EQ("fr", pref);
+                  ->GetList()[1]
+                  .is_string());
+  EXPECT_EQ("fr", GetPrefs()
+                      ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
+                      ->GetList()[1]
+                      .GetString());
 }
 
 #if defined(OS_WIN)
