@@ -196,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CreateSendStream) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, ReceiveStream) {
+// Disabled due to flakes; see https://crbug.com/1140193.
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, DISABLED_ReceiveStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
