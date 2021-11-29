@@ -213,7 +213,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
     for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
       VerifyGalleryInfo(it->second, it->first);
       if (it->second.type != MediaGalleryPrefInfo::kAutoDetected &&
-          it->second.type != MediaGalleryPrefInfo::kBlackListed) {
+          it->second.type != MediaGalleryPrefInfo::kBlockListed) {
         if (!base::Contains(expected_galleries_for_all, it->first) &&
             !base::Contains(expected_galleries_for_regular, it->first)) {
           EXPECT_FALSE(gallery_prefs_->NonAutoGalleryHasPermission(it->first));
@@ -500,13 +500,13 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryManagement) {
   EXPECT_EQ(other_info.device_id(), gallery_info.device_id);
   EXPECT_EQ(relative_path.value(), gallery_info.path.value());
 
-  // Remove an auto added gallery (i.e. make it blacklisted).
+  // Remove an auto added gallery (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(auto_id);
-  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlackListed;
+  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlockListed;
   expected_galleries_for_all.erase(auto_id);
   Verify();
 
-  // Remove a scan result (i.e. make it blacklisted).
+  // Remove a scan result (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(scan_id);
   expected_galleries_[scan_id].type = MediaGalleryPrefInfo::kRemovedScan;
   Verify();
@@ -550,7 +550,7 @@ TEST_F(MediaGalleriesPreferencesTest, ForgetAndErase) {
   Verify();
 
   gallery_prefs()->ForgetGalleryById(auto_forget);
-  expected_galleries_[auto_forget].type = MediaGalleryPrefInfo::kBlackListed;
+  expected_galleries_[auto_forget].type = MediaGalleryPrefInfo::kBlockListed;
   expected_galleries_for_all.erase(auto_forget);
   Verify();
 
@@ -577,7 +577,7 @@ TEST_F(MediaGalleriesPreferencesTest, ForgetAndErase) {
   expected_device_map[device_id].erase(scan_erase);
   Verify();
 
-  // Also erase the previously forgetten ones to check erasing blacklisted ones.
+  // Also erase the previously forgetten ones to check erasing blocklisted ones.
   gallery_prefs()->EraseGalleryById(auto_forget);
   device_id = expected_galleries_[auto_forget].device_id;
   expected_galleries_.erase(auto_forget);
@@ -657,10 +657,10 @@ TEST_F(MediaGalleriesPreferencesTest, ReplaceGalleryWithVolumeMetadata) {
   Verify();
 }
 
-// Whenever an "AutoDetected" gallery is removed, it is moved to a black listed
-// state.  When the gallery is added again, the black listed state is updated
+// Whenever an "AutoDetected" gallery is removed, it is moved to a block listed
+// state.  When the gallery is added again, the block listed state is updated
 // back to the "AutoDetected" type.
-TEST_F(MediaGalleriesPreferencesTest, AutoAddedBlackListing) {
+TEST_F(MediaGalleriesPreferencesTest, AutoAddedBlockListing) {
   MediaGalleryPrefId auto_id, id;
   base::FilePath path;
   StorageInfo info;
@@ -679,9 +679,9 @@ TEST_F(MediaGalleriesPreferencesTest, AutoAddedBlackListing) {
                         MediaGalleryPrefInfo::kAutoDetected);
   Verify();
 
-  // Remove an auto added gallery (i.e. make it blacklisted).
+  // Remove an auto added gallery (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(auto_id);
-  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlackListed;
+  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlockListed;
   expected_galleries_for_all.erase(auto_id);
   Verify();
 
@@ -700,10 +700,10 @@ TEST_F(MediaGalleriesPreferencesTest, AutoAddedBlackListing) {
   Verify();
 }
 
-// Whenever a "ScanResult" gallery is removed, it is moved to a black listed
-// state.  When the gallery is added again, the black listed state is updated
+// Whenever a "ScanResult" gallery is removed, it is moved to a block listed
+// state.  When the gallery is added again, the block listed state is updated
 // back to the "ScanResult" type.
-TEST_F(MediaGalleriesPreferencesTest, ScanResultBlackListing) {
+TEST_F(MediaGalleriesPreferencesTest, ScanResultBlockListing) {
   MediaGalleryPrefId scan_id, id;
   base::FilePath path;
   StorageInfo info;
@@ -722,7 +722,7 @@ TEST_F(MediaGalleriesPreferencesTest, ScanResultBlackListing) {
                         MediaGalleryPrefInfo::kScanResult);
   Verify();
 
-  // Remove a scan result gallery (i.e. make it blacklisted).
+  // Remove a scan result gallery (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(scan_id);
   expected_galleries_[scan_id].type = MediaGalleryPrefInfo::kRemovedScan;
   expected_galleries_for_all.erase(scan_id);
@@ -773,8 +773,8 @@ TEST_F(MediaGalleriesPreferencesTest, UpdateGalleryNameV2) {
 }
 
 TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
-  MediaGalleryPrefId auto_id, user_added_id, to_blacklist_id, scan_id,
-                     to_scan_remove_id, id;
+  MediaGalleryPrefId auto_id, user_added_id, to_blocklist_id, scan_id,
+      to_scan_remove_id, id;
   base::FilePath path;
   StorageInfo info;
   base::FilePath relative_path;
@@ -803,13 +803,13 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
                         MediaGalleryPrefInfo::kAutoDetected);
   Verify();
 
-  path = MakeMediaGalleriesTestingPath("to_blacklist");
+  path = MakeMediaGalleriesTestingPath("to_blocklist");
   MediaStorageUtil::GetDeviceInfoFromPath(path, &info, &relative_path);
-  gallery_name = u"ToBlacklistGallery";
+  gallery_name = u"ToBlocklistGallery";
   id = AddGalleryWithNameV1(info.device_id(), gallery_name, relative_path,
                             false /*auto*/);
   EXPECT_EQ(default_galleries_count() + 3UL, id);
-  to_blacklist_id = id;
+  to_blocklist_id = id;
   AddGalleryExpectation(id, gallery_name, info.device_id(), relative_path,
                         MediaGalleryPrefInfo::kAutoDetected);
   Verify();
@@ -848,8 +848,8 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
-      *all_permission_extension.get(), to_blacklist_id, false);
-  expected_galleries_for_all.erase(to_blacklist_id);
+      *all_permission_extension.get(), to_blocklist_id, false);
+  expected_galleries_for_all.erase(to_blocklist_id);
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
@@ -874,8 +874,8 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
-      *all_permission_extension.get(), to_blacklist_id, true);
-  expected_galleries_for_all.insert(to_blacklist_id);
+      *all_permission_extension.get(), to_blocklist_id, true);
+  expected_galleries_for_all.insert(to_blocklist_id);
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
@@ -900,8 +900,8 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
-      *regular_permission_extension.get(), to_blacklist_id, true);
-  expected_galleries_for_regular.insert(to_blacklist_id);
+      *regular_permission_extension.get(), to_blocklist_id, true);
+  expected_galleries_for_regular.insert(to_blocklist_id);
   Verify();
 
   gallery_prefs()->SetGalleryPermissionForExtension(
@@ -914,12 +914,12 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryPermissions) {
   expected_galleries_for_regular.insert(to_scan_remove_id);
   Verify();
 
-  // Blacklist the to be black listed gallery
-  gallery_prefs()->ForgetGalleryById(to_blacklist_id);
-  expected_galleries_[to_blacklist_id].type =
-      MediaGalleryPrefInfo::kBlackListed;
-  expected_galleries_for_all.erase(to_blacklist_id);
-  expected_galleries_for_regular.erase(to_blacklist_id);
+  // Blocklist the to be block listed gallery
+  gallery_prefs()->ForgetGalleryById(to_blocklist_id);
+  expected_galleries_[to_blocklist_id].type =
+      MediaGalleryPrefInfo::kBlockListed;
+  expected_galleries_for_all.erase(to_blocklist_id);
+  expected_galleries_for_regular.erase(to_blocklist_id);
   Verify();
 
   gallery_prefs()->ForgetGalleryById(to_scan_remove_id);
@@ -1095,9 +1095,9 @@ TEST_F(MediaGalleriesPreferencesTest, GalleryChangeObserver) {
   // Remove the first observer.
   gallery_prefs()->RemoveGalleryChangeObserver(&observer1);
 
-  // Remove an auto added gallery (i.e. make it blacklisted).
+  // Remove an auto added gallery (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(auto_id);
-  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlackListed;
+  expected_galleries_[auto_id].type = MediaGalleryPrefInfo::kBlockListed;
   expected_galleries_for_all.erase(auto_id);
 
   EXPECT_EQ(2, observer1.notifications());
@@ -1140,7 +1140,7 @@ TEST_F(MediaGalleriesPreferencesTest, ScanResults) {
                            relative_path, 4, 5, 6);
   Verify();
 
-  // Remove a scan result (i.e. make it blacklisted).
+  // Remove a scan result (i.e. make it blocklisted).
   gallery_prefs()->ForgetGalleryById(id);
   expected_galleries_[id].type = MediaGalleryPrefInfo::kRemovedScan;
   expected_galleries_[id].audio_count = 0;

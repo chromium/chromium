@@ -166,7 +166,7 @@ class MediaGalleriesPermissionController
   void SavePermissions();
 
   // Updates the model and view when |preferences_| changes. Some of the
-  // possible changes includes a gallery getting blacklisted, or a new
+  // possible changes includes a gallery getting blocklisted, or a new
   // auto detected gallery becoming available.
   void UpdateGalleriesOnPreferencesEvent();
 
@@ -188,7 +188,7 @@ class MediaGalleriesPermissionController
   // Mapping between pref ids and dialog ids.
   DialogIdMap id_map_;
 
-  // This map excludes those galleries which have been blacklisted; it only
+  // This map excludes those galleries which have been blocklisted; it only
   // counts active known galleries.
   GalleryPermissionsMap known_galleries_;
 

@@ -47,7 +47,7 @@ struct MediaGalleryPrefInfo {
   enum Type {
     kUserAdded,     // Explicitly added by the user.
     kAutoDetected,  // Auto added to the list of galleries.
-    kBlackListed,   // Auto added but then removed by the user.
+    kBlockListed,   // Auto added but then removed by the user.
     kScanResult,    // Discovered by a disk scan.
     kRemovedScan,   // Discovered by a disk scan but then removed by the user.
     kInvalidType,
@@ -68,8 +68,8 @@ struct MediaGalleryPrefInfo {
   base::FilePath AbsolutePath() const;
 
   // True if the gallery should not be displayed to the user
-  // i.e. kBlackListed || kRemovedScan.
-  bool IsBlackListedType() const;
+  // i.e. kBlockListed || kRemovedScan.
+  bool IsBlockListedType() const;
 
   // The ID that identifies this gallery in this Profile.
   MediaGalleryPrefId pref_id;
@@ -224,7 +224,7 @@ class MediaGalleriesPreferences
       bool include_unpermitted_galleries);
 
   // Teaches the registry about a new gallery. If the gallery is in a
-  // blacklisted state, it is unblacklisted. |type| should not be a blacklisted
+  // blocklisted state, it is unblocklisted. |type| should not be a blocklisted
   // type. Returns the gallery's pref id.
   MediaGalleryPrefId AddGallery(const std::string& device_id,
                                 const base::FilePath& relative_path,
@@ -239,14 +239,14 @@ class MediaGalleriesPreferences
                                 int video_count);
 
   // Teach the registry about a gallery simply from the path. If the gallery is
-  // in a blacklisted state, it is unblacklisted. |type| should not be a
-  // blacklisted type. Returns the gallery's pref id.
+  // in a blocklisted state, it is unblocklisted. |type| should not be a
+  // blocklisted type. Returns the gallery's pref id.
   MediaGalleryPrefId AddGalleryByPath(const base::FilePath& path,
                                       MediaGalleryPrefInfo::Type type);
 
   // Logically removes the gallery identified by |id| from the store. For
   // auto added or scan result galleries, this means moving them into a
-  // blacklisted state, otherwise they may come back when they are detected
+  // blocklisted state, otherwise they may come back when they are detected
   // again.
   void ForgetGalleryById(MediaGalleryPrefId id);
 
@@ -315,7 +315,7 @@ class MediaGalleriesPreferences
       int prefs_version,
       MediaGalleryPrefInfo::DefaultGalleryType default_gallery_type);
 
-  void EraseOrBlacklistGalleryById(MediaGalleryPrefId id, bool erase);
+  void EraseOrBlocklistGalleryById(MediaGalleryPrefId id, bool erase);
 
   // Updates the default galleries: finds the previously default galleries
   // and updates their device IDs (i.e., their paths) inplace if they have

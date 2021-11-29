@@ -78,7 +78,7 @@ const char kMediaGalleriesScanImageCountKey[] = "imageCount";
 const char kMediaGalleriesScanVideoCountKey[] = "videoCount";
 
 const char kMediaGalleriesTypeAutoDetectedValue[] = "autoDetected";
-const char kMediaGalleriesTypeBlackListedValue[] = "blackListed";
+const char kMediaGalleriesTypeBlockListedValue[] = "blockListed";
 const char kMediaGalleriesTypeRemovedScanValue[] = "removedScan";
 const char kMediaGalleriesTypeScanResultValue[] = "scanResult";
 const char kMediaGalleriesTypeUserAddedValue[] = "userAdded";
@@ -131,8 +131,8 @@ bool GetType(const base::DictionaryValue& dict,
     *type = MediaGalleryPrefInfo::kAutoDetected;
     return true;
   }
-  if (string_type == kMediaGalleriesTypeBlackListedValue) {
-    *type = MediaGalleryPrefInfo::kBlackListed;
+  if (string_type == kMediaGalleriesTypeBlockListedValue) {
+    *type = MediaGalleryPrefInfo::kBlockListed;
     return true;
   }
   if (string_type == kMediaGalleriesTypeScanResultValue) {
@@ -156,8 +156,8 @@ const char* TypeToStringValue(MediaGalleryPrefInfo::Type type) {
     case MediaGalleryPrefInfo::kAutoDetected:
       result = kMediaGalleriesTypeAutoDetectedValue;
       break;
-    case MediaGalleryPrefInfo::kBlackListed:
-      result = kMediaGalleriesTypeBlackListedValue;
+    case MediaGalleryPrefInfo::kBlockListed:
+      result = kMediaGalleriesTypeBlockListedValue;
       break;
     case MediaGalleryPrefInfo::kScanResult:
       result = kMediaGalleriesTypeScanResultValue;
@@ -385,8 +385,8 @@ base::FilePath MediaGalleryPrefInfo::AbsolutePath() const {
   return base_path.empty() ? base_path : base_path.Append(path);
 }
 
-bool MediaGalleryPrefInfo::IsBlackListedType() const {
-  return type == kBlackListed || type == kRemovedScan;
+bool MediaGalleryPrefInfo::IsBlockListedType() const {
+  return type == kBlockListed || type == kRemovedScan;
 }
 
 std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
@@ -746,7 +746,7 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
     bool update_gallery_type = false;
     MediaGalleryPrefInfo::Type new_type = existing.type;
     if (type == MediaGalleryPrefInfo::kUserAdded) {
-      if (existing.type == MediaGalleryPrefInfo::kBlackListed) {
+      if (existing.type == MediaGalleryPrefInfo::kBlockListed) {
         new_type = MediaGalleryPrefInfo::kAutoDetected;
         update_gallery_type = true;
       }
@@ -782,10 +782,10 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
          (existing.last_attach_time != last_attach_time));
 
     bool update_scan_counts =
-      new_type != MediaGalleryPrefInfo::kRemovedScan &&
-      new_type != MediaGalleryPrefInfo::kBlackListed &&
-      (audio_count > 0 || image_count > 0 || video_count > 0 ||
-       existing.audio_count || existing.image_count || existing.video_count);
+        new_type != MediaGalleryPrefInfo::kRemovedScan &&
+        new_type != MediaGalleryPrefInfo::kBlockListed &&
+        (audio_count > 0 || image_count > 0 || video_count > 0 ||
+         existing.audio_count || existing.image_count || existing.video_count);
 
     if (!update_gallery_name && !update_gallery_type &&
         !update_gallery_metadata && !update_scan_counts &&
@@ -954,7 +954,7 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddGalleryByPath(
   DCHECK(IsInitialized());
   MediaGalleryPrefInfo gallery_info;
   if (LookUpGalleryByPath(path, &gallery_info) &&
-      !gallery_info.IsBlackListedType()) {
+      !gallery_info.IsBlockListedType()) {
     return gallery_info.pref_id;
   }
   return AddOrUpdateGalleryInternal(gallery_info.device_id,
@@ -973,15 +973,16 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddGalleryByPath(
 }
 
 void MediaGalleriesPreferences::ForgetGalleryById(MediaGalleryPrefId id) {
-  EraseOrBlacklistGalleryById(id, false);
+  EraseOrBlocklistGalleryById(id, false);
 }
 
 void MediaGalleriesPreferences::EraseGalleryById(MediaGalleryPrefId id) {
-  EraseOrBlacklistGalleryById(id, true);
+  EraseOrBlocklistGalleryById(id, true);
 }
 
-void MediaGalleriesPreferences::EraseOrBlacklistGalleryById(
-    MediaGalleryPrefId id, bool erase) {
+void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
+    MediaGalleryPrefId id,
+    bool erase) {
   DCHECK(IsInitialized());
   PrefService* prefs = profile_->GetPrefs();
   std::unique_ptr<ListPrefUpdate> update(
@@ -1004,7 +1005,7 @@ void MediaGalleriesPreferences::EraseOrBlacklistGalleryById(
            type == MediaGalleryPrefInfo::kScanResult)) {
         if (type == MediaGalleryPrefInfo::kAutoDetected) {
           iter->SetStringKey(kMediaGalleriesTypeKey,
-                             kMediaGalleriesTypeBlackListedValue);
+                             kMediaGalleriesTypeBlockListedValue);
         } else {
           iter->SetStringKey(kMediaGalleriesTypeKey,
                              kMediaGalleriesTypeRemovedScanValue);
@@ -1087,7 +1088,7 @@ MediaGalleryPrefIdSet MediaGalleriesPreferences::GalleriesForExtension(
         continue;
       }
 
-      if (!gallery->second.IsBlackListedType()) {
+      if (!gallery->second.IsBlockListedType()) {
         result.insert(it->pref_id);
       } else {
         NOTREACHED() << gallery->second.device_id;

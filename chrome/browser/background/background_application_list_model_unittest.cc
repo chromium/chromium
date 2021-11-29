@@ -146,7 +146,7 @@ void RemoveBackgroundPermission(extensions::ExtensionService* service,
 }
 }  // namespace
 
-// Crashes on Mac tryslaves.
+// Crashes on Mac trybots.
 // http://crbug.com/165458
 // Also crashes on Windows under Dr. Memory (https://crbug.com/606779),
 // presumably broken on all platforms.

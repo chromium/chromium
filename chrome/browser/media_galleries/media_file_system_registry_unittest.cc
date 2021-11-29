@@ -890,9 +890,9 @@ TEST_F(MediaFileSystemRegistryTest, EraseGalleries) {
 }
 
 // Regression test to make sure calling GetPreferences() does not re-insert
-// galleries on auto-detected removable devices that were blacklisted.
+// galleries on auto-detected removable devices that were blocklisted.
 TEST_F(MediaFileSystemRegistryTest,
-       GetPreferencesDoesNotReinsertBlacklistedGalleries) {
+       GetPreferencesDoesNotReinsertBlocklistedGalleries) {
   CreateProfileState(1);
   AssertAllAutoAddedGalleries();
 
