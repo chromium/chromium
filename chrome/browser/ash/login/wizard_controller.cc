@@ -460,6 +460,8 @@ void WizardController::Init(OobeScreenId first_screen) {
   // Do not show the HID Detection screen if device is owned.
   if (!device_is_owned && CanShowHIDDetectionScreen() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {
+    // Temp logs for crbug/1274589
+    VLOG(1) << "CheckIsScreenRequired";
     GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(
         base::BindOnce(&WizardController::OnHIDScreenNecessityCheck,
                        weak_factory_.GetWeakPtr()));
@@ -1963,6 +1965,8 @@ void WizardController::UpdateStatusAreaVisibilityForScreen(
 }
 
 void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
+  // Temp logs for crbug/1274589
+  VLOG(1) << "OnHIDScreenNecessityCheck " << screen_needed;
   if (!GetOobeUI())
     return;
 
@@ -2014,6 +2018,8 @@ bool WizardController::CanNavigateTo(OobeScreenId screen_id) {
 }
 
 void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
+  // Temp logs for crbug/1274589
+  VLOG(1) << "AdvanceToScreen " << screen_id;
   if (!CanNavigateTo(screen_id)) {
     LOG(WARNING) << "Cannot advance to screen : " << screen_id
                  << " as it's priority is less than the current screen : "
