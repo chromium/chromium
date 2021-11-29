@@ -35,7 +35,6 @@
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "components/history_clusters/core/remote_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
@@ -297,19 +296,10 @@ HistoryClustersService::HistoryClustersService(
   visit_deletion_observer_.AttachToHistoryService(history_service);
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
-  if (kUseOnDeviceClusteringBackend.Get()) {
-    backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        template_url_service, entity_metadata_provider,
-        engagement_score_provider);
-  }
+  backend_ = std::make_unique<OnDeviceClusteringBackend>(
+      template_url_service, entity_metadata_provider,
+      engagement_score_provider);
 #endif
-
-  if (!backend_ && RemoteModelEndpoint().is_valid() && url_loader_factory) {
-    backend_ = std::make_unique<RemoteClusteringBackend>(
-        url_loader_factory,
-        base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 HistoryClustersService::~HistoryClustersService() = default;

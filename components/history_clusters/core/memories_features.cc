@@ -18,17 +18,7 @@ constexpr auto enabled_by_default_desktop_only =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const base::FeatureParam<std::string> kRemoteModelEndpoint{
-    &kRemoteModelForDebugging, "JourneysRemoteModelEndpoint", ""};
-
 }  // namespace
-
-GURL RemoteModelEndpoint() {
-  return GURL(kRemoteModelEndpoint.Get());
-}
-
-const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName{
-    &kJourneys, "JourneysExperimentName", ""};
 
 const base::FeatureParam<int> kMaxVisitsToCluster{
     &kJourneys, "JourneysMaxVisitsToCluster", 1000};
@@ -43,9 +33,6 @@ const base::FeatureParam<int> kMaxKeywordPhrases{
 
 const base::FeatureParam<bool> kPersistClustersInHistoryDb{
     &kJourneys, "JourneysPersistClustersInHistoryDb", false};
-
-const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
-    &kJourneys, "JourneysOnDeviceClusteringBackend", true};
 
 const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold{
     &kJourneys, "JourneysMinScoreToAlwaysShowAboveTheFold", 0.5};
@@ -68,9 +55,6 @@ const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
 
 const base::Feature kUserVisibleDebug{"JourneysUserVisibleDebug",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kRemoteModelForDebugging{"JourneysRemoteModelForDebugging",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPersistContextAnnotationsInHistoryDb{
     "JourneysPersistContextAnnotationsInHistoryDb",

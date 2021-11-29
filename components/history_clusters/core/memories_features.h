@@ -13,23 +13,8 @@ namespace history_clusters {
 
 // Params & helpers functions
 
-// Returns the remote model debug endpoint used to cluster visits into memories.
-// Returns an empty GURL() when the remote model debug endpoint is disabled.
-// Note, the on-device backend (enabled by default) takes precedence over the
-// remote model endpoint. The on-device backend has to be separately disabled
-// to access the remote model endpoint.
-GURL RemoteModelEndpoint();
-
-// Returns the experiment name to pass through to the remote model debug
-// endpoint to control how the visits get clustered. Returns an empty string if
-// this client should just use be returned the default clustering or if the
-// remote model debug endpoint is disabled.
-extern const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName;
-
-// The max number of visits to use for each clustering iteration. When using the
-// remote model, this limits the number of visits sent.  Only applies when using
-// persisted visit context annotations; i.e.
-// `kPersistContextAnnotationsInHistoryDb` is true.
+// The max number of visits to use for each clustering iteration. This limits
+// the number of visits sent to the clustering backend per batch.
 extern const base::FeatureParam<int> kMaxVisitsToCluster;
 
 // The recency threshold controlling which visits will be clustered. This isn't
@@ -81,10 +66,6 @@ extern const base::Feature kNonUserVisibleDebug;
 // Enables debug info in user-visible surfaces, like the actual WebUI page.
 // Does nothing if `kJourneys` is disabled.
 extern const base::Feature kUserVisibleDebug;
-
-// Enables using a remote model endpoint for Memories clustering for debugging
-// purposes. This should not be ever enabled in production.
-extern const base::Feature kRemoteModelForDebugging;
 
 // Enables persisting context annotations in the History DB. They are always
 // calculated anyways. This just enables storing them. This is expected to be
