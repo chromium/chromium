@@ -53,7 +53,6 @@ class SearchControllerImplNew : public SearchController {
   SearchControllerImplNew& operator=(const SearchControllerImplNew&) = delete;
 
   // SearchController:
-  void InitializeRankers() override;
   void Start(const std::u16string& query) override;
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,

@@ -15,6 +15,9 @@ namespace app_list {
 class MrfuCache;
 
 // A ranker that groups results into categories.
+//
+// TODO(crbug.com/1199206): This is temporarily unused while being incorporated
+// into the FtrlCategoryRanker.
 class CategoryUsageRanker : public Ranker {
  public:
   explicit CategoryUsageRanker(Profile* profile);

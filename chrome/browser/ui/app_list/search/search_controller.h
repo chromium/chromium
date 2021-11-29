@@ -40,7 +40,7 @@ using ResultsMap = base::flat_map<ProviderType, Results>;
 // to all search providers, then invokes the mixer to mix and to publish the
 // results to the given SearchResults UI model.
 //
-// // TODO(crbug.com/1199206): The SearchController is being reimplemented with
+// TODO(crbug.com/1199206): The SearchController is being reimplemented with
 // a different ranking system. Once this reimplementation is finished, this pure
 // virtual class can be removed and replaced with SearchControllerImplNew.
 class SearchController {
@@ -67,7 +67,7 @@ class SearchController {
 
   virtual ~SearchController() {}
 
-  virtual void InitializeRankers() = 0;
+  virtual void InitializeRankers() {}
 
   virtual void Start(const std::u16string& query) = 0;
   // TODO(crbug.com/1199206): We should rename this to AppListClosing for

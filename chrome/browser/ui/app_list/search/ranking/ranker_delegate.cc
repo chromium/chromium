@@ -4,10 +4,26 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 
+#include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/ftrl_category_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/ftrl_result_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
+
 namespace app_list {
 
-RankerDelegate::RankerDelegate(Profile* profile,
-                               SearchController* controller) {}
+RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
+  AddRanker(std::make_unique<ScoreNormalizingRanker>(profile));
+  AddRanker(std::make_unique<FtrlResultRanker>());
+  AddRanker(std::make_unique<FtrlCategoryRanker>());
+  AddRanker(std::make_unique<TopMatchRanker>());
+  AddRanker(std::make_unique<FilteringRanker>());
+  AddRanker(std::make_unique<RemovedResultsRanker>(
+      RankerStateDirectory(profile).AppendASCII("removed_results_ranker.pb"),
+      base::Seconds(30)));
+}
 
 RankerDelegate::~RankerDelegate() {}
 

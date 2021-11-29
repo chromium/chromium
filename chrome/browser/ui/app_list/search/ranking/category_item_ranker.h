@@ -14,6 +14,9 @@ namespace app_list {
 // the highest scoring result per-category. This is assumed to run after the
 // score normalization stage, which makes score comparable between search
 // providers.
+//
+// TODO(crbug.com/1199206): This is temporarily unused while being incorporated
+// into the FtrlCategoryRanker.
 class CategoryItemRanker : public Ranker {
  public:
   CategoryItemRanker() = default;
