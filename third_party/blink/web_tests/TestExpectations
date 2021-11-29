@@ -5900,11 +5900,6 @@ crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.
 crbug.com/1105274 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Failure Pass Skip Timeout ]
 crbug.com/1105275 [ Mac ] fast/dom/Window/window-onFocus.html [ Failure Pass ]
 
-# Temporarily disable tests to allow fixing of devtools path escaping
-crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Failure Pass Skip Timeout ]
-crbug.com/1094436 http/tests/devtools/persistence/automapping-urlencoded-paths.js [ Failure Pass ]
-crbug.com/1094436 http/tests/devtools/sources/debugger/navigator-view.js [ Crash Failure Pass ]
-
 # This test fails due to the linked bug since input is now routed through the compositor.
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
