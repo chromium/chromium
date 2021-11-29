@@ -2916,7 +2916,7 @@ String AXNodeObject::GetValueForControl() const {
   // An ARIA combobox can get value from inner contents.
   if (AriaRoleAttribute() == ax::mojom::blink::Role::kComboBoxMenuButton) {
     AXObjectSet visited;
-    return TextFromDescendants(visited, false);
+    return TextFromDescendants(visited, nullptr, false);
   }
 
   return String();
@@ -3230,12 +3230,14 @@ String AXNodeObject::TextAlternative(
         name_sources->back().type = name_from;
       }
 
-      if (auto* text_node = DynamicTo<Text>(node))
+      if (auto* text_node = DynamicTo<Text>(node)) {
         text_alternative = text_node->data();
-      else if (IsA<HTMLBRElement>(node))
+      } else if (IsA<HTMLBRElement>(node)) {
         text_alternative = String("\n");
-      else
-        text_alternative = TextFromDescendants(visited, false);
+      } else {
+        text_alternative =
+            TextFromDescendants(visited, aria_label_or_description_root, false);
+      }
 
       if (!text_alternative.IsEmpty()) {
         if (name_sources) {
@@ -3367,8 +3369,10 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   return false;
 }
 
-String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
-                                         bool recursive) const {
+String AXNodeObject::TextFromDescendants(
+    AXObjectSet& visited,
+    const AXObject* aria_label_or_description_root,
+    bool recursive) const {
   if (!CanHaveChildren())
     return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
 
@@ -3442,10 +3446,11 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
         ax::mojom::blink::NameFrom::kUninitialized;
     String result;
     if (child->IsPresentational()) {
-      result = child->TextFromDescendants(visited, true);
+      result = child->TextFromDescendants(visited,
+                                          aria_label_or_description_root, true);
     } else {
-      result =
-          RecursiveTextAlternative(*child, nullptr, visited, child_name_from);
+      result = RecursiveTextAlternative(*child, aria_label_or_description_root,
+                                        visited, child_name_from);
     }
 
     if (!result.IsEmpty() && previous && accumulated_text.length() &&
@@ -5544,7 +5549,7 @@ String AXNodeObject::Description(
     }
 
     AXObjectSet visited;
-    description = TextFromDescendants(visited, false);
+    description = TextFromDescendants(visited, nullptr, false);
 
     if (!description.IsEmpty()) {
       if (description_sources) {

@@ -562,8 +562,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                  NameSources* name_sources) const {
     return String();
   }
-  virtual String TextFromDescendants(AXObjectSet& visited,
-                                     bool recursive) const {
+  virtual String TextFromDescendants(
+      AXObjectSet& visited,
+      const AXObject* aria_label_or_description_root,
+      bool recursive) const {
     return String();
   }
 

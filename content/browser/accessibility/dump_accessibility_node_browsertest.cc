@@ -302,6 +302,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       DescFromContentOfDescribedbyElementRecursive) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "desc-from-content-of-describedby-element-recursive.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        DescImgAltDescribedbyHidden) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-img-alt-describedby-hidden.html"));
 }
@@ -862,6 +868,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameRadioTitle) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameResetButton) {
   RunAccNameTest(FILE_PATH_LITERAL("name-reset-button.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextContentOfLabelledByElementRecursive) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-text-content-of-labelledby-element-recursive.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextCssAfterInLabel) {

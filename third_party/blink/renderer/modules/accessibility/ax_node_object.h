@@ -174,6 +174,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String GetValueForControl() const override;
   String SlowGetValueForControlIncludingContentEditable() const override;
   String TextFromDescendants(AXObjectSet& visited,
+                             const AXObject* aria_label_or_description_root,
                              bool recursive) const override;
 
   // ARIA attributes.
