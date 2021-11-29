@@ -96,6 +96,13 @@ void TestCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
   std::move(callback).Run(/*proceed=*/is_allowed_by_dlp_);
 }
 
+void TestCaptureModeDelegate::CheckCaptureOperationRestrictionByDlp(
+    const aura::Window* window,
+    const gfx::Rect& bounds,
+    OnCaptureModeDlpRestrictionChecked callback) {
+  std::move(callback).Run(/*proceed=*/is_allowed_by_dlp_);
+}
+
 bool TestCaptureModeDelegate::IsCaptureAllowedByDlp(
     const aura::Window* window,
     const gfx::Rect& bounds) const {

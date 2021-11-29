@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
@@ -106,6 +107,20 @@ class ASH_EXPORT CaptureModeSession
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
+  // When performing capture, or at the end of the 3-second count down, the DLP
+  // manager is checked for any restricted content. The DLP manager may choose
+  // to show a system-modal dialog to warn the user about some content they're
+  // about to capture. This function is called to prepare for this case by
+  // hiding all the capture mode UIs and stopping the consumption of input
+  // events, so users can interact with the dialog.
+  void OnWaitingForDlpConfirmationStarted();
+
+  // This function is called when the DLP manager replies back, so we can undo
+  // the operations done in the above function. `will_proceed` is true when when
+  // the capture operation will continue (i.e. there are no restricted content
+  // found, or the user has accepted the dialog).
+  void OnWaitingForDlpConfirmationEnded(bool will_proceed);
+
   // Called when the settings menu is toggled.
   void SetSettingsMenuShown(bool shown);
 
@@ -187,6 +202,10 @@ class ASH_EXPORT CaptureModeSession
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Returns a list of all the currently available widgets that are owned by
+  // this session.
+  std::vector<views::Widget*> GetAvailableWidgets();
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
@@ -434,6 +453,10 @@ class ASH_EXPORT CaptureModeSession
   // point, it's guaranteed that recording will start and will not be blocked by
   // any errors, DLP restrictions, or any user cancellation.
   bool is_stopping_to_start_video_recording_ = false;
+
+  // True when we ask the DLP manager to check the screen content before we
+  // perform the capture.
+  bool is_waiting_for_dlp_confirmation_ = false;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;

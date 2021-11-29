@@ -72,6 +72,10 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool IsCaptureModeInitRestrictedByDlp() const override;
   void CheckCaptureModeInitRestrictionByDlp(
       OnCaptureModeDlpRestrictionChecked callback) override;
+  void CheckCaptureOperationRestrictionByDlp(
+      const aura::Window* window,
+      const gfx::Rect& bounds,
+      OnCaptureModeDlpRestrictionChecked callback) override;
   bool IsCaptureAllowedByDlp(const aura::Window* window,
                              const gfx::Rect& bounds) const override;
   bool IsCaptureAllowedByPolicy() const override;

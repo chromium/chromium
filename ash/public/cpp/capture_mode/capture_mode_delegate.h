@@ -84,8 +84,15 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void CheckCaptureModeInitRestrictionByDlp(
       OnCaptureModeDlpRestrictionChecked callback) = 0;
 
-  // Returns whether capture of the region defined by |window| and |bounds|
-  // is currently allowed by Data Leak Prevention feature.
+  // Checks whether capture of the region defined by |window| and |bounds|
+  // is currently allowed by the Data Leak Prevention feature. `callback` will
+  // be triggered by the DLP manager with `proceed` set to true if capture of
+  // that region is allowed, or set to false otherwise.
+  virtual void CheckCaptureOperationRestrictionByDlp(
+      const aura::Window* window,
+      const gfx::Rect& bounds,
+      OnCaptureModeDlpRestrictionChecked callback) = 0;
+
   virtual bool IsCaptureAllowedByDlp(const aura::Window* window,
                                      const gfx::Rect& bounds) const = 0;
 

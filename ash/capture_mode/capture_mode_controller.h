@@ -47,7 +47,13 @@ using OnFileDeletedCallback =
     base::OnceCallback<void(const base::FilePath& path,
                             bool delete_successful)>;
 
-// Controls starting and ending a Capture Mode session and its behavior.
+// Controls starting and ending a Capture Mode session and its behavior. There
+// are various checks that are run when a capture session start is attempted,
+// and when a capture operation is performed, to make sure they're allowed. For
+// example, checking that policy allows screen capture, and there are no content
+// on the screen restricted by DLP (Data Leak Prevention). In the case of video
+// recording, HDCP is also checked to ensure no protected content is being
+// recorded.
 class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
       public SessionObserver,
@@ -387,6 +393,18 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // Called by the DLP manager when it's checked for any on-screen content
+  // restriction at the time when the capture operation is attempted. `proceed`
+  // will be set to true if the capture operation should continue, false if it
+  // should be aborted.
+  void OnDlpRestrictionCheckedAtPerformingCapture(bool proceed);
+
+  // Called by the DLP manager when it's checked again for any on-screen content
+  // restriction at the time when the video capture 3-second countdown ends.
+  // `proceed` will be set to true if video recording should begin, or false if
+  // it should be aborted.
+  void OnDlpRestrictionCheckedAtCountDownFinished(bool proceed);
+
   // Bound to a callback that will be called by the DLP manager to let us know
   // whether a pending session initialization should `proceed` or abort due to
   // some restricted contents on the screen.
@@ -453,8 +471,9 @@ class ASH_EXPORT CaptureModeController
   bool low_disk_space_threshold_reached_ = false;
 
   // Set to true when we're waiting for a callback from the DLP manager to check
-  // content restrictions that may block the session initialization.
-  bool pending_dlp_check_on_session_init_ = false;
+  // content restrictions that may block capture mode at any of its stages
+  // (initialization or performing the capture).
+  bool pending_dlp_check_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;

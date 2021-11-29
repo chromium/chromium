@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
 
 #include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
 namespace policy {
@@ -51,6 +53,10 @@ void DlpWarnNotifier::ShowDlpWarningDialog(
       new DlpWarnDialog(std::move(callback), options),
       /*context=*/nullptr, /*parent=*/nullptr);
   widget->Show();
+  // We disable the dialog's hide animations after showing it so that it doesn't
+  // end up showing in the screenshots, video recording, or screen share.
+  widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                         true);
 }
 
 }  // namespace policy

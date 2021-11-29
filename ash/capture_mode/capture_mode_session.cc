@@ -37,6 +37,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/cursor/cursor_util.h"
 #include "ui/aura/env.h"
@@ -590,16 +591,10 @@ void CaptureModeSession::Shutdown() {
   if (old_mouse_warp_status_)
     SetMouseWarpEnabled(*old_mouse_warp_status_);
 
-  // Close these widgets immediately to avoid having them show up in the
-  // captured screenshots or video.
-  if (capture_label_widget_)
-    capture_label_widget_->CloseNow();
-  if (dimensions_label_widget_)
-    dimensions_label_widget_->CloseNow();
-  if (capture_mode_settings_widget_)
-    capture_mode_settings_widget_->CloseNow();
-  DCHECK(capture_mode_bar_widget_);
-  capture_mode_bar_widget_->CloseNow();
+  // Close all widgets immediately to avoid having them show up in the captured
+  // screenshots or video.
+  for (auto* widget : GetAvailableWidgets())
+    widget->CloseNow();
 
   if (a11y_alert_on_session_exit_) {
     capture_mode_util::TriggerAccessibilityAlert(
@@ -653,6 +648,55 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
       new_type == CaptureModeType::kImage
           ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE
           : IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO);
+}
+
+void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
+  is_waiting_for_dlp_confirmation_ = true;
+
+  cursor_setter_.reset();
+
+  for (auto* widget : GetAvailableWidgets()) {
+    // The order here matters. We need to disable the animation before we hide
+    // to avoid any hide animation here, or until the widgets are shown (also
+    // without animation) when OnWaitingForDlpConfirmationEnded() is called.
+    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                           true);
+    widget->Hide();
+  }
+
+  // Refresh painting the layer, since we don't paint anything while a DLP
+  // dialog might be shown.
+  layer()->SchedulePaint(layer()->bounds());
+}
+
+void CaptureModeSession::OnWaitingForDlpConfirmationEnded(bool will_proceed) {
+  is_waiting_for_dlp_confirmation_ = false;
+
+  if (!will_proceed) {
+    // If the capture operation is aborting, we don't need to undo the work done
+    // in OnWaitingForDlpConfirmationStarted(). The session is about to shutdown
+    // anyways, so it's better to avoid any wasted effort.
+    return;
+  }
+
+  // If `will_proceed` is true, which means we'll soon end the session to
+  // continue the capture operation, it doesn't always mean the session is
+  // ending immediately, since we may proceed to the 3-second countdown, for
+  // which the capture mode UIs need to be returned back to normal.
+
+  cursor_setter_ = std::make_unique<CursorSetter>();
+
+  for (auto* widget : GetAvailableWidgets()) {
+    // The order here matters. See OnWaitingForDlpConfirmationStarted() above.
+    // At this point the animation is still disabled, so we show the window now
+    // before we re-enable the animations. This is to avoid having those widgets
+    // show up in the captured images or videos.
+    widget->Show();
+    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                           false);
+  }
+
+  layer()->SchedulePaint(layer()->bounds());
 }
 
 void CaptureModeSession::SetSettingsMenuShown(bool shown) {
@@ -795,6 +839,10 @@ void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
+  // We don't paint anything while a DLP system-modal dialog might be shown.
+  if (is_waiting_for_dlp_confirmation_)
+    return;
+
   ui::PaintRecorder recorder(context, layer()->size());
 
   auto* color_provider = AshColorProvider::Get();
@@ -806,6 +854,11 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
 }
 
 void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
+  // We don't consume any events while a DLP system-modal dialog might be shown,
+  // so that the user may interact with it.
+  if (is_waiting_for_dlp_confirmation_)
+    return;
+
   if (folder_selection_dialog_controller_) {
     if (folder_selection_dialog_controller_->ShouldConsumeEvent(event))
       event->StopPropagation();
@@ -883,10 +936,20 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeSession::OnMouseEvent(ui::MouseEvent* event) {
+  // We don't consume any events while a DLP system-modal dialog might be shown,
+  // so that the user may interact with it.
+  if (is_waiting_for_dlp_confirmation_)
+    return;
+
   OnLocatedEvent(event, /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
+  // We don't consume any events while a DLP system-modal dialog might be shown,
+  // so that the user may interact with it.
+  if (is_waiting_for_dlp_confirmation_)
+    return;
+
   OnLocatedEvent(event, /*is_touch=*/true);
 }
 
@@ -1043,6 +1106,19 @@ void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
   MaybeChangeRoot(window->GetRootWindow());
   capture_window_observer_->SetSelectedWindow(window);
+}
+
+std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
+  std::vector<views::Widget*> result;
+  DCHECK(capture_mode_bar_widget_);
+  result.push_back(capture_mode_bar_widget_.get());
+  if (capture_label_widget_)
+    result.push_back(capture_label_widget_.get());
+  if (capture_mode_settings_widget_)
+    result.push_back(capture_mode_settings_widget_.get());
+  if (dimensions_label_widget_)
+    result.push_back(dimensions_label_widget_.get());
+  return result;
 }
 
 void CaptureModeSession::RefreshBarWidgetBounds() {
