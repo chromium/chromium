@@ -9,8 +9,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "Dawn Linux x64 DEPS Builder": {
@@ -23,8 +22,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "Dawn Mac x64 Builder": {
