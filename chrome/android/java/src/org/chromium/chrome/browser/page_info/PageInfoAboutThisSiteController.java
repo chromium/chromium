@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -36,15 +36,15 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final Tab mTab;
+    private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
-            PageInfoRowView rowView, PageInfoControllerDelegate delegate, Tab tab) {
+            PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
-        mTab = tab;
+        mWebContents = webContents;
         setupRow();
     }
 
@@ -70,7 +70,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             new TabDelegate(/*incognito=*/false)
                     .createNewTab(
                             new LoadUrlParams(mSiteInfo.getDescription().getSource().getUrl()),
-                            TabLaunchType.FROM_CHROME_UI, mTab);
+                            TabLaunchType.FROM_CHROME_UI, TabUtils.fromWebContents(mWebContents));
         });
         return view;
     }
@@ -110,8 +110,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     private @Nullable SiteInfo getSiteInfo() {
         byte[] result = PageInfoAboutThisSiteControllerJni.get().getSiteInfo(
-                mMainController.getBrowserContext(), mMainController.getURL(),
-                mTab.getWebContents());
+                mMainController.getBrowserContext(), mMainController.getURL(), mWebContents);
         if (result == null) return null;
         SiteInfo info = null;
         try {
