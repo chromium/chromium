@@ -61,7 +61,7 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
       if os.path.exists(os.path.join(in_directory, '.git')):
         return True
       parent = os.path.dirname(in_directory)
-      if parent == host_paths.DIR_SOURCE_ROOT or parent == in_directory:
+      if parent in (host_paths.DIR_SOURCE_ROOT, in_directory):
         return False
       return _is_git_directory(parent)
 
@@ -70,8 +70,7 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
     if not os.path.exists(os.path.join(in_directory, '.svn')):
       if _is_git_directory(in_directory):
         return repo_utils.GetGitHeadSHA1(in_directory)
-      else:
-        return ''
+      return ''
 
     output = cmd_helper.GetCmdOutput(['svn', 'info', '--xml'], cwd=in_directory)
     try:

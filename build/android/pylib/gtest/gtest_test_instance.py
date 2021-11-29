@@ -623,4 +623,3 @@ class GtestTestInstance(test_instance.TestInstance):
   #override
   def TearDown(self):
     """Do nothing."""
-    pass

@@ -108,6 +108,7 @@ def _ThreadType(thread_name):
     return 'main'
   if thread_name.startswith('RenderThread'):
     return 'render'
+  raise ValueError('got no matching thread_name')
 
 
 def _GetSpecifiedTID(device, pid, thread_specifier):

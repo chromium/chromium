@@ -33,10 +33,9 @@ _SIGTERM_TEST_LOG = (
 def SubstituteDeviceRoot(device_path, device_root):
   if not device_path:
     return device_root
-  elif isinstance(device_path, list):
+  if isinstance(device_path, list):
     return posixpath.join(*(p if p else device_root for p in device_path))
-  else:
-    return device_path
+  return device_path
 
 
 class TestsTerminated(Exception):

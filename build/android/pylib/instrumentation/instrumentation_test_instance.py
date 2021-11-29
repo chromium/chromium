@@ -404,15 +404,14 @@ def FilterTests(tests, filter_str=None, annotations=None,
   def annotation_value_matches(filter_av, av):
     if filter_av is None:
       return True
-    elif isinstance(av, dict):
+    if isinstance(av, dict):
       tav_from_dict = av['value']
       # If tav_from_dict is an int, the 'in' operator breaks, so convert
       # filter_av and manually compare. See https://crbug.com/1019707
       if isinstance(tav_from_dict, int):
         return int(filter_av) == tav_from_dict
-      else:
-        return filter_av in tav_from_dict
-    elif isinstance(av, list):
+      return filter_av in tav_from_dict
+    if isinstance(av, list):
       return filter_av in av
     return filter_av == av
 
@@ -779,10 +778,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           self._package_info = package_info
           break
     if not self._package_info:
-      logging.warning(("Unable to find package info for %s. " +
-                       "(This may just mean that the test package is " +
-                       "currently being installed.)"),
-                       self._test_package)
+      logging.warning(
+          'Unable to find package info for %s. '
+          '(This may just mean that the test package is '
+          'currently being installed.)', self._test_package)
 
     for apk in args.additional_apks:
       if not os.path.exists(apk):
@@ -1122,14 +1121,13 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     def _annotationToSwitches(clazz, methods):
       if clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS_SWITCHES:
         return [methods['value']]
-      elif clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS:
+      if clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS:
         list_of_switches = []
         for annotation in methods['value']:
-          for clazz, methods in six.iteritems(annotation):
-            list_of_switches += _annotationToSwitches(clazz, methods)
+          for c, m in six.iteritems(annotation):
+            list_of_switches += _annotationToSwitches(c, m)
         return list_of_switches
-      else:
-        return []
+      return []
 
     def _setTestFlags(test, flags):
       if flags:

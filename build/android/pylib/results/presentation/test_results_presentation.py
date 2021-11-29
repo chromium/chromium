@@ -127,8 +127,7 @@ def logs_cell(result, test_name, suite_name):
         target=LinkTarget.NEW_TAB))
   if link_list:
     return links_cell(link_list)
-  else:
-    return cell('(no logs)')
+  return cell('(no logs)')
 
 
 def code_search(test, cs_base_url):
@@ -324,17 +323,16 @@ def results_to_html(results_dict, cs_base_url, bucket, test_name,
           'feedback_url': feedback_url(None),
         })
     return (html_render, None, None)
-  else:
-    dest = google_storage_helper.unique_name(
-        '%s_%s_%s' % (test_name, builder_name, build_number))
-    result_details_link = google_storage_helper.get_url_link(
-        dest, '%s/html' % bucket)
-    html_render = main_template.render(  #  pylint: disable=no-member
-        {
-          'tb_values': [suite_table_values, test_table_values],
-          'feedback_url': feedback_url(result_details_link),
-        })
-    return (html_render, dest, result_details_link)
+  dest = google_storage_helper.unique_name(
+      '%s_%s_%s' % (test_name, builder_name, build_number))
+  result_details_link = google_storage_helper.get_url_link(
+      dest, '%s/html' % bucket)
+  html_render = main_template.render(  #  pylint: disable=no-member
+      {
+        'tb_values': [suite_table_values, test_table_values],
+        'feedback_url': feedback_url(result_details_link),
+      })
+  return (html_render, dest, result_details_link)
 
 
 def result_details(json_path, test_name, cs_base_url, bucket=None,
@@ -473,7 +471,7 @@ def main():
       with open(args.output_json, 'w') as f:
         json.dump({}, f)
     return
-  elif len(args.positional) != 0 and args.json_file:
+  if len(args.positional) != 0 and args.json_file:
     raise parser.error('Exactly one of args.positional and '
                        'args.json_file should be given.')
 

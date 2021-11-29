@@ -130,9 +130,9 @@ def InitializeFilterFromArgs(args):
     return test_filter
 
   # At this point it's potentially several files, in a list and ; separated
-  for test_filter_file in args.test_filter_files:
+  for test_filter_files in args.test_filter_files:
     # At this point it's potentially several files, ; separated
-    for test_filter_file in test_filter_file.split(';'):
+    for test_filter_file in test_filter_files.split(';'):
       # At this point it's individual files
       with open(test_filter_file, 'r') as f:
         positive_file_patterns, negative_file_patterns = ParseFilterFile(f)

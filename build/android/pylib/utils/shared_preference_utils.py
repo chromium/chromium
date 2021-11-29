@@ -23,7 +23,7 @@ def UnicodeToStr(data):
         UnicodeToStr(key): UnicodeToStr(value)
         for key, value in data.items()
     }
-  elif isinstance(data, list):
+  if isinstance(data, list):
     return [UnicodeToStr(element) for element in data]
   try:
     # Python-2 compatibility.
@@ -97,7 +97,7 @@ def ApplySharedPreferenceSetting(shared_pref, setting):
       if not is_set and isinstance(value, basestring):
         shared_pref.SetString(key, value)
         is_set = True
-      if not is_set and (isinstance(value, long) or isinstance(value, int)):
+      if not is_set and isinstance(value, (long, int)):
         shared_pref.SetLong(key, value)
         is_set = True
     except NameError:

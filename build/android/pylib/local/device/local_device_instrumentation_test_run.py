@@ -537,11 +537,11 @@ class LocalDeviceInstrumentationTestRun(
         other_tests.append(test)
 
     all_tests = []
-    for _, tests in list(batched_tests.items()):
-      tests.sort()  # Ensure a consistent ordering across external shards.
+    for _, btests in list(batched_tests.items()):
+      btests.sort()  # Ensure a consistent ordering across external shards.
       all_tests.extend([
-          tests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]
-          for i in range(0, len(tests), _TEST_BATCH_MAX_GROUP_SIZE)
+          btests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]
+          for i in range(0, len(btests), _TEST_BATCH_MAX_GROUP_SIZE)
       ])
     all_tests.extend(other_tests)
     # Sort all tests by hash.

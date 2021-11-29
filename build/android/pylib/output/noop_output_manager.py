@@ -36,7 +36,6 @@ class NoopArchivedFile(output_manager.ArchivedFile):
 
   def Archive(self):
     """NoopArchivedFiles are not retained."""
-    pass
 
   def _Archive(self):
     pass

@@ -161,6 +161,7 @@ def _generate_trace_function(to_include, to_exclude):
       if event == "return":
         trace_event.trace_end(function_name)
         return None
+    return None
 
   return traceFunction
 
