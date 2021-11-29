@@ -23,6 +23,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/wm/core/window_util.h"
 
@@ -101,11 +103,13 @@ void StopRecordingAndWaitForDlpWarningDialog(Browser* browser) {
   EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
 }
 
-void SendKeyEvent(Browser* browser, ui::KeyboardCode key_code) {
+void SendKeyEvent(Browser* browser,
+                  ui::KeyboardCode key_code,
+                  int flags = ui::EF_NONE) {
   auto* browser_window = GetBrowserWindow(browser);
   ui::test::EventGenerator event_generator{browser_window->GetRootWindow(),
                                            browser_window};
-  event_generator.PressAndReleaseKey(key_code);
+  event_generator.PressAndReleaseKey(key_code, flags);
 }
 
 }  // namespace
@@ -226,6 +230,60 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SendKeyEvent(browser(), ui::VKEY_RETURN);
   EXPECT_TRUE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CaptureModeBrowserTest,
+    DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed) {
+  ASSERT_TRUE(browser());
+
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
+  ash::CaptureModeTestApi test_api;
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // The screenshots should not be taken immediately through the keyboard
+  // shortcut. The controller should be in a pending state waiting for a reply
+  // from the DLP manager.
+  SendKeyEvent(browser(), ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // Dismiss the dialog by hitting the ESCAPE key. The screenshot should be
+  // aborted and the pending state should end.
+  SendKeyEvent(browser(), ui::VKEY_ESCAPE);
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CaptureModeBrowserTest,
+    DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted) {
+  ASSERT_TRUE(browser());
+
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
+  ash::CaptureModeTestApi test_api;
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // The screenshots should not be taken immediately through the keyboard
+  // shortcut. The controller should be in a pending state waiting for a reply
+  // from the DLP manager.
+  SendKeyEvent(browser(), ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // Set up a waiter to wait for the file to be saved.
+  base::RunLoop loop;
+  test_api.SetOnCaptureFileSavedCallback(
+      base::BindLambdaForTesting([&loop](const base::FilePath& path) {
+        base::ScopedAllowBlockingForTesting allow_blocking;
+        EXPECT_TRUE(base::PathExists(path));
+        loop.Quit();
+      }));
+
+  // Accept the dialog by hitting the ENTER key. The screenshot should be taken
+  // and the pending state should end.
+  SendKeyEvent(browser(), ui::VKEY_RETURN);
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // Wait for the file to be saved.
+  loop.Run();
 }
 
 class AdvancedSettingsCaptureModeBrowserTest

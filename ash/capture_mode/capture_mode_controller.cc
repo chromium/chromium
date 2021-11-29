@@ -614,36 +614,19 @@ CaptureModeController::GetCurrentCaptureFolder() const {
 }
 
 void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
+  if (pending_dlp_check_on_session_init_)
+    return;
+
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
     return;
   }
-  if (delegate_->IsCaptureModeInitRestrictedByDlp()) {
-    ShowDisabledNotification(CaptureAllowance::kDisallowedByDlp);
-    return;
-  }
-  // Get a vector of RootWindowControllers with primary root window at first.
-  const std::vector<RootWindowController*> controllers =
-      RootWindowController::root_window_controllers();
-  // Capture screenshot for each individual display.
-  int display_index = 1;
-  for (RootWindowController* controller : controllers) {
-    // TODO(shidi): Check with UX what notification should show if
-    // some (but not all) of the displays have restricted content and
-    // whether we should localize the display name.
-    const CaptureParams capture_params{controller->GetRootWindow(),
-                                       controller->GetRootWindow()->bounds()};
-    CaptureImage(capture_params, controllers.size() == 1
-                                     ? BuildImagePath()
-                                     : BuildImagePathForDisplay(display_index));
-    ++display_index;
-  }
 
-  // Since this doesn't create a capture mode session, log metrics here.
-  RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
-  RecordCaptureModeConfiguration(CaptureModeType::kImage,
-                                 CaptureModeSource::kFullscreen,
-                                 /*audio_on=*/false);
+  pending_dlp_check_on_session_init_ = true;
+  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
+      &CaptureModeController::
+          OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeController::PerformCapture() {
@@ -1509,6 +1492,43 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
 
   low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
+}
+
+void CaptureModeController::
+    OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays(bool proceed) {
+  pending_dlp_check_on_session_init_ = false;
+  if (!proceed)
+    return;
+
+  // Due to fact that the DLP warning dialog may take a while, check policy
+  // again even though we checked in CaptureScreenshotsOfAllDisplays().
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+
+  // Get a vector of RootWindowControllers with primary root window at first.
+  const std::vector<RootWindowController*> controllers =
+      RootWindowController::root_window_controllers();
+  // Capture screenshot for each individual display.
+  int display_index = 1;
+  for (RootWindowController* controller : controllers) {
+    // TODO(shidi): Check with UX what notification should show if
+    // some (but not all) of the displays have restricted content and
+    // whether we should localize the display name.
+    const CaptureParams capture_params{controller->GetRootWindow(),
+                                       controller->GetRootWindow()->bounds()};
+    CaptureImage(capture_params, controllers.size() == 1
+                                     ? BuildImagePath()
+                                     : BuildImagePathForDisplay(display_index));
+    ++display_index;
+  }
+
+  // Since this doesn't create a capture mode session, log metrics here.
+  RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
+  RecordCaptureModeConfiguration(CaptureModeType::kImage,
+                                 CaptureModeSource::kFullscreen,
+                                 /*audio_on=*/false);
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(

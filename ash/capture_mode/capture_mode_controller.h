@@ -405,6 +405,11 @@ class ASH_EXPORT CaptureModeController
                                          bool in_projector_mode,
                                          bool proceed);
 
+  // Bound to a callback that will be called by DLP manager to let the user know
+  // whether full screen capture on all displays should `proceed` or abort due
+  // to some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays(bool proceed);
+
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
