@@ -45,7 +45,8 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"hasBeenUpdated", IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT},
       {"updatingInfo", IDS_FIRMWARE_UPDATING_INFO_TEXT},
       {"installing", IDS_FIRMWARE_INSTALLING_TEXT},
-      {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT}};
+      {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT},
+      {"versionText", IDS_FIRMWARE_VERSION_TEXT}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();

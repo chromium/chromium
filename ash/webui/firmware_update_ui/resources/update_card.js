@@ -59,6 +59,18 @@ export class UpdateCardElement extends UpdateCardElementBase {
         eventName,
         {bubbles: true, composed: true, detail: {update: this.update}}));
   }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeVersionText_() {
+    if (!this.update.version) {
+      return '';
+    }
+
+    return this.i18n('versionText', this.update.version);
+  }
 }
 
 customElements.define(UpdateCardElement.is, UpdateCardElement);

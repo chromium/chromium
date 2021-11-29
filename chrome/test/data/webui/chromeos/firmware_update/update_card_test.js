@@ -61,7 +61,8 @@ export function updateCardTest() {
       assertEquals(
           fakeFirmwareUpdate.deviceName, updateCardElement.$.name.innerText);
       assertEquals(
-          fakeFirmwareUpdate.version, updateCardElement.$.version.innerText);
+          `Version ${fakeFirmwareUpdate.version}`,
+          updateCardElement.$.version.innerText);
       assertEquals(
           fakeFirmwareUpdate.description,
           updateCardElement.$.description.innerText);

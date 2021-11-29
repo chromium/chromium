@@ -2540,6 +2540,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FIRMWARE_UP_TO_DATE_TEXT" desc="Label shown when no firmware updates are available.">
         All peripherals are up to date
       </message>
+      <message name="IDS_FIRMWARE_VERSION_TEXT" desc="Label for the update's version.">
+        Version <ph name="VERSION">$1<ex>3.0.2</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
