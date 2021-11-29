@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/cxx17_backports.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -20,7 +21,10 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
 
       web_app::kGoogleCalendarAppId,
 
+      // TODO(b/207576430): Once Files SWA is fully launched, remove this entry.
       extension_misc::kFilesManagerAppId,
+
+      file_manager::kFileManagerSwaAppId,
 
       web_app::kMessagesAppId,
 

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -231,7 +232,8 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == arc::kGoogleDuoAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == extension_misc::kFilesManagerAppId) {
+  } else if (app_id == extension_misc::kFilesManagerAppId ||
+             app_id == file_manager::kFileManagerSwaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGmailAppId ||
