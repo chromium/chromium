@@ -7,22 +7,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/signin_fre_uma_dialog_padding"
     android:paddingBottom="@dimen/signin_fre_uma_dialog_padding"
-    android:paddingStart="@dimen/signin_fre_uma_dialog_padding"
     android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:requiresFadingEdge="vertical"
-        android:overScrollMode="ifContentScrolls">
+        android:requiresFadingEdge="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/signin_fre_uma_dialog_padding"
+            android:paddingTop="@dimen/signin_fre_uma_dialog_padding"
+            android:paddingStart="@dimen/signin_fre_uma_dialog_padding"
+            android:paddingEnd="@dimen/signin_fre_uma_dialog_padding"
             android:orientation="vertical">
 
             <TextView
