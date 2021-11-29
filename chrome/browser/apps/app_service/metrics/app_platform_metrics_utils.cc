@@ -207,23 +207,22 @@ bool ShouldRecordUkm(Profile* profile) {
   }
 }
 
-bool ShouldRecordUkmForAppTypeName(AppTypeName app_type_name) {
-  switch (app_type_name) {
-    case apps::AppTypeName::kArc:
-    case apps::AppTypeName::kBuiltIn:
-    case apps::AppTypeName::kChromeApp:
-    case apps::AppTypeName::kChromeBrowser:
-    case apps::AppTypeName::kWeb:
-    case apps::AppTypeName::kSystemWeb:
-    case apps::AppTypeName::kCrostini:
+bool ShouldRecordUkmForAppTypeName(AppType app_type) {
+  switch (app_type) {
+    case AppType::kArc:
+    case AppType::kBuiltIn:
+    case AppType::kExtension:
+    case AppType::kWeb:
+    case AppType::kSystemWeb:
+    case AppType::kCrostini:
       return true;
-    case apps::AppTypeName::kUnknown:
-    case apps::AppTypeName::kMacOs:
-    case apps::AppTypeName::kPluginVm:
-    case apps::AppTypeName::kStandaloneBrowser:
-    case apps::AppTypeName::kStandaloneBrowserExtension:
-    case apps::AppTypeName::kRemote:
-    case apps::AppTypeName::kBorealis:
+    case AppType::kUnknown:
+    case AppType::kMacOs:
+    case AppType::kPluginVm:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserExtension:
+    case AppType::kRemote:
+    case AppType::kBorealis:
       return false;
   }
 }

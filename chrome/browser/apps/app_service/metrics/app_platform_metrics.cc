@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/ukm/app_source_url_recorder.h"
@@ -463,10 +464,6 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
   apps::AppTypeName app_type_name =
       GetAppTypeName(profile_, app_type, app_id, container);
 
-  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
-    return;
-  }
-
   ukm::SourceId source_id = GetSourceId(app_id);
   if (source_id == ukm::kInvalidSourceId) {
     return;
@@ -487,9 +484,6 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
   AppTypeName app_type_name =
       GetAppTypeName(profile_, app_type, app_id,
                      apps::mojom::LaunchContainer::kLaunchContainerNone);
-  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
-    return;
-  }
 
   ukm::SourceId source_id = GetSourceId(app_id);
   if (source_id == ukm::kInvalidSourceId) {
@@ -738,12 +732,6 @@ void AppPlatformMetrics::SetWindowInActivated(
   AppTypeName app_type_name = it->second.app_type_name;
   AppTypeNameV2 app_type_name_v2 = it->second.app_type_name_v2;
 
-  if (usage_time_it == usage_time_per_five_minutes_.end()) {
-    usage_time_per_five_minutes_[it->first].source_id = GetSourceId(app_id);
-    usage_time_it = usage_time_per_five_minutes_.find(it->first);
-  }
-  usage_time_it->second.app_type_name = app_type_name;
-
   running_duration_[app_type_name] +=
       base::TimeTicks::Now() - it->second.start_time;
 
@@ -752,7 +740,18 @@ void AppPlatformMetrics::SetWindowInActivated(
       start_time_per_five_minutes_[instance_id].start_time;
   app_type_running_time_per_five_minutes_[app_type_name] += running_time;
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
-  usage_time_it->second.running_time += running_time;
+
+  if (usage_time_it == usage_time_per_five_minutes_.end()) {
+    auto source_id = GetSourceId(app_id);
+    if (source_id != ukm::kInvalidSourceId) {
+      usage_time_per_five_minutes_[it->first].source_id = source_id;
+      usage_time_it = usage_time_per_five_minutes_.find(it->first);
+    }
+  }
+  if (usage_time_it != usage_time_per_five_minutes_.end()) {
+    usage_time_it->second.app_type_name = app_type_name;
+    usage_time_it->second.running_time += running_time;
+  }
 
   running_start_time_.erase(it);
   start_time_per_five_minutes_.erase(instance_id);
@@ -885,12 +884,17 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
 
     auto usage_time_it = usage_time_per_five_minutes_.find(it.first);
     if (usage_time_it == usage_time_per_five_minutes_.end()) {
-      usage_time_per_five_minutes_[it.first].source_id =
-          GetSourceId(it.second.app_id);
-      usage_time_it = usage_time_per_five_minutes_.find(it.first);
+      auto source_id = GetSourceId(it.second.app_id);
+      if (source_id != ukm::kInvalidSourceId) {
+        usage_time_per_five_minutes_[it.first].source_id = source_id;
+        usage_time_it = usage_time_per_five_minutes_.find(it.first);
+      }
     }
-    usage_time_it->second.app_type_name = it.second.app_type_name;
-    usage_time_it->second.running_time += running_time;
+    if (usage_time_it != usage_time_per_five_minutes_.end()) {
+      usage_time_it->second.app_type_name = it.second.app_type_name;
+      usage_time_it->second.running_time += running_time;
+    }
+
     it.second.start_time = base::TimeTicks::Now();
   }
 
@@ -920,13 +924,9 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
   std::vector<base::UnguessableToken> closed_instance_ids;
   for (auto& it : usage_time_per_five_minutes_) {
     apps::AppTypeName app_type_name = it.second.app_type_name;
-    if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
-      continue;
-    }
-
     ukm::SourceId source_id = it.second.source_id;
-    if (source_id != ukm::kInvalidSourceId &&
-        !it.second.running_time.is_zero()) {
+    DCHECK_NE(source_id, ukm::kInvalidSourceId);
+    if (!it.second.running_time.is_zero()) {
       ukm::builders::ChromeOSApp_UsageTime builder(source_id);
       builder.SetAppType((int)app_type_name)
           .SetDuration(it.second.running_time.InMilliseconds())
@@ -951,9 +951,6 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
   AppTypeName app_type_name =
       GetAppTypeName(profile_, update.AppType(), update.AppId(),
                      apps::mojom::LaunchContainer::kLaunchContainerNone);
-  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
-    return;
-  }
 
   ukm::SourceId source_id = GetSourceId(update.AppId());
   if (source_id == ukm::kInvalidSourceId) {
@@ -973,6 +970,10 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
 ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
   ukm::SourceId source_id = ukm::kInvalidSourceId;
   apps::mojom::AppType app_type = GetAppType(profile_, app_id);
+  if (!ShouldRecordUkmForAppTypeName(ConvertMojomAppTypToAppType(app_type))) {
+    return ukm::kInvalidSourceId;
+  }
+
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kExtension:

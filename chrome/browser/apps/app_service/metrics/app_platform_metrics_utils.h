@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Profile;
@@ -112,7 +113,7 @@ bool ShouldRecordUkm(Profile* profile);
 // record UKM. Otherwise, returns false.
 //
 // See DD: go/app-platform-metrics-using-ukm for details.
-bool ShouldRecordUkmForAppTypeName(AppTypeName app_type_name);
+bool ShouldRecordUkmForAppTypeName(AppType app_type_name);
 
 int GetUserTypeByDeviceTypeMetrics();
 
