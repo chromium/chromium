@@ -27,13 +27,14 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 
 bool GetTempDir(base::FilePath* path) {
   // In order to facilitate hermetic runs on macOS, first check
-  // $MAC_CHROMIUM_TMPDIR. We check this instead of $TMPDIR because external
-  // programs currently set $TMPDIR with no effect, but when we respect it
-  // directly it can cause crashes (like crbug.com/698759).
+  // MAC_CHROMIUM_TMPDIR. This is used instead of TMPDIR for historical reasons.
+  // This was originally done for https://crbug.com/698759 (TMPDIR too long for
+  // process singleton socket path), but is hopefully obsolete as of
+  // https://crbug.com/1266817 (allows a longer process singleton socket path).
+  // Continue tracking MAC_CHROMIUM_TMPDIR as that's what build infrastructure
+  // sets on macOS.
   const char* env_tmpdir = getenv("MAC_CHROMIUM_TMPDIR");
   if (env_tmpdir) {
-    DCHECK_LT(strlen(env_tmpdir), 50u)
-        << "too-long TMPDIR causes socket name length issues.";
     *path = base::FilePath(env_tmpdir);
     return true;
   }
