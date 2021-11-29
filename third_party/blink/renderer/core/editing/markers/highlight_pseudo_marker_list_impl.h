@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MARKER_BASE_LIST_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MARKER_BASE_LIST_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_PSEUDO_MARKER_LIST_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_PSEUDO_MARKER_LIST_IMPL_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -11,17 +11,13 @@
 
 namespace blink {
 
-// Nearly-complete implementation of DocumentMarkerList for text match or text
-// fragment markers (subclassed by TextMatchMarkerListImpl and
-// TextFragmentMarkerListImpl to implement the MarkerType() method).
-// TODO(rego): Remove this class and add a HighlightPseudoMarkerListImpl instead
-// (to match HighlightPseudoMarker classes).
-class CORE_EXPORT TextMarkerBaseListImpl : public DocumentMarkerList {
+// Implementation of HighlightPseudoMarkerList for HighlightPseudo markers.
+class CORE_EXPORT HighlightPseudoMarkerListImpl : public DocumentMarkerList {
  public:
-  TextMarkerBaseListImpl(const TextMarkerBaseListImpl&) = delete;
-  TextMarkerBaseListImpl& operator=(const TextMarkerBaseListImpl&) = delete;
+  HighlightPseudoMarkerListImpl(const HighlightPseudoMarkerListImpl&) = delete;
+  HighlightPseudoMarkerListImpl& operator=(
+      const HighlightPseudoMarkerListImpl&) = delete;
 
-  // DocumentMarkerList implementations
   bool IsEmpty() const final;
 
   void Add(DocumentMarker*) final;
@@ -41,21 +37,23 @@ class CORE_EXPORT TextMarkerBaseListImpl : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
-  void Trace(Visitor*) const override;
+  void Trace(blink::Visitor*) const override;
 
  protected:
-  TextMarkerBaseListImpl() = default;
+  HighlightPseudoMarkerListImpl() = default;
+
+ private:
   HeapVector<Member<DocumentMarker>> markers_;
 };
 
 template <>
-struct DowncastTraits<TextMarkerBaseListImpl> {
+struct DowncastTraits<HighlightPseudoMarkerListImpl> {
   static bool AllowFrom(const DocumentMarkerList& list) {
-    return list.MarkerType() == DocumentMarker::kTextMatch ||
+    return list.MarkerType() == DocumentMarker::kHighlight ||
            list.MarkerType() == DocumentMarker::kTextFragment;
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MARKER_BASE_LIST_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_PSEUDO_MARKER_LIST_IMPL_H_

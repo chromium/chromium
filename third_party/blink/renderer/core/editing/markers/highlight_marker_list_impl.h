@@ -5,43 +5,30 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_LIST_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_LIST_IMPL_H_
 
-#include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker_list_impl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-// Implementation of HighlightMarkerList for Highlight markers.
-class CORE_EXPORT HighlightMarkerListImpl final : public DocumentMarkerList {
+// Implementation of HighlightPseudoMarkerListImpl for Highlight markers.
+class CORE_EXPORT HighlightMarkerListImpl final
+    : public HighlightPseudoMarkerListImpl {
  public:
   HighlightMarkerListImpl() = default;
   HighlightMarkerListImpl(const HighlightMarkerListImpl&) = delete;
   HighlightMarkerListImpl& operator=(const HighlightMarkerListImpl&) = delete;
 
   DocumentMarker::MarkerType MarkerType() const final;
+};
 
-  bool IsEmpty() const final;
-
-  void Add(DocumentMarker*) final;
-  void Clear() final;
-
-  const HeapVector<Member<DocumentMarker>>& GetMarkers() const final;
-  DocumentMarker* FirstMarkerIntersectingRange(unsigned start_offset,
-                                               unsigned end_offset) const final;
-  HeapVector<Member<DocumentMarker>> MarkersIntersectingRange(
-      unsigned start_offset,
-      unsigned end_offset) const final;
-
-  bool MoveMarkers(int length, DocumentMarkerList* dst_list) final;
-  bool RemoveMarkers(unsigned start_offset, int length) final;
-  bool ShiftMarkers(const String& node_text,
-                    unsigned offset,
-                    unsigned old_length,
-                    unsigned new_length) final;
-
-  void Trace(blink::Visitor*) const override;
-
- private:
-  HeapVector<Member<DocumentMarker>> markers_;
+template <>
+struct DowncastTraits<HighlightMarkerListImpl> {
+  static bool AllowFrom(const DocumentMarkerList& list) {
+    return list.MarkerType() == DocumentMarker::kHighlight;
+  }
+  static bool AllowFrom(const HighlightPseudoMarkerListImpl& list) {
+    return list.MarkerType() == DocumentMarker::kHighlight;
+  }
 };
 
 }  // namespace blink
