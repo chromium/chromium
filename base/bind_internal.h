@@ -869,17 +869,22 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   DCHECK(receiver);
 
   // It's error prone to make the implicit first reference to ref-counted types.
-  // In the example below, base::BindOnce() makes the implicit first reference
-  // to the ref-counted Foo. If PostTask() failed or the posted task ran fast
-  // enough, the newly created instance can be destroyed before |oo| makes
-  // another reference.
+  // In the example below, base::BindOnce() would make the implicit first
+  // reference to the ref-counted Foo. If PostTask() failed or the posted task
+  // ran fast enough, the newly created instance could be destroyed before `oo`
+  // makes another reference.
   //   Foo::Foo() {
   //     base::PostTask(FROM_HERE, base::BindOnce(&Foo::Bar, this));
   //   }
   //
   //   scoped_refptr<Foo> oo = new Foo();
   //
-  // Instead of doing like above, please consider adding a static constructor,
+  // Hence, base::Bind{Once,Repeating}() refuses to create the first reference
+  // to ref-counted objects, and DCHECK()s otherwise. As above, that typically
+  // happens around PostTask() in their constructor, and such objects can be
+  // destroyed before `new` returns if the task resolves fast enough.
+  //
+  // Instead of doing the above, please consider adding a static constructor,
   // and keep the first reference alive explicitly.
   //   // static
   //   scoped_refptr<Foo> Foo::Create() {
@@ -891,11 +896,8 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   //   Foo::Foo() {}
   //
   //   scoped_refptr<Foo> oo = Foo::Create();
-  DCHECK(receiver->HasAtLeastOneRef())
-      << "base::Bind{Once,Repeating}() refuses to create the first reference "
-         "to ref-counted objects. That typically happens around PostTask() in "
-         "their constructor, and such objects can be destroyed before `new` "
-         "returns if the task resolves fast enough.";
+  //
+  DCHECK(receiver->HasAtLeastOneRef());
 }
 
 // BindState<>
