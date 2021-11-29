@@ -142,13 +142,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Opens the Ash account settings page in a new window.
   void HandleOpenAshAccountSettingsPage(base::Value::ConstListView args);
 
-  // List of unassigned accounts used by the profile choice and the account
+  // List of available accounts used by the profile choice and the account
   // selection screens.
-  // TODO(crbug.com/1226050): Rename this concept in code to available accounts.
-  void HandleGetUnassignedAccounts(const base::ListValue* args);
+  void HandleGetAvailableAccounts(const base::ListValue* args);
 
-  // Queries available profiles, and ends up sending them to the WebUI page.
-  void UpdateAvailableProfiles();
+  // Queries accounts available for addition in the profile, and ends up sending
+  // them to the WebUI page.
+  void UpdateAvailableAccounts();
 
   // Loads extended info for accounts from Ash.
   void GetAvailableAccountsInfo(

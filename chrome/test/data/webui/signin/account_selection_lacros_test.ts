@@ -5,7 +5,7 @@
 import 'chrome://profile-picker/lazy_load.js';
 
 import {AccountSelectionLacrosElement} from 'chrome://profile-picker/lazy_load.js';
-import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, UnassignedAccount} from 'chrome://profile-picker/profile_picker.js';
+import {AvailableAccount, ensureLazyLoaded, ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
@@ -22,7 +22,7 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
     /**
      * @param n Indicates the desired number of accounts.
      */
-    function generateAccountsList(n: number): UnassignedAccount[] {
+    function generateAccountsList(n: number): AvailableAccount[] {
       return Array(n).fill(null).map((_x, i) => ({
                                        gaiaId: `gaia-id-${i}`,
                                        name: `name-${i}`,
@@ -57,7 +57,7 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       document.body.append(testElement);
 
       await Promise.all([
-        browserProxy.whenCalled('getUnassignedAccounts'),
+        browserProxy.whenCalled('getAvailableAccounts'),
         ensureLazyLoaded(),
       ]);
       browserProxy.reset();
@@ -78,7 +78,7 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertEquals(buttons.length, 1);
       // Add some accounts.
       webUIListenerCallback(
-          'unassigned-accounts-changed', generateAccountsList(3));
+          'available-accounts-changed', generateAccountsList(3));
       flushTasks();
       buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
           '.account-button');
@@ -86,7 +86,7 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertEquals(buttons.length, 4);
       // Update the accounts again.
       webUIListenerCallback(
-          'unassigned-accounts-changed', generateAccountsList(2));
+          'available-accounts-changed', generateAccountsList(2));
       flushTasks();
       buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
           '.account-button');

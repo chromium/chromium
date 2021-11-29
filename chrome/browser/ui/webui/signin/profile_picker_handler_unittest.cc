@@ -307,23 +307,23 @@ TEST_F(ProfilePickerHandlerTest, OmittedProfileOnInit) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that accounts available as primary are returned.
-TEST_F(ProfilePickerHandlerTest, HandleGetUnassignedAccounts_Empty) {
+TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Empty) {
   CompleteFacadeGetAccounts({});
 
   // Send message to the handler.
   base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data.arg1()->GetString());
   EXPECT_TRUE(data.arg2()->GetList().empty());
 }
 
-TEST_F(ProfilePickerHandlerTest, HandleGetUnassignedAccounts_Available) {
-  // AccountProfileMapper only allows unassigned accounts if there are
+TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
+  // AccountProfileMapper only allows available accounts if there are
   // multiple profiles.
   CreateTestingProfile("Primary");
   ProfileAttributesEntry* secondary = CreateTestingProfile("Secondary");
@@ -345,26 +345,26 @@ TEST_F(ProfilePickerHandlerTest, HandleGetUnassignedAccounts_Available) {
   // ****** No accounts syncing in any profile: return all.
   // Send message to the handler.
   base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
   EXPECT_EQ(data1.arg2()->GetList().size(), 2u);
 
   // ****** Account 1 syncing in Secondary profile: return account 2.
   secondary->SetAuthInfo(kGaiaId1, u"example1@gmail.com",
                          /*is_consented_primary_account=*/true);
   // Send message to the handler.
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
   EXPECT_EQ(data2.arg2()->GetList().size(), 1u);
   const std::string* gaia_id =
       data2.arg2()->GetList()[0].FindStringPath("gaiaId");
@@ -476,7 +476,7 @@ class ProfilePickerHandlerInUserProfileTest : public ProfilePickerHandlerTest {
 
   void SetUp() override {
     ProfilePickerHandlerTest::SetUp();
-    // AccountProfileMapper only allows unassigned accounts if there are
+    // AccountProfileMapper only allows available accounts if there are
     // multiple profiles (another profile, named "Secondary", is created below).
     CreateTestingProfile("Primary");
   }
@@ -503,23 +503,23 @@ class ProfilePickerHandlerInUserProfileTest : public ProfilePickerHandlerTest {
 
 // Tests that accounts available as secondary are returned.
 TEST_F(ProfilePickerHandlerInUserProfileTest,
-       HandleGetUnassignedAccounts_Empty) {
+       HandleGetAvailableAccounts_Empty) {
   CompleteFacadeGetAccounts({});
 
   // Send message to the handler.
   base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data.arg1()->GetString());
   EXPECT_TRUE(data.arg2()->GetList().empty());
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest,
-       HandleGetUnassignedAccounts_Available) {
+       HandleGetAvailableAccounts_Available) {
   // Add an available account into the facade
   const std::string kGaiaId1 = "some_gaia_id1";
   const std::string kGaiaId2 = "some_gaia_id2";
@@ -537,13 +537,13 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   // ****** No accounts assigned to "Secondary": return all.
   // Send message to the handler.
   base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
   EXPECT_EQ(data1.arg2()->GetList().size(), 2u);
 
   // ****** Account 1 is assigned to "Secondary": return account 2.
@@ -553,13 +553,13 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
           ->GetProfileAttributesWithPath(GetWebUIProfile()->GetPath());
   profile_entry->SetGaiaIds({kGaiaId1});
   // Send message to the handler.
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
   EXPECT_EQ(data2.arg2()->GetList().size(), 1u);
   const std::string* gaia_id =
       data2.arg2()->GetList()[0].FindStringPath("gaiaId");

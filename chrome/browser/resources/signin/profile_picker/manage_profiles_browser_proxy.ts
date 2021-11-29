@@ -54,7 +54,7 @@ export type UserThemeChoice = {
  * This is a data structure sent from C++ to JS, representing accounts present
  * in the ChromeOS system, but not in any Lacros profile.
  */
-export type UnassignedAccount = {
+export type AvailableAccount = {
   gaiaId: string,
   name: string,
   email: string,
@@ -157,8 +157,8 @@ export interface ManageProfilesBrowserProxy {
   cancelProfileSwitch(): void;
 
   // <if expr="lacros">
-  /** Gets the unassigned accounts, through WebUIListener. */
-  getUnassignedAccounts(): void;
+  /** Gets the available accounts, through WebUIListener. */
+  getAvailableAccounts(): void;
 
   /**
    * Opens Ash Account settings page in a new window.
@@ -242,8 +242,8 @@ export class ManageProfilesBrowserProxyImpl {
   }
 
   // <if expr="lacros">
-  getUnassignedAccounts() {
-    chrome.send('getUnassignedAccounts');
+  getAvailableAccounts() {
+    chrome.send('getAvailableAccounts');
   }
 
   openAshAccountSettingsPage() {

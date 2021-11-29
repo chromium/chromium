@@ -336,8 +336,8 @@ void ProfilePickerHandler::RegisterMessages() {
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   web_ui()->RegisterDeprecatedMessageCallback(
-      "getUnassignedAccounts",
-      base::BindRepeating(&ProfilePickerHandler::HandleGetUnassignedAccounts,
+      "getAvailableAccounts",
+      base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableAccounts,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openAshAccountSettingsPage",
@@ -1061,13 +1061,13 @@ void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
   lacros_url_handling::NavigateInAsh(GURL(settings_url));
 }
 
-void ProfilePickerHandler::HandleGetUnassignedAccounts(
+void ProfilePickerHandler::HandleGetAvailableAccounts(
     const base::ListValue* args) {
   AllowJavascript();
-  UpdateAvailableProfiles();
+  UpdateAvailableAccounts();
 }
 
-void ProfilePickerHandler::UpdateAvailableProfiles() {
+void ProfilePickerHandler::UpdateAvailableAccounts() {
   AccountProfileMapper* mapper =
       g_browser_process->profile_manager()->GetAccountProfileMapper();
 
@@ -1120,7 +1120,7 @@ void ProfilePickerHandler::SendAvailableAccounts(
                               webui::GetBitmapDataUrl(account_bitmap));
     accounts_list.Append(std::move(account_dict));
   }
-  FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
+  FireWebUIListener("available-accounts-changed", std::move(accounts_list));
 }
 
 void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
@@ -1142,13 +1142,13 @@ void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
 void ProfilePickerHandler::OnAccountUpserted(
     const base::FilePath& profile_path,
     const account_manager::Account& account) {
-  UpdateAvailableProfiles();
+  UpdateAvailableAccounts();
 }
 
 void ProfilePickerHandler::OnAccountRemoved(
     const base::FilePath& profile_path,
     const account_manager::Account& account) {
-  UpdateAvailableProfiles();
+  UpdateAvailableAccounts();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

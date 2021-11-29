@@ -8,7 +8,7 @@ import 'chrome://profile-picker/lazy_load.js';
 // </if>
 
 // <if expr="lacros">
-import {UnassignedAccount} from 'chrome://profile-picker/profile_picker.js';
+import {AvailableAccount} from 'chrome://profile-picker/profile_picker.js';
 // </if>
 
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, Routes} from 'chrome://profile-picker/profile_picker.js';
@@ -101,7 +101,7 @@ suite('ProfilePickerAppTest', function() {
   });
 
   // <if expr="lacros">
-  test('SignInPromoSignInWithUnassignedAccountLacros', async function() {
+  test('SignInPromoSignInWithAvailableAccountLacros', async function() {
     loadTimeData.overrideValues({
       isMultiProfileAccountConsistentcyLacrosEnabled: true,
     });
@@ -110,14 +110,14 @@ suite('ProfilePickerAppTest', function() {
     const choice =
         testElement.shadowRoot!.querySelector('profile-type-choice')!;
     assertTrue(!!choice);
-    // Add unassigned account to trigger the account selection screen.
-    const unassignedAccount: UnassignedAccount = {
-      gaiaId: 'unassigned-id',
+    // Add available account to trigger the account selection screen.
+    const availableAccount: AvailableAccount = {
+      gaiaId: 'available-id',
       name: 'Account Name',
       email: 'email@gmail.com',
       accountImageUrl: 'account-image-url',
     };
-    webUIListenerCallback('unassigned-accounts-changed', [unassignedAccount]);
+    webUIListenerCallback('available-accounts-changed', [availableAccount]);
     flushTasks();
     assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
     choice!.$.signInButton.click();
@@ -144,7 +144,7 @@ suite('ProfilePickerAppTest', function() {
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
     assertTrue(!!choice);
     // No available account.
-    webUIListenerCallback('unassigned-accounts-changed', []);
+    webUIListenerCallback('available-accounts-changed', []);
     flushTasks();
     assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
     choice!.$.signInButton.click();
