@@ -34,7 +34,7 @@
       t.add_cleanup(cleanup_main);
       let style = set_style(`
         @container ${query} {}
-        @container (${query}) or (not (${query})) { main { --match:true; } }
+        @container (${query} or (not ${query})) { main { --match:true; } }
       `);
       assert_equals(style.sheet.rules.length, 2);
       assert_equals(getComputedStyle(main).getPropertyValue('--match'), 'true');
@@ -57,14 +57,14 @@
     }, `Container selector: ${container_selector}`);
   }
 
-  test_query_known('(width: 100px)');
-  test_query_known('((width: 100px))');
-  test_query_known('(not (width: 100px))');
-  test_query_known('(width: 100px) and (height: 100px)');
-  test_query_known('(width: 50px) or (height: 100px)');
-  test_query_known('(width < 100px)');
-  test_query_known('(100px < width)');
-  test_query_known('(100px < width < 200px)');
+  test_query_known('size(width: 100px)');
+  test_query_known('size((width: 100px))');
+  test_query_known('size(not (width: 100px))');
+  test_query_known('size((width: 100px) and (height: 100px))');
+  test_query_known('size((width: 50px) or (height: 100px))');
+  test_query_known('size(width < 100px)');
+  test_query_known('size(100px < width)');
+  test_query_known('size(100px < width < 200px)');
 
   test_query_invalid('screen');
   test_query_invalid('print');

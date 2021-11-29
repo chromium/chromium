@@ -289,7 +289,7 @@ class CORE_EXPORT MediaQueryExpNode {
  public:
   virtual ~MediaQueryExpNode() = default;
 
-  enum class Type { kFeature, kNested, kNot, kAnd, kOr, kUnknown };
+  enum class Type { kFeature, kNested, kFunction, kNot, kAnd, kOr, kUnknown };
 
   String Serialize() const;
 
@@ -305,6 +305,9 @@ class CORE_EXPORT MediaQueryExpNode {
       std::unique_ptr<MediaQueryExpNode>);
   static std::unique_ptr<MediaQueryExpNode> Nested(
       std::unique_ptr<MediaQueryExpNode>);
+  static std::unique_ptr<MediaQueryExpNode> Function(
+      std::unique_ptr<MediaQueryExpNode>,
+      const AtomicString& name);
   static std::unique_ptr<MediaQueryExpNode> And(
       std::unique_ptr<MediaQueryExpNode>,
       std::unique_ptr<MediaQueryExpNode>);
@@ -360,6 +363,22 @@ class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryUnaryExpNode {
   Type GetType() const override { return Type::kNested; }
   void SerializeTo(StringBuilder&) const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+class CORE_EXPORT MediaQueryFunctionExpNode : public MediaQueryUnaryExpNode {
+  USING_FAST_MALLOC(MediaQueryFunctionExpNode);
+
+ public:
+  explicit MediaQueryFunctionExpNode(std::unique_ptr<MediaQueryExpNode> operand,
+                                     const AtomicString& name)
+      : MediaQueryUnaryExpNode(std::move(operand)), name_(name) {}
+
+  Type GetType() const override { return Type::kFunction; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+
+ private:
+  AtomicString name_;
 };
 
 class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryUnaryExpNode {
@@ -450,6 +469,13 @@ template <>
 struct DowncastTraits<MediaQueryNestedExpNode> {
   static bool AllowFrom(const MediaQueryExpNode& node) {
     return node.GetType() == MediaQueryExpNode::Type::kNested;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryFunctionExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kFunction;
   }
 };
 

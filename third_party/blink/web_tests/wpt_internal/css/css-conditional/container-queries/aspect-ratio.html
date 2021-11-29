@@ -11,10 +11,10 @@
   #block-size { container-type: block-size; }
   #size { container-type: size; }
   span { color: red }
-  @container (min-aspect-ratio: 1 / 1000) {
+  @container size(min-aspect-ratio: 1 / 1000) {
     span { color: green; }
   }
-  @container (min-aspect-ratio: 2 / 1) {
+  @container size(min-aspect-ratio: 2 / 1) {
     span { background-color: lime; }
   }
 </style>

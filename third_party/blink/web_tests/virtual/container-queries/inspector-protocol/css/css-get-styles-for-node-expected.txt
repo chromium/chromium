@@ -45,7 +45,7 @@ Dumping matched rules:
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
-@container (min-width: 50px)
+@container size(min-width: 50px)
     *#inspected* {    regular
         padding-right: 10px; @[26:8-26:28]
         padding-right: 10px; @[undefined-undefined]

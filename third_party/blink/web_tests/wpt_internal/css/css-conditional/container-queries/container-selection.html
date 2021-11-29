@@ -123,40 +123,40 @@
   // and the outer container has a size of 32x32px.
 
   // "Nearest" selection:
-  test_applied('(width: 16px)', '.block > .inline > span');
-  test_applied('(height: 16px)', '.inline > .block > span');
-  test_rejected('(height)', '.block > .inline > span');
-  test_rejected('(width)', '.inline > .block > span');
+  test_applied('size(width: 16px)', '.block > .inline > span');
+  test_applied('size(height: 16px)', '.inline > .block > span');
+  test_rejected('size(height)', '.block > .inline > span');
+  test_rejected('size(width)', '.inline > .block > span');
 
   // type():
-  test_applied('type(inline-size) (width: 32px)', '.inline > .block > span');
-  test_applied('type(inline-size) (width: 16px)', '.block > .inline > span');
-  test_applied('type(inline-size) (width: 32px)', '.size > .block > span');
-  test_applied('type(inline-size) (width: 16px)', '.size > .inline > span');
+  test_applied('type(inline-size) size(width: 32px)', '.inline > .block > span');
+  test_applied('type(inline-size) size(width: 16px)', '.block > .inline > span');
+  test_applied('type(inline-size) size(width: 32px)', '.size > .block > span');
+  test_applied('type(inline-size) size(width: 16px)', '.size > .inline > span');
 
-  test_applied('type(block-size) (height: 16px)', '.inline > .block > span');
-  test_applied('type(block-size) (height: 32px)', '.block > .inline > span');
-  test_applied('type(block-size) (height: 16px)', '.size > .block > span');
-  test_applied('type(block-size) (height: 32px)', '.size > .inline > span');
+  test_applied('type(block-size) size(height: 16px)', '.inline > .block > span');
+  test_applied('type(block-size) size(height: 32px)', '.block > .inline > span');
+  test_applied('type(block-size) size(height: 16px)', '.size > .block > span');
+  test_applied('type(block-size) size(height: 32px)', '.size > .inline > span');
 
-  test_rejected('type(size) (height)', '.inline > .block > span');
-  test_rejected('type(size) (height)', '.block > .inline > span');
-  test_rejected('type(size) (width)', '.inline > .block > span');
-  test_rejected('type(size) (width)', '.block > .inline > span');
-  test_applied('type(size) (height: 32px)', '.size > .block > span');
-  test_applied('type(size) (height: 32px)', '.size > .inline > span');
+  test_rejected('type(size) size(height)', '.inline > .block > span');
+  test_rejected('type(size) size(height)', '.block > .inline > span');
+  test_rejected('type(size) size(width)', '.inline > .block > span');
+  test_rejected('type(size) size(width)', '.block > .inline > span');
+  test_applied('type(size) size(height: 32px)', '.size > .block > span');
+  test_applied('type(size) size(height: 32px)', '.size > .inline > span');
 
   // name():
-  test_applied('name(a) (width: 32px)', '.a-inline > .b-inline > span');
-  test_applied('name(b) (width: 16px)', '.a-inline > .b-inline > span');
-  test_rejected('name(c) (width)', '.a-inline > .b-inline > span');
-  test_applied('name(a) (width: 16px)', '.a-inline > .a-inline > span');
+  test_applied('name(a) size(width: 32px)', '.a-inline > .b-inline > span');
+  test_applied('name(b) size(width: 16px)', '.a-inline > .b-inline > span');
+  test_rejected('name(c) size(width)', '.a-inline > .b-inline > span');
+  test_applied('name(a) size(width: 16px)', '.a-inline > .a-inline > span');
 
   // Name as plain ident:
-  test_applied('a (width: 32px)', '.a-inline > .b-inline > span');
-  test_applied('b (width: 16px)', '.a-inline > .b-inline > span');
-  test_rejected('c (width)', '.a-inline > .b-inline > span');
-  test_applied('a (width: 16px)', '.a-inline > .a-inline > span');
+  test_applied('a size(width: 32px)', '.a-inline > .b-inline > span');
+  test_applied('b size(width: 16px)', '.a-inline > .b-inline > span');
+  test_rejected('c size(width)', '.a-inline > .b-inline > span');
+  test_applied('a size(width: 16px)', '.a-inline > .a-inline > span');
 
   // The following tests have three containers:
   //
@@ -165,15 +165,15 @@
   //  inner -> 8x8px
 
   // Mixing name() and type():
-  test_applied('name(a) type(inline-size) (width: 32px)', '.a-inline > .b-inline > .a-block > span');
-  test_applied('name(a) type(block-size) (height: 8px)', '.a-inline > .b-inline > .a-block > span');
-  test_rejected('name(a) type(size) (height)', '.a-inline > .b-inline > .a-block > span');
-  test_applied('name(b) type(inline-size) (width: 16px)', '.a-inline > .b-inline > .a-block > span');
-  test_rejected('name(b) type(block-size) (height)', '.a-inline > .b-inline > .a-block > span');
-  test_rejected('name(b) type(size) (height)', '.a-inline > .b-inline > .a-block > span');
+  test_applied('name(a) type(inline-size) size(width: 32px)', '.a-inline > .b-inline > .a-block > span');
+  test_applied('name(a) type(block-size) size(height: 8px)', '.a-inline > .b-inline > .a-block > span');
+  test_rejected('name(a) type(size) size(height)', '.a-inline > .b-inline > .a-block > span');
+  test_applied('name(b) type(inline-size) size(width: 16px)', '.a-inline > .b-inline > .a-block > span');
+  test_rejected('name(b) type(block-size) size(height)', '.a-inline > .b-inline > .a-block > span');
+  test_rejected('name(b) type(size) size(height)', '.a-inline > .b-inline > .a-block > span');
 
   // type() first, then name():
-  test_applied('type(inline-size) name(a) (width: 32px)', '.a-inline > .b-inline > .a-block > span');
-  test_applied('type(block-size) name(a) (height: 8px)', '.a-inline > .b-inline > .a-block > span');
+  test_applied('type(inline-size) name(a) size(width: 32px)', '.a-inline > .b-inline > .a-block > span');
+  test_applied('type(block-size) name(a) size(height: 8px)', '.a-inline > .b-inline > .a-block > span');
 
 </script>

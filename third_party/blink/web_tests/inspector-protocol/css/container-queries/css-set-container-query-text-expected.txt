@@ -1,6 +1,6 @@
 Tests CSS.setContainerQueryText method.
 ==== Initial style sheet text ====
-@container (max-width: 200px) and (min-height: 100px) {
+@container size((max-width: 200px) and (min-height: 100px)) {
   div {
     color: red;
   }

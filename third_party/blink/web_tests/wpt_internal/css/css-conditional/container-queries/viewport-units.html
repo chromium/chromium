@@ -6,16 +6,16 @@
   #vw { container-type: inline-size; width: 10vw; }
   #vh { container-type: inline-size; width: 10vh; }
 
-  @container (min-width: 10vw) {
+  @container size(min-width: 10vw) {
     #vw span { color: green }
   }
-  @container (min-width: 11vw) {
+  @container size(min-width: 11vw) {
     #vw span { color: red }
   }
-  @container (min-width: 10vh) {
+  @container size(min-width: 10vh) {
     #vh span { color: green }
   }
-  @container (min-width: 11vh) {
+  @container size(min-width: 11vh) {
     #vh span { color: red }
   }
 </style>

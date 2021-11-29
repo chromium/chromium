@@ -576,6 +576,14 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Nested(
   return std::make_unique<MediaQueryNestedExpNode>(std::move(operand));
 }
 
+std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Function(
+    std::unique_ptr<MediaQueryExpNode> operand,
+    const AtomicString& name) {
+  if (!operand)
+    return nullptr;
+  return std::make_unique<MediaQueryFunctionExpNode>(std::move(operand), name);
+}
+
 std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::And(
     std::unique_ptr<MediaQueryExpNode> left,
     std::unique_ptr<MediaQueryExpNode> right) {
@@ -643,6 +651,17 @@ void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryNestedExpNode::Copy() const {
   return std::make_unique<MediaQueryNestedExpNode>(Operand().Copy());
+}
+
+void MediaQueryFunctionExpNode::SerializeTo(StringBuilder& builder) const {
+  builder.Append(name_);
+  builder.Append("(");
+  Operand().SerializeTo(builder);
+  builder.Append(")");
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryFunctionExpNode::Copy() const {
+  return std::make_unique<MediaQueryFunctionExpNode>(Operand().Copy(), name_);
 }
 
 void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {

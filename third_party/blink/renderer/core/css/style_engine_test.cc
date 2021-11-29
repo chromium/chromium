@@ -3646,7 +3646,7 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         .affected { background-color: green; }
       }
     </style>
@@ -3707,7 +3707,7 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         .toggle { background-color: green; }
       }
     </style>
@@ -3767,7 +3767,7 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #container::before { content: " " }
         span::before { content: " " }
       }
@@ -3800,7 +3800,7 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #input { background-color: green; }
       }
     </style>
@@ -3862,7 +3862,7 @@ TEST_F(StyleEngineContainerQueryTest, UsesContainerQueries) {
   ASSERT_TRUE(late_style);
 
   late_style->setTextContent(R"CSS(
-      @container (min-width: 1px) {
+      @container size(min-width: 1px) {
         #a { color: green; }
       }
     )CSS");
@@ -3907,7 +3907,7 @@ TEST_F(StyleEngineContainerQueryTest,
         width: 200px;
       }
 
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #a { z-index: 2; }
       }
     </style>

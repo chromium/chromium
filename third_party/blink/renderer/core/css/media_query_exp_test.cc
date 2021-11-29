@@ -407,6 +407,7 @@ TEST(MediaQueryExpTest, UtilsNullptrHandling) {
   MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
 
   EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Function(nullptr, "test"));
   EXPECT_FALSE(MediaQueryExpNode::Not(nullptr));
   EXPECT_FALSE(MediaQueryExpNode::And(nullptr, FeatureNode(exp)));
   EXPECT_FALSE(MediaQueryExpNode::And(FeatureNode(exp), nullptr));

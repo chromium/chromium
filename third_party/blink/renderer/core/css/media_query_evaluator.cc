@@ -147,6 +147,8 @@ KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
                                       Results results) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
     return Eval(n->Operand(), results);
+  if (auto* n = DynamicTo<MediaQueryFunctionExpNode>(node))
+    return Eval(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
     return EvalNot(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
