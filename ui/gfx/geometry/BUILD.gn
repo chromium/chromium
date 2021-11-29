@@ -51,6 +51,8 @@ component("geometry") {
     "size_conversions.h",
     "size_f.cc",
     "size_f.h",
+    "triangle_f.cc",
+    "triangle_f.h",
     "vector2d.cc",
     "vector2d.h",
     "vector2d_conversions.cc",

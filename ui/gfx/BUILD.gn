@@ -782,6 +782,7 @@ test("gfx_unittests") {
       "geometry/size_unittest.cc",
       "geometry/skia_conversions_unittest.cc",
       "geometry/transform_util_unittest.cc",
+      "geometry/triangle_unittest.cc",
       "geometry/vector2d_f_unittest.cc",
       "geometry/vector2d_unittest.cc",
       "geometry/vector3d_unittest.cc",
