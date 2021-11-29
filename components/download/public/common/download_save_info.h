@@ -37,7 +37,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
 
   ~DownloadSaveInfo();
 
-  int64_t GetStartingFileWriteOffset();
+  int64_t GetStartingFileWriteOffset() const;
+
+  bool IsArbitraryRangeRequest() const;
 
   // If non-empty, contains the full target path of the download that has been
   // determined prior to download initiation. This is considered to be a trusted

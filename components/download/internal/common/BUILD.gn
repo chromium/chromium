@@ -159,6 +159,7 @@ source_set("unit_tests") {
     "download_path_reservation_tracker_unittest.cc",
     "download_stats_unittest.cc",
     "download_ukm_helper_unittest.cc",
+    "download_utils_unittest.cc",
     "parallel_download_job_unittest.cc",
     "parallel_download_utils_unittest.cc",
     "rate_estimator_unittest.cc",

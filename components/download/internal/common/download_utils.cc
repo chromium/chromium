@@ -88,6 +88,11 @@ void AppendExtraHeaders(net::HttpRequestHeaders* headers,
     headers->SetHeaderIfMissing(header.first, header.second);
 }
 
+// Return whether the download is explicitly to fetch part of the file.
+bool IsArbitraryRangeRequest(DownloadSaveInfo* save_info) {
+  return save_info && save_info->IsArbitraryRangeRequest();
+}
+
 }  // namespace
 
 const uint32_t DownloadItem::kInvalidId = 0;
@@ -186,8 +191,29 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
       result = DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
   }
 
+  // Handle normal errors which are not related to range requests.
   if (result != DOWNLOAD_INTERRUPT_REASON_NONE && !fetch_error_body)
     return result;
+
+  int64_t first_byte = -1;
+  int64_t last_byte = -1;
+  int64_t length = -1;
+
+  // Explicitly range request.
+  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
+      IsArbitraryRangeRequest(save_info)) {
+    // Only 206 response is allowed.
+    if (http_headers.response_code() != net::HTTP_PARTIAL_CONTENT) {
+      return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
+    }
+
+    // Must has valid range response header.
+    if (!http_headers.GetContentRangeFor206(&first_byte, &last_byte, &length)) {
+      return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
+    }
+
+    return DOWNLOAD_INTERRUPT_REASON_NONE;
+  }
 
   // The caller is expecting a partial response.
   if (save_info && save_info->offset > 0) {
@@ -203,9 +229,6 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
       return DOWNLOAD_INTERRUPT_REASON_NONE;
     }
 
-    int64_t first_byte = -1;
-    int64_t last_byte = -1;
-    int64_t length = -1;
     if (!http_headers.GetContentRangeFor206(&first_byte, &last_byte, &length))
       return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
     DCHECK_GE(first_byte, 0);
@@ -219,6 +242,7 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
     return DOWNLOAD_INTERRUPT_REASON_NONE;
   }
 
+  // For non range request.
   if (http_headers.response_code() == net::HTTP_PARTIAL_CONTENT)
     return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
 
