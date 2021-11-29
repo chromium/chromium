@@ -18,3 +18,5 @@ jonross@chromium.org
 dullweber@chromium.org
 # For PerformanceMonitor.* histograms:
 olivierli@chromium.org
+# For BootTime.*, Uptime.*, UserManager.*, TimeZone.* histograms:
+alemate@chromium.org
