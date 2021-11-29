@@ -651,11 +651,11 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kTextMatch:
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground) {
-          inline_text_box_.PaintTextMarkerBackground(
-              paint_info, box_origin, To<TextMarkerBase>(marker), style, font);
+          inline_text_box_.PaintTextMarkerBackground(paint_info, box_origin,
+                                                     marker, style, font);
         } else {
-          inline_text_box_.PaintTextMarkerForeground(
-              paint_info, box_origin, To<TextMarkerBase>(marker), style, font);
+          inline_text_box_.PaintTextMarkerForeground(paint_info, box_origin,
+                                                     marker, style, font);
         }
         break;
       case DocumentMarker::kComposition:
@@ -903,7 +903,7 @@ void InlineTextBoxPainter::PaintStyleableMarkerUnderline(
 void InlineTextBoxPainter::PaintTextMarkerForeground(
     const PaintInfo& paint_info,
     const PhysicalOffset& box_origin,
-    const TextMarkerBase& marker,
+    const DocumentMarker& marker,
     const ComputedStyle& style,
     const Font& font) {
   if (marker.GetType() == DocumentMarker::kTextMatch &&
@@ -951,7 +951,7 @@ void InlineTextBoxPainter::PaintTextMarkerForeground(
 void InlineTextBoxPainter::PaintTextMarkerBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& box_origin,
-    const TextMarkerBase& marker,
+    const DocumentMarker& marker,
     const ComputedStyle& style,
     const Font& font) {
   if (marker.GetType() == DocumentMarker::kTextMatch &&
@@ -966,7 +966,10 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
   TextRun run = inline_text_box_.ConstructTextRun(style);
 
   Color color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-      marker.IsActiveMatch(), style.UsedColorScheme());
+      marker.GetType() == DocumentMarker::kTextMatch
+          ? To<TextMatchMarker>(marker).IsActiveMatch()
+          : false,
+      style.UsedColorScheme());
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
 

@@ -645,13 +645,12 @@ Vector<SVGTextFragmentWithRange> SVGInlineTextBoxPainter::CollectTextMatches(
   const Vector<SVGTextFragmentWithRange> empty_text_match_list;
 
   // SVG does not support grammar or spellcheck markers, so skip anything but
-  // TextMarkerBase types.
+  // TextFragmentMarker and TextMatchMarker types.
   if (marker.GetType() != DocumentMarker::kTextMatch &&
       marker.GetType() != DocumentMarker::kTextFragment)
     return empty_text_match_list;
 
-  if (marker.GetType() == DocumentMarker::kTextMatch &&
-      !InlineLayoutObject()
+  if (!InlineLayoutObject()
            .GetFrame()
            ->GetEditor()
            .MarkedTextMatchesAreHighlighted())
@@ -690,7 +689,7 @@ SVGInlineTextBoxPainter::CollectFragmentsInRange(int start_position,
 void SVGInlineTextBoxPainter::PaintTextMarkerForeground(
     const PaintInfo& paint_info,
     const PhysicalOffset& point,
-    const TextMarkerBase& marker,
+    const DocumentMarker& marker,
     const ComputedStyle& style,
     const Font& font) {
   const Vector<SVGTextFragmentWithRange> text_match_info_list =
@@ -699,7 +698,10 @@ void SVGInlineTextBoxPainter::PaintTextMarkerForeground(
     return;
 
   Color text_color = LayoutTheme::GetTheme().PlatformTextSearchColor(
-      marker.IsActiveMatch(), style.UsedColorScheme());
+      marker.GetType() == DocumentMarker::kTextMatch
+          ? To<TextMatchMarker>(marker).IsActiveMatch()
+          : false,
+      style.UsedColorScheme());
 
   PaintFlags fill_flags;
   fill_flags.setColor(text_color.Rgb());
@@ -733,7 +735,7 @@ void SVGInlineTextBoxPainter::PaintTextMarkerForeground(
 void SVGInlineTextBoxPainter::PaintTextMarkerBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& point,
-    const TextMarkerBase& marker,
+    const DocumentMarker& marker,
     const ComputedStyle& style,
     const Font& font) {
   const Vector<SVGTextFragmentWithRange> text_match_info_list =
@@ -742,7 +744,10 @@ void SVGInlineTextBoxPainter::PaintTextMarkerBackground(
     return;
 
   Color color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-      marker.IsActiveMatch(), style.UsedColorScheme());
+      marker.GetType() == DocumentMarker::kTextMatch
+          ? To<TextMatchMarker>(marker).IsActiveMatch()
+          : false,
+      style.UsedColorScheme());
   for (const SVGTextFragmentWithRange& text_match_info : text_match_info_list) {
     const SVGTextFragment& fragment = text_match_info.fragment;
 

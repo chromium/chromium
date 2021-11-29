@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
-#include "third_party/blink/renderer/core/editing/markers/text_marker_base.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -243,7 +242,7 @@ void SVGInlineTextBox::PaintDocumentMarker(const PaintInfo&,
 
 void SVGInlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
                                                  const PhysicalOffset& point,
-                                                 const TextMarkerBase& marker,
+                                                 const DocumentMarker& marker,
                                                  const ComputedStyle& style,
                                                  const Font& font) const {
   SVGInlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, point,
@@ -252,7 +251,7 @@ void SVGInlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
 
 void SVGInlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                                  const PhysicalOffset& point,
-                                                 const TextMarkerBase& marker,
+                                                 const DocumentMarker& marker,
                                                  const ComputedStyle& style,
                                                  const Font& font) const {
   SVGInlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, point,

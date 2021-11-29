@@ -530,7 +530,7 @@ void InlineTextBox::PaintDocumentMarker(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, box_origin,
@@ -539,7 +539,7 @@ void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, box_origin,

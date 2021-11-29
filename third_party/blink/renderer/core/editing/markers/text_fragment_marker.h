@@ -5,24 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_FRAGMENT_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_FRAGMENT_MARKER_H_
 
-#include "third_party/blink/renderer/core/editing/markers/text_marker_base.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-// A subclass of TextMarkerBase used for indicating a text fragment on the
-// page. See blink/renderer/core/page/scrolling/text_fragment_anchor.h.
-class CORE_EXPORT TextFragmentMarker final : public TextMarkerBase {
+// A subclass of HighlightPseudoMarker used for indicating a text fragment on
+// the page. See blink/renderer/core/page/scrolling/text_fragment_anchor.h.
+class CORE_EXPORT TextFragmentMarker final : public HighlightPseudoMarker {
  public:
   TextFragmentMarker(unsigned start_offset, unsigned end_offset);
   TextFragmentMarker(const TextFragmentMarker&) = delete;
   TextFragmentMarker& operator=(const TextFragmentMarker&) = delete;
 
-  // DocumentMarker implementations
+  // DocumentMarker implementations.
   MarkerType GetType() const final;
 
-  // TextMarkerBase implementations
-  bool IsActiveMatch() const final;
+  // HighlightPseudoMarker implementations.
+  PseudoId GetPseudoId() const final;
+  const AtomicString& GetPseudoArgument() const final;
 };
 
 template <>
@@ -30,7 +31,7 @@ struct DowncastTraits<TextFragmentMarker> {
   static bool AllowFrom(const DocumentMarker& marker) {
     return marker.GetType() == DocumentMarker::kTextFragment;
   }
-  static bool AllowFrom(const TextMarkerBase& marker) {
+  static bool AllowFrom(const HighlightPseudoMarker& marker) {
     return marker.GetType() == DocumentMarker::kTextFragment;
   }
 };

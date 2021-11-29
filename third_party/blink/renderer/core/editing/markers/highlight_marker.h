@@ -5,14 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_H_
 
-#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class Highlight;
 
-class CORE_EXPORT HighlightMarker final : public DocumentMarker {
+// A subclass of HighlightPseudoMarker for CSS custom highlights.
+// TODO(rego): Rename to CustomHighlightMarker to avoid misunderstandings.
+class CORE_EXPORT HighlightMarker final : public HighlightPseudoMarker {
  public:
   HighlightMarker(unsigned start_offset,
                   unsigned end_offset,
@@ -22,6 +24,9 @@ class CORE_EXPORT HighlightMarker final : public DocumentMarker {
   HighlightMarker& operator=(const HighlightMarker&) = delete;
 
   MarkerType GetType() const final;
+  PseudoId GetPseudoId() const final;
+  const AtomicString& GetPseudoArgument() const final;
+
   const Highlight* GetHighlight() const { return highlight_; }
   const AtomicString& GetHighlightName() const { return highlight_name_; }
 
@@ -34,8 +39,11 @@ class CORE_EXPORT HighlightMarker final : public DocumentMarker {
 
 template <>
 struct DowncastTraits<HighlightMarker> {
-  static bool AllowFrom(const DocumentMarker& document_marker) {
-    return document_marker.GetType() == DocumentMarker::kHighlight;
+  static bool AllowFrom(const DocumentMarker& marker) {
+    return marker.GetType() == DocumentMarker::kHighlight;
+  }
+  static bool AllowFrom(const HighlightPseudoMarker& marker) {
+    return marker.GetType() == DocumentMarker::kHighlight;
   }
 };
 

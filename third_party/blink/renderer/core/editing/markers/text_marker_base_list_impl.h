@@ -14,6 +14,8 @@ namespace blink {
 // Nearly-complete implementation of DocumentMarkerList for text match or text
 // fragment markers (subclassed by TextMatchMarkerListImpl and
 // TextFragmentMarkerListImpl to implement the MarkerType() method).
+// TODO(rego): Remove this class and add a HighlightPseudoMarkerListImpl instead
+// (to match HighlightPseudoMarker classes).
 class CORE_EXPORT TextMarkerBaseListImpl : public DocumentMarkerList {
  public:
   TextMarkerBaseListImpl(const TextMarkerBaseListImpl&) = delete;

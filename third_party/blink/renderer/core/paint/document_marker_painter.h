@@ -18,7 +18,6 @@ class GraphicsContext;
 class LayoutUnit;
 class Node;
 class StyleableMarker;
-class TextMarkerBase;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -49,7 +48,7 @@ class DocumentMarkerPainter {
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,
                                                   const ComputedStyle& style,
-                                                  const TextMarkerBase& marker,
+                                                  const DocumentMarker& marker,
                                                   const PaintInfo& paint_info);
   static bool ShouldPaintMarkerUnderline(const StyleableMarker& marker);
 };

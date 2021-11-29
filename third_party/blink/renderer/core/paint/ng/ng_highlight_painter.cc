@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
-#include "third_party/blink/renderer/core/editing/markers/text_marker_base.h"
+#include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -330,22 +330,15 @@ void NGHighlightPainter::Paint(Phase phase) {
                     : kPseudoIdGrammarError));
       } break;
 
-      case DocumentMarker::kTextFragment:
       case DocumentMarker::kTextMatch: {
         const Document& document = node_->GetDocument();
-        if (marker->GetType() == DocumentMarker::kTextMatch &&
-            !document.GetFrame()->GetEditor().MarkedTextMatchesAreHighlighted())
+        if (!document.GetFrame()->GetEditor().MarkedTextMatchesAreHighlighted())
           break;
-        const auto& text_marker = To<TextMarkerBase>(*marker);
+        const auto& text_match_marker = To<TextMatchMarker>(*marker);
         if (phase == kBackground) {
-          Color color;
-          if (marker->GetType() == DocumentMarker::kTextMatch) {
-            color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-                text_marker.IsActiveMatch(), style_.UsedColorScheme());
-          } else {
-            color = HighlightPaintingUtils::HighlightBackgroundColor(
-                document, style_, node_, kPseudoIdTargetText);
-          }
+          Color color =
+              LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
+                  text_match_marker.IsActiveMatch(), style_.UsedColorScheme());
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
                                              paint_end_offset),
@@ -356,13 +349,13 @@ void NGHighlightPainter::Paint(Phase phase) {
         TextPaintStyle text_style;
         if (fragment_item_->Type() != NGFragmentItem::kSvgText) {
           text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-              document, node_, style_, text_marker, paint_info_);
+              document, node_, style_, text_match_marker, paint_info_);
         } else {
           // DocumentMarkerPainter::ComputeTextPaintStyleFrom() doesn't work
           // well with SVG <text>, which doesn't apply 'color' CSS property.
           const Color platform_matched_color =
               LayoutTheme::GetTheme().PlatformTextSearchColor(
-                  text_marker.IsActiveMatch(), style_.UsedColorScheme());
+                  text_match_marker.IsActiveMatch(), style_.UsedColorScheme());
           text_painter_.SetSvgState(
               *To<LayoutSVGInlineText>(fragment_item_->GetLayoutObject()),
               style_, platform_matched_color);
@@ -399,16 +392,19 @@ void NGHighlightPainter::Paint(Phase phase) {
         }
       } break;
 
+      case DocumentMarker::kTextFragment:
       case DocumentMarker::kHighlight: {
-        const auto& highlight_marker = To<HighlightMarker>(*marker);
+        const auto& highlight_pseudo_marker =
+            To<HighlightPseudoMarker>(*marker);
         const Document& document = node_->GetDocument();
 
         // Paint background
         if (phase == kBackground) {
           Color background_color =
               HighlightPaintingUtils::HighlightBackgroundColor(
-                  document, style_, node_, kPseudoIdHighlight,
-                  highlight_marker.GetHighlightName());
+                  document, style_, node_,
+                  highlight_pseudo_marker.GetPseudoId(),
+                  highlight_pseudo_marker.GetPseudoArgument());
 
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
@@ -430,8 +426,9 @@ void NGHighlightPainter::Paint(Phase phase) {
 
         const TextPaintStyle final_text_style =
             HighlightPaintingUtils::HighlightPaintingStyle(
-                document, style_, node_, kPseudoIdHighlight, text_style,
-                paint_info_, highlight_marker.GetHighlightName());
+                document, style_, node_, highlight_pseudo_marker.GetPseudoId(),
+                text_style, paint_info_,
+                highlight_pseudo_marker.GetPseudoArgument());
 
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset,

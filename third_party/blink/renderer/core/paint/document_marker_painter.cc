@@ -283,13 +283,14 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
     const Document& document,
     Node* node,
     const ComputedStyle& style,
-    const TextMarkerBase& marker,
+    const DocumentMarker& marker,
     const PaintInfo& paint_info) {
   Color text_color = style.VisitedDependentColor(GetCSSPropertyColor());
-  if (marker.GetType() != DocumentMarker::kTextFragment) {
+  if (marker.GetType() == DocumentMarker::kTextMatch) {
     const Color platform_text_color =
         LayoutTheme::GetTheme().PlatformTextSearchColor(
-            marker.IsActiveMatch(), style.UsedColorScheme());
+            To<TextMatchMarker>(marker).IsActiveMatch(),
+            style.UsedColorScheme());
     if (platform_text_color == text_color)
       return {};
     text_color = platform_text_color;
@@ -301,7 +302,7 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
   text_style.stroke_width = style.TextStrokeWidth();
   text_style.color_scheme = style.UsedColorScheme();
   text_style.shadow = nullptr;
-  if (marker.GetType() != DocumentMarker::kTextFragment)
+  if (marker.GetType() == DocumentMarker::kTextMatch)
     return text_style;
   return HighlightPaintingUtils::HighlightPaintingStyle(
       document, style, node, kPseudoIdTargetText, text_style, paint_info);
