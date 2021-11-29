@@ -178,8 +178,6 @@ class FakeAppInstance : public mojom::AppInstance {
       GetAppShortcutGlobalQueryItemsCallback callback) override;
   void GetAppShortcutItems(const std::string& package_name,
                            GetAppShortcutItemsCallback callback) override;
-
-  void StartPaiFlowDeprecated() override;
   void StartPaiFlow(StartPaiFlowCallback callback) override;
   void GetAppReinstallCandidates(
       GetAppReinstallCandidatesCallback callback) override;

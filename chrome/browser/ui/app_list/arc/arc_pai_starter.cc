@@ -104,19 +104,6 @@ void ArcPaiStarter::MaybeStartPai() {
   arc::mojom::AppInstance* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->app(), StartPaiFlow);
 
-  if (!app_instance) {
-    app_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
-        StartPaiFlowDeprecated);
-    // this should always be set because PAI can be started only in case Play
-    // Store app is ready which means app_instance is connected.
-    DCHECK(app_instance);
-    VLOG(1) << "Start deprecated PAI flow";
-    app_instance->StartPaiFlowDeprecated();
-    OnPaiDone();
-    return;
-  }
-
   VLOG(1) << "Start PAI flow";
   pending_ = true;
   request_start_time_ = base::Time::Now();

@@ -488,10 +488,6 @@ void FakeAppInstance::GetAppShortcutItems(
   std::move(callback).Run(std::move(fake_app_shortcut_items));
 }
 
-void FakeAppInstance::StartPaiFlowDeprecated() {
-  NOTREACHED();
-}
-
 void FakeAppInstance::StartPaiFlow(StartPaiFlowCallback callback) {
   ++start_pai_request_count_;
   std::move(callback).Run(pai_state_response_);
