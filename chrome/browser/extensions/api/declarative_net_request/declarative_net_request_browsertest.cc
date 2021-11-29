@@ -2696,8 +2696,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
 // Tests that redirecting requests using the declarativeNetRequest API works
 // with runtime host permissions.
+// Disabled due to flakes across all desktop platforms; see
+// https://crbug.com/1274533
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       WithheldPermissions_Redirect) {
+                       DISABLED_WithheldPermissions_Redirect) {
   // Load an extension which redirects all script requests made to
   // "b.com/subresources/not_a_valid_script.js", to
   // "b.com/subresources/script.js".
