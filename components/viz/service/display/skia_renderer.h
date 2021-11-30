@@ -144,6 +144,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                                          const gfx::Rect* scissor_rect,
                                          const DrawQuad* quad,
                                          const gfx::QuadF* draw_region) const;
+
   DrawRPDQParams CalculateRPDQParams(const AggregatedRenderPassDrawQuad* quad,
                                      DrawQuadParams* params);
   // Modifies |params| and |rpdq_params| to apply correctly when drawing the
@@ -161,12 +162,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const SkImage* image,
       const gfx::RectF& valid_texel_bounds,
       DrawQuadParams* params) const;
-  // True or false if the DrawQuad can have the scissor rect applied by
-  // modifying the quad's visible_rect instead of as a separate clip operation.
-  bool CanExplicitlyScissor(const DrawQuad* quad,
-                            const gfx::QuadF* draw_region,
-                            const gfx::Transform& contents_device_transform,
-                            const gfx::Rect& scissor_rect) const;
 
   bool MustFlushBatchedQuads(const DrawQuad* new_quad,
                              const DrawRPDQParams* rpdq_params,
