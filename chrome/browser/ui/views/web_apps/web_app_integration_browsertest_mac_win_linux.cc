@@ -11,6 +11,24 @@ namespace {
 
 using WebAppIntegrationBrowserTestMacWinLinux = WebAppIntegrationBrowserTest;
 
+// Manual tests:
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckAppShortcutExists) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppShortcutExists("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckPolicyAppUninstallWorks) {
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppShortcutExists("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppShortcutNotExists("SiteA");
+}
+
+// Generated tests:
+
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTestMacWinLinux,
     WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_UninstallFromMenuSiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {

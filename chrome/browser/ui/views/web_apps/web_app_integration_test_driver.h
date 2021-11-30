@@ -72,7 +72,8 @@ struct AppState {
            const GURL app_scope,
            const blink::mojom::DisplayMode& effective_display_mode,
            const blink::mojom::DisplayMode& user_display_mode,
-           bool is_installed_locally);
+           bool is_installed_locally,
+           bool is_shortcut_created);
   ~AppState();
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
@@ -83,6 +84,7 @@ struct AppState {
   blink::mojom::DisplayMode effective_display_mode;
   blink::mojom::DisplayMode user_display_mode;
   bool is_installed_locally;
+  bool is_shortcut_created;
 };
 
 struct ProfileState {
@@ -172,6 +174,8 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
   void CheckAppNotInList(const std::string& site_mode);
+  void CheckAppShortcutExists(const std::string& site_mode);
+  void CheckAppShortcutNotExists(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
@@ -214,12 +218,14 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
   GURL GetScopeForSiteMode(const std::string& site_mode);
+  GURL GetURLForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
 
   void InstallPolicyAppInternal(const std::string& site_mode,
                                 base::Value default_launch_container,
                                 const bool create_shortcut);
 
+  void UninstallPolicyAppById(const AppId& id);
   // This action only works if no navigations to the given app_url occur
   // between app installation and calls to this action.
   bool AreNoAppWindowsOpen(Profile* profile, const AppId& app_id);
@@ -233,6 +239,10 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // not.
   Browser* GetAppBrowserForSite(const std::string& site_mode,
                                 bool launch_if_not_open = true);
+
+  bool IsShortcutCreated(Profile* profile,
+                         const std::string& name,
+                         const AppId& id);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();
@@ -280,6 +290,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       observation_{this};
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration
