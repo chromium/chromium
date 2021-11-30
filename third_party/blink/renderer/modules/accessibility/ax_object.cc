@@ -548,7 +548,7 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
     case DocumentMarker::kSuggestion:
       result = ax::mojom::blink::MarkerType::kSuggestion;
       break;
-    case DocumentMarker::kHighlight:
+    case DocumentMarker::kCustomHighlight:
       result = ax::mojom::blink::MarkerType::kHighlight;
       break;
     default:

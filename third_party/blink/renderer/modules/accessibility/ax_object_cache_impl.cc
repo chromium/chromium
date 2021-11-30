@@ -3633,7 +3633,7 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
   const DocumentMarker::MarkerTypes non_spelling_or_grammar_markers(
       DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
       DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
-      DocumentMarker::kHighlight);
+      DocumentMarker::kCustomHighlight);
   if (!marker_controller.MarkersFor(*text_node, non_spelling_or_grammar_markers)
            .IsEmpty()) {
     ChildrenChangedWithCleanLayout(node);

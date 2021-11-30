@@ -13,7 +13,7 @@ bool HighlightPseudoMarkerListImpl::IsEmpty() const {
 }
 
 void HighlightPseudoMarkerListImpl::Add(DocumentMarker* marker) {
-  DCHECK(marker->GetType() == DocumentMarker::kHighlight ||
+  DCHECK(marker->GetType() == DocumentMarker::kCustomHighlight ||
          marker->GetType() == DocumentMarker::kTextFragment);
   markers_.push_back(marker);
 }

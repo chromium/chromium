@@ -49,7 +49,7 @@ class CORE_EXPORT HighlightPseudoMarkerListImpl : public DocumentMarkerList {
 template <>
 struct DowncastTraits<HighlightPseudoMarkerListImpl> {
   static bool AllowFrom(const DocumentMarkerList& list) {
-    return list.MarkerType() == DocumentMarker::kHighlight ||
+    return list.MarkerType() == DocumentMarker::kCustomHighlight ||
            list.MarkerType() == DocumentMarker::kTextFragment;
   }
 };

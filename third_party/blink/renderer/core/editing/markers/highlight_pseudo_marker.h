@@ -28,7 +28,7 @@ class CORE_EXPORT HighlightPseudoMarker : public DocumentMarker {
 template <>
 struct DowncastTraits<HighlightPseudoMarker> {
   static bool AllowFrom(const DocumentMarker& document_marker) {
-    return document_marker.GetType() == DocumentMarker::kHighlight ||
+    return document_marker.GetType() == DocumentMarker::kCustomHighlight ||
            document_marker.GetType() == DocumentMarker::kTextFragment;
   }
 };

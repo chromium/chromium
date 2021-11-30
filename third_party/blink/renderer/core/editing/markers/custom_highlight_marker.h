@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_CUSTOM_HIGHLIGHT_MARKER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_CUSTOM_HIGHLIGHT_MARKER_H_
 
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -13,15 +13,14 @@ namespace blink {
 class Highlight;
 
 // A subclass of HighlightPseudoMarker for CSS custom highlights.
-// TODO(rego): Rename to CustomHighlightMarker to avoid misunderstandings.
-class CORE_EXPORT HighlightMarker final : public HighlightPseudoMarker {
+class CORE_EXPORT CustomHighlightMarker final : public HighlightPseudoMarker {
  public:
-  HighlightMarker(unsigned start_offset,
-                  unsigned end_offset,
-                  const String& highlight_name,
-                  const Member<Highlight> highlight);
-  HighlightMarker(const HighlightMarker&) = delete;
-  HighlightMarker& operator=(const HighlightMarker&) = delete;
+  CustomHighlightMarker(unsigned start_offset,
+                        unsigned end_offset,
+                        const String& highlight_name,
+                        const Member<Highlight> highlight);
+  CustomHighlightMarker(const CustomHighlightMarker&) = delete;
+  CustomHighlightMarker& operator=(const CustomHighlightMarker&) = delete;
 
   MarkerType GetType() const final;
   PseudoId GetPseudoId() const final;
@@ -38,15 +37,15 @@ class CORE_EXPORT HighlightMarker final : public HighlightPseudoMarker {
 };
 
 template <>
-struct DowncastTraits<HighlightMarker> {
+struct DowncastTraits<CustomHighlightMarker> {
   static bool AllowFrom(const DocumentMarker& marker) {
-    return marker.GetType() == DocumentMarker::kHighlight;
+    return marker.GetType() == DocumentMarker::kCustomHighlight;
   }
   static bool AllowFrom(const HighlightPseudoMarker& marker) {
-    return marker.GetType() == DocumentMarker::kHighlight;
+    return marker.GetType() == DocumentMarker::kCustomHighlight;
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_HIGHLIGHT_MARKER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_CUSTOM_HIGHLIGHT_MARKER_H_

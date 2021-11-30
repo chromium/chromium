@@ -57,7 +57,7 @@ std::pair<unsigned, unsigned> GetTextMatchMarkerPaintOffsets(
 
   DCHECK(marker.GetType() == DocumentMarker::kTextMatch ||
          marker.GetType() == DocumentMarker::kTextFragment ||
-         marker.GetType() == DocumentMarker::kHighlight);
+         marker.GetType() == DocumentMarker::kCustomHighlight);
   const unsigned start_offset = marker.StartOffset() > text_box_start
                                     ? marker.StartOffset() - text_box_start
                                     : 0U;
@@ -650,7 +650,7 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
         inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
                                              style, font, true);
         break;
-      case DocumentMarker::kHighlight:
+      case DocumentMarker::kCustomHighlight:
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kTextMatch:
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground) {
@@ -969,7 +969,7 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
     color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
         To<TextMatchMarker>(marker).IsActiveMatch(), style.UsedColorScheme());
   } else {
-    DCHECK(marker.GetType() == DocumentMarker::kHighlight ||
+    DCHECK(marker.GetType() == DocumentMarker::kCustomHighlight ||
            marker.GetType() == DocumentMarker::kTextFragment);
     const auto& highlight_pseudo_marker = To<HighlightPseudoMarker>(marker);
     auto layout_item = inline_text_box_.GetLineLayoutItem();

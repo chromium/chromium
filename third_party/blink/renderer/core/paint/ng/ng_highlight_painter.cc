@@ -393,7 +393,7 @@ void NGHighlightPainter::Paint(Phase phase) {
       } break;
 
       case DocumentMarker::kTextFragment:
-      case DocumentMarker::kHighlight: {
+      case DocumentMarker::kCustomHighlight: {
         const auto& highlight_pseudo_marker =
             To<HighlightPseudoMarker>(*marker);
         const Document& document = node_->GetDocument();

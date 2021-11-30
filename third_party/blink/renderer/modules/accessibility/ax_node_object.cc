@@ -51,8 +51,8 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -1997,7 +1997,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
       DocumentMarker::kSpelling | DocumentMarker::kGrammar |
       DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
       DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
-      DocumentMarker::kHighlight);
+      DocumentMarker::kCustomHighlight);
   const DocumentMarkerVector markers =
       marker_controller.MarkersFor(*text_node, markers_used_by_accessibility);
   for (const DocumentMarker* marker : markers) {
@@ -2013,8 +2013,8 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
 
     int32_t highlight_type =
         static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone);
-    if (marker->GetType() == DocumentMarker::kHighlight) {
-      const auto& highlight_marker = To<HighlightMarker>(*marker);
+    if (marker->GetType() == DocumentMarker::kCustomHighlight) {
+      const auto& highlight_marker = To<CustomHighlightMarker>(*marker);
       highlight_type =
           ToAXHighlightType(highlight_marker.GetHighlight()->type());
     }

@@ -60,7 +60,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   force_markers_validation_ = false;
 
   document->Markers().RemoveMarkersOfTypes(
-      DocumentMarker::MarkerTypes::Highlight());
+      DocumentMarker::MarkerTypes::CustomHighlight());
 
   for (const auto& highlight_registry_map_entry : highlights_) {
     const auto& highlight_name = highlight_registry_map_entry->highlight_name;
@@ -74,8 +74,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
           continue;
 
         EphemeralRange eph_range(abstract_range);
-        document->Markers().AddHighlightMarker(eph_range, highlight_name,
-                                               highlight);
+        document->Markers().AddCustomHighlightMarker(eph_range, highlight_name,
+                                                     highlight);
       }
     }
   }

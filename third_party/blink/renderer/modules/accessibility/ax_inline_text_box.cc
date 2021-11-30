@@ -35,8 +35,8 @@
 #include "base/numerics/clamped_math.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
@@ -305,7 +305,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
       DocumentMarker::kSpelling | DocumentMarker::kGrammar |
       DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
       DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
-      DocumentMarker::kHighlight);
+      DocumentMarker::kCustomHighlight);
   // "MarkersIntersectingRange" performs a binary search through the document
   // markers list for markers in the given range and of the given types. It
   // should be of a logarithmic complexity.
@@ -342,8 +342,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 
     int32_t highlight_type =
         static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone);
-    if (marker->GetType() == DocumentMarker::kHighlight) {
-      const auto& highlight_marker = To<HighlightMarker>(*marker);
+    if (marker->GetType() == DocumentMarker::kCustomHighlight) {
+      const auto& highlight_marker = To<CustomHighlightMarker>(*marker);
       highlight_type =
           ToAXHighlightType(highlight_marker.GetHighlight()->type());
     }
