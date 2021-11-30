@@ -14,6 +14,7 @@
 @class CRUUpdateStateWrapper;
 @class CRUPriorityWrapper;
 @class CRUPolicySameVersionUpdateWrapper;
+@class CRUAppStatesWrapper;
 
 // Protocol which observes the state of the XPC update checking service.
 @protocol CRUUpdateStateObserving <NSObject>
@@ -55,6 +56,10 @@
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
                               reply:(void (^_Nonnull)(int rc))reply;
+
+// Gets states of all registered apps.
+- (void)getAppStatesWithReply:
+    (void (^_Nonnull)(CRUAppStatesWrapper* _Nullable apps))reply;
 
 @end
 

@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -371,6 +372,15 @@ void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
           base::BindPostTask(main_task_runner_, std::move(callback))));
 }
 
+void UpdateServiceProxy::GetAppStates(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  com_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UpdateServiceProxy::GetAppStatesSTA, this,
+                                base::BindPostTask(main_task_runner_,
+                                                   std::move(callback))));
+}
+
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
   com_task_runner_->PostTask(
@@ -491,6 +501,15 @@ void UpdateServiceProxy::RegisterAppOnSTA(
     callback_wrapper->Disconnect().Run(RegistrationResponse(hr));
     return;
   }
+}
+
+void UpdateServiceProxy::GetAppStatesSTA(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) const {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  // TODO(crbug.com/1094024): implement this feature in the COM server and then
+  // replace this stub code with the actual call.
+  std::move(callback).Run(std::vector<AppState>());
 }
 
 void UpdateServiceProxy::RunPeriodicTasksOnSTA(base::OnceClosure callback) {

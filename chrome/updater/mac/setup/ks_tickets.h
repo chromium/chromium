@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "chrome/updater/update_service.h"
+
 @interface KSPathExistenceChecker : NSObject <NSSecureCoding>
 @property(nonnull, readonly) NSString* path;
 @end
@@ -36,6 +38,9 @@
 - (nullable NSString*)determineTag;      // ap
 - (nullable NSString*)determineBrand;    // brand
 - (nullable NSString*)determineVersion;  // version
+
+- (nullable instancetype)initWithAppState:
+    (const updater::UpdateService::AppState&)state;
 
 @end
 

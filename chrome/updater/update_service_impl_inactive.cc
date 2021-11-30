@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -35,6 +36,13 @@ class UpdateServiceImplInactive : public UpdateService {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RegistrationResponse(-1)));
+  }
+
+  void GetAppStates(base::OnceCallback<void(const std::vector<AppState>&)>
+                        callback) const override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::vector<AppState>()));
   }
 
   void RunPeriodicTasks(base::OnceClosure callback) override {

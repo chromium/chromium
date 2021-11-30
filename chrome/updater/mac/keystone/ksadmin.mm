@@ -8,6 +8,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -29,7 +30,9 @@
 #include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
 #include "chrome/updater/mac/update_service_proxy.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -133,6 +136,7 @@ class KSAdminApp : public App {
   void PrintUsage(const std::string& error_message);
   void PrintVersion();
   void PrintTickets();
+  void PrintKeystoneTickets();
 
   UpdaterScope Scope() const;
   bool HasSwitch(const std::string& arg) const;
@@ -303,9 +307,7 @@ void KSAdminApp::PrintVersion() {
   Shutdown(0);
 }
 
-void KSAdminApp::PrintTickets() {
-  // TODO(crbug.com/1250524): Print tickets owned by Chromium Updater. If there
-  // are any, suppress printing any legacy tickets.
+void KSAdminApp::PrintKeystoneTickets() {
   @autoreleasepool {
     NSDictionary<NSString*, KSTicket*>* store = LoadTicketStore();
     if (store.count > 0) {
@@ -317,7 +319,28 @@ void KSAdminApp::PrintTickets() {
       printf("No tickets\n");
     }
   }
-  Shutdown(0);
+}
+
+void KSAdminApp::PrintTickets() {
+  service_proxy_->GetAppStates(base::BindOnce(
+      [](base::OnceCallback<void()> fallback_cb,
+         base::OnceCallback<void(int)> done_cb,
+         const std::vector<updater::UpdateService::AppState>& states) {
+        for (const auto& state : states) {
+          KSTicket* ticket =
+              [[[KSTicket alloc] initWithAppState:state] autorelease];
+          printf("%s\n", base::SysNSStringToUTF8([ticket description]).c_str());
+        }
+
+        // Fallback to print legacy Keystone tickets if there's no app
+        // registered with the new updater.
+        if (states.empty()) {
+          std::move(fallback_cb).Run();
+        }
+        std::move(done_cb).Run(0);
+      },
+      base::BindOnce(&KSAdminApp::PrintKeystoneTickets, this),
+      base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
 void KSAdminApp::FirstTaskRun() {

@@ -242,6 +242,26 @@ void UpdateServiceImpl::RegisterApp(
           std::move(callback)));
 }
 
+void UpdateServiceImpl::GetAppStates(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) const {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::string> app_ids = persisted_data_->GetAppIds();
+  std::vector<AppState> apps;
+  for (const std::string& app_id : app_ids) {
+    AppState app_state;
+    app_state.app_id = app_id;
+    app_state.version = persisted_data_->GetProductVersion(app_id);
+    app_state.ap = persisted_data_->GetAP(app_id);
+    app_state.brand_code = persisted_data_->GetBrandCode(app_id);
+    app_state.ecp = persisted_data_->GetExistenceCheckerPath(app_id);
+    apps.push_back(app_state);
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(apps)));
+}
+
 void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

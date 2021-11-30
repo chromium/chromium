@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chrome/updater/enum_traits.h"
@@ -175,6 +177,21 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kForeground = 2,
   };
 
+  struct AppState {
+    AppState();
+    AppState(const AppState&);
+    AppState& operator=(const AppState&);
+    AppState(AppState&&);
+    AppState& operator=(AppState&&);
+    ~AppState();
+
+    std::string app_id;
+    base::Version version;
+    std::string ap;
+    std::string brand_code;
+    base::FilePath ecp;
+  };
+
   using Callback = base::OnceCallback<void(Result)>;
   using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
   using RegisterAppCallback =
@@ -189,6 +206,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   // Registers given request to the updater.
   virtual void RegisterApp(const RegistrationRequest& request,
                            RegisterAppCallback callback) = 0;
+
+  // Gets state of all registered apps.
+  virtual void GetAppStates(
+      base::OnceCallback<void(const std::vector<AppState>&)>) const = 0;
 
   // Runs periodic tasks such as checking for uninstallation of registered
   // applications or doing background updates for registered applications.

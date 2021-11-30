@@ -111,6 +111,17 @@ using base::SysUTF8ToNSString;
                             reply:reply];
 }
 
+- (void)getAppStatesWithReply:(void (^_Nonnull)(CRUAppStatesWrapper*))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply(nil);
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      getAppStatesWithReply:reply];
+}
+
 - (void)runPeriodicTasksWithReply:(void (^)(void))reply {
   auto errorHandler = ^(NSError* xpcError) {
     LOG(ERROR) << "XPC connection failed: "
@@ -208,6 +219,21 @@ void UpdateServiceProxy::RegisterApp(
                                       request.existence_checker_path
                                           .AsUTF8Unsafe())
                             reply:reply];
+}
+
+void UpdateServiceProxy::GetAppStates(
+    base::OnceCallback<void(
+        const std::vector<updater::UpdateService::AppState>&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  __block base::OnceCallback<void(
+      const std::vector<updater::UpdateService::AppState>&)>
+      block_callback = std::move(callback);
+
+  auto reply = ^(CRUAppStatesWrapper* wrapper) {
+    callback_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(block_callback), wrapper.states));
+  };
+  [client_ getAppStatesWithReply:reply];
 }
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {

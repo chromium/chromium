@@ -6,6 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -221,6 +224,24 @@
                                 request, std::move(cb)));
 }
 
+- (void)getAppStatesWithReply:(void (^_Nonnull)(CRUAppStatesWrapper*))reply {
+  auto cb = base::BindOnce(base::RetainBlock(
+      ^(const std::vector<updater::UpdateService::AppState>& states) {
+        if (reply) {
+          base::scoped_nsobject<CRUAppStatesWrapper> appStatesWrapper(
+              [[CRUAppStatesWrapper alloc] initWithAppStates:states],
+              base::scoped_policy::RETAIN);
+          reply(appStatesWrapper);
+        }
+
+        _appServer->TaskCompleted();
+      }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(&updater::UpdateService::GetAppStates, _service,
+                                std::move(cb)));
+}
 @end
 
 @interface CRUUpdateServiceInternalXPCImpl

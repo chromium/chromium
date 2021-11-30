@@ -6,7 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -68,7 +70,7 @@
   [super dealloc];
 }
 
-- (id)initWithCoder:(NSCoder*)coder {
+- (instancetype)initWithCoder:(NSCoder*)coder {
   if ((self = [super init])) {
     @try {
       path_ = [[coder decodeObjectOfClass:[NSString class]
@@ -78,6 +80,13 @@
           [NSString stringWithFormat:@"Coder exception %@", e]);
       return nil;
     }
+  }
+  return self;
+}
+
+- (instancetype)initWithFilePath:(const base::FilePath&)filePath {
+  if ((self = [super init])) {
+    path_ = [base::mac::FilePathToNSString(filePath) retain];
   }
   return self;
 }
@@ -101,6 +110,7 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
 @implementation KSTicket {
   NSString* tag_;
   NSString* version_;
+  NSString* brandCode_;
 }
 
 @synthesize productID = productID_;
@@ -142,7 +152,7 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
   return (NSURL*)serverURL;
 }
 
-- (id)initWithCoder:(NSCoder*)coder {
+- (instancetype)initWithCoder:(NSCoder*)coder {
   if ((self = [super init])) {
     @try {
       productID_ = [[coder decodeObjectOfClass:[NSString class]
@@ -187,6 +197,29 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
   return self;
 }
 
+- (instancetype)initWithAppState:
+    (const updater::UpdateService::AppState&)state {
+  if ((self = [super init])) {
+    productID_ = [base::SysUTF8ToNSString(state.app_id) retain];
+    version_ = [base::SysUTF8ToNSString(state.version.GetString()) retain];
+    if (!state.ecp.empty()) {
+      existenceChecker_ =
+          [[KSPathExistenceChecker alloc] initWithFilePath:state.ecp];
+    }
+    tag_ = [base::SysUTF8ToNSString(state.ap) retain];
+    brandCode_ = [base::SysUTF8ToNSString(state.brand_code) retain];
+    serverURL_ = [[NSURL
+        URLWithString:@"https://tools.google.com/service/update2"] retain];
+    serverType_ = [@"Omaha" retain];
+    ticketVersion_ = 1;
+
+    // TODO(crbug/1250524): Infer tagPath, tagKey, brandPath, brandKey,
+    // versionPath, versionKey from app's existence checker and populate them
+    // as additional properties.
+  }
+  return self;
+}
+
 - (void)dealloc {
   [productID_ release];
   [version_ release];
@@ -197,6 +230,7 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
   [tag_ release];
   [tagPath_ release];
   [tagKey_ release];
+  [brandCode_ release];
   [brandPath_ release];
   [brandKey_ release];
   [versionPath_ release];
