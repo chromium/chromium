@@ -1531,6 +1531,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.BreakoutBox.OutOfOrderFrameDropped" enum="Boolean"
+    expires_after="2022-11-29">
+  <owner>toprice@chromium.org</owner>
+  <owner>benjaminwagner@chromium.org</owner>
+  <summary>
+    Number of BreakoutBox instances which have encountered an out of order video
+    frame and dropped it. Reported once per MediaStreamTrackProcessor instance,
+    on the first out of order frame.
+  </summary>
+</histogram>
+
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
     expires_after="2022-05-21">
   <owner>guidou@chromium.org</owner>
