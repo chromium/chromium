@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
@@ -55,7 +56,8 @@ std::pair<unsigned, unsigned> GetTextMatchMarkerPaintOffsets(
       text_box.Start() + text_box.GetLineLayoutItem().TextStartOffset();
 
   DCHECK(marker.GetType() == DocumentMarker::kTextMatch ||
-         marker.GetType() == DocumentMarker::kTextFragment);
+         marker.GetType() == DocumentMarker::kTextFragment ||
+         marker.GetType() == DocumentMarker::kHighlight);
   const unsigned start_offset = marker.StartOffset() > text_box_start
                                     ? marker.StartOffset() - text_box_start
                                     : 0U;
@@ -648,6 +650,7 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
         inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
                                              style, font, true);
         break;
+      case DocumentMarker::kHighlight:
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kTextMatch:
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground) {
@@ -675,10 +678,6 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
                                         styleable_marker, style, font);
         }
       } break;
-      case DocumentMarker::kHighlight:
-        inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
-                                             style, font, false);
-        break;
       default:
         // Marker is not painted, or painting code has not been added yet
         break;
@@ -965,11 +964,20 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
       GetTextMatchMarkerPaintOffsets(marker, inline_text_box_);
   TextRun run = inline_text_box_.ConstructTextRun(style);
 
-  Color color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
-      marker.GetType() == DocumentMarker::kTextMatch
-          ? To<TextMatchMarker>(marker).IsActiveMatch()
-          : false,
-      style.UsedColorScheme());
+  Color color;
+  if (marker.GetType() == DocumentMarker::kTextMatch) {
+    color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
+        To<TextMatchMarker>(marker).IsActiveMatch(), style.UsedColorScheme());
+  } else {
+    DCHECK(marker.GetType() == DocumentMarker::kHighlight ||
+           marker.GetType() == DocumentMarker::kTextFragment);
+    const auto& highlight_pseudo_marker = To<HighlightPseudoMarker>(marker);
+    auto layout_item = inline_text_box_.GetLineLayoutItem();
+    color = HighlightPaintingUtils::HighlightBackgroundColor(
+        layout_item.GetDocument(), layout_item.StyleRef(),
+        layout_item.GetNode(), highlight_pseudo_marker.GetPseudoId(),
+        highlight_pseudo_marker.GetPseudoArgument());
+  }
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
 
