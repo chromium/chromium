@@ -310,12 +310,12 @@ void SyncFileSystemService::GetExtensionStatusMap(
                      AsWeakPtr(), std::move(callback)));
 }
 
-void SyncFileSystemService::DumpFiles(const GURL& origin,
-                                      DumpFilesCallback callback) {
+void SyncFileSystemService::DumpFiles(
+    content::StoragePartition* storage_partition,
+    const GURL& origin,
+    DumpFilesCallback callback) {
   DCHECK(!origin.is_empty());
 
-  content::StoragePartition* storage_partition =
-      profile_->GetStoragePartitionForUrl(origin);
   storage::FileSystemContext* file_system_context =
       storage_partition->GetFileSystemContext();
   local_service_->MaybeInitializeFileSystemContext(

@@ -28,6 +28,10 @@
 
 class Profile;
 
+namespace content {
+class StoragePartition;
+}
+
 namespace storage {
 class FileSystemContext;
 }
@@ -66,7 +70,9 @@ class SyncFileSystemService
                         SyncStatusCallback callback);
 
   void GetExtensionStatusMap(ExtensionStatusMapCallback callback);
-  void DumpFiles(const GURL& origin, DumpFilesCallback callback);
+  void DumpFiles(content::StoragePartition* storage_partition,
+                 const GURL& origin,
+                 DumpFilesCallback callback);
   void DumpDatabase(DumpFilesCallback callback);
 
   // Returns the file |url|'s sync status.

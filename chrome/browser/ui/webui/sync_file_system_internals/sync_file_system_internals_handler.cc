@@ -80,6 +80,11 @@ void SyncFileSystemInternalsHandler::OnSyncStateUpdated(
     const GURL& app_origin,
     sync_file_system::SyncServiceState state,
     const std::string& description) {
+  if (!IsJavascriptAllowed()) {
+    // Javascript is disallowed, either due to the page still loading, or in the
+    // process of being unloaded. Skip this update.
+    return;
+  }
   std::string state_string = chrome_apps::api::sync_file_system::ToString(
       chrome_apps::api::SyncServiceStateToExtensionEnum(state));
   if (!description.empty())
