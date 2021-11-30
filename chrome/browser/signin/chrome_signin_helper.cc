@@ -340,22 +340,19 @@ void ProcessMirrorHeader(
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-      AccountProfileMapper* mapper =
-          g_browser_process->profile_manager()->GetAccountProfileMapper();
-      GetAccountsAvailableAsSecondary(
-          mapper, profile->GetPath(),
-          // It's safe to bind raw `mapper`, the callback gets called iff
-          // `mapper` is still valid.
-          base::BindOnce(&OnLacrosAccountsAvailableAsSecondaryFetched, mapper,
-                         profile->GetPath()));
-      return;
-    }
-#endif
-
+    AccountProfileMapper* mapper =
+        g_browser_process->profile_manager()->GetAccountProfileMapper();
+    GetAccountsAvailableAsSecondary(
+        mapper, profile->GetPath(),
+        // It's safe to bind raw `mapper`, the callback gets called iff
+        // `mapper` is still valid.
+        base::BindOnce(&OnLacrosAccountsAvailableAsSecondaryFetched, mapper,
+                       profile->GetPath()));
+#else
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
                                    AccountAdditionSource::kOgbAddAccount);
+#endif
     return;
   }
 

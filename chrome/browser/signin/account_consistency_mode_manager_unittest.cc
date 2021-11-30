@@ -8,13 +8,11 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,12 +44,9 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
       BuildTestingProfile(/*is_new_profile=*/false);
 
   signin::AccountConsistencyMethod method =
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
       signin::AccountConsistencyMethod::kMirror;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)
-          ? signin::AccountConsistencyMethod::kMirror
-          : signin::AccountConsistencyMethod::kDice;
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
       signin::AccountConsistencyMethod::kDice;
 #else
@@ -213,11 +208,6 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Mirror is enabled by default on Chrome OS, unless specified otherwise.
 TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
-#endif
-
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 
@@ -231,11 +221,6 @@ TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
 }
 
 TEST(AccountConsistencyModeManagerTest, MirrorDisabledForGuestSession) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
-#endif
-
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 
@@ -250,11 +235,6 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForGuestSession) {
 }
 
 TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
-#endif
-
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 

@@ -5,11 +5,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -41,6 +38,13 @@
 #endif
 
 namespace signin_ui_util {
+
+namespace {
+const char kMainEmail[] = "main_email@example.com";
+const char kMainGaiaID[] = "main_gaia_id";
+const char kSecondaryEmail[] = "secondary_email@example.com";
+const char kSecondaryGaiaID[] = "secondary_gaia_id";
+}  // namespace
 
 class GetAllowedDomainTest : public ::testing::Test {};
 
@@ -67,14 +71,11 @@ TEST_F(GetAllowedDomainTest, WithValidPattern) {
   EXPECT_EQ("example-1.com", GetAllowedDomain("email@example-1.com"));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(https://crbug.com/1198523: Remove Lacros check once Dice is no longer
+// supported on Lacros.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
-
-const char kMainEmail[] = "main_email@example.com";
-const char kMainGaiaID[] = "main_gaia_id";
-const char kSecondaryEmail[] = "secondary_email@example.com";
-const char kSecondaryGaiaID[] = "secondary_gaia_id";
 
 class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
  public:
@@ -105,11 +106,7 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
 
 class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  DiceSigninUiUtilTest() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    scoped_feature_list_.InitAndDisableFeature(kMultiProfileAccountConsistency);
-#endif
-  }
+  DiceSigninUiUtilTest() = default;
   ~DiceSigninUiUtilTest() override = default;
 
   struct CreateDiceTurnSyncOnHelperParams {
@@ -154,11 +151,6 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     static_cast<SigninUiUtilTestBrowserWindow*>(browser()->window())
         ->set_browser(browser());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-      GTEST_SKIP();
-#endif
   }
 
   // BrowserWithTestWindowTest:
@@ -266,9 +258,6 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
 
   bool create_dice_turn_sync_on_helper_called_ = false;
   CreateDiceTurnSyncOnHelperParams create_dice_turn_sync_on_helper_params_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
@@ -629,8 +618,7 @@ TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  MirrorSigninUiUtilTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency) {}
+  MirrorSigninUiUtilTest() = default;
   ~MirrorSigninUiUtilTest() override = default;
 
   // BrowserWithTestWindowTest:
@@ -638,9 +626,6 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactories();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {

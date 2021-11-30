@@ -71,6 +71,7 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     account_manager::AccountManagerFacade* account_manager_facade);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -78,6 +79,7 @@ void ShowExtensionSigninPrompt(
 #endif
     bool enable_sync,
     const std::string& email_hint);
+#endif
 }  // namespace internal
 
 // This function is used to enable sync for a given account:

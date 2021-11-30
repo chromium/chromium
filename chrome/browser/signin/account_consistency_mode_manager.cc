@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -191,11 +190,6 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   // Sessions.
   if (profiles::IsPublicSession())
     is_account_manager_available = false;
-
-  if (!profile->IsMainProfile() &&
-      !base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    is_account_manager_available = false;
-  }
 
   if (is_account_manager_available)
     return AccountConsistencyMethod::kMirror;

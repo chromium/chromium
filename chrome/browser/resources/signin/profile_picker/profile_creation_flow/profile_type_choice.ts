@@ -119,9 +119,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
 
   private onSignInClick_() {
     // <if expr="lacros">
-    if (loadTimeData.getBoolean(
-            'isMultiProfileAccountConsistentcyLacrosEnabled') &&
-        this.hasAvailableAccounts_) {
+    if (this.hasAvailableAccounts_) {
       navigateTo(Routes.ACCOUNT_SELECTION_LACROS);
       return;
     }

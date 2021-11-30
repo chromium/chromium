@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -64,8 +62,7 @@ IdentityManagerFactory::IdentityManagerFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    DependsOn(ProfileAccountManagerFactory::GetInstance());
+  DependsOn(ProfileAccountManagerFactory::GetInstance());
 #endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
   signin::SetIdentityManagerProvider(
@@ -145,7 +142,6 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   // The system and (original profile of the) guest profiles are not regular.
   const bool is_regular_profile = profile->IsRegularProfile();
   const bool use_profile_account_manager =
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency) &&
       is_regular_profile &&
       // `ProfileManager` may be null in tests, and is required for account
       // consistency.

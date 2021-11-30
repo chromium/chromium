@@ -9,12 +9,10 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -156,8 +154,6 @@ class ProfilePickerHandlerTest : public testing::Test {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kMultiProfileAccountConsistency};
   testing::NiceMock<account_manager::MockAccountManagerFacade>
       mock_account_manager_facade_;
 

@@ -775,56 +775,47 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
   AllowJavascript();
   CHECK_EQ(2U, args->GetList().size());
   absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
+  const std::string& gaia_id = args->GetList()[1].GetString();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    if (IsSelectingSecondaryAccount(web_ui())) {
-      AccountProfileMapper* mapper =
-          g_browser_process->profile_manager()->GetAccountProfileMapper();
-      const std::string& gaia_id = args->GetList()[1].GetString();
-      if (gaia_id.empty()) {
-        mapper->ShowAddAccountDialog(
-            GetCurrentProfilePath(web_ui()),
-            account_manager::AccountManagerFacade::AccountAdditionSource::
-                kOgbAddAccount,
-            AccountProfileMapper::AddAccountCallback());
-      } else {
-        mapper->AddAccount(GetCurrentProfilePath(web_ui()),
-                           account_manager::AccountKey(
-                               gaia_id, account_manager::AccountType::kGaia),
-                           AccountProfileMapper::AddAccountCallback());
-      }
-      ProfilePicker::Hide();
-      return;
-    }
-
-    DCHECK(!lacros_sign_in_provider_);
-    lacros_sign_in_provider_ =
-        std::make_unique<ProfilePickerLacrosSignInProvider>();
-    ProfilePickerLacrosSignInProvider::SignedInCallback callback =
-        base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
-                       weak_factory_.GetWeakPtr(), profile_color);
-    const std::string& gaia_id = args->GetList()[1].GetString();
+  if (IsSelectingSecondaryAccount(web_ui())) {
+    AccountProfileMapper* mapper =
+        g_browser_process->profile_manager()->GetAccountProfileMapper();
     if (gaia_id.empty()) {
-      lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
-          std::move(callback));
+      mapper->ShowAddAccountDialog(GetCurrentProfilePath(web_ui()),
+                                   account_manager::AccountManagerFacade::
+                                       AccountAdditionSource::kOgbAddAccount,
+                                   AccountProfileMapper::AddAccountCallback());
     } else {
-      lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-          gaia_id, std::move(callback));
+      mapper->AddAccount(GetCurrentProfilePath(web_ui()),
+                         account_manager::AccountKey(
+                             gaia_id, account_manager::AccountType::kGaia),
+                         AccountProfileMapper::AddAccountCallback());
     }
+    ProfilePicker::Hide();
     return;
   }
-#endif
 
-  DCHECK(args->GetList()[1].GetString().empty())
-      << "gaiaId is only supported on Lacros with account consistency";
+  DCHECK(!lacros_sign_in_provider_);
+  lacros_sign_in_provider_ =
+      std::make_unique<ProfilePickerLacrosSignInProvider>();
+  ProfilePickerLacrosSignInProvider::SignedInCallback callback =
+      base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
+                     weak_factory_.GetWeakPtr(), profile_color);
+  if (gaia_id.empty()) {
+    lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
+        std::move(callback));
+  } else {
+    lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
+        gaia_id, std::move(callback));
+  }
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DCHECK(gaia_id.empty()) << "gaiaId is only supported on Lacros.";
   if (signin_util::IsForceSigninEnabled()) {
     // Force sign-in policy uses a separate flow that doesn't initialize the
     // profile color. Generate a new profile color here.
     profile_color = GenerateNewProfileColor().color;
   }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   ProfilePicker::SwitchToDiceSignIn(
       profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
                                     weak_factory_.GetWeakPtr()));
@@ -1126,7 +1117,6 @@ void ProfilePickerHandler::SendAvailableAccounts(
 void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
     absl::optional<SkColor> profile_color,
     Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
   DCHECK(lacros_sign_in_provider_);
   lacros_sign_in_provider_.reset();
 

@@ -9,10 +9,9 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -29,11 +28,7 @@ namespace signin_ui_util {
 
 class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
  public:
-  DiceSigninUiUtilBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    scoped_feature_list_.InitAndDisableFeature(kMultiProfileAccountConsistency);
-#endif
-  }
+  DiceSigninUiUtilBrowserTest() = default;
   ~DiceSigninUiUtilBrowserTest() override = default;
 
   Profile* CreateProfile() {
@@ -55,9 +50,6 @@ class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 // Tests that `ShowExtensionSigninPrompt()` doesn't crash when it cannot create

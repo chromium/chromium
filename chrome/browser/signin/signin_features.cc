@@ -14,9 +14,3 @@ const base::Feature kProcessGaiaRemoveLocalAccountHeader{
 // the profile picker.
 const base::Feature kAccountPoliciesLoadedWithoutSync{
     "AccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Enable support for account consistency across multiple profiles.
-const base::Feature kMultiProfileAccountConsistency{
-    "MultiProfileAccountConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif

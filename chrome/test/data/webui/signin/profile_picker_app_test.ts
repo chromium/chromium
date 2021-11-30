@@ -102,9 +102,6 @@ suite('ProfilePickerAppTest', function() {
 
   // <if expr="lacros">
   test('SignInPromoSignInWithAvailableAccountLacros', async function() {
-    loadTimeData.overrideValues({
-      isMultiProfileAccountConsistentcyLacrosEnabled: true,
-    });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
     const choice =
@@ -136,9 +133,6 @@ suite('ProfilePickerAppTest', function() {
   });
 
   test('SignInPromoSignInWithoutAccountLacros', async function() {
-    loadTimeData.overrideValues({
-      isMultiProfileAccountConsistentcyLacrosEnabled: true,
-    });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');

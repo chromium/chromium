@@ -70,7 +70,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -1017,8 +1016,7 @@ ProfileShortcutManager* ProfileManager::profile_shortcut_manager() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 AccountProfileMapper* ProfileManager::GetAccountProfileMapper() {
-  if (!account_profile_mapper_ &&
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+  if (!account_profile_mapper_) {
     account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
         GetAccountManagerFacade(/*profile_path=*/std::string()),
         &GetProfileAttributesStorage(), g_browser_process->local_state());

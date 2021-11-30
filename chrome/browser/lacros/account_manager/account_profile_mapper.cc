@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
@@ -49,7 +48,6 @@ AccountProfileMapper::AccountProfileMapper(
       profile_attributes_storage_(storage),
       account_cache_(local_state) {
   DCHECK(profile_attributes_storage_);
-  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
 
   // This must be done before OnGetAccountsCompleted() is called, to avoid
   // unnecessary profile deletion.

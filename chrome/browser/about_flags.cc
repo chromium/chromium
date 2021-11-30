@@ -59,7 +59,6 @@
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
@@ -7463,13 +7462,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"share-context-menu", flag_descriptions::kShareContextMenuName,
      flag_descriptions::kShareContextMenuDescription, kOsAll,
      FEATURE_VALUE_TYPE(share::kShareMenu)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"multi-profile-account-consistency",
-     flag_descriptions::kMultiProfileAccountConsistencyName,
-     flag_descriptions::kMultiProfileAccountConsistencyDescription, kOsLinux,
-     FEATURE_VALUE_TYPE(kMultiProfileAccountConsistency)},
 #endif
 
     {"enable-drdc", flag_descriptions::kEnableDrDcName,

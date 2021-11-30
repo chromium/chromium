@@ -232,12 +232,16 @@ void ShowReauthForPrimaryAccountWithAuthError(
 void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
   internal::ShowExtensionSigninPrompt(
       profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       ::GetAccountManagerFacade(profile->GetPath().value()),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       enable_sync, email_hint);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 namespace internal {
@@ -247,25 +251,20 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     signin_metrics::AccessPoint access_point,
     account_manager::AccountManagerFacade* account_manager_facade) {
   Profile* profile = browser->profile();
-  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    CoreAccountInfo primary_account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    DCHECK(!primary_account_info.IsEmpty());
-    DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-        primary_account_info.account_id));
-    account_manager_facade->ShowReauthAccountDialog(
-        GetAccountReauthSourceFromAccessPoint(access_point),
-        primary_account_info.email);
-  } else {
-    DCHECK(!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
-    browser->signin_view_controller()->ShowSignin(
-        profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH, access_point);
-  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  DCHECK(!primary_account_info.IsEmpty());
+  DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      primary_account_info.account_id));
+  account_manager_facade->ShowReauthAccountDialog(
+      GetAccountReauthSourceFromAccessPoint(access_point),
+      primary_account_info.email);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -273,9 +272,6 @@ void ShowExtensionSigninPrompt(
 #endif
     bool enable_sync,
     const std::string& email_hint) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
-#else
   // There is no sign-in flow for guest or system profile.
   if (profile->IsGuestSession() || profile->IsSystemProfile())
     return;
@@ -292,28 +288,23 @@ void ShowExtensionSigninPrompt(
   profile = profile->GetOriginalProfile();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1233933): remove the fallback to DICE once the
-  // feature is deleted.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    // There is no sign-in without Mirror.
-    if (!AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile))
-      return;
+  // There is no sign-in without Mirror.
+  if (!AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile))
+    return;
 
-    if (email_hint.empty()) {
-      // Add a new account.
-      // TODO(https://crbug.com/1260291): add support for signed out profiles.
-      NOTREACHED() << "Lacros doesn't support signed-out profiles yet.";
-      return;
-    }
-
-    // Re-authenticate an existing account.
-    account_manager_facade->ShowReauthAccountDialog(
-        account_manager::AccountManagerFacade::AccountAdditionSource::
-            kChromeExtensionReauth,
-        email_hint);
+  if (email_hint.empty()) {
+    // Add a new account.
+    // TODO(https://crbug.com/1260291): add support for signed out profiles.
+    NOTREACHED() << "Lacros doesn't support signed-out profiles yet.";
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Re-authenticate an existing account.
+  account_manager_facade->ShowReauthAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeExtensionReauth,
+      email_hint);
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
 
@@ -331,8 +322,10 @@ void ShowExtensionSigninPrompt(
     browser->signin_view_controller()->ShowDiceAddAccountTab(
         signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace internal
 
 void EnableSyncFromSingleAccountPromo(

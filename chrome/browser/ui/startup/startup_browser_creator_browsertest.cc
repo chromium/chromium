@@ -3152,10 +3152,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   std::string new_tab_url1 =
       tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros Welcome page appears in the new (non-main) profile only if
-  // account consistency is not enabled.
-  should_show_welcome =
-      !base::FeatureList::IsEnabled(kMultiProfileAccountConsistency);
+  // Welcome page should not be shown on Lacros.
+  // (about:blank or new tab page will be shown instead)
+  should_show_welcome = false;
 #endif
   if (should_show_welcome)
     EXPECT_EQ(chrome::kChromeUIWelcomeURL, new_tab_url1);

@@ -5240,14 +5240,6 @@ const char kLauncherNudgeShortIntervalDescription[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kMultiProfileAccountConsistencyName[] =
-    "Account consistency for multi-profile.";
-extern const char kMultiProfileAccountConsistencyDescription[] =
-    "Enables integration of secondary profiles with the ChromeOS Account "
-    "Manager.";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[] =
     "Allow default web app migration for Chrome OS managed users";

@@ -13,13 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -147,8 +145,7 @@ std::vector<Account> AccountsFromGaiaIDs(
 class AccountProfileMapperTest : public testing::Test {
  public:
   AccountProfileMapperTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(testing_profile_manager_.SetUp());
     main_path_ = GetProfilePath("Default");
     ON_CALL(mock_facade_, GetPersistentErrorForAccount)
@@ -399,7 +396,6 @@ class AccountProfileMapperTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   account_manager::MockAccountManagerFacade mock_facade_;
   std::queue<base::OnceCallback<void(const std::vector<Account>&)>>

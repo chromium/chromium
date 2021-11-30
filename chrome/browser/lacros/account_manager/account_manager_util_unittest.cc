@@ -12,12 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_manager_core/account.h"
@@ -55,8 +53,7 @@ Account AccountFromGaiaID(const std::string& gaia_id) {
 class AccountManagerUtilTest : public testing::Test {
  public:
   AccountManagerUtilTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(testing_profile_manager_.SetUp());
     main_path_ = GetProfilePath("Default");
     ON_CALL(mock_facade_, GetPersistentErrorForAccount)
@@ -142,7 +139,6 @@ class AccountManagerUtilTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   testing::NiceMock<account_manager::MockAccountManagerFacade> mock_facade_;
   TestingProfileManager testing_profile_manager_;

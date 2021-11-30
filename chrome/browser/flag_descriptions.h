@@ -3030,11 +3030,6 @@ extern const char kLauncherNudgeShortIntervalDescription[];
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kMultiProfileAccountConsistencyName[];
-extern const char kMultiProfileAccountConsistencyDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
 extern const char

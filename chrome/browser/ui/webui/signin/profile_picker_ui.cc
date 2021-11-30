@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -220,10 +218,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
       l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
   html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
-
-  html_source->AddBoolean(
-      "isMultiProfileAccountConsistentcyLacrosEnabled",
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
 #endif
 
   // Add policies.
