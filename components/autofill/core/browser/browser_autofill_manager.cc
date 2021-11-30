@@ -1945,9 +1945,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       if (profile) {
         const std::u16string phone_home_city_and_number =
             profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
-        suggestion.value =
-            FieldFiller::GetPhoneNumberValue(autofill_field, suggestion.value,
-                                             phone_home_city_and_number, field);
+        suggestion.value = FieldFiller::GetPhoneNumberValueForInput(
+            autofill_field, suggestion.value, phone_home_city_and_number,
+            field);
       }
     }
   }

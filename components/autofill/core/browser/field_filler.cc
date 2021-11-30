@@ -497,17 +497,6 @@ bool FillCreditCardTypeSelectControl(const std::u16string& value,
   return false;
 }
 
-// Set |field_data|'s value to |number|, or |phone_home_city_and_number|, or
-// possibly an appropriate substring of |number|.  The |field| specifies the
-// type of the phone and whether this is a phone prefix or suffix.
-void FillPhoneNumberField(const AutofillField& field,
-                          const std::u16string& number,
-                          const std::u16string& phone_home_city_and_number,
-                          FormFieldData* field_data) {
-  field_data->value = FieldFiller::GetPhoneNumberValue(
-      field, number, phone_home_city_and_number, *field_data);
-}
-
 // Return the appropriate credit card number from |credit_card|. Truncates the
 // credit card number to be split across HTML form input fields depending on if
 // |field.credit_card_number_offset()| is less than the length of the credit
@@ -586,82 +575,71 @@ std::u16string GetExpirationForMonthControl(const CreditCard& card) {
          card.Expiration2DigitMonthAsString();
 }
 
-// Fills |field| with the street address in |value|. Translates newlines into
+// Returns appropriate street address for |field|. Translates newlines into
 // equivalent separators when necessary, i.e. when filling a single-line field.
 // The separators depend on |address_language_code|.
-void FillStreetAddress(const std::u16string& value,
-                       const std::string& address_language_code,
-                       FormFieldData* field) {
-  if (field->form_control_type == "textarea") {
-    field->value = value;
-    return;
-  }
+std::u16string GetStreetAddressForInput(
+    const std::u16string& address_value,
+    const std::string& address_language_code,
+    FormFieldData* field) {
+  if (field->form_control_type == "textarea")
+    return address_value;
 
   ::i18n::addressinput::AddressData address_data;
   address_data.language_code = address_language_code;
   address_data.address_line =
-      base::SplitString(base::UTF16ToUTF8(value), "\n", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_ALL);
+      base::SplitString(base::UTF16ToUTF8(address_value), "\n",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string line;
   ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(address_data, &line);
-  field->value = base::UTF8ToUTF16(line);
+  return base::UTF8ToUTF16(line);
 }
 
-// Returns whether the |field| was filled with the state in |value| or its
-// canonical state name or the abbreviation.
-// First looks if |value| fits directly in the field, then looks if the
-// abbreviation of |value| fits in case the
+// Returns appropriate state value that matches |field|.
+// First looks if |state_value| fits directly in the field, then looks if the
+// abbreviation of |state_value| fits in case the
 // |features::kAutofillUseAlternativeStateNameMap| is disabled.
 // If the |features::kAutofillUseAlternativeStateNameMap| is enabled, the
 // canonical state is checked if it fits in the field and at last the
-// abbreviations are tried.
-// Does not fill if neither |value| nor the canonical state name nor its
-// abbreviation fit into the field.
-bool FillStateText(const std::u16string& value,
-                   const std::string& country_code,
-                   FormFieldData* field,
-                   std::string* failure_to_fill) {
-  if (field->max_length == 0 || field->max_length >= value.size()) {
-    // Fill the state value directly.
-    field->value = value;
-    return true;
-  }
+// abbreviations are tried. Does not return a state if neither |state_value| nor
+// the canonical state name nor its abbreviation fit into the field.
+std::u16string GetStateTextForInput(const std::u16string& state_value,
+                                    const std::string& country_code,
+                                    FormFieldData* field,
+                                    std::string* failure_to_fill) {
+  if (field->max_length == 0 || field->max_length >= state_value.size())
+    // Return the state value directly.
+    return state_value;
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAlternativeStateNameMap)) {
     absl::optional<StateEntry> state =
         AlternativeStateNameMap::GetInstance()->GetEntry(
             AlternativeStateNameMap::CountryCode(country_code),
-            AlternativeStateNameMap::StateName(value));
+            AlternativeStateNameMap::StateName(state_value));
     if (state) {
-      // Fill with the canonical state name if possible.
+      // Return the canonical state name if possible.
       if (state->has_canonical_name() && !state->canonical_name().empty() &&
-          field->max_length >= state->canonical_name().size()) {
-        field->value = base::UTF8ToUTF16(state->canonical_name());
-        return true;
-      }
+          field->max_length >= state->canonical_name().size())
+        return base::UTF8ToUTF16(state->canonical_name());
 
-      // Fill with the abbreviation if possible.
+      // Return the abbreviation if possible.
       for (const auto& abbr : state->abbreviations()) {
-        if (!abbr.empty() && field->max_length >= abbr.size()) {
-          field->value = base::i18n::ToUpper(base::UTF8ToUTF16(abbr));
-          return true;
-        }
+        if (!abbr.empty() && field->max_length >= abbr.size())
+          return base::i18n::ToUpper(base::UTF8ToUTF16(abbr));
       }
     }
   }
 
-  // Fill with the state abbreviation.
+  // Return with the state abbreviation.
   std::u16string abbreviation;
-  state_names::GetNameAndAbbreviation(value, nullptr, &abbreviation);
-  if (!abbreviation.empty() && field->max_length >= abbreviation.size()) {
-    field->value = base::i18n::ToUpper(abbreviation);
-    return true;
-  }
+  state_names::GetNameAndAbbreviation(state_value, nullptr, &abbreviation);
+  if (!abbreviation.empty() && field->max_length >= abbreviation.size())
+    return base::i18n::ToUpper(abbreviation);
 
   if (failure_to_fill)
     *failure_to_fill += "Could not fit raw state nor abbreviation. ";
-  return false;
+  return std::u16string();
 }
 
 // Returns the appropriate expiration year from |credit_card| for the field.
@@ -737,16 +715,18 @@ std::u16string RemoveWhitespace(const std::u16string& value) {
 // |country_code|.
 // If the exact match is not found, extracts the digits (ignoring leading '00'
 // or '+') from each option and compares them with the |country_code|.
-void FillPhoneCountryCodeSelectControl(const std::u16string& country_code,
-                                       FormFieldData* field,
-                                       std::string* failure_to_fill) {
+std::u16string GetPhoneCountryCodeSelectControlForInput(
+    const std::u16string& country_code,
+    FormFieldData* field,
+    std::string* failure_to_fill) {
   if (country_code.empty())
-    return;
+    return std::u16string();
 
   // Find the option that exactly matches the |country_code|.
   if (SetSelectControlValue(country_code, field, /*best_match_index=*/nullptr,
-                            failure_to_fill))
-    return;
+                            failure_to_fill)) {
+    return country_code;
+  }
 
   for (const SelectOption& option : field->options) {
     std::u16string cc_candidate_in_value =
@@ -756,10 +736,10 @@ void FillPhoneCountryCodeSelectControl(const std::u16string& country_code,
             RemoveWhitespace(option.content));
     if (cc_candidate_in_value == country_code ||
         cc_candidate_in_content == country_code) {
-      field->value = option.value;
-      return;
+      return option.value;
     }
   }
+  return std::u16string();
 }
 
 // Returns the appropriate |credit_card| value based on |storable_type| to fill
@@ -795,6 +775,44 @@ std::u16string GetValueForCreditCard(const CreditCard& credit_card,
   }
 }
 
+// Returns the appropriate |profile| value based on |type| to fill
+// into |field|.
+std::u16string GetValueForProfile(const AutofillProfile& profile,
+                                  const std::string& app_locale,
+                                  const AutofillField& field,
+                                  FormFieldData* field_data,
+                                  std::string* failure_to_fill) {
+  const AutofillType type = field.Type();
+  std::u16string value = profile.GetInfo(type, app_locale);
+
+  if (type.group() == FieldTypeGroup::kPhoneHome) {
+    // If the |field_data| is a selection box and having the type
+    // |PHONE_HOME_COUNTRY_CODE|, call
+    // |GetPhoneCountryCodeSelectControlForInput|.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableAugmentedPhoneCountryCode) &&
+        field_data->form_control_type == "select-one" &&
+        type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
+      value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
+                                                       failure_to_fill);
+    } else {
+      const std::u16string phone_home_city_and_number =
+          profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
+      value = FieldFiller::GetPhoneNumberValueForInput(
+          field, value, phone_home_city_and_number, *field_data);
+    }
+  } else if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
+    const std::string& profile_language_code = profile.language_code();
+    value = GetStreetAddressForInput(value, profile_language_code, field_data);
+  } else if (type.GetStorableType() == ADDRESS_HOME_STATE) {
+    const std::string& country_code =
+        data_util::GetCountryCodeWithFallback(profile, app_locale);
+    value =
+        GetStateTextForInput(value, country_code, field_data, failure_to_fill);
+  }
+  return value;
+}
+
 }  // namespace
 
 FieldFiller::FieldFiller(const std::string& app_locale,
@@ -820,34 +838,23 @@ bool FieldFiller::FillFormField(
 
     value = GetValueForCreditCard(*credit_card, cvc, app_locale_, action, field,
                                   failure_to_fill);
-
-    // Do not attempt to fill empty values as it would skew the metrics.
-    if (value.empty()) {
-      if (failure_to_fill)
-        *failure_to_fill += "No value to fill available. ";
-      return false;
-    }
-    if (field.form_control_type == "select-one") {
-      return FillSelectControl(type, value, credit_card, app_locale_,
-                               field_data, address_normalizer_,
-                               failure_to_fill);
-    }
-    field_data->value = value;
-    return true;
   }
 
   // Grab AutofillProfile data.
-  DCHECK(
-      absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card));
-  const AutofillProfile* profile =
-      absl::get<const AutofillProfile*>(profile_or_credit_card);
-  if (profile->ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
-    if (failure_to_fill)
-      *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";
-    return false;
-  }
+  else {
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    const AutofillProfile* profile =
+        absl::get<const AutofillProfile*>(profile_or_credit_card);
+    if (profile->ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
+      if (failure_to_fill)
+        *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";
+      return false;
+    }
 
-  value = profile->GetInfo(type, app_locale_);
+    value = GetValueForProfile(*profile, app_locale_, field, field_data,
+                               failure_to_fill);
+  }
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (value.empty()) {
@@ -855,47 +862,9 @@ bool FieldFiller::FillFormField(
       *failure_to_fill += "No value to fill available. ";
     return false;
   }
-
-  // Filling of AutofillProfile.
-  if (type.group() == FieldTypeGroup::kPhoneHome) {
-    // If the |field_data| is a selection box and having the type
-    // |PHONE_HOME_COUNTRY_CODE|, call |FillPhoneCountryCodeSelectControl|.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableAugmentedPhoneCountryCode) &&
-        field_data->form_control_type == "select-one" &&
-        type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
-      FillPhoneCountryCodeSelectControl(value, field_data, failure_to_fill);
-    } else {
-      DCHECK(absl::holds_alternative<const AutofillProfile*>(
-          profile_or_credit_card));
-      const std::u16string phone_home_city_and_number =
-          absl::get<const AutofillProfile*>(profile_or_credit_card)
-              ->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
-      FillPhoneNumberField(field, value, phone_home_city_and_number,
-                           field_data);
-    }
-    return true;
-  }
-  if (field_data->form_control_type == "select-one") {
+  if (field.form_control_type == "select-one") {
     return FillSelectControl(type, value, profile_or_credit_card, app_locale_,
                              field_data, address_normalizer_, failure_to_fill);
-  }
-  if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
-    DCHECK(absl::holds_alternative<const AutofillProfile*>(
-        profile_or_credit_card));
-    const std::string& profile_language_code =
-        absl::get<const AutofillProfile*>(profile_or_credit_card)
-            ->language_code();
-    FillStreetAddress(value, profile_language_code, field_data);
-    return true;
-  }
-  if (type.GetStorableType() == ADDRESS_HOME_STATE) {
-    DCHECK(absl::holds_alternative<const AutofillProfile*>(
-        profile_or_credit_card));
-    const std::string& country_code = data_util::GetCountryCodeWithFallback(
-        *absl::get<const AutofillProfile*>(profile_or_credit_card),
-        app_locale_);
-    return FillStateText(value, country_code, field_data, failure_to_fill);
   }
   field_data->value = value;
   return true;
@@ -904,7 +873,7 @@ bool FieldFiller::FillFormField(
 // TODO(crbug.com/581514): Add support for filling only the prefix/suffix for
 // phone numbers with 10 or 11 digits.
 // static
-std::u16string FieldFiller::GetPhoneNumberValue(
+std::u16string FieldFiller::GetPhoneNumberValueForInput(
     const AutofillField& field,
     const std::u16string& number,
     const std::u16string& phone_home_city_and_number,

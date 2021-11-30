@@ -45,7 +45,7 @@ class FieldFiller {
   // Returns the phone number value for the given |field|. The returned value
   // might be |number|, or |phone_home_city_and_number|, or could possibly be a
   // meaningful subset |number|, if that's appropriate for the field.
-  static std::u16string GetPhoneNumberValue(
+  static std::u16string GetPhoneNumberValueForInput(
       const AutofillField& field,
       const std::u16string& number,
       const std::u16string& phone_home_city_and_number,
