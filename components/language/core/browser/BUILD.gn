@@ -16,6 +16,8 @@ static_library("browser") {
     "locale_util.h",
     "pref_names.cc",
     "pref_names.h",
+    "ulp_metrics_logger.cc",
+    "ulp_metrics_logger.h",
     "url_language_histogram.cc",
     "url_language_histogram.h",
   ]
@@ -37,6 +39,7 @@ source_set("unit_tests") {
   sources = [
     "language_prefs_unittest.cc",
     "language_usage_metrics_unittest.cc",
+    "ulp_metrics_logger_unittest.cc",
     "url_language_histogram_unittest.cc",
   ]
   deps = [

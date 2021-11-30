@@ -323,6 +323,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap"
+    units="%" expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of ULP languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question of
+    &quot;How many of the predicted ULP languages have already been added by the
+    user?&quot;.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
+    enum="ULPLanguageStatus" expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether Chrome's UI language exists in the user's LanguageProfile,
+    and if so whether it was the top language.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
+    expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of unique languages present in the user's LanguageProfile.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
+    enum="ULPLanguageStatus" expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether the first accept language exists in the user's
+    LanguageProfile, and if so whether it was the top language.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.TranslateTargetInULP"
+    enum="ULPLanguageStatus" expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether the current translate target language exists in the user's
+    LanguageProfile, and if so whether it was the top language.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

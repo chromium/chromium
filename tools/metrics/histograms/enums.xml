@@ -86274,6 +86274,12 @@ Full version information for the fingerprint enum values:
   <int value="16" label="Disabled by URL-keyed anonymized data collection"/>
 </enum>
 
+<enum name="ULPLanguageStatus">
+  <int value="0" label="Top ULP language"/>
+  <int value="1" label="Non-top ULP language"/>
+  <int value="2" label="Language not in ULP"/>
+</enum>
+
 <enum name="UmaCleanExitConsistency">
   <obsolete>
     Deprecated 07/2021 in favor of UmaCleanExitConsistency2. Version 2 re-orders
