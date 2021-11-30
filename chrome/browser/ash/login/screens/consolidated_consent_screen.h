@@ -61,6 +61,10 @@ class ConsolidatedConsentScreen
   // associated View if this class is destroyed before that.
   void OnViewDestroyed(ConsolidatedConsentScreenView* view);
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
   const ScreenExitCallback& get_exit_callback_for_testing() {
     return exit_callback_;
   }

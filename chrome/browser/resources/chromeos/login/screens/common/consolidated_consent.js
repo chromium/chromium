@@ -123,7 +123,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
      * The hostname of the url where the terms of service will be fetched.
      * Overwritten by tests to load terms of service from local test server.
      */
-    this.termsOfServiceHostName_ = 'https://play.google.com';
+    this.arcTosHostName_ = 'https://play.google.com';
 
     // Online URLs
     this.googleEulaUrl_ = '';
@@ -168,6 +168,12 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       resetAllowed: true,
     });
     this.updateLocalizedContent();
+
+    if (loadTimeData.valueExists(
+            'consolidatedConsentArcTosHostNameForTesting')) {
+      this.setArcTosHostNameForTesting_(loadTimeData.getString(
+          'consolidatedConsentArcTosHostNameForTesting'));
+    }
   }
 
   onBeforeShow(data) {
@@ -181,7 +187,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     this.googleEulaUrl_ = data['googleEulaUrl'];
     this.crosEulaUrl_ = data['crosEulaUrl'];
-    this.arcTosUrl_ = this.termsOfServiceHostName_ + '/about/play-terms.html';
+    this.arcTosUrl_ = this.arcTosHostName_ + '/about/play-terms.html';
 
     this.maybeLoadWebviews_(
         this.isEnterpriseManagedAccount_, this.isArcEnabled_);
@@ -237,14 +243,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     webview.addContentScripts([{
       name: 'preProcess',
-      matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
+      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
       js: {code: scriptSetParameters},
       run_at: 'document_start'
     }]);
 
     webview.addContentScripts([{
       name: 'postProcess',
-      matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
+      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
       css: {files: ['playstore.css']},
       js: {files: ['playstore.js']},
       run_at: 'document_end'
@@ -319,8 +325,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
    * @return {string}
    * @private
    */
-  getTermsOfServiceHostNameForMatchPattern_() {
-    return this.termsOfServiceHostName_.replace(/:[0-9]+/, '');
+  getArcTosHostNameForMatchPattern_() {
+    return this.arcTosHostName_.replace(/:[0-9]+/, '');
   }
 
   /**
@@ -495,7 +501,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return this.i18n('consolidatedConsentHeader');
   }
 
-
   getUsageText_(locale, isChildAccount, isArcEnabled, isDemo) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
       return this.i18n('consolidatedConsentUsageOptInArcDisabled');
@@ -644,6 +649,27 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
    */
   onBack_() {
     this.userActed('back');
+  }
+
+  /**
+   * Sets Play Store hostname url used to fetch terms of service for testing.
+   * @param {string} hostname hostname used to fetch terms of service.
+   * @suppress {missingProperties} as WebView type has no addContentScripts
+   */
+  setArcTosHostNameForTesting_(hostname) {
+    this.arcTosHostName_ = hostname;
+
+    // Enable loading content script 'playstore.js' when fetching ToS from
+    // the test server.
+    var termsView = this.$.arcTosWebview;
+    termsView.removeContentScripts(['postProcess']);
+    termsView.addContentScripts([{
+      name: 'postProcess',
+      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
+      css: {files: ['playstore.css']},
+      js: {files: ['playstore.js']},
+      run_at: 'document_end'
+    }]);
   }
 }
 

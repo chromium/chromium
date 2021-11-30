@@ -57,10 +57,15 @@ std::string GetGoogleEulaOnlineUrl() {
 }
 
 std::string GetCrosEulaOnlineUrl() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOobeEulaUrlForTests)) {
+    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kOobeEulaUrlForTests);
+  }
+
   return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
-
 }  // namespace
 
 std::string ConsolidatedConsentScreen::GetResultString(Result result) {
