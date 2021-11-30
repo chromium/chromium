@@ -132,6 +132,7 @@ class CORE_EXPORT MediaQueryEvaluator final
   KleeneValue EvalOr(const MediaQueryExpNode&,
                      const MediaQueryExpNode&,
                      Results) const;
+  KleeneValue EvalFeature(const MediaQueryExp&, Results) const;
 
   const String MediaType() const;
 

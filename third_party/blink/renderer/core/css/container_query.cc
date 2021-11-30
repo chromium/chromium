@@ -37,14 +37,10 @@ String ContainerSelector::ToString() const {
 
 ContainerQuery::ContainerQuery(const ContainerSelector& selector,
                                std::unique_ptr<MediaQueryExpNode> query)
-    : selector_(selector),
-      query_(std::move(query)),
-      queried_axes_(query_->QueriedAxes()) {}
+    : selector_(selector), query_(std::move(query)) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
-    : selector_(other.selector_),
-      query_(other.query_->Copy()),
-      queried_axes_(other.queried_axes_) {}
+    : selector_(other.selector_), query_(other.query_->Copy()) {}
 
 String ContainerQuery::ToString() const {
   return query_->Serialize();

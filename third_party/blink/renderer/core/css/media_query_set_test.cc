@@ -11,17 +11,6 @@
 
 namespace blink {
 
-namespace {
-
-absl::optional<PhysicalAxes> QueriedAxes(String string) {
-  auto set = MediaQuerySet::Create(string, nullptr);
-  if (!set)
-    return absl::nullopt;
-  return set->QueriedAxes();
-}
-
-}  // namespace
-
 typedef struct {
   const char* input;
   const char* output;
@@ -428,28 +417,6 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
         MediaQuerySet::Create(test_cases[i].input, nullptr);
     TestMediaQuery(test_cases[i], *query_set);
   }
-}
-
-TEST(MediaQuerySetTest, QueriedAxes) {
-  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
-
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), QueriedAxes("(color)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("(width)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("(height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth), QueriedAxes("(width), (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            QueriedAxes("(color), (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            QueriedAxes("(width) and (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            QueriedAxes("(width) or (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            QueriedAxes("(color) and (width) and (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            QueriedAxes("not screen and (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("((width))"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("((height))"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), QueriedAxes("(unknown)"));
 }
 
 }  // namespace blink

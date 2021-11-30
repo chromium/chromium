@@ -45,7 +45,6 @@ class CORE_EXPORT ContainerQuery final
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
-  PhysicalAxes QueriedAxes() const { return queried_axes_; }
 
   String ToString() const;
 
@@ -61,7 +60,6 @@ class CORE_EXPORT ContainerQuery final
 
   ContainerSelector selector_;
   std::unique_ptr<MediaQueryExpNode> query_;
-  PhysicalAxes queried_axes_{kPhysicalAxisNone};
 };
 
 }  // namespace blink

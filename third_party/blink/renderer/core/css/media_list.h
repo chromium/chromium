@@ -57,7 +57,6 @@ class CORE_EXPORT MediaQuerySet : public RefCounted<MediaQuerySet> {
   const Vector<std::unique_ptr<MediaQuery>>& QueryVector() const {
     return queries_;
   }
-  PhysicalAxes QueriedAxes() const;
 
   String MediaText() const;
   bool HasUnknown() const;

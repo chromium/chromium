@@ -111,12 +111,6 @@ const String& MediaQuery::MediaType() const {
   return media_type_;
 }
 
-PhysicalAxes MediaQuery::QueriedAxes() const {
-  if (const MediaQueryExpNode* exp_node = ExpNode())
-    return exp_node_->QueriedAxes();
-  return PhysicalAxes(kPhysicalAxisNone);
-}
-
 // https://drafts.csswg.org/cssom/#compare-media-queries
 bool MediaQuery::operator==(const MediaQuery& other) const {
   return CssText() == other.CssText();

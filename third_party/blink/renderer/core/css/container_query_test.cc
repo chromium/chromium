@@ -50,15 +50,6 @@ class ContainerQueryTest : public PageTestBase,
     return &container->GetContainerQuery();
   }
 
-  PhysicalAxes QueriedAxes(String query) {
-    // This does not use ParseContainerQuery, since we want to allow queries
-    // with "unknown" parts.
-    auto* rule = DynamicTo<StyleRuleContainer>(css_test_helpers::ParseRule(
-        GetDocument(), "@container " + query + " {}"));
-    DCHECK(rule);
-    return rule->GetContainerQuery().QueriedAxes();
-  }
-
   String SerializeCondition(StyleRuleContainer* container) {
     if (!container)
       return "";
@@ -251,33 +242,6 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
   container->setAttribute(html_names::kClassAttr, "");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
-}
-
-TEST_F(ContainerQueryTest, QueriedAxes) {
-  auto horizontal = PhysicalAxes(kPhysicalAxisHorizontal);
-  auto vertical = PhysicalAxes(kPhysicalAxisVertical);
-  auto both = PhysicalAxes(kPhysicalAxisBoth);
-  auto none = PhysicalAxes(kPhysicalAxisNone);
-
-  EXPECT_EQ(horizontal, QueriedAxes("size(min-width: 1px)"));
-  EXPECT_EQ(horizontal, QueriedAxes("size(max-width: 1px)"));
-  EXPECT_EQ(horizontal, QueriedAxes("size(width: 1px)"));
-
-  EXPECT_EQ(vertical, QueriedAxes("size(min-height: 1px)"));
-  EXPECT_EQ(vertical, QueriedAxes("size(max-height: 1px)"));
-  EXPECT_EQ(vertical, QueriedAxes("size(height: 1px)"));
-
-  EXPECT_EQ(both, QueriedAxes("size((width: 1px) and (height: 1px))"));
-  EXPECT_EQ(both, QueriedAxes("size((min-width: 1px) and (max-height: 1px))"));
-
-  EXPECT_EQ(both, QueriedAxes("size(aspect-ratio: 1/2)"));
-  EXPECT_EQ(both, QueriedAxes("size(min-aspect-ratio: 1/2)"));
-  EXPECT_EQ(both, QueriedAxes("size(min-aspect-ratio: 1/2)"));
-
-  EXPECT_EQ(both, QueriedAxes("size(orientation: portrait)"));
-  EXPECT_EQ(both, QueriedAxes("size(orientation: landscape)"));
-
-  EXPECT_EQ(none, QueriedAxes("size(unknown)"));
 }
 
 TEST_F(ContainerQueryTest, QueryZoom) {

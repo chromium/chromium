@@ -157,9 +157,7 @@ KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
     return EvalOr(n->Left(), n->Right(), results);
   if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node))
     return KleeneValue::kUnknown;
-  return Eval(To<MediaQueryFeatureExpNode>(node).Expression(), results)
-             ? KleeneValue::kTrue
-             : KleeneValue::kFalse;
+  return EvalFeature(To<MediaQueryFeatureExpNode>(node).Expression(), results);
 }
 
 KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
@@ -194,6 +192,17 @@ KleeneValue MediaQueryEvaluator::EvalOr(const MediaQueryExpNode& left_node,
   if (left == KleeneValue::kTrue)
     return left;
   return Eval(right_node, results);
+}
+
+KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
+                                             Results results) const {
+  if (media_values_) {
+    if (!media_values_->Width().has_value() && expr.IsWidthDependent())
+      return KleeneValue::kUnknown;
+    if (!media_values_->Height().has_value() && expr.IsHeightDependent())
+      return KleeneValue::kUnknown;
+  }
+  return Eval(expr, results) ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
@@ -344,8 +353,8 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
 static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {
-  int width = media_values.Width();
-  int height = media_values.Height();
+  int width = *media_values.Width();
+  int height = *media_values.Height();
 
   if (value.IsId()) {
     if (width > height)  // Square viewport is portrait.
@@ -361,8 +370,8 @@ static bool AspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator op,
                                         const MediaValues& media_values) {
   if (value.IsValid()) {
-    return CompareAspectRatioValue(value, media_values.Width(),
-                                   media_values.Height(), op);
+    return CompareAspectRatioValue(value, *media_values.Width(),
+                                   *media_values.Height(), op);
   }
 
   // ({,min-,max-}aspect-ratio)
@@ -547,7 +556,7 @@ static bool DeviceWidthMediaFeatureEval(const MediaQueryExpValue& value,
 static bool HeightMediaFeatureEval(const MediaQueryExpValue& value,
                                    MediaQueryOperator op,
                                    const MediaValues& media_values) {
-  double height = media_values.Height();
+  double height = *media_values.Height();
   if (value.IsValid())
     return ComputeLengthAndCompare(value, op, media_values, height);
 
@@ -557,7 +566,7 @@ static bool HeightMediaFeatureEval(const MediaQueryExpValue& value,
 static bool WidthMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaQueryOperator op,
                                   const MediaValues& media_values) {
-  double width = media_values.Width();
+  double width = *media_values.Width();
   if (value.IsValid())
     return ComputeLengthAndCompare(value, op, media_values, width);
 
@@ -1137,6 +1146,9 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
     NOTREACHED();
     return false;
   }
+
+  DCHECK(media_values_->Width().has_value() || !expr.IsWidthDependent());
+  DCHECK(media_values_->Height().has_value() || !expr.IsHeightDependent());
 
   DCHECK(g_function_map);
 

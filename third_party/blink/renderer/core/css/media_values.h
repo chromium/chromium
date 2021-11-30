@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_H_
 
 #include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -47,8 +48,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
     return true;
   }
 
-  virtual double Width() const { return ViewportWidth(); }
-  virtual double Height() const { return ViewportHeight(); }
+  virtual absl::optional<double> Width() const { return ViewportWidth(); }
+  virtual absl::optional<double> Height() const { return ViewportHeight(); }
   virtual int DeviceWidth() const = 0;
   virtual int DeviceHeight() const = 0;
   virtual float DevicePixelRatio() const = 0;

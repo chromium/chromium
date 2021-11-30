@@ -604,17 +604,6 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Or(
                                                std::move(right));
 }
 
-PhysicalAxes MediaQueryFeatureExpNode::QueriedAxes() const {
-  PhysicalAxes axes(kPhysicalAxisNone);
-
-  if (exp_.IsWidthDependent())
-    axes |= PhysicalAxes(kPhysicalAxisHorizontal);
-  if (exp_.IsHeightDependent())
-    axes |= PhysicalAxes(kPhysicalAxisVertical);
-
-  return axes;
-}
-
 void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(exp_.Serialize());
 }
@@ -630,10 +619,6 @@ bool MediaQueryFeatureExpNode::HasUnknown() const {
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
   return std::make_unique<MediaQueryFeatureExpNode>(exp_);
-}
-
-PhysicalAxes MediaQueryUnaryExpNode::QueriedAxes() const {
-  return operand_->QueriedAxes();
 }
 
 void MediaQueryUnaryExpNode::CollectExpressions(
@@ -675,10 +660,6 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryNotExpNode::Copy() const {
   return std::make_unique<MediaQueryNotExpNode>(Operand().Copy());
 }
 
-PhysicalAxes MediaQueryCompoundExpNode::QueriedAxes() const {
-  return left_->QueriedAxes() | right_->QueriedAxes();
-}
-
 void MediaQueryCompoundExpNode::CollectExpressions(
     Vector<MediaQueryExp>& result) const {
   left_->CollectExpressions(result);
@@ -707,10 +688,6 @@ void MediaQueryOrExpNode::SerializeTo(StringBuilder& builder) const {
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryOrExpNode::Copy() const {
   return std::make_unique<MediaQueryOrExpNode>(Left().Copy(), Right().Copy());
-}
-
-PhysicalAxes MediaQueryUnknownExpNode::QueriedAxes() const {
-  return PhysicalAxes(kPhysicalAxisNone);
 }
 
 void MediaQueryUnknownExpNode::SerializeTo(StringBuilder& builder) const {

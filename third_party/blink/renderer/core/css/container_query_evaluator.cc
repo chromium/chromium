@@ -17,9 +17,17 @@ namespace blink {
 
 namespace {
 
-bool IsSufficientlyContained(PhysicalAxes contained_axes,
-                             PhysicalAxes queried_axes) {
-  return (contained_axes & queried_axes) == queried_axes;
+// Produce PhysicalAxes corresponding to the computed container-type.
+// Note that this may be different from the *actually* contained axes
+// provided to ContainerChanged, since there are multiple sources of
+// applied containment (e.g. the 'contain' property itself).
+PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
+  LogicalAxes axes(kLogicalAxisNone);
+  if (style.ContainerType() & kContainerTypeInlineSize)
+    axes |= LogicalAxes(kLogicalAxisInline);
+  if (style.ContainerType() & kContainerTypeBlockSize)
+    axes |= LogicalAxes(kLogicalAxisBlock);
+  return ToPhysicalAxes(axes, style.GetWritingMode());
 }
 
 bool NameMatches(const ComputedStyle& style,
@@ -82,11 +90,8 @@ bool ContainerQueryEvaluator::Eval(
 
 bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
                                    MediaQueryEvaluator::Results results) const {
-  if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
+  if (!media_query_evaluator_)
     return false;
-  if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
-    return false;
-  DCHECK(media_query_evaluator_);
   return media_query_evaluator_->Eval(*container_query.query_, results) ==
          KleeneValue::kTrue;
 }
@@ -146,8 +151,27 @@ void ContainerQueryEvaluator::SetData(Document& document,
   size_ = size;
   contained_axes_ = contained_axes;
 
-  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      document, style, size.width.ToDouble(), size.height.ToDouble());
+  absl::optional<double> width;
+  absl::optional<double> height;
+
+  // An axis is "supported" only when it appears in the computed value of
+  // 'container-type', and when containment is actually applied for that axis.
+  //
+  // See IsEligibleForSizeContainment (and similar).
+  PhysicalAxes supported_axes = ContainerTypeAxes(style) & contained_axes;
+
+  if ((supported_axes & PhysicalAxes(kPhysicalAxisHorizontal)) !=
+      PhysicalAxes(kPhysicalAxisNone)) {
+    width = size.width.ToDouble();
+  }
+
+  if ((supported_axes & PhysicalAxes(kPhysicalAxisVertical)) !=
+      PhysicalAxes(kPhysicalAxisNone)) {
+    height = size.height.ToDouble();
+  }
+
+  auto* query_values =
+      MakeGarbageCollected<CSSContainerValues>(document, style, width, height);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }

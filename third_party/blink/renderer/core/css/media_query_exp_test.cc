@@ -285,46 +285,6 @@ TEST(MediaQueryExpTest, SerializeNode) {
           ->Serialize());
 }
 
-TEST(MediaQueryExpTest, QueriedAxes) {
-  MediaQueryExp color = RightExp("color", NoCmp(InvalidValue()));
-  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
-  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
-
-  // color
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), FeatureNode(color)->QueriedAxes());
-  // (color)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone),
-            EnclosedFeatureNode(color)->QueriedAxes());
-  // (width < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            EnclosedFeatureNode(width_lt10)->QueriedAxes());
-  // (height < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            EnclosedFeatureNode(height_lt10)->QueriedAxes());
-  // (width < 10px) and (height < 10px)
-  EXPECT_EQ(
-      PhysicalAxes(kPhysicalAxisBoth),
-      AndNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
-          ->QueriedAxes());
-  // (width < 10px) or (height < 10px)
-  EXPECT_EQ(
-      PhysicalAxes(kPhysicalAxisBoth),
-      OrNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
-          ->QueriedAxes());
-  // ((width < 10px))
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            NestedNode(EnclosedFeatureNode(width_lt10))->QueriedAxes());
-  // not (width < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            NotNode(EnclosedFeatureNode(width_lt10))->QueriedAxes());
-  // (foo)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), UnknownNode("foo")->QueriedAxes());
-  // (foo) or (width)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            OrNode(UnknownNode("foo"), EnclosedFeatureNode(width_lt10))
-                ->QueriedAxes());
-}
-
 TEST(MediaQueryExpTest, CollectExpressions) {
   MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
   MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
