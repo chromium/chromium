@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">எனது சாதனங்களுக்கு உரைச் செய்தியை அனுப்பு</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் ஃபைல்கள் </translation>
 <translation id="4714588616299687897">தரவில் 60% வரை சேமியுங்கள்</translation>
+<translation id="471759387343966120">தொடர்வதன் மூலம் <ph name="BEGIN_TOS_LINK" />சேவை விதிமுறைகளையும்<ph name="END_TOS_LINK" /> <ph name="BEGIN_PRIVACY_LINK" />தனியுரிமைக்\u00A0கொள்கையையும்<ph name="END_PRIVACY_LINK" /> ஏற்கிறீர்கள்.\nஆப்ஸை மேம்படுத்த உதவும் வகையில் உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_UMA_LINK" />நிர்வகியுங்கள்<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />இல் திற</translation>
 <translation id="4720982865791209136">Chromeஐ மேம்படுத்த உதவவும். <ph name="BEGIN_LINK" />கருத்துக்கணிப்பில் பங்கேற்கவும்<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">சாதனத்துடன் இணைக்கப்பட்டது</translation>
 <translation id="8088176524274673045">அருகிலுள்ளவர்களுடன் பகிர இந்த QR குறியீட்டை அவர்கள் ஸ்கேன் செய்ய வேண்டும்</translation>
 <translation id="8103578431304235997">மறைநிலைத் தாவல்</translation>
+<translation id="8105613260829665809">தொடர்வதன் மூலம் <ph name="BEGIN_TOS_LINK" />சேவை விதிமுறைகளை<ph name="END_TOS_LINK" /> ஏற்கிறீர்கள்.\nஆப்ஸை மேம்படுத்த உதவும் வகையில் உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_UMA_LINK" />நிர்வகியுங்கள்<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">உங்கள் அனைத்துச் சாதனங்களிலும் புத்தகக்குறிகளைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="8110024788458304985">Chromeமின் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுதல்</translation>

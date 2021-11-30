@@ -208,7 +208,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1199814941632954229">Ziurtagiri-profil hauetarako ziurtagiriak hornitzen ari dira</translation>
 <translation id="120069043972472860">Oso txarra</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
-<translation id="1202596434010270079">Aplikazio espezializatua eguneratu egin da. Kendu USB memoria.</translation>
+<translation id="1202596434010270079">Kiosko-aplikazioa eguneratu egin da. Kendu USB memoria.</translation>
 <translation id="120368089816228251">Nota musikala</translation>
 <translation id="1203942045716040624">Partekatutako langilea: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Zeuk aukeratzen dituzu lasterbideak</translation>
@@ -2791,7 +2791,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3861638017150647085">"<ph name="USERNAME" />" erabiltzaile-izena ez dago erabilgarri</translation>
 <translation id="3861977424605124250">Erakutsi abioan</translation>
 <translation id="386239283124269513">Leheneratu taldea</translation>
-<translation id="3862788408946266506">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-en modu espezializatuan</translation>
+<translation id="3862788408946266506">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-en kiosko moduan</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="3866249974567520381">Azalpena</translation>
 <translation id="3867134342671430205">Arrastatu edo erabili gezi-teklak pantaila bat mugitzeko</translation>
@@ -4069,7 +4069,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="526260164969390554">Pantaila osoko lupa aktibatzeko edo desaktibatzeko, sakatu Ktrl + <ph name="SEARCH_KEY_NAME" /> + M. Pantailan zehar mugitzeko hura handituta dagoenean, sakatu Ktrl + Alt + gezi-teklak.</translation>
 <translation id="5262784498883614021">Konektatu automatikoki sarera</translation>
 <translation id="5264148714798105376">Minutu bat inguru beharko da.</translation>
-<translation id="5264252276333215551">Konektatu Internetera aplikazioa modu espezializatuan abiarazteko.</translation>
+<translation id="5264252276333215551">Konektatu Internetera aplikazioa kiosko moduan abiarazteko.</translation>
 <translation id="5265562206369321422">Astebete baino gehiago konektatu gabe</translation>
 <translation id="5265797726250773323">Errore bat gertatu da instalatzean</translation>
 <translation id="5266113311903163739">Errore bat gertatu da autoritate ziurtagiri-emailea inportatzean</translation>
@@ -5855,7 +5855,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7198503619164954386">Enpresa batek erregistratutako gailu bat erabili behar duzu</translation>
 <translation id="7199158086730159431">Lortu l&amp;aguntza</translation>
 <translation id="7200083590239651963">Hautatu konfigurazioa</translation>
-<translation id="720110658997053098">Ezarri gailu hau pantaila osoko moduan betiko</translation>
+<translation id="720110658997053098">Ezarri gailu hau kiosko moduan betiko</translation>
 <translation id="7201118060536064622">Ezabatu da "<ph name="DELETED_ITEM_NAME" />"</translation>
 <translation id="7201420661433230412">Ikusi fitxategiak</translation>
 <translation id="7203150201908454328">Zabalduta</translation>
@@ -6202,7 +6202,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7556242789364317684">Tamalez, <ph name="SHORT_PRODUCT_NAME" /> programak ezin ditu berreskuratu zure ezarpenak. Errorea konpontzeko, <ph name="SHORT_PRODUCT_NAME" /> programak gailuaren fabrikako ezarpenak berrezarri behar ditu Powerwash erabilita.</translation>
 <translation id="7557194624273628371">Linux-en ataka-birbideratzea</translation>
 <translation id="7557411183415085169">Toki gutxi geratzen da Linux-en diskoan</translation>
-<translation id="7559719679815339381">Itxaron, mesedez… Aplikazio espezializatua eguneratzen ari da. Ez kendu USB memoria.</translation>
+<translation id="7559719679815339381">Itxaron, mesedez… Kiosko-aplikazioa eguneratzen ari da. Ez kendu USB memoria.</translation>
 <translation id="7560756177962144929">Sinkronizatu <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="756445078718366910">Ireki arakatzailearen leihoa</translation>
@@ -6269,7 +6269,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7631014249255418691">Egin dira Linux aplikazioen eta fitxategien babeskopiak</translation>
 <translation id="7631205654593498032">Gailuak konektatzen dituzunean, onartu egingo duzu <ph name="DEVICE_TYPE" /> gailuak gaitasuna izango duela hauek egiteko:</translation>
 <translation id="7631887513477658702">Ireki beti &amp;mota honetako fitxategiak</translation>
-<translation id="7632948528260659758">Aplikazio espezializatu hauek ezin izan dira eguneratu:</translation>
+<translation id="7632948528260659758">Kiosko-aplikazio hauek ezin izan dira eguneratu:</translation>
 <translation id="7633724038415831385">Hau da eguneratzeen zain egongo zaren aldi bakarra. Izan ere, atzeko planoan eguneratzen da softwarea Chromebook-etan.</translation>
 <translation id="7634566076839829401">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="7635048370253485243">Administratzaileak ainguratu du</translation>
@@ -6534,7 +6534,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7869143217755017858">Desgaitu modu iluna</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Parekatu da</translation>
 <translation id="7870730066603611552">Berrikusi sinkronizazio-aukerak konfigurazioaren ondoren</translation>
-<translation id="7870790288828963061">Ez da aurkitu aplikazio espezializatu berriagorik. Ez dago ezer eguneratzeko. Kendu USB memoria.</translation>
+<translation id="7870790288828963061">Ez da aurkitu kiosko-aplikazio berriagorik. Ez dago ezer eguneratzeko. Kendu USB memoria.</translation>
 <translation id="7871109039747854576">Erabili <ph name="COMMA" /> eta <ph name="PERIOD" /> teklak aukeren zerrenda erakusteko</translation>
 <translation id="787268756490971083">Desaktibatuta</translation>
 <translation id="7872758299142009420">Habiaratutako talde gehiegi daude: <ph name="ERROR_LINE" /></translation>
@@ -7015,7 +7015,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="835951711479681002">Gorde Google-ko kontuan</translation>
 <translation id="8363095875018065315">egonkorra</translation>
 <translation id="8363142353806532503">Mikrofonoa blokeatua dago</translation>
-<translation id="8366396658833131068">Sareko konexioa leheneratu da. Hautatu beste sare bat edo sakatu hemen behean dagoen "Jarraitu" botoia aplikazio espezializatua abiarazteko.</translation>
+<translation id="8366396658833131068">Sareko konexioa leheneratu da. Hautatu beste sare bat edo sakatu hemen behean dagoen "Jarraitu" botoia kiosko-aplikazioa abiarazteko.</translation>
 <translation id="8366694425498033255">Hautatze-teklak</translation>
 <translation id="8368859634510605990">I&amp;reki laster-marka guztiak</translation>
 <translation id="8370294614544004647">Ixtean, ezarri ordenagailu eramangarria inaktibo</translation>
@@ -7118,7 +7118,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="848666842773560761">Aplikazio bat kamera atzitu nahian dabil. Baimena emateko, desaktibatu kameraren pribatutasun-etengailua.</translation>
 <translation id="8487678622945914333">Handitu</translation>
 <translation id="8489156414266187072">Iradokizun pertsonalak zure kontuan soilik agertzen dira</translation>
-<translation id="8490896350101740396">"<ph name="UPDATED_APPS" />" aplikazio espezializatuak eguneratu egin dira. Berrabiarazi gailua eguneratze-prozesua osatzeko.</translation>
+<translation id="8490896350101740396">"<ph name="UPDATED_APPS" />" kiosko-aplikazioak eguneratu egin dira. Berrabiarazi gailua eguneratze-prozesua osatzeko.</translation>
 <translation id="8492685019009920170">Ukitu hatz-marken sentsorea hatzarekin. Zure datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik.</translation>
 <translation id="8492822722330266509">Webguneek leiho gainerakorrak bidali, eta birbideratzeak erabil ditzakete</translation>
 <translation id="8492960370534528742">Google Cast-i buruzko oharrak</translation>
@@ -7494,7 +7494,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8871551568777368300">Administratzaileak ainguratu du</translation>
 <translation id="8871696467337989339">Agindu-lerroko etengailu ez-onartu bat erabiltzen ari zara: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
-<translation id="8872155268274985541">Kiosk kanpoko eguneratze-manifestuaren fitxategi baliogabea aurkitu da. Ezin izan da eguneratu aplikazio espezializatua. Kendu USB memoria.</translation>
+<translation id="8872155268274985541">Kiosk kanpoko eguneratze-manifestuaren fitxategi baliogabea aurkitu da. Ezin izan da eguneratu kiosko-aplikazioa. Kendu USB memoria.</translation>
 <translation id="8872777911145321141">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>
 <translation id="8875520811099717934">Linux-en bertsio-berritzea</translation>

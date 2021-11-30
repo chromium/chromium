@@ -4076,6 +4076,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5265562206369321422">Hors ligne depuis plus d'une semaine</translation>
 <translation id="5265797726250773323">Erreur lors de l'installation</translation>
 <translation id="5266113311903163739">Erreur d'importation de l'autorité de certification</translation>
+<translation id="526622169288322445">Autres actions pour <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
 <translation id="5275352920323889391">Chien</translation>
 <translation id="527605982717517565">Toujours autoriser l'utilisation de JavaScript sur <ph name="HOST" /></translation>
@@ -5454,6 +5455,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6775163072363532304">Les appareils accessibles s'afficheront ici.</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6778737459546443941">L'un de tes parents n'a pas encore donné son autorisation</translation>
+<translation id="6779092717724412415">Pour mettre en évidence un élément comme celui-ci, sélectionnez un texte et faites un clic droit.</translation>
 <translation id="6779447100905857289">vos paniers</translation>
 <translation id="677965093459947883">Très petit</translation>
 <translation id="6781005693196527806">&amp;Gérer les moteurs de recherche…</translation>
@@ -6269,6 +6271,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7625823789272218216">Nouvel onglet à gauche</translation>
 <translation id="7628201176665550262">Fréquence d'actualisation</translation>
 <translation id="7629827748548208700">Onglet : <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Cet appareil est géré par <ph name="MANAGER" /> et exige que vous vous connectiez chaque fois.</translation>
 <translation id="7631014249255418691">Les applications et les fichiers Linux ont été sauvegardées</translation>
 <translation id="7631205654593498032">En connectant vos appareils, vous acceptez que votre <ph name="DEVICE_TYPE" /> puisse :</translation>
 <translation id="7631887513477658702">&amp;Toujours ouvrir les fichiers de ce type</translation>

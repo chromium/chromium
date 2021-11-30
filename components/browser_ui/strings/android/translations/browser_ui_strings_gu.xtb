@@ -87,7 +87,7 @@
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
 <translation id="3114012059975132928">વીડિયો પ્લેયર</translation>
 <translation id="3115898365077584848">માહિતી બતાવો</translation>
-<translation id="3123473560110926937">કેટલીક સાઇટ પર બ્લૉક કરેલ</translation>
+<translation id="3123473560110926937">કેટલીક સાઇટ પર બ્લૉક થયેલું છે</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> સંગ્રહિત ડેટા</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> તમને નોટિફિકેશન મોકલી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
@@ -102,7 +102,7 @@
 <translation id="358794129225322306">એકથી વધુ ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી સાઇટને આપો.</translation>
 <translation id="3594780231884063836">વીડિયોને મ્યૂટ કરો</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
-<translation id="3600792891314830896">જે સાઇટ અવાજ ચલાવતી હોય તેઓનો અવાજ બંધ કરો</translation>
+<translation id="3600792891314830896">જે સાઇટ સાઉન્ડ ચલાવતી હોય તેઓને મ્યૂટ કરો</translation>
 <translation id="3744111561329211289">બૅકગ્રાઉન્ડ સિંક</translation>
 <translation id="3763247130972274048">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
 <translation id="3797520601150691162">કોઈ ચોક્કસ સાઇટ માટે ઘેરી થીમ લાગુ કરશો નહીં</translation>
@@ -125,7 +125,7 @@
 <translation id="429312253194641664">સાઇટ મીડિયા ચલાવી રહી છે</translation>
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
 <translation id="4336434711095810371">બધો ડેટા સાફ કરો</translation>
-<translation id="4402755511846832236">તમે સક્રિય રૂપે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેની જાણ ન થાય એ માટે સાઇટ બ્લૉક કરો</translation>
+<translation id="4402755511846832236">તમે સક્રિય રીતે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેની જાણ ન થાય એ માટે સાઇટ બ્લૉક કરો</translation>
 <translation id="4434045419905280838">પૉપ-અપ અને રીડાયરેક્ટ</translation>
 <translation id="445467742685312942">સાઇટને સંરક્ષિત કન્ટેન્ટ ચલાવવાની મંજૂરી આપો</translation>
 <translation id="4468959413250150279">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ બંધ કરો.</translation>
@@ -206,7 +206,7 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
-<translation id="6295158916970320988">બધી સાઇટ્સ</translation>
+<translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6320088164292336938">વાઇબ્રેટ</translation>
 <translation id="6388207532828177975">સાફ કરો અને ફરીથી સેટ કરો</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
@@ -302,7 +302,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{વપરાશમાંની 1 કુકી}one{વપરાશમાંની # કુકી}other{વપરાશમાંની # કુકી}}</translation>
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="848952951823693243">હંમેશાં મોબાઇલ સાઇટની વિનંતી કરો</translation>
-<translation id="851751545965956758">સાઇટને ઉપકરણો સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
+<translation id="851751545965956758">સાઇટને ડિવાઇસ સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="857943718398505171">મંજૂર (ભલામણ કરેલ)</translation>
 <translation id="8609465669617005112">ઉપર ખસેડો</translation>
