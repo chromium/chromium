@@ -100,3 +100,6 @@ trying to build with is closer to clang trunk than to Chromium's pinned clang
 
 * [Clang Sheriffing](clang_sheriffing.md) contains instructions for how to debug
   compiler bugs, for clang sheriffs.
+
+* [Clang Tool Refactoring](clang_tool_refactoring.md) has notes on how to build
+  and run refactoring tools based on clang's libraries.
