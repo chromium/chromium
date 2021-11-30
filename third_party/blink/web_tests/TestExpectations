@@ -7346,9 +7346,6 @@ crbug.com/1272575 [ Mac ] virtual/gpu-rasterization/images/color-profile-svg-fil
 # Flaky on mac 10.13
 crbug.com/1263709 [ Mac10.13 ] http/tests/devtools/elements/node-xpath.js [ Failure ]
 
-# Temporarily disable this test to allow DevTools CL to land: https://crrev.com/c/3306493
-crbug.com/1268754 http/tests/devtools/elements/styles-4/styles-formatting.js [ Failure Pass ]
-
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/1272203 external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
