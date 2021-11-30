@@ -27,7 +27,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
-interface PasswordEditDialogElement {
+export interface PasswordEditDialogElement {
   $: {
     dialog: CrDialogElement,
     passwordInput: CrInputElement,
@@ -52,7 +52,7 @@ enum PasswordDialogMode {
 }
 
 /* TODO(crbug.com/1255127): Revisit usage for 3 different modes. */
-class PasswordEditDialogElement extends PasswordEditDialogElementBase {
+export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   static get is() {
     return 'password-edit-dialog';
   }
@@ -500,6 +500,12 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       usernamesByOrigin.get(origin).add(entry.username);
       return usernamesByOrigin;
     }, new Map());
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-edit-dialog': PasswordEditDialogElement;
   }
 }
 

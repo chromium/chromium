@@ -48,7 +48,8 @@ const progressBarBlockMs: number = 1000;
 
 const PasswordsExportDialogElementBase = I18nMixin(PolymerElement);
 
-class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
+export class PasswordsExportDialogElement extends
+    PasswordsExportDialogElementBase {
   static get is() {
     return 'passwords-export-dialog';
   }
@@ -274,6 +275,12 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   private onCancelProgressButtonTap_() {
     this.passwordManager_.cancelExportPasswords();
     this.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passwords-export-dialog': PasswordsExportDialogElement;
   }
 }
 

@@ -21,7 +21,8 @@ export function runStartExportTest(exportDialog, passwordManager, done) {
 // Test the export flow. If exporting is fast, we should skip the
 // in-progress view altogether.
 export function runExportFlowFastTest(exportDialog, passwordManager, done) {
-  const progressCallback = passwordManager.progressCallback;
+  const progressCallback =
+      passwordManager.lastCallback.addPasswordsFileExportProgressListener;
 
   // Use this to freeze the delayed progress bar and avoid flakiness.
   const mockTimer = new MockTimer();
@@ -48,7 +49,8 @@ export function runExportFlowFastTest(exportDialog, passwordManager, done) {
 
 // The error view is shown when an error occurs.
 export function runExportFlowErrorTest(exportDialog, passwordManager, done) {
-  const progressCallback = passwordManager.progressCallback;
+  const progressCallback =
+      passwordManager.lastCallback.addPasswordsFileExportProgressListener;
 
   // Use this to freeze the delayed progress bar and avoid flakiness.
   const mockTimer = new MockTimer();
@@ -79,7 +81,8 @@ export function runExportFlowErrorTest(exportDialog, passwordManager, done) {
 // The error view allows to retry.
 export function runExportFlowErrorRetryTest(
     exportDialog, passwordManager, done) {
-  const progressCallback = passwordManager.progressCallback;
+  const progressCallback =
+      passwordManager.lastCallback.addPasswordsFileExportProgressListener;
   // Use this to freeze the delayed progress bar and avoid flakiness.
   const mockTimer = new MockTimer();
 
@@ -115,7 +118,8 @@ export function runExportFlowErrorRetryTest(
 // Test the export flow. If exporting is slow, Chrome should show the
 // in-progress dialog for at least 1000ms.
 export function runExportFlowSlowTest(exportDialog, passwordManager, done) {
-  const progressCallback = passwordManager.progressCallback;
+  const progressCallback =
+      passwordManager.lastCallback.addPasswordsFileExportProgressListener;
 
   const mockTimer = new MockTimer();
   mockTimer.install();
@@ -163,7 +167,8 @@ export function runExportFlowSlowTest(exportDialog, passwordManager, done) {
 // Test that canceling the dialog while exporting will also cancel the
 // export on the browser.
 export function runCancelExportTest(exportDialog, passwordManager, done) {
-  const progressCallback = passwordManager.progressCallback;
+  const progressCallback =
+      passwordManager.lastCallback.addPasswordsFileExportProgressListener;
 
   passwordManager.cancelExportPasswords = () => {
     done();
@@ -196,9 +201,9 @@ export function runFireCloseEventAfterExportCompleteTest(
     exportDialog, passwordManager) {
   const wait = eventToPromise('passwords-export-dialog-close', exportDialog);
   exportDialog.shadowRoot.querySelector('#exportPasswordsButton').click();
-  passwordManager.progressCallback(
+  passwordManager.lastCallback.addPasswordsFileExportProgressListener(
       {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
-  passwordManager.progressCallback(
+  passwordManager.lastCallback.addPasswordsFileExportProgressListener(
       {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
   return wait;
 }

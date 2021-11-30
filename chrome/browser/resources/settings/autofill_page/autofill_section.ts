@@ -29,77 +29,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../i18n_setup.js';
 
 import {SettingsAddressRemoveConfirmationDialogElement} from './address_remove_confirmation_dialog.js';
-
-type PersonalDataChangedListener =
-    (addresses: Array<chrome.autofillPrivate.AddressEntry>,
-     creditCards: Array<chrome.autofillPrivate.CreditCardEntry>) => void;
-
-/**
- * Interface for all callbacks to the autofill API.
- */
-export interface AutofillManager {
-  /**
-   * Add an observer to the list of personal data.
-   */
-  setPersonalDataManagerListener(listener: PersonalDataChangedListener): void;
-
-  /**
-   * Remove an observer from the list of personal data.
-   */
-  removePersonalDataManagerListener(listener: PersonalDataChangedListener):
-      void;
-
-  /**
-   * Request the list of addresses.
-   */
-  getAddressList(
-      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void):
-      void;
-
-  /**
-   * Saves the given address.
-   */
-  saveAddress(address: chrome.autofillPrivate.AddressEntry): void;
-
-  /** @param guid The guid of the address to remove.  */
-  removeAddress(guid: string): void;
-}
-
-/**
- * Implementation that accesses the private API.
- */
-export class AutofillManagerImpl implements AutofillManager {
-  setPersonalDataManagerListener(listener: PersonalDataChangedListener) {
-    chrome.autofillPrivate.onPersonalDataChanged.addListener(listener);
-  }
-
-  removePersonalDataManagerListener(listener: PersonalDataChangedListener) {
-    chrome.autofillPrivate.onPersonalDataChanged.removeListener(listener);
-  }
-
-  getAddressList(
-      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void) {
-    chrome.autofillPrivate.getAddressList(callback);
-  }
-
-  saveAddress(address: chrome.autofillPrivate.AddressEntry) {
-    chrome.autofillPrivate.saveAddress(address);
-  }
-
-  removeAddress(guid: string) {
-    chrome.autofillPrivate.removeEntry(assert(guid));
-  }
-
-  static getInstance(): AutofillManager {
-    return instance || (instance = new AutofillManagerImpl());
-  }
-
-  static setInstance(obj: AutofillManager) {
-    instance = obj;
-  }
-}
-
-let instance: AutofillManager|null = null;
+import {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -150,7 +80,8 @@ class SettingsAutofillSectionElement extends
   private showAddressDialog_: boolean;
   private showAddressRemoveConfirmationDialog_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
-  private autofillManager_: AutofillManager = AutofillManagerImpl.getInstance();
+  private autofillManager_: AutofillManagerProxy =
+      AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
 
   constructor() {

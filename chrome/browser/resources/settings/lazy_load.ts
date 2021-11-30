@@ -4,6 +4,7 @@
 
 // Subpages
 import './appearance_page/appearance_fonts_page.js';
+import './autofill_page/autofill_section.js';
 import './autofill_page/password_check.js';
 import './autofill_page/passwords_section.js';
 import './autofill_page/passwords_device_section.js';
@@ -65,11 +66,16 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
-export {AutofillManager, AutofillManagerImpl} from './autofill_page/autofill_section.js';
+export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 // <if expr="chromeos or lacros">
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
-export {PaymentsManager, PaymentsManagerImpl} from './autofill_page/payments_section.js';
+export {PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
+export {PasswordListItemElement} from './autofill_page/password_list_item.js';
+export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
+export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
+export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
+export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 // <if expr="_google_chrome and is_win">
 export {ChromeCleanupIdleReason} from './chrome_cleanup_page/chrome_cleanup_page.js';
 export {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_page/chrome_cleanup_proxy.js';

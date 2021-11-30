@@ -21,13 +21,13 @@ import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 
-interface PasswordMoveMultiplePasswordsToAccountDialogElement {
+export interface PasswordMoveMultiplePasswordsToAccountDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class PasswordMoveMultiplePasswordsToAccountDialogElement extends
+export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
     PolymerElement {
   static get is() {
     return 'password-move-multiple-passwords-to-account-dialog';

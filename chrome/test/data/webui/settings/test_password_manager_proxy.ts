@@ -5,6 +5,7 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
+import {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -13,6 +14,24 @@ import {makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 // clang-format on
 
 export class PasswordManagerExpectations {
+  requested: {
+    passwords: number,
+    exceptions: number,
+    plaintextPassword: number,
+    accountStorageOptInState: number,
+  };
+
+  removed: {
+    passwords: number,
+    exceptions: number,
+  };
+
+  listening: {
+    passwords: number,
+    exceptions: number,
+    accountStorageOptInState: number,
+  };
+
   constructor() {
     this.requested = {
       passwords: 0,
@@ -36,9 +55,37 @@ export class PasswordManagerExpectations {
 
 /**
  * Test implementation
- * @implements {PasswordManagerProxy}
  */
-export class TestPasswordManagerProxy extends TestBrowserProxy {
+export class TestPasswordManagerProxy extends TestBrowserProxy implements
+    PasswordManagerProxy {
+  private actual_: PasswordManagerExpectations;
+
+  data: {
+    passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+    exceptions: chrome.passwordsPrivate.ExceptionEntry[],
+    leakedCredentials: chrome.passwordsPrivate.InsecureCredential[],
+    weakCredentials: chrome.passwordsPrivate.InsecureCredential[],
+    checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
+  };
+
+  lastCallback: {
+    addPasswordCheckStatusListener: PasswordCheckStatusChangedListener|null,
+    addSavedPasswordListChangedListener: SavedPasswordListChangedListener|null,
+    addExceptionListChangedListener: PasswordExceptionListChangedListener|null,
+    addCompromisedCredentialsListener: CredentialsChangedListener|null,
+    addWeakCredentialsListener: CredentialsChangedListener|null,
+    addAccountStorageOptInStateListener:
+        AccountStorageOptInStateChangedListener|null,
+    addPasswordsFileExportProgressListener: PasswordsFileExportProgressListener|
+    null,
+  };
+
+  private plaintextPassword_: string = '';
+  private isOptedInForAccountStorage_: boolean = false;
+  private isAccountStoreDefault_: boolean = false;
+  private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
+      null = null;
+
   constructor() {
     super([
       'requestPlaintextPassword',
@@ -81,104 +128,84 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       addPasswordCheckStatusListener: null,
       addSavedPasswordListChangedListener: null,
       addExceptionListChangedListener: null,
-      requestPlaintextPassword: null,
       addCompromisedCredentialsListener: null,
       addWeakCredentialsListener: null,
       addAccountStorageOptInStateListener: null,
+      addPasswordsFileExportProgressListener: null,
     };
-
-    /** @private {string} */
-    this.plaintextPassword_ = '';
-
-    /** @private {boolean} */
-    this.isOptedInForAccountStorage_ = false;
-
-    /** @private {boolean} */
-    this.isAccountStoreDefault_ = false;
-
-    /** @private {?chrome.passwordsPrivate.UrlCollection} */
-    this.getUrlCollectionResponse_ = null;
   }
 
-  /** @override */
-  addSavedPasswordListChangedListener(listener) {
+  addSavedPasswordListChangedListener(listener:
+                                          SavedPasswordListChangedListener) {
     this.actual_.listening.passwords++;
     this.lastCallback.addSavedPasswordListChangedListener = listener;
   }
 
-  /** @override */
-  removeSavedPasswordListChangedListener(listener) {
+  removeSavedPasswordListChangedListener(_listener:
+                                             SavedPasswordListChangedListener) {
     this.actual_.listening.passwords--;
   }
 
-  /** @override */
-  getSavedPasswordList(callback) {
+  getSavedPasswordList(callback: SavedPasswordListChangedListener) {
     this.actual_.requested.passwords++;
     callback(this.data.passwords);
   }
 
-  /** @override */
   recordPasswordsPageAccessInSettings() {}
 
-  /** @override */
-  removeSavedPassword(id) {
+  removeSavedPassword(id: number) {
     this.actual_.removed.passwords++;
     this.methodCalled('removeSavedPassword', id);
   }
 
-  /** @override */
-  movePasswordsToAccount(ids) {
+  movePasswordsToAccount(ids: Array<number>) {
     this.methodCalled('movePasswordsToAccount', ids);
   }
 
-  /** @override */
-  removeSavedPasswords(ids) {
+  removeSavedPasswords(ids: Array<number>) {
     this.actual_.removed.passwords += ids.length;
     this.methodCalled('removeSavedPasswords', ids);
   }
 
-  /** @override */
-  addExceptionListChangedListener(listener) {
+  addExceptionListChangedListener(listener:
+                                      PasswordExceptionListChangedListener) {
     this.actual_.listening.exceptions++;
     this.lastCallback.addExceptionListChangedListener = listener;
   }
 
-  /** @override */
-  removeExceptionListChangedListener(listener) {
+  removeExceptionListChangedListener(_listener:
+                                         PasswordExceptionListChangedListener) {
     this.actual_.listening.exceptions--;
   }
 
-  /** @override */
-  getExceptionList(callback) {
+  getExceptionList(callback: PasswordExceptionListChangedListener) {
     this.actual_.requested.exceptions++;
     callback(this.data.exceptions);
   }
 
-  /** @override */
-  removeException(id) {
+  removeException(id: number) {
     this.actual_.removed.exceptions++;
     this.methodCalled('removeException', id);
   }
 
-  /** @override */
-  removeExceptions(ids) {
+  removeExceptions(ids: Array<number>) {
     this.actual_.removed.exceptions += ids.length;
     this.methodCalled('removeExceptions', ids);
   }
 
-  /** @override */
-  requestPlaintextPassword(id, reason) {
+  requestPlaintextPassword(
+      id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('requestPlaintextPassword', {id, reason});
     return Promise.resolve(this.plaintextPassword_);
   }
 
-  setPlaintextPassword(plaintextPassword) {
+  setPlaintextPassword(plaintextPassword: string) {
     this.plaintextPassword_ = plaintextPassword;
   }
 
   // Sets the return value of isOptedInForAccountStorage calls and notifies
   // the last added listener.
-  setIsOptedInForAccountStorageAndNotify(optIn) {
+  setIsOptedInForAccountStorageAndNotify(optIn: boolean) {
     this.isOptedInForAccountStorage_ = optIn;
     if (this.lastCallback.addAccountStorageOptInStateListener) {
       this.lastCallback.addAccountStorageOptInStateListener(
@@ -186,18 +213,17 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     }
   }
 
-  /** @override */
-  addAccountStorageOptInStateListener(listener) {
+  addAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener) {
     this.actual_.listening.accountStorageOptInState++;
     this.lastCallback.addAccountStorageOptInStateListener = listener;
   }
 
-  /** @override */
-  removeAccountStorageOptInStateListener(listener) {
+  removeAccountStorageOptInStateListener(
+      _listener: AccountStorageOptInStateChangedListener) {
     this.actual_.listening.accountStorageOptInState--;
   }
 
-  /** @override */
   isOptedInForAccountStorage() {
     this.methodCalled('isOptedInForAccountStorage');
     this.actual_.requested.accountStorageOptInState++;
@@ -206,9 +232,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
 
   /**
    * Verifies expectations.
-   * @param {!PasswordManagerExpectations} expected
    */
-  assertExpectations(expected) {
+  assertExpectations(expected: PasswordManagerExpectations) {
     const actual = this.actual_;
 
     assertEquals(expected.requested.passwords, actual.requested.passwords);
@@ -230,7 +255,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
         actual.listening.accountStorageOptInState);
   }
 
-  /** @override */
   startBulkPasswordCheck() {
     this.methodCalled('startBulkPasswordCheck');
     if (this.data.checkStatus.state ===
@@ -240,55 +264,47 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     return Promise.resolve();
   }
 
-  /** @override */
   stopBulkPasswordCheck() {
     this.methodCalled('stopBulkPasswordCheck');
   }
 
-  /** @override */
   getCompromisedCredentials() {
     this.methodCalled('getCompromisedCredentials');
     return Promise.resolve(this.data.leakedCredentials);
   }
 
-  /** @override */
   getWeakCredentials() {
     this.methodCalled('getWeakCredentials');
     return Promise.resolve(this.data.weakCredentials);
   }
 
-  /** @override */
   getPasswordCheckStatus() {
     this.methodCalled('getPasswordCheckStatus');
     return Promise.resolve(this.data.checkStatus);
   }
 
-  /** @override */
-  addCompromisedCredentialsListener(listener) {
+  addCompromisedCredentialsListener(listener: CredentialsChangedListener) {
     this.lastCallback.addCompromisedCredentialsListener = listener;
   }
 
-  /** @override */
-  removeCompromisedCredentialsListener(listener) {}
+  removeCompromisedCredentialsListener(_listener: CredentialsChangedListener) {}
 
-  /** @override */
-  addWeakCredentialsListener(listener) {
+  addWeakCredentialsListener(listener: CredentialsChangedListener) {
     this.lastCallback.addWeakCredentialsListener = listener;
   }
 
-  /** @override */
-  removeWeakCredentialsListener(listener) {}
+  removeWeakCredentialsListener(_listener: CredentialsChangedListener) {}
 
-  /** @override */
-  addPasswordCheckStatusListener(listener) {
+  addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener) {
     this.lastCallback.addPasswordCheckStatusListener = listener;
   }
 
-  /** @override */
-  removePasswordCheckStatusListener(listener) {}
+  removePasswordCheckStatusListener(_listener:
+                                        PasswordCheckStatusChangedListener) {}
 
-  /** @override */
-  getPlaintextInsecurePassword(credential, reason) {
+  getPlaintextInsecurePassword(
+      credential: chrome.passwordsPrivate.InsecureCredential,
+      reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('getPlaintextInsecurePassword', {credential, reason});
     if (!this.plaintextPassword_) {
       return Promise.reject('Could not obtain plaintext password');
@@ -301,42 +317,39 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     return Promise.resolve(newCredential);
   }
 
-  /** @override */
-  changeInsecureCredential(credential, newPassword) {
+  changeInsecureCredential(
+      credential: chrome.passwordsPrivate.InsecureCredential,
+      newPassword: string) {
     this.methodCalled('changeInsecureCredential', {credential, newPassword});
     return Promise.resolve();
   }
 
-  /** @override */
-  removeInsecureCredential(insecureCredential) {
+  removeInsecureCredential(insecureCredential:
+                               chrome.passwordsPrivate.InsecureCredential) {
     this.methodCalled('removeInsecureCredential', insecureCredential);
   }
 
-  /** @override */
-  recordPasswordCheckInteraction(interaction) {
+  recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
   }
 
-  /** @override */
-  recordPasswordCheckReferrer(referrer) {
+  recordPasswordCheckReferrer(referrer: PasswordCheckReferrer) {
     this.methodCalled('recordPasswordCheckReferrer', referrer);
   }
 
-  /** @override */
-  changeSavedPassword(ids, newUsername, newPassword) {
+  changeSavedPassword(
+      ids: Array<number>, newUsername: string, newPassword: string) {
     this.methodCalled('changeSavedPassword', {ids, newUsername, newPassword});
     return Promise.resolve();
   }
 
   /**
    * Sets the value to be returned by isAccountStoreDefault.
-   * @param {boolean} isDefault
    */
-  setIsAccountStoreDefault(isDefault) {
+  setIsAccountStoreDefault(isDefault: boolean) {
     this.isAccountStoreDefault_ = isDefault;
   }
 
-  /** @override */
   isAccountStoreDefault() {
     this.methodCalled('isAccountStoreDefault');
     return Promise.resolve(this.isAccountStoreDefault_);
@@ -344,45 +357,41 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
 
   /**
    * Sets the value to be returned by getUrlCollection.
-   * @param {?chrome.passwordsPrivate.UrlCollection} urlCollection
    */
-  setGetUrlCollectionResponse(urlCollection) {
+  setGetUrlCollectionResponse(urlCollection:
+                                  chrome.passwordsPrivate.UrlCollection) {
     this.getUrlCollectionResponse_ = urlCollection;
   }
 
-  /** @override */
-  getUrlCollection(url) {
+  getUrlCollection(url: string) {
     this.methodCalled('getUrlCollection', url);
     return Promise.resolve(this.getUrlCollectionResponse_);
   }
 
-  /** @override */
-  addPassword(options) {
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
     this.methodCalled('addPassword', options);
     return Promise.resolve();
   }
 
-  /** @override */
-  addPasswordsFileExportProgressListener() {}
+  addPasswordsFileExportProgressListener(
+      listener: PasswordsFileExportProgressListener) {
+    this.lastCallback.addPasswordsFileExportProgressListener = listener;
+  }
 
-  /** @override */
   cancelExportPasswords() {}
 
-  /** @override */
-  exportPasswords() {}
+  exportPasswords(_callback: () => void) {}
 
-  /** @override */
   importPasswords() {}
 
-  /** @override */
-  optInForAccountStorage() {}
+  optInForAccountStorage(_optIn: boolean) {}
 
-  /** @override */
-  removePasswordsFileExportProgressListener() {}
+  removePasswordsFileExportProgressListener(
+      _listener: PasswordsFileExportProgressListener) {}
 
-  /** @override */
-  requestExportProgressStatus() {}
+  requestExportProgressStatus(
+      _callback:
+          (status: chrome.passwordsPrivate.ExportProgressStatus) => void) {}
 
-  /** @override */
   undoRemoveSavedPasswordOrException() {}
 }

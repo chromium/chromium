@@ -80,7 +80,7 @@ interface RepeaterEvent extends CustomEvent {
   };
 }
 
-interface PasswordsSectionElement {
+export interface PasswordsSectionElement {
   $: {
     exportImportMenu: CrActionMenuElement,
     passwordsListHandler: PasswordsListHandlerElement,
@@ -91,7 +91,7 @@ const PasswordsSectionElementBase = MergePasswordsStoreCopiesMixin(
     PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
         WebUIListenerMixin(I18nMixin(PasswordCheckMixin(PolymerElement)))))));
 
-class PasswordsSectionElement extends PasswordsSectionElementBase {
+export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
     return 'passwords-section';
   }
@@ -689,6 +689,12 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
         }
       }));
     }, 0);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passwords-section': PasswordsSectionElement;
   }
 }
 

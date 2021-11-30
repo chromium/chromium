@@ -92,4 +92,10 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-list-item': PasswordListItemElement;
+  }
+}
+
 customElements.define(PasswordListItemElement.is, PasswordListItemElement);
