@@ -115,15 +115,11 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     const GestureEventWithHitTestResults& targeted_event) {
   DCHECK(!targeted_event.Event().IsScrollEvent());
 
-  // Remove all tap down touch id, pointer id pairs that have a
-  // lower touch id than the targeted event's primary_unique_touch_event_id
-  // because all gesture sequences prior to the current one have been already
-  // handled.
-  while (!recent_pointerdown_pointer_ids_.empty() &&
-         recent_pointerdown_pointer_ids_.front().first <
-             targeted_event.Event().primary_unique_touch_event_id) {
-    recent_pointerdown_pointer_ids_.pop_front();
-  }
+  frame_->LocalFrameRoot()
+      .GetEventHandler()
+      .GetGestureManager()
+      .ClearOldPointerDownIds(
+          targeted_event.Event().primary_unique_touch_event_id);
 
   Node* event_target = targeted_event.GetHitTestResult().InnerNode();
   const WebGestureEvent& gesture_event = targeted_event.Event();
@@ -167,6 +163,16 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
   }
 
   return WebInputEventResult::kNotHandled;
+}
+
+void GestureManager::ClearOldPointerDownIds(
+    uint32_t primary_unique_touch_event_id) {
+  DCHECK(frame_->IsLocalRoot());
+  while (!recent_pointerdown_pointer_ids_.empty() &&
+         recent_pointerdown_pointer_ids_.front().first <
+             primary_unique_touch_event_id) {
+    recent_pointerdown_pointer_ids_.pop_front();
+  }
 }
 
 bool GestureManager::GestureContextMenuDeferred() const {
@@ -558,6 +564,19 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
 
 void GestureManager::NotifyPointerEventHandled(
     const WebPointerEvent& web_pointer_event) {
+  DCHECK(frame_->IsLocalRoot() || (web_pointer_event.pointer_type !=
+                                   WebPointerProperties::PointerType::kTouch));
+  // TODO(https://crbug.com/449649): Fix the DCHECK after moving all event
+  // handling state to local-frame-root.
+  //
+  // We need to assert that this method is called for top frame only.  But for
+  // mouse-like pointer events (which comes from mice or hoverable pens), this
+  // method gets called AFTER the events are routed to a subframe (e.g. from
+  // |EventHandler|'s |HandleMouseMoveOrLeaveEvent()| to
+  // |PassMouseMoveEventToSubframe()| to |HandlePointerEvent()| to this method).
+  // Because such events don't affect gestures, we are ignoring the unexpected
+  // calls to this method for the time being until the bigger problem is fixed.
+
   if (web_pointer_event.GetType() != WebInputEvent::Type::kPointerDown)
     return;
   PointerId pointer_id =
@@ -579,6 +598,13 @@ void GestureManager::NotifyPointerEventHandled(
 
 PointerId GestureManager::GetPointerIdFromWebGestureEvent(
     const WebGestureEvent& gesture_event) const {
+  if (!frame_->IsLocalRoot()) {
+    return frame_->LocalFrameRoot()
+        .GetEventHandler()
+        .GetGestureManager()
+        .GetPointerIdFromWebGestureEvent(gesture_event);
+  }
+
   // When tests send Tap, LongTap, LongPress, TwoFingerTap directly
   // (e.g. from eventSender) there is no primary_unique_touch_event_id
   // populated.
@@ -600,4 +626,5 @@ PointerId GestureManager::GetPointerIdFromWebGestureEvent(
   NOTREACHED();
   return PointerEventFactory::kInvalidId;
 }
+
 }  // namespace blink

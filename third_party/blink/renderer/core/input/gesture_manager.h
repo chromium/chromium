@@ -64,6 +64,8 @@ class CORE_EXPORT GestureManager final
   // GestureManager is interested in knowing the pointerId of pointerdown
   // event because it uses this pointer id to populate the pointerId for
   // click and auxclick pointer events it generates.
+  //
+  // This must be called from local root frame.
   void NotifyPointerEventHandled(const WebPointerEvent& web_pointer_event);
 
  private:
@@ -94,6 +96,13 @@ class CORE_EXPORT GestureManager final
   // most recently handled WebGestureEvent.
   PointerId GetPointerIdFromWebGestureEvent(
       const WebGestureEvent& gesture_event) const;
+
+  // Remove pointerdown id information for the events with a smaller
+  // |primary_unique_touch_event_id| because all gestures prior to the given id
+  // have been already handled.
+  //
+  // This must be called from local root frame.
+  void ClearOldPointerDownIds(uint32_t primary_unique_touch_event_id);
 
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared if needed in |GestureManager::clear()|.
