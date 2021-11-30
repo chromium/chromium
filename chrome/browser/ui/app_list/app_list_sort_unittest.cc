@@ -502,13 +502,13 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
 
   syncer::StringOrdinal child_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  sync_list.push_back(
-      CreateAppRemoteData(kChildItemId1_1, "folder_child1", kFolderItemId,
-                          child_position.ToInternalValue(), kUnset));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId1_1, "D", kFolderItemId,
+                                          child_position.ToInternalValue(),
+                                          kUnset));
   child_position = child_position.CreateAfter();
-  sync_list.push_back(
-      CreateAppRemoteData(kChildItemId1_2, "folder_child2", kFolderItemId,
-                          child_position.ToInternalValue(), kUnset));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId1_2, "E", kFolderItemId,
+                                          child_position.ToInternalValue(),
+                                          kUnset));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -535,33 +535,28 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
   // Sort with the name alphabetical order and commit.
   model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
-  EXPECT_EQ(
-      std::vector<std::string>({kFolderItemId, kItemId1, kItemId2, kItemId3,
-                                kChildItemId1_1, kChildItemId1_2}),
-      GetOrderedItemIdsFromSyncableService());
+  EXPECT_EQ(std::vector<std::string>({"Folder", "A", "B", "C", "D", "E"}),
+            GetOrderedNamesFromSyncableService());
 
   // Sort with the name reverse alphabetical order without committing.
   model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
-  EXPECT_EQ(
-      std::vector<std::string>({kFolderItemId, kItemId1, kItemId2, kItemId3,
-                                kChildItemId1_1, kChildItemId1_2}),
-      GetOrderedItemIdsFromSyncableService());
+  EXPECT_EQ(std::vector<std::string>({"Folder", "A", "B", "C", "D", "E"}),
+            GetOrderedNamesFromSyncableService());
 
   // Move `app3` to the folder.
   model_updater->RequestMoveItemToFolder(
       kItemId3, kFolderItemId, ash::RequestMoveToFolderReason::kMoveItem);
 
-  // TODO(https://crbug.com/1260447): the correct behavior is to commit the
-  // temporary sort order. However, implementation is blocked by the issue
-  // 1267417. Revisit this test when the blocking issue is fixed.
-
   // Verify that:
   // (1) Temporary sort ends.
-  // (2) Sort order is cleared.
+  // (2) Sort order is committed.
   EXPECT_FALSE(IsUnderTemporarySort());
-  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
+            GetSortOrderFromPrefs());
+  EXPECT_EQ(std::vector<std::string>({"Folder", "E", "D", "C", "B", "A"}),
+            GetOrderedNamesFromSyncableService());
 }
 
 // Verifies the temporary sorting behavior with local app installation.

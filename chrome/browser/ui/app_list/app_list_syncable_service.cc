@@ -1296,6 +1296,11 @@ syncer::StringOrdinal AppListSyncableService::CalculateGlobalFrontPosition()
   return reorder::CalculateFrontPosition(sync_items_);
 }
 
+ash::AppListSortOrder AppListSyncableService::GetPermanentSortingOrder() const {
+  return static_cast<ash::AppListSortOrder>(
+      profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+}
+
 // AppListSyncableService private
 
 bool AppListSyncableService::ProcessSyncItemSpecifics(
@@ -1664,8 +1669,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // The target position of `new_item`.
   syncer::StringOrdinal position;
 
-  ash::AppListSortOrder order = static_cast<ash::AppListSortOrder>(
-      profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+  ash::AppListSortOrder order = GetPermanentSortingOrder();
 
   // TODO(https://crbug.com/1260877): ideally we would not have to create a
   // one-off vector of items using `GetItems()`.

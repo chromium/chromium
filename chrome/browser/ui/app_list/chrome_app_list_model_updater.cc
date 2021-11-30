@@ -663,19 +663,41 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
 
   ash::AppListItem* item = model_.FindItem(id);
   if (item) {
-    // The target position relies on the items under the target folder.
-    // Therefore calculate `target_position` before moving the item to the
-    // folder.
+    // Indicates the item's target position after moving to folder. The target
+    // position relies on the items under the target folder. Therefore calculate
+    // `target_position` before moving the item to the folder.
     syncer::StringOrdinal target_position;
-    ChromeAppListItem* last_child =
-        item_manager_->FindLastChildInFolder(folder_id);
-    if (!last_child) {
-      // The moved item is the first item under folder.
-      target_position = syncer::StringOrdinal::CreateInitialOrdinal();
+
+    const syncer::StringOrdinal old_position =
+        item_manager_->FindItem(id)->position();
+
+    const bool is_sorted = ash::features::IsLauncherAppSortEnabled()
+                               ? (is_under_temporary_sort() ||
+                                  order_delegate_->GetPermanentSortingOrder() !=
+                                      ash::AppListSortOrder::kCustom)
+                               : false;
+
+    // Verify that when the app list is under sorting, `old_position` should be
+    // valid. But the case that `old_position` is invalid is handled for safety.
+    DCHECK(!is_sorted || old_position.IsValid());
+
+    if (is_sorted && old_position.IsValid()) {
+      // When items are sorted, item positions are set so all items in the model
+      // are in correct sort order (regardless of their parent IDs). Therefore,
+      // item position will be in correct sort order relative to items already
+      // in the target folder.
+      target_position = old_position;
     } else {
-      // TODO(https://crbug.com/1247408): now the new item is always added to
-      // the rear. We should take launcher sort order into consideration.
-      target_position = last_child->position().CreateAfter();
+      ChromeAppListItem* last_child =
+          item_manager_->FindLastChildInFolder(folder_id);
+      if (!last_child) {
+        // The moved item is the first item under folder.
+        target_position = syncer::StringOrdinal::CreateInitialOrdinal();
+      } else {
+        // TODO(https://crbug.com/1247408): now the new item is always added to
+        // the rear. We should take launcher sort order into consideration.
+        target_position = last_child->position().CreateAfter();
+      }
     }
 
     std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
@@ -690,17 +712,17 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
   DCHECK(temporary_sort_manager_->is_active());
 
   // When user moves a local item to a folder, the user is believed to accept
-  // the item layout after reordering. Therefore local positions are committed.
-  if (reason == ash::RequestMoveToFolderReason::kMergeSecondItem ||
-      reason == ash::RequestMoveToFolderReason::kMoveItem) {
-    // Clear the sort order. Note that the folder that is created by merging may
-    // not be placed following the temporary sort order. Therefore the sort
-    // order is cleared.
+  // the item layout after reordering. Therefore local positions are
+  // committed.
+  if (reason == ash::RequestMoveToFolderReason::kMergeSecondItem) {
+    // Clear the sort order. Note that the folder that is created by merging
+    // may not be placed following the temporary sort order. Therefore the
+    // sort order is cleared.
     EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
-
-    // TODO(https://crbug.com/1267417): now `target_position` is incorrect when
-    // app list is under temporary sort. When this issue gets fixed, commit the
-    // sort order as well as local positions if `reason` is kMoveItem.
+  } else if (reason == ash::RequestMoveToFolderReason::kMoveItem) {
+    // When an item is moved to an existing folder, the sorting order is still
+    // maintained. Therefore commit the temporary order in this scenario.
+    EndTemporarySortAndTakeAction(EndAction::kCommit);
   }
 }
 
@@ -794,8 +816,8 @@ void ChromeAppListModelUpdater::OnAppListHidden() {
 void ChromeAppListModelUpdater::MaybeNotifyObserversOfItemChange(
     ChromeAppListItem* chrome_item,
     ItemChangeType type) {
-  // If `temporary_sort_manager_` is active, item changes are not propagated to
-  // observers.
+  // If `temporary_sort_manager_` is active, item changes are not propagated
+  // to observers.
   if (is_under_temporary_sort() && temporary_sort_manager_->is_active())
     return;
 

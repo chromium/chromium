@@ -198,6 +198,7 @@ class AppListSyncableService : public syncer::SyncableService,
   void AddObserverAndStart(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  const Profile* profile() const { return profile_; }
   Profile* profile() { return profile_; }
   size_t GetNumSyncItemsForTest();
   const std::string& GetOemFolderNameForTest() const {
@@ -231,6 +232,7 @@ class AppListSyncableService : public syncer::SyncableService,
   // reorder::AppListReorderDelegate:
   void SetAppListPreferredOrder(ash::AppListSortOrder order) override;
   syncer::StringOrdinal CalculateGlobalFrontPosition() const override;
+  ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
  private:
   class ModelUpdaterObserver;

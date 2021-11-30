@@ -24,6 +24,10 @@ class AppListReorderDelegate {
 
   // Returns the front position among all sync items.
   virtual syncer::StringOrdinal CalculateGlobalFrontPosition() const = 0;
+
+  // Returns the sorting order that is saved in perf service and gets shared
+  // among synced devices.
+  virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
 };
 
 }  // namespace reorder
