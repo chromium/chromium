@@ -8,8 +8,10 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -26,6 +28,23 @@ public class PasswordManagerHelper {
     // |PasswordSettings.class.getName()| once it's modularized.
     private static final String PASSWORD_SETTINGS_CLASS =
             "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
+    private static final String ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Latency";
+    private static final String ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Success";
+    private static final String ACCOUNT_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Error";
+    private static final String ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.Launch.Success";
+
+    private static final String LOCAL_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Latency";
+    private static final String LOCAL_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Success";
+    private static final String LOCAL_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Error";
+    private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
     /**
      * Launches the password settings or, if available, the credential manager from Google Play
@@ -47,14 +66,21 @@ public class PasswordManagerHelper {
         }
 
         if (hasChosenToSyncPasswords(syncService)) {
-            credentialManagerLauncher.getCredentialManagerLaunchIntentForAccount(referrer,
+            long startTimeMs = SystemClock.elapsedRealtime();
+            credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
+
                     CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                    PasswordManagerHelper::launchCredentialManager,
-                    PasswordManagerHelper::recordFailureMetrics);
+                    (intent)
+                            -> PasswordManagerHelper.launchCredentialManager(
+                                    intent, startTimeMs, true),
+                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
         } else {
-            credentialManagerLauncher.getCredentialManagerLaunchIntentForLocal(referrer,
-                    PasswordManagerHelper::launchCredentialManager,
-                    PasswordManagerHelper::recordFailureMetrics);
+            long startTimeMs = SystemClock.elapsedRealtime();
+            credentialManagerLauncher.getCredentialManagerIntentForLocal(referrer,
+                    (intent)
+                            -> PasswordManagerHelper.launchCredentialManager(
+                                    intent, startTimeMs, false),
+                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, false));
         }
     }
 
@@ -96,15 +122,40 @@ public class PasswordManagerHelper {
         return true;
     }
 
-    private static void recordFailureMetrics(Exception exception) {
-        // TODO(crbug.com/1255038): Record metrics.
+    private static void recordFailureMetrics(
+            @CredentialManagerError int error, boolean forAccount) {
+        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+        final String kGetIntentErrorHistogram =
+                forAccount ? ACCOUNT_GET_INTENT_ERROR_HISTOGRAM : LOCAL_GET_INTENT_ERROR_HISTOGRAM;
+        RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, false);
+        RecordHistogram.recordEnumeratedHistogram(
+                kGetIntentErrorHistogram, error, CredentialManagerError.COUNT);
     }
 
-    private static void launchCredentialManager(PendingIntent intent) {
+    private static void launchCredentialManager(
+            PendingIntent intent, long startTimeMs, boolean forAccount) {
+        recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
+
+        boolean launchIntentSuccessfully = true;
         try {
             intent.send();
         } catch (CanceledException e) {
-            // TODO(crbug.com/1255038): Record metrics.
+            launchIntentSuccessfully = false;
         }
+        RecordHistogram.recordBooleanHistogram(forAccount
+                        ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
+                        : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                launchIntentSuccessfully);
+    }
+
+    private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
+        final String kGetIntentLatencyHistogram = forAccount ? ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_LATENCY_HISTOGRAM;
+        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+
+        RecordHistogram.recordTimesHistogram(kGetIntentLatencyHistogram, elapsedTimeMs);
+        RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, true);
     }
 }
