@@ -307,71 +307,6 @@ bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
 }
 #endif
 
-// Utility to fill a DropData object from ui::OSExchangeData.
-void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
-  drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
-
-  std::u16string plain_text;
-  data.GetString(&plain_text);
-  if (!plain_text.empty())
-    drop_data->text = plain_text;
-
-  GURL url;
-  std::u16string url_title;
-  data.GetURLAndTitle(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url,
-                      &url_title);
-  if (url.is_valid()) {
-    drop_data->url = url;
-    drop_data->url_title = url_title;
-  }
-
-  std::u16string html;
-  GURL html_base_url;
-  data.GetHtml(&html, &html_base_url);
-  if (!html.empty())
-    drop_data->html = html;
-  if (html_base_url.is_valid())
-    drop_data->html_base_url = html_base_url;
-
-  // Only add FileContents if Filenames is empty to avoid duplicates
-  // (https://crbug.com/1251482). We prefer filenames since it supports multiple
-  // files and does not send all file data upfront.
-  data.GetFilenames(&drop_data->filenames);
-  if (drop_data->filenames.empty()) {
-    base::FilePath filename;
-    std::string file_contents;
-    data.GetFileContents(&filename, &file_contents);
-    if (!filename.empty()) {
-      drop_data->file_contents = std::move(file_contents);
-      drop_data->file_contents_source_url =
-          GURL(ui::FilePathToFileURL(filename));
-      base::FilePath::StringType extension = filename.Extension();
-      if (!extension.empty())
-        drop_data->file_contents_filename_extension = extension.substr(1);
-    }
-  }
-
-#if defined(OS_WIN)
-  // Get a list of virtual files for later retrieval when a drop is performed
-  // (will return empty vector if there are any non-virtual files in the data
-  // store).
-  if (ShouldIncludeVirtualFiles(*drop_data))
-    data.GetVirtualFilenames(&drop_data->filenames);
-#endif
-
-  base::Pickle pickle;
-  std::vector<DropData::FileSystemFileInfo> file_system_files;
-  if (data.GetPickledData(GetFileSystemFileFormatType(), &pickle) &&
-      DropData::FileSystemFileInfo::ReadFileSystemFilesFromPickle(
-          pickle, &file_system_files))
-    drop_data->file_system_files = file_system_files;
-
-  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle))
-    ui::ReadCustomDataIntoMap(
-        pickle.data(), pickle.size(), &drop_data->custom_data);
-}
-
 // Utilities to convert between blink::DragOperationsMask and
 // ui::DragDropTypes.
 int ConvertFromDragOperationsMask(blink::DragOperationsMask ops) {
@@ -739,8 +674,6 @@ WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
-      drag_start_process_id_(ChildProcessHost::kInvalidUniqueID),
-      drag_start_view_id_(ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE),
       drag_in_progress_(false),
       init_rwhv_with_null_parent_for_testing_(false) {}
 
@@ -763,12 +696,86 @@ WebContentsViewAura::~WebContentsViewAura() {
   window_.reset();
 }
 
+void WebContentsViewAura::PrepareDropData(
+    DropData* drop_data,
+    const ui::OSExchangeData& data) const {
+  drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
+
+  std::u16string plain_text;
+  data.GetString(&plain_text);
+  if (!plain_text.empty())
+    drop_data->text = plain_text;
+
+  GURL url;
+  std::u16string url_title;
+  data.GetURLAndTitle(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url,
+                      &url_title);
+  if (url.is_valid()) {
+    drop_data->url = url;
+    drop_data->url_title = url_title;
+  }
+
+  std::u16string html;
+  GURL html_base_url;
+  data.GetHtml(&html, &html_base_url);
+  if (!html.empty())
+    drop_data->html = html;
+  if (html_base_url.is_valid())
+    drop_data->html_base_url = html_base_url;
+
+  // Only add FileContents if Filenames is empty to avoid duplicates
+  // (https://crbug.com/1251482). We prefer filenames since it supports multiple
+  // files and does not send all file data upfront.
+  // Do not add FileContents if this is a tainted-cross-origin same-page image
+  // (https://crbug.com/1264873).
+  bool access_allowed =
+      // Drag started outside blink.
+      !drag_start_ ||
+      // Drag began in blink, but image access is allowed.
+      drag_start_->image_accessible_from_frame ||
+      // Drag began in blink, but in a different WebContents.
+      GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
+          drag_start_->view_id;
+  data.GetFilenames(&drop_data->filenames);
+  if (access_allowed && drop_data->filenames.empty()) {
+    base::FilePath filename;
+    std::string file_contents;
+    data.GetFileContents(&filename, &file_contents);
+    if (!filename.empty()) {
+      drop_data->file_contents = std::move(file_contents);
+      drop_data->file_contents_source_url =
+          GURL(ui::FilePathToFileURL(filename));
+      base::FilePath::StringType extension = filename.Extension();
+      if (!extension.empty())
+        drop_data->file_contents_filename_extension = extension.substr(1);
+    }
+  }
+
+#if defined(OS_WIN)
+  // Get a list of virtual files for later retrieval when a drop is performed
+  // (will return empty vector if there are any non-virtual files in the data
+  // store).
+  if (ShouldIncludeVirtualFiles(*drop_data))
+    data.GetVirtualFilenames(&drop_data->filenames);
+#endif
+
+  base::Pickle pickle;
+  std::vector<DropData::FileSystemFileInfo> file_system_files;
+  if (data.GetPickledData(GetFileSystemFileFormatType(), &pickle) &&
+      DropData::FileSystemFileInfo::ReadFileSystemFilesFromPickle(
+          pickle, &file_system_files))
+    drop_data->file_system_files = file_system_files;
+
+  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
+                          &pickle))
+    ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(),
+                              &drop_data->custom_data);
+}
+
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
-  drag_start_process_id_ = ChildProcessHost::kInvalidUniqueID;
-  drag_start_view_id_ = GlobalRoutingID(ChildProcessHost::kInvalidUniqueID,
-                                        MSG_ROUTING_NONE);
+  drag_start_ = absl::nullopt;
 
   if (!web_contents_)
     return;
@@ -839,9 +846,43 @@ gfx::NativeView WebContentsViewAura::GetRenderWidgetHostViewParent() const {
 
 bool WebContentsViewAura::IsValidDragTarget(
     RenderWidgetHostImpl* target_rwh) const {
-  return target_rwh->GetProcess()->GetID() == drag_start_process_id_ ||
-      GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
-      drag_start_view_id_;
+  // This is the browser-side check for https://crbug.com/59081 to prevent
+  // drags between cross-origin frames within the same page.
+  //
+  // First, check if the target widget's render process ID matches the starting
+  // frame's render process ID. If it matches, this is either:
+  //
+  // - a same-process drag between frames in the same page. Since this is a drag
+  //   within the same `blink::Page`, `blink::DragController::drag_initiator_`
+  //   will be non-null (since each `blink::Page` owns `blink::DragController`)
+  //   and the render process will use `drag_initiator_` to perform an origin
+  //   check to decide whether or not to allow the drag. For example, frames
+  //   in the same renderer process may be same-site but cross-origin: in this
+  //   case, the drag should be disallowed.
+  //
+  // - a same-process drag between frames in different pages. Since this is a
+  //   drag between two different `blink::Page`s, the aforementioned
+  //   `blink::DragController::drag_initiator_` for the target
+  //   `blink::Page` will be null. When `drag_initiator_` is unset, Blink always
+  //   allows the drag, but this is OK: cross-origin cross-page drags should be
+  //   allowed.
+  //
+  // Otherwise, if the render process IDs do not match, this is a cross-process
+  // drag—but still possibly within the same page. `drag_start_->view_id` is set
+  // to the main `RenderFrameHost`'s `RenderViewHost`'s ID—so if the two
+  // IDs match here, the drag is within the same page and disallowed. It is
+  // important to block these drags here, as if it were allowed to go to the
+  // render process, `blink::DragController::drag_initiator_` will be null (by
+  // definition, since the target frame is cross-process to the starting frame),
+  // and the drag will be incorrectly allowed.
+  //
+  // TODO(https://crbug.com/1266953): There are some known gaps caused by
+  // comparing `RenderViewHost` IDs, as `RenderViewHost` ID is not really a
+  // strong signal for page identity.
+  return !drag_start_ ||
+         target_rwh->GetProcess()->GetID() == drag_start_->process_id ||
+         GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
+             drag_start_->view_id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1081,8 +1122,10 @@ void WebContentsViewAura::StartDragging(
   base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr =
       source_rwh->GetWeakPtr();
 
-  drag_start_process_id_ = source_rwh->GetProcess()->GetID();
-  drag_start_view_id_ = GetRenderViewHostID(web_contents_->GetRenderViewHost());
+  drag_start_ =
+      DragStart(source_rwh->GetProcess()->GetID(),
+                GetRenderViewHostID(web_contents_->GetRenderViewHost()),
+                drop_data.file_contents_accessible_from_start_frame);
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)
@@ -1091,13 +1134,11 @@ void WebContentsViewAura::StartDragging(
       ui::OSExchangeDataProviderFactory::CreateProvider();
   PrepareDragData(drop_data, provider.get(), web_contents_);
 
-  auto data(std::make_unique<ui::OSExchangeData>(
-      std::move(provider)));  // takes ownership of |provider|.
+  auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
   data->SetSource(
       web_contents_->GetBrowserContext()->IsOffTheRecord()
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
-
                 web_contents_->GetFocusedFrame()->GetLastCommittedOrigin()));
 
   if (!image.isNull())
