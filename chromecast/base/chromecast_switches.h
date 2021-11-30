@@ -102,6 +102,9 @@ extern const char kForceUpdateRemoteUrl[];
 
 extern const char kSysInfoFilePath[];
 
+// Extension switches.
+extern const char kExtensionsDir[];
+
 }  // namespace switches
 
 namespace chromecast {

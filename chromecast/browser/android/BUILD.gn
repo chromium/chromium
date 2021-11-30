@@ -109,6 +109,7 @@ android_library("cast_shell_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [
     "$java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",

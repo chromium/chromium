@@ -98,6 +98,8 @@ group("browser") {
 
 cast_source_set("browser_base") {
   sources = [
+    "accessibility/accessibility_service_impl.cc",
+    "accessibility/accessibility_service_impl.h",
     "application_media_info_manager.cc",
     "application_media_info_manager.h",
     "audio_socket_broker.cc",
@@ -245,6 +247,7 @@ cast_source_set("browser_base") {
     "//chromecast/net:connectivity_checker",
     "//chromecast/net:socket_util",
     "//chromecast/service",
+    "//chromecast/ui:display_settings_public",
     "//components/cast/message_port:message_port_cast",
     "//components/cdm/browser",
     "//components/download/public/common:public",
@@ -764,6 +767,7 @@ cast_source_set("unittests") {
 if (is_android) {
   generate_jni("jni_headers") {
     sources = [
+      "android/apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
       "android/apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
       "android/apk/src/org/chromium/chromecast/shell/CastCrashHandler.java",
       "android/apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
