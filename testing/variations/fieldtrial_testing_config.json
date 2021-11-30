@@ -1089,19 +1089,6 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillUseAlternativeStateNameMap_2021-08-10",
-                    "enable_features": [
-                        "AutofillUseAlternativeStateNameMap"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM"
-                    ]
-                },
-                {
                     "name": "AutofillShadowDOM_2021-08-10",
                     "enable_features": [
                         "AutofillShadowDOM"
@@ -1110,21 +1097,7 @@
                         "AutofillEnableProfileDeduplication",
                         "AutofillEnableSupportForParsingWithSharedLabels",
                         "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "StableFeatures_2021-08-10",
-                    "enable_features": [
-                        "AutofillUseAlternativeStateNameMap"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache",
-                        "AutofillShadowDOM"
+                        "AutofillRetrieveOverallPredictionsFromCache"
                     ]
                 }
             ]
@@ -1383,6 +1356,27 @@
                     "disable_features": [
                         "AutofillCardSurvey",
                         "AutofillPasswordSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillUseAlternativeStateNameMap": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AutofillUseAlternativeStateNameMap",
+                    "enable_features": [
+                        "AutofillUseAlternativeStateNameMap"
                     ]
                 }
             ]
