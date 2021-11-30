@@ -97,8 +97,6 @@ class ReactionLayout extends RelativeLayout {
                         return true;
                     }
                 });
-        int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
-        int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
         mReaction.setOnTouchListener(new OnTouchListener() {
             private float mBaseX;
             private float mBaseY;
@@ -115,6 +113,8 @@ class ReactionLayout extends RelativeLayout {
                 }
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+                int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         mSceneEditorDelegate.reactionWasMoved();
@@ -157,6 +157,8 @@ class ReactionLayout extends RelativeLayout {
                 }
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+                int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
                 float x = motionEvent.getRawX();
                 float y = motionEvent.getRawY();
                 switch (motionEvent.getAction()) {
@@ -179,6 +181,10 @@ class ReactionLayout extends RelativeLayout {
                         layoutParams.height = (int) (distRatio * mBaseHeight);
                         layoutParams.leftMargin = (int) (mCenterX - layoutParams.width / 2.0);
                         layoutParams.topMargin = (int) (mCenterY - layoutParams.height / 2.0);
+                        layoutParams.rightMargin =
+                                screenWidth - (layoutParams.leftMargin - layoutParams.width);
+                        layoutParams.bottomMargin =
+                                screenHeight - (layoutParams.topMargin - layoutParams.height);
                         ReactionLayout.this.setLayoutParams(layoutParams);
 
                         // Rotation calculations
