@@ -88,9 +88,9 @@
 
       :host(:active) {
         background: var(--active-bg);
-        box-shadow:
+        box-shadow: var(--active-shadow,
             0 1px 2px 0 rgba(var(--active-shadow-rgb), .3),
-            0 3px 6px 2px rgba(var(--active-shadow-rgb), .15);
+            0 3px 6px 2px rgba(var(--active-shadow-rgb), .15));
       }
 
       :host(:hover) {
@@ -112,9 +112,9 @@
       }
 
       :host(.action-button:active) {
-        box-shadow:
+        box-shadow: var(--active-shadow-action,
             0 1px 2px 0 rgba(var(--active-shadow-action-rgb), .3),
-            0 3px 6px 2px rgba(var(--active-shadow-action-rgb), .15);
+            0 3px 6px 2px rgba(var(--active-shadow-action-rgb), .15));
       }
 
       :host(.action-button:hover) {
@@ -155,11 +155,11 @@
       paper-ripple {
         color: var(--ink-color);
         height: var(--paper-ripple-height);
-        width: var(--paper-ripple-width);
         /* Fallback to 0 to match the values in paper-ripple.html. Falls back
          * to null without this. */
         left: var(--paper-ripple-left, 0);
         top: var(--paper-ripple-top, 0);
+        width: var(--paper-ripple-width);
       }
     </style>
     <slot></slot>
