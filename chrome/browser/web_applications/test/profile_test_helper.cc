@@ -58,8 +58,7 @@ void InitCrosapiFeaturesForParam(
     base::test::ScopedFeatureList* scoped_feature_list) {
   if (crosapi_state == web_app::test::CrosapiParam::kEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list->InitWithFeatures(
-        {chromeos::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+    scoped_feature_list->InitAndEnableFeature(features::kWebAppsCrosapi);
 #else
     NOTREACHED();
 #endif
