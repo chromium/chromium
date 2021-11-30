@@ -449,7 +449,7 @@ void SimpleIndexFile::SyncLoadFromDisk(net::CacheType cache_type,
   base::File file(index_filename, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
                                       base::File::FLAG_WIN_SHARE_DELETE |
-                                      base::File::FLAG_SEQUENTIAL_SCAN);
+                                      base::File::FLAG_WIN_SEQUENTIAL_SCAN);
   if (!file.IsValid())
     return;
 
