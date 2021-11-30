@@ -93,7 +93,6 @@ const WebsiteSettingsInfo* WebsiteSettingsRegistry::Register(
 #elif defined(OS_FUCHSIA)
   if (!(platform & PLATFORM_FUCHSIA))
     return nullptr;
-  sync_status = WebsiteSettingsInfo::UNSYNCABLE;
 #else
 #error "Unsupported platform"
 #endif
