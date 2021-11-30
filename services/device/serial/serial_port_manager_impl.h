@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,13 +21,21 @@
 namespace base {
 class SingleThreadTaskRunner;
 class UnguessableToken;
-}
+}  // namespace base
 
 namespace device {
 
 // TODO(leonhsl): Merge this class with SerialDeviceEnumerator if/once
 // SerialDeviceEnumerator is exposed only via the Device Service.
 // crbug.com/748505
+//
+// Threading notes:
+// 1. Created on the UI thread.
+// 2. Used on the UI thread runner (macOS only), otherwise on a blocking task
+//    runner.
+// 3. Deleted on the same runner on which it is used *except* sometimes
+//    during shutdown when the runner threadpool is already shutdown.
+//    See crbug.com/1263149#c20 for details.
 class SerialPortManagerImpl : public mojom::SerialPortManager,
                               public SerialDeviceEnumerator::Observer {
  public:
@@ -73,6 +82,8 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
 
   mojo::ReceiverSet<SerialPortManager> receivers_;
   mojo::RemoteSet<mojom::SerialPortManagerClient> clients_;
+  // See threading notes above for guidelines for checking sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace device

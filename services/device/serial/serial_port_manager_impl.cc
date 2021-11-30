@@ -35,9 +35,13 @@ SerialPortManagerImpl::SerialPortManagerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : io_task_runner_(std::move(io_task_runner)),
-      ui_task_runner_(std::move(ui_task_runner)) {}
+      ui_task_runner_(std::move(ui_task_runner)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-SerialPortManagerImpl::~SerialPortManagerImpl() = default;
+SerialPortManagerImpl::~SerialPortManagerImpl() {
+  // Intentionally do not check sequence. See class comment doc for more info.
+}
 
 void SerialPortManagerImpl::Bind(
     mojo::PendingReceiver<mojom::SerialPortManager> receiver) {
@@ -47,6 +51,7 @@ void SerialPortManagerImpl::Bind(
 void SerialPortManagerImpl::SetSerialEnumeratorForTesting(
     std::unique_ptr<SerialDeviceEnumerator> fake_enumerator) {
   DCHECK(fake_enumerator);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enumerator_ = std::move(fake_enumerator);
   observed_enumerator_.AddObservation(enumerator_.get());
 }
@@ -55,16 +60,19 @@ void SerialPortManagerImpl::SetBluetoothSerialEnumeratorForTesting(
     std::unique_ptr<BluetoothSerialDeviceEnumerator>
         fake_bluetooth_enumerator) {
   DCHECK(fake_bluetooth_enumerator);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bluetooth_enumerator_ = std::move(fake_bluetooth_enumerator);
   observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
 }
 
 void SerialPortManagerImpl::SetClient(
     mojo::PendingRemote<mojom::SerialPortManagerClient> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   clients_.Add(std::move(client));
 }
 
 void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enumerator_) {
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
     observed_enumerator_.AddObservation(enumerator_.get());
@@ -93,6 +101,7 @@ void SerialPortManagerImpl::OpenPort(
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     OpenPortCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enumerator_) {
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
     observed_enumerator_.AddObservation(enumerator_.get());
@@ -135,11 +144,13 @@ void SerialPortManagerImpl::OpenPort(
 }
 
 void SerialPortManagerImpl::OnPortAdded(const mojom::SerialPortInfo& port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_)
     client->OnPortAdded(port.Clone());
 }
 
 void SerialPortManagerImpl::OnPortRemoved(const mojom::SerialPortInfo& port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_)
     client->OnPortRemoved(port.Clone());
 }
