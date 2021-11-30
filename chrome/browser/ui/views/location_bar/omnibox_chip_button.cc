@@ -14,7 +14,9 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/painter.h"
 
 namespace {
 
@@ -36,9 +38,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
       icon_on_(icon_on),
       icon_off_(icon_off) {
   views::InstallPillHighlightPathGenerator(this);
-  SetProminent(is_prominent);
   SetText(message);
-  SetCornerRadius(GetIconSize());
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -94,6 +94,12 @@ void OmniboxChipButton::OnThemeChanged() {
   UpdateIconAndColors();
 }
 
+void OmniboxChipButton::UpdateBackgroundColor() {
+  SetBackground(
+      CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
+          GetBackgroundColor(), GetIconSize())));
+}
+
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
   if (animation != animation_.get())
     return;
@@ -125,7 +131,6 @@ void OmniboxChipButton::UpdateIconAndColors() {
                 ui::ImageModel::FromVectorIcon(
                     show_blocked_icon_ ? icon_off_ : icon_on_,
                     GetTextAndIconColor(), GetIconSize(), nullptr));
-  SetBgColorOverride(GetBackgroundColor());
 }
 
 SkColor OmniboxChipButton::GetTextAndIconColor() {
@@ -155,13 +160,9 @@ SkColor OmniboxChipButton::GetBackgroundColor() {
 
   // TODO(crbug.com/1274118) Instead of using constants or toolbar colors, add
   // the chip's properties.
-  if (color_utils::IsDark(active_tab_color)) {
-    return ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_TOOLBAR, false,
-        /*dark_mode=*/color_utils::IsDark(active_tab_color));
-  } else {
-    return SK_ColorWHITE;
-  }
+  return ThemeProperties::GetDefaultColor(
+      ThemeProperties::COLOR_TOOLBAR, false,
+      /*dark_mode=*/color_utils::IsDark(active_tab_color));
 }
 
 void OmniboxChipButton::SetForceExpandedForTesting(

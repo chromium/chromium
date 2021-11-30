@@ -46,6 +46,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // views::MdTextButton:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  void UpdateBackgroundColor() override;
 
   // Set the button theme.
   void SetTheme(Theme theme);
