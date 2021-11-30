@@ -89,14 +89,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void Suspend(const media::VideoCaptureSessionId& id);
   void Resume(const media::VideoCaptureSessionId& id);
 
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  void Crop(const media::VideoCaptureSessionId& id,
-            const base::Token& crop_id,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
-
   // Get supported formats supported by the device for the given session
   // ID. |callback| will be called on the IO thread.
   void GetDeviceSupportedFormats(const media::VideoCaptureSessionId& id,

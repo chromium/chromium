@@ -188,19 +188,6 @@ void WebVideoCaptureImplManager::Resume(
                                 it->impl->GetWeakPtr(), false));
 }
 
-void WebVideoCaptureImplManager::Crop(
-    const media::VideoCaptureSessionId& id,
-    const base::Token& crop_id,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
-  if (it == devices_.end())
-    return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::Crop, it->impl->GetWeakPtr(),
-                                crop_id, std::move(callback)));
-}
-
 void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
     const media::VideoCaptureSessionId& id,
     VideoCaptureDeviceFormatsCB callback) {

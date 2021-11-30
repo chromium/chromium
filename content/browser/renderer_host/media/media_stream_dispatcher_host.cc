@@ -13,8 +13,10 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
+#include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +29,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
+
+#if !defined(OS_ANDROID)
+#include "content/browser/media/capture/crop_id_web_contents_helper.h"
+#endif
 
 namespace content {
 
@@ -62,6 +68,41 @@ StartObservingWebContents(int render_process_id,
   }
   return web_contents_observer;
 }
+
+#if !defined(OS_ANDROID)
+// Checks whether a track living in the WebContents indicated by
+// (render_process_id, render_frame_id) may be cropped to the crop-target
+// indicated by |crop_id|.
+bool IsCropTargetValid(int render_process_id,
+                       int render_frame_id,
+                       const base::Token& crop_id) {
+  RenderFrameHost* const rfh =
+      RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!rfh) {
+    return false;
+  }
+
+  WebContents* const web_contents =
+      WebContents::FromRenderFrameHost(rfh->GetMainFrame());
+  if (!web_contents) {
+    return false;
+  }
+
+  CropIdWebContentsHelper* const helper =
+      CropIdWebContentsHelper::FromWebContents(web_contents);
+  if (!helper) {
+    // No crop-IDs were ever produced on this WebContents.
+    // Any non-zero crop-ID should be rejected on account of being
+    // invalid. A zero crop-ID would ultimately be rejected on account
+    // of the track being uncropped, so we can unconditionally reject.
+    return false;
+  }
+
+  // * crop_id.is_zero() = uncrop-request.
+  // * !crop_id.is_zero() = crop-request.
+  return crop_id.is_zero() || helper->IsAssociatedWithCropId(crop_id);
+}
+#endif
 
 }  // namespace
 
@@ -422,6 +463,39 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
       label, focus,
       /*is_from_microtask=*/false,
       /*is_from_timer=*/false);
+}
+
+void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
+                                     const base::Token& crop_id,
+                                     CropCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Hop to the UI thread to verify that cropping to |crop_id| is permitted
+  // from this particular context. Namely, cropping is currently only allowed
+  // for self-capture, so the crop_id has to be associated with the top-level
+  // WebContents belonging to this very tab.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&IsCropTargetValid, render_process_id_, render_frame_id_,
+                     crop_id),
+      base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
+                     weak_factory_.GetWeakPtr(), device_id, crop_id,
+                     std::move(callback)));
+}
+
+void MediaStreamDispatcherHost::OnCropValidationComplete(
+    const base::UnguessableToken& device_id,
+    const base::Token& crop_id,
+    CropCallback callback,
+    bool crop_id_passed_validation) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!crop_id_passed_validation) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+  media_stream_manager_->video_capture_manager()->Crop(device_id, crop_id,
+                                                       std::move(callback));
 }
 #endif
 

@@ -80,14 +80,6 @@ void LocalVideoCapturerSource::Resume() {
   manager_->Resume(session_id_);
 }
 
-void LocalVideoCapturerSource::Crop(
-    const base::Token& crop_id,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  manager_->Crop(session_id_, crop_id,
-                 base::BindPostTask(task_runner_, std::move(callback)));
-}
-
 void LocalVideoCapturerSource::StopCapture() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Immediately make sure we don't provide more frames.

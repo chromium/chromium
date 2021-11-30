@@ -53,6 +53,10 @@ class MockMojoMediaStreamDispatcherHost
   MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
 #if !defined(OS_ANDROID)
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
+  MOCK_METHOD3(Crop,
+               void(const base::UnguessableToken&,
+                    const base::Token&,
+                    CropCallback));
 #endif
 
   void ResetSessionId() { session_id_ = base::UnguessableToken::Create(); }

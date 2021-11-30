@@ -80,6 +80,14 @@ class CONTENT_EXPORT VideoCaptureManager
   base::UnguessableToken Open(const blink::MediaStreamDevice& device) override;
   void Close(const base::UnguessableToken& capture_session_id) override;
 
+  // Start/stop cropping the video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  void Crop(const base::UnguessableToken& session_id,
+            const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+
   // Called by VideoCaptureHost to locate a capture device for |capture_params|,
   // adding the Host as a client of the device's controller if successful. The
   // value of |session_id| controls which device is selected;

@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
@@ -517,11 +518,13 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
 }
 
+#if !defined(OS_ANDROID)
 void MediaStreamVideoSource::Crop(
     const base::Token& crop_id,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
+#endif
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.

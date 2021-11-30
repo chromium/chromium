@@ -86,11 +86,6 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
     pause_callback_->OnResumed(session_id);
   }
 
-  MOCK_METHOD3(Crop,
-               void(const base::UnguessableToken&,
-                    const base::Token&,
-                    CropCallback));
-
   MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
   MOCK_METHOD3(ReleaseBuffer,
                void(const base::UnguessableToken&,

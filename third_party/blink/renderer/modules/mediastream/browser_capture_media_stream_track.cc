@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +21,7 @@ namespace blink {
 
 namespace {
 
+#if !defined(OS_ANDROID)
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
 // Otherwise, returns nullopt.
@@ -76,6 +78,7 @@ void ResolveCropPromise(ScriptPromiseResolver* resolver,
 
   NOTREACHED();
 }
+#endif
 
 }  // namespace
 
@@ -115,6 +118,12 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+#if defined(OS_ANDROID)
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kUnknownError, "Not supported on Android."));
+  return promise;
+#else
+
   const absl::optional<base::Token> crop_id_token =
       CropIdStringToToken(crop_id);
   if (!crop_id_token.has_value()) {
@@ -138,6 +147,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
                       WTF::Bind(&ResolveCropPromise, WrapPersistent(resolver)));
 
   return promise;
+#endif
 }
 
 BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(

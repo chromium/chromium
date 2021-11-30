@@ -94,6 +94,14 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void OnStreamStarted(const std::string& label) override;
 #if !defined(OS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
+  void Crop(const base::UnguessableToken& device_id,
+            const base::Token& crop_id,
+            CropCallback callback) override;
+
+  void OnCropValidationComplete(const base::UnguessableToken& device_id,
+                                const base::Token& crop_id,
+                                CropCallback callback,
+                                bool crop_id_passed_validation);
 #endif
 
   void DoGenerateStream(

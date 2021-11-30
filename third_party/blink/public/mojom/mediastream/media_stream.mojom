@@ -7,6 +7,7 @@ module blink.mojom;
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/display_media_information.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Types of media streams. When updating this list, make sure to update the
@@ -191,6 +192,15 @@ interface MediaStreamDispatcherHost {
 
   // Tells the browser process that the stream has been started successfully.
   OnStreamStarted(string label);
+
+  // Start/stop cropping the video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  [EnableIfNot=is_android]
+  Crop(mojo_base.mojom.UnguessableToken device_id,
+       mojo_base.mojom.Token crop_id)
+    => (media.mojom.CropRequestResult crop_result);
 };
 
 // Browser-side interface that is used by the renderer process to notify the

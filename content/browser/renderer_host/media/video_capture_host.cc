@@ -287,34 +287,6 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
   }
 }
 
-void VideoCaptureHost::Crop(const base::UnguessableToken& device_id,
-                            const base::Token& crop_id,
-                            CropCallback callback) {
-  DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  const VideoCaptureControllerID& controller_id(device_id);
-  const auto it = controllers_.find(controller_id);
-  if (it == controllers_.end() || !it->second) {
-    std::move(callback).Run(
-        media::mojom::CropRequestResult::kErrorUnknownDeviceId);
-    return;
-  }
-  VideoCaptureController* const controller = it->second.get();
-  DCHECK(controller);  // Verified above.
-
-  if (!controller->IsDeviceAlive()) {
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
-    return;
-  }
-
-  // TODO(crbug.com/1247761): Validate that the crop-ID was produced
-  // by produceCropId(), and that this was done for this specific tab,
-  // thereby rejecting (a) unknown crop-IDs and (b) other-tab-crops.
-
-  controller->Crop(crop_id, std::move(callback));
-}
-
 void VideoCaptureHost::RequestRefreshFrame(
     const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;

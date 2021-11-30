@@ -641,16 +641,6 @@ void VideoCaptureImpl::SuspendCapture(bool suspend) {
     GetVideoCaptureHost()->Resume(device_id_, session_id_, params_);
 }
 
-void VideoCaptureImpl::Crop(
-    const base::Token& crop_id,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-  GetVideoCaptureHost()->Crop(
-      device_id_, crop_id,
-      base::BindOnce(&VideoCaptureImpl::OnCropResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void VideoCaptureImpl::StartCapture(
     int client_id,
     const media::VideoCaptureParams& params,
@@ -1122,13 +1112,6 @@ void VideoCaptureImpl::OnDeviceFormatsInUse(
     const Vector<media::VideoCaptureFormat>& formats_in_use) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   std::move(callback).Run(formats_in_use);
-}
-
-void VideoCaptureImpl::OnCropResult(
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
-    media::mojom::CropRequestResult result) {
-  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-  std::move(callback).Run(result);
 }
 
 bool VideoCaptureImpl::RemoveClient(int client_id, ClientInfoMap* clients) {

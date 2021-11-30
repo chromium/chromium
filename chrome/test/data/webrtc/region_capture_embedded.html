@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let capturedStream;
+      let capturedVideoTrack;
+
+      async function startCapture() {
+        if (capturedStream) {
+          window.domAutomationController.send("error-multiple-embedded-captures");
+          return;
+        }
+
+        try {
+          capturedStream = await navigator.mediaDevices.getDisplayMedia();
+          [capturedVideoTrack] = capturedStream.getVideoTracks();
+          window.domAutomationController.send("embedded-capture-success");
+        } catch (e) {
+          window.domAutomationController.send("embedded-capture-failure");
+        }
+      }
+
+      async function produceCropId() {
+        const div = document.getElementById("div");
+        try {
+          const cropId = await navigator.mediaDevices.produceCropId(div);
+          // Explicitly note emptiness to make it clear this is genuine emptiness
+          // and not a test error on the C++/JS boundary.
+          window.domAutomationController.send(
+              cropId == "" ? "empty-crop-id" : cropId);
+        } catch (e) {
+          window.domAutomationController.send("produce-crop-id-embedded-failure");
+        }
+      }
+
+      async function crop(cropId) {
+        if (!capturedVideoTrack) {
+          window.domAutomationController.send("embedded-crop-error-no-track");
+          return;
+        }
+
+        try {
+          await capturedVideoTrack.cropTo(cropId);
+          window.domAutomationController.send("embedded-crop-success");
+          return;
+        } catch (e) {
+          window.domAutomationController.send("embedded-crop-error");
+        }
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data == "start-capture") {
+          startCapture();
+        } else if (event.data == "produce-crop-id") {
+          produceCropId();
+        } else if (event.data.startsWith("crop-to:")) {
+          crop(event.data.substr("crop-to:".length));
+        } else {
+          window.domAutomationController.send("unrecognized-message");
+        }
+      });
+
+      function reportEmbeddingSuccess() {
+        window.domAutomationController.send("embedding-done");
+      }
+    </script>
+  </head>
+  <body onload="reportEmbeddingSuccess();">
+    <div id="div">
+      <!-- This DIV is just a convenient target for produceCropId. -->
+      <h1>Region Capture Test - Page 1 (Embedded)</h1>
+    </div>
+  </body>
+</html>

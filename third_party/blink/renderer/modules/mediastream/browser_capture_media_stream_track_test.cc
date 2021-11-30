@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
 #include "base/guid.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -49,6 +50,7 @@ class BrowserCaptureMediaStreamTrackTest : public testing::Test {
   }
 };
 
+#if !defined(OS_ANDROID)
 TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
   V8TestingScope v8_scope;
 
@@ -68,7 +70,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
       v8_scope.GetExceptionState());
 }
 
-TEST_F(BrowserCaptureMediaStreamTrackTest, CropToInvalidIdRaisesException) {
+TEST_F(BrowserCaptureMediaStreamTrackTest, CropToInvalidIdIsRejected) {
   V8TestingScope v8_scope;
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
@@ -79,12 +81,32 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToInvalidIdRaisesException) {
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   const ScriptPromise promise =
       track->cropTo(v8_scope.GetScriptState(), WTF::String("INVALID-ID"),
                     v8_scope.GetExceptionState());
-  EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
 }
+
+#else
+
+TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
+  V8TestingScope v8_scope;
+
+  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+
+  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
+      MakeMockMediaStreamVideoSource();
+
+  EXPECT_CALL(*media_stream_video_source, Crop(_, _)).Times(0);
+
+  BrowserCaptureMediaStreamTrack* const track =
+      MakeTrack(v8_scope, std::move(media_stream_video_source));
+
+  const ScriptPromise promise = track->cropTo(
+      v8_scope.GetScriptState(), WTF::String(valid_id.AsLowercaseString()),
+      v8_scope.GetExceptionState());
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+}
+#endif
 
 }  // namespace blink

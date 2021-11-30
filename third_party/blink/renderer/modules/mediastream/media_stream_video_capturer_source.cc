@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -191,12 +192,21 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
                          WTF::Unretained(this), capture_params_));
 }
 
+#if !defined(OS_ANDROID)
 void MediaStreamVideoCapturerSource::Crop(
     const base::Token& crop_id,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  source_->Crop(crop_id, std::move(callback));
+  const absl::optional<base::UnguessableToken>& session_id =
+      device().serializable_session_id();
+  if (!session_id.has_value()) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+  GetMediaStreamDispatcherHost()->Crop(session_id.value(), crop_id,
+                                       std::move(callback));
 }
+#endif
 
 base::WeakPtr<MediaStreamVideoSource>
 MediaStreamVideoCapturerSource::GetWeakPtr() const {

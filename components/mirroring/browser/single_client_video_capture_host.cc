@@ -143,14 +143,6 @@ void SingleClientVideoCaptureHost::Resume(
     launched_device_->ResumeDevice();
 }
 
-void SingleClientVideoCaptureHost::Crop(const base::UnguessableToken& device_id,
-                                        const base::Token& crop_id,
-                                        CropCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1247761): Implement.
-  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
-}
-
 void SingleClientVideoCaptureHost::RequestRefreshFrame(
     const base::UnguessableToken& device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

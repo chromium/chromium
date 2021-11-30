@@ -85,14 +85,6 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // StopCapture(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
 
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  virtual void Crop(
-      const base::Token& crop_id,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {}
-
   // Stops capturing frames and clears all callbacks including the
   // SupportedFormatsCallback callback. Note that queued frame callbacks
   // may still occur after this call, so the caller must take care to

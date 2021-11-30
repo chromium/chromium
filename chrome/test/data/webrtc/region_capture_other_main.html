@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <!-- The test scans for which source to share according to the title. -->
+    <title>Region Capture Test - Page 2 (Main)</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      function startEmbeddingFrame(url) {
+        document.getElementById("embedded_frame").src = url;
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      async function produceCropId(targetFrame) {
+        if (targetFrame == "top") {
+          const div = document.getElementById("div");
+          const cropId = await navigator.mediaDevices.produceCropId(div);
+          // Explicitly note emptiness so as to make it clear that this is
+          // genuine emptiness and not a test error on the C++/JS boundary.
+          window.domAutomationController.send(
+              cropId == "" ? "empty-crop-id" : cropId);
+        } else {
+          document
+            .getElementById("embedded_frame")
+            .contentWindow.postMessage("produce-crop-id", "*");
+          // window.domAutomationController.send() called by embedded page.
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="div">
+      <!-- This DIV is just a convenient target for produceCropId. -->
+      <h1>Region Capture Test - Page 2 (Main)</h1>
+      <br/>
+      <iframe id="embedded_frame" allow="display-capture *"></iframe>
+    </div>
+  </body>
+</html>
