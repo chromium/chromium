@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
-    enum="AutofillFormEvent" expires_after="2021-12-19">
+    enum="AutofillFormEvent" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -1987,7 +1987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SelectedCardHasOffer"
-    enum="AutofillCreditCardOfferSelection" expires_after="2021-12-19">
+    enum="AutofillCreditCardOfferSelection" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -1999,7 +1999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.StoredOfferCount" units="offers"
-    expires_after="2022-04-10">
+    expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2009,7 +2009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
-    expires_after="2022-04-10">
+    expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2019,7 +2019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount"
-    units="merchants" expires_after="2022-04-10">
+    units="merchants" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2029,7 +2029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SubmittedCardHasOffer"
-    enum="AutofillCreditCardOfferSubmission" expires_after="2021-12-19">
+    enum="AutofillCreditCardOfferSubmission" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2041,7 +2041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestedCardsHaveOffer"
-    enum="AutofillCreditCardOfferSuggestion" expires_after="2022-04-24">
+    enum="AutofillCreditCardOfferSuggestion" expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2052,7 +2052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SyncedOfferDataBeingValid" units="offers"
-    expires_after="2022-04-10">
+    expires_after="2022-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2656,7 +2656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptOffer{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2022-01-09">
+    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2023-01-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -2672,7 +2672,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.SaveCreditCardPromptResult{AutofillSaveCreditCardPromptDestination}"
-    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2022-01-09">
+    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2023-01-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
