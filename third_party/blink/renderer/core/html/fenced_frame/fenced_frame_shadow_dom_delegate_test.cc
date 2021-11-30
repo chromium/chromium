@@ -106,6 +106,19 @@ TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {
   AssertInternalIFrameExists(fenced_frame);
 }
 
+TEST_F(FencedFrameShadowDOMDelegateTest, PresentationAttributes) {
+  SetBodyInnerHTML(R"HTML(
+    <fencedframe width="123" height="456"></fencedframe>
+)HTML");
+  HTMLFencedFrameElement& fenced_frame = FencedFrame();
+  const auto* box = fenced_frame.GetLayoutBox();
+  ASSERT_TRUE(box);
+  EXPECT_EQ(box->StyleRef().Width(), Length::Fixed(123));
+  EXPECT_EQ(box->StyleRef().Height(), Length::Fixed(456));
+  EXPECT_EQ(box->OffsetWidth(), LayoutUnit(123));
+  EXPECT_EQ(box->OffsetHeight(), LayoutUnit(456));
+}
+
 // This test tests navigations with respect to the DOM-connectedness of the
 // element.
 TEST_F(FencedFrameShadowDOMDelegateTest, NavigationWithInsertionAndRemoval) {

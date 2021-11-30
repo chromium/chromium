@@ -118,6 +118,27 @@ bool HTMLFencedFrameElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == html_names::kSrcAttr;
 }
 
+bool HTMLFencedFrameElement::IsPresentationAttribute(
+    const QualifiedName& name) const {
+  if (name == html_names::kWidthAttr || name == html_names::kHeightAttr)
+    return true;
+  return HTMLFrameOwnerElement::IsPresentationAttribute(name);
+}
+
+void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
+    const QualifiedName& name,
+    const AtomicString& value,
+    MutableCSSPropertyValueSet* style) {
+  if (name == html_names::kWidthAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+  } else if (name == html_names::kHeightAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
+  } else {
+    HTMLFrameOwnerElement::CollectStyleForPresentationAttribute(name, value,
+                                                                style);
+  }
+}
+
 void HTMLFencedFrameElement::Navigate() {
   if (!isConnected())
     return;
