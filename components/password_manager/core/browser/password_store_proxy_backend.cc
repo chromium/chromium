@@ -23,13 +23,17 @@ namespace password_manager {
 
 namespace {
 
+using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
+
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
   std::move(completion).Run(base::ranges::all_of(statuses, base::identity()));
 }
 
-// Records the difference metrics between |main_result| and |backend_result|.
-void RecordMetrics(const LoginsResult& main_result,
+// Records the difference metrics between |main_result| and |backend_result|
+// when returned by |method_name|.
+void RecordMetrics(const MethodName& method_name,
+                   const LoginsResult& main_result,
                    const LoginsResult& backend_result) {
   struct IsLess {
     bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
@@ -64,11 +68,11 @@ void RecordMetrics(const LoginsResult& main_result,
   });
 
   // Emits a pair of absolute and relative metrics.
-  auto Emit = [](base::StringPiece metric_infix, size_t nominator,
-                 size_t denominator) {
-    std::string prefix = base::StrCat(
-        {"PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.",
-         metric_infix, "."});
+  auto Emit = [&method_name](base::StringPiece metric_infix, size_t nominator,
+                             size_t denominator) {
+    std::string prefix =
+        base::StrCat({"PasswordManager.PasswordStoreProxyBackend.",
+                      method_name.value(), ".", metric_infix, "."});
     base::UmaHistogramCounts1M(prefix + "Abs", nominator);
     if (denominator != 0) {
       size_t ceiling_of_percentage =
@@ -82,53 +86,59 @@ void RecordMetrics(const LoginsResult& main_result,
   Emit("InconsistentPasswords", inconsistent, common_logins.size());
 }
 
-// Records the metrics of a pair of GetAllLoginsAsync() calls to the main and
+// Records the metrics of a pair of MethodName calls to the main and
 // the shadow backends once both calls are finished.
 //
 // The class is ref-counted because it is equally owned by the two parallel
-// GetAllLoginsAsync() calls: it must outlive the first returning one and shall
-// be destroyed after the second one returns.
-class GetAllLoginsAsyncMetricsRecorder
-    : public base::RefCounted<GetAllLoginsAsyncMetricsRecorder> {
+// method calls : it must outlive the first returning one and shall  be
+// destroyed after the second one returns.
+class ShadowTrafficMetricsRecorder
+    : public base::RefCounted<ShadowTrafficMetricsRecorder> {
  public:
+  explicit ShadowTrafficMetricsRecorder(MethodName method_name)
+      : method_name_(std::move(method_name)) {}
+
   // Returns the unchanged |result| so it can be passed to the main handler.
-  LoginsResultOrError RecordMainResult(LoginsResultOrError result) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
-      return result;
+  LoginsResultOrError RecordMainLoginsResultOrError(
+      LoginsResultOrError logins_or_error) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+      return logins_or_error;
     }
 
-    LoginsResult logins = std::move(absl::get<LoginsResult>(result));
-
+    LoginsResult logins = std::move(absl::get<LoginsResult>(logins_or_error));
     if (!first_result_) {
       first_result_ = absl::make_optional<LoginsResult>();
       first_result_->reserve(logins.size());
       for (const auto& login : logins)
         first_result_->push_back(std::make_unique<PasswordForm>(*login));
     } else {
-      RecordMetrics(/*main_result=*/logins, /*shadow_result=*/*first_result_);
+      RecordMetrics(method_name_, /*main_result=*/logins,
+                    /*shadow_result=*/*first_result_);
     }
 
     return logins;
   }
 
-  void RecordShadowResult(LoginsResultOrError result) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+  void RecordShadowLoginsResultOrError(LoginsResultOrError logins_or_error) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
       return;
     }
-    LoginsResult logins = std::move(absl::get<LoginsResult>(result));
 
+    LoginsResult logins = std::move(absl::get<LoginsResult>(logins_or_error));
     if (!first_result_)
       first_result_ = std::move(logins);
     else
-      RecordMetrics(/*main_result=*/*first_result_, /*shadow_result=*/logins);
+      RecordMetrics(method_name_, /*main_result=*/*first_result_,
+                    /*shadow_result=*/logins);
   }
 
  private:
-  friend class RefCounted<GetAllLoginsAsyncMetricsRecorder>;
-  ~GetAllLoginsAsyncMetricsRecorder() = default;
+  friend class RefCounted<ShadowTrafficMetricsRecorder>;
+  ~ShadowTrafficMetricsRecorder() = default;
 
   // Stores the result of the backend that returns first.
   absl::optional<LoginsResult> first_result_;
+  const MethodName method_name_;
 };
 
 }  // namespace
@@ -172,18 +182,20 @@ void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
-  scoped_refptr<GetAllLoginsAsyncMetricsRecorder> handler =
-      base::MakeRefCounted<GetAllLoginsAsyncMetricsRecorder>();
+  scoped_refptr<ShadowTrafficMetricsRecorder> handler =
+      base::MakeRefCounted<ShadowTrafficMetricsRecorder>(
+          MethodName("GetAllLoginsAsync"));
   main_backend_->GetAllLoginsAsync(
-      base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordMainResult,
-                     handler)
+      base::BindOnce(
+          &ShadowTrafficMetricsRecorder::RecordMainLoginsResultOrError, handler)
           .Then(std::move(callback)));
 
   if (is_syncing_passwords_callback_.Run() &&
       base::FeatureList::IsEnabled(
           features::kUnifiedPasswordManagerShadowAndroid)) {
     shadow_backend_->GetAllLoginsAsync(base::BindOnce(
-        &GetAllLoginsAsyncMetricsRecorder::RecordShadowResult, handler));
+        &ShadowTrafficMetricsRecorder::RecordShadowLoginsResultOrError,
+        handler));
   }
 }
 
