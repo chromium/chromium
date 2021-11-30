@@ -42,6 +42,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public static final String SHARED_HIGHLIGHTING_SUPPORT_URL =
             "https://support.google.com/chrome?p=shared_highlighting";
     public static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
+    public static final String ADDITIONAL_TEXT_FRAGMENT_SELECTOR = "&text=";
 
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String INVALID_SELECTOR = "";
@@ -171,8 +172,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
-                        getExistingSelectors(
-                                mProducer, (text) -> { onSelectorReady(String.join("", text)); });
+                        getExistingSelectors(mProducer, (text) -> {
+                            onSelectorReady(String.join(ADDITIONAL_TEXT_FRAGMENT_SELECTOR, text));
+                        });
                     }
                 });
     }
