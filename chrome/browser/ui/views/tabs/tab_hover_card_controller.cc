@@ -294,7 +294,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
                                            const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
-  if (hover_card_ || !target_tab_ || target_tab_ != intended_tab)
+  if (hover_card_ || !TargetTabIsValid() || target_tab_ != intended_tab)
     return;
 
   CreateHoverCard(target_tab_);
@@ -508,9 +508,17 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
   return hover_card_->GetAnchorView();
 }
 
+bool TabHoverCardController::TargetTabIsValid() const {
+  return target_tab_ && tab_strip_->GetModelIndexOf(target_tab_) >= 0 &&
+         !target_tab_->closing();
+}
+
 void TabHoverCardController::OnCardFullyVisible() {
-  const bool has_preview = ArePreviewsEnabled() && !target_tab_->IsActive() &&
-                           !waiting_for_preview();
+  // We have to do a bunch of validity checks here because this happens on a
+  // callback and so the tab may no longer be valid (or part of the original
+  // tabstrip).
+  const bool has_preview = ArePreviewsEnabled() && TargetTabIsValid() &&
+                           !target_tab_->IsActive() && !waiting_for_preview();
   metrics_->CardFullyVisibleOnTab(target_tab_, has_preview);
 }
 
