@@ -2761,6 +2761,38 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
     EXPECT_FALSE(fenced_frame_host->IsInBackForwardCache());
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RendererInitiatedNavigateToSameUrl) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // 3) Navigate to B again, renderer initiated.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_b));
+  // This is treated as replacement, and RenderFrameHost does not change.
+  EXPECT_EQ(rfh_b.get(), current_frame_host());
+
+  // 4) Go back. Make sure we go back to A instead of B and restore from
+  // bfcache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_a.get());
+  EXPECT_TRUE(rfh_b.get()->IsInBackForwardCache());
+  ExpectRestored(FROM_HERE);
+
+  // 5) Go forward and restore from bfcache.
+  ASSERT_TRUE(HistoryGoForward(shell()->web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_b.get());
+  ExpectRestored(FROM_HERE);
+}
+
 // BEFORE ADDING A NEW TEST HERE
 // Read the note at the top about the other files you could add it to.
 }  // namespace content
