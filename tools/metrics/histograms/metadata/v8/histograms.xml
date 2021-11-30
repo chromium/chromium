@@ -1522,12 +1522,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCacheCount" units="count" expires_after="2022-06-30">
+  <owner>ahaas@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Number of times a WebAssembly module being added to the browser cache. With
+    dynamic tiering, caching is triggered repeatedly whenever the amount of
+    generated optimized code reaches a threshold. Recorded every time a new
+    version of the WebAssembly module is being added to the cache, and also when
+    the module is compiled initially.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCatchCount" units="count" expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <summary>
     Number of exceptions caught so far in an isolate, recorded on each caught
     exception.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmCompileAfterDeserializeMilliSeconds" units="ms"
+    expires_after="2022-06-30">
+  <owner>ahaas@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    After deserialization, all functions that were not in the serialized module
+    are compiled with the baseline compiler. This metric measures the time spent
+    by the baseline compiler on compiling missing functions. Recorded after the
+    baseline compilation of the missing functions finishes.
   </summary>
 </histogram>
 
