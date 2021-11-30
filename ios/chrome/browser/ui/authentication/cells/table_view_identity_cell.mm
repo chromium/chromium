@@ -54,7 +54,7 @@ const CGFloat kSeparatorMargin = 80;
   self.identityView.titleColor = titleColor;
   self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone;
-  if (checked) {
+  if (checked && identityViewStyle != IdentityViewStyleConsistency) {
     self.directionalLayoutMargins =
         NSDirectionalEdgeInsetsMake(0, 0, 0, kCheckmarkMagin);
   } else {
