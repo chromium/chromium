@@ -165,7 +165,7 @@ const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTabSearchChevronIcon{"TabSearchChevronIcon",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the tab search submit feedback button.
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
@@ -295,7 +295,7 @@ int GetLocationPermissionsExperimentLabelPromptLimit() {
 // Moves the Tab Search button into the browser frame's caption button area on
 // Windows 10 (crbug.com/1223847).
 const base::Feature kWin10TabSearchCaptionButton{
-    "Win10TabSearchCaptionButton", base::FEATURE_DISABLED_BY_DEFAULT};
+    "Win10TabSearchCaptionButton", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #endif
 
