@@ -55,11 +55,7 @@ const int kDefaultDownloadExpiredTimeInDays = 90;
 const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 
 // Default buffer size in bytes to write to the download file.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-const int kDefaultDownloadFileBufferSize = 524288;  // Desktop uses 512 KB.
-#else
-const int kDefaultDownloadFileBufferSize = 4096;
-#endif
+const int kDefaultDownloadFileBufferSize = 524288;
 
 #if defined(OS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
