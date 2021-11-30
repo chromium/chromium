@@ -36,10 +36,16 @@
         // window.domAutomationController.send() called by embedded page.
       }
 
-      async function produceCropId(targetFrame) {
+      async function produceCropId(targetFrame, elementId) {
         if (targetFrame == "top") {
-          const div = document.getElementById("div");
-          const cropId = await navigator.mediaDevices.produceCropId(div);
+          const element = document.getElementById(elementId);
+          let cropId;
+          try {
+            cropId = await navigator.mediaDevices.produceCropId(element);
+          } catch (e) {
+            window.domAutomationController.send("top-level-produce-crop-id-error");
+            return;
+          }
           // Explicitly note emptiness so as to make it clear that this is
           // genuine emptiness and not a test error on the C++/JS boundary.
           window.domAutomationController.send(
@@ -47,7 +53,7 @@
         } else {
           document
             .getElementById("embedded_frame")
-            .contentWindow.postMessage("produce-crop-id", "*");
+            .contentWindow.postMessage("produce-crop-id:" + elementId, "*");
           // window.domAutomationController.send() called by embedded page.
         }
       }
@@ -65,6 +71,21 @@
           document
             .getElementById("embedded_frame")
             .contentWindow.postMessage("crop-to:" + cropId, "*");
+          // window.domAutomationController.send() called by embedded page.
+        }
+      }
+
+      // Allows creating new div-elements for which new crop-IDs may be created.
+      async function createNewDivElement(targetFrame, divId) {
+        if (targetFrame == "top") {
+          let newDiv = document.createElement("div");
+          newDiv.id = divId;
+          document.body.appendChild(newDiv);
+          window.domAutomationController.send("top-level-new-div-success");
+        } else {
+          document
+            .getElementById("embedded_frame")
+            .contentWindow.postMessage("create-new-div-element:" + divId, "*");
           // window.domAutomationController.send() called by embedded page.
         }
       }

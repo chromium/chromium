@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,7 @@
 #include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -54,6 +56,9 @@ MATCHER(IsValidCropId, "") {
 const char kMainPageTitle[] = "Region Capture Test - Page 1 (Main)";
 const char kOtherPageTitle[] = "Region Capture Test - Page 2 (Main)";
 
+// Tracks CropIdWebContentsHelper::kMaxCropIdsPerWebContents.
+constexpr size_t kMaxCropIdsPerWebContents = 100;
+
 enum {
   kMainPageTopLevelDocument,
   kMainPageEmbeddedDocument,
@@ -69,6 +74,7 @@ enum {
 };
 
 enum class Frame {
+  kNone,
   kTopLevelDocument,
   kEmbeddedFrame,
 };
@@ -103,13 +109,17 @@ struct TabInfo {
     EXPECT_EQ(script_result, "embedded-capture-success");
   }
 
-  std::string ProduceCropId(Frame frame) {
-    const char* const frame_js =
+  std::string ProduceCropId(Frame frame,
+                            const std::string& element_id = "div") {
+    DCHECK_NE(frame, Frame::kNone);
+    const std::string frame_js =
         (frame == Frame::kTopLevelDocument) ? "top" : "embedded";
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetMainFrame(),
-        base::StrCat({"produceCropId(\"", frame_js, "\");"}), &script_result));
+        base::StrCat(
+            {"produceCropId(\"", frame_js, "\", \"" + element_id + "\");"}),
+        &script_result));
     return script_result;
   }
 
@@ -118,6 +128,19 @@ struct TabInfo {
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetMainFrame(),
         base::StrCat({"cropTo(\"", crop_id, "\");"}), &script_result));
+    return script_result;
+  }
+
+  std::string CreateNewDivElement(Frame frame, const std::string& div_id) {
+    DCHECK_NE(frame, Frame::kNone);
+    const std::string frame_js =
+        (frame == Frame::kTopLevelDocument) ? "top" : "embedded";
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(),
+        base::StrCat(
+            {"createNewDivElement(\"", frame_js, "\", \"", div_id, "\");"}),
+        &script_result));
     return script_result;
   }
 
@@ -213,8 +236,7 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
 
     if (capturing_entity == Frame::kTopLevelDocument) {
       tabs_[kMainTab].StartCapture();
-    } else {
-      DCHECK_EQ(capturing_entity, Frame::kEmbeddedFrame);
+    } else if (capturing_entity == Frame::kEmbeddedFrame) {
       tabs_[kMainTab].StartCaptureFromEmbeddedFrame();
     }
   }
@@ -374,6 +396,103 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   ASSERT_THAT(crop_id, IsValidCropId());
 
   EXPECT_EQ(tabs_[kMainTab].CropTo(crop_id), "top-level-crop-error");
+}
+
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
+  SetUpTest(Frame::kNone, /*self_capture=*/false);
+  TabInfo& tab = tabs_[kMainTab];
+
+  // Create kMaxCropIdsPerWebContents new elements and assign each a crop-ID.
+  std::set<std::string> crop_ids;
+  for (size_t i = 0; i < kMaxCropIdsPerWebContents; ++i) {
+    const std::string element_id = ("new_id_" + base::NumberToString(i));
+    ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
+              "top-level-new-div-success");
+    const std::string crop_id =
+        tab.ProduceCropId(Frame::kTopLevelDocument, element_id);
+    ASSERT_THAT(crop_id, IsValidCropId());
+    crop_ids.insert(crop_id);
+  }
+  EXPECT_EQ(crop_ids.size(), kMaxCropIdsPerWebContents);
+
+  // Create one more element - this one won't get a crop-ID.
+  const std::string element_id =
+      ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
+  ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
+            "top-level-new-div-success");
+  EXPECT_EQ(tab.ProduceCropId(Frame::kTopLevelDocument, element_id),
+            "top-level-produce-crop-id-error");
+}
+
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInEmbeddedFrame) {
+  SetUpTest(Frame::kNone, /*self_capture=*/false);
+  TabInfo& tab = tabs_[kMainTab];
+
+  // Create kMaxCropIdsPerWebContents new elements and assign each a crop-ID.
+  std::set<std::string> crop_ids;
+  for (size_t i = 0; i < kMaxCropIdsPerWebContents; ++i) {
+    const std::string element_id = ("new_id_" + base::NumberToString(i));
+    ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
+              "embedded-new-div-success");
+    const std::string crop_id =
+        tab.ProduceCropId(Frame::kEmbeddedFrame, element_id);
+    ASSERT_THAT(crop_id, IsValidCropId());
+    crop_ids.insert(crop_id);
+  }
+  EXPECT_EQ(crop_ids.size(), kMaxCropIdsPerWebContents);
+
+  // Create one more element - this one won't get a crop-ID.
+  const std::string element_id =
+      ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
+  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
+            "embedded-new-div-success");
+  EXPECT_EQ(tab.ProduceCropId(Frame::kEmbeddedFrame, element_id),
+            "embedded-produce-crop-id-error");
+}
+
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
+                       MaxCropIdsSharedBetweenFramesInTab) {
+  SetUpTest(Frame::kNone, /*self_capture=*/false);
+  TabInfo& tab = tabs_[kMainTab];
+
+  static_assert(kMaxCropIdsPerWebContents > 1, "");
+
+  // Create (kMaxCropIdsPerWebContents - 1) new elements and assign each a
+  // crop-ID.
+  std::set<std::string> crop_ids;
+  for (size_t i = 0; i < kMaxCropIdsPerWebContents - 1; ++i) {
+    const std::string element_id = ("new_id_" + base::NumberToString(i));
+    ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
+              "top-level-new-div-success");
+    const std::string crop_id =
+        tab.ProduceCropId(Frame::kTopLevelDocument, element_id);
+    ASSERT_THAT(crop_id, IsValidCropId());
+    crop_ids.insert(crop_id);
+  }
+  EXPECT_EQ(crop_ids.size(), kMaxCropIdsPerWebContents - 1);
+
+  // One more in the embedded frame is possible.
+  std::string element_id =
+      ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents - 1));
+  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
+            "embedded-new-div-success");
+  std::string crop_id = tab.ProduceCropId(Frame::kEmbeddedFrame, element_id);
+  EXPECT_THAT(crop_id, IsValidCropId());
+  EXPECT_TRUE(crop_ids.find(crop_id) == crop_ids.end());
+
+  // Create one more element - this one won't get a crop-ID.
+  element_id = ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
+  ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
+            "top-level-new-div-success");
+  EXPECT_EQ(tab.ProduceCropId(Frame::kTopLevelDocument, element_id),
+            "top-level-produce-crop-id-error");
+  // Neither in the top-level nor in the embedded frame.
+  element_id =
+      ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents + 1));
+  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
+            "embedded-new-div-success");
+  EXPECT_EQ(tab.ProduceCropId(Frame::kEmbeddedFrame, element_id),
+            "embedded-produce-crop-id-error");
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
