@@ -1046,24 +1046,15 @@
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_dino_info"/>
     </receiver>  # DIFF-ANCHOR: 226134db
-    <receiver  # DIFF-ANCHOR: 6e59bf36
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderMedium"
-        android:exported="true"
-        android:label="@string/quick_action_search_widget_title">
-      <intent-filter>  # DIFF-ANCHOR: 4ed161a4
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ed161a4
-      <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_medium_info"/>
-    </receiver>  # DIFF-ANCHOR: 6e59bf36
-    <receiver  # DIFF-ANCHOR: 5fe9b78b
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSmall"
+    <receiver  # DIFF-ANCHOR: 5a0b9536
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
         android:exported="true"
         android:label="@string/quick_action_search_widget_title">
       <intent-filter>  # DIFF-ANCHOR: 4ed161a4
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_small_info"/>
-    </receiver>  # DIFF-ANCHOR: 5fe9b78b
+    </receiver>  # DIFF-ANCHOR: 5a0b9536
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         android:exported="true"

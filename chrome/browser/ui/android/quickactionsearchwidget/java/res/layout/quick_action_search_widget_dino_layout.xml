@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dino_quick_action_button"
     android:layout_width="@dimen/quick_action_search_widget_dino_size"
     android:layout_height="@dimen/quick_action_search_widget_dino_size"
@@ -13,20 +13,19 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/quick_action_search_widget_dino_margin_start"
+        android:layout_marginTop="@dimen/quick_action_search_widget_dino_margin_top"
+        android:layout_marginBottom="@dimen/quick_action_search_widget_dino_margin_text"
         android:importantForAccessibility="no"
         android:src="@drawable/quick_action_search_widget_dino_content" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="14dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/quick_action_search_widget_dino_margin_start"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline"
         android:textAlignment="viewStart"
         android:text="@string/dino_widget_text" />
 
-</RelativeLayout>
+</LinearLayout>

@@ -932,7 +932,7 @@ by a child template that "extends" this file.
 
         <!-- Quick Action Search widget -->
         <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSmall"
+            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
             android:label="@string/quick_action_search_widget_title"
             android:exported="true">
             <intent-filter>
@@ -941,18 +941,6 @@ by a child template that "extends" this file.
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_action_search_widget_small_info" />
-        </receiver>
-
-        <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderMedium"
-            android:label="@string/quick_action_search_widget_title"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/quick_action_search_widget_medium_info" />
         </receiver>
 
         <receiver

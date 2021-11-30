@@ -45,7 +45,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
      * can resize.
      */
-    public static class QuickActionSearchWidgetResizableProvider
+    public static class QuickActionSearchWidgetProviderSearch
             extends QuickActionSearchWidgetProvider {
         protected static @Nullable QuickActionSearchWidgetProviderDelegate sSmallWidgetDelegate;
         protected static @Nullable QuickActionSearchWidgetProviderDelegate sMediumWidgetDelegate;
@@ -98,23 +98,6 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             return sMediumWidgetDelegate;
         }
     }
-    /**
-     * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
-     * initially has the small layout.
-     * Layout constraints are defined in the widget info xml file.
-     * Dedicated provider required by manifest declaration.
-     */
-    public static class QuickActionSearchWidgetProviderSmall
-            extends QuickActionSearchWidgetResizableProvider {}
-
-    /**
-     * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
-     * initially has the medium layout.
-     * Layout constraints are defined in the widget info xml file.
-     * Dedicated provider required by manifest declaration.
-     */
-    public static class QuickActionSearchWidgetProviderMedium
-            extends QuickActionSearchWidgetResizableProvider {}
 
     /**
      * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
@@ -249,8 +232,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         });
 
         QuickActionSearchWidgetProvider dinoWidget = new QuickActionSearchWidgetProviderDino();
-        QuickActionSearchWidgetProvider smallWidget = new QuickActionSearchWidgetProviderSmall();
-        QuickActionSearchWidgetProvider mediumWidget = new QuickActionSearchWidgetProviderMedium();
+        QuickActionSearchWidgetProvider smallWidget = new QuickActionSearchWidgetProviderSearch();
 
         SearchActivityPreferencesManager.addObserver(prefs -> {
             Context context = ContextUtils.getApplicationContext();
@@ -258,7 +240,6 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             AppWidgetManager manager = AppWidgetManager.getInstance(context);
             dinoWidget.updateWidgets(context, manager, prefs, null);
             smallWidget.updateWidgets(context, manager, prefs, null);
-            mediumWidget.updateWidgets(context, manager, prefs, null);
         });
     }
 
@@ -274,9 +255,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     private static void setWidgetEnabled(
             boolean shouldEnableQuickActionSearchWidget, boolean shouldEnableDinoVariant) {
         setWidgetComponentEnabled(
-                QuickActionSearchWidgetProviderSmall.class, shouldEnableQuickActionSearchWidget);
-        setWidgetComponentEnabled(
-                QuickActionSearchWidgetProviderMedium.class, shouldEnableQuickActionSearchWidget);
+                QuickActionSearchWidgetProviderSearch.class, shouldEnableQuickActionSearchWidget);
         setWidgetComponentEnabled(
                 QuickActionSearchWidgetProviderDino.class, shouldEnableDinoVariant);
     }

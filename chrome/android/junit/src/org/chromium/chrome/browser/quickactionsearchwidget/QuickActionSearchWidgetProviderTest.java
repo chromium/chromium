@@ -33,8 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider.QuickActionSearchWidgetProviderMedium;
-import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider.QuickActionSearchWidgetProviderSmall;
+import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider.QuickActionSearchWidgetProviderSearch;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 
 /**
@@ -112,9 +111,7 @@ public class QuickActionSearchWidgetProviderTest {
     @SmallTest
     public void testVerticalDynamicWidgetResizeForSmallWidgetProvider() {
         doVerticalDynamicWidgetResize(
-                "Small Widget provider", new QuickActionSearchWidgetProviderSmall());
-        doVerticalDynamicWidgetResize(
-                "Medium Widget provider", new QuickActionSearchWidgetProviderMedium());
+                "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
     }
 
     private void doVerticalDynamicWidgetResize(
@@ -149,9 +146,7 @@ public class QuickActionSearchWidgetProviderTest {
     @SmallTest
     public void testVerticalWidgetResizeOfSmallWidget() {
         doVerticalWidgetResizeOfSmallWidget(
-                "Small Widget provider", new QuickActionSearchWidgetProviderSmall());
-        doVerticalWidgetResizeOfSmallWidget(
-                "Medium Widget provider", new QuickActionSearchWidgetProviderMedium());
+                "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
     }
 
     private void doVerticalWidgetResizeOfSmallWidget(
@@ -184,9 +179,7 @@ public class QuickActionSearchWidgetProviderTest {
     @SmallTest
     public void testVerticalWidgetResizeOfMediumWidget() {
         doVerticalWidgetResizeOfMediumWidget(
-                "Small Widget provider", new QuickActionSearchWidgetProviderSmall());
-        doVerticalWidgetResizeOfMediumWidget(
-                "Medium Widget provider", new QuickActionSearchWidgetProviderMedium());
+                "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
     }
 
     private void doVerticalWidgetResizeOfMediumWidget(
