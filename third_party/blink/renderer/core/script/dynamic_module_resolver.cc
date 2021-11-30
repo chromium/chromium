@@ -43,15 +43,14 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 };
 
 // Abstract callback for modules resolution.
-class ModuleResolutionCallback : public ScriptFunction {
+class ModuleResolutionCallback : public NewScriptFunction::Callable {
  public:
-  ModuleResolutionCallback(ScriptState* script_state,
-                           ScriptPromiseResolver* promise_resolver)
-      : ScriptFunction(script_state), promise_resolver_(promise_resolver) {}
+  explicit ModuleResolutionCallback(ScriptPromiseResolver* promise_resolver)
+      : promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(promise_resolver_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
  protected:
@@ -62,21 +61,10 @@ class ModuleResolutionCallback : public ScriptFunction {
 // Called on successful resolution.
 class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionSuccessCallback(ScriptState* script_state,
-                                  ScriptPromiseResolver* promise_resolver,
+  ModuleResolutionSuccessCallback(ScriptPromiseResolver* promise_resolver,
                                   ModuleScript* module_script)
-      : ModuleResolutionCallback(script_state, promise_resolver),
+      : ModuleResolutionCallback(promise_resolver),
         module_script_(module_script) {}
-
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ScriptPromiseResolver* promise_resolver,
-      ModuleScript* module_script) {
-    ModuleResolutionSuccessCallback* self =
-        MakeGarbageCollected<ModuleResolutionSuccessCallback>(
-            script_state, promise_resolver, module_script);
-    return self->BindToV8Function();
-  }
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(module_script_);
@@ -84,8 +72,8 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
   }
 
  private:
-  ScriptValue Call(ScriptValue value) override {
-    ScriptState::Scope scope(GetScriptState());
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptState::Scope scope(script_state);
     v8::Local<v8::Module> record = module_script_->V8Module();
     v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
     promise_resolver_->Resolve(module_namespace);
@@ -99,22 +87,13 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
 // Called on unsuccessful resolution.
 class ModuleResolutionFailureCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionFailureCallback(ScriptState* script_state,
-                                  ScriptPromiseResolver* promise_resolver)
-      : ModuleResolutionCallback(script_state, promise_resolver) {}
-
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ScriptPromiseResolver* promise_resolver) {
-    ModuleResolutionFailureCallback* self =
-        MakeGarbageCollected<ModuleResolutionFailureCallback>(script_state,
-                                                              promise_resolver);
-    return self->BindToV8Function();
-  }
+  explicit ModuleResolutionFailureCallback(
+      ScriptPromiseResolver* promise_resolver)
+      : ModuleResolutionCallback(promise_resolver) {}
 
  private:
-  ScriptValue Call(ScriptValue exception) override {
-    ScriptState::Scope scope(GetScriptState());
+  ScriptValue Call(ScriptState* script_state, ScriptValue exception) override {
+    ScriptState::Scope scope(script_state);
     promise_resolver_->Reject(exception);
     return ScriptValue();
   }
@@ -191,12 +170,12 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
 
       if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
         ScriptPromise promise = result.GetPromise(script_state);
-        v8::Local<v8::Function> callback_success =
-            ModuleResolutionSuccessCallback::CreateFunction(
-                script_state, promise_resolver_, module_script);
-        v8::Local<v8::Function> callback_failure =
-            ModuleResolutionFailureCallback::CreateFunction(script_state,
-                                                            promise_resolver_);
+        auto* callback_success = MakeGarbageCollected<NewScriptFunction>(
+            script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
+                              promise_resolver_, module_script));
+        auto* callback_failure = MakeGarbageCollected<NewScriptFunction>(
+            script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
+                              promise_resolver_));
         promise.Then(callback_success, callback_failure);
         return;
       }

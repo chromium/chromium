@@ -123,22 +123,19 @@ void DynamicModuleResolverTestModulator::Trace(Visitor* visitor) const {
 // with a single argument of type module namespace.
 // CaptureExportedStringFunction captures the exported string value
 // from the module namespace as a WTF::String, exposed via CapturedValue().
-class CaptureExportedStringFunction final : public ScriptFunction {
+class CaptureExportedStringFunction final : public NewScriptFunction::Callable {
  public:
-  CaptureExportedStringFunction(ScriptState* script_state,
-                                const String& export_name)
-      : ScriptFunction(script_state), export_name_(export_name) {}
+  explicit CaptureExportedStringFunction(const String& export_name)
+      : export_name_(export_name) {}
 
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
   bool WasCalled() const { return was_called_; }
   const String& CapturedValue() const { return captured_value_; }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     was_called_ = true;
 
-    v8::Isolate* isolate = GetScriptState()->GetIsolate();
-    v8::Local<v8::Context> context = GetScriptState()->GetContext();
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::Local<v8::Context> context = script_state->GetContext();
 
     v8::Local<v8::Object> module_namespace =
         value.V8Value()->ToObject(context).ToLocalChecked();
@@ -151,6 +148,7 @@ class CaptureExportedStringFunction final : public ScriptFunction {
     return ScriptValue();
   }
 
+ private:
   const String export_name_;
   bool was_called_ = false;
   String captured_value_;
@@ -158,22 +156,19 @@ class CaptureExportedStringFunction final : public ScriptFunction {
 
 // CaptureErrorFunction implements a javascript function which captures
 // name and error of the exception passed as its argument.
-class CaptureErrorFunction final : public ScriptFunction {
+class CaptureErrorFunction final : public NewScriptFunction::Callable {
  public:
-  explicit CaptureErrorFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  CaptureErrorFunction() = default;
 
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
   bool WasCalled() const { return was_called_; }
   const String& Name() const { return name_; }
   const String& Message() const { return message_; }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     was_called_ = true;
 
-    v8::Isolate* isolate = GetScriptState()->GetIsolate();
-    v8::Local<v8::Context> context = GetScriptState()->GetContext();
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::Local<v8::Context> context = script_state->GetContext();
 
     v8::Local<v8::Object> error_object =
         value.V8Value()->ToObject(context).ToLocalChecked();
@@ -189,24 +184,18 @@ class CaptureErrorFunction final : public ScriptFunction {
     return ScriptValue();
   }
 
+ private:
   bool was_called_ = false;
   String name_;
   String message_;
 };
 
-class DynamicModuleResolverTestNotReached final : public ScriptFunction {
+class DynamicModuleResolverTestNotReached final
+    : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    auto* not_reached =
-        MakeGarbageCollected<DynamicModuleResolverTestNotReached>(script_state);
-    return not_reached->BindToV8Function();
-  }
+  DynamicModuleResolverTestNotReached() = default;
 
-  explicit DynamicModuleResolverTestNotReached(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-
- private:
-  ScriptValue Call(ScriptValue) override {
+  ScriptValue Call(ScriptState*, ScriptValue) override {
     ADD_FAILURE();
     return ScriptValue();
   }
@@ -232,11 +221,12 @@ TEST_P(DynamicModuleResolverTest, ResolveSuccess) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture = MakeGarbageCollected<CaptureExportedStringFunction>(
-      scope.GetScriptState(), "foo");
-  promise.Then(capture->Bind(),
-               DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()));
+  auto* capture = MakeGarbageCollected<CaptureExportedStringFunction>("foo");
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture),
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   ModuleRequest module_request("./dependency.js",
@@ -299,11 +289,12 @@ TEST_P(DynamicModuleResolverTest, ResolveSpecifierFailure) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture =
-      MakeGarbageCollected<CaptureErrorFunction>(scope.GetScriptState());
-  promise.Then(DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()),
-               capture->Bind());
+  auto* capture = MakeGarbageCollected<CaptureErrorFunction>();
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()),
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   ModuleRequest module_request("invalid-specifier",
@@ -328,11 +319,12 @@ TEST_P(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture =
-      MakeGarbageCollected<CaptureErrorFunction>(scope.GetScriptState());
-  promise.Then(DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()),
-               capture->Bind());
+  auto* capture = MakeGarbageCollected<CaptureErrorFunction>();
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()),
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   Vector<ImportAssertion> import_assertions{
@@ -358,11 +350,12 @@ TEST_P(DynamicModuleResolverTest, FetchFailure) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture =
-      MakeGarbageCollected<CaptureErrorFunction>(scope.GetScriptState());
-  promise.Then(DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()),
-               capture->Bind());
+  auto* capture = MakeGarbageCollected<CaptureErrorFunction>();
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()),
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   ModuleRequest module_request("./dependency.js",
@@ -391,11 +384,12 @@ TEST_P(DynamicModuleResolverTest, ExceptionThrown) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture =
-      MakeGarbageCollected<CaptureErrorFunction>(scope.GetScriptState());
-  promise.Then(DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()),
-               capture->Bind());
+  auto* capture = MakeGarbageCollected<CaptureErrorFunction>();
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()),
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   ModuleRequest module_request("./dependency.js",
@@ -433,11 +427,12 @@ TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   ScriptPromise promise = promise_resolver->Promise();
 
-  auto* capture = MakeGarbageCollected<CaptureExportedStringFunction>(
-      scope.GetScriptState(), "foo");
-  promise.Then(capture->Bind(),
-               DynamicModuleResolverTestNotReached::CreateFunction(
-                   scope.GetScriptState()));
+  auto* capture = MakeGarbageCollected<CaptureExportedStringFunction>("foo");
+  promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(), capture),
+      MakeGarbageCollected<NewScriptFunction>(
+          scope.GetScriptState(),
+          MakeGarbageCollected<DynamicModuleResolverTestNotReached>()));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   ModuleRequest module_request("./dependency.js",
