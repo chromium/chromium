@@ -109,32 +109,14 @@ class RestrictedToken {
   // the error.
   DWORD AddUserSidForDenyOnly();
 
-  // Lists all privileges in the token and add them to the list of privileges
-  // to remove except for those present in the exceptions parameter. If
-  // there is no exception needed, the caller can pass an empty list or nullptr
-  // for the exceptions parameter.
+  // Specify to remove all privileges in the restricted token. By default this
+  // will not remove SeChangeNotifyPrivilege, however you can specify true for
+  // |remove_traversal_privilege| to remove that privilege as well.
   //
   // If the function succeeds, the return value is ERROR_SUCCESS. If the
   // function fails, the return value is the win32 error code corresponding to
   // the error.
-  //
-  // Sample usage:
-  //    std::vector<std::wstring> privilege_exceptions;
-  //    privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-  //    restricted_token.DeleteAllPrivileges(privilege_exceptions);
-  DWORD DeleteAllPrivileges(const std::vector<std::wstring>& exceptions);
-
-  // Adds a privilege to the list of privileges to remove in the restricted
-  // token.
-  // Parameter: privilege is the privilege name to remove. This is the string
-  // representing the privilege. (e.g. "SeChangeNotifyPrivilege").
-  // If the function succeeds, the return value is ERROR_SUCCESS. If the
-  // function fails, the return value is the win32 error code corresponding to
-  // the error.
-  //
-  // Sample usage:
-  //    restricted_token.DeletePrivilege(SE_LOAD_DRIVER_NAME);
-  DWORD DeletePrivilege(const wchar_t* privilege);
+  DWORD DeleteAllPrivileges(bool remove_traversal_privilege);
 
   // Adds a SID to the list of restricting sids in the restricted token.
   // Parameter: sid is the sid to add to the list restricting sids.
@@ -206,8 +188,6 @@ class RestrictedToken {
  private:
   // The list of restricting sids in the restricted token.
   std::vector<base::win::Sid> sids_to_restrict_;
-  // The list of privileges to remove in the restricted token.
-  std::vector<CHROME_LUID> privileges_to_disable_;
   // The list of sids to mark as Deny Only in the restricted token.
   std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
@@ -223,6 +203,10 @@ class RestrictedToken {
   bool init_;
   // Lockdown the default DACL when creating new tokens.
   bool lockdown_default_dacl_;
+  // Delete all privileges except for SeChangeNotifyPrivilege.
+  bool delete_all_privileges_;
+  // Also delete SeChangeNotifyPrivilege if delete_all_privileges_ is true.
+  bool remove_traversal_privilege_;
 };
 
 }  // namespace sandbox

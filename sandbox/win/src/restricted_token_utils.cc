@@ -82,6 +82,7 @@ DWORD CreateRestrictedToken(
 
   bool deny_sids = true;
   bool remove_privileges = true;
+  bool remove_traverse_privilege = false;
 
   switch (security_level) {
     case USER_UNPROTECTED: {
@@ -105,7 +106,6 @@ DWORD CreateRestrictedToken(
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
       AddSidException(sid_exceptions,
                       base::win::WellKnownSid::kAuthenticatedUser);
-      privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       break;
     }
     case USER_RESTRICTED_NON_ADMIN: {
@@ -114,7 +114,6 @@ DWORD CreateRestrictedToken(
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
       AddSidException(sid_exceptions,
                       base::win::WellKnownSid::kAuthenticatedUser);
-      privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddRestrictingSid(
           base::win::WellKnownSid::kBuiltinUsers);
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
@@ -134,7 +133,6 @@ DWORD CreateRestrictedToken(
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
       AddSidException(sid_exceptions,
                       base::win::WellKnownSid::kAuthenticatedUser);
-      privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddRestrictingSid(
           base::win::WellKnownSid::kBuiltinUsers);
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
@@ -149,7 +147,6 @@ DWORD CreateRestrictedToken(
       AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
-      privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddRestrictingSid(
           base::win::WellKnownSid::kBuiltinUsers);
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
@@ -166,7 +163,6 @@ DWORD CreateRestrictedToken(
       break;
     }
     case USER_RESTRICTED: {
-      privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddUserSidForDenyOnly();
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
       if (unique_restricted_sid)
@@ -174,6 +170,7 @@ DWORD CreateRestrictedToken(
       break;
     }
     case USER_LOCKDOWN: {
+      remove_traverse_privilege = true;
       restricted_token.AddUserSidForDenyOnly();
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kNull);
       if (unique_restricted_sid)
@@ -191,7 +188,7 @@ DWORD CreateRestrictedToken(
   }
 
   if (remove_privileges) {
-    err_code = restricted_token.DeleteAllPrivileges(privilege_exceptions);
+    err_code = restricted_token.DeleteAllPrivileges(remove_traverse_privilege);
     if (ERROR_SUCCESS != err_code)
       return err_code;
   }

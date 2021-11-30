@@ -18,18 +18,6 @@
 
 namespace {
 
-LUID ConvertToLuid(const CHROME_LUID& luid) {
-  LUID ret;
-  memcpy(&ret, &luid, sizeof(luid));
-  return ret;
-}
-
-CHROME_LUID ConvertToChromeLuid(const LUID& luid) {
-  CHROME_LUID ret;
-  memcpy(&ret, &luid, sizeof(luid));
-  return ret;
-}
-
 std::vector<SID_AND_ATTRIBUTES> ConvertToAttributes(
     const std::vector<base::win::Sid>& sids,
     DWORD attributes) {
@@ -41,6 +29,17 @@ std::vector<SID_AND_ATTRIBUTES> ConvertToAttributes(
   return ret;
 }
 
+bool DeletePrivilege(const base::win::ScopedHandle& token,
+                     const wchar_t* name) {
+  TOKEN_PRIVILEGES privs = {};
+  privs.PrivilegeCount = 1;
+  if (!::LookupPrivilegeValue(nullptr, name, &privs.Privileges[0].Luid))
+    return false;
+  privs.Privileges[0].Attributes = SE_PRIVILEGE_REMOVED;
+  return !!::AdjustTokenPrivileges(token.Get(), FALSE, &privs, 0, nullptr,
+                                   nullptr);
+}
+
 }  // namespace
 
 namespace sandbox {
@@ -48,7 +47,9 @@ namespace sandbox {
 RestrictedToken::RestrictedToken()
     : integrity_level_(INTEGRITY_LEVEL_LAST),
       init_(false),
-      lockdown_default_dacl_(false) {}
+      lockdown_default_dacl_(false),
+      delete_all_privileges_(false),
+      remove_traversal_privilege_(false) {}
 
 RestrictedToken::~RestrictedToken() {}
 
@@ -92,20 +93,16 @@ DWORD RestrictedToken::GetRestrictedToken(
       ConvertToAttributes(sids_for_deny_only_, SE_GROUP_USE_FOR_DENY_ONLY);
   std::vector<SID_AND_ATTRIBUTES> restrict_sids =
       ConvertToAttributes(sids_to_restrict_, 0);
-  std::vector<LUID_AND_ATTRIBUTES> disable_privs(privileges_to_disable_.size());
-  for (size_t i = 0; i < privileges_to_disable_.size(); ++i) {
-    disable_privs[i].Attributes = 0;
-    disable_privs[i].Luid = ConvertToLuid(privileges_to_disable_[i]);
-  }
 
   bool result = true;
   HANDLE new_token_handle = nullptr;
-  if (!deny_sids.empty() || !restrict_sids.empty() || !disable_privs.empty()) {
+  if (!deny_sids.empty() || !restrict_sids.empty() || delete_all_privileges_) {
     result = ::CreateRestrictedToken(
-        effective_token_.Get(), 0, static_cast<DWORD>(deny_sids.size()),
-        deny_sids.data(), static_cast<DWORD>(disable_privs.size()),
-        disable_privs.data(), static_cast<DWORD>(restrict_sids.size()),
-        restrict_sids.data(), &new_token_handle);
+        effective_token_.Get(),
+        delete_all_privileges_ ? DISABLE_MAX_PRIVILEGE : 0,
+        static_cast<DWORD>(deny_sids.size()), deny_sids.data(), 0, nullptr,
+        static_cast<DWORD>(restrict_sids.size()), restrict_sids.data(),
+        &new_token_handle);
   } else {
     // Duplicate the token even if it's not modified at this point
     // because any subsequent changes to this token would also affect the
@@ -119,6 +116,10 @@ DWORD RestrictedToken::GetRestrictedToken(
     return ::GetLastError();
 
   base::win::ScopedHandle new_token(new_token_handle);
+  if (delete_all_privileges_ && remove_traversal_privilege_) {
+    if (!DeletePrivilege(new_token, SE_CHANGE_NOTIFY_NAME))
+      return ::GetLastError();
+  }
 
   if (lockdown_default_dacl_) {
     // Don't add Restricted sid and also remove logon sid access.
@@ -232,35 +233,12 @@ DWORD RestrictedToken::AddUserSidForDenyOnly() {
   return ERROR_SUCCESS;
 }
 
-DWORD RestrictedToken::DeleteAllPrivileges(
-    const std::vector<std::wstring>& exceptions) {
+DWORD RestrictedToken::DeleteAllPrivileges(bool remove_traversal_privilege) {
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
-  std::unordered_set<std::wstring> privilege_set(exceptions.begin(),
-                                                 exceptions.end());
-  // Build the list of privileges to disable
-  for (const base::win::AccessToken::Privilege& privilege :
-       query_token_->Privileges()) {
-    if (privilege_set.count(privilege.GetName()) == 0) {
-      privileges_to_disable_.push_back(privilege.GetLuid());
-    }
-  }
-
-  return ERROR_SUCCESS;
-}
-
-DWORD RestrictedToken::DeletePrivilege(const wchar_t* privilege) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  LUID luid = {0};
-  if (::LookupPrivilegeValue(nullptr, privilege, &luid))
-    privileges_to_disable_.push_back(ConvertToChromeLuid(luid));
-  else
-    return ::GetLastError();
-
+  delete_all_privileges_ = true;
+  remove_traversal_privilege_ = remove_traversal_privilege;
   return ERROR_SUCCESS;
 }
 

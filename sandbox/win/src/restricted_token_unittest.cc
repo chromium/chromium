@@ -410,7 +410,8 @@ TEST(RestrictedTokenTest, DeleteAllPrivileges) {
   base::win::ScopedHandle token_handle;
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.DeleteAllPrivileges({}));
+  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
+            token.DeleteAllPrivileges(/*remove_traversal_privilege=*/true));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
   auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
@@ -423,12 +424,9 @@ TEST(RestrictedTokenTest, DeleteAllPrivilegesException) {
   RestrictedToken token;
   base::win::ScopedHandle token_handle;
 
-  std::vector<std::wstring> exceptions;
-  exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeleteAllPrivileges(exceptions));
+            token.DeleteAllPrivileges(/*remove_traversal_privilege=*/false));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -437,23 +435,6 @@ TEST(RestrictedTokenTest, DeleteAllPrivilegesException) {
   auto privileges = restricted_token->Privileges();
   ASSERT_EQ(1U, privileges.size());
   EXPECT_EQ(privileges[0].GetName(), SE_CHANGE_NOTIFY_NAME);
-}
-
-// Tests the method DeletePrivilege.
-TEST(RestrictedTokenTest, DeletePrivilege) {
-  RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeletePrivilege(SE_CHANGE_NOTIFY_NAME));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
-  ASSERT_TRUE(restricted_token);
-  for (const auto& priv : restricted_token->Privileges()) {
-    ASSERT_NE(priv.GetName(), SE_CHANGE_NOTIFY_NAME);
-  }
 }
 
 // Tests the method AddRestrictingSid.
