@@ -265,7 +265,7 @@ void SpeechRecognitionRecognizerImpl::
   }
 
   if (enable_soda_) {
-    DCHECK(soda_client_);
+    CHECK(soda_client_);
     DCHECK(base::PathExists(config_path_));
     if (!soda_client_->IsInitialized() ||
         soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
@@ -357,6 +357,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config.soda_config_size = serialized.size();
   config.callback = &OnSodaResponse;
   config.callback_handle = this;
+  CHECK(soda_client_);
   soda_client_->Reset(config, sample_rate_, channel_count_);
 }
 
