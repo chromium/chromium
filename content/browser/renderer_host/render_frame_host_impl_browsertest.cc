@@ -3004,7 +3004,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // The popup navigation should be cancelled and therefore shouldn't
   // contribute an extra history entry.
-  EXPECT_EQ(0, popup->GetController().GetEntryCount());
+  EXPECT_EQ(1, popup->GetController().GetEntryCount());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -3029,8 +3030,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   )";
   ExecuteScriptAsync(web_contents(), kScript);
 
-  // Wait for the new popup to be created (this will be before the popup commits
-  // the initial about:blank page).
+  // Wait for the new popup to be created (this will be before the popup finish
+  // the synchronous about:blank commit in the browser).
   WebContents* popup = popup_observer.GetWebContents();
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(
@@ -3038,7 +3039,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
   // A round-trip to the renderer process is an indirect way to wait for
-  // DidCommitProvisionalLoad IPC for the initial about:blank page.
+  // DidCommitProvisionalLoad IPC for the synchronous about:blank commit.
   // WaitForLoadStop cannot be used, because this commit won't raise
   // NOTIFICATION_LOAD_STOP.
   EXPECT_EQ(123, EvalJs(popup, "123"));
@@ -3047,8 +3048,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       blink::StorageKey(main_origin),
       static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
-  // The about:blank navigation shouldn't contribute an extra history entry.
-  EXPECT_EQ(0, popup->GetController().GetEntryCount());
+  // The synchronous about:blank commit should be ignored, and won't replace the
+  // initial NavigationEntry.
+  EXPECT_EQ(1, popup->GetController().GetEntryCount());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

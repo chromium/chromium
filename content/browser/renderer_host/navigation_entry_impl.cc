@@ -360,7 +360,8 @@ NavigationEntryImpl::NavigationEntryImpl()
                           std::u16string(),
                           ui::PAGE_TRANSITION_LINK,
                           false,
-                          nullptr) {}
+                          nullptr,
+                          /* is_initial_entry = */ false) {}
 
 NavigationEntryImpl::NavigationEntryImpl(
     scoped_refptr<SiteInstanceImpl> instance,
@@ -370,7 +371,8 @@ NavigationEntryImpl::NavigationEntryImpl(
     const std::u16string& title,
     ui::PageTransition transition_type,
     bool is_renderer_initiated,
-    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+    bool is_initial_entry)
     : frame_tree_(std::make_unique<TreeNode>(
           nullptr,
           base::MakeRefCounted<FrameNavigationEntry>(
@@ -408,7 +410,8 @@ NavigationEntryImpl::NavigationEntryImpl(
       reload_type_(ReloadType::NONE),
       started_from_context_menu_(false),
       ssl_error_(false),
-      should_skip_on_back_forward_ui_(false) {}
+      should_skip_on_back_forward_ui_(false),
+      is_initial_entry_(is_initial_entry) {}
 
 NavigationEntryImpl::~NavigationEntryImpl() {}
 
@@ -715,9 +718,18 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
   return can_load_local_resources_;
 }
 
+bool NavigationEntryImpl::IsInitialEntry() {
+  return is_initial_entry_;
+}
+
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
-  return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr, nullptr,
-                                 ClonePolicy::kShareFrameEntries);
+  std::unique_ptr<NavigationEntryImpl> entry =
+      CloneAndReplaceInternal(nullptr, false, nullptr, nullptr, nullptr,
+                              ClonePolicy::kShareFrameEntries);
+  // When we are not deep-copying, the NavigationEntry is going to be used for
+  // a new committed navigation, so it loses its "initial" status.
+  entry->set_is_initial_entry(false);
+  return entry;
 }
 
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneWithoutSharing(
@@ -733,9 +745,13 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneAndReplace(
     bool clone_children_of_target,
     FrameTreeNode* target_frame_tree_node,
     FrameTreeNode* root_frame_tree_node) const {
-  return CloneAndReplaceInternal(
+  std::unique_ptr<NavigationEntryImpl> entry = CloneAndReplaceInternal(
       frame_navigation_entry, clone_children_of_target, target_frame_tree_node,
       root_frame_tree_node, nullptr, ClonePolicy::kShareFrameEntries);
+  // When we are not deep-copying, the NavigationEntry is going to be used for
+  // a new committed navigation, so it loses its "initial" status.
+  entry->set_is_initial_entry(false);
+  return entry;
 }
 
 std::unique_ptr<NavigationEntryImpl>
@@ -784,6 +800,7 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->CloneDataFrom(*this);
   copy->replaced_entry_data_ = replaced_entry_data_;
   copy->should_skip_on_back_forward_ui_ = should_skip_on_back_forward_ui_;
+  copy->is_initial_entry_ = is_initial_entry_;
 
   return copy;
 }
@@ -976,6 +993,18 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     if (root_node()->frame_entry->document_sequence_number() !=
         document_sequence_number)
       root_node()->children.clear();
+
+    if (!url.is_empty()) {
+      // A navigation committed on the main frame, so the NavigationEntry loses
+      // its "initial NavigationEntry" status. Note that the initial entry
+      // creation path also goes through this function, but we know not to
+      // remove the status in that case because it uses the empty URL.
+      // TODO(https://crbug.com/1215096): Consider to remove the initial entry
+      // status after subframe navigations too, when the initial empty document
+      // replacement behavior is more consistent, and we've determined that
+      // exposing more history entries to WebView is OK.
+      is_initial_entry_ = false;
+    }
 
     root_node()->frame_entry->UpdateEntry(
         frame_tree_node->unique_name(), item_sequence_number,

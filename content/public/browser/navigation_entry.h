@@ -44,6 +44,13 @@ class NavigationEntry : public base::SupportsUserData {
 
   CONTENT_EXPORT static std::unique_ptr<NavigationEntry> Create();
 
+  // True if this entry is the initial NavigationEntry, which is created when a
+  // FrameTree is first initialized. The initial NavigationEntry, unlike other
+  // NavigationEntries, is not associated with any committed navigation in the
+  // main frame. After any navigation committed in the main frame, the
+  // NavigationEntry will be replaced, or at least lose its "initial" status.
+  virtual bool IsInitialEntry() = 0;
+
   // Page-related stuff --------------------------------------------------------
 
   // A unique ID is preserved across commits and redirects, which means that

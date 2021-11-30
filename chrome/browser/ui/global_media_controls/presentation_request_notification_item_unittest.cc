@@ -39,7 +39,7 @@ TEST_F(PresentationRequestNotificationItemTest, NotificationHeader) {
   testing::NiceMock<media_message_center::test::MockMediaNotificationView> view;
 
   const std::u16string title = u"This is the page title";
-  web_contents()->UpdateTitleForEntry(controller().GetPendingEntry(), title);
+  web_contents()->UpdateTitleForEntry(controller().GetVisibleEntry(), title);
   media_session::MediaMetadata data;
   data.source_title = u"google2.com";
   data.artist = title;

@@ -147,6 +147,11 @@ public class SaveRestoreStateTest {
     public void testSaveRestoreStateWithHistoryItemList() throws Throwable {
         setServerResponseAndLoad(mVars, NUM_NAVIGATIONS);
         TestVars restoredVars = saveAndRestoreStateOnUiThread(mVars);
+        mActivityTestRule.pollUiThread(
+                ()
+                        -> TITLES[NUM_NAVIGATIONS - 1].equals(restoredVars.awContents.getTitle())
+                        && TITLES[NUM_NAVIGATIONS - 1].equals(
+                                restoredVars.contentsClient.getUpdatedTitle()));
         checkHistoryItemList(restoredVars);
     }
 

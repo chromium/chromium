@@ -12,6 +12,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -257,8 +258,10 @@ void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
   // When navigating a newly created portal contents, establish an association
   // with its creator, so we can track the referrer chain across portal
   // activations.
-  if (web_contents()->IsPortal() &&
-      !web_contents()->GetController().GetLastCommittedEntry()) {
+  if (web_contents()->IsPortal() && web_contents()
+                                        ->GetController()
+                                        .GetLastCommittedEntry()
+                                        ->IsInitialEntry()) {
     content::RenderFrameHost* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(

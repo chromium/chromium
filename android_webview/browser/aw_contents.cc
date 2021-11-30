@@ -882,8 +882,9 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::NavigationEntry* entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (!entry || !entry->GetSSL().certificate)
+  if (entry->IsInitialEntry() || !entry->GetSSL().certificate) {
     return ScopedJavaLocalRef<jbyteArray>();
+  }
 
   // Convert the certificate and return it
   base::StringPiece der_string = net::x509_util::CryptoBufferAsStringPiece(
@@ -1031,7 +1032,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
-  if (!web_contents_->GetController().GetEntryCount())
+  if (web_contents_->GetController().GetLastCommittedEntry()->IsInitialEntry())
     return ScopedJavaLocalRef<jbyteArray>();
 
   base::Pickle pickle;

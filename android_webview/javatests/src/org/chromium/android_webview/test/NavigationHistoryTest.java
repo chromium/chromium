@@ -112,7 +112,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateOneUrl() throws Throwable {
         NavigationHistory history = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, history.getEntryCount());
+        Assert.assertEquals(1, history.getEntryCount());
 
         final String pageWithHashTagRedirectUrl = addPageWithHashTagRedirectToServer(mWebServer);
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
@@ -134,7 +134,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateBackForwardWithIntervention() throws Throwable {
         NavigationHistory history = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, history.getEntryCount());
+        Assert.assertEquals(1, history.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String pageWithSameDocumentUrl = addPageWithSameDocumentToServer(mWebServer);
@@ -161,7 +161,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateTwoUrls() throws Throwable {
         NavigationHistory list = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, list.getEntryCount());
+        Assert.assertEquals(1, list.getEntryCount());
 
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
@@ -199,7 +199,7 @@ public class NavigationHistoryTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         NavigationHistory list = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, list.getEntryCount());
+        Assert.assertEquals(1, list.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String page2Url = addPage2ToServer(mWebServer);
@@ -238,7 +238,7 @@ public class NavigationHistoryTest {
                 CommonResources.FAVICON_STATIC_HTML, null);
 
         NavigationHistory list = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, list.getEntryCount());
+        Assert.assertEquals(1, list.getEntryCount());
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setImagesEnabled(true);
         int faviconLoadCount = mContentsClient.getFaviconHelper().getCallCount();
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
@@ -256,7 +256,7 @@ public class NavigationHistoryTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         NavigationHistory list = getNavigationHistory(mAwContents);
-        Assert.assertEquals(0, list.getEntryCount());
+        Assert.assertEquals(1, list.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String page2Url = addPage2ToServer(mWebServer);

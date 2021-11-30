@@ -485,11 +485,11 @@ const Extension* ProcessManager::GetExtensionForWebContents(
     // extension urls are loaded in that SiteInstance).
     content::NavigationController& controller = web_contents->GetController();
     content::NavigationEntry* entry = controller.GetLastCommittedEntry();
-    // If there is no last committed entry, check the pending entry. This can
-    // happen in cases where we query this before any entry is fully committed,
-    // such as when attributing a WebContents for the TaskManager. If there is
-    // a committed navigation, use that instead.
-    if (!entry)
+    // If the "last committed" entry is the initial entry, check the pending
+    // entry. This can happen in cases where we query this before any entry is
+    // fully committed, such as when attributing a WebContents for the
+    // TaskManager. If there is a committed navigation, use that instead.
+    if (entry->IsInitialEntry())
       entry = controller.GetPendingEntry();
     if (!entry ||
         extension_registry_->enabled_extensions().GetExtensionOrAppByURL(

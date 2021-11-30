@@ -46,7 +46,7 @@ void WebAppDataRetriever::GetWebApplicationInfo(
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (!entry) {
+  if (entry->IsInitialEntry()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -159,7 +159,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
 
-  if (entry) {
+  if (!entry->IsInitialEntry()) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebApplicationInfo>(*web_page_metadata);
       if (info->start_url.is_empty())

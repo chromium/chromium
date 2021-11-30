@@ -1820,7 +1820,7 @@ const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride() {
 
 bool WebContentsImpl::ShouldOverrideUserAgentForRendererInitiatedNavigation() {
   NavigationEntryImpl* current_entry = GetController().GetLastCommittedEntry();
-  if (!current_entry)
+  if (current_entry->IsInitialEntry())
     return should_override_user_agent_in_new_tabs_;
 
   switch (renderer_initiated_user_agent_override_option_) {
@@ -1895,13 +1895,8 @@ const std::u16string& WebContentsImpl::GetTitle() {
   }
 
   NavigationEntry* entry = GetNavigationEntryForTitle();
-  if (entry) {
-    return entry->GetTitleForDisplay();
-  }
-
-  // |page_title_when_no_navigation_entry_| is finally used
-  // if no title cannot be retrieved.
-  return page_title_when_no_navigation_entry_;
+  CHECK(entry);
+  return entry->GetTitleForDisplay();
 }
 
 SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
@@ -2973,7 +2968,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
 
   primary_frame_tree_.Init(site_instance.get(),
                            params.renderer_initiated_creation,
-                           params.main_frame_name);
+                           params.main_frame_name, GetOriginalOpener());
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
@@ -5858,7 +5853,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
       referrer_for_view_source, initiator_for_view_source,
       title_for_view_source, ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated = */ false,
-      /* blob_url_loader_factory = */ nullptr);
+      /* blob_url_loader_factory = */ nullptr, /* is_initial_entry = */ false);
   const GURL url(content::kViewSourceScheme + std::string(":") +
                  frame_entry->url().spec());
   navigation_entry->SetVirtualURL(url);
@@ -6352,28 +6347,17 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
 
 bool WebContentsImpl::UpdateTitleForEntryImpl(NavigationEntryImpl* entry,
                                               const std::u16string& title) {
+  CHECK(entry);
   std::u16string final_title;
   base::TrimWhitespace(title, base::TRIM_ALL, &final_title);
 
-  // If a page is created via window.open and never navigated,
-  // there will be no navigation entry. In this situation,
-  // |page_title_when_no_navigation_entry_| will be used for page title.
-  // For a title update from a non-primary frame tree, |entry| will always be
-  // non-null.
-  if (entry) {
-    if (final_title == entry->GetTitle())
-      return false;  // Nothing changed, don't bother.
+  if (final_title == entry->GetTitle())
+    return false;  // Nothing changed, don't bother.
 
-    entry->SetTitle(final_title);
+  entry->SetTitle(final_title);
+  // The title for display may differ from the title just set; grab it.
+  final_title = entry->GetTitleForDisplay();
 
-    // The title for display may differ from the title just set; grab it.
-    final_title = entry->GetTitleForDisplay();
-  } else {
-    if (page_title_when_no_navigation_entry_ == final_title)
-      return false;  // Nothing changed, don't bother.
-
-    page_title_when_no_navigation_entry_ = final_title;
-  }
   return true;
 }
 
@@ -6382,8 +6366,7 @@ void WebContentsImpl::NotifyTitleUpdateForEntry(NavigationEntryImpl* entry) {
   // NavigationController.
   DCHECK(!entry || GetController().GetEntryWithUniqueIDIncludingPending(
                        entry->GetUniqueID()));
-  std::u16string final_title = entry ? entry->GetTitleForDisplay()
-                                     : page_title_when_no_navigation_entry_;
+  std::u16string final_title = entry->GetTitleForDisplay();
   bool did_web_contents_title_change = entry == GetNavigationEntryForTitle();
   if (did_web_contents_title_change)
     view_->SetPageTitle(final_title);
@@ -7441,8 +7424,12 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
 
   // We can handle title updates when we don't have an entry in
   // UpdateTitleForEntry, but only if the update is from the current RFH.
-  if (!entry && render_frame_host != GetMainFrame())
-    return;
+  if (!entry) {
+    if (render_frame_host != GetMainFrame())
+      return;
+    // Use the last committed entry to attach the title to.
+    entry = GetController().GetLastCommittedEntry();
+  }
 
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094

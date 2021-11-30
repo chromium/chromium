@@ -432,7 +432,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
 
   NavigationEntryImpl* e1 = new NavigationEntryImpl(
       instance, url, Referrer(), absl::nullopt, std::u16string(),
-      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */);
+      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
+      false /* is_initial_entry */);
 
   // Redundantly setting e1's SiteInstance shouldn't affect the ref count.
   e1->set_site_instance(instance);
@@ -442,7 +443,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   // Add a second reference
   NavigationEntryImpl* e2 = new NavigationEntryImpl(
       instance, url, Referrer(), absl::nullopt, std::u16string(),
-      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */);
+      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
+      false /* is_initial_entry */);
 
   instance = nullptr;
   EXPECT_EQ(0, browser_client()->GetAndClearSiteInstanceDeleteCount());

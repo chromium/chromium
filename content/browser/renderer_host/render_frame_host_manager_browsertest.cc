@@ -1457,8 +1457,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ClickLinkAfter204Error) {
       shell()->web_contents()->GetSiteInstance());
   EXPECT_EQ(orig_site_instance, post_nav_site_instance);
   EXPECT_EQ("/nocontent", shell()->web_contents()->GetVisibleURL().path());
-  EXPECT_FALSE(
-      shell()->web_contents()->GetController().GetLastCommittedEntry());
+  EXPECT_TRUE(shell()
+                  ->web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 
   // Renderer-initiated navigations should work.
   std::u16string expected_title = u"Title Of Awesomeness";
@@ -1511,15 +1514,18 @@ class RenderFrameHostManagerSpoofingTest : public RenderFrameHostManagerTest {
   }
 };
 
-// Helper to wait until a WebContent's NavigationController has a visible entry.
+// Helper to wait until a WebContent's NavigationController has a visible entry
+// that is not the initial NavigationEntry.
 class VisibleEntryWaiter : public WebContentsObserver {
  public:
   explicit VisibleEntryWaiter(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void Wait() {
-    if (web_contents()->GetController().GetVisibleEntry())
-      return;
+    if (auto* entry = web_contents()->GetController().GetVisibleEntry()) {
+      if (!entry->IsInitialEntry())
+        return;
+    }
     run_loop_.Run();
   }
 
@@ -1632,9 +1638,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // At this point, we should no longer be showing the destination URL.
-  // The visible entry should be null, resulting in about:blank in the address
-  // bar.
-  EXPECT_FALSE(contents->GetController().GetVisibleEntry());
+  // The visible entry should be the initial entry, resulting in about:blank in
+  // the address bar.
+  EXPECT_TRUE(contents->GetController().GetVisibleEntry()->IsInitialEntry());
 }
 
 // Same as ShowLoadingURLUntilSpoof, but reloads the new popup before modifying
@@ -1690,9 +1696,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // At this point, we should no longer be showing the destination URL.
-  // The visible entry should be null, resulting in about:blank in the address
-  // bar.
-  EXPECT_FALSE(contents->GetController().GetVisibleEntry());
+  // The visible entry should be the initial entry, resulting in about:blank in
+  // the address bar.
+  EXPECT_TRUE(contents->GetController().GetVisibleEntry()->IsInitialEntry());
 }
 
 // Similar but using document.open(): once a Document is opened, subsequent
@@ -1741,9 +1747,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // At this point, we should no longer be showing the destination URL.
-  // The visible entry should be null, resulting in about:blank in the address
-  // bar.
-  EXPECT_FALSE(contents->GetController().GetVisibleEntry());
+  // The visible entry should be the initial entry, resulting in about:blank in
+  // the address bar.
+  EXPECT_TRUE(contents->GetController().GetVisibleEntry()->IsInitialEntry());
 }
 
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
@@ -2177,7 +2183,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // navigation.
   WebContents* contents = new_shell->web_contents();
   EXPECT_FALSE(contents->GetController().IsInitialNavigation());
-  EXPECT_FALSE(contents->GetController().GetVisibleEntry());
+  // The visible entry should be the initial entry, resulting in about:blank in
+  // the address bar.
+  EXPECT_TRUE(contents->GetController().GetVisibleEntry()->IsInitialEntry());
 }
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
@@ -2191,7 +2199,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // renderer.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, MAYBE_BackForwardNotStale) {
   StartEmbeddedServer();
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 
   // Visit a page on first site.
   EXPECT_TRUE(
@@ -2314,7 +2323,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
   SiteInstance* blank_site_instance =
       shell()->web_contents()->GetMainFrame()->GetSiteInstance();
-  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL::EmptyGURL());
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL());
   EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL::EmptyGURL());
   rvh_observers.EnsureRVHGetsDestructed(blank_rvh);
 

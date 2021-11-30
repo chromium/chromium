@@ -975,7 +975,7 @@ content::WebContents* VrShell::GetActiveWebContents() const {
 
 bool VrShell::ShouldDisplayURL() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry) {
+  if (!entry || entry->IsInitialEntry()) {
     return ChromeLocationBarModelDelegate::ShouldDisplayURL();
   }
   GURL url = entry->GetVirtualURL();

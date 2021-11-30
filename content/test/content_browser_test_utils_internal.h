@@ -98,7 +98,7 @@ std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents);
 
 // Open a new popup passing no URL to window.open, which results in a blank page
-// and no last committed entry. Returns the newly created shell. Also saves the
+// and only the initial entry. Returns the newly created shell. Also saves the
 // reference to the opened window in the "last_opened_window" variable in JS.
 Shell* OpenBlankWindow(WebContentsImpl* web_contents);
 

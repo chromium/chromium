@@ -1979,11 +1979,14 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                   .requires_origin_keyed_process());
 }
 
-// This test creates a scenario where we have a frame without a
-// FrameNavigationEntry, and then we created another frame with the same origin
+// This test creates a scenario where we have a frame that is on the initial
+// NavigationEntry, and then we created another frame with the same origin
 // that opts-in to isolation. The opt-in triggers a walk of the session history
 // and the frame tree ... the session history won't pick up the first frame, but
 // the frame-tree walk should.
+// TODO(https://crbug.com/608402): Once every created frame is guaranteed to
+// have a FrameNavigationEntry and thus represented in the sesion history, we
+// probably can remove the frame-tree walk.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("bar.com", "/title1.html")));
@@ -2006,7 +2009,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   FrameTreeNode* tab2_child = tab2_root->child_at(0);
   GURL isolated_origin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
-  // The subframe won't be isolated.
+  // Navigate the iframe in tab2 to `isolated_origin_url` without requesting
+  // isolation, so it won't be isolated.
   EXPECT_TRUE(NavigateFrameToURL(tab2_child, isolated_origin_url));
 
   // Do a browser-initiated navigation of tab1 to the same origin, but isolate
@@ -2048,12 +2052,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
                           ->GetIsolationContext(),
                       isolated_origin, MakeOACIsolationState(false))
                   .requires_origin_keyed_process());
-  // Verify that the tab2 child frame has no FrameNavigationEntry.
-  // TODO(wjmaclean): when https://crbug.com/524208 is fixed, this next check
-  // will fail, and it should be removed with the CL that fixes 524208.
-  EXPECT_EQ(
-      nullptr,
-      tab2_shell->web_contents()->GetController().GetLastCommittedEntry());
+  // Verify that the tab2 child frame is on the initial NavigationEntry.
+  EXPECT_TRUE(tab2_shell->web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 
   // Now, create a second frame in tab2 and navigate it to
   // `isolated_origin_url`. Even though isolation is requested, it should not

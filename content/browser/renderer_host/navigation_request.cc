@@ -860,7 +860,7 @@ int EstimateHistoryOffset(NavigationController& controller,
   int pending_index = controller.GetPendingEntryIndex();
 
   // +1 for non history navigation.
-  if (current_index == -1 || pending_index == -1)
+  if (pending_index == -1)
     return 1;
 
   return pending_index - current_index;
@@ -2076,10 +2076,13 @@ void NavigationRequest::StartNavigation() {
         common_params_->url, *common_params_->referrer);
   }
 
-  if (ShouldReplaceCurrentEntryForSameUrlNavigation())
-    common_params_->should_replace_current_entry = true;
-
-  if (ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
+  // If the navigation explicitly requested for history list clearing (e.g. when
+  // running layout tests), don't do a replacement (since there won't be any
+  // entry to replace after the navigation).
+  if (commit_params_->should_clear_history_list) {
+    common_params_->should_replace_current_entry = false;
+  } else if (ShouldReplaceCurrentEntryForSameUrlNavigation() ||
+             ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
     common_params_->should_replace_current_entry = true;
   }
 
@@ -6956,6 +6959,8 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
 // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
 bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
+  DCHECK_GE(frame_tree_node_->navigator().controller().GetEntryCount(), 1);
+
   // Not a same-url navigation. Note that this is comparing against the "last
   // loading URL" since this is what was used in the renderer check that was
   // moved here. This means for error pages we should compare against the URL
@@ -6978,9 +6983,6 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
     return false;
   }
 
-  // Never replace if there is no NavigationEntry to replace.
-  if (!frame_tree_node_->navigator().controller().GetEntryCount())
-    return false;
   // Reloads and history navigations have special handling and don't need to
   // set |common_params_->should_replace_current_entry|.
   if (common_params_->navigation_type !=
@@ -7011,22 +7013,6 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
 bool NavigationRequest::
     ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument() const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
-
-  // Never replace if there is no NavigationEntry to replace.
-  if (!frame_tree_node_->navigator().controller().GetEntryCount())
-    return false;
-
-  if (IsInMainFrame()) {
-    // Currently we only handle subframe initial empty document replacements.
-    // TODO(https://crbug.com/1215096): Handle main frame navigations too.
-    return false;
-  }
-
-  if (!frame_tree_node_->is_on_initial_empty_document()) {
-    // Return if we're not on the initial empty document.
-    return false;
-  }
-
   if (common_params_->navigation_type !=
           blink::mojom::NavigationType::SAME_DOCUMENT &&
       common_params_->navigation_type !=
@@ -7036,21 +7022,29 @@ bool NavigationRequest::
     return false;
   }
 
-  // If the navigation explicitly requested for history list clearing (e.g. when
-  // running layout tests), don't do a replacement (since there won't be any
-  // entry to replace after the navigation).
-  return !commit_params_->should_clear_history_list;
+  if (!frame_tree_node_->is_on_initial_empty_document()) {
+    // Return if we're not on the initial empty document.
+    return false;
+  }
+
+  if (IsInMainFrame()) {
+    // We don't currently do initial empty document replacement on main frames,
+    // but we always replace the initial NavigationEntry on the next navigation
+    // on the main frame.
+    return frame_tree_node_->navigator()
+        .controller()
+        .GetLastCommittedEntry()
+        ->IsInitialEntry();
+  }
+  return true;
 }
 
 bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
   DCHECK(state_ == CANCELING || state_ == WILL_FAIL_REQUEST);
+  DCHECK_GE(frame_tree_node_->navigator().controller().GetEntryCount(), 1);
 
   if (common_params_->should_replace_current_entry)
     return true;
-
-  // Never replace if there is no NavigationEntry to replace.
-  if (!frame_tree_node_->navigator().controller().GetEntryCount())
-    return false;
 
   auto page_state =
       blink::PageState::CreateFromEncodedData(commit_params_->page_state);

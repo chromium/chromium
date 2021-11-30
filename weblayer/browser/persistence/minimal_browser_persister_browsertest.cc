@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
 
   TabImpl* restored_tab = tab_;
   EXPECT_EQ(restored_tab, browser_->GetActiveTab());
-  EXPECT_EQ(0, restored_tab->web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(1, restored_tab->web_contents()->GetController().GetEntryCount());
   EXPECT_TRUE(restored_tab->web_contents()->GetController().GetPendingEntry() ==
               nullptr);
 }

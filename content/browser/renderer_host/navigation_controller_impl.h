@@ -154,6 +154,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool IsEntryMarkedToBeSkipped(int index) override;
   BackForwardCacheImpl& GetBackForwardCache() override;
 
+  // Creates the initial NavigationEntry for the NavigationController when its
+  // FrameTree is being initialized. See NavigationEntry::IsInitialEntry() on
+  // what this means.
+  void CreateInitialEntry();
+
   // Starts a navigation in a newly created subframe as part of a history
   // navigation. Returns true if the history navigation could start, false
   // otherwise.  If this returns false, the caller should do a regular
@@ -677,7 +682,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   std::unique_ptr<PolicyContainerPolicies>
   ComputePolicyContainerPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
                                               bool is_same_document,
-                                              NavigationRequest* request);
+                                              const GURL& url);
 
   // Adds details from a committed navigation to `entry` and the
   // FrameNavigationEntry corresponding to `rfh`.

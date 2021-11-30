@@ -6725,16 +6725,6 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   RenderFrameHostImpl* new_main_rfh =
       new_frame_tree->root()->current_frame_host();
-
-  // When the popup is created, it hasn't committed any navigation yet - its
-  // initial empty document should inherit the origin of its opener (the origin
-  // may change after the first commit). See also https://crbug.com/932067.
-  //
-  // Note that that origin of the new frame might depend on sandbox flags.
-  // Checking sandbox flags of the new frame should be safe at this point,
-  // because the flags should be already inherited by the CreateNewWindow call
-  // above.
-  new_main_rfh->SetOriginDependentStateOfNewFrame(GetLastCommittedOrigin());
   new_main_rfh->cross_origin_embedder_policy_ = popup_coep;
 
   new_main_rfh->virtual_browsing_context_group_ =
@@ -11483,7 +11473,16 @@ bool CalculateShouldReplaceCurrentEntry(
   // For other navigations, the CommonNavigationParams' value supplied by the
   // browser to the renderer at commit time can be used, as the renderer will
   // always follow it.
-  return request->IsSameDocument()
+  // Note: We will always replace the initial NavigationEntry (CommonParams'
+  // should_replace_current_entry will be true) but the renderer doesn't know
+  // about it so DidCommitParams' should_replace_current_entry might differ,
+  // which is why we depend on the DidCommitParams for that case (for now).
+  return (request->IsSameDocument() ||
+          (request->IsInMainFrame() && request->frame_tree_node()
+                                           ->navigator()
+                                           .controller()
+                                           .GetLastCommittedEntry()
+                                           ->IsInitialEntry()))
              ? params.should_replace_current_entry
              : request->common_params().should_replace_current_entry;
 }

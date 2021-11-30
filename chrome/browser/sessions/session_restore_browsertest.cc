@@ -2711,6 +2711,43 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
       subframe_instance_c->IsRelatedSiteInstance(subframe->GetSiteInstance()));
 }
 
+// Tests that an initial NavigationEntry does not get restored.
+IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, RestoreInitialEntry) {
+  GURL main_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  url::Origin main_origin = url::Origin::Create(main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  content::WebContents* old_popup = nullptr;
+  {
+    // Open a new window that stays on the initial NavigationEntry.
+    content::WebContents* tab1 = GetTab(browser(), 0);
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(tab1, "window.open('/nocontent')"));
+    old_popup = popup_observer.GetWebContents();
+    EXPECT_EQ(GURL::EmptyGURL(),
+              old_popup->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(main_origin, old_popup->GetMainFrame()->GetLastCommittedOrigin());
+    EXPECT_TRUE(
+        old_popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  }
+
+  // Kill the original browser then open a new one to trigger a restore.
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+  ASSERT_EQ(1u, active_browser_list_->size());
+  // We only restore 1 tab, the main tab.
+  ASSERT_EQ(1, new_browser->tab_strip_model()->count());
+  content::WebContents* new_browser_tab = GetTab(new_browser, 0);
+  old_popup = nullptr;
+
+  // Verify that the restored tab is the main tab instead of the initial
+  // NavigationEntry tab.
+  EXPECT_EQ(main_url, new_browser_tab->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_origin,
+            new_browser_tab->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_FALSE(new_browser_tab->GetController()
+                   .GetLastCommittedEntry()
+                   ->IsInitialEntry());
+}
+
 // Check that TabManager.TimeSinceTabClosedUntilRestored histogram is not
 // recorded on session restore.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,

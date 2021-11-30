@@ -454,8 +454,10 @@ class BlockedSchemeNavigationBrowserTest
     EXPECT_TRUE(
         new_shell->web_contents()->GetLastCommittedURL().spec().empty());
     // No navigation should commit.
-    EXPECT_FALSE(
-        new_shell->web_contents()->GetController().GetLastCommittedEntry());
+    EXPECT_TRUE(new_shell->web_contents()
+                    ->GetController()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
     // Original page shouldn't navigate away.
     EXPECT_EQ(original_url, shell()->web_contents()->GetLastCommittedURL());
   }

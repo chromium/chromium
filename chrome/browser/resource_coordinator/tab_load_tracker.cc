@@ -230,11 +230,12 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
     loading_state = LOADING;
   } else {
     // Determine if the WebContents is already loaded. A loaded WebContents has
-    // a committed navigation entry, is not in an initial navigation, and
-    // doesn't require a reload. This can occur during prerendering, when an
-    // already rendered WebContents is swapped in at the moment of a navigation.
+    // a committed navigation entry that is not the initial entry, is not in an
+    // initial navigation, and doesn't require a reload. This can occur during
+    // prerendering, when an already rendered WebContents is swapped in at the
+    // moment of a navigation.
     content::NavigationController& controller = web_contents->GetController();
-    if (controller.GetLastCommittedEntry() != nullptr &&
+    if (!controller.GetLastCommittedEntry()->IsInitialEntry() &&
         !controller.IsInitialNavigation() && !controller.NeedsReload()) {
       loading_state = LOADED;
     }

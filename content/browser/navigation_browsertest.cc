@@ -5232,27 +5232,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameOriginOfSandboxedIframe) {
 }
 
 // The test below verifies that an initial empty document has a functional
-// URLLoaderFactory.  Note that the same behavior is expected in the
-// ...NewPopupToEmptyUrl and in the ...NewPopupToAboutBlank testcases - the
-// differences in test expectations (around `GetController().GetEntryCount()`)
-// are unexpected and would need to be fixed as part of https://crbug.com/524208
-// (or maybe more broadly https://crbug.com/778318 and/or
-// https://github.com/whatwg/html/issues/3267).
+// URLLoaderFactory.
 IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
                        URLLoaderFactoryInInitialEmptyDoc_NewPopupToEmptyUrl) {
   GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
-  content::WebContents* popup = nullptr;
+  WebContentsImpl* popup = nullptr;
   {
     WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(ExecJs(shell(), "window.open('', '_blank')"));
-    popup = popup_observer.GetWebContents();
+    popup = static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
   }
   WaitForLoadStop(popup);
 
   // Verify that we are at the initial empty document.
-  EXPECT_EQ(0, popup->GetController().GetEntryCount());
+  EXPECT_EQ(1, popup->GetController().GetEntryCount());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_TRUE(
+      popup->GetPrimaryFrameTree().root()->is_on_initial_empty_document());
 
   // Verify that the `popup` is at "about:blank", with expected origin, with
   // working `document.cookie`, and with working subresource loads.
@@ -5267,16 +5265,20 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
-  content::WebContents* popup = nullptr;
+  WebContentsImpl* popup = nullptr;
   {
     WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(ExecJs(shell(), "window.open('about:blank', '_blank')"));
-    popup = popup_observer.GetWebContents();
+    popup = static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
   }
   WaitForLoadStop(popup);
 
-  // Verify that we are not at the initial empty document anymore.
+  // Verify that we are at the synchronously committed about:blank document.
   EXPECT_EQ(1, popup->GetController().GetEntryCount());
+  EXPECT_FALSE(
+      popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_TRUE(
+      popup->GetPrimaryFrameTree().root()->is_on_initial_empty_document());
 
   // Verify other about:blank things.
   VerifyResultsOfAboutBlankNavigation(popup->GetMainFrame(),
@@ -5504,7 +5506,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Double-check that the new shell didn't commit any navigation and that it
   // has an opaque origin.
-  ASSERT_EQ(0, new_shell->web_contents()->GetController().GetEntryCount());
+  ASSERT_EQ(1, new_shell->web_contents()->GetController().GetEntryCount());
+  EXPECT_TRUE(new_shell->web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
   EXPECT_EQ(GURL(), main_frame->GetLastCommittedURL());
   EXPECT_EQ("null", EvalJs(main_frame, "window.origin"));
 

@@ -320,9 +320,9 @@ import org.chromium.url.Origin;
     @CalledByNative
     private static NavigationEntry createNavigationEntry(int index, GURL url, GURL virtualUrl,
             GURL originalUrl, GURL referrerUrl, String title, Bitmap favicon, int transition,
-            long timestamp) {
+            long timestamp, boolean isInitialEntry) {
         return new NavigationEntry(index, url, virtualUrl, originalUrl, referrerUrl, title, favicon,
-                transition, timestamp);
+                transition, timestamp, isInitialEntry);
     }
 
     @NativeMethods

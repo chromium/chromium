@@ -130,7 +130,7 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         redirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
                 navigationParams.isRedirect,
                 navigationParams.hasUserGesture || navigationParams.hasUserGestureCarryover,
-                lastUserInteractionTime, getLastCommittedEntryIndex());
+                lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
 
         boolean shouldCloseTab = shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent();
         ExternalNavigationParams params =
@@ -230,18 +230,21 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         return mClient.getWebContents().getNavigationController().getLastCommittedEntryIndex();
     }
 
+    private boolean isInitialNavigation() {
+        if (mClient.getWebContents() == null) return true;
+        return mClient.getWebContents().getNavigationController().isInitialNavigation();
+    }
+
     private boolean shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent() {
         if (mClient.getWebContents() == null) return false;
-        if (!mClient.getWebContents().getNavigationController().canGoToOffset(0)) return true;
+        // If no navigation has committed, close the tab.
+        if (mClient.getWebContents().getLastCommittedUrl().isEmpty()) return true;
 
-        // http://crbug/415948 : if the last committed entry index which was saved before this
-        // navigation is invalid, it means that this navigation is the first one since this tab was
-        // created.
+        // http://crbug/415948: If the user has not started a non-initial
+        // navigation, this might be a JS redirect.
         // In such case, we would like to close this tab.
         if (mClient.getOrCreateRedirectHandler().isOnNavigation()) {
-            return mClient.getOrCreateRedirectHandler()
-                           .getLastCommittedEntryIndexBeforeStartingNavigation()
-                    == RedirectHandler.INVALID_ENTRY_INDEX;
+            return !mClient.getOrCreateRedirectHandler().hasUserStartedNonInitialNavigation();
         }
         return false;
     }

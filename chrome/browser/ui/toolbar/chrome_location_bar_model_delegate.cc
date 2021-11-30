@@ -74,7 +74,7 @@ ChromeLocationBarModelDelegate::FormattedStringWithEquivalentMeaning(
 bool ChromeLocationBarModelDelegate::GetURL(GURL* url) const {
   DCHECK(url);
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return false;
 
   *url = entry->GetVirtualURL();
@@ -98,7 +98,7 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   //   of view-source:chrome://newtab, which should display its URL despite what
   //   chrome://newtab says.
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return true;
 
   security_interstitials::SecurityInterstitialTabHelper*
@@ -181,7 +181,7 @@ ChromeLocationBarModelDelegate::GetVisibleSecurityState() const {
 scoped_refptr<net::X509Certificate>
 ChromeLocationBarModelDelegate::GetCertificate() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return scoped_refptr<net::X509Certificate>();
   return entry->GetSSL().certificate;
 }
@@ -215,7 +215,7 @@ bool ChromeLocationBarModelDelegate::IsOfflinePage() const {
 
 bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
   content::NavigationEntry* const entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return false;
 
   Profile* const profile = GetProfile();

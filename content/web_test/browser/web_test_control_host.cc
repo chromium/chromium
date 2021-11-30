@@ -129,8 +129,7 @@ std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
   std::string url = web_test_string_util::NormalizeWebTestURL(
       base::UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())));
   result.append(url);
-  DCHECK(frame_state.target);
-  if (!frame_state.target->empty()) {
+  if (frame_state.target && !frame_state.target->empty()) {
     std::string unique_name = base::UTF16ToUTF8(*frame_state.target);
     result.append(" (in frame \"");
     result.append(

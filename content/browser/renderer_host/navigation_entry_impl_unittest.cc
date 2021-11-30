@@ -53,7 +53,7 @@ class NavigationEntryTest : public testing::Test {
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
         kInitiatorOrigin, u"title", ui::PAGE_TRANSITION_TYPED, false,
-        nullptr /* blob_url_loader_factory */);
+        nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   }
 
   void TearDown() override {}

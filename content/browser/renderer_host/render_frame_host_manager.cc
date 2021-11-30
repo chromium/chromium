@@ -1901,7 +1901,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // https://crbug.com/766630.
   NavigationEntry* current_entry =
       GetNavigationController().GetLastCommittedEntry();
-  bool current_is_view_source_mode = current_entry
+  bool current_is_view_source_mode = !current_entry->IsInitialEntry()
                                          ? current_entry->IsViewSourceMode()
                                          : dest_is_view_source_mode;
 

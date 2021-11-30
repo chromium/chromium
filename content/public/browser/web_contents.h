@@ -350,7 +350,9 @@ class WebContents : public PageNavigator,
   // "view-source:" prefix for view source URLs, unlike NavigationEntry::GetURL
   // and NavigationHandle::GetURL). The last committed page is the current
   // security context and the content that is actually displayed within the tab.
-  // See also GetVisibleURL above, which may differ from this URL.
+  // See also GetVisibleURL above, which may differ from this URL. Note that
+  // this might return an empty GURL if no navigation has committed in the
+  // WebContents' main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
 
   // Returns the main frame for the currently active view. Always non-null

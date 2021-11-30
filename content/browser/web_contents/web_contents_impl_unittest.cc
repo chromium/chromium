@@ -1504,14 +1504,14 @@ TEST_F(WebContentsImplTest, CrossSiteNotPreemptedDuringBeforeUnload) {
 // Test that NavigationEntries have the correct page state after going
 // forward and back.  Prevents regression for bug 1116137.
 TEST_F(WebContentsImplTest, NavigationEntryContentState) {
-
-  // Navigate to URL.  There should be no committed entry yet.
+  // Navigate to URL.  Before the navigation finishes, there should be only the
+  // initial NavigationEntry.
   const GURL url("http://www.google.com");
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(url, contents());
   navigation->ReadyToCommit();
   NavigationEntry* entry = controller().GetLastCommittedEntry();
-  EXPECT_EQ(nullptr, entry);
+  EXPECT_TRUE(entry->IsInitialEntry());
 
   // Committed entry should have page state.
   navigation->Commit();

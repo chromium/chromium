@@ -70,7 +70,8 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_referrer_url, j_title,
-      j_bitmap, entry->GetTransitionType(), j_timestamp);
+      j_bitmap, entry->GetTransitionType(), j_timestamp,
+      entry->IsInitialEntry());
 }
 
 static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(

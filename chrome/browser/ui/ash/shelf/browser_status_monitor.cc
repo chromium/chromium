@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -402,11 +403,12 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
                                          content::WebContents* contents) {
   if (!web_app::IsWebAppsCrosapiEnabled()) {
     UpdateAppItemState(contents, false /*remove*/);
-    // If the contents does not have a visible navigation entry, wait until a
-    // navigation status changes before setting the browser window Shelf ID
-    // (done by the web contents observer added by AddWebContentsObserver()).
+    // If the contents does not have a visible navigation entry that is not the
+    // initial entry, wait until a navigation status changes before setting the
+    // browser window Shelf ID (done by the web contents observer added by
+    // AddWebContentsObserver()).
     if (tab_strip_model->GetActiveWebContents() == contents &&
-        contents->GetController().GetVisibleEntry()) {
+        !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
       Browser* browser = chrome::FindBrowserWithWebContents(contents);
       SetShelfIDForBrowserWindowContents(browser, contents);
     }

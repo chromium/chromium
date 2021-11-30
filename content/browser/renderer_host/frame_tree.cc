@@ -755,7 +755,6 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
   // BrowsingInstance of a bfcache RFH while it's in the cache.
   for (auto* frame_tree_node : SubtreeNodes(root())) {
     auto* frame_host = frame_tree_node->current_frame_host();
-
     if (previously_visited_origin == frame_host->GetLastCommittedOrigin())
       matching_site_instances.insert(frame_host->GetSiteInstance());
 
@@ -789,7 +788,8 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
 
 void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
-                     const std::string& main_frame_name) {
+                     const std::string& main_frame_name,
+                     RenderFrameHostImpl* opener) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
@@ -797,6 +797,21 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
   root_->render_manager()->InitRoot(main_frame_site_instance,
                                     renderer_initiated_creation);
   root_->SetFencedFrameNonceIfNeeded();
+
+  // The initial empty document should inherit the origin of its opener (the
+  // origin may change after the first commit), except when they are in
+  // different browsing context groups (`renderer_initiated_creation` is false),
+  // where it should use a new opaque origin.
+  // See also https://crbug.com/932067.
+  //
+  // Note that the origin of the new frame might depend on sandbox flags.
+  // Checking sandbox flags of the new frame should be safe at this point,
+  // because the flags should be already inherited when creating the root node.
+  DCHECK(!renderer_initiated_creation || opener);
+  root_->current_frame_host()->SetOriginDependentStateOfNewFrame(
+      renderer_initiated_creation ? opener->GetLastCommittedOrigin()
+                                  : url::Origin());
+  controller().CreateInitialEntry();
 }
 
 void FrameTree::DidAccessInitialMainDocument() {

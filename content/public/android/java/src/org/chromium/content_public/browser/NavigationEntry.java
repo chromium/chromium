@@ -24,13 +24,14 @@ public class NavigationEntry {
     private Bitmap mFavicon;
     private int mTransition;
     private long mTimestamp;
+    private final boolean mIsInitialEntry;
 
     /**
      * Default constructor.
      */
     public NavigationEntry(int index, @NonNull GURL url, @NonNull GURL virtualUrl,
             @NonNull GURL originalUrl, @NonNull GURL referrerUrl, String title, Bitmap favicon,
-            int transition, long timestamp) {
+            int transition, long timestamp, boolean isInitialEntry) {
         mIndex = index;
         mUrl = url;
         mVirtualUrl = virtualUrl;
@@ -40,6 +41,7 @@ public class NavigationEntry {
         mFavicon = favicon;
         mTransition = transition;
         mTimestamp = timestamp;
+        mIsInitialEntry = isInitialEntry;
     }
 
     /**
@@ -120,5 +122,12 @@ public class NavigationEntry {
      */
     public long getTimestamp() {
         return mTimestamp;
+    }
+
+    /**
+     * @return Whether the entry is the initial entry or not.
+     */
+    public boolean isInitialEntry() {
+        return mIsInitialEntry;
     }
 }

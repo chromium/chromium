@@ -125,7 +125,7 @@ void NavigationControllerImpl::SetEventListener(
       [this](zx_status_t status) { SetEventListener(nullptr, {}); });
 
   // Immediately send the current navigation state, even if it is empty.
-  if (web_contents_->GetController().GetVisibleEntry() == nullptr) {
+  if (web_contents_->GetController().GetVisibleEntry()->IsInitialEntry()) {
     waiting_for_navigation_event_ack_ = true;
     navigation_listener_->OnNavigationStateChanged(
         fuchsia::web::NavigationState(), [this]() {
@@ -141,7 +141,7 @@ fuchsia::web::NavigationState
 NavigationControllerImpl::GetVisibleNavigationState() const {
   content::NavigationEntry* const entry =
       web_contents_->GetController().GetVisibleEntry();
-  if (!entry)
+  if (entry->IsInitialEntry())
     return fuchsia::web::NavigationState();
 
   fuchsia::web::NavigationState state;

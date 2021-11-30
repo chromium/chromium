@@ -3258,8 +3258,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
         &success));
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
-    // Delaying popup holds the initial load.
-    EXPECT_FALSE(WaitForLoadStop(new_contents));
+    // Delaying popup holds the initial load of |url|.
+    EXPECT_TRUE(WaitForLoadStop(new_contents));
+    EXPECT_TRUE(new_contents->GetController()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
+    EXPECT_NE(url, new_contents->GetLastCommittedURL());
   }
 
   EXPECT_FALSE(new_contents->GetDelegate());
