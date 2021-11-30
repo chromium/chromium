@@ -56,7 +56,7 @@ public class ScrollCaptureCallbackDelegate {
         EntryManager create(Tab tab) {
             return new EntryManager(tab.getContext(), tab,
                     ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.SCROLL_CAPTURE, IN_MEMORY_CAPTURE, false));
+                            ChromeFeatureList.SCROLL_CAPTURE, IN_MEMORY_CAPTURE, true));
         }
     }
 

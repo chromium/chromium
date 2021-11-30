@@ -906,7 +906,7 @@ const base::Feature kSchedulerConfiguration{"SchedulerConfiguration",
 
 #if defined(OS_ANDROID)
 const base::Feature kScrollCapture{"ScrollCapture",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Controls whether SCT audit reports are queued and the rate at which they
