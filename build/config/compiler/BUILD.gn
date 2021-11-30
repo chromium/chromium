@@ -1711,7 +1711,7 @@ config("no_chromium_code") {
     "-A",
     "bare_trait_objects",
     "-A",
-    "non_fmt_panic",
+    "non_fmt_panics",
     "-A",
     "redundant_semicolons",
     "-A",
