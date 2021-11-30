@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/run_loop.h"
 #include "storage/browser/file_system/file_observers.h"

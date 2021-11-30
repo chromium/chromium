@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 
-
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"

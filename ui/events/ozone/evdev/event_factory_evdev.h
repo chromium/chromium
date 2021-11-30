@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_EVENT_FACTORY_EVDEV_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"

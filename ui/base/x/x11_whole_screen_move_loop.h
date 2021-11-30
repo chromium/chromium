@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/x/x11_move_loop.h"

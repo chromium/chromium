@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"

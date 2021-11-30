@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/shared_impl/media_stream_buffer_manager.h"
 

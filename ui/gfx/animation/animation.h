@@ -5,7 +5,6 @@
 #ifndef UI_GFX_ANIMATION_ANIMATION_H_
 #define UI_GFX_ANIMATION_ANIMATION_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"

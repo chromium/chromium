@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"

@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/browser_accessibility.h"

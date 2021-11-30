@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

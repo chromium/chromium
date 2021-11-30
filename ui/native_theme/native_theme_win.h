@@ -12,7 +12,6 @@
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/shellcc/platform/commctls/userex/topics/partsandstates.asp
 #include <windows.h>
 
-#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

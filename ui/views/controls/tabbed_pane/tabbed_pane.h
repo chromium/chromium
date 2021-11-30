@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"

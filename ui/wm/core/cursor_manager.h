@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/display/display.h"

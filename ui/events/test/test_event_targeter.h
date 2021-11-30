@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_TEST_EVENT_TARGETER_H_
 #define UI_EVENTS_TEST_TEST_EVENT_TARGETER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_targeter.h"
 

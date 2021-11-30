@@ -5,7 +5,6 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_DEVTOOLS_MANAGER_DELEGATE_H_
 #define CONTENT_SHELL_BROWSER_SHELL_DEVTOOLS_MANAGER_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"

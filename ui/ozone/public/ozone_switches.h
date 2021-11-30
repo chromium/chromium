@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PUBLIC_OZONE_SWITCHES_H_
 #define UI_OZONE_PUBLIC_OZONE_SWITCHES_H_
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 
 // TODO(rjkroege): Specify this at the time of ::InitializeUI to avoid the habit

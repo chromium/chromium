@@ -5,7 +5,6 @@
 #ifndef UI_WM_PUBLIC_ANIMATION_HOST_H_
 #define UI_WM_PUBLIC_ANIMATION_HOST_H_
 
-#include "base/compiler_specific.h"
 #include "ui/wm/public/wm_public_export.h"
 
 namespace aura {

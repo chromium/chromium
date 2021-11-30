@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 #define UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event.h"

@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
 #include "base/synchronization/lock.h"

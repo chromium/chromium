@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "third_party/skia/include/core/SkColor.h"

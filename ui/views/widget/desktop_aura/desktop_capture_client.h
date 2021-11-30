@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client.h"

@@ -10,7 +10,6 @@
 #include <deque>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ime_text_span.h"

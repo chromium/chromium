@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/common/content_export.h"

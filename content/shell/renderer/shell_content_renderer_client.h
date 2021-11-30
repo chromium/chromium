@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/mojo/buildflags.h"

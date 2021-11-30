@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/id_map.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

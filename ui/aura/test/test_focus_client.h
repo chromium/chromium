@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_TEST_FOCUS_CLIENT_H_
 #define UI_AURA_TEST_TEST_FOCUS_CLIENT_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

@@ -5,7 +5,6 @@
 #ifndef UI_PLATFORM_WINDOW_WIN_WIN_WINDOW_H_
 #define UI_PLATFORM_WINDOW_WIN_WIN_WINDOW_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

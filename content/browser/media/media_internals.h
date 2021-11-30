@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"

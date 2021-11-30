@@ -10,7 +10,6 @@
 
 #include <UIAutomationCore.h>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 
 namespace base {

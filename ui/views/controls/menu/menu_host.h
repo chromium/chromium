@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"

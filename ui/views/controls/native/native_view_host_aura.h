@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_owner.h"

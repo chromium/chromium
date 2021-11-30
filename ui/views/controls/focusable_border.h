@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 #define UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/views/border.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_AURALINUX_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_AURALINUX_H_
 
-#include "base/compiler_specific.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/font_list.h"

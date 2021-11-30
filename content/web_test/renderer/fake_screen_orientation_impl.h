@@ -5,7 +5,6 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_FAKE_SCREEN_ORIENTATION_IMPL_H_
 #define CONTENT_WEB_TEST_RENDERER_FAKE_SCREEN_ORIENTATION_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"

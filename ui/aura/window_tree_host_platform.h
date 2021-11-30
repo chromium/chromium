@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"

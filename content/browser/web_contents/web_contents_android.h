@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"

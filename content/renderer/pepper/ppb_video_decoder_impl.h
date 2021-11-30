@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/dev/pp_video_dev.h"

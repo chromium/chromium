@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 

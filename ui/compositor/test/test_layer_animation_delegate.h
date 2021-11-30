@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_DELEGATE_H_
 #define UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "cc/layers/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_threaded_animation_delegate.h"

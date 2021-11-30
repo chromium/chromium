@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 

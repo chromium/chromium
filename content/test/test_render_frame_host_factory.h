@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 
 namespace content {

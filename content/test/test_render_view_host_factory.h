@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 
 namespace content {

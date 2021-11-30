@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/event.h"

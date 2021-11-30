@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"

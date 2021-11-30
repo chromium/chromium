@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"

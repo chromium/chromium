@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/gpu/context_provider.h"

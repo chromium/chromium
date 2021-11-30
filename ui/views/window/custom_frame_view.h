@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"

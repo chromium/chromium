@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/gfx/native_widget_types.h"

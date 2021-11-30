@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"

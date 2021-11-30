@@ -8,7 +8,6 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_type.h"

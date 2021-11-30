@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 

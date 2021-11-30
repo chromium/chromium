@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_TEST_SUITE_BASE_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_TEST_SUITE_BASE_H_
 
-#include "base/compiler_specific.h"
 #include "base/test/test_suite.h"
 
 namespace content {

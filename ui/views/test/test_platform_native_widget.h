@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_TEST_TEST_PLATFORM_NATIVE_WIDGET_H_
 #define UI_VIEWS_TEST_TEST_PLATFORM_NATIVE_WIDGET_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 

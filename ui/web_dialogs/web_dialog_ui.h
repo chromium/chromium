@@ -5,7 +5,6 @@
 #ifndef UI_WEB_DIALOGS_WEB_DIALOG_UI_H_
 #define UI_WEB_DIALOGS_WEB_DIALOG_UI_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_controller.h"

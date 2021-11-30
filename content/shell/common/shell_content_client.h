@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "content/public/common/content_client.h"
 #include "content/shell/common/shell_origin_trial_policy.h"
 

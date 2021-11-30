@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/test/aura_test_base.h"

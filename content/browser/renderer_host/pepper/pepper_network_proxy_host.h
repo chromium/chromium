@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"

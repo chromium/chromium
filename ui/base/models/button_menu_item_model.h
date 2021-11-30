@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"

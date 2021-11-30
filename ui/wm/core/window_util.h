@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/wm/core/wm_core_export.h"
 

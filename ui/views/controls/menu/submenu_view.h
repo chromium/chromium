@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/controls/menu/menu_delegate.h"

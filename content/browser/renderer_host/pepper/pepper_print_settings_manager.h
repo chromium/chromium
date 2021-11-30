@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "ppapi/c/dev/pp_print_settings_dev.h"
 
 namespace content {

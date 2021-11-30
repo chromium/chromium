@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font_render_params.h"

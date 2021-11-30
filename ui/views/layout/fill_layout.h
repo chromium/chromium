@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_FILL_LAYOUT_H_
 #define UI_VIEWS_LAYOUT_FILL_LAYOUT_H_
 
-#include "base/compiler_specific.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 

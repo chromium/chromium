@@ -9,7 +9,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/geometry_export.h"

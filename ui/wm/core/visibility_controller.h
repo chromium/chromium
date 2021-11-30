@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 #define UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/visibility_client.h"
 #include "ui/wm/core/wm_core_export.h"

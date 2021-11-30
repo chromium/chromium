@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_TEST_SCREEN_H_
 #define UI_AURA_TEST_TEST_SCREEN_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"

@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_OBSERVER_H_
 #define UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_OBSERVER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer_animation_observer.h"

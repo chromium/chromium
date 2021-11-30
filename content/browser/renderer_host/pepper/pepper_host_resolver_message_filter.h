@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ppapi/c/pp_instance.h"

@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/win/imm32_manager.h"

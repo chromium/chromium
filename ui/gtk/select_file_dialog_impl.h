@@ -12,7 +12,6 @@
 #include <memory>
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/nix/xdg_util.h"
 #include "ui/aura/window.h"
 #include "ui/shell_dialogs/select_file_dialog.h"

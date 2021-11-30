@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"

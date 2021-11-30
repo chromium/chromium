@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SCREENLOCK_OBSERVER_H_
 #define CONTENT_PUBLIC_BROWSER_SCREENLOCK_OBSERVER_H_
 
-#include "base/compiler_specific.h"
 #include "content/common/content_export.h"
 
 namespace content {

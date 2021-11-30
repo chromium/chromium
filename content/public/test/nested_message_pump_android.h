@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_NESTED_MESSAGE_PUMP_ANDROID_H_
 #define CONTENT_PUBLIC_TEST_NESTED_MESSAGE_PUMP_ANDROID_H_
 
-#include "base/compiler_specific.h"
 #include "base/message_loop/message_pump_android.h"
 
 namespace content {

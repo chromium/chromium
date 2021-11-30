@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
