@@ -127,7 +127,7 @@ void WebAppInstallTask::LoadWebAppAndCheckManifest(
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest,
-          base::Unretained(this), web_contents_ptr));
+          GetWeakPtr(), web_contents_ptr));
 }
 
 void WebAppInstallTask::InstallWebAppFromManifest(
@@ -152,7 +152,7 @@ void WebAppInstallTask::InstallWebAppFromManifest(
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents(), bypass_service_worker_check,
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
-                     base::Unretained(this), std::move(web_app_info),
+                     GetWeakPtr(), std::move(web_app_info),
                      /*force_shortcut_app=*/false));
 }
 
@@ -172,8 +172,8 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
 
   data_retriever_->GetWebApplicationInfo(
       web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo,
-                     base::Unretained(this), force_shortcut_app));
+      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo, GetWeakPtr(),
+                     force_shortcut_app));
 }
 
 void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
@@ -268,8 +268,8 @@ void WebAppInstallTask::InstallWebAppWithParams(
 
   data_retriever_->GetWebApplicationInfo(
       web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo,
-                     base::Unretained(this), /*force_shortcut_app=*/false));
+      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo, GetWeakPtr(),
+                     /*force_shortcut_app=*/false));
 }
 
 void WebAppInstallTask::UpdateWebAppFromInfo(
@@ -408,8 +408,8 @@ void WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo(
 
   data_retriever_->GetWebApplicationInfo(
       web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo,
-                     base::Unretained(this), /*force_shortcut_app*/ false));
+      base::BindOnce(&WebAppInstallTask::OnGetWebApplicationInfo, GetWeakPtr(),
+                     /*force_shortcut_app*/ false));
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
@@ -437,7 +437,7 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
       web_contents,
       /*bypass_service_worker_check=*/true,
       base::BindOnce(&WebAppInstallTask::OnWebAppInstallabilityChecked,
-                     base::Unretained(this)));
+                     GetWeakPtr()));
 }
 
 void WebAppInstallTask::OnWebAppInstallabilityChecked(
@@ -488,7 +488,7 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents(), bypass_service_worker_check,
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
-                     base::Unretained(this), std::move(web_app_info),
+                     GetWeakPtr(), std::move(web_app_info),
                      force_shortcut_app));
 }
 
@@ -657,7 +657,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
           ? WebAppIconDownloader::Histogram::kForSync
           : WebAppIconDownloader::Histogram::kForCreate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedShowDialog,
-                     base::Unretained(this), std::move(web_app_info),
+                     GetWeakPtr(), std::move(web_app_info),
                      for_installable_site));
 }
 
@@ -685,9 +685,8 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
       install_source_ == webapps::WebappInstallSource::SYNC
           ? WebAppIconDownloader::Histogram::kForSync
           : WebAppIconDownloader::Histogram::kForCreate,
-      base::BindOnce(&WebAppInstallTask::OnIconsRetrieved,
-                     base::Unretained(this), std::move(web_application_info),
-                     finalize_options));
+      base::BindOnce(&WebAppInstallTask::OnIconsRetrieved, GetWeakPtr(),
+                     std::move(web_application_info), finalize_options));
 }
 
 void WebAppInstallTask::OnIconsRetrieved(

@@ -82,7 +82,7 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
       web_app_url, install_source, url_loader_.get(),
       base::BindOnce(
           &WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted,
-          base::Unretained(this), task.get(), std::move(callback)));
+          GetWeakPtr(), task.get(), std::move(callback)));
 
   tasks_.insert(std::move(task));
 }
@@ -102,7 +102,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
       contents, bypass_service_worker_check, install_source,
       std::move(dialog_callback),
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     base::Unretained(this), task.get(), std::move(callback)));
+                     GetWeakPtr(), task.get(), std::move(callback)));
 
   tasks_.insert(std::move(task));
 }
@@ -121,7 +121,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
   task->InstallWebAppFromManifestWithFallback(
       contents, force_shortcut_app, install_source, std::move(dialog_callback),
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     base::Unretained(this), task.get(), std::move(callback)));
+                     GetWeakPtr(), task.get(), std::move(callback)));
 
   tasks_.insert(std::move(task));
 }
@@ -156,7 +156,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
       std::move(web_application_info), overwrite_existing_manifest_fields,
       for_installable_site, install_source,
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     base::Unretained(this), task.get(), std::move(callback)));
+                     GetWeakPtr(), task.get(), std::move(callback)));
 
   tasks_.insert(std::move(task));
 }
@@ -174,9 +174,13 @@ void WebAppInstallManager::InstallWebAppWithParams(
   task->InstallWebAppWithParams(
       web_contents, install_params, install_source,
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     base::Unretained(this), task.get(), std::move(callback)));
+                     GetWeakPtr(), task.get(), std::move(callback)));
 
   tasks_.insert(std::move(task));
+}
+
+base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WebAppInstallManager::EnqueueInstallAppFromSync(
@@ -225,16 +229,15 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   OnceInstallCallback task_completed_callback = base::BindOnce(
       &WebAppInstallManager::
           LoadAndInstallWebAppFromManifestWithFallbackCompleted_ForAppSync,
-      base::Unretained(this), sync_app_id, std::move(web_application_info),
+      GetWeakPtr(), sync_app_id, std::move(web_application_info),
       std::move(callback));
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback,
       task->GetWeakPtr(), start_url, EnsureWebContentsCreated(),
       base::Unretained(url_loader_.get()), webapps::WebappInstallSource::SYNC,
-      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
-                     base::Unretained(this), task.get(),
-                     std::move(task_completed_callback)));
+      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted, GetWeakPtr(),
+                     task.get(), std::move(task_completed_callback)));
 
   EnqueueTask(std::move(task), std::move(start_task));
 }
@@ -374,8 +377,8 @@ void WebAppInstallManager::
       &WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons,
       task->GetWeakPtr(), EnsureWebContentsCreated(),
       std::move(web_application_info), finalize_options,
-      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
-                     base::Unretained(this), task.get(), std::move(callback)));
+      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted, GetWeakPtr(),
+                     task.get(), std::move(callback)));
 
   EnqueueTask(std::move(task), std::move(start_task));
 }
@@ -410,7 +413,7 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
       GURL("about:blank"), web_contents_.get(),
       WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&WebAppInstallManager::OnWebContentsReadyRunTask,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(pending_task)));
+                     GetWeakPtr(), std::move(pending_task)));
 }
 
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {
