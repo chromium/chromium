@@ -175,6 +175,7 @@ crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-min
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-limits-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/aspect-ratio-004.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-intrinsic-maximums.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-item-inline-contribution-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-item-inline-contribution-003.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-size-with-orthogonal-child-dynamic.html [ Failure ]

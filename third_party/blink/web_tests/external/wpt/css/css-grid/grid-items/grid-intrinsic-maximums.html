@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-
-<link href="resources/grid.css" rel="stylesheet">
-<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<html>
+<title>CSS Grid: Grid item intrinsic maximum sizes</title>
+<link rel="author" title="Serio Villar" href="mailto:svillar@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid/#grid-items">
+<link href="/css/support/grid.css" rel="stylesheet">
+<link href="/css/support/width-keyword-classes.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<link rel="match" href="grid-intrinsic-maximums-ref.html">
 
 <style>
 
@@ -58,14 +63,11 @@
     <div class="abs col2"></div>
 </div>
 
-<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
-<!--
 <div class="grid gridMinContent">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
--->
 
 <div class="grid gridMaxContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
@@ -103,15 +105,12 @@
     <div class="abs col3"></div>
 </div>
 
-<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
-<!--
 <div class="grid gridMinMaxContent">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
--->
 
 <div class="grid gridAutoMinContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
@@ -127,15 +126,12 @@
     <div class="abs col3"></div>
 </div>
 
-<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
-<!--
 <div class="grid gridAutoMinContent" style="justify-items: start">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
--->
 
 </div>
 
