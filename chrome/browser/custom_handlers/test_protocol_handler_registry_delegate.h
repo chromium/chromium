@@ -31,6 +31,7 @@ class TestProtocolHandlerRegistryDelegate
                                      DefaultClientCallback callback) override;
   void CheckDefaultClientWithOS(const std::string& protocol,
                                 DefaultClientCallback callback) override;
+  bool ShouldRemoveHandlersNotInOS() override;
 
  private:
   // Holds registered protocols.

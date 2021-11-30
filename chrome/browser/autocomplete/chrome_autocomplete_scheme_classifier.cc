@@ -9,6 +9,7 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #if defined(OS_ANDROID)
 #include "chrome/browser/profiles/profile_android.h"
 #endif

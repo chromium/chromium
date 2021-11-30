@@ -15,9 +15,8 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/shell_integration.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 
@@ -49,34 +48,19 @@ class ProtocolHandlerRegistry : public KeyedService {
   // as the default handler for specific protocols.
   class Delegate {
    public:
-    Delegate();
-    virtual ~Delegate();
-    virtual void RegisterExternalHandler(const std::string& protocol);
-    virtual void DeregisterExternalHandler(const std::string& protocol);
-    virtual bool IsExternalHandlerRegistered(const std::string& protocol);
-    virtual void RegisterWithOSAsDefaultClient(const std::string& protocol,
-                                               DefaultClientCallback callback);
-    virtual void CheckDefaultClientWithOS(const std::string& protocol,
-                                          DefaultClientCallback callback);
-    virtual bool ShouldRemoveHandlersNotInOS();
-
-   private:
-    // Gets the callback for DefaultProtocolClientWorker.
-    shell_integration::DefaultWebClientWorkerCallback
-    GetDefaultWebClientCallback(const std::string& protocol,
-                                DefaultClientCallback callback);
-
-    // Called with the default state when the default protocol client worker is
-    // done.
-    void OnSetAsDefaultProtocolClientFinished(
+    virtual ~Delegate() = default;
+    virtual void RegisterExternalHandler(const std::string& protocol) = 0;
+    virtual bool IsExternalHandlerRegistered(const std::string& protocol) = 0;
+    virtual void RegisterWithOSAsDefaultClient(
         const std::string& protocol,
-        DefaultClientCallback callback,
-        shell_integration::DefaultWebClientState state);
+        DefaultClientCallback callback) = 0;
+    virtual void CheckDefaultClientWithOS(const std::string& protocol,
+                                          DefaultClientCallback callback) = 0;
+    virtual bool ShouldRemoveHandlersNotInOS() = 0;
 
-    // Makes it possible to invalidate the callback for the
-    // DefaultProtocolClientWorker.
-    base::WeakPtrFactory<ProtocolHandlerRegistry::Delegate> weak_ptr_factory_{
-        this};
+    // Only implemented by TestProtocolHandlerRegistryDelegate and FakeDelegate,
+    // hence only used for testing purposes.
+    virtual void DeregisterExternalHandler(const std::string& protocol) {}
   };
 
   class Observer : public base::CheckedObserver {

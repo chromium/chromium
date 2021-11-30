@@ -83,6 +83,11 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
     return registered_protocols_.find(protocol) != registered_protocols_.end();
   }
 
+  void CheckDefaultClientWithOS(const std::string& protocol,
+                                DefaultClientCallback callback) override {}
+
+  bool ShouldRemoveHandlersNotInOS() override { return true; }
+
   bool IsFakeRegisteredWithOS(const std::string& protocol) {
     return os_registered_protocols_.find(protocol) !=
         os_registered_protocols_.end();

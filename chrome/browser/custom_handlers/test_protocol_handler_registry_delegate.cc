@@ -48,3 +48,7 @@ void TestProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
+
+bool TestProtocolHandlerRegistryDelegate::ShouldRemoveHandlersNotInOS() {
+  return true;
+}
