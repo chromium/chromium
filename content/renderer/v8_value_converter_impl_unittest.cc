@@ -111,12 +111,12 @@ class V8ValueConverterImplTest : public testing::Test {
   }
 
   std::string GetString(base::ListValue* value, uint32_t index) {
-    std::string temp;
-    if (!value->GetString(static_cast<size_t>(index), &temp)) {
+    base::Value::ConstListView value_list = value->GetList();
+    if (index >= value_list.size() || !value_list[index].is_string()) {
       ADD_FAILURE();
       return std::string();
     }
-    return temp;
+    return value_list[index].GetString();
   }
 
   std::string GetString(v8::Local<v8::Array> value, uint32_t index) {
