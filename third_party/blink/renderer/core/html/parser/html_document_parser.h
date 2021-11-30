@@ -242,6 +242,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // resources using the resulting PreloadRequests and |preloader_|.
   void ScanAndPreload(HTMLPreloadScanner*);
   void FetchQueuedPreloads();
+  std::string GetPreloadHistogramSuffix();
 
   HTMLToken& Token() { return *token_; }
 

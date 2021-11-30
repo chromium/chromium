@@ -29,8 +29,10 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1770,6 +1772,7 @@ std::unique_ptr<HTMLPreloadScanner> HTMLDocumentParser::CreatePreloadScanner(
 void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   TRACE_EVENT0("blink", "HTMLDocumentParser::ScanAndPreload");
   DCHECK(preloader_);
+  base::ElapsedTimer timer;
   bool seen_csp_meta_tag = false;
   absl::optional<ViewportDescription> viewport_description;
   PreloadRequestStream requests =
@@ -1808,6 +1811,9 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
     queued_preloads_.push_back(std::move(request));
   }
   FetchQueuedPreloads();
+  base::UmaHistogramTimes(
+      base::StrCat({"Blink.ScanAndPreloadTime", GetPreloadHistogramSuffix()}),
+      timer.Elapsed());
 }
 
 void HTMLDocumentParser::FetchQueuedPreloads() {
@@ -1819,12 +1825,25 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
       return;
   }
 
-  if (!queued_preloads_.IsEmpty())
+  if (!queued_preloads_.IsEmpty()) {
+    base::ElapsedTimer timer;
     preloader_->TakeAndPreload(queued_preloads_);
+    base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
+                                          GetPreloadHistogramSuffix()}),
+                            timer.Elapsed());
+  }
   if (auto* subresource_redirect_origins_preloader =
           SubresourceRedirectOriginsPreloader::From(*GetDocument())) {
     subresource_redirect_origins_preloader->PreloadOriginsNow();
   }
+}
+
+std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
+  bool is_main_frame = GetDocument() && GetDocument()->GetFrame() &&
+                       GetDocument()->GetFrame()->IsMainFrame();
+  bool have_seen_first_byte = task_runner_state_->HaveSeenFirstByte();
+  return base::StrCat({is_main_frame ? ".MainFrame" : ".Subframe",
+                       have_seen_first_byte ? ".NonInitial" : ".Initial"});
 }
 
 }  // namespace blink

@@ -1180,6 +1180,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FetchQueuedPreloadsTime.{FrameType}.{IsInitial}"
+    units="ms" expires_after="2022-05-29">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time it takes to fetch queued subresource preloads for a
+    document in a {FrameType}. Logged every time preloads need to be fetched
+    after the {IsInitial} preload scan.
+  </summary>
+  <token key="FrameType">
+    <variant name="MainFrame"/>
+    <variant name="Subframe"/>
+  </token>
+  <token key="IsInitial">
+    <variant name="Initial"/>
+    <variant name="NonInitial"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.Fonts.AndroidFontLookupLoadFromFileTime" units="ms"
     expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
@@ -2767,6 +2786,25 @@ chromium-metrics-reviews@google.com.
     Measures the time from when the renderer starts a resource request to when
     it is actually started on the network. Logged for every resource request.
   </summary>
+</histogram>
+
+<histogram name="Blink.ScanAndPreloadTime.{FrameType}.{IsInitial}" units="ms"
+    expires_after="2022-05-29">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time it takes to scan and preload subresources for a document
+    in a {FrameType}. Logged every time the {IsInitial} preload scan is
+    performed.
+  </summary>
+  <token key="FrameType">
+    <variant name="MainFrame"/>
+    <variant name="Subframe"/>
+  </token>
+  <token key="IsInitial">
+    <variant name="Initial"/>
+    <variant name="NonInitial"/>
+  </token>
 </histogram>
 
 <histogram name="Blink.ScanPendingActivityDuration" units="ms"
