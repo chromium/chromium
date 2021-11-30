@@ -64,12 +64,9 @@ class DeleteProfileDialogManager : public BrowserListObserver {
     virtual void OnProfileDeleted(DeleteProfileDialogManager* manager) = 0;
   };
 
-  DeleteProfileDialogManager(Profile* profile,
-                             std::string primary_account_email,
+  DeleteProfileDialogManager(std::string primary_account_email,
                              Delegate* delegate)
-      : profile_(profile),
-        primary_account_email_(primary_account_email),
-        delegate_(delegate) {}
+      : primary_account_email_(primary_account_email), delegate_(delegate) {}
 
   DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
   DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
@@ -77,16 +74,21 @@ class DeleteProfileDialogManager : public BrowserListObserver {
 
   ~DeleteProfileDialogManager() override { BrowserList::RemoveObserver(this); }
 
-  void PresentDialogOnAllBrowserWindows() {
+  void PresentDialogOnAllBrowserWindows(Profile* profile) {
+    DCHECK(profile);
+    DCHECK(profile_path_.empty());
+    profile_path_ = profile->GetPath();
+
     BrowserList::AddObserver(this);
-    Browser* active_browser = chrome::FindLastActiveWithProfile(profile_);
+    Browser* active_browser = chrome::FindLastActiveWithProfile(profile);
     if (active_browser)
       OnBrowserSetLastActive(active_browser);
   }
 
   void OnBrowserSetLastActive(Browser* browser) override {
-    DCHECK(profile_);
-    if (browser->profile() != profile_)
+    DCHECK(!profile_path_.empty());
+
+    if (profile_path_ != browser->profile()->GetPath())
       return;
 
     DCHECK(browser->window()->GetNativeWindow());
@@ -100,15 +102,15 @@ class DeleteProfileDialogManager : public BrowserListObserver {
                 gaia::ExtractDomainName(primary_account_email_))));
 
     webui::DeleteProfileAtPath(
-        profile_->GetPath(),
+        profile_path_,
         ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
     delegate_->OnProfileDeleted(this);
   }
 
  private:
-  Profile* profile_;
   std::string primary_account_email_;
   Delegate* delegate_;
+  base::FilePath profile_path_;
 };
 #endif  // defined(CAN_DELETE_PROFILE)
 
@@ -146,8 +148,8 @@ class UserSignoutSetting : public base::SupportsUserData::Data {
     if (delete_profile_dialog_manager_)
       return;
     delete_profile_dialog_manager_ =
-        std::make_unique<DeleteProfileDialogManager>(profile, email, this);
-    delete_profile_dialog_manager_->PresentDialogOnAllBrowserWindows();
+        std::make_unique<DeleteProfileDialogManager>(email, this);
+    delete_profile_dialog_manager_->PresentDialogOnAllBrowserWindows(profile);
   }
 
   void OnProfileDeleted(DeleteProfileDialogManager* dialog_manager) override {
