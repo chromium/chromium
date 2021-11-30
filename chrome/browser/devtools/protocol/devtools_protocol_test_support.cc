@@ -146,3 +146,7 @@ void DevToolsProtocolTestBase::AgentHostClosed(
 bool DevToolsProtocolTestBase::AllowUnsafeOperations() {
   return allow_unsafe_operations_;
 }
+
+bool DevToolsProtocolTestBase::MaySendInputEventsToBrowser() {
+  return may_send_input_event_to_browser_;
+}

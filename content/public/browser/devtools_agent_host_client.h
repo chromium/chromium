@@ -35,6 +35,9 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // manipulate browser altogether.
   virtual bool MayAttachToBrowser();
 
+  // Returns true if the client is allowed to send input events to the browser.
+  virtual bool MaySendInputEventsToBrowser();
+
   // Returns true if the client is allowed to read local files over the
   // protocol. Example would be exposing file content to the page under debug.
   virtual bool MayReadLocalFiles();

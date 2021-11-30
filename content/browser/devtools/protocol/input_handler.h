@@ -34,7 +34,7 @@ namespace protocol {
 
 class InputHandler : public DevToolsDomainHandler, public Input::Backend {
  public:
-  explicit InputHandler(bool allow_file_access);
+  InputHandler(bool allow_file_access, bool allow_sending_input_to_browser);
 
   InputHandler(const InputHandler&) = delete;
   InputHandler& operator=(const InputHandler&) = delete;
@@ -246,6 +246,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   bool ignore_input_events_ = false;
   bool intercept_drags_ = false;
   const bool allow_file_access_;
+  const bool allow_sending_input_to_browser_ = false;
   std::set<int> pointer_ids_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   base::flat_map<int, blink::WebTouchPoint> touch_points_;

@@ -526,12 +526,14 @@ class InputHandler::InputInjector
   base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 };
 
-InputHandler::InputHandler(bool allow_file_access)
+InputHandler::InputHandler(bool allow_file_access,
+                           bool allow_sending_input_to_browser)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
       host_(nullptr),
       page_scale_factor_(1.0),
       last_id_(0),
-      allow_file_access_(allow_file_access) {}
+      allow_file_access_(allow_file_access),
+      allow_sending_input_to_browser_(allow_sending_input_to_browser) {}
 
 InputHandler::~InputHandler() = default;
 
@@ -669,7 +671,7 @@ void InputHandler::DispatchKeyEvent(
 
   // We do not pass events to browser if there is no native key event
   // due to Mac needing the actual os_event.
-  if (event.native_key_code)
+  if (event.native_key_code && allow_sending_input_to_browser_)
     event.os_event = NativeInputEventBuilder::CreateEvent(event);
   else
     event.skip_in_browser = true;

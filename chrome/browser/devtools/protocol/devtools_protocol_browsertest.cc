@@ -13,6 +13,7 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -189,6 +190,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                                 base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
               AllOf(Not(Contains("click")), Not(Contains("dragenter")),
                     Not(Contains("keydown"))));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoInputEventsSentToBrowserWhenDisallowed) {
+  may_send_input_event_to_browser_ = false;
+  Attach();
+
+  base::DictionaryValue params;
+  params.SetStringKey("type", "rawKeyDown");
+  params.SetStringKey("key", "F12");
+  params.SetIntKey("windowsVirtualKeyCode", 123);
+  params.SetIntKey("nativeVirtualKeyCode", 123);
+  SendCommandSync("Input.dispatchKeyEvent", std::move(params));
+
+  EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
 class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {

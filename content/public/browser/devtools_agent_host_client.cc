@@ -15,6 +15,10 @@ bool DevToolsAgentHostClient::MayAttachToBrowser() {
   return true;
 }
 
+bool DevToolsAgentHostClient::MaySendInputEventsToBrowser() {
+  return MayAttachToBrowser();
+}
+
 // File access is allowed by default, only restricted clients that represent
 // not entirely trusted protocol peers override this to false.
 bool DevToolsAgentHostClient::MayReadLocalFiles() {
