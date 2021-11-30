@@ -72,7 +72,6 @@ if (include_js_tests) {
     sources = [
       "../../../browser/ui/webui/identity_internals_ui_browsertest.js",
       "../../../browser/ui/webui/sync_internals/sync_internals_browsertest.js",
-      "access_code_cast/access_code_cast_browsertest.js",
       "assertions.js",
       "async_gen.js",
       "bookmarks/bookmarks_browsertest.js",
