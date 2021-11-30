@@ -583,7 +583,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (source_browser &&
+  const GURL& source_url =
+      params->source_contents ? params->source_contents->GetURL() : GURL();
+  if (lacros_url_handling::IsNavigationInterceptable(*params, source_url) &&
       lacros_url_handling::MaybeInterceptNavigation(params->url)) {
     return nullptr;
   }

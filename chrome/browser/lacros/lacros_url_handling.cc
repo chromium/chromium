@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/lacros_url_handling.h"
 
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
@@ -12,6 +13,28 @@
 #include "url/gurl.h"
 
 namespace lacros_url_handling {
+
+bool IsNavigationInterceptable(const NavigateParams& params,
+                               const GURL& source_url) {
+  const auto qualifier = PageTransitionGetQualifier(params.transition);
+  // True if this was triggered by the user through a bookmark, or typing into
+  // the Omnibox.
+  const bool is_omnibox_navigation =
+      (PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_TYPED) ||
+       PageTransitionCoreTypeIs(params.transition,
+                                ui::PAGE_TRANSITION_GENERATED)) &&
+      qualifier & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
+  // True if this is a bookmark navigation.
+  const bool is_bookmark_navigation = PageTransitionCoreTypeIs(
+      params.transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  // True if this is a navigation created by the user, clicking on a link on a
+  // page with the chrome:// scheme.
+  const bool is_system_navigation =
+      PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_LINK) &&
+      source_url.SchemeIs(content::kChromeUIScheme);
+  return (is_omnibox_navigation || is_system_navigation ||
+          is_bookmark_navigation);
+}
 
 bool MaybeInterceptNavigation(const GURL& url) {
   const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);

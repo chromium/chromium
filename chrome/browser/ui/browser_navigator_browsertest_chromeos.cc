@@ -251,6 +251,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
   params.url = GURL(chrome::kOsUIFlagsURL);
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  params.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   Navigate(&params);
 
   // No change should have happened on the Lacros side.

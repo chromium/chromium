@@ -6,8 +6,16 @@
 #define CHROME_BROWSER_LACROS_LACROS_URL_HANDLING_H_
 
 class GURL;
+struct NavigateParams;
 
 namespace lacros_url_handling {
+
+// Checks if the given navigation is allowable to intercept a navigation and
+// redirects it to Ash. This function does not test the target URL, but the
+// navigation |params| and the |source_url| (the page which is asking for the
+// navigation).
+bool IsNavigationInterceptable(const NavigateParams& params,
+                               const GURL& source_url);
 
 // Provides an opportunity for the URL to be intercepted and handled by Ash.
 // This is used for example to handle system chrome:// URLs that only Ash knows
