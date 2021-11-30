@@ -219,12 +219,15 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
     // But we should not display the 'wallpaper-set-by-mesage' since it might
     // introduce confusion as shown in crbug.com/599407.
     base::StringPiece ext_name;
-    bool is_file_manager =
-        (source_context_type() ==
-             extensions::Feature::BLESSED_EXTENSION_CONTEXT ||
-         source_context_type() == extensions::Feature::WEBUI_CONTEXT) &&
-        file_manager::util::IsFileManagerURL(
-            GetSenderWebContents()->GetLastCommittedURL());
+    bool is_file_manager = false;
+    if (source_context_type() ==
+            extensions::Feature::BLESSED_EXTENSION_CONTEXT ||
+        source_context_type() == extensions::Feature::WEBUI_CONTEXT) {
+      content::WebContents* web_contents = GetSenderWebContents();
+      is_file_manager =
+          web_contents && file_manager::util::IsFileManagerURL(
+                              web_contents->GetLastCommittedURL());
+    }
     if (!is_file_manager) {
       ext_name = ext->name();
     }
