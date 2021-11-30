@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 import typing
+import ctypes
 
 import browsers
 import scenarios
@@ -43,6 +44,24 @@ class DriverContext:
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     utils.TerminateProcess(self._caffeinate_process)
+
+  def SetMainDisplayBrightness(self, brightness_level: int):
+    # This function imitates the open-source "brightness" tool at
+    # https://github.com/nriley/brightness.
+    # Since the benchmark doesn't care about older MacOSen, multiple displays
+    # or other complications that tool has to consider, setting the brightness
+    # level boils down to calling this function for the main display.
+    CoreGraphics = ctypes.CDLL(
+        "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")
+    main_display = CoreGraphics.CGMainDisplayID()
+    DisplayServices = ctypes.CDLL(
+        "/System/Library/PrivateFrameworks/DisplayServices.framework"
+        "/DisplayServices")
+    DisplayServices.DisplayServicesSetBrightness.argtypes = [
+        ctypes.c_int, ctypes.c_float
+    ]
+    DisplayServices.DisplayServicesSetBrightness(main_display,
+                                                 brightness_level / 100)
 
   def CheckEnv(self, throw_on_bad_env: bool):
     """Verifies that the environment is conducive to proper profiling or

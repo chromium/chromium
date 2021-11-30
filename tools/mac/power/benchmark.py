@@ -87,6 +87,8 @@ def main():
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
   with DriverContext(output_dir) as driver:
     driver.CheckEnv(not args.no_checks)
+    # This is the average brightness from UMA data.
+    driver.SetMainDisplayBrightness(65)
 
     # Measure or Profile all defined scenarios.
     browser_factory = lambda browser_name: browsers.MakeBrowserDriver(
