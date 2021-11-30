@@ -225,6 +225,7 @@ static_library("test_support") {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/lacros/dbus",
     ]
   }
 

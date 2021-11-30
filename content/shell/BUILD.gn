@@ -366,7 +366,7 @@ static_library("content_shell_lib") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/dbus/constants",
-      "//chromeos/lacros",
+      "//chromeos/lacros/dbus",
     ]
   }
 

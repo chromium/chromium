@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/lacros/lacros_dbus_helper.h"
+#include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#include "chromeos/lacros/lacros_dbus_thread_manager.h"
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 
 namespace chromeos {
 

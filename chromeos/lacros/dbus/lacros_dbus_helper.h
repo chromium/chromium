@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LACROS_LACROS_DBUS_HELPER_H_
-#define CHROMEOS_LACROS_LACROS_DBUS_HELPER_H_
+#ifndef CHROMEOS_LACROS_DBUS_LACROS_DBUS_HELPER_H_
+#define CHROMEOS_LACROS_DBUS_LACROS_DBUS_HELPER_H_
 
 #include "base/component_export.h"
 
@@ -17,4 +17,4 @@ COMPONENT_EXPORT(CHROMEOS_LACROS) void LacrosShutdownDBus();
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_LACROS_LACROS_DBUS_HELPER_H_
+#endif  // CHROMEOS_LACROS_DBUS_LACROS_DBUS_HELPER_H_

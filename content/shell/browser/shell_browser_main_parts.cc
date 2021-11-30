@@ -61,7 +61,7 @@
 #endif  // #elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_dbus_thread_manager.h"
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 #endif
 
 #if BUILDFLAG(USE_GTK)

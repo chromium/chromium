@@ -5222,6 +5222,7 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros",
+      "//chromeos/lacros/dbus",
       "//chromeos/ui/frame",
       "//ui/platform_window",
     ]

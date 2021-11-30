@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/lacros/lacros_dbus_thread_manager.h"
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 
 #include "base/logging.h"
 

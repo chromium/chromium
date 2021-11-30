@@ -186,7 +186,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_dbus_helper.h"
+#include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "media/base/media_switches.h"
 #endif
