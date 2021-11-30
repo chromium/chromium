@@ -46,6 +46,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     kOutOfFragmentainerSpace = 3,
     kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
     kDisableFragmentation = 5,
+    kNeedsRelayoutWithNoChildScrollbarChanges = 6,
     // When adding new values, make sure the bit size of |Bitfields::status| is
     // large enough to store.
   };

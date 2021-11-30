@@ -73,14 +73,15 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       bool min_block_size_should_encompass_intrinsic_size = false) const;
   void ConstructAndAppendFlexItems();
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
-  bool GiveItemsFinalPositionAndSize(Vector<NGFlexLine>* flex_line_outputs);
-  void GiveItemsFinalPositionAndSizeForFragmentation(
+  NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
+      Vector<NGFlexLine>* flex_line_outputs);
+  NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       Vector<NGFlexLine>* flex_line_outputs,
       LayoutUnit* total_intrinsic_block_size);
-  bool PropagateFlexItemInfo(FlexItem* flex_item,
-                             wtf_size_t flex_line_idx,
-                             LayoutPoint location,
-                             PhysicalSize fragment_size);
+  NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
+                                                wtf_size_t flex_line_idx,
+                                                LayoutPoint location,
+                                                PhysicalSize fragment_size);
   void LayoutColumnReverse(LayoutUnit main_axis_content_size);
 
   // This is same method as FlexItem but we need that logic before FlexItem is
@@ -99,6 +100,16 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
 
+  // Return the amount of block space available in the current fragmentainer
+  // for the node being laid out by this algorithm.
+  LayoutUnit FragmentainerSpaceAvailable() const;
+
+  // Consume all remaining fragmentainer space. This happens when we decide to
+  // break before a child.
+  //
+  // https://www.w3.org/TR/css-break-3/#box-splitting
+  void ConsumeRemainingFragmentainerSpace(NGFlexLine& flex_line);
+
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
 #endif
@@ -111,6 +122,12 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool has_column_percent_flex_basis_ = false;
   bool ignore_child_scrollbar_changes_ = false;
   bool has_block_fragmentation_ = false;
+
+  // This will be set during block fragmentation once we've processed the first
+  // flex item in a given line. It is used to check if we're at a valid class A
+  // or B breakpoint within a column flex container.
+  wtf_size_t last_line_idx_to_process_first_child_ = kNotFound;
+
   FlexLayoutAlgorithm algorithm_;
   DevtoolsFlexInfo* layout_info_for_devtools_;
 
