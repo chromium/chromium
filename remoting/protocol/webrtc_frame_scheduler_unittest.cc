@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/frame_stats.h"
+#include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "remoting/protocol/webrtc_frame_scheduler_simple.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -25,20 +26,30 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
  public:
   WebrtcFrameSchedulerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        frame_(DesktopSize(1, 1)) {
+        frame_(DesktopSize(1, 1)) {}
+  ~WebrtcFrameSchedulerTest() override = default;
+
+  void InitSimpleScheduler() {
     // Default ctor starts clock with null TimeTicks, which confuses
     // the scheduler, so use the current time as a baseline.
     task_environment_.FastForwardBy(base::Time::NowFromSystemTime() -
                                     base::Time());
 
-    scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(SessionOptions());
-    scheduler_->SetTickClockForTest(task_environment_.GetMockTickClock());
+    auto scheduler =
+        std::make_unique<WebrtcFrameSchedulerSimple>(SessionOptions());
+    scheduler->SetTickClockForTest(task_environment_.GetMockTickClock());
+    scheduler_ = std::move(scheduler);
     scheduler_->Start(
         base::BindRepeating(&WebrtcFrameSchedulerTest::CaptureCallback,
                             base::Unretained(this)));
     scheduler_->SetMaxFramerateFps(30);
   }
-  ~WebrtcFrameSchedulerTest() override = default;
+
+  void InitConstantRateScheduler() {
+    scheduler_ = std::make_unique<WebrtcFrameSchedulerConstantRate>();
+    scheduler_->Start(base::BindRepeating(
+        &WebrtcFrameSchedulerTest::CaptureCallback, base::Unretained(this)));
+  }
 
   void CaptureCallback() {
     capture_callback_count_++;
@@ -57,14 +68,16 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<WebrtcFrameSchedulerSimple> scheduler_;
+  std::unique_ptr<WebrtcFrameScheduler> scheduler_;
 
   int capture_callback_count_ = 0;
-  bool simulate_capture_ = false;
+  bool simulate_capture_ = true;
   BasicDesktopFrame frame_;
 };
 
 TEST_F(WebrtcFrameSchedulerTest, UpdateBitrateWhenPending) {
+  InitSimpleScheduler();
+  simulate_capture_ = false;
   scheduler_->OnKeyFrameRequested();
   scheduler_->OnTargetBitrateChanged(100);
 
@@ -81,7 +94,7 @@ TEST_F(WebrtcFrameSchedulerTest, UpdateBitrateWhenPending) {
 }
 
 TEST_F(WebrtcFrameSchedulerTest, Capturer_RunsAt30Fps) {
-  simulate_capture_ = true;
+  InitSimpleScheduler();
 
   scheduler_->OnTargetBitrateChanged(100);
 
@@ -97,6 +110,57 @@ TEST_F(WebrtcFrameSchedulerTest, Capturer_RunsAt30Fps) {
   // There should be approximately 30 captures in 1 second.
   EXPECT_LE(29, capture_callback_count_);
   EXPECT_LE(capture_callback_count_, 31);
+}
+
+// The tests below operate on the constant-rate scheduler. When the simple
+// scheduler is no longer used, the tests above can be removed.
+
+TEST_F(WebrtcFrameSchedulerTest, NoCapturesIfZeroFps) {
+  InitConstantRateScheduler();
+  scheduler_->SetMaxFramerateFps(0);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(0, capture_callback_count_);
+}
+
+TEST_F(WebrtcFrameSchedulerTest, CapturesAtRequestedFramerate) {
+  InitConstantRateScheduler();
+  scheduler_->SetMaxFramerateFps(60);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // There should be approximately 60 captures in 1 second, making an allowance
+  // for any off-by-one artifacts in timing.
+  EXPECT_LE(59, capture_callback_count_);
+  EXPECT_LE(capture_callback_count_, 61);
+}
+
+TEST_F(WebrtcFrameSchedulerTest, NoCaptureWhileCapturePending) {
+  InitConstantRateScheduler();
+  simulate_capture_ = false;
+  scheduler_->SetMaxFramerateFps(60);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Only 1 capture callback, because the fake "capturer" never returns a
+  // captured frame. The scheduler should only do 1 capture at a time.
+  EXPECT_EQ(1, capture_callback_count_);
+}
+
+TEST_F(WebrtcFrameSchedulerTest, NoCaptureWhilePaused) {
+  InitConstantRateScheduler();
+  scheduler_->SetMaxFramerateFps(60);
+  scheduler_->Pause(true);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(0, capture_callback_count_);
+
+  scheduler_->Pause(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_LE(1, capture_callback_count_);
 }
 
 }  // namespace protocol
