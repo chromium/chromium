@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -152,6 +153,9 @@ class CC_EXPORT CompositorFrameReportingController {
   // that reporter is in, its ownership might be pass or not.
   void SetPartialUpdateDeciderWhenWaitingOnMain(
       std::unique_ptr<CompositorFrameReporter>& reporter);
+  void TrackSwapTiming(const viz::FrameTimingDetails& details);
+  void ReportMultipleSwaps(base::TimeTicks begin_frame_time,
+                           base::TimeDelta interval);
 
   const bool should_report_metrics_;
   const int layer_tree_host_id_;
@@ -200,6 +204,13 @@ class CC_EXPORT CompositorFrameReportingController {
   // these metrics and report them.
   std::map<viz::BeginFrameId, EventMetrics::List>
       events_metrics_from_dropped_frames_;
+
+  // Tracking the swap times in a queue to measure delta of multiple swaps in
+  // each vsync.
+  std::queue<base::TimeTicks> latest_swap_times_;
+
+  // interval of last begin frame args.
+  base::TimeDelta last_interval_;
 };
 }  // namespace cc
 
