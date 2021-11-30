@@ -584,10 +584,6 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
   if (!web_contents)
     return;
 
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
-  if (!main_frame)
-    return;
-
   // If the omnibox is focused, then the top controls should be constrained to
   // remain fully shown until the omnibox is blurred.
   const cc::BrowserControlsState constraints_state =
