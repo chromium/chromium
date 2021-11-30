@@ -1335,11 +1335,20 @@ void RemoveFormsToBeDeleted(
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
               self.compromisedPasswordsCount));
-      UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      _passwordProblemsItem.trailingImage = unSafeIconImage;
-      _passwordProblemsItem.trailingImageTintColor =
-          [UIColor colorNamed:kRedColor];
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kIOSEnablePasswordManagerBrandingUpdate)) {
+        _passwordProblemsItem.trailingImage =
+            [UIImage imageNamed:@"round_settings_unsafe_state"];
+      } else {
+        UIImage* unSafeIconImage =
+            [[UIImage imageNamed:@"settings_unsafe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _passwordProblemsItem.trailingImage = unSafeIconImage;
+        _passwordProblemsItem.trailingImageTintColor =
+            [UIColor colorNamed:kRedColor];
+      }
+
       _passwordProblemsItem.accessoryType =
           UITableViewCellAccessoryDisclosureIndicator;
       break;
