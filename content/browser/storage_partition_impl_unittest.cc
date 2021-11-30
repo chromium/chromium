@@ -1757,9 +1757,16 @@ TEST_F(StoragePartitionImplTest, WebUICodeCacheDisabled) {
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
-  EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
-                ->generated_webui_js_code_cache(),
-            nullptr);
+  base::RunLoop run_loop;
+  auto* context = partition->GetGeneratedCodeCacheContext();
+  GeneratedCodeCacheContext::RunOrPostTask(
+      context, FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
+                      ->generated_webui_js_code_cache(),
+                  nullptr);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
