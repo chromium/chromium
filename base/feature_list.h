@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list_buildflags.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -40,7 +41,17 @@ enum FeatureState {
 // for a given feature name - generally defined as a constant global variable or
 // file static. It should never be used as a constexpr as it breaks
 // pointer-based identity lookup.
+// Note: New code should use CONSTINIT on the base::Feature declaration.
 struct BASE_EXPORT Feature {
+  constexpr Feature(const char* name, FeatureState default_state)
+      : name(name), default_state(default_state) {
+#if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
+    if (StringPiece(name).find(BUILDFLAG(BANNED_BASE_FEATURE_PREFIX)) == 0) {
+      LOG(FATAL) << "Invalid feature name " << name << " starts with "
+                 << BUILDFLAG(BANNED_BASE_FEATURE_PREFIX);
+    }
+#endif  // BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
+  }
   // The name of the feature. This should be unique to each feature and is used
   // for enabling/disabling features via command line flags and experiments.
   // It is strongly recommended to use CamelCase style for feature names, e.g.
