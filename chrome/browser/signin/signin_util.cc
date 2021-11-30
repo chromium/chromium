@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,8 +92,51 @@ class DeleteProfileDialogManager : public BrowserListObserver {
     if (profile_path_ != browser->profile()->GetPath())
       return;
 
+    active_browser_ = browser;
+
+    // Display the dialog on the next run loop as otherwise the dialog can block
+    // browser from displaying because the dialog creates a nested run loop.
+    //
+    // This happens because the browser window is not fully created yet when
+    // OnBrowserSetLastActive() is called. To finish the creation, the code
+    // needs to return from OnBrowserSetLastActive().
+    //
+    // However, if we open a warning dialog from OnBrowserSetLastActive()
+    // synchronously, it will create a nested run loop that will not return
+    // from OnBrowserSetLastActive() until the dialog is dismissed. But the user
+    // cannot dismiss the dialog because the browser is not even shown!
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
+                       weak_factory_.GetWeakPtr(), browser));
+  }
+
+  // Called immediately after a browser becomes not active.
+  void OnBrowserNoLongerActive(Browser* browser) override {
+    if (active_browser_ == browser)
+      active_browser_ = nullptr;
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
+    if (active_browser_ == browser)
+      active_browser_ = nullptr;
+  }
+
+ private:
+  void ShowDeleteProfileDialog(Browser* browser) {
+    // Block opening dialog from nested task.
+    static bool is_dialog_shown = false;
+    if (is_dialog_shown)
+      return;
+    base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
+
+    // Check that |browser| is still active.
+    if (!active_browser_ || active_browser_ != browser)
+      return;
+
+    // Show the dialog.
     DCHECK(browser->window()->GetNativeWindow());
-    chrome::ShowWarningMessageBox(
+    chrome::MessageBoxResult result = chrome::ShowWarningMessageBox(
         browser->window()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
@@ -101,16 +145,37 @@ class DeleteProfileDialogManager : public BrowserListObserver {
             base::ASCIIToUTF16(
                 gaia::ExtractDomainName(primary_account_email_))));
 
-    webui::DeleteProfileAtPath(
-        profile_path_,
-        ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
-    delegate_->OnProfileDeleted(this);
+    switch (result) {
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_NO: {
+        // If the warning dialog is automatically dismissed or the user closed
+        // the dialog by clicking on the close "X" button, then re-present the
+        // dialog (the user should not be able to interact with the browser
+        // window as the profile must be deleted).
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
+                           weak_factory_.GetWeakPtr(), browser));
+        break;
+      }
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_YES:
+        webui::DeleteProfileAtPath(
+            profile_path_,
+            ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
+        delegate_->OnProfileDeleted(this);
+        // |this| may be destroyed at this point. Avoid using it.
+        break;
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_DEFERRED:
+        NOTREACHED() << "Message box must not return deferred result when run "
+                        "synchronously";
+        break;
+    }
   }
 
- private:
   std::string primary_account_email_;
   raw_ptr<Delegate> delegate_;
   base::FilePath profile_path_;
+  raw_ptr<Browser> active_browser_;
+  base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
 };
 #endif  // defined(CAN_DELETE_PROFILE)
 
