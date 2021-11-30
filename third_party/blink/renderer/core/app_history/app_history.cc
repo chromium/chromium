@@ -41,7 +41,7 @@
 
 namespace blink {
 
-class NavigateReaction final : public ScriptFunction {
+class NavigateReaction final : public NewScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
   static void React(ScriptState* script_state,
@@ -49,52 +49,40 @@ class NavigateReaction final : public ScriptFunction {
                     AppHistoryApiNavigation* navigation,
                     AppHistoryTransition* transition,
                     AbortSignal* signal) {
-    promise.Then(CreateFunction(script_state, navigation, transition, signal,
-                                ResolveType::kFulfill),
-                 CreateFunction(script_state, navigation, transition, signal,
-                                ResolveType::kReject));
+    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+                     script_state, MakeGarbageCollected<NavigateReaction>(
+                                       navigation, transition, signal,
+                                       ResolveType::kFulfill)),
+                 MakeGarbageCollected<NewScriptFunction>(
+                     script_state, MakeGarbageCollected<NavigateReaction>(
+                                       navigation, transition, signal,
+                                       ResolveType::kReject)));
   }
 
-  NavigateReaction(ScriptState* script_state,
-                   AppHistoryApiNavigation* navigation,
+  NavigateReaction(AppHistoryApiNavigation* navigation,
                    AppHistoryTransition* transition,
                    AbortSignal* signal,
                    ResolveType type)
-      : ScriptFunction(script_state),
-        window_(LocalDOMWindow::From(script_state)),
-        navigation_(navigation),
+      : navigation_(navigation),
         transition_(transition),
         signal_(signal),
         type_(type) {}
 
   void Trace(Visitor* visitor) const final {
-    ScriptFunction::Trace(visitor);
-    visitor->Trace(window_);
+    NewScriptFunction::Callable::Trace(visitor);
     visitor->Trace(navigation_);
     visitor->Trace(transition_);
     visitor->Trace(signal_);
   }
 
- private:
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      AppHistoryApiNavigation* navigation,
-      AppHistoryTransition* transition,
-      AbortSignal* signal,
-      ResolveType type) {
-    return MakeGarbageCollected<NavigateReaction>(script_state, navigation,
-                                                  transition, signal, type)
-        ->BindToV8Function();
-  }
-
-  ScriptValue Call(ScriptValue value) final {
-    DCHECK(window_);
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    auto* window = LocalDOMWindow::From(script_state);
+    DCHECK(window);
     if (signal_->aborted()) {
-      window_ = nullptr;
       return ScriptValue();
     }
 
-    AppHistory* app_history = AppHistory::appHistory(*window_);
+    AppHistory* app_history = AppHistory::appHistory(*window);
     app_history->ongoing_navigation_signal_ = nullptr;
     if (type_ == ResolveType::kFulfill) {
       if (navigation_) {
@@ -110,11 +98,10 @@ class NavigateReaction final : public ScriptFunction {
       app_history->transition_ = nullptr;
     }
 
-    window_ = nullptr;
     return ScriptValue();
   }
 
-  Member<LocalDOMWindow> window_;
+ private:
   Member<AppHistoryApiNavigation> navigation_;
   Member<AppHistoryTransition> transition_;
   Member<AbortSignal> signal_;
