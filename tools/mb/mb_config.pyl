@@ -2738,7 +2738,7 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_astro_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_all_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
 
     'official_goma_linux_pgo': [
@@ -3501,8 +3501,8 @@
       'gn_args': 'fuchsia_code_coverage=true',
     },
 
-    'fuchsia_include_astro_images': {
-      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/"]',
+    'fuchsia_include_all_images': {
+      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/"]',
     },
 
     'full_symbols': {
