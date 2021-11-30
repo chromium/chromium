@@ -7,17 +7,33 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
+
+namespace {
+
+PhysicalRect ToPhysicalRect(const DOMRectReadOnly& rect) {
+  return PhysicalRect(LayoutUnit::FromDoubleRound(rect.x()),
+                      LayoutUnit::FromDoubleRound(rect.y()),
+                      LayoutUnit::FromDoubleRound(rect.width()),
+                      LayoutUnit::FromDoubleRound(rect.height()));
+}
+
+}  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
     : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
@@ -25,6 +41,8 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
   DocumentFencedFrames::From(document).RegisterFencedFrame(this);
+  if (!features::IsFencedFramesMPArchBased())
+    StartResizeObserver();
 }
 
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
@@ -32,6 +50,7 @@ HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
 void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
+  visitor->Trace(resize_observer_);
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
@@ -62,6 +81,12 @@ void HTMLFencedFrameElement::FencedFrameDelegate::Trace(
 }
 
 // END HTMLFencedFrameElement::FencedFrameDelegate.
+
+HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
+  if (const ShadowRoot* root = UserAgentShadowRoot())
+    return To<HTMLIFrameElement>(root->lastChild());
+  return nullptr;
+}
 
 Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(
     ContainerNode& insertion_point) {
@@ -107,6 +132,9 @@ void HTMLFencedFrameElement::Navigate() {
 
   DCHECK(frame_delegate_);
   frame_delegate_->Navigate(url);
+
+  if (!frozen_frame_size_)
+    FreezeFrameSize();
 }
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
@@ -130,6 +158,90 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
 
 bool HTMLFencedFrameElement::SupportsFocus() const {
   return features::IsFencedFramesMPArchBased();
+}
+
+void HTMLFencedFrameElement::FreezeFrameSize() {
+  if (features::IsFencedFramesMPArchBased())
+    return;
+  DCHECK(!frozen_frame_size_);
+
+  // When the parser finds `<fencedframe>` with the `src` attribute, the
+  // |Navigate| occurs after |LayoutObject| tree is created and its initial
+  // layout was done (|NeedsLayout| is cleared,) but the size of the `<iframe>`
+  // is still (0, 0). Wait until a lifecycle completes and the resize observer
+  // runs.
+  if (!content_rect_) {
+    should_freeze_frame_size_on_next_layout_ = true;
+    return;
+  }
+
+  frozen_frame_size_ = content_rect_->size;
+  UpdateInnerStyleOnFrozenInternalFrame();
+}
+
+void HTMLFencedFrameElement::StartResizeObserver() {
+  DCHECK(!features::IsFencedFramesMPArchBased());
+  DCHECK(!resize_observer_);
+  resize_observer_ =
+      ResizeObserver::Create(GetDocument().domWindow(),
+                             MakeGarbageCollected<ResizeObserverDelegate>());
+  resize_observer_->observe(this);
+}
+
+void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
+    const HeapVector<Member<ResizeObserverEntry>>& entries) {
+  if (entries.IsEmpty())
+    return;
+  const Member<ResizeObserverEntry>& entry = entries.back();
+  auto* element = To<HTMLFencedFrameElement>(entry->target());
+  const DOMRectReadOnly* content_rect = entry->contentRect();
+  element->OnResize(ToPhysicalRect(*content_rect));
+}
+
+void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
+  content_rect_ = content_rect;
+  // If the size information at |FreezeFrameSize| is not complete and we
+  // needed to postpone freezing until the next resize, do it now. See
+  // |FreezeFrameSize| for more.
+  if (should_freeze_frame_size_on_next_layout_) {
+    should_freeze_frame_size_on_next_layout_ = false;
+    DCHECK(!frozen_frame_size_);
+    frozen_frame_size_ = content_rect_->size;
+  }
+  if (frozen_frame_size_)
+    UpdateInnerStyleOnFrozenInternalFrame();
+}
+
+void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
+  DCHECK(content_rect_);
+  DCHECK(frozen_frame_size_);
+  const double child_width = frozen_frame_size_->width.ToDouble();
+  const double child_height = frozen_frame_size_->height.ToDouble();
+  // TODO(kojii): Theoritically this `transform` is the same as `object-fit:
+  // contain`, but `<iframe>` does not support the `object-fit` property today.
+  // We can change to use the `object-fit` property and stop the resize-observer
+  // once it is supported.
+  String css;
+  if (child_width <= std::numeric_limits<double>::epsilon() ||
+      child_height <= std::numeric_limits<double>::epsilon()) {
+    // If the child's width or height is zero, the scale will be infinite. Do
+    // not scale in such cases.
+    css =
+        String::Format("width: %fpx; height: %fpx", child_width, child_height);
+  } else {
+    const double parent_width = content_rect_->Width().ToDouble();
+    const double parent_height = content_rect_->Height().ToDouble();
+    const double scale_x = parent_width / child_width;
+    const double scale_y = parent_height / child_height;
+    const double scale = std::min(scale_x, scale_y);
+    const double tx = (parent_width - child_width * scale) / 2;
+    const double ty = (parent_height - child_height * scale) / 2;
+    css = String::Format(
+        "width: %fpx; height: %fpx; transform: translate(%fpx, %fpx) scale(%f)",
+        child_width, child_height, tx, ty, scale);
+  }
+  InnerIFrameElement()->setAttribute(html_names::kStyleAttr, css,
+                                     ASSERT_NO_EXCEPTION);
 }
 
 }  // namespace blink

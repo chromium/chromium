@@ -12,11 +12,12 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
 
-class FencedFrameShadowDOMDelegateTest : public PageTestBase {
+class FencedFrameShadowDOMDelegateTest : public RenderingTest {
  protected:
   void SetUp() override {
     PageTestBase::SetUp();
@@ -37,18 +38,19 @@ class FencedFrameShadowDOMDelegateTest : public PageTestBase {
   void AssertInternalIFrameExists(HTMLFencedFrameElement* fenced_frame) {
     ShadowRoot* shadow_root = fenced_frame->UserAgentShadowRoot();
     EXPECT_TRUE(shadow_root);
-    EXPECT_TRUE(shadow_root->Children()->HasExactlyOneItem());
 
     HTMLCollection* collection = shadow_root->getElementsByTagName("iframe");
     EXPECT_TRUE(collection->HasExactlyOneItem());
   }
 
   HTMLIFrameElement& ShadowIFrame() {
-    HTMLCollection* collection =
-        FencedFrame().UserAgentShadowRoot()->Children();
-    DCHECK(collection->HasExactlyOneItem());
-    Element* element = *collection->begin();
-    return To<HTMLIFrameElement>(*element);
+    HTMLFencedFrameElement& element = FencedFrame();
+    DCHECK(element.InnerIFrameElement());
+    return *element.InnerIFrameElement();
+  }
+
+  String IFrameHTMLAsString(HTMLFencedFrameElement& element) {
+    return element.InnerIFrameElement()->outerHTML();
   }
 
  private:
@@ -66,9 +68,10 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateRaw) {
   GetDocument().body()->AppendChild(fenced_frame);
   EXPECT_TRUE(fenced_frame->isConnected());
   EXPECT_NE(nullptr, fenced_frame->UserAgentShadowRoot());
-  EXPECT_EQ("<iframe></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+  EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(*fenced_frame));
   EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+  EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
@@ -76,9 +79,10 @@ TEST_F(FencedFrameShadowDOMDelegateTest, CreateViasetInnerHTML) {
   HTMLFencedFrameElement& fenced_frame = FencedFrame();
   EXPECT_TRUE(fenced_frame.isConnected());
   EXPECT_NE(nullptr, fenced_frame.UserAgentShadowRoot());
-  EXPECT_EQ("<iframe></iframe>",
-            fenced_frame.UserAgentShadowRoot()->innerHTML());
+  EXPECT_EQ("<iframe></iframe>", IFrameHTMLAsString(fenced_frame));
   EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+  EXPECT_FALSE(fenced_frame.ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame.FrozenFrameSize());
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {
@@ -108,41 +112,137 @@ TEST_F(FencedFrameShadowDOMDelegateTest, NavigationWithInsertionAndRemoval) {
   HTMLFencedFrameElement* fenced_frame =
       MakeGarbageCollected<HTMLFencedFrameElement>(GetDocument());
   EXPECT_EQ(0u, fenced_frame->UserAgentShadowRoot()->CountChildren());
+  EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 
   // Navigation before insertion has no effect.
   fenced_frame->setAttribute(html_names::kSrcAttr, "https://example.com");
   EXPECT_EQ(0u, fenced_frame->UserAgentShadowRoot()->CountChildren());
+  EXPECT_FALSE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 
   // Insertion causes navigation to the last `src` attribute mutation value.
   GetDocument().body()->AppendChild(fenced_frame);
   AssertInternalIFrameExists(fenced_frame);
   EXPECT_EQ("<iframe src=\"https://example.com/\"></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+            IFrameHTMLAsString(*fenced_frame));
+  EXPECT_TRUE(fenced_frame->ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame->FrozenFrameSize());
 
   // Navigating after insertion works correctly.
   fenced_frame->setAttribute(html_names::kSrcAttr, "https://example-2.com");
   EXPECT_EQ("<iframe src=\"https://example-2.com/\"></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+            IFrameHTMLAsString(*fenced_frame));
   EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
 
   // Removal does not remove the internal iframe, or change its `src`.
   GetDocument().body()->RemoveChild(fenced_frame);
   AssertInternalIFrameExists(fenced_frame);
   EXPECT_EQ("<iframe src=\"https://example-2.com/\"></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+            IFrameHTMLAsString(*fenced_frame));
 
   // Navigating after removal has no effect on the internal iframe's `src`
   // attribute, because the HTMLFencedFrameElement is not connected.
   fenced_frame->setAttribute(html_names::kSrcAttr, "https://example-3.com");
   EXPECT_EQ("<iframe src=\"https://example-2.com/\"></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+            IFrameHTMLAsString(*fenced_frame));
 
   // Re-insertion allows the last `src` attribute mutation to take effect.
   GetDocument().body()->AppendChild(fenced_frame);
   AssertInternalIFrameExists(fenced_frame);
   EXPECT_EQ("<iframe src=\"https://example-3.com/\"></iframe>",
-            fenced_frame->UserAgentShadowRoot()->innerHTML());
+            IFrameHTMLAsString(*fenced_frame));
   EXPECT_TRUE(ShadowIFrame().GetFramePolicy().is_fenced);
+}
+
+TEST_F(FencedFrameShadowDOMDelegateTest, FreezeSizeByInnerHTML) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    fencedframe {
+      width: 100px;
+      height: 100px;
+    }
+    .large {
+      width: 200px;
+      height: 200px;
+    }
+    </style>
+    <fencedframe src="https://example.com"></fencedframe>
+)HTML");
+  // The frame size should be frozen because the `src` attribute is set.
+  HTMLFencedFrameElement& fenced_frame = FencedFrame();
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(100, 100));
+
+  // Changing the size of the fenced frame should not affect the frozen size.
+  fenced_frame.classList().Add("large");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(100, 100));
+}
+
+TEST_F(FencedFrameShadowDOMDelegateTest, FreezeSizeBySrc) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    fencedframe {
+      width: 100px;
+      height: 100px;
+    }
+    .large {
+      width: 200px;
+      height: 200px;
+    }
+    </style>
+    <fencedframe></fencedframe>
+)HTML");
+  HTMLFencedFrameElement& fenced_frame = FencedFrame();
+  EXPECT_FALSE(fenced_frame.ShouldFreezeFrameSizeOnNextLayoutForTesting());
+  EXPECT_FALSE(fenced_frame.FrozenFrameSize());
+
+  fenced_frame.classList().Add("large");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(fenced_frame.FrozenFrameSize());
+
+  // The frame size is frozen after the fenced frame became larger.
+  fenced_frame.setAttribute(html_names::kSrcAttr, "https://example.com");
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(200, 200));
+
+  // Making it smaller should not affect the frozen size.
+  fenced_frame.classList().Remove("large");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(200, 200));
+}
+
+// Test when the frozen width or height is zero.
+// The `object-fit: contain` behavior can't scale the content if its width or
+// height is zero. It shouldn't hit divide-by-zero errors in such cases.
+TEST_F(FencedFrameShadowDOMDelegateTest, FreezeSizeToZero) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    fencedframe {
+      width: 100px;
+      height: 0;
+    }
+    </style>
+    <fencedframe src="https://example.com"></fencedframe>
+)HTML");
+  HTMLFencedFrameElement& fenced_frame = FencedFrame();
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(100, 0));
+}
+
+TEST_F(FencedFrameShadowDOMDelegateTest, FreezeSizeWithBorderPadding) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    fencedframe {
+      width: 100px;
+      height: 100px;
+      border: 15px solid blue;
+      padding: 10px;
+    }
+    </style>
+    <fencedframe src="https://example.com"></fencedframe>
+)HTML");
+  // The frame size should be frozen because the `src` attribute is set.
+  HTMLFencedFrameElement& fenced_frame = FencedFrame();
+  EXPECT_EQ(fenced_frame.FrozenFrameSize(), PhysicalSize(100, 100));
 }
 
 }  // namespace blink

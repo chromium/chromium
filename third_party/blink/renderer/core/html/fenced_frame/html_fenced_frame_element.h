@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -71,6 +72,29 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
 
+  // TODO(kojii): Currently followings members are valid only when non-MPArch.
+  // They may better be moved to |FencedFrameDelegate| once how to achieve the
+  // desired layout behavior on MPArch has been determined.
+
+  // The frame size is "frozen" when the `src` attribute is set.
+  // The frozen state is kept in this element so that it can survive across
+  // reattaches.
+  const absl::optional<PhysicalSize>& FrozenFrameSize() const {
+    return frozen_frame_size_;
+  }
+  // True if the frame size should be frozen when the next resize completed.
+  // When `src` is set but layout is not completed yet, the frame size is frozen
+  // after the first layout.
+  bool ShouldFreezeFrameSizeOnNextLayoutForTesting() const {
+    return should_freeze_frame_size_on_next_layout_;
+  }
+
+  // Returns the inner `IFRAME` element. This element creates two boxes, the
+  // outer container and the inner frame, so that the outer container can
+  // respond to the size change requests from the containing layout algorithm,
+  // while keeping the inner frame size unchanged.
+  HTMLIFrameElement* InnerIFrameElement() const;
+
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`.
@@ -88,9 +112,27 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
 
+  void FreezeFrameSize();
+
+  void StartResizeObserver();
+  void OnResize(const PhysicalRect& content_box);
+  void UpdateInnerStyleOnFrozenInternalFrame();
+
+  class ResizeObserverDelegate final : public ResizeObserver::Delegate {
+   public:
+    void OnResize(const HeapVector<Member<ResizeObserverEntry>>& entries) final;
+  };
+
   // The underlying <fencedframe> implementation that we delegate all of the
   // important bits to. See the comment above this class declaration.
   Member<FencedFrameDelegate> frame_delegate_;
+  Member<ResizeObserver> resize_observer_;
+  // See |FrozenFrameSize| above.
+  absl::optional<PhysicalSize> frozen_frame_size_;
+  absl::optional<PhysicalRect> content_rect_;
+  bool should_freeze_frame_size_on_next_layout_ = false;
+
+  friend class ResizeObserverDelegate;
 };
 
 // Type casting. Custom since adoption could lead to an HTMLFencedFrameElement

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -21,24 +22,41 @@ FencedFrameShadowDOMDelegate::FencedFrameShadowDOMDelegate(
 }
 
 void FencedFrameShadowDOMDelegate::DidGetInserted() {
-  DCHECK(GetElement().UserAgentShadowRoot());
-  HTMLCollection* shadow_children =
-      GetElement().UserAgentShadowRoot()->Children();
-  if (!shadow_children->IsEmpty())
-    return;
-
   // Only create and append a new internal <iframe> element if it doesn't
   // already exist.
-  auto* iframe =
-      MakeGarbageCollected<HTMLIFrameElement>(GetElement().GetDocument());
-  GetElement().UserAgentShadowRoot()->AppendChild(iframe);
+  ShadowRoot* root = GetElement().UserAgentShadowRoot();
+  DCHECK(root);
+  if (!root->HasChildren())
+    AddUserAgentShadowContent(*root);
+}
+
+void FencedFrameShadowDOMDelegate::AddUserAgentShadowContent(ShadowRoot& root) {
+  DCHECK(!root.HasChildren());
+
+  // Make all children block, to avoid making this box an inline formatting
+  // context, and possible baseline alignment kicking in.
+  Document& doc = GetElement().GetDocument();
+  auto* style =
+      MakeGarbageCollected<HTMLStyleElement>(doc, CreateElementFlags());
+  style->setTextContent(R"CSS(
+iframe {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  transform-origin: left top;
+}
+)CSS");
+  root.AppendChild(style);
+
+  auto* iframe = MakeGarbageCollected<HTMLIFrameElement>(doc);
+  root.AppendChild(iframe);
 }
 
 void FencedFrameShadowDOMDelegate::Navigate(const KURL& url) {
   DCHECK(GetElement().UserAgentShadowRoot());
 
-  HTMLIFrameElement* internal_iframe =
-      To<HTMLIFrameElement>(GetElement().UserAgentShadowRoot()->firstChild());
+  HTMLIFrameElement* internal_iframe = GetElement().InnerIFrameElement();
   DCHECK(internal_iframe);
   AtomicString url_string(url.GetString());
   internal_iframe->setAttribute(html_names::kSrcAttr, url_string);

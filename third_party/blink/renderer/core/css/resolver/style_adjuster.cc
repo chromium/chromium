@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -141,6 +143,47 @@ void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetTextUnderlineOffset(Length());  // crbug.com/1247912
   style.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
+}
+
+// Returns the `<display-outside>` for a `EDisplay` value.
+// https://drafts.csswg.org/css-display-3/#propdef-display
+EDisplay DisplayOutside(EDisplay display) {
+  switch (display) {
+    case EDisplay::kBlock:
+    case EDisplay::kTable:
+    case EDisplay::kWebkitBox:
+    case EDisplay::kFlex:
+    case EDisplay::kGrid:
+    case EDisplay::kBlockMath:
+    case EDisplay::kListItem:
+    case EDisplay::kFlowRoot:
+    case EDisplay::kLayoutCustom:
+    case EDisplay::kTableRowGroup:
+    case EDisplay::kTableHeaderGroup:
+    case EDisplay::kTableFooterGroup:
+    case EDisplay::kTableRow:
+    case EDisplay::kTableColumnGroup:
+    case EDisplay::kTableColumn:
+    case EDisplay::kTableCell:
+    case EDisplay::kTableCaption:
+      return EDisplay::kBlock;
+    case EDisplay::kInline:
+    case EDisplay::kInlineBlock:
+    case EDisplay::kInlineTable:
+    case EDisplay::kWebkitInlineBox:
+    case EDisplay::kInlineFlex:
+    case EDisplay::kInlineGrid:
+    case EDisplay::kInlineLayoutCustom:
+    case EDisplay::kMath:
+      return EDisplay::kInline;
+    case EDisplay::kNone:
+    case EDisplay::kContents:
+      // These values don't have `<display-outside>`.
+      // Returns the original value.
+      return display;
+  }
+  NOTREACHED();
+  return EDisplay::kBlock;
 }
 
 }  // namespace
@@ -381,6 +424,26 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     style.SetOverflowX(EOverflow::kVisible);
     style.SetOverflowY(EOverflow::kVisible);
     return;
+  }
+
+  if (IsA<HTMLFencedFrameElement>(element) &&
+      !features::IsFencedFramesMPArchBased()) {
+    // Force the inside-display to `flow`, but honors the outside-display.
+    switch (DisplayOutside(style.Display())) {
+      case EDisplay::kInline:
+      case EDisplay::kContents:
+        style.SetDisplay(EDisplay::kInlineBlock);
+        break;
+      case EDisplay::kBlock:
+        style.SetDisplay(EDisplay::kBlock);
+        break;
+      case EDisplay::kNone:
+        break;
+      default:
+        NOTREACHED();
+        style.SetDisplay(EDisplay::kInlineBlock);
+        break;
+    }
   }
 
   if (IsA<HTMLRTElement>(element)) {
