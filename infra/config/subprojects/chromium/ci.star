@@ -2790,6 +2790,9 @@ ci.dawn_linux_builder(
         category = "ToT|Linux|Builder",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.dawn_linux_builder(
@@ -2801,6 +2804,9 @@ ci.dawn_linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.dawn_thin_tester(

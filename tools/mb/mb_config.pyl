@@ -217,8 +217,8 @@
     },
 
     'chromium.dawn': {
-      'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot',
-      'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot',
+      'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
+      'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on',
@@ -2136,6 +2136,10 @@
 
     'dawn_tests_with_desktop_gl_release_trybot': [
       'dawn_tests', 'dawn_enable_desktop_gl', 'release_trybot_minimal_symbols',
+    ],
+
+    'dawn_tests_with_desktop_gl_release_trybot_reclient': [
+      'dawn_tests', 'dawn_enable_desktop_gl', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'debug_bot': [
