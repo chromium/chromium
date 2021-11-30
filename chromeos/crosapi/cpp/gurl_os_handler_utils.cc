@@ -23,16 +23,18 @@ const size_t kHostStart = sizeof(kOsUrlPrefix) - 1;
 // Used for sanitation - any of the characters will cut the rest of the URL.
 const char kTerminatingCharacters[] = "/\\? #.%$&*<>+";
 
+// Note that GURL can't operate on the "os://" scheme as it is intentionally
+// not a registered scheme.
 std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
   // Only keep the scheme, host and sub-host. Everything else gets cut off.
-  const std::string& url_spec = url.spec();
+  const std::string& url_spec = base::ToLowerASCII(url.spec());
 
   // Find the first character after the host start
   std::size_t valid_spec_end =
       url_spec.find_first_of(kTerminatingCharacters, kHostStart);
 
   if (valid_spec_end == std::string::npos)
-    return base::ToLowerASCII(url_spec.substr(kHostStart));
+    return url_spec.substr(kHostStart);
 
   if (url_spec[valid_spec_end] == '/') {
     // A sub URL is allowed (e.g. chrome://settings/network) - so we skip the
@@ -41,15 +43,14 @@ std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
         url_spec.find_first_of(kTerminatingCharacters, valid_spec_end + 1);
 
     if (sub_host_end == std::string::npos)
-      return base::ToLowerASCII(url_spec.substr(kHostStart));
+      return url_spec.substr(kHostStart);
 
     if (sub_host_end > valid_spec_end + 1)
       valid_spec_end = sub_host_end;
   }
 
   // Copy beginning from after "os://" all characters in host and sub-host.
-  return base::ToLowerASCII(
-      url_spec.substr(kHostStart, valid_spec_end - kHostStart));
+  return url_spec.substr(kHostStart, valid_spec_end - kHostStart);
 }
 
 GURL GetValidHostAndSubhostFromGURL(GURL gurl) {
