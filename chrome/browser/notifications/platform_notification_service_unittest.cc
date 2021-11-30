@@ -137,6 +137,11 @@ class PlatformNotificationServiceTest : public testing::Test {
   }
 
  protected:
+  // This needs to be declared before `task_environment_`, so that it is
+  // destroyed after `task_environment_` - this ensures that tasks running on
+  // other threads won't access `scoped_feature_list_` while it is being
+  // destroyed.
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
@@ -416,9 +421,11 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
     : public PlatformNotificationServiceTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsNotificationIconAndTitle};
+ protected:
+  PlatformNotificationServiceTest_WebAppNotificationIconAndTitle() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsNotificationIconAndTitle);
+  }
 };
 
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
