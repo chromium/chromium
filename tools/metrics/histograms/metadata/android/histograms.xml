@@ -1357,6 +1357,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.FontLookup.Blink.DLFontsLatencyFailure" units="ms"
     expires_after="2022-06-30">
+  <obsolete>
+    Removed in M98. No longer tracked.
+  </obsolete>
+  <owner>drott@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    This metric was never logged. See
+    Android.FontLookup.Blink.DLFontsLatencyFailure2 instead.
+  </summary>
+</histogram>
+
+<histogram name="Android.FontLookup.Blink.DLFontsLatencyFailure2"
+    units="microseconds" expires_after="2022-06-30">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1364,12 +1377,26 @@ chromium-metrics-reviews@google.com.
     fonts at the time of instantiating the font in the fonts backend in the
     renderer. Includes time for error checking and attempting to create the font
     from the retrieved blob, if there is one. Only records timings for
-    situations in which a font could not be instantiated.
+    situations in which a font could not be instantiated. This is recorded only
+    on devices that support high resolution timers.
   </summary>
 </histogram>
 
 <histogram name="Android.FontLookup.Blink.DLFontsLatencySuccess" units="ms"
     expires_after="2022-06-30">
+  <obsolete>
+    Removed in M98. No longer tracked.
+  </obsolete>
+  <owner>drott@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    This is obsolete in favor of Android.FontLookup.Blink.DLFontsLatencySuccess.
+    This was incorrectly logging both successes and failures.
+  </summary>
+</histogram>
+
+<histogram name="Android.FontLookup.Blink.DLFontsLatencySuccess2"
+    units="microseconds" expires_after="2022-06-30">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1377,7 +1404,8 @@ chromium-metrics-reviews@google.com.
     fonts at the time of instantiating the font in the fonts backend in the
     renderer. Includes time for error checking and attempting to create the font
     from the retrieved blob, if there is one. Only records timings for
-    situations in which a font was successfully instantiated and returned.
+    situations in which a font was successfully instantiated and returned. This
+    is recorded only on devices that support high resolution timers.
   </summary>
 </histogram>
 

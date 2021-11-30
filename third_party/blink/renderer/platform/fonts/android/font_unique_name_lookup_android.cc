@@ -19,6 +19,20 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
+namespace {
+
+void LogFontLatencyFailure(base::TimeDelta delta) {
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Android.FontLookup.Blink.DLFontsLatencyFailure2", delta,
+      base::Microseconds(1), base::Seconds(10), 50);
+}
+
+void LogFontLatencySuccess(base::TimeDelta delta) {
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Android.FontLookup.Blink.DLFontsLatencySuccess2", delta,
+      base::Microseconds(1), base::Seconds(10), 50);
+}
+}  // namespace
 
 FontUniqueNameLookupAndroid::~FontUniqueNameLookupAndroid() = default;
 
@@ -171,15 +185,6 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
   if (!RequestedNameInQueryableFonts(font_unique_name))
     return nullptr;
 
-  DEFINE_STATIC_LOCAL_IMPL(
-      CustomCountHistogram, lookup_latency_histogram_success,
-      ("Android.FontLookup.Blink.DLFontsLatencySuccess", 0, 10000000, 50),
-      false);
-  DEFINE_STATIC_LOCAL_IMPL(
-      CustomCountHistogram, lookup_latency_histogram_failure,
-      ("Android.FontLookup.Blink.DLFontsLatencySuccess", 0, 10000000, 50),
-      false);
-
   base::File font_file;
   String case_folded_unique_font_name =
       String::FromUTF8(IcuFoldCase(font_unique_name.Utf8()).c_str());
@@ -194,14 +199,14 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
     LOG(ERROR)
         << "Mojo method returned false for case-folded unique font name: "
         << case_folded_unique_font_name;
-    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
+    LogFontLatencyFailure(elapsed_timer.Elapsed());
     return nullptr;
   }
 
   if (!font_file.IsValid()) {
     LOG(ERROR) << "Received platform font handle invalid, fd: "
                << font_file.GetPlatformFile();
-    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
+    LogFontLatencyFailure(elapsed_timer.Elapsed());
     return nullptr;
   }
 
@@ -209,18 +214,18 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   if (!font_data || font_data->isEmpty()) {
     LOG(ERROR) << "Received file descriptor has 0 size.";
-    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
+    LogFontLatencyFailure(elapsed_timer.Elapsed());
     return nullptr;
   }
 
   sk_sp<SkTypeface> return_typeface(SkTypeface::MakeFromData(font_data));
 
   if (!return_typeface) {
-    lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
+    LogFontLatencyFailure(elapsed_timer.Elapsed());
     LOG(ERROR) << "Cannot instantiate SkTypeface from font blob SkData.";
   }
 
-  lookup_latency_histogram_success.CountMicroseconds(elapsed_timer.Elapsed());
+  LogFontLatencySuccess(elapsed_timer.Elapsed());
   return return_typeface;
 }
 
