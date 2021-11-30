@@ -184,23 +184,31 @@ found in the LICENSE file. -->
       <h1 slot="title">
         [[getTitle_(locale, isEnterpriseManagedAccount_, isChildAccount_)]]
       </h1>
-      <div id="subtitle" slot="subtitle"
-          inner-h-t-m-l="[[getSubtitle_(locale)]]">
+      <div id="subtitle" slot="subtitle">
+        <div inner-h-t-m-l="[[getSubtitleArcEnabled_(locale)]]"
+            hidden="[[!shouldShowArcTos_(isEnterpriseManagedAccount_,
+                        isArcEnabled_)]]">
+        </div>
+        <div hidden="[[shouldShowArcTos_(isEnterpriseManagedAccount_,
+                        isArcEnabled_)]]">
+          [[i18nDynamic(locale, 'consolidatedConsentSubheaderArcDisabled')]]
+        </div>
       </div>
       <div id="loadedContent" slot="content">
-        <div id="termsDescriptionTitle"
-            hidden="[[isEnterpriseManagedAccount_]]">
-          [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
-        </div>
-        <div id="termsDescription"
-            inner-h-t-m-l="[[getTermsDescription_(locale)]]"
-            hidden="[[isTermsArcEnabledHidden_(isArcEnabled_,
-                        isEnterpriseManagedAccount_)]]">
-        </div>
-        <div id="termsDescriptionArcDisabled"
-            inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
-            hidden="[[isTermsArcDisabledHidden_(isArcEnabled_,
-                        isEnterpriseManagedAccount_)]]">
+        <div hidden="[[!shouldShowTos_(isEnterpriseManagedAccount_)]]">
+          <div id="termsDescriptionTitle">
+            [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
+          </div>
+          <div id="termsDescriptionArEnabled"
+              inner-h-t-m-l="[[getTermsDescriptionArcEnabled_(locale)]]"
+              hidden="[[!shouldShowArcTos_(isEnterpriseManagedAccount_,
+                          isArcEnabled_)]]">
+          </div>
+          <div id="termsDescriptionArcDisabled"
+              inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
+              hidden="[[shouldShowArcTos_(isEnterpriseManagedAccount_,
+                          isArcEnabled_)]]">
+          </div>
         </div>
 
         <!-- Usage stats toggle row -->

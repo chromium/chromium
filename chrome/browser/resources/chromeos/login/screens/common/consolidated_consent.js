@@ -99,26 +99,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         type: Boolean,
         value: true,
       },
-
-      googleEulaLoading_: {
-        type: Boolean,
-        value: true,
-      },
-
-      crosEulaLoading_: {
-        type: Boolean,
-        value: true,
-      },
-
-      arcTosLoading_: {
-        type: Boolean,
-        value: true,
-      },
-
-      privacyPolicyLoading_: {
-        type: Boolean,
-        value: true,
-      },
     };
   }
 
@@ -149,6 +129,16 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.googleEulaUrl_ = '';
     this.crosEulaUrl_ = '';
     this.arcTosUrl_ = '';
+
+    // Used for loading ARC ToS.
+    this.countryCode_ = '';
+
+    // When Google EULA and/or ARC ToS need to be shown to the user,
+    // it must be loaded before the loaded step is shown.
+    this.googleEulaLoading_ = false;
+    this.crosEulaLoading_ = false;
+    this.arcTosLoading_ = false;
+    this.privacyPolicyLoading_ = false;
   }
 
   /** Overridden from LoginScreenBehavior. */
@@ -187,18 +177,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.isDemo_ = data['isDemo'];
     this.isChildAccount_ = data['isChildAccount'];
     this.isEnterpriseManagedAccount_ = data['isEnterpriseManagedAccount'];
-
-    this.googleEulaLoading_ = true;
-    this.crosEulaLoading_ = true;
-    this.arcTosLoading_ = true;
+    this.countryCode_ = data['countryCode'];
 
     this.googleEulaUrl_ = data['googleEulaUrl'];
     this.crosEulaUrl_ = data['crosEulaUrl'];
     this.arcTosUrl_ = this.termsOfServiceHostName_ + '/about/play-terms.html';
 
-    const countryCode = data['countryCode'];
-    this.initializeArcTos_(countryCode);
-    this.loadWebviews_();
+    this.maybeLoadWebviews_(
+        this.isEnterpriseManagedAccount_, this.isArcEnabled_);
 
     if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
       this.$.loadedContent.classList.remove('landscape-vertical-centered');
@@ -222,6 +208,16 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     if (configuration.eulaAutoAccept && configuration.arcTosAutoAccept)
       this.onAcceptClick_();
+  }
+
+  // Managed users will not be shown any terms of service.
+  shouldShowTos_(isEnterpriseManagedAccount) {
+    return !isEnterpriseManagedAccount;
+  }
+
+  // If ARC is disabled, don't show ARC ToS.
+  shouldShowArcTos_(isEnterpriseManagedAccount, isArcEnabled) {
+    return !isEnterpriseManagedAccount && isArcEnabled;
   }
 
   initializeArcTos_(countryCode) {
@@ -267,13 +263,23 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     });
   }
 
-  loadWebviews_() {
-    this.loadEulaWebview_(
-        this.$.googleEulaWebview, this.googleEulaUrl_,
-        false /* clear_anchors */);
-    this.loadEulaWebview_(
-        this.$.crosEulaWebview, this.crosEulaUrl_, true /* clear_anchors */);
-    this.loadArcTosWebview_(this.arcTosUrl_);
+  maybeLoadWebviews_(isEnterpriseManagedAccount, isArcEnabled) {
+    if (this.shouldShowTos_(isEnterpriseManagedAccount)) {
+      this.googleEulaLoading_ = true;
+      this.crosEulaLoading_ = true;
+      this.loadEulaWebview_(
+          this.$.googleEulaWebview, this.googleEulaUrl_,
+          false /* clear_anchors */);
+      this.loadEulaWebview_(
+          this.$.crosEulaWebview, this.crosEulaUrl_, true /* clear_anchors */);
+    }
+
+    if (this.shouldShowArcTos_(isEnterpriseManagedAccount, isArcEnabled)) {
+      this.arcTosLoading_ = true;
+      this.privacyPolicyLoading_ = true;
+      this.initializeArcTos_(this.countryCode_);
+      this.loadArcTosWebview_(this.arcTosUrl_);
+    }
   }
 
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
@@ -431,7 +437,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         .addEventListener('click', () => this.onArcTosLinkClick_());
   }
 
-  getSubtitle_(locale) {
+  getSubtitleArcEnabled_(locale) {
     const subtitle = document.createElement('div');
     subtitle.innerHTML =
         this.i18nAdvanced('consolidatedConsentSubheader', {attrs: ['id']});
@@ -442,7 +448,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return subtitle.innerHTML;
   }
 
-  getTermsDescription_(locale) {
+  getTermsDescriptionArcEnabled_(locale) {
     const description = document.createElement('div');
     description.innerHTML = this.i18nAdvanced(
         'consolidatedConsentTermsDescription', {attrs: ['id']});
@@ -480,11 +486,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   getTitle_(locale, isEnterpriseManagedAccount, isChildAccount) {
+    if (!this.shouldShowTos_(isEnterpriseManagedAccount))
+      return this.i18n('consolidatedConsentHeaderManaged');
+
     if (isChildAccount)
       return this.i18n('consolidatedConsentHeaderChild');
-
-    if (isEnterpriseManagedAccount)
-      return this.i18n('consolidatedConsentHeaderManaged');
 
     return this.i18n('consolidatedConsentHeader');
   }
@@ -530,14 +536,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   isArcOptInsHidden_(isArcEnabled, isDemo) {
     return !isArcEnabled || isDemo;
-  }
-
-  isTermsArcEnabledHidden_(isArcEnabled, isEnterpriseManagedAccount) {
-    return !isArcEnabled || isEnterpriseManagedAccount;
-  }
-
-  isTermsArcDisabledHidden_(isArcEnabled, isEnterpriseManagedAccount) {
-    return isArcEnabled || isEnterpriseManagedAccount;
   }
 
   /**
@@ -635,7 +633,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   onRetryClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.LOADING);
     this.$.retryButton.focus();
-    this.loadWebviews_();
+    this.maybeLoadWebviews_(
+        this.isEnterpriseManagedAccount_, this.isArcEnabled_);
   }
 
   /**

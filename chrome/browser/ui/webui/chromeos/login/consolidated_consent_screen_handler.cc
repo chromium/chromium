@@ -38,6 +38,8 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_HEADER_MANAGED);
   builder->Add("consolidatedConsentSubheader",
                IDS_CONSOLIDATED_CONSENT_SUBHEADER);
+  builder->Add("consolidatedConsentSubheaderArcDisabled",
+               IDS_CONSOLIDATED_CONSENT_SUBHEADER_ARC_DISABLED);
   builder->Add("consolidatedConsentTermsDescriptionTitle",
                IDS_CONSOLIDATED_CONSENT_TERMS_TITLE);
   builder->Add("consolidatedConsentTermsDescription",

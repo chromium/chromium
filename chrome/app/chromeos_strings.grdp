@@ -3868,6 +3868,9 @@
   <message name="IDS_CONSOLIDATED_CONSENT_HEADER_MANAGED" desc="Title of the consolidated consent screen for managed accounts.">
     Control your data
   </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER_ARC_DISABLED" desc="Subtitle of the consolidated consent screen when ARC is disabled.">
+    You can control what data is shared with Google. You can change this anytime in Settings.
+  </message>
   <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen.">
     You can control what data is shared with Google. You can change this anytime in Settings. Data will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
