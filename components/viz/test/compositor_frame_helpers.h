@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/frame_deadline.h"
@@ -19,6 +20,8 @@
 
 namespace viz {
 
+class CopyOutputRequest;
+
 // Note that QuadParam structs should not have a user defined constructor to
 // allow the use designated initializers.
 
@@ -29,6 +32,7 @@ struct SolidColorQuadParms {
 struct SurfaceQuadParams {
   SkColor default_background_color = SK_ColorWHITE;
   bool stretch_content_to_fill_bounds = false;
+  bool is_reflection = false;
   bool allow_merge = true;
 };
 
@@ -57,9 +61,18 @@ class RenderPassBuilder {
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Size& output_size);
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Rect& output_rect);
 
+  // Constructors for use with CompositorFrameBuilder when the specific render
+  // pass id doesn't matter. CompositorFrameBuilder will auto assign valid ids.
+  explicit RenderPassBuilder(const gfx::Size& output_size);
+  explicit RenderPassBuilder(const gfx::Rect& output_rect);
+
   RenderPassBuilder(const RenderPassBuilder& other) = delete;
   RenderPassBuilder& operator=(const RenderPassBuilder& other) = delete;
   ~RenderPassBuilder();
+
+  // Checks basic validity, like the render pass hasn't already been built and
+  // there is at least one quad.
+  bool IsValid() const;
 
   // Returns the CompositorRenderPass and leaves |this| in an invalid state.
   std::unique_ptr<CompositorRenderPass> Build();
@@ -70,6 +83,16 @@ class RenderPassBuilder {
   RenderPassBuilder& SetHasDamageFromContributingContent(bool val);
   RenderPassBuilder& AddFilter(const cc::FilterOperation& filter);
   RenderPassBuilder& AddBackdropFilter(const cc::FilterOperation& filter);
+
+  // Creates a new stub CopyOutputRequest and adds it to the render pass. If
+  // |request_out| is not null the pointer will set to the newly created
+  // request.
+  //
+  // Note that |request_out| is a WeakPtr because the CopyOutputRequest lifetime
+  // is difficult to reason about as ownership can be transferred in many
+  // places.
+  RenderPassBuilder& AddStubCopyOutputRequest(
+      base::WeakPtr<CopyOutputRequest>* request_out = nullptr);
 
   // Methods to add DrawQuads start here. The methods are structured so that the
   // most important attributes on the quad are function parameters. Less
@@ -156,8 +179,16 @@ class CompositorFrameBuilder {
   // Adds a render pass with specified |output_rect| and |damage_rect|.
   CompositorFrameBuilder& AddRenderPass(const gfx::Rect& output_rect,
                                         const gfx::Rect& damage_rect);
+
+  // Add a new render pass. If the render pass has an invalid id then a new id
+  // will be assigned.
+  //
+  // This also populates CompositorFrameMetadata::referenced_surfaces if the
+  // render pass contains any SurfaceDrawQuads.
   CompositorFrameBuilder& AddRenderPass(
       std::unique_ptr<CompositorRenderPass> render_pass);
+  CompositorFrameBuilder& AddRenderPass(RenderPassBuilder& builder);
+
   // Sets list of render passes. The list of render passes must be empty when
   // this is called.
   CompositorFrameBuilder& SetRenderPassList(

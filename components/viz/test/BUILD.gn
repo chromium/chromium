@@ -29,6 +29,8 @@ viz_static_library("test_support") {
     "compositor_frame_helpers.h",
     "delegated_ink_point_renderer_skia_for_test.cc",
     "delegated_ink_point_renderer_skia_for_test.h",
+    "draw_quad_matchers.cc",
+    "draw_quad_matchers.h",
     "fake_compositor_frame_sink_client.cc",
     "fake_compositor_frame_sink_client.h",
     "fake_delay_based_time_source.cc",
