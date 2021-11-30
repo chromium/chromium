@@ -350,7 +350,7 @@
   "fileBrowserHandler": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "fileManagerPrivate": {
     "channel": "stable",

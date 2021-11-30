@@ -1013,6 +1013,8 @@ static_library("extensions") {
       sources += [
         "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.cc",
         "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
+        "api/file_manager/file_browser_handler_api_lacros.cc",
+        "api/file_manager/file_browser_handler_api_lacros.h",
         "api/image_writer_private/image_writer_controller_lacros.cc",
         "api/image_writer_private/image_writer_controller_lacros.h",
         "api/messaging/native_message_host_lacros.cc",

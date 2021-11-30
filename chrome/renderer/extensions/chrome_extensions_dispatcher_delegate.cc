@@ -43,12 +43,12 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/renderer/extensions/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/platform_keys_natives.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
-#include "chrome/renderer/extensions/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/file_manager_private_custom_bindings.h"
 #if defined(USE_CUPS)
 #include "chrome/renderer/extensions/printing_hooks_delegate.h"
@@ -72,14 +72,13 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
           new extensions::SyncFileSystemCustomBindings(context)));
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   module_system->RegisterNativeHandler(
+      "file_browser_handler",
+      std::make_unique<extensions::FileBrowserHandlerCustomBindings>(context));
+  module_system->RegisterNativeHandler(
       "platform_keys_natives",
       std::make_unique<extensions::PlatformKeysNatives>(context));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  module_system->RegisterNativeHandler(
-      "file_browser_handler",
-      std::unique_ptr<NativeHandler>(
-          new extensions::FileBrowserHandlerCustomBindings(context)));
   module_system->RegisterNativeHandler(
       "file_manager_private",
       std::unique_ptr<NativeHandler>(
@@ -151,6 +150,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
   source_map->RegisterSource("enterprise.platformKeys.Token",
                              IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS);
+  source_map->RegisterSource("fileBrowserHandler",
+                             IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys",
                              IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys.getPublicKeyUtil",
@@ -164,8 +165,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source_map->RegisterSource("certificateProvider",
                              IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("fileBrowserHandler",
-                             IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("fileManagerPrivate",
                              IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("fileSystemProvider",

@@ -262,6 +262,8 @@ static_library("common") {
     sources += [
       "extensions/api/commands/commands_handler.cc",
       "extensions/api/commands/commands_handler.h",
+      "extensions/api/file_browser_handlers/file_browser_handler.cc",
+      "extensions/api/file_browser_handlers/file_browser_handler.h",
       "extensions/api/notifications/notification_style.cc",
       "extensions/api/notifications/notification_style.h",
       "extensions/api/omnibox/omnibox_handler.cc",
@@ -348,8 +350,6 @@ static_library("common") {
   if (is_chromeos_ash) {
     assert(enable_extensions)
     sources += [
-      "extensions/api/file_browser_handlers/file_browser_handler.cc",
-      "extensions/api/file_browser_handlers/file_browser_handler.h",
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
       "extensions/api/input_ime/input_components_handler.cc",
