@@ -26,6 +26,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
 AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
     @"AXDetailsElements";
+AX_EXPORT constexpr NSString* const NSAccessibilityDOMIdentifierAttribute =
+    @"AXDOMIdentifier";
 AX_EXPORT constexpr NSString* const NSAccessibilityInvalidAttribute =
     @"AXInvalid";
 AX_EXPORT constexpr NSString* const

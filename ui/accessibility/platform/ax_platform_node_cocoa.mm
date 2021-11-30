@@ -651,6 +651,7 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
+    NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityChildrenAttribute,
     NSAccessibilityParentAttribute,
     NSAccessibilityPositionAttribute,
@@ -957,6 +958,17 @@ bool IsAXSetter(SEL selector) {
   }
 
   return [elements count] ? elements : nil;
+}
+
+- (NSString*)AXDOMIdentifier {
+  if (![self instanceActive])
+    return nil;
+
+  std::string id;
+  if (_node->GetHtmlAttribute("id", &id))
+    return base::SysUTF8ToNSString(id);
+
+  return @"";
 }
 
 - (NSNumber*)AXRequired {

@@ -69,7 +69,6 @@ NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
-NSString* const NSAccessibilityDOMIdentifierAttribute = @"AXDOMIdentifier";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
@@ -796,7 +795,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
       {NSAccessibilityDropEffectsAttribute, @"dropEffects"},
       {NSAccessibilityDOMClassList, @"domClassList"},
-      {NSAccessibilityDOMIdentifierAttribute, @"domIdentifier"},
       {NSAccessibilityEditableAncestorAttribute, @"editableAncestor"},
       {NSAccessibilityElementBusyAttribute, @"elementBusy"},
       {NSAccessibilityEnabledAttribute, @"enabled"},
@@ -1206,17 +1204,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       [ret addObject:(base::SysUTF8ToNSString(className))];
   }
   return ret;
-}
-
-- (NSString*)domIdentifier {
-  if (![self instanceActive])
-    return nil;
-
-  std::string id;
-  if (_owner->GetHtmlAttribute("id", &id))
-    return base::SysUTF8ToNSString(id);
-
-  return @"";
 }
 
 - (id)editableAncestor {
@@ -3177,7 +3164,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                        NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
                        NSAccessibilityDOMClassList,
-                       NSAccessibilityDOMIdentifierAttribute,
                        NSAccessibilityElementBusyAttribute,
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,

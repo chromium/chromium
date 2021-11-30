@@ -1,0 +1,2 @@
+header.AXDOMIdentifier='header'
+header.AXChildren[0].AXDOMIdentifier=''
