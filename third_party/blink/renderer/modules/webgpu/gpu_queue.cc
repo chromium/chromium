@@ -385,6 +385,7 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
   const uint8_t* data_ptr = data_base_ptr_bytes + data_byte_offset;
   GetProcs().queueWriteBuffer(GetHandle(), buffer->GetHandle(), buffer_offset,
                               data_ptr, static_cast<size_t>(write_byte_size));
+  EnsureFlush();
 }
 
 void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
@@ -427,6 +428,7 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
 
   GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data, data_size,
                                &dawn_data_layout, &dawn_write_size);
+  EnsureFlush();
   return;
 }
 
