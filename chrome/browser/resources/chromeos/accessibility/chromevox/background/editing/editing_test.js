@@ -2023,3 +2023,74 @@ TEST_F('ChromeVoxEditingTest', 'TableNavigation', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxEditingTest', 'InputTextBrailleContractions', function() {
+  const site = `
+    <input type=text value="about that"></input>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    // In case LibLouis takes a while to load.
+    if (!ChromeVox.braille.displayManager_.translatorManager_.liblouis_
+             .isLoaded()) {
+      await new Promise(r => {
+        ChromeVox.braille.displayManager_.translatorManager_.liblouis_
+            .onInstanceLoad_ = r;
+      });
+    }
+
+    // Fake an available display.
+    ChromeVox.braille.displayManager_.refreshDisplayState_(
+        {available: true, textRowCount: 1, textColumnCount: 40});
+
+    // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
+    // contracted braille).
+    localStorage['brailleTable'] = 'en-UEB-g2';
+
+    async function waitForBrailleDots(expectedDots) {
+      return new Promise(r => {
+        chrome.brailleDisplayPrivate.writeDots = (dotsBuffer) => {
+          const view = new Uint8Array(dotsBuffer);
+          const dots = new Array(view.length);
+          view.forEach((item, index) => dots[index] = item.toString(2));
+          if (expectedDots.toString() === dots.toString()) {
+            r();
+          }
+        };
+      });
+    }
+
+    this.press(KeyCode.END)();
+
+    // This test intentionally leaves the raw binary encoding for braille. Dots
+    // are read from right to left.
+    await waitForBrailleDots([
+      // 'ab' is 'about' in UEB Grade 2.
+      1 /* a */, 11 /* b */,
+
+      0 /* space */,
+
+      11110 /* t */, 10011 /* h */, 1 /* a */, 11110 /* t */,
+
+      11000000 /* cursor _ */,
+
+      101011 /* ed contraction */
+    ]);
+
+    this.press(KeyCode.HOME)();
+    await waitForBrailleDots([
+      11000001 /* a with a cursor _*/, 11 /* b */, 10101 /* o */,
+      100101 /* u */, 11110 /* t */,
+
+      0 /* space */,
+
+      // 't' by itself is contracted as 'that'.
+      11110 /* t */,
+
+      0 /* space */,
+
+      101011 /* ed contraction */
+    ]);
+  });
+});
