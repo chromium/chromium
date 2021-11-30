@@ -65,8 +65,6 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
                                                               icon, dip_size);
   button->SetTooltipText(tooltip_text);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetBackground(
-      views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
   button->SetProperty(views::kMarginsKey, margin_insets);
   return button;
 }
