@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 
 #include <string>
 #include <utility>
@@ -96,10 +96,10 @@ class FakeAudioOutputIPCDelegate : public media::AudioOutputIPCDelegate {
 
 }  // namespace
 
-class WebAudioOutputIPCFactoryTest : public testing::Test {
+class AudioOutputIPCFactoryTest : public testing::Test {
  public:
-  WebAudioOutputIPCFactoryTest() = default;
-  ~WebAudioOutputIPCFactoryTest() override = default;
+  AudioOutputIPCFactoryTest() = default;
+  ~AudioOutputIPCFactoryTest() override = default;
 
   void RequestAuthorizationOnIOThread(
       std::unique_ptr<media::AudioOutputIPC> output_ipc) {
@@ -113,8 +113,8 @@ class WebAudioOutputIPCFactoryTest : public testing::Test {
   FakeAudioOutputIPCDelegate fake_delegate;
 };
 
-TEST_F(WebAudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
-  // This test makes sure that WebAudioOutputIPCFactory correctly binds the
+TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
+  // This test makes sure that AudioOutputIPCFactory correctly binds the
   // RendererAudioOutputStreamFactory to the IO thread.
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   base::RunLoop run_loop;
@@ -129,7 +129,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
       base::BindRepeating(&FakeRemoteFactory::Bind,
                           base::Unretained(&remote_factory)));
 
-  WebAudioOutputIPCFactory ipc_factory(io_thread->task_runner());
+  AudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
   ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId),
                                     &interface_broker);
@@ -141,7 +141,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   io_thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebAudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
+          &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
           base::Unretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId))));
 
@@ -157,7 +157,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
+TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
   // This test simulates having several frames being created and destructed.
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   auto io_thread = MakeIOThread();
@@ -177,7 +177,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
 
   base::RunLoop().RunUntilIdle();
 
-  WebAudioOutputIPCFactory ipc_factory(io_thread->task_runner());
+  AudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
   for (int i = 0; i < n_factories; i++) {
     ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId + i),
@@ -189,7 +189,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
   io_thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebAudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
+          &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
           base::Unretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId))));
   run_loop.Run();
@@ -202,7 +202,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
   io_thread->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebAudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
+          &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
           base::Unretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId + 2))));
   run_loop2.Run();
@@ -220,7 +220,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(WebAudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
+TEST_F(AudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
   // This test makes sure that calling Register... followed by Deregister...
   // correctly sequences the registration before the deregistration.
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
@@ -235,13 +235,13 @@ TEST_F(WebAudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
       base::BindRepeating(&FakeRemoteFactory::Bind,
                           base::Unretained(&remote_factory)));
 
-  WebAudioOutputIPCFactory ipc_factory(io_thread->task_runner());
+  AudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
   ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId),
                                     &interface_broker);
   ipc_factory.MaybeDeregisterRemoteFactory(TokenFromInt(kRenderFrameId));
   // That there is no factory remaining at destruction is DCHECKed in the
-  // WebAudioOutputIPCFactory destructor.
+  // AudioOutputIPCFactory destructor.
 
   base::RunLoop().RunUntilIdle();
 

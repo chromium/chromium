@@ -193,7 +193,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
@@ -2007,8 +2007,8 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
     GetContentClient()->renderer()->RenderFrameCreated(this);
   }
 
-  // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
-  auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+  // blink::AudioOutputIPCFactory::io_task_runner_ may be null in tests.
+  auto& factory = blink::AudioOutputIPCFactory::GetInstance();
   if (factory.io_task_runner()) {
     factory.RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
                                   GetBrowserInterfaceBroker());
@@ -3698,8 +3698,8 @@ void RenderFrameImpl::WillDetach() {
   for (auto& observer : observers_)
     observer.WillDetach();
 
-  // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
-  auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+  // blink::AudioOutputIPCFactory::io_task_runner_ may be null in tests.
+  auto& factory = blink::AudioOutputIPCFactory::GetInstance();
   if (factory.io_task_runner())
     factory.MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());
 
@@ -3876,8 +3876,8 @@ void RenderFrameImpl::DidCommitNavigation(
     browser_interface_broker_receiver = browser_interface_broker_proxy_.Reset(
         agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
-    // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
-    auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+    // blink::AudioOutputIPCFactory::io_task_runner_ may be null in tests.
+    auto& factory = blink::AudioOutputIPCFactory::GetInstance();
     if (factory.io_task_runner()) {
       // The RendererAudioOutputStreamFactory must be readily accessible on the
       // IO thread when it's needed, because the main thread may block while

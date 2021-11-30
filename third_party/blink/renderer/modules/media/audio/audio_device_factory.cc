@@ -20,8 +20,8 @@
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_renderer_mixer_input.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -56,11 +56,11 @@ scoped_refptr<media::AudioOutputDevice> NewOutputDevice(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
-  CHECK(blink::WebAudioOutputIPCFactory::GetInstance().io_task_runner());
+  CHECK(blink::AudioOutputIPCFactory::GetInstance().io_task_runner());
   auto device = base::MakeRefCounted<media::AudioOutputDevice>(
-      blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+      blink::AudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
           frame_token),
-      blink::WebAudioOutputIPCFactory::GetInstance().io_task_runner(), params,
+      blink::AudioOutputIPCFactory::GetInstance().io_task_runner(), params,
       auth_timeout);
   device->RequestDeviceAuthorization();
   return device;
@@ -178,7 +178,7 @@ AudioDeviceFactory::NewAudioCapturerSource(
   }
 
   return base::MakeRefCounted<media::AudioInputDevice>(
-      blink::WebAudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
+      blink::AudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
           frame_token, params),
       media::AudioInputDevice::Purpose::kUserInput,
       media::AudioInputDevice::DeadStreamDetection::kEnabled);

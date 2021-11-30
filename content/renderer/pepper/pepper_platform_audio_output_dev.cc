@@ -22,7 +22,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "media/audio/audio_device_description.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
@@ -261,7 +261,7 @@ bool PepperPlatformAudioOutputDev::Initialize(int sample_rate,
 
   client_ = client;
 
-  ipc_ = blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+  ipc_ = blink::AudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
       render_frame->GetWebFrame()->GetLocalFrameToken());
   CHECK(ipc_);
 

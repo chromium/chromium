@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_OUTPUT_IPC_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_OUTPUT_IPC_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_OUTPUT_IPC_FACTORY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_OUTPUT_IPC_FACTORY_H_
 
 #include <memory>
 
@@ -32,15 +32,15 @@ class BrowserInterfaceBrokerProxy;
 // TODO(maxmorin): Registering the factories for each frame will become
 // unnecessary when https://crbug.com/668275 is fixed. When that is done, this
 // class can be greatly simplified.
-class BLINK_MODULES_EXPORT WebAudioOutputIPCFactory {
+class BLINK_MODULES_EXPORT AudioOutputIPCFactory {
  public:
-  explicit WebAudioOutputIPCFactory(
+  explicit AudioOutputIPCFactory(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-  WebAudioOutputIPCFactory(const WebAudioOutputIPCFactory&) = delete;
-  WebAudioOutputIPCFactory& operator=(const WebAudioOutputIPCFactory&) = delete;
-  ~WebAudioOutputIPCFactory();
+  AudioOutputIPCFactory(const AudioOutputIPCFactory&) = delete;
+  AudioOutputIPCFactory& operator=(const AudioOutputIPCFactory&) = delete;
+  ~AudioOutputIPCFactory();
 
-  static WebAudioOutputIPCFactory& GetInstance();
+  static AudioOutputIPCFactory& GetInstance();
 
   const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() const;
 
@@ -67,4 +67,4 @@ class BLINK_MODULES_EXPORT WebAudioOutputIPCFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_OUTPUT_IPC_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_OUTPUT_IPC_FACTORY_H_
