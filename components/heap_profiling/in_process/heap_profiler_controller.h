@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/time/time.h"
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
@@ -49,16 +50,26 @@ class HeapProfilerController {
   // Merges samples that have identical stack traces, excluding total and size.
   static SampleMap MergeSamples(const std::vector<Sample>& samples);
 
+  // Uses the exact parameter values for the sampling interval and time between
+  // samples, instead of a distribution around those values. This must be called
+  // before Start.
+  void SuppressRandomnessForTesting();
+
  private:
   using StoppedFlag = base::RefCountedData<base::AtomicFlag>;
 
+  struct CollectionInterval {
+    base::TimeDelta interval;
+    bool use_random_interval = false;
+  };
   static void ScheduleNextSnapshot(scoped_refptr<StoppedFlag> stopped,
-                                   base::TimeDelta heap_collection_interval);
+                                   CollectionInterval heap_collection_interval);
   static void TakeSnapshot(scoped_refptr<StoppedFlag> stopped,
-                           base::TimeDelta heap_collection_interval);
+                           CollectionInterval heap_collection_interval);
   static void RetrieveAndSendSnapshot();
 
   scoped_refptr<StoppedFlag> stopped_;
+  bool suppress_randomness_for_testing_ = false;
 };
 
 #endif  // COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_

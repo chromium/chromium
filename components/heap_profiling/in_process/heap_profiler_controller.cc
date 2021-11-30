@@ -17,6 +17,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
@@ -73,24 +74,34 @@ void HeapProfilerController::Start() {
   base::SamplingHeapProfiler::Get()->Start();
   const int interval = GetCollectionIntervalInMinutes();
   DCHECK_GT(interval, 0);
-  ScheduleNextSnapshot(stopped_, base::Minutes(interval));
+  ScheduleNextSnapshot(
+      stopped_, {.interval = base::Minutes(interval),
+                 .use_random_interval = !suppress_randomness_for_testing_});
+}
+
+void HeapProfilerController::SuppressRandomnessForTesting() {
+  suppress_randomness_for_testing_ = true;
 }
 
 // static
 void HeapProfilerController::ScheduleNextSnapshot(
     scoped_refptr<StoppedFlag> stopped,
-    base::TimeDelta heap_collection_interval) {
+    CollectionInterval heap_collection_interval) {
+  base::TimeDelta next_interval =
+      heap_collection_interval.use_random_interval
+          ? RandomInterval(heap_collection_interval.interval)
+          : heap_collection_interval.interval;
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(stopped),
                      heap_collection_interval),
-      RandomInterval(heap_collection_interval));
+      next_interval);
 }
 
 // static
 void HeapProfilerController::TakeSnapshot(
     scoped_refptr<StoppedFlag> stopped,
-    base::TimeDelta heap_collection_interval) {
+    CollectionInterval heap_collection_interval) {
   if (stopped->data.IsSet())
     return;
   RetrieveAndSendSnapshot();

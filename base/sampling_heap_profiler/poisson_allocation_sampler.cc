@@ -12,6 +12,8 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/ignore_result.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -123,6 +125,9 @@ thread_local bool g_tls_sampling_interval_initialized;
 // Controls if sample intervals should not be randomized. Used for testing.
 bool g_deterministic;
 
+// Controls if hooked samples should be ignored. Used for testing.
+std::atomic_bool g_mute_hooked_samples{false};
+
 // A positive value if profiling is running, otherwise it's zero.
 std::atomic_bool g_running;
 
@@ -133,6 +138,12 @@ std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set;
 std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
 
 void (*g_hooks_install_callback)();
+
+// This will be true if *either* InstallAllocatorHooksOnce or
+// SetHooksInstallerCallback has run. `g_hooks_install_callback` should be
+// invoked when *both* have run, so each of them checks the value and, if it is
+// true, knows that the other function has already run so it's time to invoke
+// the callback.
 std::atomic_bool g_hooks_installed;
 
 void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
@@ -318,6 +329,32 @@ void PartitionFreeHook(void* address) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
 
+void InstallStandardAllocatorHooks() {
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator::InsertAllocatorDispatch(&g_allocator_dispatch);
+#else
+  // If the allocator shim isn't available, then we don't install any hooks.
+  // There's no point in printing an error message, since this can regularly
+  // happen for tests.
+  ignore_result(g_allocator_dispatch);
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+  PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
+                                        &PartitionFreeHook);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+}
+
+void RemoveStandardAllocatorHooksForTesting() {
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator::RemoveAllocatorDispatchForTesting(
+      &g_allocator_dispatch);  // IN-TEST
+#endif
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+  PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
+#endif
+}
+
 }  // namespace
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
@@ -349,6 +386,36 @@ bool PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted() {
   return g_tls_internal_reentry_guard;
 }
 
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
+    ScopedMuteHookedSamplesForTesting() {
+  DCHECK(!g_mute_hooked_samples);
+  g_mute_hooked_samples = true;
+
+  // `g_hooks_install_callback` can't be used with
+  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
+  DCHECK(!g_hooks_install_callback);
+
+  // Make sure hooks have been installed, so that the only order of operations
+  // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
+  // Reinstall Hooks.
+  PoissonAllocationSampler::InstallAllocatorHooksOnce();
+
+  RemoveStandardAllocatorHooksForTesting();  // IN-TEST
+
+  // Reset the accumulated bytes to 0 on this thread.
+  accumulated_bytes_snapshot_ = g_tls_accumulated_bytes;
+  g_tls_accumulated_bytes = 0;
+}
+
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
+    ~ScopedMuteHookedSamplesForTesting() {
+  DCHECK(g_mute_hooked_samples);
+  // Restore the allocator hooks and accumulated bytes.
+  g_tls_accumulated_bytes = accumulated_bytes_snapshot_;
+  InstallStandardAllocatorHooks();
+  g_mute_hooked_samples = false;
+}
+
 PoissonAllocationSampler* PoissonAllocationSampler::instance_;
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
@@ -370,42 +437,38 @@ void PoissonAllocationSampler::Init() {
 
 // static
 void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
-  static bool hook_installed = InstallAllocatorHooks();
+  static bool hook_installed = [] {
+    InstallStandardAllocatorHooks();
+    bool expected = false;
+    if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
+      // SetHooksInstallCallback already ran, so run the callback now.
+      g_hooks_install_callback();
+    }
+    return true;
+  }();
   ignore_result(hook_installed);
-}
-
-// static
-bool PoissonAllocationSampler::InstallAllocatorHooks() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::InsertAllocatorDispatch(&g_allocator_dispatch);
-#else
-  // If the allocator shim isn't available, then we don't install any hooks.
-  // There's no point in printing an error message, since this can regularly
-  // happen for tests.
-  ignore_result(g_allocator_dispatch);
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-  PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
-                                        &PartitionFreeHook);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-
-  bool expected = false;
-  if (!g_hooks_installed.compare_exchange_strong(expected, true))
-    g_hooks_install_callback();
-
-  return true;
 }
 
 // static
 void PoissonAllocationSampler::SetHooksInstallCallback(
     void (*hooks_install_callback)()) {
+  // `g_hooks_install_callback` can't be used with
+  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
+  DCHECK(!g_mute_hooked_samples);
+
   CHECK(!g_hooks_install_callback && hooks_install_callback);
   g_hooks_install_callback = hooks_install_callback;
 
   bool expected = false;
-  if (!g_hooks_installed.compare_exchange_strong(expected, true))
+  if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
+    // InstallAllocatorHooksOnce already ran, so run the callback now.
     g_hooks_install_callback();
+  }
+}
+
+// static
+bool PoissonAllocationSampler::AreHookedSamplesMuted() {
+  return g_mute_hooked_samples;
 }
 
 void PoissonAllocationSampler::SetSamplingInterval(size_t sampling_interval) {

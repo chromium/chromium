@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
 #include "build/build_config.h"
@@ -181,6 +182,14 @@ void SamplingHeapProfiler::SampleAdded(
   sample.allocator = type;
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
+  if (UNLIKELY(PoissonAllocationSampler::AreHookedSamplesMuted() &&
+               type != PoissonAllocationSampler::kManualForTesting)) {
+    // Throw away any non-test samples that were being collected before
+    // ScopedMuteHookedSamplesForTesting was enabled. This is done inside the
+    // lock to catch any samples that were being collected while
+    // ClearSamplesForTesting is running.
+    return;
+  }
   RecordString(sample.context);
   samples_.emplace(address, std::move(sample));
 }
@@ -253,6 +262,16 @@ SamplingHeapProfiler* SamplingHeapProfiler::Get() {
 
 void SamplingHeapProfiler::OnThreadNameChanged(const char* name) {
   UpdateAndGetThreadName(name);
+}
+
+void SamplingHeapProfiler::ClearSamplesForTesting() {
+  DCHECK(PoissonAllocationSampler::AreHookedSamplesMuted());
+  base::AutoLock lock(mutex_);
+  samples_.clear();
+  // Since hooked samples are muted, any samples that are waiting to take the
+  // lock in SampleAdded will be discarded. Tests can now call
+  // PoissonAllocationSampler::RecordAlloc with allocator type kManualForTesting
+  // to add samples cleanly.
 }
 
 }  // namespace base

@@ -17,6 +17,10 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
 
+namespace heap_profiling {
+class HeapProfilerControllerTest;
+}
+
 namespace base {
 
 // The class implements sampling profiling of native memory heap.
@@ -113,6 +117,12 @@ class BASE_EXPORT SamplingHeapProfiler
   void CaptureNativeStack(const char* context, Sample* sample);
   const char* RecordString(const char* string) EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
+  // Delete all samples recorded, to ensure the profiler is in a consistent
+  // state at the beginning of a test. This should only be called within the
+  // scope of a PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting so
+  // that new hooked samples don't arrive while it's running.
+  void ClearSamplesForTesting();
+
   // Mutex to access |samples_| and |strings_|.
   Lock mutex_;
 
@@ -135,6 +145,7 @@ class BASE_EXPORT SamplingHeapProfiler
   // Whether it should record thread names.
   std::atomic<bool> record_thread_names_{false};
 
+  friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<SamplingHeapProfiler>;
   friend class SamplingHeapProfilerTest;
 };
