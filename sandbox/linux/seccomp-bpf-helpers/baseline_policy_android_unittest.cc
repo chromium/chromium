@@ -5,10 +5,12 @@
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
 
 #include <fcntl.h>
+#include <sched.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 
 namespace sandbox {
@@ -36,6 +38,35 @@ BPF_TEST_C(BaselinePolicyAndroid, CanOpenProcCpuinfo, BaselinePolicyAndroid) {
 BPF_TEST_C(BaselinePolicyAndroid, Membarrier, BaselinePolicyAndroid) {
   // Should not crash.
   syscall(__NR_membarrier, 32 /* cmd */, 0 /* flags */);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 SchedGetAffinity_Blocked,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicyAndroid) {
+  cpu_set_t set{};
+  BPF_ASSERT_EQ(-1, sched_getaffinity(0, sizeof(set), &set));
+}
+
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 SchedSetAffinity_Blocked,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicyAndroid) {
+  cpu_set_t set{};
+  BPF_ASSERT_EQ(-1, sched_setaffinity(0, sizeof(set), &set));
+}
+
+class AllowSchedSetaffinityBaselinePoliyAndroid : public BaselinePolicyAndroid {
+ public:
+  AllowSchedSetaffinityBaselinePoliyAndroid() : BaselinePolicyAndroid(true) {}
+};
+
+BPF_TEST_C(BaselinePolicyAndroid,
+           SchedAffinity_Allowed,
+           AllowSchedSetaffinityBaselinePoliyAndroid) {
+  cpu_set_t set{};
+  BPF_ASSERT_NE(-1, sched_getaffinity(0, sizeof(set), &set));
+  BPF_ASSERT_NE(-1, sched_setaffinity(0, sizeof(set), &set));
 }
 
 }  // namespace

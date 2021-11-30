@@ -7,6 +7,8 @@
 #include "base/android/build_info.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "components/power_scheduler/power_scheduler_features.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/seccomp_sandbox_status_android.h"
 #include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/sandbox_buildflags.h"
@@ -35,7 +37,11 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
   sandbox::SeccompStarterAndroid starter(info->sdk_int());
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.
 #if BUILDFLAG(USE_SECCOMP_BPF)
-  starter.set_policy(std::make_unique<sandbox::BaselinePolicyAndroid>());
+  bool allow_sched_affinity =
+      base::FeatureList::IsEnabled(features::kBigLittleScheduling) ||
+      base::FeatureList::IsEnabled(power_scheduler::features::kPowerScheduler);
+  starter.set_policy(
+      std::make_unique<sandbox::BaselinePolicyAndroid>(allow_sched_affinity));
 #endif
   starter.StartSandbox();
 
