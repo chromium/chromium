@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -50,22 +49,27 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
     std::unique_ptr<attestation::DeviceTrustSignals> signals,
     AttestationCallback callback) {
   DCHECK(signals);
-  tpm_key_challenger_ =
+  auto tpm_key_challenger =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
-  tpm_key_challenger_->BuildResponse(
+  auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
+  tpm_key_challenger_ptr->BuildResponse(
       base::Seconds(15), ash::attestation::KEY_DEVICE, profile_,
       base::BindOnce(&AshAttestationService::ReturnResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
+                     std::move(callback)),
       JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,
       /*key_name_for_spkac=*/std::string(), /*signals=*/*signals);
 }
 
 void AshAttestationService::ReturnResult(
+    std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
+        tpm_key_challenger,
     AttestationCallback callback,
     const ash::attestation::TpmChallengeKeyResult& result) {
   std::string encoded_response;
   if (result.IsSuccess()) {
-    base::Base64Encode(result.challenge_response, &encoded_response);
+    encoded_response =
+        ProtobufChallengeToJsonChallenge(result.challenge_response);
     LogAttestationResult(DTAttestationResult::kSuccess);
   } else {
     LogAttestationResult(ToAttestationResult(result.result_code));

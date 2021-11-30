@@ -7482,6 +7482,13 @@ test("unit_tests") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [ "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_unittest.cc" ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
+    ]
+  }
+
   if (enable_plugins) {
     sources += [
       "../browser/metrics/plugin_metrics_provider_unittest.cc",
