@@ -4862,14 +4862,13 @@ static_library("ui") {
           "views/chrome_browser_main_extra_parts_views_linux.cc",
           "views/chrome_browser_main_extra_parts_views_linux.h",
         ]
+        deps += [
+          "//ui/base/cursor:cursor_base",
+          "//ui/ozone",
+        ]
+
         if (use_gtk) {
           deps += [ "//ui/gtk" ]
-          if (use_ozone) {
-            deps += [ "//ui/ozone" ]
-          }
-        }
-        if (use_ozone) {
-          deps += [ "//ui/base/cursor:cursor_base" ]
         }
       }
     }
