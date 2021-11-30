@@ -50,6 +50,7 @@ namespace viz {
 class CapturableFrameSink;
 class CompositorFrameSinkSupport;
 class FrameSinkBundleImpl;
+class HintSessionFactory;
 class OutputSurfaceProvider;
 class SharedBitmapManager;
 
@@ -79,6 +80,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     bool run_all_compositor_stages_before_draw = false;
     bool log_capture_pipeline_in_webrtc = false;
     DebugRendererSettings debug_renderer_settings;
+    raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 
@@ -339,6 +341,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // This is viz-global instance of DebugRendererSettings.
   DebugRendererSettings debug_settings_;
+
+  // Performance hint session factory of this viz instance.
+  const raw_ptr<HintSessionFactory> hint_session_factory_;
 
   // Contains registered frame sink ids, debug labels and synchronization
   // labels. Map entries will be created when frame sink is registered and

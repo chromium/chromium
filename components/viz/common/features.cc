@@ -32,8 +32,12 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
-// Enables the use of CPU scheduling APIs on Android.
+// Enables the use of power hint APIs on Android.
 const base::Feature kAdpf{"Adpf", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Target duration used for power hint on Android.
+const base::FeatureParam<int> kAdpfTargetDurationMs{&kAdpf,
+                                                    "AdpfTargetDurationMs", 12};
 
 const base::Feature kEnableOverlayPrioritization {
   "EnableOverlayPrioritization",

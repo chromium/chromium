@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 
 namespace viz {
 
@@ -45,6 +46,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
                                    base::SingleThreadTaskRunner* task_runner,
                                    int max_pending_swaps,
                                    absl::optional<int> max_pending_swaps_120hz,
+                                   HintSessionFactory* hint_session_factory,
                                    bool wait_for_all_surfaces_before_draw)
     : begin_frame_observer_(std::make_unique<BeginFrameObserver>(this)),
       begin_frame_source_(begin_frame_source),
@@ -61,6 +63,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       max_pending_swaps_120hz_(max_pending_swaps_120hz),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
+      hint_session_factory_(hint_session_factory),
       dynamic_cc_deadlines_percentile_(
           features::IsDynamicSchedulerEnabledForClients()),
       dynamic_scheduler_deadlines_percentile_(
@@ -147,13 +150,34 @@ void DisplayScheduler::OutputSurfaceLost() {
   ScheduleBeginFrameDeadline();
 }
 
+void DisplayScheduler::MaybeCreateHintSession() {
+  if (!hint_session_factory_)
+    return;
+
+  if (!hint_session_) {
+    int target_ms = features::kAdpfTargetDurationMs.Get();
+    if (target_ms <= 0 || target_ms > 1000)
+      target_ms = 12;
+    hint_session_ =
+        hint_session_factory_->CreateSession({}, base::Milliseconds(target_ms));
+  }
+}
+
+void DisplayScheduler::ReportFrameTime(base::TimeDelta frame_time) {
+  MaybeCreateHintSession();
+  if (hint_session_)
+    hint_session_->ReportCpuCompletionTime(frame_time);
+}
+
 bool DisplayScheduler::DrawAndSwap() {
   TRACE_EVENT0("viz", "DisplayScheduler::DrawAndSwap");
   DCHECK_LT(pending_swaps_,
             std::max(max_pending_swaps_, max_pending_swaps_120hz_.value_or(0)));
   DCHECK(!output_surface_lost_);
 
-  bool success = client_ && client_->DrawAndSwap(current_frame_display_time());
+  bool success =
+      client_ && client_->DrawAndSwap(current_begin_frame_args_.frame_time,
+                                      current_frame_display_time());
   if (!success)
     return false;
 

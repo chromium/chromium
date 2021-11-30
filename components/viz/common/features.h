@@ -20,6 +20,7 @@
 namespace features {
 
 VIZ_COMMON_EXPORT extern const base::Feature kAdpf;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kAdpfTargetDurationMs;
 VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
 VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;

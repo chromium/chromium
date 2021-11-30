@@ -381,12 +381,13 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
                                           std::move(frame));
     root_support_->SubmitCompositorFrame(root_local_surface_id_,
                                          std::move(embed_frame));
-    display_->DrawAndSwap(base::TimeTicks::Now());
+    base::TimeTicks now = base::TimeTicks::Now();
+    display_->DrawAndSwap(now, now);
 
     // We don't track metrics for frames submitted to |display_| but it still
     // expects that every frame will receive a swap ack and presentation
     // feedback so we send null signals here.
-    base::TimeTicks now = base::TimeTicks::Now();
+    now = base::TimeTicks::Now();
     display_->DidReceiveSwapBuffersAck({now, now},
                                        /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(

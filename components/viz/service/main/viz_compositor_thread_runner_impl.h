@@ -46,15 +46,18 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   base::SingleThreadTaskRunner* task_runner() override;
   base::PlatformThreadId thread_id() override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
-  void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
-                              gpu::CommandBufferTaskExecutor* task_executor,
-                              GpuServiceImpl* gpu_service) override;
+  void CreateFrameSinkManager(
+      mojom::FrameSinkManagerParamsPtr params,
+      gpu::CommandBufferTaskExecutor* task_executor,
+      GpuServiceImpl* gpu_service,
+      HintSessionFactory* hint_session_factory) override;
 
  private:
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service);
+      GpuServiceImpl* gpu_service,
+      HintSessionFactory* hint_session_factory);
   void TearDownOnCompositorThread();
 
   // Start variables to be accessed only on |task_runner_|.

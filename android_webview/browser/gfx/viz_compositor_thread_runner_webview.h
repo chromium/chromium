@@ -63,9 +63,11 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   base::SingleThreadTaskRunner* task_runner() override;
   void CreateFrameSinkManager(
       viz::mojom::FrameSinkManagerParamsPtr params) override;
-  void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
-                              gpu::CommandBufferTaskExecutor* task_executor,
-                              viz::GpuServiceImpl* gpu_service) override;
+  void CreateFrameSinkManager(
+      viz::mojom::FrameSinkManagerParamsPtr params,
+      gpu::CommandBufferTaskExecutor* task_executor,
+      viz::GpuServiceImpl* gpu_service,
+      viz::HintSessionFactory* hint_session_factory) override;
 
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;

@@ -76,7 +76,8 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
 
   ~FakeDisplaySchedulerClient() override {}
 
-  bool DrawAndSwap(base::TimeTicks expected_display_time) override {
+  bool DrawAndSwap(base::TimeTicks frame_time,
+                   base::TimeTicks expected_display_time) override {
     draw_and_swap_count_++;
 
     bool success = !next_draw_and_swap_fails_;
@@ -130,6 +131,7 @@ class TestDisplayScheduler : public DisplayScheduler {
                          task_runner,
                          max_pending_swaps,
                          max_pending_swaps,
+                         /*hint_session_factory=*/nullptr,
                          wait_for_all_surfaces_before_draw),
         scheduler_begin_frame_deadline_count_(0) {
     SetDamageTracker(damage_tracker);

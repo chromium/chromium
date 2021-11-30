@@ -151,7 +151,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   const SurfaceId& CurrentSurfaceId() const;
 
   // DisplaySchedulerClient implementation.
-  bool DrawAndSwap(base::TimeTicks expected_display_time) override;
+  bool DrawAndSwap(base::TimeTicks frame_time,
+                   base::TimeTicks expected_display_time) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
   base::TimeDelta GetEstimatedDisplayDrawTime(const base::TimeDelta interval,
                                               double percentile) const override;
@@ -233,17 +234,18 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
     void AddPresentationHelper(
         std::unique_ptr<Surface::PresentationHelper> helper);
-    void OnDraw(base::TimeTicks draw_start_timestamp);
-    void OnSwap(gfx::SwapTimings timings);
+    void OnDraw(base::TimeTicks frame_time,
+                base::TimeTicks draw_start_timestamp);
+    void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
-    void OnPresent(const gfx::PresentationFeedback& feedback,
-                   DisplaySchedulerBase* scheduler);
+    void OnPresent(const gfx::PresentationFeedback& feedback);
 
     base::TimeTicks draw_start_timestamp() const {
       return draw_start_timestamp_;
     }
 
    private:
+    base::TimeTicks frame_time_;
     base::TimeTicks draw_start_timestamp_;
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>

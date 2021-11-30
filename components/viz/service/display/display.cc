@@ -285,32 +285,36 @@ void Display::PresentationGroupTiming::AddPresentationHelper(
 }
 
 void Display::PresentationGroupTiming::OnDraw(
+    base::TimeTicks frame_time,
     base::TimeTicks draw_start_timestamp) {
+  frame_time_ = frame_time;
   draw_start_timestamp_ = draw_start_timestamp;
 }
 
-void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings) {
+void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
+                                              DisplaySchedulerBase* scheduler) {
   swap_timings_ = timings;
+
+  if (timings.swap_start.is_null())
+    return;
+
+  auto frame_latency = timings.swap_start - frame_time_;
+  if (frame_latency < base::Seconds(0)) {
+    LOG(ERROR) << "Frame latency is negative: "
+               << frame_latency.InMillisecondsF() << " ms";
+    return;
+  }
+  // Can be nullptr in unittests.
+  if (scheduler) {
+    scheduler->ReportFrameTime(frame_latency);
+  }
 }
 
 void Display::PresentationGroupTiming::OnPresent(
-    const gfx::PresentationFeedback& feedback,
-    DisplaySchedulerBase* scheduler) {
+    const gfx::PresentationFeedback& feedback) {
   for (auto& presentation_helper : presentation_helpers_) {
     presentation_helper->DidPresent(draw_start_timestamp_, swap_timings_,
                                     feedback);
-  }
-
-  if (feedback.ready_timestamp.is_null())
-    return;
-
-  auto gpu_latency = feedback.ready_timestamp - swap_timings_.swap_start;
-  // TODO(crbug.com/1157620): Move this check to SanitizePresentationFeedback
-  // to handle all incorrect feedback cases.
-  if (gpu_latency < base::Seconds(0)) {
-    DVLOG(1) << "GPU latency is negative: " << gpu_latency.InMillisecondsF()
-             << " ms";
-    return;
   }
 }
 
@@ -662,7 +666,8 @@ void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
 
 }  // namespace
 
-bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
+bool Display::DrawAndSwap(base::TimeTicks frame_time,
+                          base::TimeTicks expected_display_time) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
       aggregator_->HasFrameAnnotator()) {
@@ -890,7 +895,8 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   if (should_swap) {
     PresentationGroupTiming& presentation_group_timing =
         pending_presentation_group_timings_.emplace_back();
-    presentation_group_timing.OnDraw(draw_timer->Begin());
+
+    presentation_group_timing.OnDraw(frame_time, draw_timer->Begin());
 
     for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(id_entry.first);
@@ -1007,7 +1013,7 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
   base::TimeTicks draw_start_timestamp;
   for (auto& group_timing : pending_presentation_group_timings_) {
     if (!group_timing.HasSwapped()) {
-      group_timing.OnSwap(timings);
+      group_timing.OnSwap(timings, scheduler_.get());
       draw_start_timestamp = group_timing.draw_start_timestamp();
       break;
     }
@@ -1113,7 +1119,7 @@ void Display::DidReceivePresentationFeedback(
     }
   }
 
-  presentation_group_timing.OnPresent(copy_feedback, scheduler_.get());
+  presentation_group_timing.OnPresent(copy_feedback);
   pending_presentation_group_timings_.pop_front();
 }
 

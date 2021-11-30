@@ -180,6 +180,8 @@ viz_component("service") {
     "hit_test/hit_test_aggregator_delegate.h",
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
+    "performance_hint/hint_session.cc",
+    "performance_hint/hint_session.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
     "surfaces/pending_copy_output_request.cc",
     "surfaces/pending_copy_output_request.h",

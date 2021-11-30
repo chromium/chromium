@@ -20,6 +20,9 @@
 
 namespace viz {
 
+class HintSession;
+class HintSessionFactory;
+
 class VIZ_SERVICE_EXPORT DisplayScheduler
     : public DisplaySchedulerBase,
       public DynamicBeginFrameDeadlineOffsetSource {
@@ -31,6 +34,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
                    base::SingleThreadTaskRunner* task_runner,
                    int max_pending_swaps,
                    absl::optional<int> max_pending_swaps_120hz,
+                   HintSessionFactory* hint_session_factory = nullptr,
                    bool wait_for_all_surfaces_before_draw = false);
 
   DisplayScheduler(const DisplayScheduler&) = delete;
@@ -45,6 +49,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
+  void ReportFrameTime(base::TimeDelta frame_time) override;
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
@@ -103,6 +108,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidFinishFrame(bool did_draw);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
+  void MaybeCreateHintSession();
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -130,6 +136,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool wait_for_all_surfaces_before_draw_;
 
   bool observing_begin_frame_source_;
+
+  const raw_ptr<HintSessionFactory> hint_session_factory_;
+  std::unique_ptr<HintSession> hint_session_;
 
   // If set, we are dynamically adjusting our frame deadline, by the percentile
   // of historic draw times to base the adjustment on.

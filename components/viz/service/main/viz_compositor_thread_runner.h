@@ -19,6 +19,7 @@ class CommandBufferTaskExecutor;
 namespace viz {
 
 class GpuServiceImpl;
+class HintSessionFactory;
 
 // Starts and runs the VizCompositorThread. The thread will be started when this
 // object is constructed. Objects on the thread will be initialized after
@@ -41,7 +42,8 @@ class VizCompositorThreadRunner {
   virtual void CreateFrameSinkManager(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service) = 0;
+      GpuServiceImpl* gpu_service,
+      HintSessionFactory* hint_session_factory) = 0;
 };
 
 }  // namespace viz

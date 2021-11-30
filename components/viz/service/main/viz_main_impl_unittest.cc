@@ -55,10 +55,11 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
   }
   base::SingleThreadTaskRunner* task_runner() override { return task_runner_; }
   MOCK_METHOD1(CreateFrameSinkManager, void(mojom::FrameSinkManagerParamsPtr));
-  MOCK_METHOD3(CreateFrameSinkManager,
+  MOCK_METHOD4(CreateFrameSinkManager,
                void(mojom::FrameSinkManagerParamsPtr,
                     gpu::CommandBufferTaskExecutor*,
-                    GpuServiceImpl*));
+                    GpuServiceImpl*,
+                    HintSessionFactory*));
 
  private:
   const raw_ptr<base::SingleThreadTaskRunner> task_runner_;

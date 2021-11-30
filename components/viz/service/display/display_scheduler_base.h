@@ -19,9 +19,11 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
  public:
   virtual ~DisplaySchedulerClient() = default;
 
+  // |frame_time| is the the start of the VSync interval of this frame.
   // |expected_display_time| is used as video timestamps for capturing frame
   // sinks. DisplayScheduler passes the end of current VSync interval.
-  virtual bool DrawAndSwap(base::TimeTicks expected_display_time) = 0;
+  virtual bool DrawAndSwap(base::TimeTicks frame_time,
+                           base::TimeTicks expected_display_time) = 0;
   virtual void DidFinishFrame(const BeginFrameAck& ack) = 0;
   // Returns the estimated time required from Draw Start to Swap End based on
   // a historical `percentile`, or a default value if there is insufficient
@@ -47,6 +49,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void DidSwapBuffers() = 0;
   virtual void DidReceiveSwapBuffersAck() = 0;
   virtual void OutputSurfaceLost() = 0;
+  virtual void ReportFrameTime(base::TimeDelta frame_time) = 0;
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;

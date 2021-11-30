@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@ class MojoUkmRecorder;
 }
 
 namespace viz {
+class HintSessionFactory;
 #if defined(OS_WIN)
 class InfoCollectionGpuServiceImpl;
 #endif
@@ -198,6 +200,8 @@ class VizMainImpl : public mojom::VizMain,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
+
+  std::unique_ptr<HintSessionFactory> hint_session_factory_;
 };
 
 }  // namespace viz

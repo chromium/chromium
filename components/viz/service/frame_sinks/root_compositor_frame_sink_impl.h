@@ -25,6 +25,7 @@
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_params.h"
 
 namespace viz {
@@ -33,6 +34,7 @@ class Display;
 class OutputSurfaceProvider;
 class ExternalBeginFrameSource;
 class FrameSinkManagerImpl;
+class HintSessionFactory;
 class SyntheticBeginFrameSource;
 class VSyncParameterListener;
 
@@ -50,7 +52,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       OutputSurfaceProvider* output_surface_provider,
       uint32_t restart_id,
       bool run_all_compositor_stages_before_draw,
-      const DebugRendererSettings* debug_settings);
+      const DebugRendererSettings* debug_settings,
+      HintSessionFactory* hint_session_factory);
 
   RootCompositorFrameSinkImpl(const RootCompositorFrameSinkImpl&) = delete;
   RootCompositorFrameSinkImpl& operator=(const RootCompositorFrameSinkImpl&) =
