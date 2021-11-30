@@ -1146,6 +1146,11 @@ class BBJSONGenerator(object):
         if isinstance(variant, str):
           variant = self.variants[variant]
 
+        # If 'enabled' is set to False, we will not use this variant;
+        # otherwise if the variant doesn't include 'enabled' variable or
+        # 'enabled' is set to True, we will use this variant
+        if not variant.get('enabled', True):
+          continue
         # Clone a copy of test_config so that we can have a uniquely updated
         # version of it per variant
         cloned_config = copy.deepcopy(test_config)
@@ -1180,6 +1185,11 @@ class BBJSONGenerator(object):
         skylab_config = cloned_variant.get('skylab')
         if skylab_config:
           for k, v in skylab_config.items():
+            # cros_chrome_version is the ash chrome version in the cros img
+            # in the variant of cros_board. We don't want to include it in
+            # the final json files; so remove it.
+            if k == 'cros_chrome_version':
+              continue
             cloned_config[k] = v
 
         # The identifier is used to make the name of the test unique.
