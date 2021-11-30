@@ -433,32 +433,26 @@ void DOMWindow::PostMessageForTesting(
 
 void DOMWindow::InstallCoopAccessMonitor(
     LocalFrame* accessing_frame,
-    bool register_metrics,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
         coop_reporter_params) {
-  DCHECK(register_metrics || coop_reporter_params);
   CoopAccessMonitor monitor;
-  monitor.register_metrics = register_metrics;
-  monitor.send_reports = !!coop_reporter_params;
-  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
 
   DCHECK(accessing_frame->IsMainFrame());
-  if (coop_reporter_params) {
-    monitor.report_type = coop_reporter_params->report_type;
-    monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
-    monitor.reported_window_url =
-        std::move(coop_reporter_params->reported_window_url);
+  monitor.report_type = coop_reporter_params->report_type;
+  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
+  monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
+  monitor.reported_window_url =
+      std::move(coop_reporter_params->reported_window_url);
 
-    monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
-    // CoopAccessMonitor are cleared when their reporter are gone. This avoids
-    // accumulation. However it would have been interesting continuing reporting
-    // accesses past this point, at least for the ReportingObserver and Devtool.
-    // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
-    // instead.
-    monitor.reporter.set_disconnect_handler(
-        WTF::Bind(&DOMWindow::DisconnectCoopAccessMonitor,
-                  WrapWeakPersistent(this), monitor.accessing_main_frame));
-  }
+  monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
+  // CoopAccessMonitor are cleared when their reporter are gone. This avoids
+  // accumulation. However it would have been interesting continuing reporting
+  // accesses past this point, at least for the ReportingObserver and Devtool.
+  // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
+  // instead.
+  monitor.reporter.set_disconnect_handler(
+      WTF::Bind(&DOMWindow::DisconnectCoopAccessMonitor,
+                WrapWeakPersistent(this), monitor.accessing_main_frame));
 
   // As long as RenderDocument isn't shipped, it can exist a CoopAccessMonitor
   // for the same |accessing_main_frame|, because it might now host a different
@@ -500,9 +494,6 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  // TODO(https://crbug.com/1238824): When used for recording metrics, accesses
-  // from cross-origin iframes should also be reported. This requires moving
-  // this and sending the corresponding remote frame tokens.
   if (accessing_frame->IsCrossOriginToMainFrame())
     return;
 
@@ -530,45 +521,37 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
       continue;
     }
 
-    if (it->register_metrics) {
-      UseCounter::Count(accessing_window,
-                        WebFeature::kCrossPageAccessBrokenByCOOPSOAPByDefault);
-    }
+    // TODO(arthursonzogni): Send the blocked-window-url.
 
-    if (it->send_reports) {
-      // TODO(arthursonzogni): Send the blocked-window-url.
+    auto location = SourceLocation::Capture(
+        ExecutionContext::From(isolate->GetCurrentContext()));
+    // TODO(arthursonzogni): Once implemented, use the SourceLocation typemap
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2041657
+    auto source_location = network::mojom::blink::SourceLocation::New(
+        location->Url() ? location->Url() : "", location->LineNumber(),
+        location->ColumnNumber());
 
-      auto location = SourceLocation::Capture(
-          ExecutionContext::From(isolate->GetCurrentContext()));
-      // TODO(arthursonzogni): Once implemented, use the SourceLocation typemap
-      // https://chromium-review.googlesource.com/c/chromium/src/+/2041657
-      auto source_location = network::mojom::blink::SourceLocation::New(
-          location->Url() ? location->Url() : "", location->LineNumber(),
-          location->ColumnNumber());
+    // TODO(https://crbug.com/1124251): Notify Devtool about the access attempt.
 
-      // TODO(https://crbug.com/1124251): Notify Devtool about the access
-      // attempt.
-
-      // If the reporting document hasn't specified any network report
-      // endpoint(s), then it is likely not interested in receiving
-      // ReportingObserver's reports.
-      //
-      // TODO(arthursonzogni): Reconsider this decision later, developers might
-      // be interested.
-      if (it->endpoint_defined) {
-        it->reporter->QueueAccessReport(it->report_type, property_name,
-                                        std::move(source_location),
-                                        std::move(it->reported_window_url));
-        // Send a coop-access-violation report.
-        if (network::IsAccessFromCoopPage(it->report_type)) {
-          ReportingContext::From(accessing_main_frame.DomWindow())
-              ->QueueReport(MakeGarbageCollected<Report>(
-                  ReportType::kCoopAccessViolation,
-                  accessing_main_frame.GetDocument()->Url().GetString(),
-                  MakeGarbageCollected<CoopAccessViolationReportBody>(
-                      std::move(location), it->report_type,
-                      String(property_name), it->reported_window_url)));
-        }
+    // If the reporting document hasn't specified any network report
+    // endpoint(s), then it is likely not interested in receiving
+    // ReportingObserver's reports.
+    //
+    // TODO(arthursonzogni): Reconsider this decision later, developers might be
+    // interested.
+    if (it->endpoint_defined) {
+      it->reporter->QueueAccessReport(it->report_type, property_name,
+                                      std::move(source_location),
+                                      std::move(it->reported_window_url));
+      // Send a coop-access-violation report.
+      if (network::IsAccessFromCoopPage(it->report_type)) {
+        ReportingContext::From(accessing_main_frame.DomWindow())
+            ->QueueReport(MakeGarbageCollected<Report>(
+                ReportType::kCoopAccessViolation,
+                accessing_main_frame.GetDocument()->Url().GetString(),
+                MakeGarbageCollected<CoopAccessViolationReportBody>(
+                    std::move(location), it->report_type, String(property_name),
+                    it->reported_window_url)));
       }
     }
 
@@ -752,15 +735,11 @@ void DOMWindow::DisconnectCoopAccessMonitor(
     const LocalFrameToken& accessing_main_frame) {
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
-    if (it->accessing_main_frame != accessing_main_frame) {
-      ++it;
-      continue;
-    }
-    it->send_reports = false;
-    if (it->register_metrics)
-      ++it;
-    else
+    if (it->accessing_main_frame == accessing_main_frame) {
       it = coop_access_monitor_.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 

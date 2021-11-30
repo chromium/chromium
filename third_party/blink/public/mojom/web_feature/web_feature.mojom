@@ -3391,7 +3391,6 @@ enum WebFeature {
   kCSSMatchMediaUnknown = 4082,
   kCSSMediaListUnknown = 4083,
   kCSSOMMediaConditionUnknown = 4084,
-  kCrossPageAccessBrokenByCOOPSOAPByDefault = 4085,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

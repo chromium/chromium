@@ -205,7 +205,6 @@ class LocalFrameMojoHandler
   void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
   void InstallCoopAccessMonitor(
       const FrameToken& accessed_window,
-      bool register_metrics,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
           coop_reporter_params) final;
   void OnPortalActivated(

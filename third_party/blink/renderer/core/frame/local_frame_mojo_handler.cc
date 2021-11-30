@@ -1179,7 +1179,6 @@ void LocalFrameMojoHandler::ZoomToFindInPageRect(
 
 void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     const FrameToken& accessed_window,
-    bool register_metrics,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
         coop_reporter_params) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
@@ -1188,7 +1187,7 @@ void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     return;
 
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      frame_, register_metrics, std::move(coop_reporter_params));
+      frame_, std::move(coop_reporter_params));
 }
 
 void LocalFrameMojoHandler::OnPortalActivated(
