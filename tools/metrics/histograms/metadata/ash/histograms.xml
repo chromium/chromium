@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BackGesture.EndScenarioType"
-    enum="BackGestureEndScenarioType" expires_after="2021-12-01">
+    enum="BackGestureEndScenarioType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BackGesture.StartScenarioType"
-    enum="BackGestureStartScenarioType" expires_after="2021-12-01">
+    enum="BackGestureStartScenarioType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BackGesture.UnderneathWindowType"
-    enum="BackGestureUnderneathWindowType" expires_after="2021-12-01">
+    enum="BackGestureUnderneathWindowType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>

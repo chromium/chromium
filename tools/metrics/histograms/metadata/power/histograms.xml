@@ -1149,14 +1149,14 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
-    expires_after="2021-12-05">
+    expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Actions performed while the power button menu is open.</summary>
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2021-12-26">
+    enum="PowerButtonPressType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>

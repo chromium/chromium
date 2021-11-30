@@ -15901,7 +15901,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.CountOfVolumeAdjustType" units="numbers"
-    expires_after="2021-12-20">
+    expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -15922,7 +15922,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.TabDrag.DragType" enum="TabDragType"
-    expires_after="2021-12-05">
+    expires_after="2022-10-05">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -15943,7 +15943,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.WindowDrag.DragEndEventType"
-    enum="WindowDragEndEventType" expires_after="2021-12-01">
+    enum="WindowDragEndEventType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -15953,7 +15953,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.WindowDrag.OpenedWindowsNumber" units="numbers"
-    expires_after="2021-12-01">
+    expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
