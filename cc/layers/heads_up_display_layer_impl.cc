@@ -634,9 +634,6 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   canvas->clear(SkColorSetARGB(0, 0, 0, 0));
   canvas->save();
   canvas->scale(internal_contents_scale_);
-  // Our output should be in layout space, but all of the draw commands here are
-  // in dips. Scale the canvas to account for this difference.
-  canvas->scale(layer_tree_impl()->painted_device_scale_factor());
 
   if (debug_state.ShowDebugRects()) {
     DrawDebugRects(canvas, layer_tree_impl()->debug_rect_history());
@@ -649,6 +646,11 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
     canvas->restore();
     return;
   }
+
+  // Our output should be in layout space, but all of the draw commands for the
+  // HUD overlays here are in dips. Scale the canvas to account for this
+  // difference.
+  canvas->scale(layer_tree_impl()->painted_device_scale_factor());
 
   SkRect area = SkRect::MakeXYWH(0, 0, 0, 0);
 
