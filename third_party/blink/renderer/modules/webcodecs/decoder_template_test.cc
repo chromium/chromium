@@ -215,9 +215,6 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   testing::Mock::VerifyAndClearExpectations(error_callback);
 }
 
-// Note: AudioDecoder and VideoDecoder specific tests should be put in
-// audio_decoder_test.cc and video_decoder_test.cc respectively.
-
 }  // namespace
 
 }  // namespace blink

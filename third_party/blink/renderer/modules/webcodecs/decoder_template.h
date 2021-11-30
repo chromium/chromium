@@ -29,6 +29,10 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace media {
 class GpuVideoAcceleratorFactories;
 class ScopedDecodeTrace;
@@ -227,6 +231,9 @@ class MODULES_EXPORT DecoderTemplate
 
   // Keyframes are required after configure(), flush(), and reset().
   bool require_key_frame_ = true;
+
+  // Task runner for main thread.
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 }  // namespace blink
