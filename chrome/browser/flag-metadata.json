@@ -4932,8 +4932,8 @@
   },
   {
     "name": "shared-highlighting-v2",
-    "owners": ["kmilka"],
-    "expiry_milestone": 97
+    "owners": ["kmilka", "cheickcisse@google.com"],
+    "expiry_milestone": 99
   },
   {
     "name": "sharing-desktop-screenshots",
