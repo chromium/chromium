@@ -2977,6 +2977,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Connections" enum="State"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     Recorded every time a Chromoting connection enters a new state.
@@ -2985,6 +2988,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Connections.Durations.Closed" units="minutes"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The duration of sessions that were closed, normally by a user-initiated
@@ -2994,12 +3000,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Connections.Durations.Failed" units="minutes"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>The duration of sessions that failed to connect.</summary>
 </histogram>
 
 <histogram name="Chromoting.Connections.Times.ToAuthenticate" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The time taken to authenticate as part of a Chromoting connection request.
@@ -3008,6 +3020,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Connections.Times.ToConnect" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The time taken to connect to a remote-host, after a request has been
@@ -3017,6 +3032,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Input.EventLatency" units="microseconds"
     expires_after="M81">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>joedow@chromium.org</owner>
   <owner>lambroslambrou@chromium.org</owner>
   <summary>
@@ -3032,6 +3050,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.Bandwidth" units="Bytes/second"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The bandwidth of non-empty packets in Chromoting remote sessions, updated
@@ -3041,6 +3062,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.CaptureLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The time to capture a video frame on the host, returned as part of a video
@@ -3050,6 +3074,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.CaptureOverhead" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     Amount of time wasted on IPC and threading overhead when capturing a video
@@ -3059,6 +3086,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.CapturePendingLatency" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>joedow@chromium.org</owner>
   <owner>lambroslambrou@chromium.org</owner>
   <summary>
@@ -3069,11 +3099,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.DecodeLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>The time to decode a video packet on the client.</summary>
 </histogram>
 
 <histogram name="Chromoting.Video.EncodeLatency" units="ms" expires_after="M85">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>joedow@chromium.org</owner>
   <owner>lambroslambrou@chromium.org</owner>
   <summary>
@@ -3084,6 +3120,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.EncodePendingLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     Delay before a newly captured frame is passed to the encoder.
@@ -3091,6 +3130,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chromoting.Video.FrameRate" units="fps" expires_after="M81">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>joedow@chromium.org</owner>
   <owner>lambroslambrou@chromium.org</owner>
   <summary>
@@ -3101,6 +3143,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.NetworkLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     Estimated network roundtrip latency calculated by subtracting total
@@ -3110,6 +3155,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.PacketRate" units="packets/second"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The packets/sec, including empty packets, in Chromoting remote sessions,
@@ -3119,12 +3167,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.PaintLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>The time to paint a decoded video packet on the client.</summary>
 </histogram>
 
 <histogram name="Chromoting.Video.RoundTripLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     The time from an input being sent from the client to a response being
@@ -3134,6 +3188,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chromoting.Video.SendPendingLatency" units="ms"
     expires_after="2018-08-30">
+  <obsolete>
+    Removed in M98, metrics haven't been collected since ~mid 2019.
+  </obsolete>
   <owner>jamiewalch@chromium.org</owner>
   <summary>
     Delay before an encoded video packet is written to the send buffer.
