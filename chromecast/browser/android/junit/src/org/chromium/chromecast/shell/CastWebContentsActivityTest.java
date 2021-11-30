@@ -231,6 +231,9 @@ public class CastWebContentsActivityTest {
                                   .getFlag(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON));
     }
 
+    // TODO(guohuideng): Add unit test for PiP when the Robolectric in internal codebase is
+    // ready.
+
     @Test
     public void testStopDoesNotCauseFinish() {
         mActivityLifecycle.create().start().resume();

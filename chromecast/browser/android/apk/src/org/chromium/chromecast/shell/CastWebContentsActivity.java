@@ -4,10 +4,13 @@
 
 package org.chromium.chromecast.shell;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -182,6 +185,7 @@ public class CastWebContentsActivity extends Activity {
         }));
     }
 
+    @TargetApi(Build.VERSION_CODES.S)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         if (DEBUG) Log.d(TAG, "onCreate");
@@ -193,6 +197,11 @@ public class CastWebContentsActivity extends Activity {
         // For more information read:
         // http://developer.android.com/training/managing-audio/volume-playback.html
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        if (canAutoEnterPictureInPicture()) {
+            setPictureInPictureParams(
+                    new PictureInPictureParams.Builder().setAutoEnterEnabled(true).build());
+        }
     }
 
     @Override
@@ -264,6 +273,14 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    @Override
+    public void onUserLeaveHint() {
+        if (canUsePictureInPicture() && !canAutoEnterPictureInPicture()) {
+            enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        }
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mSurfaceHelper != null && mSurfaceHelper.isTouchInputEnabled()) {
@@ -282,6 +299,16 @@ public class CastWebContentsActivity extends Activity {
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         }
+    }
+
+    private boolean canUsePictureInPicture() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
+    }
+
+    private boolean canAutoEnterPictureInPicture() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
     }
 
     public void finishForTesting() {
