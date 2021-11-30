@@ -73,6 +73,9 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
 
   SetAcceptCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
+        // Remove the force-close callback to indicate that we were closed as a
+        // result of user action.
+        dialog->dialog_force_closed_callback_ = base::OnceClosure();
         if (dialog->dialog_callback_)
           std::move(dialog->dialog_callback_)
               .Run(true, dialog->message_box_view_->GetInputText());
@@ -80,12 +83,17 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
       base::Unretained(this)));
   SetCancelCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
+        // Remove the force-close callback to indicate that we were closed as a
+        // result of user action.
+        dialog->dialog_force_closed_callback_ = base::OnceClosure();
         if (dialog->dialog_callback_)
           std::move(dialog->dialog_callback_).Run(false, std::u16string());
       },
       base::Unretained(this)));
-  SetCloseCallback(base::BindOnce(
+  RegisterWindowWillCloseCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
+        // If the force-close callback still exists at this point we're not
+        // closed due to a user action (would've been caught in Accept/Cancel).
         if (dialog->dialog_force_closed_callback_)
           std::move(dialog->dialog_force_closed_callback_).Run();
       },
