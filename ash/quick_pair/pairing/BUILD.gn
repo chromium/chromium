@@ -10,18 +10,6 @@ assert(is_chromeos_ash,
 
 source_set("pairing") {
   sources = [
-    "fast_pair/fake_fast_pair_gatt_service_client.cc",
-    "fast_pair/fake_fast_pair_gatt_service_client.h",
-    "fast_pair/fast_pair_data_encryptor.h",
-    "fast_pair/fast_pair_data_encryptor_impl.cc",
-    "fast_pair/fast_pair_data_encryptor_impl.h",
-    "fast_pair/fast_pair_encryption.cc",
-    "fast_pair/fast_pair_encryption.h",
-    "fast_pair/fast_pair_gatt_service_client.h",
-    "fast_pair/fast_pair_gatt_service_client_impl.cc",
-    "fast_pair/fast_pair_gatt_service_client_impl.h",
-    "fast_pair/fast_pair_key_pair.cc",
-    "fast_pair/fast_pair_key_pair.h",
     "fast_pair/fast_pair_pairer.cc",
     "fast_pair/fast_pair_pairer.h",
     "fast_pair/fast_pair_unpair_handler.cc",
@@ -37,6 +25,7 @@ source_set("pairing") {
   deps = [
     "//ash/public/cpp",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
@@ -63,6 +52,7 @@ static_library("test_support") {
 
   deps = [
     "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
     "//base",
     "//base/test:test_support",
     "//device/bluetooth",
@@ -74,9 +64,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fast_pair/fast_pair_data_encryptor_unittest.cc",
-    "fast_pair/fast_pair_encryption_unittest.cc",
-    "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
     "fast_pair/fast_pair_unpair_handler_unittest.cc",
     "retroactive_pairing_detector_unittest.cc",
@@ -88,6 +75,8 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/public/cpp:test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
+    "//ash/quick_pair/fast_pair_handshake:test_support",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/message_stream:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
@@ -102,17 +91,5 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
-  ]
-}
-
-fuzzer_test("fast_pair_encryption_fuzzer") {
-  sources = [ "fast_pair/fast_pair_encryption_fuzzer.cc" ]
-  deps = [
-    ":pairing",
-    ":test_support",
-    "//ash:test_support",
-    "//ash/quick_pair/common",
-    "//ash/services/quick_pair",
-    "//base",
   ]
 }

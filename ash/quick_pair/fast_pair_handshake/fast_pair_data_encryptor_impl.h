@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_
+#ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_
+#define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,8 +11,8 @@
 #include <array>
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -107,4 +107,4 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_
+#endif  // ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_IMPL_H_

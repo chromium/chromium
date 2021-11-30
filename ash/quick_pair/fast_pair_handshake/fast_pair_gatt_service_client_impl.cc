@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"

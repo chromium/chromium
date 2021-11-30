@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 
 #include "ash/quick_pair/common/pair_failure.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
-
-class BluetothAdapter;
 class BluetoothDevice;
-
 }  // namespace device
 
 namespace ash {
@@ -88,4 +85,4 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#endif  // ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_

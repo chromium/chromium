@@ -67,7 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":quick_pair",
     "//ash/quick_pair/common:test_support",
-    "//ash/quick_pair/pairing",
+    "//ash/quick_pair/fast_pair_handshake",
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/cpp:unit_tests",
     "//ash/services/quick_pair/public/mojom",

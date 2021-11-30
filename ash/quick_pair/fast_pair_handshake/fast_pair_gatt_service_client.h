@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -63,4 +63,4 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_H_
+#endif  // ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_

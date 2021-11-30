@@ -6,7 +6,7 @@
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_H_
 
 #include "ash/quick_pair/common/pair_failure.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"

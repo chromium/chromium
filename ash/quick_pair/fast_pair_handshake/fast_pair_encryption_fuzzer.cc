@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
@@ -10,7 +10,7 @@
 #include <array>
 
 #include "ash/quick_pair/common/logging.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "ash/services/quick_pair/fast_pair_decryption.h"
 #include "base/check.h"
 #include "base/no_destructor.h"

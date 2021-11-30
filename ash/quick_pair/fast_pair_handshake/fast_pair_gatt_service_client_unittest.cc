@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
 #include <stddef.h>
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

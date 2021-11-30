@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
+#ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
+#define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
 
 #include <stdint.h>
 
 #include <vector>
 
 #include "ash/quick_pair/common/pair_failure.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -196,4 +196,4 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
+#endif  // ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_

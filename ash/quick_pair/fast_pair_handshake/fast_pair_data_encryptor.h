@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_H_
+#ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_H_
+#define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -54,4 +54,4 @@ class FastPairDataEncryptor {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_H_
+#endif  // ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_DATA_ENCRYPTOR_H_

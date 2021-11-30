@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,7 +10,7 @@
 #include <array>
 
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process.h"

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
+
 #include <array>
 #include <cstdint>
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
