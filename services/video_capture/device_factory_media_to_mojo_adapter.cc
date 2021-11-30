@@ -175,9 +175,9 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
     const std::string& device_id,
     mojo::PendingReceiver<mojom::Device> device_receiver,
     CreateDeviceCallback callback) {
-  std::unique_ptr<media::VideoCaptureDevice> media_device =
+  media::VideoCaptureErrorOrDevice device_status =
       capture_system_->CreateDevice(device_id);
-  if (media_device == nullptr) {
+  if (!device_status.ok()) {
     std::move(callback).Run(
         mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND);
     return;
@@ -185,6 +185,8 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
 
   // Add entry to active_devices to keep track of it
   ActiveDeviceEntry device_entry;
+  std::unique_ptr<media::VideoCaptureDevice> media_device =
+      device_status.ReleaseDevice();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(

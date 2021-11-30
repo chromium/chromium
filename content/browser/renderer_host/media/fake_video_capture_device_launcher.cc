@@ -82,7 +82,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
-  auto device = system_->CreateDevice(device_id);
+  auto device = system_->CreateDevice(device_id).ReleaseDevice();
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
           media::VideoCaptureBufferType::kSharedMemory));

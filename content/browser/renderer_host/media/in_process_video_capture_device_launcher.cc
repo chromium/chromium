@@ -336,12 +336,16 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDeviceCaptureOnDeviceThread(
   DCHECK(device_task_runner_->BelongsToCurrentThread());
   DCHECK(video_capture_system_);
 
-  std::unique_ptr<media::VideoCaptureDevice> video_capture_device =
-      video_capture_system_->CreateDevice(device_id);
+  auto device_status = video_capture_system_->CreateDevice(device_id);
 
-  if (video_capture_device)
+  if (device_status.ok()) {
+    std::unique_ptr<media::VideoCaptureDevice> video_capture_device =
+        device_status.ReleaseDevice();
     video_capture_device->AllocateAndStart(params, std::move(device_client));
-  std::move(result_callback).Run(std::move(video_capture_device));
+    std::move(result_callback).Run(std::move(video_capture_device));
+  } else {
+    std::move(result_callback).Run(nullptr);
+  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)

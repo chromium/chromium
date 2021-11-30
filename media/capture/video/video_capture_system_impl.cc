@@ -86,14 +86,16 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
   }
 }
 
-std::unique_ptr<VideoCaptureDevice> VideoCaptureSystemImpl::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const VideoCaptureDeviceInfo* device_info = LookupDeviceInfoFromId(device_id);
-  if (!device_info)
-    return nullptr;
-  auto device_status = factory_->CreateDevice(device_info->descriptor);
-  return device_status.ok() ? device_status.ReleaseDevice() : nullptr;
+  if (!device_info) {
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  }
+  return factory_->CreateDevice(device_info->descriptor);
 }
 
 const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(
