@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_item_options.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
@@ -47,7 +48,7 @@ using mojom::blink::PermissionService;
 // This class deals with all the Blob promises and executes the write
 // operation after all the promises have been resolved.
 class ClipboardPromise::BlobPromiseResolverFunction final
-    : public ScriptFunction {
+    : public NewScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
 
@@ -55,41 +56,32 @@ class ClipboardPromise::BlobPromiseResolverFunction final
                      ScriptPromise promise,
                      ClipboardPromise* clipboard_promise) {
     promise.Then(
-        CreateFunction(script_state, clipboard_promise, ResolveType::kFulfill),
-        CreateFunction(script_state, clipboard_promise, ResolveType::kReject));
+        MakeGarbageCollected<NewScriptFunction>(
+            script_state, MakeGarbageCollected<BlobPromiseResolverFunction>(
+                              clipboard_promise, ResolveType::kFulfill)),
+        MakeGarbageCollected<NewScriptFunction>(
+            script_state, MakeGarbageCollected<BlobPromiseResolverFunction>(
+                              clipboard_promise, ResolveType::kReject)));
   }
 
-  BlobPromiseResolverFunction(ScriptState* script_state,
-                              ClipboardPromise* clipboard_promise,
+  BlobPromiseResolverFunction(ClipboardPromise* clipboard_promise,
                               ResolveType type)
-      : ScriptFunction(script_state),
-        clipboard_promise_(clipboard_promise),
-        type_(type) {}
+      : clipboard_promise_(clipboard_promise), type_(type) {}
 
   void Trace(Visitor* visitor) const final {
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
     visitor->Trace(clipboard_promise_);
   }
 
- private:
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ClipboardPromise* clipboard_promise,
-      ResolveType type) {
-    return MakeGarbageCollected<BlobPromiseResolverFunction>(
-               script_state, clipboard_promise, type)
-        ->BindToV8Function();
-  }
-
-  ScriptValue Call(ScriptValue value) final {
-    ExceptionState exception_state(GetScriptState()->GetIsolate(),
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kExecutionContext,
                                    "Clipboard", "write");
     if (type_ == ResolveType::kFulfill) {
       HeapVector<Member<Blob>>* blob_list =
           MakeGarbageCollected<HeapVector<Member<Blob>>>(
               NativeValueTraits<IDLSequence<Blob>>::NativeValue(
-                  GetScriptState()->GetIsolate(), value.V8Value(),
+                  script_state->GetIsolate(), value.V8Value(),
                   exception_state));
       if (exception_state.HadException()) {
         // Clear the exception here as it'll be fired in `RejectBlobPromise`.
@@ -115,6 +107,7 @@ class ClipboardPromise::BlobPromiseResolverFunction final
     return ScriptValue();
   }
 
+ private:
   Member<ClipboardPromise> clipboard_promise_;
   ResolveType type_;
 };
