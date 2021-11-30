@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -13,7 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -21,10 +22,8 @@ namespace ash {
 
 namespace {
 
-// The column set id that this view's GridLayout uses.
-constexpr int kColumnSetId = 0;
-
-constexpr int kNumColumns = 3;
+// TODO: This will be different for rotated screens.
+constexpr int kMaxNumColumns = 3;
 
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
@@ -108,33 +107,36 @@ void DesksTemplatesGridView::UpdateGridUI(
   DCHECK_LE(desk_templates.size(),
             DesksTemplatesPresenter::Get()->GetMaxEntryCount());
 
-  layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout_->AddColumnSet(kColumnSetId);
+  layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  // Add `kNumColumns` and some padding between each one.
-  const float fixed_size = views::GridLayout::kFixedSize;
-  for (int i = 0; i < kNumColumns; ++i) {
+  // Add the correct number of columns and some padding between each one.
+  size_t column_count = std::min<size_t>(desk_templates.size(), kMaxNumColumns);
+  const float fixed_size = views::TableLayout::kFixedSize;
+  for (size_t i = 0; i < column_count; ++i) {
     // Add a padding column in front of each column except the first one.
     if (i != 0)
-      column_set->AddPaddingColumn(fixed_size, kGridPaddingDp);
+      layout_->AddPaddingColumn(fixed_size, kGridPaddingDp);
 
-    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                          fixed_size,
-                          views::GridLayout::ColumnSize::kUsePreferred,
-                          /*fixed_width=*/0, /*min_width=*/0);
+    layout_->AddColumn(views::LayoutAlignment::kCenter,
+                       views::LayoutAlignment::kCenter, fixed_size,
+                       views::TableLayout::ColumnSize::kUsePreferred,
+                       /*fixed_width=*/0, /*min_width=*/0);
+  }
+
+  // Add the correct number of rows and some padding between each one.
+  size_t row_count = (desk_templates.size() - 1) / column_count + 1;
+  for (size_t i = 0; i < row_count; ++i) {
+    // Add padding in front of each row except the first one.
+    if (i != 0)
+      layout_->AddPaddingRow(fixed_size, kGridPaddingDp);
+
+    layout_->AddRows(1, fixed_size);
   }
 
   // Add each of the templates to the grid.
-  for (size_t i = 0; i < desk_templates.size(); ++i) {
-    // Add padding in front of each row except the first one.
-    if (i == 0) {
-      layout_->StartRow(fixed_size, kColumnSetId);
-    } else if (i % kNumColumns == 0) {
-      layout_->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
-                                   kGridPaddingDp);
-    }
-    grid_items_.push_back(layout_->AddView(
-        std::make_unique<DesksTemplatesItemView>(desk_templates[i])));
+  for (DeskTemplate* desk_template : desk_templates) {
+    grid_items_.push_back(
+        AddChildView(std::make_unique<DesksTemplatesItemView>(desk_template)));
   }
 
   gfx::Rect widget_bounds(grid_bounds);
@@ -172,7 +174,7 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
       const gfx::Point screen_location =
           event->target() ? event->target()->GetScreenLocation(*event)
                           : event->root_location();
-      for (auto* grid_item : grid_items_)
+      for (DesksTemplatesItemView* grid_item : grid_items_)
         grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
 
       event->SetHandled();

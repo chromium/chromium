@@ -11,7 +11,7 @@
 #include "ui/views/view.h"
 
 namespace views {
-class GridLayout;
+class TableLayout;
 class UniqueWidgetPtr;
 }  // namespace views
 
@@ -61,7 +61,10 @@ class DesksTemplatesGridView : public views::View {
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Owned by the views hierarchy.
-  views::GridLayout* layout_ = nullptr;
+  // TODO(richui): This is temporary until we decide what is the best way to
+  // layout the grid which may be 2x3 or 3x2 depending on the display size and
+  // needs to support animations when items are added or removed.
+  views::TableLayout* layout_ = nullptr;
 
   // The views representing templates. They're owned by views hierarchy.
   std::vector<DesksTemplatesItemView*> grid_items_;
