@@ -11,16 +11,9 @@
 
 namespace nacl {
 
+// TODO(crbug.com/1273132): Remove.
 bool IsNonSFIModeEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL))
-  return true;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableNaClNonSfiMode);
-#else
   return false;
-#endif
 }
 
 }  // namespace nacl
