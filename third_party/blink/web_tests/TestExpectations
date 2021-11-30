@@ -7363,6 +7363,13 @@ crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-his
 crbug.com/1272954 external/wpt/app-history/navigate-event/navigate-history-back-after-fragment.html [ Failure Pass ]
 crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
 
+# Flaky as depends upon order of execution.
+crbug.com/1274917 external/wpt/content-security-policy/inheritance/history.sub.html [ Timeout Failure Pass ]
+crbug.com/1274917 external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Timeout Failure Pass ]
+
+# Test is very flaky (score of 223).
+crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Timeout Pass ]
+
 # Sheriff 2021-11-23
 crbug.com/1270963 wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
@@ -7380,3 +7387,4 @@ crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollect
 # Sheriff 2021-11-29
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
 crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
+
