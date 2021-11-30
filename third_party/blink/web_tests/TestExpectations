@@ -2796,8 +2796,9 @@ crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.
 
 crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element/resize-during-playback.html [ Failure Pass ]
 
-# css-pseudo-4 opacity not applied to ::first-line
+# ::first-line issues
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
+crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 
 # motion-1 issues
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-002.html [ Failure ]
@@ -3058,10 +3059,8 @@ crbug.com/626703 [ Mac10.13 ] virtual/change-service-worker-priority-when-client
 crbug.com/626703 [ Mac10.12 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/top-layer-001.html [ Crash Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/scalefactor200/external/wpt/element-timing/cross-origin-element.sub.html [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] wpt_internal/webcodecs/reconfiguring_encoder.https.any.worker.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.sharedworker.html [ Crash Failure ]
-crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
