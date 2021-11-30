@@ -284,6 +284,9 @@ public class RecordHistogram {
     /**
      * Forgets the given histogram, for testing purposes only.
      *
+     * NOTE: Causes flakiness on batched instrumentation tests!
+     * See https://crbug.com/1211884 and https://crbug.com/1270962 for details.
+     *
      * @param name name of the histogram to forget
      */
     @VisibleForTesting
