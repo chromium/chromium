@@ -346,7 +346,7 @@ bool ComputeOutOfFlowInlineDimensions(
   const bool is_table = node.IsTable();
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node);
-  bool is_shrink_to_fit = is_table || node.ShouldBeConsideredAsReplaced();
+  bool is_shrink_to_fit = is_table;
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -458,7 +458,6 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
 
   scoped_refptr<const NGLayoutResult> result;
 
-  // NOTE: |is_shrink_to_fit| isn't symmetrical with the inline calculations.
   const auto& style = node.Style();
   const bool is_table = node.IsTable();
   bool is_shrink_to_fit = is_table;
