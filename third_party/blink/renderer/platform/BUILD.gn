@@ -1557,6 +1557,7 @@ component("platform") {
     "widget/input/prediction/filter_factory.cc",
     "widget/input/prediction/filter_factory.h",
     "widget/input/prediction/predictor_factory.cc",
+    "widget/input/prediction/predictor_factory.h",
     "widget/input/scroll_predictor.cc",
     "widget/input/scroll_predictor.h",
     "widget/input/synchronous_input_handler_proxy.h",

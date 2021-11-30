@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_PREDICTOR_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_PREDICTOR_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_PREDICTION_PREDICTOR_FACTORY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_PREDICTION_PREDICTOR_FACTORY_H_
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/base/prediction/input_predictor.h"
@@ -20,9 +20,10 @@ enum class PredictorType {
   kScrollPredictorTypeLinearResampling,
   kScrollPredictorTypeEmpty
 };
+
 }  // namespace input_prediction
 
-class BLINK_PLATFORM_EXPORT PredictorFactory {
+class PredictorFactory {
  public:
   // Returns the PredictorType associated to the given predictor
   // name if found, otherwise returns kScrollPredictorTypeEmpty
@@ -47,4 +48,4 @@ class BLINK_PLATFORM_EXPORT PredictorFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_PREDICTOR_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_PREDICTION_PREDICTOR_FACTORY_H_

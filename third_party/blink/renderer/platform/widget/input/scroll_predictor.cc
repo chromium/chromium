@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/input/predictor_factory.h"
+#include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
