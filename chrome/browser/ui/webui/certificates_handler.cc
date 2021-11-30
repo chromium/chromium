@@ -520,9 +520,10 @@ void CertificatesHandler::ExportPersonalFileSelected(
 
 void CertificatesHandler::HandleExportPersonalPasswordSelected(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  const base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(2U, args_list.size());
   AssignWebUICallbackId(args);
-  CHECK(args->GetString(1, &password_));
+  password_ = UTF8ToUTF16(args_list[1].GetString());  // CHECKs if non-string.
 
   // Currently, we don't support exporting more than one at a time.  If we do,
   // this would need to either change this to use UnlockSlotsIfNecessary or
@@ -663,9 +664,10 @@ void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
 
 void CertificatesHandler::HandleImportPersonalPasswordSelected(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(2U, args_list.size());
   AssignWebUICallbackId(args);
-  CHECK(args->GetString(1, &password_));
+  password_ = UTF8ToUTF16(args_list[1].GetString());  // CHECKs if non-string.
 
   if (use_hardware_backed_) {
     slot_ = certificate_manager_model_->cert_db()->GetPrivateSlot();
