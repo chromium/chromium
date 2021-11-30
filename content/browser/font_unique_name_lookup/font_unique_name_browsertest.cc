@@ -119,23 +119,6 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
     feature_list_.InitAndEnableFeature(features::kFontSrcLocalMatching);
   }
 
-#if defined(OS_WIN)
-  void PreRunTestOnMainThread() override {
-    DWriteFontLookupTableBuilder* table_builder =
-        DWriteFontLookupTableBuilder::GetInstance();
-    table_builder->ResetStateForTesting();
-    table_builder->SchedulePrepareFontUniqueNameTableIfNeeded();
-    DevToolsProtocolTest::PreRunTestOnMainThread();
-  }
-
-  void PostRunTestOnMainThread() override {
-    DWriteFontLookupTableBuilder* table_builder =
-        DWriteFontLookupTableBuilder::GetInstance();
-    table_builder->ResetStateForTesting();
-    DevToolsProtocolTest::PostRunTestOnMainThread();
-  }
-#endif
-
   void LoadAndWait(const std::string& url) {
     base::ScopedAllowBlockingForTesting blocking_for_load;
     ASSERT_TRUE(embedded_test_server()->Start());

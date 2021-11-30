@@ -268,13 +268,25 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
 class ContentBrowserTestSanityTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_FALSE(ran_);
+
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     if (std::string(test_info->name()) == "SingleProcess")
       command_line->AppendSwitch(switches::kSingleProcess);
   }
 
+  void SetUp() override {
+    ASSERT_FALSE(ran_);
+    BrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override { ASSERT_FALSE(ran_); }
+
   void Test() {
+    ASSERT_FALSE(ran_);
+    ran_ = true;
+
     GURL url = GetTestUrl(".", "simple_page.html");
 
     std::u16string expected_title(u"OK");
@@ -283,6 +295,18 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
     std::u16string title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, title);
   }
+
+  void TearDownOnMainThread() override { ASSERT_TRUE(ran_); }
+
+  void TearDown() override {
+    ASSERT_TRUE(ran_);
+    BrowserTestBase::TearDown();
+  }
+
+ private:
+  // Verify that Test() is invoked once and only once between SetUp and TearDown
+  // phases.
+  bool ran_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, Basic) {

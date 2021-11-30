@@ -110,7 +110,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   // Used to respond to changes to the system's current locale.
   std::unique_ptr<base::FuchsiaIntlProfileWatcher> intl_profile_watcher_;
 
-  bool run_message_loop_ = true;
   base::OnceClosure quit_closure_;
 };
 

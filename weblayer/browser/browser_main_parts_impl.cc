@@ -251,11 +251,6 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
           FROM_HERE,
           base::BindOnce(&PublishSubresourceFilterRulesetFromResourceBundle));
 
-  if (main_function_params_.ui_task) {
-    std::move(main_function_params_.ui_task).Run();
-    run_message_loop_ = false;
-  }
-
 #if defined(OS_ANDROID)
   // On Android, retrieve the application start time from Java and record it. On
   // other platforms, the application start time was already recorded in the
@@ -289,14 +284,10 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
 
 void BrowserMainPartsImpl::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  if (run_message_loop_) {
-    // Wrap the method that stops the message loop so we can do other shutdown
-    // cleanup inside content.
-    params_->delegate->SetMainMessageLoopQuitClosure(
-        base::BindOnce(StopMessageLoop, run_loop->QuitClosure()));
-  } else {
-    run_loop.reset();
-  }
+  // Wrap the method that stops the message loop so we can do other shutdown
+  // cleanup inside content.
+  params_->delegate->SetMainMessageLoopQuitClosure(
+      base::BindOnce(StopMessageLoop, run_loop->QuitClosure()));
 }
 
 void BrowserMainPartsImpl::OnFirstIdle() {

@@ -743,11 +743,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   cast_browser_process_->cast_service()->Start();
 
-  if (parameters_.ui_task) {
-    std::move(parameters_.ui_task).Run();
-    run_message_loop_ = false;
-  }
-
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -776,16 +771,10 @@ void CastBrowserMainParts::WillRunMainMessageLoop(
 #if defined(OS_ANDROID)
   // Android does not use native main MessageLoop.
   NOTREACHED();
-#else
-  if (run_message_loop_) {
-#if !defined(OS_FUCHSIA)
-    // Fuchsia doesn't have signals.
-    RegisterClosureOnSignal(run_loop->QuitClosure());
+#elif !defined(OS_FUCHSIA)
+  // Fuchsia doesn't have signals.
+  RegisterClosureOnSignal(run_loop->QuitClosure());
 #endif  // !defined(OS_FUCHSIA)
-  } else {
-    run_loop.reset();
-  }
-#endif
 }
 
 void CastBrowserMainParts::PostMainMessageLoopRun() {

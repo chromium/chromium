@@ -90,10 +90,6 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   // For running app browsertests.
   content::MainFunctionParams parameters_;
 
-  // If true, indicates the main message loop should be run
-  // in MainMessageLoopRun. If false, it has already been run.
-  bool run_message_loop_;
-
   std::unique_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
 };
 

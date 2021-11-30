@@ -86,7 +86,6 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   std::unique_ptr<PrefService> local_state_;
 #endif
 
-  bool run_message_loop_ = true;
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
 #if defined(OS_MAC)

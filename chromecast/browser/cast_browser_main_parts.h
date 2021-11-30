@@ -175,8 +175,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Only used when running with --enable-ui-devtools.
   std::unique_ptr<CastUIDevTools> ui_devtools_;
 #endif  // defined(USE_AURA) && !defined(OS_FUCHSIA)
-
-  bool run_message_loop_ = true;
 };
 
 }  // namespace shell
