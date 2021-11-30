@@ -546,7 +546,8 @@
   # END chromeos/ section.
 
   # START components/ section.
-  # TODO(b/206708823): Move this to the section for ash.
+  # TODO(b/207518736): Input overlay resources will be changed to proto soon,
+  # thus not rushing to update it for now.
   "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
     "META": {"align": 1000},

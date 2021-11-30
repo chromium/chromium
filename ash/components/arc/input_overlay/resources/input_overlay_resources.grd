@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
      NOTE: if you are adding resources here, you should probably also edit:
-     components/arc/input_overlay/resources/input_overlay_resources_util.cc
+     ash/components/arc/input_overlay/resources/input_overlay_resources_util.cc
 -->
 <grit base_dir="." latest_public_release="0" current_release="1">
   <outputs>
