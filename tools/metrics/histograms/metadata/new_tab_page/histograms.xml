@@ -1377,7 +1377,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilDismissal"
-    units="units" expires_after="2022-03-27">
+    units="units" expires_after="2022-05-29">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
