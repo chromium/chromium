@@ -230,6 +230,15 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
     return browser;
   }
 
+  Browser* CreatePopupBrowser() {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    Browser::CreateParams params(profile, true /* user_gesture */);
+    params.type = Browser::TYPE_POPUP;
+    Browser* browser = Browser::Create(params);
+    browser->window()->Show();
+    return browser;
+  }
+
   Browser* CreateAppBrowser(const std::string& app_id) {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     auto params = Browser::CreateParams::CreateForApp(
@@ -435,6 +444,66 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
         {"removed", 3, kAppTab, kAppId_B, window, kTitle_B, kActive, kInactive},
         {"removed", 2, kAppTab, kAppId_A, window, kTitle_A, kActive, kInactive},
         {"removed", 1, kChromeWindow, "", window, "", kActive, false},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, PopupBrowserWindow) {
+  Browser* browser = nullptr;
+  aura::Window* window = nullptr;
+
+  {
+    SCOPED_TRACE("open popup browser window");
+    Recorder recorder(*tracker_);
+
+    browser = CreatePopupBrowser();
+    window = browser->window()->GetNativeWindow();
+    InsertForegroundTab(browser, "https://c.example.org");
+
+    recorder.Verify({
+        {"added", 1, kChromeWindow, "", window, "", kActive, false},
+    });
+  }
+
+  {
+    SCOPED_TRACE("close popup browser window");
+    Recorder recorder(*tracker_);
+
+    browser->tab_strip_model()->CloseAllTabs();
+
+    recorder.Verify({
+        {"removed", 1, kChromeWindow, "", window, "", kActive, false},
+    });
+  }
+
+  {
+    // Happens when an app running in a browser tab opens a separate popup
+    // window: it's not of type Browser::TYPE_APP_POPUP, but the window contains
+    // an instance of this app.
+    SCOPED_TRACE("open popup browser window with app tab");
+    Recorder recorder(*tracker_);
+
+    browser = CreatePopupBrowser();
+    window = browser->window()->GetNativeWindow();
+    InsertForegroundTab(browser, "https://a.example.org");
+
+    recorder.Verify({
+        {"added", 2, kChromeWindow, "", window, "", kActive, false},
+        {"added", 3, kAppTab, kAppId_A, window, "", kActive, kActive},
+        {"updated", 3, kAppTab, kAppId_A, window, kURL_A, kActive, kActive},
+        {"updated", 3, kAppTab, kAppId_A, window, kTitle_A, kActive, kActive},
+    });
+  }
+
+  {
+    SCOPED_TRACE("close popup browser window with app tab");
+    Recorder recorder(*tracker_);
+
+    browser->tab_strip_model()->CloseAllTabs();
+
+    recorder.Verify({
+        {"removed", 3, kAppTab, kAppId_A, window, kTitle_A, kActive, kActive},
+        {"removed", 2, kChromeWindow, "", window, "", kActive, false},
     });
   }
 }
