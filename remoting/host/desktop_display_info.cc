@@ -19,16 +19,16 @@ DesktopDisplayInfo::~DesktopDisplayInfo() = default;
 bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
   if (other.displays_.size() == displays_.size()) {
     for (size_t display = 0; display < displays_.size(); display++) {
-      const DisplayGeometry* this_display = displays_[display].get();
-      const DisplayGeometry* other_display = other.displays_[display].get();
-      if (this_display->id != other_display->id ||
-          this_display->x != other_display->x ||
-          this_display->y != other_display->y ||
-          this_display->width != other_display->width ||
-          this_display->height != other_display->height ||
-          this_display->dpi != other_display->dpi ||
-          this_display->bpp != other_display->bpp ||
-          this_display->is_default != other_display->is_default) {
+      const DisplayGeometry& this_display = displays_[display];
+      const DisplayGeometry& other_display = other.displays_[display];
+      if (this_display.id != other_display.id ||
+          this_display.x != other_display.x ||
+          this_display.y != other_display.y ||
+          this_display.width != other_display.width ||
+          this_display.height != other_display.height ||
+          this_display.dpi != other_display.dpi ||
+          this_display.bpp != other_display.bpp ||
+          this_display.is_default != other_display.is_default) {
         return false;
       }
     }
@@ -68,7 +68,7 @@ int DesktopDisplayInfo::NumDisplays() {
 const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
   if (id < 0 || id >= displays_.size())
     return nullptr;
-  return displays_[id].get();
+  return &displays_[id];
 }
 
 // Calculate the offset from the origin of the desktop to the origin of the
@@ -117,18 +117,17 @@ webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
     return webrtc::DesktopVector();
   }
 
-  const DisplayGeometry* disp_info = displays_[disp_index].get();
-  webrtc::DesktopVector origin(disp_info->x, disp_info->y);
+  const DisplayGeometry& disp_info = displays_[disp_index];
+  webrtc::DesktopVector origin(disp_info.x, disp_info.y);
 
   // Find topleft-most display coordinate. This is the topleft of the desktop.
   int dx = 0;
   int dy = 0;
-  for (auto& display : displays_) {
-    const DisplayGeometry* disp = display.get();
-    if (disp->x < dx)
-      dx = disp->x;
-    if (disp->y < dy)
-      dy = disp->y;
+  for (const auto& display : displays_) {
+    if (display.x < dx)
+      dx = display.x;
+    if (display.y < dy)
+      dy = display.y;
   }
   webrtc::DesktopVector topleft(dx, dy);
 
@@ -148,20 +147,21 @@ webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
 #endif  // defined(OS_APPLE)
 }
 
-void DesktopDisplayInfo::AddDisplay(std::unique_ptr<DisplayGeometry> display) {
-  displays_.push_back(std::move(display));
+void DesktopDisplayInfo::AddDisplay(const DisplayGeometry& display) {
+  displays_.push_back(display);
 }
 
-void DesktopDisplayInfo::AddDisplayFrom(protocol::VideoTrackLayout track) {
-  std::unique_ptr<DisplayGeometry> display(new DisplayGeometry());
-  display->x = track.position_x();
-  display->y = track.position_y();
-  display->width = track.width();
-  display->height = track.height();
-  display->dpi = track.x_dpi();
-  display->bpp = 24;
-  display->is_default = false;
-  displays_.push_back(std::move(display));
+void DesktopDisplayInfo::AddDisplayFrom(
+    const protocol::VideoTrackLayout& track) {
+  DisplayGeometry display;
+  display.x = track.position_x();
+  display.y = track.position_y();
+  display.width = track.width();
+  display.height = track.height();
+  display.dpi = track.x_dpi();
+  display.bpp = 24;
+  display.is_default = false;
+  displays_.push_back(display);
 }
 
 }  // namespace remoting

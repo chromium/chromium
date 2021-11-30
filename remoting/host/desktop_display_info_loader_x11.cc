@@ -90,27 +90,27 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
 
   for (const auto& monitor : monitors_) {
-    auto info = std::make_unique<DisplayGeometry>();
+    DisplayGeometry info;
 
     // webrtc::ScreenCapturerX11 uses the |name| Atom as the monitor ID.
-    info->id = static_cast<int32_t>(monitor.name);
-    info->is_default = monitor.primary;
-    info->x = monitor.x;
-    info->y = monitor.y;
-    info->width = monitor.width;
-    info->height = monitor.height;
-    info->dpi = kDefaultScreenDpi;
-    info->bpp = 24;
+    info.id = static_cast<int32_t>(monitor.name);
+    info.is_default = monitor.primary;
+    info.x = monitor.x;
+    info.y = monitor.y;
+    info.width = monitor.width;
+    info.height = monitor.height;
+    info.dpi = kDefaultScreenDpi;
+    info.bpp = 24;
 
     // Calculate DPI if possible, using width in millimeters.
     if (monitor.width_in_millimeters != 0) {
       double pixelsPerMillimeter =
           static_cast<double>(monitor.width) / monitor.width_in_millimeters;
       double pixelsPerInch = pixelsPerMillimeter * kMillimetersPerInch;
-      info->dpi = base::ClampRound(pixelsPerInch);
+      info.dpi = base::ClampRound(pixelsPerInch);
     }
 
-    result.AddDisplay(std::move(info));
+    result.AddDisplay(info);
   }
   return result;
 }

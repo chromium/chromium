@@ -23,9 +23,6 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
 
   BOOL enum_result = TRUE;
   for (int device_index = 0;; ++device_index) {
-    auto info = std::make_unique<DisplayGeometry>();
-    info->id = device_index;
-
     DISPLAY_DEVICE device = {};
     device.cb = sizeof(device);
     enum_result = EnumDisplayDevices(NULL, device_index, &device, 0);
@@ -38,9 +35,9 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     if (!(device.StateFlags & DISPLAY_DEVICE_ACTIVE))
       continue;
 
-    info->is_default = false;
+    bool is_default = false;
     if (device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
-      info->is_default = true;
+      is_default = true;
 
     // Get additional info about device.
     DEVMODE devmode;
@@ -48,13 +45,16 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     EnumDisplaySettingsEx(device.DeviceName, ENUM_CURRENT_SETTINGS, &devmode,
                           0);
 
-    info->x = devmode.dmPosition.x;
-    info->y = devmode.dmPosition.y;
-    info->width = devmode.dmPelsWidth;
-    info->height = devmode.dmPelsHeight;
-    info->dpi = devmode.dmLogPixels;
-    info->bpp = devmode.dmBitsPerPel;
-    result.AddDisplay(std::move(info));
+    DisplayGeometry info;
+    info.id = device_index;
+    info.is_default = is_default;
+    info.x = devmode.dmPosition.x;
+    info.y = devmode.dmPosition.y;
+    info.width = devmode.dmPelsWidth;
+    info.height = devmode.dmPelsHeight;
+    info.dpi = devmode.dmLogPixels;
+    info.bpp = devmode.dmBitsPerPel;
+    result.AddDisplay(info);
   }
 
   return result;

@@ -50,9 +50,9 @@ using protocol::MockInputStub;
 using protocol::MockVideoStub;
 using protocol::SessionConfig;
 using protocol::test::EqualsClipboardEvent;
+using protocol::test::EqualsKeyEvent;
 using protocol::test::EqualsMouseButtonEvent;
 using protocol::test::EqualsMouseMoveEvent;
-using protocol::test::EqualsKeyEvent;
 
 using testing::_;
 using testing::AtLeast;
@@ -69,12 +69,12 @@ MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
   if (!arg.has_capabilities())
     return false;
 
-  std::vector<std::string> words_args = base::SplitString(
-      arg.capabilities(), " ", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
-  std::vector<std::string> words_expected = base::SplitString(
-      expected_capabilities, " ", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> words_args =
+      base::SplitString(arg.capabilities(), " ", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> words_expected =
+      base::SplitString(expected_capabilities, " ", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
 
   for (const auto& word : words_expected) {
     if (std::find(words_args.begin(), words_args.end(), word) ==
@@ -301,22 +301,22 @@ void ClientSessionTest::NotifyVideoSizeAll() {
 
   int x_min, x_max, y_min, y_max;
   bool initialized = false;
-  for (auto& disp : displays_.displays()) {
-    int disp_x_max = disp->x + disp->width;
-    int disp_y_max = disp->y + disp->height;
+  for (const auto& disp : displays_.displays()) {
+    int disp_x_max = disp.x + disp.width;
+    int disp_y_max = disp.y + disp.height;
     if (!initialized) {
-      x_min = disp->x;
+      x_min = disp.x;
       x_max = disp_x_max;
-      y_min = disp->y;
+      y_min = disp.y;
       y_max = disp_y_max;
       initialized = true;
     } else {
-      if (disp->x < x_min)
-        x_min = disp->x;
+      if (disp.x < x_min)
+        x_min = disp.x;
       if (disp_x_max > x_max)
         x_max = disp_x_max;
-      if (disp->y < y_min)
-        y_min = disp->y;
+      if (disp.y < y_min)
+        y_min = disp.y;
       if (disp_y_max > y_max)
         y_max = disp_y_max;
     }

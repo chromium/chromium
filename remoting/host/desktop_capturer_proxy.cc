@@ -201,12 +201,11 @@ bool DesktopCapturerProxy::GetSourceList(SourceList* sources) {
 bool DesktopCapturerProxy::SelectSource(SourceId id_index) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  SourceId id = -1;
-  if (id_index >= 0 && id_index < desktop_display_info_.NumDisplays()) {
-    const DisplayGeometry* display =
-        desktop_display_info_.displays()[id_index].get();
-    id = display->id;
-  }
+  const DisplayGeometry* display =
+      desktop_display_info_.GetDisplayInfo(id_index);
+
+  SourceId id = (display ? display->id : webrtc::kFullDesktopScreenId);
+
   capture_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
@@ -243,15 +242,14 @@ void DesktopCapturerProxy::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
   LOG(INFO) << "DCP::OnDisplayInfoLoaded";
   for (const auto& display : desktop_display_info_.displays()) {
     protocol::VideoTrackLayout* track = layout->add_video_track();
-    track->set_position_x(display->x);
-    track->set_position_y(display->y);
-    track->set_width(display->width);
-    track->set_height(display->height);
-    track->set_x_dpi(display->dpi);
-    track->set_y_dpi(display->dpi);
-    LOG(INFO) << "   Display: " << display->x << "," << display->y << " "
-              << display->width << "x" << display->height << " @ "
-              << display->dpi;
+    track->set_position_x(display.x);
+    track->set_position_y(display.y);
+    track->set_width(display.width);
+    track->set_height(display.height);
+    track->set_x_dpi(display.dpi);
+    track->set_y_dpi(display.dpi);
+    LOG(INFO) << "   Display: " << display.x << "," << display.y << " "
+              << display.width << "x" << display.height << " @ " << display.dpi;
   }
   client_session_control_->OnDesktopDisplayChanged(std::move(layout));
 }

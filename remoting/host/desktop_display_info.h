@@ -42,19 +42,17 @@ class DesktopDisplayInfo {
   webrtc::DesktopVector CalcDisplayOffset(webrtc::ScreenId id);
 
   // Add a new display with the given info to the display list.
-  void AddDisplay(std::unique_ptr<DisplayGeometry> display);
+  void AddDisplay(const DisplayGeometry& display);
 
-  void AddDisplayFrom(protocol::VideoTrackLayout track);
+  void AddDisplayFrom(const protocol::VideoTrackLayout& track);
 
   bool operator==(const DesktopDisplayInfo& other);
   bool operator!=(const DesktopDisplayInfo& other);
 
-  const std::vector<std::unique_ptr<DisplayGeometry>>& displays() const {
-    return displays_;
-  }
+  const std::vector<DisplayGeometry>& displays() const { return displays_; }
 
  private:
-  std::vector<std::unique_ptr<DisplayGeometry>> displays_;
+  std::vector<DisplayGeometry> displays_;
 };
 
 }  // namespace remoting

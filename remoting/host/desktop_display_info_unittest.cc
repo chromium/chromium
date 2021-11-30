@@ -12,16 +12,15 @@ namespace remoting {
 
 class DesktopDisplayInfoTest : public testing::Test {
  public:
-  void AddDisplay(int x, int y, int width, int height) {
-    auto* display = new DisplayGeometry();
-    display->x = x;
-    display->y = y;
-    display->width = width;
-    display->height = height;
-    display->dpi = 96;
-    display->bpp = 24;
-    display->is_default = false;
-    info_.AddDisplay(std::unique_ptr<DisplayGeometry>(display));
+  void AddDisplay(int x, int y, uint32_t width, uint32_t height) {
+    info_.AddDisplay({.id = 0,
+                      .x = x,
+                      .y = y,
+                      .width = width,
+                      .height = height,
+                      .dpi = 96,
+                      .bpp = 24,
+                      .is_default = false});
   }
 
   void VerifyDisplayOffset(const base::Location& from_here,
