@@ -101,10 +101,10 @@ class CONTENT_EXPORT WebUIController {
 // This macro declares a static variable inside the class that inherits from
 // WebUIController. The address of the static variable is used as the unique
 // Type for the subclass.
-#define WEB_UI_CONTROLLER_TYPE_DECL()            \
-  static constexpr int kWebUIControllerType = 0; \
-  Type GetType() final;                          \
-  friend class content::WebUIController;         \
+#define WEB_UI_CONTROLLER_TYPE_DECL()        \
+  static const int kWebUIControllerType = 0; \
+  Type GetType() final;                      \
+  friend class content::WebUIController;     \
   friend class content::WebUIBrowserInterfaceBrokerRegistry
 
 // This macro instantiates the static variable declared by the previous macro.
