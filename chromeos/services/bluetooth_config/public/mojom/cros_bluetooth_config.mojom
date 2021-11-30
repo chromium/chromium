@@ -140,9 +140,17 @@ interface SystemPropertiesObserver {
 };
 
 // Observer for changes to Bluetooth device status.
+// Clients include:
+// * Ash system UI; implemented in C++ as part of the browser process
 interface BluetoothDeviceStatusObserver {
   // Invoked when a device has been newly-paired.
   OnDevicePaired(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been connected.
+  OnDeviceConnected(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been disconnected.
+  OnDeviceDisconnected(PairedBluetoothDeviceProperties device);
 };
 
 // Provided to the pairing UI to handle keys that have been entered
@@ -253,8 +261,8 @@ interface CrosBluetoothConfig {
   // observing, disconnect |observer|.
   ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
 
-  // Invokes OnDevicePaired() when a device is newly paired. To stop
-  // observing, disconnect |observer|.
+  // Invokes OnDevicePaired() when a device is newly paired, connected or
+  // disconnected. To stop observing, disconnect |observer|.
   ObserveDeviceStatusChanges(
     pending_remote<BluetoothDeviceStatusObserver> observer);
 

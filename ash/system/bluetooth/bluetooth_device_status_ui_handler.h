@@ -31,6 +31,12 @@ class ASH_EXPORT BluetoothDeviceStatusUiHandler
   void OnDevicePaired(
       chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
           device) override;
+  void OnDeviceConnected(
+      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
+          device) override;
+  void OnDeviceDisconnected(
+      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
+          device) override;
 
   virtual void ShowToast(const ash::ToastData& toast_data);
 

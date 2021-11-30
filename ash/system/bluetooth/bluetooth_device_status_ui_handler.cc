@@ -50,6 +50,16 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
   ShowToast(toast_data);
 }
 
+void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
+    PairedBluetoothDevicePropertiesPtr device) {
+  // TODO(crbug.com/1010321): Implement this function.
+}
+
+void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
+    PairedBluetoothDevicePropertiesPtr device) {
+  // TODO(crbug.com/1010321): Implement this function.
+}
+
 void BluetoothDeviceStatusUiHandler::ShowToast(
     const ash::ToastData& toast_data) {
   ash::ToastManager::Get()->Show(toast_data);

@@ -25,6 +25,24 @@ void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyPaired(
   }
 }
 
+void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyConnected(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+  for (auto& observer : observers_) {
+    for (auto& device : devices) {
+      observer->OnDeviceConnected(mojo::Clone(device));
+    }
+  }
+}
+
+void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyDisconnected(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+  for (auto& observer : observers_) {
+    for (auto& device : devices) {
+      observer->OnDeviceDisconnected(mojo::Clone(device));
+    }
+  }
+}
+
 void BluetoothDeviceStatusNotifier::FlushForTesting() {
   observers_.FlushForTesting();  // IN-TEST
 }

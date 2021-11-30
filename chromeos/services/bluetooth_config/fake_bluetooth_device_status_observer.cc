@@ -34,5 +34,15 @@ void FakeBluetoothDeviceStatusObserver::OnDevicePaired(
   paired_device_properties_list_.push_back(std::move(device));
 }
 
+void FakeBluetoothDeviceStatusObserver::OnDeviceConnected(
+    mojom::PairedBluetoothDevicePropertiesPtr device) {
+  connected_device_properties_list_.push_back(std::move(device));
+}
+
+void FakeBluetoothDeviceStatusObserver::OnDeviceDisconnected(
+    mojom::PairedBluetoothDevicePropertiesPtr device) {
+  disconnected_device_properties_list_.push_back(std::move(device));
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos
