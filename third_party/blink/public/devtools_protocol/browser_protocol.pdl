@@ -1949,6 +1949,11 @@ experimental domain Cast
     parameters
       string sinkName
 
+  # Starts mirroring the desktop to the sink.
+  command startDesktopMirroring
+    parameters
+      string sinkName
+
   # Starts mirroring the tab to the sink.
   command startTabMirroring
     parameters

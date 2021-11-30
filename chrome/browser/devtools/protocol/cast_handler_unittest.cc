@@ -42,12 +42,20 @@ media_router::MediaRoute Route1() {
       "", true, true);
 }
 
+class MockStartDesktopMirroringCallback
+    : public CastHandler::StartDesktopMirroringCallback {
+ public:
+  MOCK_METHOD(void, sendSuccess, ());
+  MOCK_METHOD(void, sendFailure, (const protocol::DispatchResponse&));
+  MOCK_METHOD(void, fallThrough, ());
+};
+
 class MockStartTabMirroringCallback
     : public CastHandler::StartTabMirroringCallback {
  public:
-  MOCK_METHOD0(sendSuccess, void());
-  MOCK_METHOD1(sendFailure, void(const protocol::DispatchResponse&));
-  MOCK_METHOD0(fallThrough, void());
+  MOCK_METHOD(void, sendSuccess, ());
+  MOCK_METHOD(void, sendFailure, (const protocol::DispatchResponse&));
+  MOCK_METHOD(void, fallThrough, ());
 };
 
 }  // namespace
@@ -80,8 +88,13 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(*router_, RegisterMediaSinksObserver(_))
         .WillRepeatedly(
             WithArg<0>([this](media_router::MediaSinksObserver* observer) {
-              if (observer->source())
-                sinks_observer_ = observer;
+              if (observer->source()) {
+                if (observer->source()->IsDesktopMirroringSource()) {
+                  desktop_sinks_observer_ = observer;
+                } else {
+                  sinks_observer_ = observer;
+                }
+              }
               return true;
             }));
     handler_->Enable(protocol::Maybe<std::string>());
@@ -90,6 +103,7 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<CastHandler> handler_;
   media_router::MockMediaRouter* router_ = nullptr;
   media_router::MediaRoutesObserver* routes_observer_ = nullptr;
+  media_router::MediaSinksObserver* desktop_sinks_observer_ = nullptr;
   media_router::MediaSinksObserver* sinks_observer_ = nullptr;
 };
 
@@ -114,6 +128,39 @@ TEST_F(CastHandlerTest, SetSinkToUse) {
   media_router::PresentationServiceDelegateImpl::GetOrCreateForWebContents(
       web_contents())
       ->StartPresentation(request, base::DoNothing(), base::DoNothing());
+}
+
+TEST_F(CastHandlerTest, StartDesktopMirroring) {
+  desktop_sinks_observer_->OnSinksUpdated({sink1, sink2}, {});
+  auto callback = std::make_unique<MockStartDesktopMirroringCallback>();
+  auto* callback_ptr = callback.get();
+
+  // Make |router_| return a successful result. |callback| should be notified of
+  // the success.
+  EXPECT_CALL(
+      *router_,
+      CreateRouteInternal(media_router::MediaSource::ForUnchosenDesktop().id(),
+                          kSinkId1, _, _, _, _, _))
+      .WillOnce(
+          WithArg<4>([](media_router::MediaRouteResponseCallback& callback) {
+            std::move(callback).Run(
+                media_router::mojom::RoutePresentationConnectionPtr(),
+                media_router::RouteRequestResult(
+                    std::make_unique<media_router::MediaRoute>(Route1()), "id",
+                    "", media_router::RouteRequestResult::OK));
+          }));
+  EXPECT_CALL(*callback_ptr, sendSuccess());
+  handler_->StartDesktopMirroring(kSinkName1, std::move(callback));
+}
+
+TEST_F(CastHandlerTest, StartDesktopMirroringWithInvalidName) {
+  sinks_observer_->OnSinksUpdated({sink1}, {});
+  auto callback = std::make_unique<MockStartDesktopMirroringCallback>();
+
+  // Attempting to start casting with a name different from that of the
+  // discovered sink should fail.
+  EXPECT_CALL(*callback.get(), sendFailure(_));
+  handler_->StartDesktopMirroring(kSinkName2, std::move(callback));
 }
 
 TEST_F(CastHandlerTest, StartTabMirroring) {

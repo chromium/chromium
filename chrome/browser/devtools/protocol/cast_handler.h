@@ -38,6 +38,9 @@ class CastHandler : public protocol::Cast::Backend,
 
   // protocol::Cast::Backend:
   protocol::Response SetSinkToUse(const std::string& in_sink_name) override;
+  void StartDesktopMirroring(
+      const std::string& in_sink_name,
+      std::unique_ptr<StartDesktopMirroringCallback> callback) override;
   void StartTabMirroring(
       const std::string& in_sink_name,
       std::unique_ptr<StartTabMirroringCallback> callback) override;
@@ -81,6 +84,10 @@ class CastHandler : public protocol::Cast::Backend,
   // updated.
   void SendSinkUpdate();
 
+  void OnDesktopMirroringStarted(
+      std::unique_ptr<StartDesktopMirroringCallback> callback,
+      media_router::mojom::RoutePresentationConnectionPtr connection,
+      const media_router::RouteRequestResult& result);
   void OnTabMirroringStarted(
       std::unique_ptr<StartTabMirroringCallback> callback,
       media_router::mojom::RoutePresentationConnectionPtr connection,

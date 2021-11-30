@@ -24,7 +24,7 @@
             },
             {
                 "domain": "Cast",
-                "async": ["startTabMirroring"]
+                "async": ["startDesktopMirroring", "startTabMirroring"]
             },
             {
                 "domain": "WindowManager"
