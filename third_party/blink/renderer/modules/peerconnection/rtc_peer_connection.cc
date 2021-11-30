@@ -2031,86 +2031,29 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
 }
 
 String RTCPeerConnection::signalingState() const {
-  switch (signaling_state_) {
-    case webrtc::PeerConnectionInterface::SignalingState::kStable:
-      return "stable";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
-      return "have-local-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
-      return "have-remote-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
-      return "have-local-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
-      return "have-remote-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kClosed:
-      return "closed";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(signaling_state_).data());
 }
 
 String RTCPeerConnection::iceGatheringState() const {
-  switch (ice_gathering_state_) {
-    case webrtc::PeerConnectionInterface::kIceGatheringNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceGatheringGathering:
-      return "gathering";
-    case webrtc::PeerConnectionInterface::kIceGatheringComplete:
-      return "complete";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(ice_gathering_state_).data());
 }
 
 String RTCPeerConnection::iceConnectionState() const {
   if (closed_) {
     return "closed";
   }
-  switch (ice_connection_state_) {
-    case webrtc::PeerConnectionInterface::kIceConnectionNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceConnectionChecking:
-      return "checking";
-    case webrtc::PeerConnectionInterface::kIceConnectionConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::kIceConnectionCompleted:
-      return "completed";
-    case webrtc::PeerConnectionInterface::kIceConnectionFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::kIceConnectionDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::kIceConnectionClosed:
-      return "closed";
-    case webrtc::PeerConnectionInterface::kIceConnectionMax:
-      NOTREACHED();
-  }
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(ice_connection_state_).data());
 }
 
 String RTCPeerConnection::connectionState() const {
   if (closed_) {
     return "closed";
   }
-  switch (peer_connection_state_) {
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting:
-      return "connecting";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kClosed:
-      return "closed";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(peer_connection_state_).data());
 }
 
 absl::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
