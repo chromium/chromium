@@ -1391,7 +1391,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(
-      IDC_SHOW_AS_TAB, !browser_->is_type_normal() && !is_fullscreen);
+      IDC_SHOW_AS_TAB, !browser_->is_type_normal() && !is_fullscreen &&
+                           !browser_->is_type_devtools());
 
   // Focus various bits of UI
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_TOOLBAR, show_main_ui);
