@@ -886,16 +886,16 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
 
   // Override redirect window and popup can request NONE/SHADOW. The shadow
   // will be updated in next commit.
-  if (!widget_->non_client_view() && !frame_enabled())
-    return;
+  if (widget_->non_client_view()) {
+    CustomFrameView* frame_view =
+        static_cast<CustomFrameView*>(widget_->non_client_view()->frame_view());
+    if (frame_view->GetFrameEnabled() == frame_enabled())
+      return;
 
-  CustomFrameView* frame_view =
-      static_cast<CustomFrameView*>(widget_->non_client_view()->frame_view());
-  if (frame_view->GetFrameEnabled() == frame_enabled())
-    return;
+    frame_view->SetFrameEnabled(frame_enabled());
+    frame_view->SetShouldPaintHeader(frame_enabled());
+  }
 
-  frame_view->SetFrameEnabled(frame_enabled());
-  frame_view->SetShouldPaintHeader(frame_enabled());
   widget_->GetRootView()->Layout();
   // TODO(oshima): We probably should wait applying these if the
   // window is animating.
