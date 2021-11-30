@@ -94,6 +94,10 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if defined(OS_WIN)
+#include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
+#endif
+
 namespace {
 
 // The global instance of the SystemNetworkContextmanager.
@@ -671,6 +675,13 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
+
+#if defined(OS_WIN)
+  if (command_line.HasSwitch(switches::kUseSystemProxyResolver)) {
+    network_context_params->windows_system_proxy_resolver =
+        ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver();
+  }
+#endif
 
   network_context_params->pac_quick_check_enabled =
       local_state_->GetBoolean(prefs::kQuickCheckEnabled);

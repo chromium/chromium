@@ -154,10 +154,10 @@ mojom("mojom_network_isolation_key") {
 }
 
 # As with |mojom_ip_address|, this is a separate target to avoid a circular
-# dependency, which comes from the fact that proxy_resolver_win service will use
-# this interfaces, and the network service will use the proxy_resolver_win
-# service. This is separate from other targets because only this needs to be
-# included in proxy_resolver_win builds.
+# dependency, which comes from the fact that proxy_resolver_win uses this
+# interface, and the network service uses the proxy_resolver_win service. This
+# is separate from other targets because only this needs to be included in
+# proxy_resolver_win builds.
 mojom("mojom_proxy_config") {
   generate_java = true
   sources = [
@@ -306,6 +306,10 @@ mojom("url_loader_base") {
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
+
+  if (is_win) {
+    public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
+  }
 
   enabled_features = []
   if (is_android || is_chromeos_ash) {
@@ -912,6 +916,10 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
+
+  if (is_win) {
+    public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
+  }
 
   enabled_features = []
 

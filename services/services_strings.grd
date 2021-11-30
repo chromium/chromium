@@ -191,6 +191,9 @@ This file contains strings for code in //services.
       <message name="IDS_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process V8 proxy resolution.">
         V8 Proxy Resolver
       </message>
+      <message name="IDS_WINDOWS_SYSTEM_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process WinHttp proxy resolution.">
+        WinHttp Proxy Resolver
+      </message>
     </messages>
   </release>
 </grit>

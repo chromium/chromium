@@ -120,6 +120,8 @@ static_library("utility") {
         "importer/nss_decryptor_win.cc",
         "importer/nss_decryptor_win.h",
       ]
+
+      deps += [ "//services/proxy_resolver_win" ]
     }
     deps += [
       "//chrome/common:mojo_bindings",

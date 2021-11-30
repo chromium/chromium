@@ -169,6 +169,7 @@ extern const char kTrustedDownloadSources[];
 extern const char kTryChromeAgain[];
 extern const char kUnlimitedStorage[];
 extern const char kUserDataDir[];
+extern const char kUseSystemProxyResolver[];
 extern const char kValidateCrx[];
 extern const char kVersion[];
 extern const char kWebRtcRemoteEventLogProactivePruningDelta[];

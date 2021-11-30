@@ -2202,6 +2202,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/chrome_main_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
+        "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
         "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc",
         "../browser/policy/test/locale_policy_browsertest.cc",
         "../browser/policy/test/network_service_sandbox_enabled_browsertest.cc",

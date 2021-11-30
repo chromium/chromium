@@ -2227,6 +2227,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::move(params_->proxy_resolver_factory));
   }
 
+#if defined(OS_WIN)
+  if (params_->windows_system_proxy_resolver) {
+    // TODO(https://crbug.com/1032820): Connect to proxy_resolver_win service.
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_->dhcp_wpad_url_client) {
     builder.SetDhcpWpadUrlClient(std::move(params_->dhcp_wpad_url_client));

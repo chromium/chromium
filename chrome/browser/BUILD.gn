@@ -3533,6 +3533,7 @@ static_library("browser") {
       "//url:gurl_android",
       "//url:origin_android",
     ]
+
     allow_circular_includes_from += [
       # chrome/browser depends on webapps, but that module needs
       # app_banner_manager_android.h from chrome. However, the .h file will soon
@@ -5339,6 +5340,8 @@ static_library("browser") {
       "metrics/power/battery_level_provider_win.cc",
       "metrics/tab_stats/tab_stats_tracker_delegate_win.cc",
       "metrics/tab_stats/tab_stats_tracker_win.cc",
+      "net/chrome_mojo_proxy_resolver_win.cc",
+      "net/chrome_mojo_proxy_resolver_win.h",
       "net/service_providers_win.cc",
       "net/service_providers_win.h",
       "notifications/win/notification_template_builder.cc",
@@ -5459,6 +5462,7 @@ static_library("browser") {
       "//components/services/quarantine/public/cpp:features",
       "//google_update",
       "//sandbox/win:sandbox",
+      "//services/proxy_resolver_win/public/mojom",
       "//third_party/crashpad/crashpad/client",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

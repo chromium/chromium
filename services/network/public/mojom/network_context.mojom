@@ -63,6 +63,9 @@ import "services/network/public/mojom/p2p.mojom";
 [EnableIf=is_p2p_enabled]
 import "services/network/public/mojom/p2p_trusted.mojom";
 
+[EnableIf=is_win]
+import "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom";
+
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
 // cookies.
@@ -297,6 +300,13 @@ struct NetworkContextParams {
   // available on Windows and Mac).
   pending_remote<proxy_resolver.mojom.ProxyResolverFactory>?
       proxy_resolver_factory;
+
+  // Handles all proxy resolution logic if the current proxy config comes from
+  // the operating system. Otherwise, or if this is not populated, proxy
+  // resolution is handled by Chrome as normal.
+  [EnableIf=is_win]
+  pending_remote<proxy_resolver_win.mojom.WindowsSystemProxyResolver>?
+      windows_system_proxy_resolver;
 
   // Retrieves the PAC script URL set via DHCP from the browser process. Only
   // used if |proxy_resolver_factory| is set. Note: optional because some tests

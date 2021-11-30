@@ -55,6 +55,7 @@ include_rules = [
   "+services/network/public",
   "+services/network/url_request_context_builder_mojo.h",
   "+services/proxy_resolver",
+  "+services/proxy_resolver_win",
   "+skia/ext",
   "+third_party/blink/public/common",
   "+third_party/zlib/google",

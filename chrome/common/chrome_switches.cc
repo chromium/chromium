@@ -560,6 +560,13 @@ const char kUnlimitedStorage[]              = "unlimited-storage";
 // all of its state.
 const char kUserDataDir[]                   = "user-data-dir";
 
+// Uses WinHttp to resolve proxies instead of using Chromium's normal proxy
+// resolution logic. This is only supported in Windows.
+//
+// TODO(https://crbug.com/1032820): Only use WinHttp whenever Chrome is
+// exclusively using system proxy configs.
+const char kUseSystemProxyResolver[] = "use-system-proxy-resolver";
+
 // Examines a .crx for validity and prints the result.
 const char kValidateCrx[]                   = "validate-crx";
 

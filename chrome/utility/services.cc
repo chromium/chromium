@@ -38,6 +38,8 @@
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
+#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 #endif  // defined(OS_WIN)
 
 #if defined(OS_MAC)
@@ -165,6 +167,13 @@ auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
 auto RunWindowsIconReader(
     mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver) {
   return std::make_unique<UtilReadIcon>(std::move(receiver));
+}
+
+auto RunWindowsSystemProxyResolver(
+    mojo::PendingReceiver<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+        receiver) {
+  return std::make_unique<proxy_resolver_win::WindowsSystemProxyResolverImpl>(
+      std::move(receiver));
 }
 #endif  // defined(OS_WIN)
 
@@ -423,4 +432,7 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 #if !defined(OS_ANDROID)
   services.Add(RunProxyResolver);
 #endif
+#if defined(OS_WIN)
+  services.Add(RunWindowsSystemProxyResolver);
+#endif  // defined(OS_WIN)
 }
