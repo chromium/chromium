@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/stl_util.h"
@@ -30,6 +29,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/onc_utils.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
@@ -144,7 +144,7 @@ arc::mojom::SecurityType TranslateWiFiSecurity(const std::string& type) {
   // Approximate it with WPA_EAP
   if (type == shill::kSecurityRsn)
     return arc::mojom::SecurityType::WPA_EAP;
-  LOG(WARNING) << "Unknown WiFi security type " << type;
+  NET_LOG(ERROR) << "Unknown WiFi security type " << type;
   return arc::mojom::SecurityType::NONE;
 }
 
@@ -267,8 +267,10 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   mojo->connection_state =
       TranslateConnectionState(network_state->connection_state());
   mojo->guid = network_state->guid();
-  if (mojo->guid.empty())
-    LOG(ERROR) << "Missing GUID property for network " << network_state->path();
+  if (mojo->guid.empty()) {
+    NET_LOG(ERROR) << "Missing GUID property for network "
+                   << network_state->path();
+  }
   mojo->type = TranslateNetworkType(network_state->type());
   mojo->is_metered =
       shill_dict &&
@@ -411,13 +413,13 @@ void ArcVpnSuccessCallback() {}
 void ArcVpnErrorCallback(const std::string& operation,
                          const std::string& error_name,
                          std::unique_ptr<base::DictionaryValue> error_data) {
-  LOG(ERROR) << "ArcVpnErrorCallback: " << operation << ": " << error_name;
+  NET_LOG(ERROR) << "ArcVpnErrorCallback: " << operation << ": " << error_name;
 }
 
 void AddPasspointCredentialsFailureCallback(const std::string& error_name,
                                             const std::string& error_message) {
-  LOG(ERROR) << "Failed to add passpoint credentials, error:" << error_name
-             << ", message: " << error_message;
+  NET_LOG(ERROR) << "Failed to add passpoint credentials, error:" << error_name
+                 << ", message: " << error_message;
 }
 
 }  // namespace
@@ -553,14 +555,14 @@ void ArcNetHostImpl::CreateNetworkFailureCallback(
     base::OnceCallback<void(const std::string&)> callback,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
-  LOG(ERROR) << "CreateNetworkFailureCallback: " << error_name;
+  NET_LOG(ERROR) << "CreateNetworkFailureCallback: " << error_name;
   std::move(callback).Run(std::string());
 }
 
 void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                                    CreateNetworkCallback callback) {
   if (!IsDeviceOwner()) {
-    LOG(ERROR) << "Only device owner can create WiFi networks";
+    NET_LOG(ERROR) << "Only device owner can create WiFi networks";
     std::move(callback).Run(std::string());
     return;
   }
@@ -571,7 +573,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   std::unique_ptr<base::DictionaryValue> wifi_dict(new base::DictionaryValue);
 
   if (!cfg->hexssid.has_value() || !cfg->details) {
-    LOG(ERROR)
+    NET_LOG(ERROR)
         << "Cannot create WiFi network without hex ssid or WiFi properties";
     std::move(callback).Run(std::string());
     return;
@@ -580,7 +582,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   mojom::ConfiguredNetworkDetailsPtr details =
       std::move(cfg->details->get_configured());
   if (!details) {
-    LOG(ERROR) << "Cannot create WiFi network without WiFi properties";
+    NET_LOG(ERROR) << "Cannot create WiFi network without WiFi properties";
     std::move(callback).Run(std::string());
     return;
   }
@@ -636,14 +638,14 @@ bool ArcNetHostImpl::GetNetworkPathFromGuid(const std::string& guid,
 void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
                                    ForgetNetworkCallback callback) {
   if (!IsDeviceOwner()) {
-    LOG(ERROR) << "Only device owner can remove WiFi networks";
+    NET_LOG(ERROR) << "Only device owner can remove WiFi networks";
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
 
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -664,7 +666,7 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
                                   StartConnectCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -685,7 +687,7 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
                                      StartDisconnectCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -716,7 +718,7 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
   if ((state == chromeos::NetworkStateHandler::TECHNOLOGY_PROHIBITED) ||
       (state == chromeos::NetworkStateHandler::TECHNOLOGY_UNINITIALIZED) ||
       (state == chromeos::NetworkStateHandler::TECHNOLOGY_UNAVAILABLE)) {
-    LOG(ERROR) << "SetWifiEnabledState failed due to WiFi state: " << state;
+    NET_LOG(ERROR) << "SetWifiEnabledState failed due to WiFi state: " << state;
     std::move(callback).Run(false);
     return;
   }
@@ -943,7 +945,7 @@ base::Value ArcNetHostImpl::TranslatePasspointCredentialsToDict(
     const mojom::PasspointCredentials& cred) {
   // Fill in EAP credentials fields.
   if (!cred.eap) {
-    LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
+    NET_LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
     return base::Value();
   }
   auto dict = TranslateEapCredentialsToDict(*cred.eap);
@@ -980,7 +982,7 @@ void ArcNetHostImpl::AddPasspointCredentials(
 
   const auto* profile = GetNetworkProfile();
   if (!profile || profile->path.empty()) {
-    LOG(ERROR) << "Unable to get network profile path";
+    NET_LOG(ERROR) << "Unable to get network profile path";
     return;
   }
 
@@ -1060,7 +1062,8 @@ void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
     absl::optional<base::Value> shill_properties) {
   if (!shill_properties) {
-    LOG(ERROR) << "Failed to get shill Service properties for " << service_path;
+    NET_LOG(ERROR) << "Failed to get shill Service properties for "
+                   << service_path;
     return;
   }
 

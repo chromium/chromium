@@ -9,7 +9,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_handler.h"

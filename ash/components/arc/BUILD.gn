@@ -138,6 +138,7 @@ static_library("arc") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/account_id",
+    "//components/device_event_log",
     "//components/exo",
     "//components/google/core/common",
     "//components/guest_os",
