@@ -386,7 +386,17 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
 
 void ExtensionAppsBase::LaunchAppWithParams(AppLaunchParams&& params,
                                             LaunchCallback callback) {
-  LaunchImpl(std::move(params));
+  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+                                         /*prefer_container=*/false);
+  auto window_info = apps::MakeWindowInfo(params.display_id);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source, std::move(window_info),
+                        base::DoNothing());
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::move(window_info));
+  }
   // TODO(crbug.com/1244506): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
