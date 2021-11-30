@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class MotionEventAndroid;
@@ -35,6 +36,9 @@ constexpr int kDefaultNumberOfTicksForSliders = 20;
 // The minimum amount a slider can move per increment/decement action as a
 // percentage of the total range, regardless of step value set on the element.
 constexpr float kMinimumPercentageMoveForSliders = 0.01f;
+
+// Max dimensions for the image data of a node.
+constexpr gfx::Size kMaxImageSize = gfx::Size(2000, 2000);
 }  // namespace
 
 class BrowserAccessibilityAndroid;
@@ -300,6 +304,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       jint id,
       jint start,
       jint len);
+
+  // Get the image data for a given node. If no image data is available, this
+  // will call through to |BrowserAccessibilityManager| to populate the data
+  // asynchronously so the next time the method is called the data is ready.
+  jboolean GetImageData(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        const base::android::JavaParamRef<jobject>& info,
+                        jint unique_id,
+                        jboolean has_sent_previous_request);
 
   void UpdateFrameInfo(float page_scale);
 

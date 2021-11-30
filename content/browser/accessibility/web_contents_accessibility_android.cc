@@ -28,6 +28,7 @@
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
+#include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/events/android/motion_event_android.h"
@@ -905,7 +906,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoOAttributes(
-      env, obj, info, node->HasCharacterLocations(),
+      env, obj, info, node->HasCharacterLocations(), node->HasImage(),
       base::android::ConvertUTF16ToJavaString(env, node->GetHint()));
 
   if (node->IsCollection()) {
@@ -1476,6 +1477,50 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(
   }
   return base::android::ToJavaIntArray(env, coords,
                                        static_cast<size_t>(4 * len));
+}
+
+jboolean WebContentsAccessibilityAndroid::GetImageData(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& info,
+    jint unique_id,
+    jboolean has_sent_previous_request) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager)
+    return false;
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node)
+    return false;
+
+  // If this is a valid node, try to get an image data url for it.
+  std::string image_data_url =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
+  std::string mimetype;
+  std::string charset;
+  std::string image_data;
+  bool success = net::DataURL::Parse(GURL(image_data_url), &mimetype, &charset,
+                                     &image_data);
+
+  if (!success) {
+    // If getting the image data url was not successful, then request that the
+    // information be added to the node asynchronously (if it has not previously
+    // been requested), and return false.
+    if (!has_sent_previous_request) {
+      root_manager->GetImageData(*node, kMaxImageSize);
+    }
+
+    return false;
+  }
+
+  // If the image data has been retrieved from the image data url successfully,
+  // then convert it to a Java byte array and add it in the Bundle extras of
+  // the node, and return true.
+  Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoImageData(
+      env, obj, info, base::android::ToJavaByteArray(env, image_data));
+
+  return true;
 }
 
 BrowserAccessibilityManagerAndroid*

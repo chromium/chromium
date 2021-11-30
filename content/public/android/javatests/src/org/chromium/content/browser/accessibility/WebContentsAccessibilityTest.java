@@ -37,7 +37,9 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_ARGUMENT_PROGRESS_VALUE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_SET_PROGRESS;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CHROME_ROLE;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_IMAGE_DATA;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_TOP;
@@ -135,6 +137,8 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object has incorrect Bundle extras for offscreen boolean.";
     private static final String PERFORM_ACTION_ERROR =
             "performAction did not update node as expected.";
+    private static final String IMAGE_DATA_BUNDLE_EXTRA_ERROR =
+            "AccessibilityNodeInfo object does not have Bundle extra containing image data.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -1097,7 +1101,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testNodeInfo_extraDataAdded() {
+    public void testNodeInfo_extraDataAdded_characterLocations() {
         setupTestWithHTML("<h1>Simple test page</h1><section><p>Text</p></section>");
 
         // Wait until we find a node in the accessibility tree with the text "Text".
@@ -1173,6 +1177,44 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(result[0].left < result[1].left);
         Assert.assertTrue(result[1].left < result[2].left);
         Assert.assertTrue(result[2].left < result[3].left);
+    }
+
+    /**
+     * Test |AccessibilityNodeInfo| object for image data for a node in Android O.
+     */
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @TargetApi(Build.VERSION_CODES.O)
+    public void testNodeInfo_extraDataAdded_imageData() {
+        // Setup test page with example image (20px red square).
+        setupTestWithHTML("<img id='id1' src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEU"
+                + "gAAABQAAAAUCAIAAAAC64paAAAAGElEQVR4AWOsZiAfDLDmUc2jmk"
+                + "c1j2oGADloCbFEqE6LAAAAAElFTkSuQmCC\"/>");
+
+        // Find the image node.
+        int imageViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(imageViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // There should be no image data in the node currently.
+        Assert.assertFalse(
+                NODE_TIMEOUT_ERROR, mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA));
+
+        // The image data is added asynchronously, call the API and poll until it has been added.
+        CriteriaHelper.pollUiThread(() -> {
+            mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                    imageViewId, mNodeInfo, EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY, new Bundle());
+            return mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA);
+        });
+
+        // Verify a byte array of sufficient size has been added to the node.
+        Assert.assertTrue(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+                mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA));
+        Assert.assertNotNull(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+                mNodeInfo.getExtras().getByteArray(EXTRAS_KEY_IMAGE_DATA));
+        Assert.assertTrue(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+                mNodeInfo.getExtras().getByteArray(EXTRAS_KEY_IMAGE_DATA).length > 50);
     }
 
     @Test
