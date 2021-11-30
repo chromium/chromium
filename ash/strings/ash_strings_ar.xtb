@@ -249,6 +249,7 @@
 <translation id="2653019840645008922">لقطة نافذة</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2658778018866295321">انقر واسحب</translation>
+<translation id="2665788051462227163">التطبيقان <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> غير مثبَّتين على هذا الجهاز.</translation>
 <translation id="2678852583403169292">قائمة سماع الاختيار</translation>
 <translation id="2689613560355655046">سطح المكتب 8</translation>
 <translation id="2700493154570097719">تعيين لوحة المفاتيح</translation>
@@ -342,7 +343,6 @@
 <translation id="3307642347673023554">تمّ التبديل إلى وضع الكمبيوتر المحمول.</translation>
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
-<translation id="3325831752328162756">{0,plural, =0{إعادة الجهاز إلى الإصدار السابق الآن}=1{إعادة الجهاز إلى الإصدار السابق في غضون ثانية واحدة}two{إعادة الجهاز إلى الإصدار السابق في غضون ثانيتين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ثوانٍ}many{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}other{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}}</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
 <translation id="334252345105450327">التقاط لقطة شاشة</translation>
 <translation id="3351879221545518001">أنت حاليًا تبث محتوى الشاشة.</translation>
@@ -421,6 +421,7 @@
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="3713734891607377840">فتح الملف بعد اكتمال تنزيله</translation>
+<translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
 <translation id="3744282433224562605">‏لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>
 <translation id="3771549900096082774">وضع التباين العالي</translation>
@@ -606,6 +607,7 @@
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> غير مثبَّت على هذا الجهاز.</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="4952936045814352993">ميزة "تحديد الموقع الجغرافي للهاتف" غير متاحة لأنّك أوقفت أصوات التنبيهات.</translation>
 <translation id="4960324571663582548">يتطلّب <ph name="MANAGER" /> منك العودة إلى استخدام جهاز <ph name="DEVICE_TYPE" />. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>

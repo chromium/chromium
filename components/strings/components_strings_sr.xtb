@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">Мора да се наведе као важећи низ када је DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Прегледачем се управља</translation>
 <translation id="1746113442205726301">Померање слике по Y оси</translation>
+<translation id="1747819498338037826">Промени аутоматски</translation>
 <translation id="17513872634828108">Отворене картице</translation>
 <translation id="1752021286346845558">8. поштанско сандуче</translation>
 <translation id="1753706481035618306">Број странице</translation>
@@ -828,6 +829,8 @@
       уклоните са листе и да га поново додате.</translation>
 <translation id="3630699740441428070">Администратори овог уређаја су конфигурисали мрежну везу, што може да им омогући да виде мрежни саобраћај, укључујући веб-сајтове које посећујете.</translation>
 <translation id="3631244953324577188">Биометрија</translation>
+<translation id="3632503704576938756">Дељење садржаја екрана је настављено</translation>
+<translation id="3632892046558972264">Дељење садржаја екрана је паузирано</translation>
 <translation id="3633738897356909127">Дугме Ажурирај Chrome, притисните Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="3634530185120165534">5. фиока</translation>
 <translation id="3634567936866541746">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chrome препоручује да проверите сачуване лозинке.</translation>
@@ -1062,6 +1065,7 @@
 <translation id="4346197816712207223">Кредитне картице које се прихватају</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Веза са сајтом <ph name="SITE" /> није безбедна</translation>
+<translation id="4349365535725594680">Дељење поверљивог садржаја није успело</translation>
 <translation id="4350629523305688469">Вишенаменска фиока</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> жели да тражи Bluetooth уређаје у близини. Пронађени су следећи уређаји:</translation>
 <translation id="4351175281479794167">Унесите верификациони кôд</translation>
@@ -1651,6 +1655,7 @@
 <translation id="6328786501058569169">Овај сајт је обмањујућ</translation>
 <translation id="6337133576188860026">Ослобађа мање од <ph name="SIZE" />. Неки сајтови ће се можда спорије учитавати кад их следећи пут посетите.</translation>
 <translation id="6337534724793800597">Филтрирај смернице према називу</translation>
+<translation id="6340739886198108203">Смернице администратора не препоручују прављење снимака екрана или снимака када је поверљив садржај видљив:</translation>
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниједна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}=2{2 лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}few{# лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизовано)}}</translation>
 <translation id="6355392890578844978">Овим прегледачем не управља компанија нити друга организација. Активностима на овом уређају се можда управља ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -1682,6 +1687,7 @@
 <translation id="643051589346665201">Промените Google лозинку</translation>
 <translation id="6433490469411711332">Измените контакт информације</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> је одбио повезивање.</translation>
+<translation id="6438025220577812695">Лично ћу то променити</translation>
 <translation id="6440503408713884761">Занемарено</translation>
 <translation id="6443406338865242315">додатке и додатне компонента које сте инсталирали</translation>
 <translation id="6446163441502663861">Kahu (коверат)</translation>
@@ -1833,6 +1839,7 @@
 <translation id="6972629891077993081">Уређаји са интерфејсом</translation>
 <translation id="6973656660372572881">Наведени су и фиксни прокси сервери и URL адреса .pac скрипте.</translation>
 <translation id="6973932557599545801">Жао ми је, не могу да вам помогнем. Наставите сами.</translation>
+<translation id="6978236010531171013">Ипак дели</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6979440798594660689">Искључен (подразумевано)</translation>
 <translation id="6979983982287291980">Датотеке које преузмете се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениране у потрази за осетљивим подацима или малвером.</translation>
@@ -2023,6 +2030,7 @@
 <translation id="7578104083680115302">Плаћајте брзо на сајтовима и у апликацијама на свим уређајима помоћу картица које сте сачували на Google-у.</translation>
 <translation id="7581199239021537589">Померање слике 2. стране по Y оси</translation>
 <translation id="7582602800368606489">Брзо направите нов догађај у Google календару</translation>
+<translation id="7591288787774558753">Желите да делите поверљиви садржај?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> жели да користи колачиће и податке о сајтовима на <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертификат сервера крши ограничења за име.</translation>
 <translation id="7598391785903975535">Мање од <ph name="UPPER_ESTIMATE" /></translation>
@@ -2033,6 +2041,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="7616645509853975347">Администратор је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
 <translation id="7619838219691048931">Последњи лист</translation>
+<translation id="7625242817712715120">Смернице администратора не препоручују штампање овог садржаја</translation>
 <translation id="762844065391966283">Појединачно</translation>
 <translation id="7633909222644580952">Подаци о учинку и извештаји о отказивању</translation>
 <translation id="7637571805876720304">Желите ли да уклоните кредитну картицу из Chromium-а?</translation>
@@ -2186,6 +2195,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Неважеће картице су уклоњене</translation>
 <translation id="8103161714697287722">Начин плаћања</translation>
+<translation id="8103643211515685474">Ипак штампај</translation>
 <translation id="8105368624971345109">Искључи</translation>
 <translation id="810875025413331850">Није пронађен ниједан уређај у близини.</translation>
 <translation id="8116925261070264013">Звук је искључен</translation>
@@ -2399,6 +2409,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>
 <translation id="8870494189203302833">Истим редоследом са одштампаном страном надоле</translation>
+<translation id="8870700989640064057">Желите да штампате поверљиви фајл?</translation>
 <translation id="8871553383647848643">Прилагодите изглед прегледача</translation>
 <translation id="8874824191258364635">Унесите важећи број картице</translation>
 <translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
@@ -2477,6 +2488,7 @@
 <translation id="9119042192571987207">Отпремљено</translation>
 <translation id="9128016270925453879">Смернице су учитане</translation>
 <translation id="9128870381267983090">Повезивање са мрежом</translation>
+<translation id="9131119348384879525">Желите да снимате поверљив садржај?</translation>
 <translation id="9137013805542155359">Прикажи оригинал</translation>
 <translation id="9141013498910525015">Управљајте адресама</translation>
 <translation id="9144951720726881238">Датум истека:</translation>

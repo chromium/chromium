@@ -248,6 +248,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2653019840645008922">Akna jäädvustamine</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2658778018866295321">Klõpsamine ja lohistamine</translation>
+<translation id="2665788051462227163">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" /> ja <ph name="UNAVAILABLE_APPS_TWO" /> pole selles seadmes.</translation>
 <translation id="2678852583403169292">Funktsiooni Vali ja kuula menüü</translation>
 <translation id="2689613560355655046">Töölaud 8</translation>
 <translation id="2700493154570097719">Valige klaviatuur</translation>
@@ -341,7 +342,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3307642347673023554">Lülitati sülearvutirežiimile</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> saab siiski hiljem sisse logida.</translation>
 <translation id="3321628682574733415">Vanema kood on vale</translation>
-<translation id="3325831752328162756">{0,plural, =0{Minge kohe üle seadme operatsioonisüsteemi eelmisele versioonile}=1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 sekund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # sekundit}}</translation>
 <translation id="3341303451326249809">Ekraanipilt on jäädvustatud</translation>
 <translation id="334252345105450327">Jäädvusta ekraanipilt</translation>
 <translation id="3351879221545518001">Kannate praegu oma ekraani üle.</translation>
@@ -420,6 +420,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
+<translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
 <translation id="3744282433224562605">Chromebooki avamiseks sisestage parool</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
@@ -606,6 +607,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4925542575807923399">Selle konto administraator nõuab, et mitmesse kontosse sisselogimisega seansil logitaks esmalt sisse sellesse kontosse.</translation>
 <translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
+<translation id="4947229553198882488">Rakendust <ph name="UNAVAILABLE_APPS" /> pole selles seadmes.</translation>
 <translation id="495046168593986294">Keri üles</translation>
 <translation id="4952936045814352993">Telefoni asukoha määramine pole saadaval, kui alarmi helid on keelatud</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> nõuab seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi varasemale versioonile üleminekut. Seade lähtestatakse ja kõik andmed kustutatakse.</translation>

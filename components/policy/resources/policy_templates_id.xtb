@@ -274,6 +274,13 @@
 <translation id="1352799151662469739">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan daya AC, dalam milidetik.</translation>
 <translation id="1353416417709895349">Nonaktifkan pemeriksaan intersepsi DNS dan infobar "Mungkin maksud Anda http://intranetsite/".</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
+<translation id="1355050231181289439"> Kebijakan ini mengontrol apakah pemetaan pintasan keyboard internasional yang ditingkatkan aktif.
+      Fitur ini memastikan pintasan keyboard berfungsi secara konsisten dengan tata letak keyboard internasional dan tidak menggunakan pintasan lama.
+
+      Jika kebijakan ini dinonaktifkan, pintasan keyboard internasional yang ditingkatkan akan nonaktif.
+      Jika kebijakan ini diaktifkan, pintasan keyboard internasional yang ditingkatkan akan aktif.
+      Jika tidak disetel, kebijakan ini akan diaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
+      Perhatikan bahwa ini hanya kebijakan sementara untuk memungkinkan pengguna terkelola agar tetap dapat menggunakan pintasan lama yang tidak digunakan lagi. Kebijakan ini tidak akan digunakan lagi setelah pintasan keyboard khusus tersedia.</translation>
 <translation id="1359553908012294236">Jika kebijakan ini disetel ke True atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mengaktifkan proses masuk tamu. Proses masuk tamu adalah profil <ph name="PRODUCT_NAME" /> dengan semua jendela dalam mode samaran.
 
       Jika kebijakan ini disetel ke False, <ph name="PRODUCT_NAME" /> tidak akan mengizinkan profil tamu dimulai.</translation>
@@ -299,6 +306,10 @@
 <translation id="1413936351612032792">Informasi laporan tentang penggunaan aplikasi Linux</translation>
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="1418387035898607074">Lewati pemeriksaan Safe Browsing untuk file yang didownload dari sumber tepercaya</translation>
+<translation id="1419945463533552043">Jika disetel ke aktif, fitur Pembaruan User-Agent Client Hints GREASE akan memperbarui algoritme User-Agent GREASE ke spesifikasi terbaru.
+      Spesifikasi terbaru dapat menyebabkan error pada beberapa situs yang membatasi karakter yang mungkin dimuat oleh permintaan. Lihat spesifikasi untuk mendapatkan informasi selengkapnya: https://wicg.github.io/ua-client-hints/#grease
+      Jika kebijakan ini disetel ke aktif atau tidak disetel, browser akan menentukan algoritme User-Agent GREASE mana yang akan digunakan. Jika kebijakan ini disetel ke nonaktif, algoritme User-Agent GREASE sebelumnya akan digunakan.
+      Kebijakan ini adalah tindakan sementara dan akan dihapus pada rilis mendatang.</translation>
 <translation id="142346659686073702">Izinkan pengguna tak terafiliasi menggunakan Crostini</translation>
 <translation id="1425551776320718592">Cegah pengguna perangkat ini menggunakan sideload ADB, tanpa memaksa powerwash, yang dapat membuat status keamanan perangkat diragukan</translation>
 <translation id="1426170570389588560">Menentukan jangka waktu penyimpanan metadata pekerjaan cetak dalam hari</translation>
@@ -563,9 +574,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1686952487081322272">Nonaktifkan Jawaban Instan</translation>
 <translation id="1690383938831887552">Cegah pemuatan Signed HTTP Exchange</translation>
 <translation id="169467210981344373">Nonaktifkan cache autentikasi HTTP yang tercakup secara global</translation>
-<translation id="1697682816954321887">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan status keamanan TPM perangkat.
-
-      Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan merekam atau melaporkan status keamanan TPM.</translation>
 <translation id="1698810555265314018">Mengontrol resolusi gambar cetak saat <ph name="PRODUCT_NAME" /> mencetak PDF dengan rasterisasi.
 
       Saat mencetak PDF menggunakan opsi Cetak sebagai gambar, akan bermanfaat jika menentukan resolusi cetak selain ke setelan printer perangkat atau default PDF.  Resolusi tinggi akan secara signifikan meningkatkan waktu pemrosesan dan pencetakan, sedangkan resolusi rendah dapat menyebabkan kualitas gambar buruk.
@@ -871,9 +879,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2036522553891755455">Jika kebijakan disetel ke Aktif, penemuan berbagi (fitur Berbagi File Jaringan untuk <ph name="PRODUCT_NAME" />) akan menggunakan <ph name="NETBIOS_PROTOCOL" /> untuk menemukan berbagi di jaringan. Jika kebijakan disetel ke Nonaktif, penemuan berbagi tidak akan menggunakan protokol ini untuk menemukan berbagi.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
-<translation id="2037214548071298156">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan statistik hardware seperti penggunaan CPU/RAM.
-
-      Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan statistik hardware.</translation>
 <translation id="2039801473506609891">Nonaktifkan dukungan HTTP/0.9 pada port non-default</translation>
 <translation id="2040479044912658454">Mode Rasterisasi Cetak</translation>
 <translation id="2042513383871755994">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat meminta akses baca ke file atau direktori di sistem file pada sistem operasi host melalui File System API.
@@ -1595,10 +1600,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="284288632677954003">URL file XML yang berisi URL yang tidak akan memicu pengalihan browser.</translation>
 <translation id="2846689894646472396">Interval pemeriksaan aktivitas jaringan dalam milidetik.</translation>
 <translation id="2853649500575897584">Jangan blokir titik ekstensi lama dalam Proses browser</translation>
-<translation id="2854607717796010700">Melaporkan informasi tentang memori perangkat.
-
-      Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
-      Jika ditetapkan ke true, informasi memori perangkat akan dilaporkan.</translation>
 <translation id="285480231336205327">Aktifkan mode kontras tinggi</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
 <translation id="2856674246949497058">Rollback dan tetap menggunakan versi target jika versi OS lebih baru dari target. Lakukan powerwash selama prosesnya.</translation>
@@ -2169,6 +2170,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, DTC akan dinonaktifkan. DTC tidak akan dapat mengumpulkan, memproses, atau melaporkan data telemetri dan diagnostik dari perangkat.</translation>
 <translation id="3450649825886735618">Jangan gunakan layanan web Google untuk membantu mengatasi kesalahan ejaan</translation>
+<translation id="3451422488938880786"> Dapat mengaktifkan/menonaktifkan pemetaan ulang tombol pintasan internasional</translation>
 <translation id="3451901387456196887">Pengguna akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
 <translation id="3456292544936505775">Kebijakan ini mengontrol rentang waktu saat perangkat <ph name="PRODUCT_OS_NAME" /> tidak diizinkan untuk otomatis memeriksa update.
       Jika kebijakan ini disetel ke daftar interval waktu yang tidak kosong:
@@ -2206,6 +2208,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
        Nilai <ph name="ALL_EXTENSIONS" /> untuk daftar yang tidak diizinkan berarti semua ekstensi diblokir dan pengguna hanya dapat menginstal ekstensi yang tercantum dalam daftar yang diizinkan.
 
        Secara default, semua ekstensi akan diizinkan. Namun, jika Anda melarang ekstensi berdasarkan kebijakan, gunakan daftar ekstensi yang diizinkan untuk mengubah kebijakan tersebut.</translation>
+<translation id="3501606938635483637">Pintasan keyboard internasional dipetakan ke glyph tombol, bukan lokasi tombol pada keyboard.</translation>
 <translation id="3502555714327823858">Izinkan semua mode dupleks</translation>
 <translation id="350443680860256679">Mengonfigurasi ARC</translation>
 <translation id="350797926066071931">Aktifkan Terjemahan</translation>
@@ -2782,6 +2785,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Catatan: Untuk Android, gunakan kebijakan <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="4261820385751181068">Lokal layar login perangkat</translation>
+<translation id="4261964161337162399">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
+
+      Jika tidak disetel, interval default 10 menit akan berlaku.</translation>
 <translation id="4266547484666068234">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
       Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum seperti "tel:" atau "ssh:".
@@ -3404,11 +3410,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="5105313908130842249">Penundaan penguncian layar saat menggunakan daya baterai</translation>
 <translation id="5108031557082757679">Menonaktifkan printer yang merupakan perangkat perusahaan</translation>
 <translation id="5109383437323376357">Menentukan ketersediaan variasi</translation>
-<translation id="5115168755602871392">Melaporkan informasi untuk CPU perangkat.
-
-      Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
-      Jika ditetapkan ke true, nama model CPU, arsitektur, dan kecepatan maksimum jam akan
-      dilaporkan untuk setiap CPU.</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
@@ -3608,9 +3609,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini dikonfigurasi, produk dapat ditetapkan ke salah satu nilai berikut: "tls1.2" atau "tls1.3". Setelah ditetapkan, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS yang lebih baru daripada versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.</translation>
 <translation id="5330684698007383292">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut</translation>
 <translation id="5331746669335642668">Kebijakan cloud <ph name="PRODUCT_NAME" /> menggantikan kebijakan Platform.</translation>
-<translation id="5340105431123046323">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar antarmuka jaringan beserta jenis dan alamat hardware-nya.
-
-      Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan antarmuka jaringan.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
 <translation id="5362531528507578966">Mengganti mode pencetakan grafis latar belakang default.</translation>
 <translation id="5365476955714838841">Parameter command line untuk browser alternatif.</translation>
@@ -4451,6 +4449,44 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Pesan peringatan hanya ditampilkan jika tindakan tidak ada aktivitas adalah logout atau matikan.</translation>
 <translation id="6331943515692769234">Paksa penggunaan algoritme GREASE Agen Pengguna sebelumnya.</translation>
+<translation id="6332489309596092806">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
+
+      Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
+      <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal)
+
+      dan 5 elemen opsional:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (untuk cara aplikasi web terbuka—tab baru adalah default)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> mulai dari versi 90
+      memungkinkan Anda mengganti nama aplikasi jika aplikasi bukan
+      Progressive Web App (PWA), atau mengganti nama aplikasi yang diinstal
+      sementara jika aplikasi adalah PWA, tetapi perlu autentikasi sebelum
+      penginstalan dapat diselesaikan. Jika
+      <ph name="CUSTOM_NAME_LABEL" /> dan
+      <ph name="FALLBACK_APP_NAME_LABEL" /> tersedia,
+      kebijakan kedua akan diabaikan).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      mulai dari versi 96 memungkinkan Anda secara permanen mengganti nama aplikasi untuk semua aplikasi
+      web dan PWA. Saat ini hanya didukung di
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (<ph name="PRODUCT_NAME" />
+      mulai dari versi 96 memungkinkan Anda mengganti ikon aplikasi yang diinstal. Ikon
+      harus berbentuk persegi, berukuran maksimal 1 MB, dan dalam salah satu format
+      berikut: jpeg, png, gif, webp, ico. Nilai hash file ikon harus
+      hash SHA256. Saat ini hanya didukung di
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke rak <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Blokir akses baca melalui File System API di situs ini</translation>
 <translation id="6334330017384340264">Kebijakan ini akan menentukan aplikasi dan URL mana yang harus diizinkan untuk batasan penggunaan per aplikasi.
         Daftar yang diizinkan dan dikonfigurasi akan diterapkan ke aplikasi yang diinstal pada <ph name="PRODUCT_OS_NAME" /> untuk pengguna tertentu dengan batas waktu per aplikasi.
@@ -4980,9 +5016,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Bahasa yang didukung saat ini adalah: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Aktifkan pencetakan dupleks tepi panjang</translation>
-<translation id="6928305045865155732">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan volume audio perangkat.
-
-      Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan merekam atau melaporkan status audio.</translation>
 <translation id="6929746927224321095">Nonaktifkan Isi Otomatis</translation>
 <translation id="6931242315485576290">Nonaktifkan sinkronisasi data dengan Google</translation>
 <translation id="6940243892299228102">Jangan izinkan pengguna menggunakan template desktop</translation>
@@ -5890,6 +5923,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Jika kebijakan ini disetel ke Aktif, pengguna dapat menggunakan browser <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Putar layar sebesar 0 derajat</translation>
+<translation id="8025620823136567878">Pintasan keyboard internasional dipetakan ke lokasi tombolnya di keyboard, bukan glyph tombol.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
@@ -5902,9 +5936,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
       </translation>
-<translation id="8036964468882248070">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware untuk perangkat penyimpanan.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik penyimpanan.</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>
 <translation id="804619600634661088">Izinkan penggunaan proses debug jarak jauh</translation>
@@ -6757,6 +6788,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Kebijakan ini hanya memengaruhi pengguna yang menjalankan autentikasi menggunakan SAML.
 
       Nilai kebijakan harus ditentukan dalam detik.</translation>
+<translation id="9015578113567730893">Interval pengumpulan telemetri audio dalam milidetik.</translation>
 <translation id="9035086760683255833">Mengaktifkan fitur aksesibilitas penyorotan fokus keyboard.
 
           Fitur ini berfungsi untuk menyoroti objek yang memiliki fokus dari keyboard.

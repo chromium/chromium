@@ -812,6 +812,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# घन्टा अघि}other{# घन्टा अघि}}</translation>
 <translation id="5810288467834065221">प्रतिलिपि अधिकार <ph name="YEAR" /> Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="5810864297166300463">वेबसम्बन्धी सहायता</translation>
+<translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> र <ph name="PARENT_NAME_2" /> यो ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="5814131985548525293">सुरु गर्न यहाँ टाइप गर्नुहोस् वा माइक्रोफोनको आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -1076,6 +1077,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> परिवर्तन गर्ने हो?</translation>
+<translation id="7286703216224610554">प्रतिक्रिया मात्र सेयर गरियोस्</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
@@ -1156,6 +1158,7 @@
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7655900163790317559">ब्लुटुथ अन गरिँदै छ…</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7663313374500954251"><ph name="PARENT_NAME" /> यो ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
 <translation id="766587987807204883">लेखहरू यहाँ देखिन्छन् र तपाईं ती लेखहरू अफलाइन भएका बेलामा पनि पढ्न सक्नुहुन्छ</translation>
 <translation id="7682724950699840886">निम्न सुझावहरूअनुसार गरी हेर्नुहोस्: कृपया आफ्नो यन्त्रमा पर्याप्त खाली ठाउँ रहेको कुरा सुनिश्चित गरेर पुनः निर्यात गर्ने प्रयास गर्नुहोस्।</translation>

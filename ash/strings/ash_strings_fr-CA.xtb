@@ -248,6 +248,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2653019840645008922">Capturer la fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquez et faites glisser</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> et <ph name="UNAVAILABLE_APPS_TWO" /> ne sont pas sur cet appareil.</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour énoncer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -341,7 +342,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> peut toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
-<translation id="3325831752328162756">{0,plural, =0{Restaurez la version antérieure de l'appareil maintenant}=1{Restaurez la version antérieure de l'appareil dans un délai de 1 seconde}one{Restaurez la version antérieure de l'appareil dans un délai de # seconde}other{Restaurez la version antérieure de l'appareil dans un délai de # secondes}}</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Prendre une capture d'écran</translation>
 <translation id="3351879221545518001">Vous diffusez actuellement l'écran.</translation>
@@ -420,6 +420,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="371370241367527062">Microphone avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applications ne sont pas sur cet appareil.</translation>
 <translation id="3742055079367172538">Saisie d'écran enregistrée</translation>
 <translation id="3744282433224562605">Pour déverrouiller votre Chromebook, entrez votre mot de passe</translation>
 <translation id="3771549900096082774">Mode de contraste élevé</translation>
@@ -605,6 +606,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vous demande de restaurer votre <ph name="DEVICE_TYPE" />. Votre appareil sera réinitialisé, et toutes les données seront supprimées.</translation>

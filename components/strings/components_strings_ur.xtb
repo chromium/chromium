@@ -829,6 +829,8 @@
       ہے تو اسے فہرست سے ہٹانے اور دوبارہ شامل کرنے کی کوشش کریں۔</translation>
 <translation id="3630699740441428070">اس آلہ کے منتظمین نے آپ کے نیٹ ورک کنکشن کو ترتیب دیا ہے، جس کی مدد سے وہ آپ کی ملاحظہ کردہ ویب سائٹس سمیت آپ کی نیٹ ورک ٹریفک دیکھ سکتے ہیں۔</translation>
 <translation id="3631244953324577188">بایو میٹرکس</translation>
+<translation id="3632503704576938756">اسکرین کا اشتراک دوبارہ شروع کیا گیا</translation>
+<translation id="3632892046558972264">اسکرین کا اشتراک موقوف کر دیا گیا</translation>
 <translation id="3633738897356909127">‏Chrome اپ ڈیٹ کریں بٹن، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="3634530185120165534">ٹرے 5</translation>
 <translation id="3634567936866541746">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Chrome آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
@@ -1063,6 +1065,7 @@
 <translation id="4346197816712207223">قبول کردہ کریڈٹ کارڈز</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
+<translation id="4349365535725594680">رازدارانہ مواد کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="4350629523305688469">ملٹی فنکشن ٹرے</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> قریبی بلوٹوتھ آلات کے لیے اسکین کرنا چاہتی ہے، مندرجہ ذیل آلات ملے ہیں:</translation>
 <translation id="4351175281479794167">توثیقی کوڈ درج کریں</translation>
@@ -1654,6 +1657,7 @@
 <translation id="6328786501058569169">یہ سائٹ پُر فریب ہے</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="6337534724793800597">نام کے لحاظ سے پالیسیاں فلٹر کریں</translation>
+<translation id="6340739886198108203">منتظم کی پالیسی رازدارانہ مواد کے مرئی ہونے پر اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتی ہے:</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس ورڈ (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہے)}=2{2 پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}other{# پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}}</translation>
 <translation id="6355392890578844978">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1836,6 +1840,7 @@
 <translation id="6972629891077993081">‏HID آلات</translation>
 <translation id="6973656660372572881">‏فکس کردہ پراکسی سرورز اور ‎.pac اسکرپٹ URL دونوں کا تعین کیا گیا ہے۔</translation>
 <translation id="6973932557599545801">معذرت، میں مدد کرنے سے قاصر ہوں، براہ کرم اپنے طور پر جاری رکھیں۔</translation>
+<translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
 <translation id="6979983982287291980">‏جن فائلز کو آپ ڈاؤن لوڈ کرتے ہیں وہ Google کلاؤڈ یا تیسرے فریق کو تجزیہ کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کیلئے اسکین کیا جا سکتا ہے۔</translation>
@@ -2026,6 +2031,7 @@
 <translation id="7578104083680115302">‏Google کے ساتھ اپنے محفوظ کردہ کارڈز کا استعمال کر کے سبھی آلات پر موجود سائٹس اور ایپس پر جلدی سے ادائیگی کریں۔</translation>
 <translation id="7581199239021537589">‏سائیڈ 2 تصویر Y شفٹ</translation>
 <translation id="7582602800368606489">‏Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کریں</translation>
+<translation id="7591288787774558753">رازدارانہ مواد کا اشتراک کریں؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> پر موجود کوکیز اور سائٹ کا ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="7592362899630581445">سرور سرٹیفیکیٹ نام کی پابندیوں کی خلاف ورزی کرتا ہے۔</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> سے کم</translation>
@@ -2036,6 +2042,7 @@
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="7616645509853975347">‏آپ کے منتظم نے آپ کے براؤزر میں Chrome انٹرپرائز کنیکٹرز آن کر دیے ہیں۔ ان کنیکٹرز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہے۔</translation>
 <translation id="7619838219691048931">آخری شیٹ</translation>
+<translation id="7625242817712715120">منتظم کی پالیسی اس مواد کو پرنٹ کرنے کی تجویز نہیں کرتی ہے</translation>
 <translation id="762844065391966283">ایک وقت میں ایک</translation>
 <translation id="7633909222644580952">کارکردگی کا ڈیٹا اور کریش رپورٹس</translation>
 <translation id="7637571805876720304">‏Chromium سے کریڈٹ کارڈ ہٹائیں؟</translation>
@@ -2189,6 +2196,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">غلط کارڈز کو ہٹا دیا گیا ہے</translation>
 <translation id="8103161714697287722">ادائیگی کا طریقہ</translation>
+<translation id="8103643211515685474">بہرحال پرنٹ کریں</translation>
 <translation id="8105368624971345109">آف کریں</translation>
 <translation id="810875025413331850">کوئی قریبی آلہ نہیں ملا۔</translation>
 <translation id="8116925261070264013">‏خاموش کردہ</translation>
@@ -2401,6 +2409,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">حال ہی میں بند کردہ</translation>
 <translation id="8870494189203302833">اسی ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
+<translation id="8870700989640064057">رازدارانہ فائل پرنٹ کریں؟</translation>
 <translation id="8871553383647848643">اپنے براؤزر کی شکل کو حسب ضرورت بنائیں</translation>
 <translation id="8874824191258364635">ایک درست کارڈ نمبر درج کریں</translation>
 <translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
@@ -2480,6 +2489,7 @@
 <translation id="9119042192571987207">اپ لوڈ ہو گیا</translation>
 <translation id="9128016270925453879">پالیسیاں لوڈ ہو گئی ہیں</translation>
 <translation id="9128870381267983090">نیٹ ورک سے منسلک ہوں</translation>
+<translation id="9131119348384879525">رازدارانہ مواد کو کیپچر کریں؟</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9141013498910525015">پتوں کا نظم کریں</translation>
 <translation id="9144951720726881238">اختتامی تاریخ:</translation>

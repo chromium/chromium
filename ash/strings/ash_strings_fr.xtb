@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1013598600051641573">La résolution de "<ph name="DISPLAY_NAME" />" est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
+<translation id="1014111206066007277">Outils d'enregistrement d'écran</translation>
 <translation id="1024261588257374085">Capture d'écran partielle sélectionnée</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
@@ -37,6 +38,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1190678134285018527">Vous devez rétablir une version antérieure de l'appareil</translation>
 <translation id="1195412055398077112">Surbalayage</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199716647557067911">Voulez-vous vraiment désactiver Switch Access ?</translation>
@@ -125,6 +127,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1743570585616704562">Non reconnu</translation>
 <translation id="1746730358044914197">Les modes de saisie sont configurés par votre administrateur.</translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
+<translation id="1749109475624620922">La fenêtre <ph name="WINDOW_TITLE" /> est associée à tous les bureaux</translation>
 <translation id="1750088060796401187">Seuls <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Supprimez un bureau pour en ajouter un.</translation>
 <translation id="1761222317188459878">Activer/Désactiver la connexion réseau. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+. (point) a été modifié. Pour utiliser la touche Entrée, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Maj+Retour arrière.</translation>
@@ -260,6 +263,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
+<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2803313416453193357">Ouvrir le dossier</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
@@ -317,6 +321,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
+<translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Régler le minuteur</translation>
@@ -441,6 +446,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3899995891769452915">Saisie vocale</translation>
 <translation id="3900355044994618856">Votre session va être fermée dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours…</translation>
+<translation id="3922427723338465344">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 minute}one{Rétablir une version antérieure de l'appareil d'ici # minute}other{Rétablir une version antérieure de l'appareil d'ici # minutes}}</translation>
 <translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -558,6 +564,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4623167406982293031">Vérifiez le compte</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note : <ph name="RATING_SCORE" /></translation>
+<translation id="4633185660152240791">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 jour}one{Rétablir une version antérieure de l'appareil d'ici # jour}other{Rétablir une version antérieure de l'appareil d'ici # jours}}</translation>
 <translation id="4642092649622328492">Faire une capture d'écran partielle</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
@@ -599,6 +606,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
+<translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
@@ -706,6 +714,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5745612484876805746">La fonctionnalité Éclairage nocturne est activée automatiquement au coucher du soleil</translation>
 <translation id="5750765938512549687">Bluetooth désactivé</translation>
 <translation id="576341972084747908">Téléchargement du fichier dangereux <ph name="FILENAME" /></translation>
+<translation id="5763928712329149804">Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Éclairage nocturne activé.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
@@ -722,6 +731,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5867217927013474703">Récupération des infos du réseau</translation>
 <translation id="5876666360658629066">Saisir le code parental</translation>
 <translation id="5881540930187678962">Configurer Phone Hub plus tard</translation>
+<translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est associée à <ph name="DESK_TITLE" /> et dissociée de tous les autres bureaux</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="589817443623831496">Exploration par position</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
@@ -783,6 +793,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6315170314923504164">Voix</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
+<translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connecté(s)</translation>
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
@@ -799,6 +810,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6459472438155181876">Extension de l'écran pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="6482559668224714696">Loupe plein écran</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
+<translation id="6491071886865974820"><ph name="MANAGER" /> exige la mise à jour de votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>
 <translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
 <translation id="6500818810472529210">Voir le résultat dans la recherche Google</translation>
@@ -835,6 +847,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
+<translation id="6707693040195709527">Délai de rétablissement d'une version antérieure de l'appareil expiré</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6713285437468012787">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" a été associé et tous les utilisateurs peuvent désormais y accéder. Vous pouvez supprimer cette association dans les paramètres.</translation>
 <translation id="6723839937902243910">Alimentation</translation>
@@ -891,6 +904,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7067196344162293536">Rotation automatique</translation>
 <translation id="7068360136237591149">Ouvre des fichiers</translation>
 <translation id="7076293881109082629">Connexion</translation>
+<translation id="7086931198345821656">Cette mise à jour requiert un Powerwash de votre <ph name="DEVICE_TYPE" />. Toutes les données seront supprimées. En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">Appareil USB de type C (port situé sur l'arrière de l'appareil, à gauche)</translation>
 <translation id="7106330611027933926">Afficher la barre de bureau</translation>
@@ -912,6 +926,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7302889331339392448">Sous-titres instantanés désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="731589979057211264">Shelf Party est activé.</translation>
 <translation id="7319740667687257810">Lanceur d'applications, vue partielle</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -1053,12 +1068,15 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8196787716797768628">Utilisez des gestes pour passer rapidement d'une application à l'autre et interagir avec votre Chromebook en mode tablette.</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>
+<translation id="8209010265547628927">Réinitialiser</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché à une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise électrique. N'éteignez pas votre Chromebook.</translation>
 <translation id="8236042855478648955">Une pause s'impose !</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
+<translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
 <translation id="8281279285293265212">Échec de l'enregistrement d'écran</translation>
 <translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
@@ -1067,6 +1085,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
 <translation id="8351131234907093545">Créer une note</translation>
+<translation id="8364673525741149932">Activer/Désactiver Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Avancer par lettre</translation>
 <translation id="8371991222807690464">Les performances du périphérique peuvent être limitées en mode Invité</translation>
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>
@@ -1093,6 +1112,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>
+<translation id="856298576161209842"><ph name="MANAGER" /> vous recommande de mettre à jour votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Paramètres de notification</translation>
 <translation id="857201607579416096">Le menu a été déplacé dans l'angle inférieur droit de l'écran.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1200,6 +1220,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9220525904950070496">Supprimer le compte</translation>
 <translation id="923686485342484400">Appuyez deux fois sur Contrôle + Maj + Q pour vous déconnecter.</translation>
 <translation id="925832987464884575">Masquer les aperçus</translation>
+<translation id="937214777182567951"><ph name="MANAGER" /> exige la mise à jour immédiate de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="951991426597076286">Refuser</translation>

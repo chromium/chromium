@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">ضبط پنجره</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> و <ph name="UNAVAILABLE_APPS_TWO" /> در این دستگاه وجود ندارند.</translation>
 <translation id="2678852583403169292">منوی «انتخاب برای شنیدن»</translation>
 <translation id="2689613560355655046">میزکار ۸</translation>
 <translation id="2700493154570097719">تنظیم صفحه‌کلید</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">به حالت رایانه کیفی رفته‌اید</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> همچنان می‌تواند بعداً به سیستم وارد شود.</translation>
 <translation id="3321628682574733415">کد والدین نادرست است</translation>
-<translation id="3325831752328162756">{0,plural, =0{همین‌حالا دستگاه را به نسخه قبلی تغییر دهید}=1{تا یک ثانیه دیگر دستگاه را به نسخه قبلی تغییر دهید}one{تا # ثانیه دیگر دستگاه را به نسخه قبلی تغییر دهید}other{تا # ثانیه دیگر دستگاه را به نسخه قبلی تغییر دهید}}</translation>
 <translation id="3341303451326249809">نماگرفت گرفته شد</translation>
 <translation id="334252345105450327">گرفتن نماگرفت</translation>
 <translation id="3351879221545518001">درحال ارسال محتوای صفحه هستید.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3744282433224562605">‏برای باز کردن قفل Chromebook، گذرواژه را وارد کنید</translation>
 <translation id="3771549900096082774">حالت تضاد بالا</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">سرپرست این حساب لازم می‌داند که این حساب اولین حسابی باشد که در جلسه چندگانه ورود به سیستم وارد سیستم شده باشد.</translation>
 <translation id="4945196315133970626">غیرفعال کردن اعلان‌ها</translation>
 <translation id="4946376291507881335">ضبط</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> در این دستگاه وجود ندارد.</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="4952936045814352993">وقتی صداهای هشدار غیرفعال هستند، «پیدا کردن تلفن» دردسترس نیست</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را تنزل دهید. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>

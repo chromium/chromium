@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode-г <ph name="SECURE_DNS_MODE_SECURE" /> байх үед тодорхойлогдсон бөгөөд хүчинтэй стринг байх ёстой.</translation>
 <translation id="1745880797583122200">Таны хөтчийг удирдаж байна</translation>
 <translation id="1746113442205726301">Y тэнхлэгийн дагуу зураг шилжүүлэх</translation>
+<translation id="1747819498338037826">Автоматаар солих</translation>
 <translation id="17513872634828108">Нээлттэй цонх</translation>
 <translation id="1752021286346845558">Шуудангийн хайрцаг 8</translation>
 <translation id="1753706481035618306">Хуудaсны дугаар</translation>
@@ -1687,6 +1688,7 @@
 <translation id="643051589346665201">Google-н нууц үгийг өөрчлөх</translation>
 <translation id="6433490469411711332">Харилцагчийн мэдээллийг засах</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> нь холбогдохоос татгалзлаа.</translation>
+<translation id="6438025220577812695">Үүнийг өөрөө солих</translation>
 <translation id="6440503408713884761">Хаагдсан</translation>
 <translation id="6443406338865242315">Таны ямар өргөтгөл болон залгаасыг суулгасан болох</translation>
 <translation id="6446163441502663861">Каху (Дугтуй)</translation>

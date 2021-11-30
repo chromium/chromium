@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">창 캡처</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
+<translation id="2665788051462227163">이 기기에 <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> 앱이 없습니다.</translation>
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
 <translation id="2689613560355655046">데스크 8</translation>
 <translation id="2700493154570097719">키보드 설정</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
-<translation id="3325831752328162756">{0,plural, =0{지금 기기를 이전 버전으로 되돌리세요}=1{1초 이내에 기기를 이전 버전으로 되돌리세요}other{#초 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
 <translation id="334252345105450327">스크린샷 찍기</translation>
 <translation id="3351879221545518001">현재 화면을 전송하고 있습니다.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="371370241367527062">전면 마이크</translation>
 <translation id="3713734891607377840">완료되면 열기</translation>
+<translation id="3726171378575546917">이 기기에 <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> 외 앱 <ph name="UNAVAILABLE_APPS_COUNT" />개가 없습니다.</translation>
 <translation id="3742055079367172538">찍은 스크린샷</translation>
 <translation id="3744282433224562605">Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="3771549900096082774">고대비 모드</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
+<translation id="4947229553198882488">이 기기에 <ph name="UNAVAILABLE_APPS" /> 앱이 없습니다.</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백할 것을 요구합니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>

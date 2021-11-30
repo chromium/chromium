@@ -812,6 +812,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ಗಂಟೆಯ ಹಿಂದೆ}one{# ಗಂಟೆಗಳ ಹಿಂದೆ}other{# ಗಂಟೆಗಳ ಹಿಂದೆ}}</translation>
 <translation id="5810288467834065221">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="5810864297166300463">ವೆಬ್ ಸಹಾಯ ವಿಭಾಗ</translation>
+<translation id="5813552293717797987">ಈ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="PARENT_NAME_1" /> ಮತ್ತು <ph name="PARENT_NAME_2" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="5814131985548525293">ಪ್ರಾರಂಭಿಸಲು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಧ್ವನಿ ಐಕಾನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5814749351757353073">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
@@ -1076,6 +1077,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="ONE_TIME_CODE" /> ಕೋಡ್ ಅನ್ನು ಸಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="7274013316676448362">ನಿರ್ಬಂಧಿಸಿರುವ ಸೈಟ್</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> ಅನ್ನು ಬದಲಾಯಿಸಬೇಕೇ?</translation>
+<translation id="7286703216224610554">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7290209999329137901">ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7291910923717764901">ಈ ಪುಟಕ್ಕಾಗಿ ಚಿತ್ರ ವಿವರಣೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7293429513719260019">ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1156,6 +1158,7 @@
 <translation id="7646772052135772216">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="7655900163790317559">ಬ್ಲೂಟೂತ್‌ ಆನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7663313374500954251">ಈ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="PARENT_NAME" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="7665369617277396874">ಖಾತೆಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="766587987807204883">ಲೇಖನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ, ಅವುಗಳನ್ನು ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗಲೂ ಸಹ ಓದಬಹುದಾಗಿದೆ</translation>
 <translation id="7682724950699840886">ಕೆಳಗಿನ ಸಲಹೆಗಳನ್ನು ಬಳಸಿ ನೋಡಿ: ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶ ಇರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಂಡು, ಪುನಃ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>

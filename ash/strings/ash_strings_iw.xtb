@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">צילום חלון</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2658778018866295321">לחיצה וגרירה</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> וגם <ph name="UNAVAILABLE_APPS_TWO" /> לא נמצאות במכשיר הזה.</translation>
 <translation id="2678852583403169292">תפריט הקראה</translation>
 <translation id="2689613560355655046">שולחן עבודה וירטואלי 8</translation>
 <translation id="2700493154570097719">בחירת מקלדת</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">עברת למצב מחשב נייד</translation>
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
 <translation id="3321628682574733415">קוד הורה שגוי</translation>
-<translation id="3325831752328162756">{0,plural, =0{שינוי המכשיר לגרסה קודמת עכשיו}=1{שינוי המכשיר לגרסה קודמת בתוך שנייה}two{שינוי המכשיר לגרסה קודמת בתוך # שניות}many{שינוי המכשיר לגרסה קודמת בתוך # שניות}other{שינוי המכשיר לגרסה קודמת בתוך # שניות}}</translation>
 <translation id="3341303451326249809">צילום המסך בוצע</translation>
 <translation id="334252345105450327">יצירת צילום מסך</translation>
 <translation id="3351879221545518001">מתבצעת עכשיו העברה של מסך.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3713734891607377840">פתיחה לאחר השלמת ההורדה</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ועוד <ph name="UNAVAILABLE_APPS_COUNT" /> אפליקציות נוספות לא נמצאות במכשיר הזה.</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3744282433224562605">‏כדי לבטל את נעילת ה-Chromebook, עליך להזין סיסמה</translation>
 <translation id="3771549900096082774">מצב ניגודיות גבוהה</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> לא נמצאת במכשיר הזה.</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="4952936045814352993">איתור הטלפון לא זמין כשצלילי ההתראות מושבתים</translation>
 <translation id="4960324571663582548">בהתאם לבקשה של <ph name="MANAGER" />, עליך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>

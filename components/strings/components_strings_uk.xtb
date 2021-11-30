@@ -828,6 +828,8 @@
         вилучити її зі списку та додати знову.</translation>
 <translation id="3630699740441428070">Адміністратори цього пристрою, які налаштували з'єднання з мережею, імовірно, можуть переглядати ваш мережевий трафік (зокрема веб-сайти, які ви відвідуєте).</translation>
 <translation id="3631244953324577188">Біометрія</translation>
+<translation id="3632503704576938756">Показ екрана відновлено</translation>
+<translation id="3632892046558972264">Показ екрана призупинено</translation>
 <translation id="3633738897356909127">Кнопка "Оновити Chrome"; натисніть Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
@@ -1062,6 +1064,7 @@
 <translation id="4346197816712207223">Кредитні картки, які приймаються до оплати</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
+<translation id="4349365535725594680">Неможливо поділитися конфіденційним контентом</translation>
 <translation id="4350629523305688469">Багатофункціональний лоток</translation>
 <translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> хоче шукати пристрої Bluetooth поруч. Виявлено такі пристрої:</translation>
 <translation id="4351175281479794167">Введіть код підтвердження</translation>
@@ -1652,6 +1655,7 @@
 <translation id="6328786501058569169">Це оманливий сайт</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6337534724793800597">Фільтрувати правила за назвою</translation>
+<translation id="6340739886198108203">Згідно з правилом адміністратора не рекомендовано здійснювати запис екрана, коли на ньому видно конфіденційний контент:</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -1834,6 +1838,7 @@
 <translation id="6972629891077993081">Пристрої HID</translation>
 <translation id="6973656660372572881">Указано фіксовані проксі-сервери та URL-адреса сценарію .pac.</translation>
 <translation id="6973932557599545801">На жаль, я не можу допомогти. Продовжуйте самостійно.</translation>
+<translation id="6978236010531171013">Усе одно поділитися</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6979983982287291980">Файли, які ви завантажуєте, надсилаються на платформу Google Cloud або стороннім сервісам на аналіз. Наприклад, їх можуть сканувати на наявність конфіденційних даних або зловмисного програмного забезпечення.</translation>
@@ -2024,6 +2029,7 @@
 <translation id="7578104083680115302">Зберігайте картки в Google, щоб швидко платити на сайтах і в додатках на всіх своїх пристроях.</translation>
 <translation id="7581199239021537589">Вертикальний зсув сторони 2 зображення</translation>
 <translation id="7582602800368606489">Швидко створюйте нові події в Google Календарі</translation>
+<translation id="7591288787774558753">Поділитися конфіденційним контентом?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> хоче отримати доступ до файлів cookie й даних сайту <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертифікат сервера порушує обмежувальні умови щодо імен.</translation>
 <translation id="7598391785903975535">Менше <ph name="UPPER_ESTIMATE" /></translation>
@@ -2034,6 +2040,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="7616645509853975347">Ваш адміністратор увімкнув Chrome Enterprise Connectors у веб-переглядачі. Ці конектори мають доступ до деяких ваших даних.</translation>
 <translation id="7619838219691048931">Останній аркуш</translation>
+<translation id="7625242817712715120">Згідно з правилом адміністратора не рекомендовано друкувати цей контент</translation>
 <translation id="762844065391966283">По одному</translation>
 <translation id="7633909222644580952">Дані про ефективність і звіти про збої</translation>
 <translation id="7637571805876720304">Видалити дані кредитної картки з Chromium?</translation>
@@ -2187,6 +2194,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Недійсні картки видалено</translation>
 <translation id="8103161714697287722">Спосіб оплати</translation>
+<translation id="8103643211515685474">Усе одно друкувати</translation>
 <translation id="8105368624971345109">Вимкнути</translation>
 <translation id="810875025413331850">Пристроїв поблизу не знайдено.</translation>
 <translation id="8116925261070264013">Звук вимкнено</translation>
@@ -2400,6 +2408,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>
 <translation id="8870494189203302833">Однаковий порядок лицевою стороною вниз</translation>
+<translation id="8870700989640064057">Надрукувати конфіденційний файл?</translation>
 <translation id="8871553383647848643">Налаштуйте вигляд веб-переглядача</translation>
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
 <translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
@@ -2478,6 +2487,7 @@
 <translation id="9119042192571987207">Завантажено</translation>
 <translation id="9128016270925453879">Правила завантажено</translation>
 <translation id="9128870381267983090">З'єднатися з мережею</translation>
+<translation id="9131119348384879525">Записати конфіденційний контент?</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
 <translation id="9141013498910525015">Керувати адресами</translation>
 <translation id="9144951720726881238">Діє до:</translation>

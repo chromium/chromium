@@ -576,9 +576,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1686952487081322272">Snelle antwoorden uitzetten</translation>
 <translation id="1690383938831887552">Niet toestaan dat Signed HTTP Exchanges worden geladen</translation>
 <translation id="169467210981344373">HTTP-verificatiecache met wereldwijd bereik uitzetten</translation>
-<translation id="1697682816954321887">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de TPM-beveiligingsstatus van het apparaat.
-
-      Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen TPM-beveiligingsstatus opnemen of rapporteren.</translation>
 <translation id="1698810555265314018">Dit beleid beheert de afbeeldingsresolutie voor afdrukken als <ph name="PRODUCT_NAME" /> gerasterde pdf's afdrukt.
 
       Als een pdf wordt afgedrukt met de optie 'Afdrukken als afbeelding', kan het soms beter zijn om een andere afdrukresolutie te selecteren dan de printerinstelling van het apparaat of de standaardoptie voor pdf's.  Met een hoge resolutie wordt de verwerkings- en afdruktijd een stuk langer, terwijl een lage resolutie tot een slechte afbeeldingskwaliteit kan leiden.
@@ -871,9 +868,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2036522553891755455">Als je het beleid toepast, wordt voor het ontdekken van fileshares (de functie Network File Shares van <ph name="PRODUCT_NAME" />) <ph name="NETBIOS_PROTOCOL" /> gebruikt om fileshares in het netwerk te ontdekken. Als je het beleid niet toepast, wordt dit protocol niet gebruikt om fileshares te ontdekken.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
-<translation id="2037214548071298156">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten hardwarestatistieken, zoals het CPU/RAM-gebruik.
-
-      Als je het beleid niet toepast, rapporteren ingeschreven apparaten de hardwarestatistieken niet.</translation>
 <translation id="2039801473506609891">Ondersteuning voor HTTP/0.9 op niet-standaardpoorten uitzetten</translation>
 <translation id="2040479044912658454">Modus voor afdrukrastering</translation>
 <translation id="2042513383871755994">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun leestoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API.
@@ -1588,10 +1582,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="284288632677954003">URL van een XML-bestand dat URL's bevat die nooit overschakeling naar een andere browser veroorzaken.</translation>
 <translation id="2846689894646472396">Snelheid voor checken van netwerkgebeurtenissen in milliseconden.</translation>
 <translation id="2853649500575897584">Geen verouderde extensiepunten in het browserproces blokkeren</translation>
-<translation id="2854607717796010700">Informatie rapporteren over het geheugen van een apparaat.
-
-      Als het beleid is ingesteld op False of niet is ingesteld, wordt de informatie niet gerapporteerd.
-      Als het beleid is ingesteld op True, wordt informatie over het geheugen van het apparaat gerapporteerd.</translation>
 <translation id="285480231336205327">Modus voor hoog contrast aanzetten</translation>
 <translation id="285627849510728211">Dagconfiguratie voor geavanceerde batterijoplaadmodus instellen</translation>
 <translation id="2856674246949497058">Herstel en blijf op de doelversie als de OS-versie nieuwer is dan de doelversie. Voer een powerwash uit tijdens het proces.</translation>
@@ -2768,6 +2758,9 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
       Opmerking: Voor Android gebruik je het beleid <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="4261820385751181068">Taal voor inlogscherm van apparaat</translation>
+<translation id="4261964161337162399">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
+
+      Als je dit beleid niet instelt, is de standaardsnelheid van 10 minuten van toepassing.</translation>
 <translation id="4266547484666068234">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://www.chromium.org/administrators/url-blocklist-filter-format ). Het meest specifieke filter bepaalt of een URL geblokkeerd of toegestaan wordt. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
 
       Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden aangezet die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
@@ -3385,11 +3378,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="5105313908130842249">Vertraging van schermvergrendeling wanneer op de batterij wordt gewerkt</translation>
 <translation id="5108031557082757679">Zakelijke apparaatprinters staan uit</translation>
 <translation id="5109383437323376357">De beschikbaarheid van varianten bepalen</translation>
-<translation id="5115168755602871392">Informatie rapporteren voor de CPU('s) voor een apparaat.
-
-      Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
-      Als het beleid is ingesteld op True, worden de CPU, naam, architectuur en maximale kloksnelheid
-      voor elke CPU gerapporteerd.</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
 <translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5141670636904227950">Standaardtype van vergrootglas voor inlogscherm instellen</translation>
@@ -3589,9 +3577,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Dit beleid kan ook worden ingesteld op een van de volgende waarden: 'tls1.2' of 'tls1.3'. Wanneer dit beleid is ingesteld, gebruikt <ph name="PRODUCT_NAME" /> geen hogere SSL-/TLS-versies dan de opgegeven versie. Als er een waarde wordt ingesteld die niet wordt herkend, wordt deze genegeerd.</translation>
 <translation id="5330684698007383292"><ph name="PRODUCT_FRAME_NAME" /> toestaan de volgende soorten content te verwerken.</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
-<translation id="5340105431123046323">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres.
-
-      Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
@@ -4958,9 +4943,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde aanzetten</translation>
-<translation id="6928305045865155732">Als je het beleid aanzet of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
-
-      Als je het beleid uitzet, betekent dit dat ingeschreven apparaten geen audiostatus opnemen of rapporteren.</translation>
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
@@ -5885,9 +5867,6 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 
       De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.
       </translation>
-<translation id="8036964468882248070">Als je dit beleid toepast, rapporteren ingeschreven apparaten hardwarestatistieken en ID's voor opslagapparaten.
-
-      Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten geen opslagstatistieken.</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>
@@ -6731,6 +6710,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Dit beleid is alleen van toepassing op gebruikers die zijn geverifieerd met SAML.
 
       De beleidswaarde moet worden gespecificeerd in seconden.</translation>
+<translation id="9015578113567730893">Snelheid voor verzameling van audiotelemetrie in milliseconden.</translation>
 <translation id="9035086760683255833">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan.
 
           Met deze functie wordt het object gemarkeerd waarop het toetsenbord is gefocust.

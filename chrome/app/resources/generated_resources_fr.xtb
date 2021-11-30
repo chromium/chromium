@@ -659,6 +659,7 @@
 <translation id="16620462294541761">Mot de passe incorrect. Veuillez réessayer.</translation>
 <translation id="1662777896967868795">Activé/Se désactive automatiquement au lever du soleil</translation>
 <translation id="166278006618318542">Algorithme de clé publique de l'objet</translation>
+<translation id="1662801900924515589"><ph name="APP" /> installé</translation>
 <translation id="1666232093776384142">Désactiver la protection de l'accès aux données pour les périphériques</translation>
 <translation id="1668435968811469751">Faire l'inscription manuellement</translation>
 <translation id="1668979692599483141">En savoir plus sur les suggestions</translation>
@@ -1317,6 +1318,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils. </translation>
 <translation id="2332131598580221120">Afficher dans la boutique</translation>
 <translation id="2332192922827071008">Ouvrir les préférences</translation>
+<translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
 <translation id="2332742915001411729">Rétablir le thème par défaut</translation>
 <translation id="2335111415680198280">{0,plural, =1{Fermer # fenêtre}one{Fermer # fenêtre}other{Fermer # fenêtres}}</translation>
 <translation id="2335122562899522968">Cette page place des cookies.</translation>
@@ -2540,6 +2542,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3616741288025931835">&amp;Effacer les données de navigation...</translation>
 <translation id="3617891479562106823">Les arrière-plans sont indisponibles. Réessayez plus tard.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619962278978697442">Choisissez une option à chaque connexion</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une appli}one{# appli}other{# applis}}</translation>
 <translation id="362333465072914957">En attente de l'émission du certificat par l'autorité de certification</translation>
 <translation id="3624567683873126087">Déverrouiller l'appareil et se connecter au compte Google</translation>
@@ -3061,6 +3064,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4138267921960073861">Afficher les noms d'utilisateurs et leur photo sur la page de connexion</translation>
 <translation id="4138598238327913711">Vérification de la grammaire que pour l'anglais actuellement</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Appareil HID associé</translation>
+<translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
 <translation id="4142052906269098341">Déverrouillez votre <ph name="DEVICE_TYPE" /> à l'aide de votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Enregistrez les imprimantes détectées dans votre profil ou ajoutez une imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Bénéficiez d'une meilleure qualité et économisez de la batterie. La vidéo sera lue uniquement sur votre écran compatible Cast.</translation>
@@ -3546,6 +3550,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identifiant de journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
+<translation id="4688176403504673761"><ph name="MANAGER" /> rétablit une version antérieure de cet appareil (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Sélectionner vos préférences de démonstration</translation>
 <translation id="4689421377817139245">Synchroniser ce favori sur votre iPhone</translation>
 <translation id="4690091457710545971">&lt;Le micrologiciel Wi-Fi d'Intel a généré quatre fichiers : csr.lst, fh_regs.lst, radio_reg.lst et monitor.lst.sysmon. Les trois premiers sont des fichiers binaires qui contiennent des images mémoire de registres. Intel certifie que ces fichiers ne possèdent pas d'informations personnelles ni de données permettant d'identifier les appareils. Le dernier fichier est une trace d'exécution du micrologiciel Intel. Toutes les informations personnelles ainsi que les données permettant d'identifier les appareils qu'il pouvait contenir ont été supprimées. Toutefois, il est trop volumineux pour s'afficher ici. Ces fichiers ont été créés suite aux problèmes que votre appareil a récemment rencontrés avec le Wi-Fi, et seront partagés avec Intel pour qu'une solution soit trouvée.&gt;</translation>
@@ -3611,6 +3616,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Renommer le réseau mobile de l'eSIM</translation>
 <translation id="4780321648949301421">Enregistrer la page sous...</translation>
+<translation id="4781443161433589743">Vous disposez du dispositif de sécurité le plus avancé sur Chrome</translation>
 <translation id="4784559565779618838">Pour effectuer une recherche sur un site spécifique ou une partie de Chrome, vous pouvez saisir les raccourcis ci-dessous dans la barre d'adresse, puis appuyer sur Tabulation ou Espace.</translation>
 <translation id="4785719467058219317">La clé de sécurité n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="478708757211772586">Appuyez sur "Suivant" pour aller au prochain élément affiché</translation>
@@ -5262,6 +5268,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="655483977608336153">Réessayer</translation>
 <translation id="6555432686520421228">Supprime tous les comptes utilisateur et réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> qui devient comme neuf.</translation>
 <translation id="6555810572223193255">Le nettoyage n'est pas disponible actuellement</translation>
+<translation id="6556477848444788999">Ce code ou mot de passe protège les données de votre <ph name="DEVICE_TYPE" />, y compris les contenus que vous lisez en streaming sur votre téléphone.</translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
@@ -6139,6 +6146,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Vous avez oublié votre ancien mot de passe ?</translation>
 <translation id="7497981768003291373">Aucun journal texte WebRTC n'a été créé récemment.</translation>
+<translation id="7501957181231305652">ou</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur le site sera conservée sur votre clé de sécurité.</translation>
 <translation id="750509436279396091">Ouvrir le dossier des téléchargements</translation>
@@ -6178,6 +6186,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7537451260744431038">Les sites ne peuvent pas utiliser de cookies pour améliorer votre expérience de navigation, par exemple pour maintenir votre connexion ou mémoriser les articles de votre panier</translation>
 <translation id="753769905878158714">Dans la barre d'adresse, saisissez le mot clé associé au site Web que vous voulez trouver. Pour continuer, utilisez un raccourci clavier.</translation>
 <translation id="7540972813190816353">Une erreur s'est produite pendant la vérification des mises à jour : <ph name="ERROR" />.</translation>
+<translation id="7541076351905098232"><ph name="MANAGER" /> a rétabli une version antérieure de cet appareil. Veuillez enregistrer les fichiers importants, puis redémarrer. Toutes les données de l'appareil seront supprimées.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> avec l'application <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Ce réseau est synchronisé avec d'autres appareils associés à votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activer les fonctionnalités de débogage sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
@@ -6653,6 +6662,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7984068253310542383">Dupliquer l'écran <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Consulter et modifier les paramètres relatifs aux mots de passe enregistrés</translation>
 <translation id="7987814697832569482">Toujours se connecter via ce VPN</translation>
+<translation id="7987932397583333141">Définir un code ou un mot de passe</translation>
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>
 <translation id="7988805580376093356">Exécutez <ph name="DEVICE_OS" /> depuis une clé USB pour conserver votre OS.</translation>
 <translation id="7991296728590311172">Paramètres Switch Access</translation>
@@ -7260,6 +7270,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8658645149275195032"><ph name="APP_NAME" /> partage votre écran et un contenu audio avec <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Ouvrir le lien dans la fenêtre de navi&amp;gation privée</translation>
 <translation id="8662671328352114214">Rejoindre le réseau <ph name="TYPE" /></translation>
+<translation id="8662733268723715832">Cette opération dure plus longtemps que prévu. Vous pouvez l'annuler ou attendre qu'elle prenne fin.</translation>
 <translation id="8662795692588422978">Personnes</translation>
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8662911384982557515">Utiliser <ph name="HOME_PAGE" /> comme page d'accueil ?</translation>
@@ -7796,6 +7807,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9179524979050048593">Nom d'utilisateur sur l'écran de connexion</translation>
 <translation id="9180281769944411366">Cette opération peut prendre quelques minutes. Démarrage du conteneur Linux…</translation>
 <translation id="9180380851667544951">Le site peut partager votre écran</translation>
+<translation id="918224512343736195">Se connecter à SSH</translation>
 <translation id="9182556968660520230">Ne pas autoriser les sites à lire du contenu protégé</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
 <translation id="9186963452600581158">Se connecter avec le compte Google d'un enfant</translation>

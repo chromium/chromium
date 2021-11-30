@@ -248,6 +248,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2653019840645008922">Acquisizione finestra</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2658778018866295321">Fai clic e trascina</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> e <ph name="UNAVAILABLE_APPS_TWO" /> non sono disponibili su questo dispositivo.</translation>
 <translation id="2678852583403169292">Menu Seleziona per ascoltare</translation>
 <translation id="2689613560355655046">Scrivania 8</translation>
 <translation id="2700493154570097719">Imposta la tastiera</translation>
@@ -341,7 +342,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
-<translation id="3325831752328162756">{0,plural, =0{Ripristina subito la versione precedente del dispositivo}=1{Ripristina la versione precedente del dispositivo entro 1 secondo}one{Ripristina la versione precedente del dispositivo entro # secondo}other{Ripristina la versione precedente del dispositivo entro # secondi}}</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
 <translation id="334252345105450327">Acquisisci uno screenshot</translation>
 <translation id="3351879221545518001">Al momento stai trasmettendo lo schermo.</translation>
@@ -420,6 +420,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e altre <ph name="UNAVAILABLE_APPS_COUNT" /> app non sono disponibili su questo dispositivo.</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3744282433224562605">Per sbloccare Chromebook, inserisci la password</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
@@ -606,6 +607,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="4945196315133970626">Disattiva le notifiche</translation>
 <translation id="4946376291507881335">Acquisisci</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> non è disponibile su questo dispositivo.</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
 <translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> richiede il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>

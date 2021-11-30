@@ -119,6 +119,7 @@
 <translation id="2783010256799387990">சரிபார்க்கப்பட்டது</translation>
 <translation id="2789486458103222910">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
+<translation id="2859243502336719778">முக்கியப் புதுப்பிப்பு</translation>
 <translation id="2860473693272905224">ஸ்கேனரில் மற்றொரு பக்கத்தை வைக்கவும்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
@@ -153,6 +154,7 @@
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% முடிந்தது.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கிறது</translation>
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
@@ -210,6 +212,7 @@
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">சாதனங்களைப் புதுப்பியுங்கள்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> முடக்கப்பட்டுள்ளது</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
@@ -262,6 +265,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
 <translation id="4930320165497208503">இணைப்பை அமைக்க அல்லது புதுப்பிக்க, <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4932733599132424254">தேதி</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> இன் நிலைபொருள் <ph name="VERSION" /> பதிப்பிற்குப் புதுப்பிக்கப்பட்டது</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
@@ -403,6 +407,7 @@
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
 <translation id="7058278511608979688">நிறுத்திவிட்டுச் சேமி</translation>
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
+<translation id="7068619307603204412">சாதனத்தைத் தயார்ப்படுத்துதல்</translation>
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
@@ -416,6 +421,7 @@
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
+<translation id="7240035910874241640">அனைத்துச் சாதனங்களும் புதுப்பித்த நிலையில் உள்ளன</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
@@ -457,6 +463,7 @@
 <translation id="7763470514545477072">டொமைனின் பிற்பாதிக்கான பொருத்தம்</translation>
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
 <translation id="7784116172884276937">DNS சேவையகங்கள் எதுவும் அமைக்கப்படவில்லை</translation>
+<translation id="7786540085520432425">புதுப்பிக்கப்படும்போது சாளரத்தைச் சிறிதாக்கலாம். ஆனால் சாதனம் மின் இணைப்பிலேயே இருக்க வேண்டும். இதற்குச் சில நிமிடங்கள் ஆகலாம், அத்துடன் இந்தப் புதுப்பிப்பின்போது சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7835501727204647447">CloudReadyயை நிறுவு</translation>
@@ -515,6 +522,7 @@
 <translation id="8498220429738806196">டிராஃபிக் கவுண்ட்டர்கள்</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
+<translation id="8520963233738002436">உங்கள் <ph name="DEVICE_NAME" /> புதுப்பித்த நிலையில் உள்ளது</translation>
 <translation id="8521021929829989041">தனிப்பட்ட சாதனமாகப் பயன்படுத்து</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
@@ -554,6 +562,7 @@
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
+<translation id="8994273342647807496">நிறுவுகிறது (<ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ரெசல்யூஷனில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>

@@ -1715,6 +1715,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2721037002783622288">&amp;Išči sliko tu: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Skrbnik je onemogočil zaščitene uporabnike.</translation>
+<translation id="2722540561488096675">Naprava se bo izklopila čez <ph name="TIME_LEFT" />. Odstranite USB, preden znova vklopite napravo. Nato lahko začnete uporabljati <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Dnevniki za WebRTC</translation>
 <translation id="272488616838512378">Pretvorba enot</translation>
 <translation id="2725200716980197196">Omrežna povezava je znova vzpostavljena</translation>
@@ -4574,6 +4575,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5739235828260127894">Čakanje na potrditev. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Zelo velika</translation>
 <translation id="5740328398383587084">Deljenje v bližini</translation>
+<translation id="5740709157181662145">Podpora za strojno opremo in stabilnost za <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Zrcaljenje zaslona</translation>
 <translation id="574209121243317957">Višina tona</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>

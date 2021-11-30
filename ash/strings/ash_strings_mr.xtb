@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">विंडो कॅप्चर</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2658778018866295321">क्लिक आणि ड्रॅग करा</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> आणि <ph name="UNAVAILABLE_APPS_TWO" /> ही ॲप्स या डिव्हाइसवर उपलब्ध नाहीत.</translation>
 <translation id="2678852583403169292">बोलण्यासाठी निवडा मेनू</translation>
 <translation id="2689613560355655046">डेस्‍क ८</translation>
 <translation id="2700493154570097719">तुमचा कीबोर्ड सेट करा</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">लॅपटॉप मोडवर स्विच केले</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
-<translation id="3325831752328162756">{0,plural, =0{Change device to previous version within now}=1{एक सेकंदामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# सेकंदांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="3351879221545518001">तुम्ही सध्या स्क्रीन कास्ट करत आहात.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> आणि<ph name="UNAVAILABLE_APPS_COUNT" /> ही ॲप्स या डिव्हाइसवर उपलब्ध नाहीत.</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3744282433224562605">तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा</translation>
 <translation id="3771549900096082774">उच्च कॉन्ट्रास्ट मोड</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
 <translation id="4946376291507881335">कॅप्चर करा</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> हे ॲप या डिव्हाइसवर उपलब्ध नाही.</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> हे मागील आवृत्तीवर स्विच करणे आवश्यक आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>

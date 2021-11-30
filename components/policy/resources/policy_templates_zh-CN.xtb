@@ -568,9 +568,6 @@
 <translation id="1686952487081322272">停用快速解答功能</translation>
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
-<translation id="1697682816954321887">如果此政策已启用或未设置，已注册的设备会报告设备 TPM 安全状态。
-
-      如果此政策已停用，已注册的设备将不会记录或报告 TPM 安全状态。</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
 
       使用“以图片形式打印”选项打印 PDF 时，不妨指定与设备的打印机设置或 PDF 默认值不同的打印分辨率，因为这样做可能会大有裨益。高分辨率会显著增加处理和打印用时，低分辨率则可能会导致图片质量不佳。
@@ -865,9 +862,6 @@
 <translation id="2036522553891755455">如果此政策已启用，共享文件发现功能（<ph name="PRODUCT_NAME" />的网络文件共享功能）会使用 <ph name="NETBIOS_PROTOCOL" />来搜寻网络上的共享文件。如果此政策已停用，共享文件发现功能将不会使用此协议来搜寻共享文件。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
-<translation id="2037214548071298156">如果此政策已启用或未设置，已注册的设备将会报告硬件统计信息（例如 CPU/RAM 使用情况）。
-
-      如果此政策已停用，已注册的设备将不会报告硬件统计信息。</translation>
 <translation id="2039801473506609891">停用对非默认端口的 HTTP/0.9 支持</translation>
 <translation id="2040479044912658454">打印光栅化模式</translation>
 <translation id="2042513383871755994">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法通过 File System API 请求用户向其授予对主机操作系统的文件系统中的文件或目录的读取权限。
@@ -1583,10 +1577,6 @@
 <translation id="284288632677954003">包含始终不应触发浏览器切换的网址的 XML 文件对应的网址。</translation>
 <translation id="2846689894646472396">网络事件检查时间间隔（以毫秒为单位）。</translation>
 <translation id="2853649500575897584">不屏蔽浏览器进程中的旧版扩展点</translation>
-<translation id="2854607717796010700">报告与设备内存有关的信息。
-
-      如果此政策设为 false 或未设置，系统将不会报告这些信息。
-      如果此政策设为 true，系统将会报告设备的内存信息。</translation>
 <translation id="285480231336205327">启用高反差模式</translation>
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
 <translation id="2856674246949497058">如果操作系统版本比目标版本新，则回滚到并持续使用目标版本。在此过程中，系统会执行 Powerwash 操作。</translation>
@@ -3379,10 +3369,6 @@
 <translation id="5105313908130842249">使用电池供电时的屏幕锁定延迟时间</translation>
 <translation id="5108031557082757679">已停用企业设备打印机</translation>
 <translation id="5109383437323376357">确定变体的可用情况</translation>
-<translation id="5115168755602871392">报告与设备 CPU 有关的信息。
-
-      如果此政策设为 false 或未设置，系统将不会报告这些信息。
-      如果此政策设为 true，系统将会报告每个 CPU 的型号名称、架构和最快时钟速度。</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
@@ -3582,9 +3568,6 @@
       如果您想配置此政策，则可将其设为“tls1.2”或“tls1.3”。如果您设置了此政策，<ph name="PRODUCT_NAME" /> 将不会使用任何高于指定版本的 SSL/TLS 版本。无法识别的值会被忽略。</translation>
 <translation id="5330684698007383292">允许 <ph name="PRODUCT_FRAME_NAME" />处理以下内容类型</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 云政策会替换平台政策。</translation>
-<translation id="5340105431123046323">如果此政策已启用或未设置，已注册的设备将会以列表形式报告网络接口及其类型和硬件地址。
-
-      如果此政策已停用，已注册的设备将不会报告网络接口。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
@@ -4958,9 +4941,6 @@
 
       目前支持的语言包括：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">启用长边双面打印</translation>
-<translation id="6928305045865155732">如果此政策已启用或未设置，已注册的设备将会报告设备音量。
-
-      如果此政策已停用，已注册的设备将不会记录或报告音频状态。</translation>
 <translation id="6929746927224321095">停用“自动填充”功能</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
@@ -5880,9 +5860,6 @@
 
       <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果该字段未设置，默认值为 100 字节。
       </translation>
-<translation id="8036964468882248070">如果此政策已启用，已注册的设备将会报告存储设备的硬件统计信息和标识符。
-
-      如果此政策已停用或未设置，已注册的设备将不会报告存储统计信息。</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="804619600634661088">允许进行远程调试</translation>

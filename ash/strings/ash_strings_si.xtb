@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">කවුළු ග්‍රහණය</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2658778018866295321">ක්ලික් කර අදින්න</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> සහ <ph name="UNAVAILABLE_APPS_TWO" /> මෙම උපාංගයෙහි නැත.</translation>
 <translation id="2678852583403169292">කථා කිරීමට තෝරන්න මෙනුව</translation>
 <translation id="2689613560355655046">මේසය 8</translation>
 <translation id="2700493154570097719">ඔබගේ යතුරු පුවරුව සකසන්න</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">ලැප්ටොප් ප්‍රකාරයට මාරු විය</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> හට තවමත් පසුව පිරිය හැක.</translation>
 <translation id="3321628682574733415">වැරදි මාපිය කේතය</translation>
-<translation id="3325831752328162756">{0,plural, =0{දැන් උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}}</translation>
 <translation id="3341303451326249809">තිර රුව ග්‍රහණය කරන ලදි</translation>
 <translation id="334252345105450327">තිර රුවක් ලබා ගන්න</translation>
 <translation id="3351879221545518001">ඔබ දැනට තිරය විකාශය කරයි.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="371370241367527062">ඉදිරිපස මයික්‍රෆෝනය</translation>
 <translation id="3713734891607377840">සම්පූර්ණ විට විවෘත කරන්න</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" /> <ph name="UNAVAILABLE_APPS_TWO" /> සහ තව <ph name="UNAVAILABLE_APPS_COUNT" />ක් මෙම උපාංගයෙහි නැත.</translation>
 <translation id="3742055079367172538">තිර ඡායාව ගැනිණි</translation>
 <translation id="3744282433224562605">ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න</translation>
 <translation id="3771549900096082774">අධි අසමානතා ප්‍රකාරය</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">මෙම ගිණුම සඳහා පරිපාලකට මෙම ගිණුම බහුවිධ පිරීමේ සැසියක් තුළ පළමු පිරූ ගිණුම වීමට අවශ්‍යයි.</translation>
 <translation id="4945196315133970626">දැනුම්දීම් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="4946376291507881335">ග්‍රහණය</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" />මෙම උපාංගයෙහි නැත.</translation>
 <translation id="495046168593986294">ඉහළට අනුචලනය කරන්න</translation>
 <translation id="4952936045814352993">එලාම හඬවල් අබල කර ඇති විට දුරකථනය තිබෙන තැන සොයා ගන්න ලබා ගත නොහැකිය</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> හට ඔබගේ <ph name="DEVICE_TYPE" /> ආපසු පෙරළීමට අවශ්‍යයි. ඔබගේ උපාංගය යළි සකසනු ඇති අතර සියලු දත්ත මකනු ඇත.</translation>

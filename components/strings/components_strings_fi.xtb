@@ -270,6 +270,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1741613555002899862">On määritettävä kelvollisena merkkijonona, kun DnsOverHttpsMode on <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Tämä on ylläpidetty selain</translation>
 <translation id="1746113442205726301">Kuvan Y vaihto</translation>
+<translation id="1747819498338037826">Vaihda automaattisesti</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
 <translation id="1752021286346845558">Postilaatikko 8</translation>
 <translation id="1753706481035618306">Sivunumero</translation>
@@ -1684,6 +1685,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="643051589346665201">Vaihda Google-salasana</translation>
 <translation id="6433490469411711332">Muokkaa yhteystietoja</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> kieltäytyi muodostamasta yhteyttä.</translation>
+<translation id="6438025220577812695">Vaihdan sen itse</translation>
 <translation id="6440503408713884761">Ohitettu</translation>
 <translation id="6443406338865242315">Asentamasi laajennukset</translation>
 <translation id="6446163441502663861">Kahu (kirjekuori)</translation>

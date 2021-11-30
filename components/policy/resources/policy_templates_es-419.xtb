@@ -307,6 +307,10 @@
 <translation id="1413936351612032792">Informar datos sobre el uso de las apps de Linux</translation>
 <translation id="1417888712677507140">Bloquea los diálogos de JavaScript que se envían desde un submarco de otro origen</translation>
 <translation id="1418387035898607074">Omite las verificaciones de la Navegación segura en archivos descargados de fuentes de confianza</translation>
+<translation id="1419945463533552043">Si habilitas la política, la función de actualización de GREASE de optimización del cliente de usuario-agente se alineará con el algoritmo GREASE de usuario-agente con las especificaciones más recientes.
+      Las especificaciones actualizadas pueden generar errores en los sitios web que restringen los caracteres que pueden incluir las solicitudes. Para obtener más información, consulta las especificaciones: https://wicg.github.io/ua-client-hints/#grease
+      Si habilitas esta política o no la estableces, el navegador decidirá qué algoritmo GREASE de usuario-agente usar. Si inhabilitas la política, se utilizará el algoritmo GREASE de usuario-agente anterior.
+      Esta política es una medida temporal y se eliminará en versiones futuras.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados usen Crostini</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo apliquen la transferencia de ADB y fuerza la opción de Powerwash, lo que puede provocar una vulnerabilidad en la seguridad del dispositivo</translation>
 <translation id="1426170570389588560">Establece el período en días para almacenar los metadatos de los trabajos de impresión</translation>
@@ -571,9 +575,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
-<translation id="1697682816954321887">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado de seguridad del TPM.
-
-      Si la inhabilitas, los dispositivos inscritos no registrarán ni informarán el estado de seguridad del TPM.</translation>
 <translation id="1698810555265314018">Controla la resolución de las imágenes de impresión cuando <ph name="PRODUCT_NAME" /> imprime archivos PDF con rasterización.
 
       Cuando el usuario imprime archivos PDF con la opción Imprimir como imagen, puede ser útil especificar una resolución de impresión diferente a la configuración de la impresora del dispositivo o el valor predeterminado para archivos PDF.  Una resolución alta aumentará enormemente el tiempo de procesamiento y de impresión, mientras que una resolución baja puede generar una baja calidad de imagen.
@@ -876,9 +877,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2036522553891755455">Si habilitas la política, la detección de elementos compartidos (la función Network File Shares para <ph name="PRODUCT_NAME" />) usará el protocolo <ph name="NETBIOS_PROTOCOL" /> para detectar archivos compartidos en la red. Si la inhabilitas, la detección de elementos compartidos no utilizará este protocolo para detectar archivos compartidos.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
-<translation id="2037214548071298156">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre las estadísticas de hardware, como el uso de CPU/RAM.
-
-      Si la inhabilitas, los dispositivos inscritos no informarán sobre las estadísticas de hardware.</translation>
 <translation id="2039801473506609891">Inhabilitar la compatibilidad con HTTP/0.9 en puertos no predeterminados</translation>
 <translation id="2040479044912658454">Modo de rasterización de impresiones</translation>
 <translation id="2042513383871755994">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host mediante la API de File System.
@@ -1598,10 +1596,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="284288632677954003">URL de un archivo XML que contiene URL que nunca deben abrirse en otro navegador</translation>
 <translation id="2846689894646472396">Tasa de revisión de eventos de red en milisegundos</translation>
 <translation id="2853649500575897584">No bloquear los puntos de extensiones heredados del proceso del navegador</translation>
-<translation id="2854607717796010700">Envía información sobre la memoria del dispositivo.
-
-      Si se establece la política como falsa o no se establece, no se enviará la información.
-      Si se establece como verdadera, se enviará información sobre la memoria del dispositivo.</translation>
 <translation id="285480231336205327">Habilitar el modo de contraste alto</translation>
 <translation id="285627849510728211">Establecer la configuración para el modo avanzado de carga de la batería durante el día</translation>
 <translation id="2856674246949497058">Implementa la reversión y mantén la versión objetivo si la versión del sistema operativo es más reciente que la objetivo. Aplica la función Powerwash durante el proceso.</translation>
@@ -3403,10 +3397,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="5105313908130842249">Demora de bloqueo de pantalla con batería</translation>
 <translation id="5108031557082757679">Impresoras empresariales inhabilitadas asociadas a dispositivos</translation>
 <translation id="5109383437323376357">Determina la disponibilidad de las variantes</translation>
-<translation id="5115168755602871392">Envía información sobre las CPU de un dispositivo.
-
-      Si se establece la política como falsa o no se establece, no se enviará la información.
-      Si se establece como verdadera, se informará el nombre de modelo, la arquitectura y la frecuencia máxima de cada CPU.</translation>
 <translation id="5124368997194894978">Habilitar el inicio mediante CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios utilicen la política SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Establece el tipo de lupa predeterminado habilitado en la pantalla de acceso.</translation>
@@ -3606,9 +3596,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       De lo contrario, se podrá establecer como uno de los siguientes valores: "tls1.2" o "tls1.3". De esta manera, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS posteriores a la especificada. Se ignorarán los valores no reconocidos.</translation>
 <translation id="5330684698007383292">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los siguientes tipos de contenido</translation>
 <translation id="5331746669335642668">La política de nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
-<translation id="5340105431123046323">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de interfaces de redes con sus tipos y direcciones de hardware.
-
-      Si inhabilitas la política, los dispositivos inscritos no informarán sobre las interfaces de redes.</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
 <translation id="5362531528507578966">Anula el modo predeterminado de impresión de los gráficos de fondo.</translation>
 <translation id="5365476955714838841">Parámetros de la línea de comandos para el navegador alternativo</translation>
@@ -5012,9 +4999,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Actualmente, los idiomas compatibles son los siguientes: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Habilitar la impresión doble con bordes largos</translation>
-<translation id="6928305045865155732">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el volumen del audio del dispositivo.
-
-      Si la inhabilitas, los dispositivos inscritos no grabarán el audio ni informarán su estado.</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar la sincronización de datos con Google</translation>
 <translation id="6940243892299228102">No permitir que los usuarios utilicen plantillas de escritorio</translation>
@@ -5925,9 +5909,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
 <translation id="8029607810986641704">Bloquear el dispositivo cuando está inactivo o suspendido</translation>
-<translation id="8036964468882248070">Si habilitas la política, los dispositivos inscritos informarán sobre los identificadores y las estadísticas de hardware de los dispositivos de almacenamiento.
-
-      Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán sobre las estadísticas de almacenamiento.</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>

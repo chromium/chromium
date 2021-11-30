@@ -132,6 +132,7 @@
 <translation id="1129850422003387628">Apps beheren</translation>
 <translation id="113050636487300043">Kies een naam en kleurthema zodat je verschillende profielen van elkaar kunt onderscheiden</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - onderdeel van groep <ph name="GROUP_NAME" /></translation>
+<translation id="1130676589211693127">Batterijniveau rechts: <ph name="PERCENTAGE" />%.</translation>
 <translation id="1133418583142946603">Huidig tabblad toevoegen</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> van <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">De beveiligingssleutel is vergrendeld omdat je te vaak een onjuiste pincode hebt ingevoerd. Ontgrendel de sleutel door deze te verwijderen en opnieuw te plaatsen.</translation>
@@ -1322,6 +1323,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2329597144923131178">Als je inlogt, heb je al je instellingen op al je apparaten: bookmarks, geschiedenis, wachtwoorden en meer.</translation>
 <translation id="2332131598580221120">Bekijken in de Web Store</translation>
 <translation id="2332192922827071008">Voorkeuren openen</translation>
+<translation id="2332515770639153015">De uitgebreide versie van Safe Browsing staat aan</translation>
 <translation id="2332742915001411729">Terugzetten naar standaardinstelling</translation>
 <translation id="2332948465534020594">Niet storen is aangezet</translation>
 <translation id="2335111415680198280">{0,plural, =1{# venster sluiten}other{# vensters sluiten}}</translation>
@@ -1640,6 +1642,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2665647207431876759">Verlopen</translation>
 <translation id="2665717534925640469">Deze pagina wordt nu op volledig scherm weergegeven en heeft je muisaanwijzer uitgezet.</translation>
 <translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
+<translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
 <translation id="2669241540496514785">Kan <ph name="APP_NAME" /> niet openen</translation>
@@ -1693,6 +1696,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2721037002783622288">Afbeelding &amp;zoeken in <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Gebruikers met beperkte rechten zijn uitgezet door je beheerder.</translation>
+<translation id="2722540561488096675">Je apparaat wordt uitgezet over <ph name="TIME_LEFT" />. Verwijder het USB-apparaat voordat je het apparaat weer aanzet. Je kunt dan aan de slag gaan met <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">WebRTC-logboeken</translation>
 <translation id="272488616838512378">Eenheidsconversie</translation>
 <translation id="2725200716980197196">Netwerkverbinding hersteld</translation>
@@ -1957,6 +1961,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2981113813906970160">Grote muisaanwijzer bekijken</translation>
 <translation id="2981474224638493138">Weergavekwaliteit van tabblad/bureaublad</translation>
+<translation id="2983373101216420412">Batterijniveau case: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Een verzoek naar je beheerder sturen om '<ph name="EXTENSION_NAME" />' te installeren?</translation>
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
 <translation id="2988018669686457659">Extra weergaveprogramma</translation>
@@ -2013,6 +2018,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3030967311408872958">Zonsondergang tot zonsopgang</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecteer items die je wilt importeren:</translation>
+<translation id="3033348223765101500">Je gegevens beheren</translation>
 <translation id="3036327949511794916">De deadline voor het terugsturen van deze <ph name="DEVICE_TYPE" /> is verstreken.</translation>
 <translation id="3036546437875325427">Flitser aanzetten</translation>
 <translation id="3037754279345160234">Kan de configuratie voor domeinkoppeling niet parseren. Neem contact op met je beheerder.</translation>
@@ -2113,6 +2119,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
 <translation id="3144647712221361880">Link openen als</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
+<translation id="3150622786624965651">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, gamecontroller.</translation>
 <translation id="3150693969729403281">Veiligheidscheck nu uitvoeren</translation>
 <translation id="3150927491400159470">Geforceerd opnieuw laden</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -2320,6 +2327,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="339178315942519818">Meldingen van je chat-apps bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Documentanalyse van Chrome</translation>
 <translation id="3394850431319394743">Toestemming om ID's te gebruiken om beveiligde content af te spelen</translation>
+<translation id="3395403082745257596">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, onbekend apparaattype.</translation>
 <translation id="3396744558790608201">Klik met de rechtermuisknop en selecteer 'Afbeeldingen zoeken met Google Lens' om te zoeken op basis van een gedeelte van de site voor meer informatie over de visuele content die je ziet als je op internet surft en shopt.</translation>
 <translation id="3396800784455899911">Door op de knop 'Accepteren en doorgaan' te klikken, ga je akkoord met de bovengenoemde verwerking voor deze Google-services.</translation>
 <translation id="339722927132407568">Loopt vast</translation>
@@ -2375,6 +2383,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3440663250074896476">Meer acties voor <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Beeldscherm</translation>
 <translation id="3441663102605358937">Log opnieuw in op <ph name="ACCOUNT" /> om dit account te verifiëren</translation>
+<translation id="3442674350323953953">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog steeds naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt.</translation>
 <translation id="3444641828375597683">Adverteerders en uitgevers kunnen FLoC gebruiken, dat verderop op deze pagina wordt beschreven.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="3445047461171030979">Snelle antwoorden van de Google Assistent</translation>
@@ -2507,6 +2516,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
 <translation id="3571734092741541777">Instellen</translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
+<translation id="3577745545227000795">Verzameling van <ph name="DEVICE_OS" />-hardwaregegevens</translation>
 <translation id="3578594933904494462">De content van dit tabblad wordt gedeeld.</translation>
 <translation id="3581605050355435601">IP-adres automatisch configureren</translation>
 <translation id="3582057310199111521">Ingevoerd op misleidende site en gevonden in gegevenslek</translation>
@@ -2948,6 +2958,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
 <translation id="3994878504415702912">&amp;Zoomen</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
+<translation id="3995963973192100066">Animatie afspelen</translation>
 <translation id="4002329649066944389">Sitespecifieke uitzonderingen beheren</translation>
 <translation id="4002440992267487163">Pincode instellen</translation>
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
@@ -3597,6 +3608,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Je beheerder<ph name="END_LINK" /> heeft de controle op schadelijke software uitgezet</translation>
 <translation id="4730492586225682674">Laatste notitie met stylus op vergrendelscherm</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
 <translation id="4733793249294335256">Locatie</translation>
 <translation id="473546211690256853">Dit account wordt beheerd door <ph name="DOMAIN" />.</translation>
 <translation id="4735803855089279419">Het systeem kan de apparaat-ID's voor dit apparaat niet bepalen.</translation>
@@ -3634,6 +3646,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Naam van mobiel netwerk voor e-simkaart wijzigen</translation>
 <translation id="4780321648949301421">Bewaar pagina als...</translation>
+<translation id="4781443161433589743">Je gebruikt de sterkste beveiliging van Chrome</translation>
 <translation id="4784559565779618838">Als je een specifieke site of een deel van Chrome wilt doorzoeken, typ je deze snelkoppelingen in de adresbalk en druk je op Tab of de spatiebalk.</translation>
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
 <translation id="478708757211772586">Gebruik Volgende om vooruit te gaan op het scherm</translation>
@@ -4159,6 +4172,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5341793073192892252">De volgende cookies zijn geblokkeerd (cookies van derden worden zonder uitzondering geblokkeerd)</translation>
 <translation id="5342091991439452114">Pincode moet minimaal <ph name="MINIMUM" /> cijfers bevatten</translation>
 <translation id="5344036115151554031">Linux herstellen</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (rechts)</translation>
 <translation id="5345916423802287046">App starten als je inlogt</translation>
 <translation id="5350293332385664455">De Google Assistent uitzetten</translation>
 <translation id="535123479159372765">Tekst gekopieerd vanaf ander apparaat</translation>
@@ -4398,6 +4412,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5585898376467608182">Op je apparaat is weinig opslagruimte beschikbaar. Je hebt ten minste <ph name="MINIMUM_SPACE" /> vrije opslagruimte nodig om <ph name="APP_NAME" /> te gebruiken. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="5585912436068747822">Formatteren mislukt</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5589101568518637088">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, toetsenbord.</translation>
 <translation id="558918721941304263">Apps laden...</translation>
 <translation id="5592595402373377407">Nog niet voldoende gegevens beschikbaar.</translation>
 <translation id="5595485650161345191">Adres bewerken</translation>
@@ -4536,6 +4551,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5739235828260127894">Wachten op verificatie. <ph name="LINK_BEGIN" />Meer informatie.<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Zeer groot</translation>
 <translation id="5740328398383587084">Dichtbij delen</translation>
+<translation id="5740709157181662145">Hardware-ondersteuning en stabiliteit van <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Scherm mirroren</translation>
 <translation id="574209121243317957">Toonhoogte</translation>
 <translation id="5746169159649715125">Opslaan als pdf</translation>
@@ -4599,6 +4615,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5817069030404929329">Wachtwoorden op dit apparaat verplaatsen naar je Google-account?</translation>
 <translation id="5817918615728894473">Koppelen</translation>
 <translation id="5821565227679781414">Snelle link maken</translation>
+<translation id="5822095611691580107">Batterijniveau linkeroordopje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="5822865422567397338">Als je een specifieke site of een deel van Chrome wilt doorzoeken, kun je deze snelkoppelingen gebruiken. Als je bijvoorbeeld alleen Gmail wilt doorzoeken, typ je '@gmail' en druk je op Tab of de spatiebalk.</translation>
 <translation id="5825412242012995131">Aan (aanbevolen)</translation>
 <translation id="5826395379250998812">Koppel je <ph name="DEVICE_TYPE" /> aan je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -5055,6 +5072,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6294759976468837022">Snelheid voor automatisch scannen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
+<translation id="6297132509712149399">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefoon.</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
 <translation id="6300177430812514606">Geen toestemming om het sturen of ontvangen van gegevens te voltooien</translation>
@@ -5268,6 +5286,9 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6528179044667508675">Niet storen</translation>
 <translation id="652948702951888897">Chrome-geschiedenis</translation>
 <translation id="6530186581263215931">Deze instellingen worden door je beheerder afgedwongen</translation>
+<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> verzamelt hardwaregegevens over apparaten en deelt deze met Google om te bepalen welke updates moeten worden geleverd. Zo kan de best mogelijke functionaliteit worden geboden. Je kunt desgewenst ook toestaan dat Google deze gegevens gebruikt voor aanvullende doeleinden, zoals support en verbeteringen voor de functionaliteit en service van <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Je kunt inloggen bij dit apparaat en naar het gedeelte CLOUDREADY_HARDWARE_INFO in chrome://system gaan om te zien welke gegevens naar Google worden gestuurd om updates te filteren, evenals andere instanties waarin je ervoor kiest gegevens met Google te delen.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ga naar g.co/xxxxx voor meer informatie over de gegevens die <ph name="DEVICE_OS" /> kan delen met Google en hoe deze worden gebruikt.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">Gevaarlijk bestand behouden</translation>
 <translation id="6532101170117367231">Opslaan in Google Drive</translation>
 <translation id="6532106788206463496">Wijzigingen opslaan</translation>
@@ -5344,6 +5365,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6601612474695404578">Sommige sites gebruiken cookies van derden om hun pagina's te laden. Als een site niet werkt, kun je proberen cookies toe te staan.</translation>
 <translation id="6602937173026466876">Toegang tot je printers</translation>
 <translation id="6602956230557165253">Gebruik de pijl naar links en naar rechts om te navigeren.</translation>
+<translation id="6602998402703530379">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videocamera.</translation>
 <translation id="6605847144724004692">Nog niet beoordeeld door gebruikers.</translation>
 <translation id="6606671997164410857">Zo te zien heb je de Google Assistent al ingesteld op een ander apparaat. Haal nog meer uit de Assistent door Schermcontext aan te zetten op dit apparaat.</translation>
 <translation id="6607831829715835317">Meer hu&amp;lpprogramma's</translation>
@@ -5365,6 +5387,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> bevat gevoelige of gevaarlijke content. Vraag de eigenaar om dit op te lossen.</translation>
 <translation id="6624687053722465643">Cupcake</translation>
 <translation id="6628328486509726751">Geüploade <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="663065535202460123">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, muis.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wil permanente toegang tot een certificaat om zichzelf names jou te verifiëren.</translation>
 <translation id="6635362468090274700">Mensen kunnen pas met je delen als je jezelf zichtbaar maakt.<ph name="BR" /><ph name="BR" />Als je jezelf tijdelijk zichtbaar wilt maken, open je het statusgedeelte en zet je 'Dichtbij aan' aan.</translation>
 <translation id="6635674640674343739">Netwerkverbinding kan niet tot stand worden gebracht. Check je netwerkverbinding en probeer het opnieuw.</translation>
@@ -5693,6 +5716,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6973611239564315524">Er is een upgrade beschikbaar voor Debian 10 (Buster)</translation>
 <translation id="6974609594866392343">Offline demomodus</translation>
 <translation id="697508444536771064">Linux afsluiten</translation>
+<translation id="6977739184256564679">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tablet.</translation>
 <translation id="6978121630131642226">Zoekmachines</translation>
 <translation id="6979044105893951891">Beheerde gastsessies starten en beëindigen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -5712,6 +5736,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6991665348624301627">Een bestemming selecteren</translation>
 <translation id="6992554835374084304">Zet verbeterde spellingcontrole aan</translation>
 <translation id="6993000214273684335">Tabblad verwijderd uit naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993889405941892667">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, computer.</translation>
 <translation id="6994069045767983299">Omgekeerde kleuren</translation>
 <translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Activiteitenlogboek</translation>
@@ -6284,6 +6309,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7602173054665172958">Afdrukbeheer</translation>
 <translation id="7603785829538808504">De hieronder vermelde sites volgen een aangepaste instelling</translation>
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
+<translation id="7606560865764296217">Animatie onderbreken</translation>
 <translation id="7606992457248886637">Certificeringsinstanties</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7608810328871051088">Android-voorkeuren</translation>
@@ -7092,6 +7118,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere toegestaan</translation>
 <translation id="8413385045638830869">Eerst vragen (aanbevolen)</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8417548266957501132">Wachtwoord van ouder</translation>
 <translation id="8418445294933751433">Tonen al&amp;s tabblad</translation>
 <translation id="8419098111404128271">Zoekresultaten voor '<ph name="SEARCH_TEXT" />'</translation>
@@ -7435,6 +7462,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8775653927968399786">{0,plural, =1{Je <ph name="DEVICE_TYPE" /> wordt over # seconde automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Je <ph name="DEVICE_TYPE" /> wordt over # seconden automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
+<translation id="8777259617149177596">Batterijniveau case: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8777628254805677039">root-wachtwoord</translation>
 <translation id="8778328560035799409">Je huidige toegewezen schakelaars worden gewist</translation>
 <translation id="8780123805589053431">Afbeeldingsbeschrijvingen ophalen van Google</translation>
@@ -7793,6 +7821,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9128335130883257666">Instellingenpagina openen voor <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Verbinding maken met netwerk</translation>
 <translation id="9130015405878219958">Ongeldige modus opgegeven.</translation>
+<translation id="9130215884425927484">Apparaat <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, audioapparaat.</translation>
 <translation id="9131487537093447019">Berichten verzenden naar en ontvangen van Bluetooth-apparaten.</translation>
 <translation id="9134066738478820307">Sites kunnen ID's gebruiken om beveiligde content af te spelen</translation>
 <translation id="913411432238655354">Apps herstellen bij opstarten</translation>
@@ -7836,6 +7865,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="916964310188958970">Waarom deze suggestie?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Huidige zichtbaarheidsinstelling is 'Alle contacten'</translation>
+<translation id="9170199455952690202">Batterijniveau rechteroordopje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
 <translation id="9170884462774788842">Een ander programma op je computer heeft een thema toegevoegd dat de manier waarop Chrome werkt kan wijzigen.</translation>
 <translation id="917350715406657904">Je hebt de tijdslimiet bereikt die je ouder heeft ingesteld voor <ph name="APP_NAME" />. Je kunt de app morgen <ph name="TIME_LIMIT" /> gebruiken.</translation>

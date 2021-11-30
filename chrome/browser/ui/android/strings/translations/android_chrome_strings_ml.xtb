@@ -813,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# മണിക്കൂര്‍ മുമ്പ്}other{# മണിക്കൂര്‍ മുമ്പ്}}</translation>
 <translation id="5810288467834065221">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
 <translation id="5810864297166300463">വെബ് സഹായം</translation>
+<translation id="5813552293717797987">ഈ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="PARENT_NAME_1" />, <ph name="PARENT_NAME_2" /> എന്നിവരാണ്.</translation>
 <translation id="5814131985548525293">ആരംഭിക്കാൻ ഇവിടെ ടൈപ്പ് ചെയ്യുക അല്ലെങ്കിൽ വോയ്‌സ് ഐക്കണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5814749351757353073">നിങ്ങളുടെ പ്രിയപ്പെട്ട സൈറ്റുകളെ കുറിച്ച് അറി‌ഞ്ഞുകൊണ്ടേ ഇരിക്കൂ</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
@@ -1077,6 +1078,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" />-ലേക്ക് <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> മാറ്റണോ?</translation>
+<translation id="7286703216224610554">പ്രതികരണം മാത്രം പങ്കിടുക</translation>
 <translation id="7290209999329137901">പേര് മാറ്റൽ ലഭ്യമല്ല</translation>
 <translation id="7291910923717764901">ഈ പേജിനായി ചിത്രത്തിന്റെ വിവരണങ്ങൾ ചേർത്തു</translation>
 <translation id="7293429513719260019">ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
@@ -1157,6 +1159,7 @@
 <translation id="7646772052135772216">പാസ്‍വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="7655900163790317559">Bluetooth ഓണാക്കുന്നു…</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
+<translation id="7663313374500954251">ഈ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="PARENT_NAME" /> ആണ്.</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="766587987807204883">ഇവിടെ ദൃശ്യമാകുന്ന ലേഖനങ്ങൾ നിങ്ങൾ ഓഫ്‌ലൈൻ ആകുന്ന സമയത്ത് പോലും വായിക്കാം</translation>
 <translation id="7682724950699840886">ഈ നുറുങ്ങുകൾ പരീക്ഷിക്കൂ: നിങ്ങളുടെ ഉപകരണത്തിൽ ആവശ്യമായ ഇടം ഉണ്ടെന്ന് ഉറപ്പാക്കി, വീണ്ടും എക്‌സ്‌പോർട്ട് ചെയ്യാൻ ശ്രമിക്കുക.</translation>

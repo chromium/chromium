@@ -248,6 +248,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2653019840645008922">Tag et screenshot af et vindue</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2658778018866295321">Klik og træk</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> og <ph name="UNAVAILABLE_APPS_TWO" /> er ikke på denne enhed.</translation>
 <translation id="2678852583403169292">Tekstoplæsningsmenu</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
 <translation id="2700493154570097719">Angiv dit tastatur</translation>
@@ -341,7 +342,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3307642347673023554">Skiftede til computertilstand</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan stadig logge ind senere.</translation>
 <translation id="3321628682574733415">Forkert forældrekode</translation>
-<translation id="3325831752328162756">{0,plural, =0{Skift til en tidligere version af enheden nu}=1{Skift til en tidligere version af enheden inden for 1 sekund}one{Skift til en tidligere version af enheden inden for # sekund}other{Skift til en tidligere version af enheden inden for # sekunder}}</translation>
 <translation id="3341303451326249809">Der blev taget et screenshot</translation>
 <translation id="334252345105450327">Tag et screenshot</translation>
 <translation id="3351879221545518001">Du caster i øjeblikket skærmen.</translation>
@@ -420,6 +420,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="3713734891607377840">Åbn efter download</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> mere er ikke på denne enhed.</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3744282433224562605">Angiv din adgangskode for at låse din Chromebook op</translation>
 <translation id="3771549900096082774">Tilstanden Høj kontrast</translation>
@@ -605,6 +606,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4925542575807923399">Kontoadministratoren kræver, at denne konto er den første konto, der logges ind på, i en session med samlet login fra flere konti.</translation>
 <translation id="4945196315133970626">Deaktiver notifikationer</translation>
 <translation id="4946376291507881335">Tag billeder</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> er ikke på denne enhed.</translation>
 <translation id="495046168593986294">Rul op</translation>
 <translation id="4952936045814352993">Funktionen "Find telefon" er ikke tilgængelig, når alarmlyde er deaktiveret</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kræver, at du skifter tilbage til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>

@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2658778018866295321">ക്ലിക്ക് ചെയ്‌ത് വലിച്ചിടുക</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവ ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="2678852583403169292">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക മെനു</translation>
 <translation id="2689613560355655046">ഡെസ്ക് 8</translation>
 <translation id="2700493154570097719">നിങ്ങളുടെ കീബോഡ് സജ്ജീകരിക്കുക</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">ലാപ്ടോപ്പ് മോഡിലേക്ക് മാറി</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിന് പിന്നീട്, തുടർന്നും സൈൻ ഇൻ ചെയ്യാനാവും.</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
-<translation id="3325831752328162756">{0,plural, =0{മുമ്പത്തെ പതിപ്പിലേക്ക് ഇപ്പോൾ ഉപകരണം മാറ്റുക}=1{ഒരു സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}other{# സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}}</translation>
 <translation id="3341303451326249809">സ്‌ക്രീൻഷോട്ട് ക്യാപ്‌ചർ ചെയ്തു</translation>
 <translation id="334252345105450327">സ്‌ക്രീൻഷോട്ട് എടുക്കൂ</translation>
 <translation id="3351879221545518001">നിലവിൽ നിങ്ങൾ സ്ക്രീൻ കാസ്‌റ്റ് ചെയ്യുന്നു.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">മുമ്പ് കണക്റ്റ് ചെയ്തവ</translation>
 <translation id="371370241367527062">മുൻവശത്തുള്ള മൈക്രോഫോൺ</translation>
 <translation id="3713734891607377840">പൂർത്തിയാകുമ്പോൾ തുറക്കുക</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവയും മറ്റ് <ph name="UNAVAILABLE_APPS_COUNT" /> എണ്ണവും ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="3742055079367172538">സ്‌ക്രീൻഷോട്ട് എടുത്തു</translation>
 <translation id="3744282433224562605">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="3771549900096082774">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="4945196315133970626">അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="4946376291507881335">ക്യാപ്‌ചർ ചെയ്യുക</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="4952936045814352993">അലാറം ശബ്‌ദങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നതിനാൽ 'ഫോൺ കണ്ടെത്തൽ' ലഭ്യമല്ല</translation>
 <translation id="4960324571663582548">മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="DEVICE_TYPE" /> പുനഃസ്ഥാപിക്കാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>

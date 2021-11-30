@@ -91,6 +91,7 @@
 <translation id="2224337661447660594">Không có Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Trạng thái kích hoạt</translation>
+<translation id="2287186687001756809">Không có hình ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Dùng cặp khóa hiện tại</translation>
 <translation id="2323506179655536734">ĐÃ BỎ QUA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -190,6 +191,7 @@
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4111761024568264522">Bàn di chuột USB</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
+<translation id="4140251671072434548">Thực hiện mở khoá máy chủ RMA</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
@@ -487,6 +489,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Nhập mã mở khoá:</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>

@@ -340,7 +340,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3307642347673023554">Đã chuyển sang chế độ máy tính xách tay</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
-<translation id="3325831752328162756">{0,plural, =0{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
 <translation id="334252345105450327">Chụp ảnh màn hình</translation>
 <translation id="3351879221545518001">Bạn hiện đang truyền màn hình.</translation>
@@ -1014,6 +1013,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7868900307798234037">Mở khóa bằng vân tay</translation>
 <translation id="7872786842639831132">Tắt</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="7886169021410746335">Điều chỉnh các tùy chọn cài đặt quyền riêng tư</translation>
 <translation id="7886277072580235377">Phiên hoạt động trên Internet của bạn sẽ bị xóa khi bạn đăng xuất. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Gửi email</translation>

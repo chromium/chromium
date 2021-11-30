@@ -342,7 +342,6 @@
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
-<translation id="3325831752328162756">{0,plural, =0{立即將裝置復原為先前的版本}=1{在 1 秒內將裝置復原為先前的版本}other{在 # 秒內將裝置復原為先前的版本}}</translation>
 <translation id="3341303451326249809">已擷取螢幕截圖</translation>
 <translation id="334252345105450327">擷取螢幕畫面</translation>
 <translation id="3351879221545518001">你目前正在投放畫面。</translation>
@@ -1018,6 +1017,7 @@
 <translation id="7868900307798234037">指紋辨識成功，正在解鎖</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
+<translation id="7877557217297072640">{0,plural, =0{立即將裝置復原為較舊的版本}=1{在 1 秒內將裝置復原為較舊的版本}other{在 # 秒內將裝置復原為較舊的版本}}</translation>
 <translation id="7886169021410746335">調整隱私權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除你的網際網路工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電子郵件</translation>

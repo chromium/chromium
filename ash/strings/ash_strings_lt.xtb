@@ -248,6 +248,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2653019840645008922">Lango užfiksavimas</translation>
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2658778018866295321">Spustelėti ir vilkti</translation>
+<translation id="2665788051462227163">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“ ir „<ph name="UNAVAILABLE_APPS_TWO" />“.</translation>
 <translation id="2678852583403169292">Teksto ištarimo meniu</translation>
 <translation id="2689613560355655046">8 darbalaukis</translation>
 <translation id="2700493154570097719">Klaviatūros nustatymas</translation>
@@ -341,7 +342,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3307642347673023554">Perjungta į skreitinio kompiuterio režimą</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vis tiek galės vėliau prisijungti.</translation>
 <translation id="3321628682574733415">Netinkamas tėvų kodas</translation>
-<translation id="3325831752328162756">{0,plural, =0{Grąžinkite ankstesnę įrenginio versiją dabar}=1{Grąžinkite ankstesnę įrenginio versiją per vieną sekundę}one{Grąžinkite ankstesnę įrenginio versiją per # sekundę}few{Grąžinkite ankstesnę įrenginio versiją per # sekundes}many{Grąžinkite ankstesnę įrenginio versiją per # sekundės}other{Grąžinkite ankstesnę įrenginio versiją per # sekundžių}}</translation>
 <translation id="3341303451326249809">Ekrano kopija užfiksuota</translation>
 <translation id="334252345105450327">Sukurk ekrano kopiją</translation>
 <translation id="3351879221545518001">Šiuo metu perduodate ekrano vaizdą.</translation>
@@ -420,6 +420,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
+<translation id="3726171378575546917">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“, „<ph name="UNAVAILABLE_APPS_TWO" />“ ir dar <ph name="UNAVAILABLE_APPS_COUNT" /> program.</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
 <translation id="3744282433224562605">Kad atrakintumėte „Chromebook“, įveskite slaptažodį</translation>
 <translation id="3771549900096082774">Didelio kontrasto režimas</translation>
@@ -605,6 +606,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4925542575807923399">Šios paskyros administratorius reikalauja, kad kelių paskyrų sesijoje pirmiausia būtų prisijungta naudojant šią paskyrą.</translation>
 <translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
+<translation id="4947229553198882488">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS" />“.</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> reikalauja grąžinti ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>

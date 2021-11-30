@@ -248,6 +248,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2653019840645008922">Pencere ekran görüntüsü alma</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2658778018866295321">Tıkla ve sürükle</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> ve <ph name="UNAVAILABLE_APPS_TWO" /> bu cihazda yok.</translation>
 <translation id="2678852583403169292">Seç ve Dinle menüsü</translation>
 <translation id="2689613560355655046">Masa 8</translation>
 <translation id="2700493154570097719">Klavyenizi ayarlayın</translation>
@@ -341,7 +342,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
-<translation id="3325831752328162756">{0,plural, =0{Cihazı hemen önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme geçirin}other{Cihazı # saniye içinde önceki sürüme geçirin}}</translation>
 <translation id="3341303451326249809">Ekran görüntüsü alındı</translation>
 <translation id="334252345105450327">Ekran görüntüsü al</translation>
 <translation id="3351879221545518001">Şu anda ekranı yayınlıyorsunuz.</translation>
@@ -420,6 +420,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandığında aç</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ve <ph name="UNAVAILABLE_APPS_COUNT" /> uygulama daha bu cihazda yok.</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
 <translation id="3744282433224562605">Chromebook'unuzun kilidini açmak için şifreyi girin</translation>
 <translation id="3771549900096082774">Yüksek Kontrast Modu</translation>
@@ -605,6 +606,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> bu cihazda yok.</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
 <translation id="4952936045814352993">Alarm sesleri devre dışıyken telefonu bulma özelliği kullanılamaz</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekmenizi zorunlu tutuyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>

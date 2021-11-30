@@ -248,6 +248,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2653019840645008922">Vindusopptak</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> og <ph name="UNAVAILABLE_APPS_TWO" /> er ikke på denne enheten.</translation>
 <translation id="2678852583403169292">Tekstopplesing-menyen</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
@@ -341,7 +342,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3307642347673023554">Byttet til laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
-<translation id="3325831752328162756">{0,plural, =0{Nedgrader enheten til en tidligere versjon nå}=1{Nedgrader enheten til en tidligere versjon innen 1 sekund}other{Nedgrader enheten til en tidligere versjon innen # sekunder}}</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
 <translation id="3351879221545518001">Du caster for øyeblikket skjermen.</translation>
@@ -420,6 +420,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> til er ikke på denne enheten.</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
 <translation id="3744282433224562605">For å låse opp Chromebooken, skriv inn passordet</translation>
 <translation id="3771549900096082774">Høykontrastmodus</translation>
@@ -605,6 +606,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> er ikke på denne enheten.</translation>
 <translation id="495046168593986294">Rull opp</translation>
 <translation id="4952936045814352993">Finn telefonen er ikke tilgjengelig når alarmlyder er slått av</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krever rollback av <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>

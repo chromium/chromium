@@ -573,9 +573,6 @@
 <translation id="1686952487081322272">停用快速解答功能</translation>
 <translation id="1690383938831887552">禁止載入採用 Signed HTTP Exchange 技術的內容</translation>
 <translation id="169467210981344373">停用全域範圍的 HTTP 驗證快取</translation>
-<translation id="1697682816954321887">如果將這項政策設為 Enabled 或不設定，已註冊的裝置會回報裝置 TPM 安全性狀態。
-
-      如果將這項政策設為 Disabled，表示已註冊的裝置不會記錄或回報 TPM 安全性狀態。</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 列印光柵化 PDF 時的列印圖片解析度。
 
       使用「以圖片形式列印」選項列印 PDF 時，指定與裝置的印表機設定或 PDF 預設值不同的列印解析度可能更合適。高解析度會使處理與列印時間明顯增加，低解析度可能導致輸出影像品質不佳。
@@ -868,9 +865,6 @@
       如果將這項政策設為停用或不設定，將導致 API 呼叫失敗，並收到錯誤代碼。</translation>
 <translation id="2036522553891755455">如果將這項政策設為啟用，共用檔案搜尋功能 (在 <ph name="PRODUCT_NAME" />上為「網路檔案共用」功能) 會使用 <ph name="NETBIOS_PROTOCOL" /> 搜尋網路上的共用檔案。如果設為停用，共用檔案搜尋功能就不會使用這項通訊協定搜尋共用檔案。
       如果不設定這項政策，系統預設會為受管理的使用者停用此通訊協定，其他使用者則會設為啟用。</translation>
-<translation id="2037214548071298156">如果將這項政策設為啟用或不設定，已註冊的裝置會回報 CPU/RAM 使用量等硬體統計資料。
-
-      如果將這項政策設為停用，已註冊的裝置不會回報硬體統計資料。</translation>
 <translation id="2039801473506609891">在非預設連接埠停用 HTTP/0.9 支援功能</translation>
 <translation id="2040479044912658454">列印光柵化模式</translation>
 <translation id="2042513383871755994">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案或目錄。
@@ -1587,10 +1581,6 @@
 <translation id="284288632677954003">XML 檔案的網址，其中包含一律不觸發瀏覽器切換的網址。</translation>
 <translation id="2846689894646472396">以毫秒為單位的網路事件檢查率。</translation>
 <translation id="2853649500575897584">不要封鎖瀏覽器程序中的舊版擴充點</translation>
-<translation id="2854607717796010700">回報有關裝置記憶體的資訊。
-
-      如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
-      如果設為 True，系統會回報裝置記憶體的資訊。</translation>
 <translation id="285480231336205327">啟用高反差模式</translation>
 <translation id="285627849510728211">設定日間進階充電模式配置</translation>
 <translation id="2856674246949497058">如果作業系統比目標版本還新，則復原並維持在目標版本，並在作業過程中執行 Powerwash。</translation>
@@ -3379,10 +3369,6 @@
 <translation id="5105313908130842249">在電池供電環境下執行時的螢幕鎖定延遲時間</translation>
 <translation id="5108031557082757679">已停用企業裝置印表機</translation>
 <translation id="5109383437323376357">指定變化版本的可用性</translation>
-<translation id="5115168755602871392">回報裝置 CPU 的資訊。
-
-      如果將這項政策設為 False 或不予設定，系統將不會回報這項資訊。
-      如果設為 True，則系統會回報每個 CPU 的型號名稱、架構和最高時脈速度。</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
 <translation id="5130213897914754028">禁止網站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
@@ -3580,9 +3566,6 @@
       如要設定這項政策，則可使用的設定值包括：「tls1.2」或「tls1.3」。設定後，<ph name="PRODUCT_NAME" /> 就不會使用高於指定版本的 SSL/TLS 版本。系統會忽略無法辨識的值。</translation>
 <translation id="5330684698007383292">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理列出的內容類型</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 雲端政策會覆寫平台政策。</translation>
-<translation id="5340105431123046323">如果將這項政策設為啟用或不設定，已註冊的裝置會回報網路介面清單，當中包含網路介面類型和硬體位址資料。
-
-      如果將這項政策設為停用，已註冊的裝置不會回報網路介面清單。</translation>
 <translation id="5346587320074666194">禁止在這些網站上存取感應器</translation>
 <translation id="5362531528507578966">覆寫預設的背景圖形列印模式。</translation>
 <translation id="5365476955714838841">替代瀏覽器的指令行參數。</translation>
@@ -4944,9 +4927,6 @@
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">啟用長邊雙面列印</translation>
-<translation id="6928305045865155732">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
-
-      如果將這項政策設為停用，那麼已註冊的裝置就不會記錄或回報音訊狀態。</translation>
 <translation id="6929746927224321095">停用自動填入功能</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
@@ -5861,9 +5841,6 @@
 
       <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 代表可觸發模式比對的最低資料量 (以位元組為單位)。也就是說，如果複製的資料大小小於這個欄位中指定的值，系統就會允許已封鎖的網址寫入剪貼簿。如果不設定這個欄位，預設值為 100 個位元組。
       </translation>
-<translation id="8036964468882248070">如果將這項政策設為啟用，已註冊的裝置會回報儲存裝置的硬體統計資料和 ID。
-
-      如果將這項政策設為停用或不設定，已註冊的裝置不會回報儲存裝置統計資料。</translation>
 <translation id="8044493735196713914">回報裝置啟動模式</translation>
 <translation id="80453040817068401">將 <ph name="LACROS_NAME" /> 設為可用瀏覽器</translation>
 <translation id="804619600634661088">允許使用遠端偵錯功能</translation>

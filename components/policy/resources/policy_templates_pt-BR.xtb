@@ -571,9 +571,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1686952487081322272">Desativar as Respostas rápidas</translation>
 <translation id="1690383938831887552">Impedir o carregamento de Signed HTTP Exchanges</translation>
 <translation id="169467210981344373">Desativar cache de autenticação HTTP com escopo global</translation>
-<translation id="1697682816954321887">Se a política for ativada ou deixada sem definição, os dispositivos registrados informarão o status de segurança TPM deles.
-
-      Se a política for desativada, os dispositivos registrados não gravarão ou informarão o status de segurança TPM.</translation>
 <translation id="1698810555265314018">Controla a resolução da imagem quando o <ph name="PRODUCT_NAME" /> imprime PDFs com rasterização.
 
       Ao imprimir um PDF com a opção "Imprimir como imagem", pode ser útil especificar uma resolução diferente da configuração do dispositivo ou do padrão do PDF.  Uma resolução alta pode aumentar significativamente o tempo de processamento e impressão, enquanto uma baixa pode levar à redução da qualidade da imagem.
@@ -879,9 +876,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2036522553891755455">Se a política for definida como "Ativada", a detecção de compartilhamento de arquivos de rede do <ph name="PRODUCT_NAME" /> usará o <ph name="NETBIOS_PROTOCOL" /> para detectar compartilhamentos na rede. Se a política for definida como "Desativada", a detecção de compartilhamentos não usará esse protocolo.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
-<translation id="2037214548071298156">Se a política for definida como "Ativada" ou não for definida, as estatísticas de hardware, como uso da CPU/RAM, serão informadas pelos dispositivos registrados.
-
-      Se a política for definida como "Desativada", as estatísticas de hardware não serão informadas pelos dispositivos registrados.</translation>
 <translation id="2039801473506609891">Desativar suporte a HTTP/0.9 em portas não padrão</translation>
 <translation id="2040479044912658454">Modo de varredura de impressão</translation>
 <translation id="2042513383871755994">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
@@ -1603,10 +1597,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="284288632677954003">URL de um arquivo XML contendo URLs que nunca devem acionar uma troca de navegador.</translation>
 <translation id="2846689894646472396">Frequência de verificação de eventos de rede em milissegundos.</translation>
 <translation id="2853649500575897584">Não bloquear pontos de extensão legados no processo do navegador</translation>
-<translation id="2854607717796010700">Envia informações sobre a memória de um dispositivo.
-
-      Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
-      Se ela for definida como verdadeira, as informações sobre a memória do dispositivo serão enviadas.</translation>
 <translation id="285480231336205327">Ativar modo de alto contraste</translation>
 <translation id="285627849510728211">Definir a configuração do dia para o modo avançado de carregamento de bateria</translation>
 <translation id="2856674246949497058">Faça a reversão e permaneça na versão de destino se a versão do SO for mais recente que a de destino. Execute um Powerwash durante o processo.</translation>
@@ -2785,6 +2775,9 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Observação: use a política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> no Android.</translation>
 <translation id="4261820385751181068">Localidade da tela de login do dispositivo</translation>
+<translation id="4261964161337162399">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
+
+      Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
 <translation id="4266547484666068234">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para ver o formato das entradas dessa lista. Por exemplo, se a <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://www.chromium.org/administrators/url-blocklist-filter-format. O filtro mais específico determina se um URL será bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
       Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
@@ -3405,10 +3398,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="5105313908130842249">Intervalo de bloqueio da tela no funcionamento com energia da bateria</translation>
 <translation id="5108031557082757679">Impressoras empresariais desativadas</translation>
 <translation id="5109383437323376357">Determinar a disponibilidade de variações</translation>
-<translation id="5115168755602871392">Enviar informações para a CPU de um dispositivo.
-
-      Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
-      Se for definida como verdadeira, o nome do modelo da CPU, a arquitetura e a velocidade máxima do clock serão informadas para cada CPU.</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
 <translation id="5130213897914754028">Evitar que os sites usem o SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Definir o tipo de lupa padrão ativada na tela de login</translation>
@@ -3606,9 +3595,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Caso contrário, ela poderá ser definida para um dos seguintes valores: "tls1.2" ou "tls1.3". Quando definida, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS posteriores à especificada. Um valor não reconhecido será ignorado.</translation>
 <translation id="5330684698007383292">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo a seguir</translation>
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
-<translation id="5340105431123046323">Se a política for definida como "Ativada" ou não for definida, a lista de interfaces de rede com seus tipos e endereços de hardware será informada pelos dispositivos registrados.
-
-      Se a política for definida como "Desativada", a interface de rede não será informada pelos dispositivos registrados.</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
 <translation id="5362531528507578966">Modifica o modo de impressão de gráficos de segundo plano padrão.</translation>
 <translation id="5365476955714838841">Parâmetros de linha de comando para o navegador alternativo.</translation>
@@ -5006,9 +4992,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Os idiomas compatíveis no momento são: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Ativar impressão duplex de borda longa</translation>
-<translation id="6928305045865155732">Se a política for ativada ou deixada sem definição, os dispositivos registrados informarão o volume do áudio.
-
-      Se a política for desativada, os dispositivos registrados não gravarão nem informarão o status do áudio.</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
@@ -5930,9 +5913,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 
       O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a cópia para a área de transferência de uma URL bloqueada é autorizada se o tamanho dos dados copiados for menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.
       </translation>
-<translation id="8036964468882248070">Se a política for definida como "Ativada", estatísticas de hardware e identificadores de dispositivos de armazenamento serão informados pelos dispositivos registrados.
-
-      Se a política for definida como "Desativada" ou não for definida, as estatísticas de armazenamento dos dispositivos registrados não serão informadas.</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir o uso da depuração remota</translation>
@@ -6785,6 +6765,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Esta política só afeta usuários que fizeram a autenticação com SAML.
 
       O valor da política precisa ser especificado em segundos.</translation>
+<translation id="9015578113567730893">Frequência de coleta da telemetria de áudio em milissegundos.</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.
 
           Este recurso é responsável por destacar o objeto que está em foco no teclado.

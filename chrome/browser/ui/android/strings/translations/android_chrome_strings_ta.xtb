@@ -611,6 +611,7 @@
 <translation id="4696983787092045100">எனது சாதனங்களுக்கு உரைச் செய்தியை அனுப்பு</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் ஃபைல்கள் </translation>
 <translation id="4714588616299687897">தரவில் 60% வரை சேமியுங்கள்</translation>
+<translation id="471759387343966120">தொடர்வதன் மூலம் <ph name="BEGIN_TOS_LINK" />சேவை விதிமுறைகளையும்<ph name="END_TOS_LINK" /> <ph name="BEGIN_PRIVACY_LINK" />தனியுரிமைக்\u00A0கொள்கையையும்<ph name="END_PRIVACY_LINK" /> ஏற்கிறீர்கள்.\nஆப்ஸை மேம்படுத்த உதவும் வகையில் உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_UMA_LINK" />நிர்வகியுங்கள்<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />இல் திற</translation>
 <translation id="4720982865791209136">Chromeஐ மேம்படுத்த உதவவும். <ph name="BEGIN_LINK" />கருத்துக்கணிப்பில் பங்கேற்கவும்<ph name="END_LINK" /></translation>
@@ -1043,6 +1044,7 @@
 <translation id="7106762743910369165">உங்கள் உலாவியை உங்கள் நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="7121362699166175603">முகவரிப் பட்டியில் வரலாற்றையும் தானே நிரப்புதலையும் அழிக்கும். உங்கள் Google கணக்கு, <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> என்ற இணைப்பில் உலாவல் வரலாறு தொடர்பான பிற தகவல்களைக் கொண்டிருக்கக்கூடும்.</translation>
 <translation id="7138678301420049075">மற்றவை</translation>
+<translation id="7143462160780459030">ஸ்கிரீன்ஷாட் எடுக்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="7146622961999026732">இந்தத் தளங்களும் ஆப்ஸும் உங்களுக்கு முக்கியமானவை எனக் கருதுகிறோம்:</translation>
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
 <translation id="7155317020660659215">QR குறியீட்டை ஸ்கேன் செய்ய, உங்கள் கேமராவை Chrome பயன்படுத்தும் வகையில் அமைப்புகளை மாற்றவும்</translation>
@@ -1223,6 +1225,7 @@
 <translation id="808747664143081553">சாதனத்துடன் இணைக்கப்பட்டது</translation>
 <translation id="8088176524274673045">அருகிலுள்ளவர்களுடன் பகிர இந்த QR குறியீட்டை அவர்கள் ஸ்கேன் செய்ய வேண்டும்</translation>
 <translation id="8103578431304235997">மறைநிலைத் தாவல்</translation>
+<translation id="8105613260829665809">தொடர்வதன் மூலம் <ph name="BEGIN_TOS_LINK" />சேவை விதிமுறைகளை<ph name="END_TOS_LINK" /> ஏற்கிறீர்கள்.\nஆப்ஸை மேம்படுத்த உதவும் வகையில் உபயோகத் தரவையும் சிதைவுத் தரவையும் Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_UMA_LINK" />நிர்வகியுங்கள்<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">உங்கள் அனைத்துச் சாதனங்களிலும் புத்தகக்குறிகளைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="8110024788458304985">Chromeமின் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுதல்</translation>
@@ -1260,6 +1263,7 @@
 <translation id="831192587911042850">நீங்கள் பின்தொடரும் இணையதளங்களின் பட்டியலில் இதையும் சேர்க்கும்.</translation>
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>
 <translation id="8349013245300336738">பயன்படுத்திய தரவு அளவின்படி வரிசைப்படுத்தும்</translation>
+<translation id="8352996530981010042">ரியாக்ஷன்களைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="8354977102499939946">குரல் மூலம் உடனடியாகத் தேடலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் மீட்டெடுக்கப்பட்டன</translation>
 <translation id="8364299278605033898">பிரபல இணையதளங்களைப் பாருங்கள்</translation>

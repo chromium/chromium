@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Λήψη παραθύρου</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2658778018866295321">Κάντε κλικ και σύρετε</translation>
+<translation id="2665788051462227163">Οι εφαρμογές <ph name="UNAVAILABLE_APPS_ONE" /> και <ph name="UNAVAILABLE_APPS_TWO" /> δεν βρίσκονται σε αυτήν τη συσκευή.</translation>
 <translation id="2678852583403169292">Μενού λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
 <translation id="2689613560355655046">Γραφείο 8</translation>
 <translation id="2700493154570097719">Ρύθμιση του πληκτρολογίου σας</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Έγινε εναλλαγή σε λειτουργία φορητού υπολογιστή.</translation>
 <translation id="3308453408813785101">Ο χρήστης <ph name="USER_EMAIL_ADDRESS" /> μπορεί να συνδεθεί αργότερα.</translation>
 <translation id="3321628682574733415">Λανθασμένος κωδικός γονέα</translation>
-<translation id="3325831752328162756">{0,plural, =0{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη τώρα}=1{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός 1 δευτερολέπτου}other{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός # δευτερολέπτων}}</translation>
 <translation id="3341303451326249809">Έγινε λήψη του στιγμιότυπου οθόνης.</translation>
 <translation id="334252345105450327">Λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3351879221545518001">Αυτήν τη στιγμή πραγματοποιείτε μετάδοση της οθόνης.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
 <translation id="3713734891607377840">Άνοιγμα όταν ολοκληρωθεί</translation>
+<translation id="3726171378575546917">Οι εφαρμογές <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> και <ph name="UNAVAILABLE_APPS_COUNT" /> ακόμη εφαρμογές δεν βρίσκονται σε αυτήν τη συσκευή.</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
 <translation id="3744282433224562605">Για να ξεκλειδώσετε το Chromebook, εισαγάγετε κωδικό πρόσβασης</translation>
 <translation id="3771549900096082774">Λειτουργία υψηλής αντίθεσης</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">Ο διαχειριστής αυτού του λογαριασμού απαιτεί ο συγκεκριμένος λογαριασμός να είναι ο πρώτος λογαριασμός που συνδέεται σε μια περίοδο σύνδεσης πολλαπλών συνδέσεων.</translation>
 <translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
+<translation id="4947229553198882488">Η εφαρμογή <ph name="UNAVAILABLE_APPS" /> δεν βρίσκεται σε αυτήν τη συσκευή.</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
 <translation id="4952936045814352993">Ο Εντοπισμός τηλεφώνου δεν είναι διαθέσιμος όταν οι ήχοι ξυπνητηριού είναι απενεργοποιημένοι</translation>
 <translation id="4960324571663582548">Ο τομέας <ph name="MANAGER" /> απαιτεί την επαναφορά της συσκευής <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>

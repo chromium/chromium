@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> と <ph name="UNAVAILABLE_APPS_TWO" /> はこのデバイスにありません。</translation>
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
 <translation id="2689613560355655046">デスク 8</translation>
 <translation id="2700493154570097719">キーボードを設定</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
-<translation id="3325831752328162756">{0,plural, =0{今すぐデバイスを以前のバージョンに戻してください}=1{1 秒以内にデバイスを以前のバージョンに戻してください}other{# 秒以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="3351879221545518001">現在、画面をキャストしています。</translation>
@@ -411,6 +411,7 @@
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3744282433224562605">Chromebook のロックを解除するには、パスワードを入力します</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
@@ -596,6 +597,7 @@
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> はこのデバイスにありません。</translation>
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4952936045814352993">アラーム音が無効になっている場合、スマートフォンを探す機能は使用できません</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックするよう求めています。デバイスはリセットされ、データはすべて削除されます。</translation>

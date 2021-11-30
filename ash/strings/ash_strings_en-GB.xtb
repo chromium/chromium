@@ -342,7 +342,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
-<translation id="3325831752328162756">{0,plural, =0{Change device to previous version within now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">You are currently casting the screen.</translation>

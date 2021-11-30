@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Зйомка вікна</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
+<translation id="2665788051462227163">На цьому пристрої не встановлено <ph name="UNAVAILABLE_APPS_ONE" /> і <ph name="UNAVAILABLE_APPS_TWO" />.</translation>
 <translation id="2678852583403169292">Меню функції "Читання з екрана"</translation>
 <translation id="2689613560355655046">Робочий стіл 8</translation>
 <translation id="2700493154570097719">Вибрати клавіатуру</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Увімкнено режим ноутбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> усе одно зможе ввійти в обліковий запис.</translation>
 <translation id="3321628682574733415">Неправильний код доступу батьків</translation>
-<translation id="3325831752328162756">{0,plural, =0{Поверніться до попередньої версії на пристрої негайно}=1{Поверніться до попередньої версії на пристрої протягом 1 секунди}one{Поверніться до попередньої версії на пристрої протягом # секунди}few{Поверніться до попередньої версії на пристрої протягом # секунд}many{Поверніться до попередньої версії на пристрої протягом # секунд}other{Поверніться до попередньої версії на пристрої протягом # секунди}}</translation>
 <translation id="3341303451326249809">Знімок екрана зроблено</translation>
 <translation id="334252345105450327">Зробити знімок екрана</translation>
 <translation id="3351879221545518001">Зараз ви транслюєте екран.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Підключені раніше</translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
+<translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
 <translation id="3744282433224562605">Щоб розблокувати Chromebook, введіть пароль</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
+<translation id="4947229553198882488">На цьому пристрої не встановлено <ph name="UNAVAILABLE_APPS" />.</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>
 <translation id="4952936045814352993">Функція "Пошук телефона" не доступна, оскільки ви вимкнули сигнали сповіщень</translation>
 <translation id="4960324571663582548">За вимогами <ph name="MANAGER" />, потрібно повернутися до попередньої версії на пристрої <ph name="DEVICE_TYPE" />. Налаштування пристрою буде скинуто, а дані – видалено.</translation>

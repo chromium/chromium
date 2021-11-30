@@ -248,6 +248,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2653019840645008922">Window capture</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2658778018866295321">I-click at i-drag</translation>
+<translation id="2665788051462227163">Wala ang <ph name="UNAVAILABLE_APPS_ONE" /> at <ph name="UNAVAILABLE_APPS_TWO" /> sa device na ito.</translation>
 <translation id="2678852583403169292">Menu ng Select-to-speak</translation>
 <translation id="2689613560355655046">Desk 8</translation>
 <translation id="2700493154570097719">Itakda ang iyong keyboard</translation>
@@ -341,7 +342,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
-<translation id="3325831752328162756">{0,plural, =0{Ibalik sa nakaraang bersyon ang device ngayon}=1{Ibalik sa nakaraang bersyon ang device sa loob ng 1 segundo}one{Ibalik sa nakaraang bersyon ang device sa loob ng # segundo}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na segundo}}</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="3351879221545518001">Kasalukuyan kang nagka-cast ng screen.</translation>
@@ -420,6 +420,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
+<translation id="3726171378575546917">Wala ang <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, at <ph name="UNAVAILABLE_APPS_COUNT" /> pa sa device na ito.</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
 <translation id="3744282433224562605">Para i-unlock ang iyong Chromebook, ilagay ang password</translation>
 <translation id="3771549900096082774">High Contrast Mode</translation>
@@ -605,6 +606,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="4945196315133970626">I-off ang mga notification</translation>
 <translation id="4946376291507881335">I-capture</translation>
+<translation id="4947229553198882488">Wala ang <ph name="UNAVAILABLE_APPS" /> sa device na ito.</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
 <translation id="4952936045814352993">Hindi available ang paghanap sa telepono kapag naka-disable ang mga tunog ng alarm</translation>
 <translation id="4960324571663582548">Inaatasan ka ng <ph name="MANAGER" /> na i-roll back ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>

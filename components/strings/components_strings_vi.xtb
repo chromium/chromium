@@ -270,6 +270,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1741613555002899862">Phải được chỉ định và là một chuỗi hợp lệ khi DnsOverHttpsMode là <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Trình duyệt của bạn được quản lý</translation>
 <translation id="1746113442205726301">Trục Y của hình ảnh</translation>
+<translation id="1747819498338037826">Thay đổi tự động</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1752021286346845558">Hộp thư 8</translation>
 <translation id="1753706481035618306">Số trang</translation>
@@ -1677,6 +1678,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="643051589346665201">Thay đổi mật khẩu Google</translation>
 <translation id="6433490469411711332">Chỉnh sửa thông tin liên hệ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> đã từ chối kết nối.</translation>
+<translation id="6438025220577812695">Tự thay đổi</translation>
 <translation id="6440503408713884761">Bị bỏ qua</translation>
 <translation id="6443406338865242315">Các tiện ích và plugin bạn đã cài đặt</translation>
 <translation id="6446163441502663861">Kahu (Phong bì)</translation>
@@ -2283,6 +2285,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8438476240229491014">Nhớ chế độ cài đặt này</translation>
 <translation id="8438786541497918448">Sử dụng máy ảnh và micrô?</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
+<translation id="8449836157089738489">Mở tất cả trong nhóm thẻ mới</translation>
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 thẻ tín dụng}other{# thẻ tín dụng}}</translation>

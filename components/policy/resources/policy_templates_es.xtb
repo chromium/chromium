@@ -307,6 +307,10 @@
 <translation id="1413936351612032792">Proporcionar información sobre el uso de aplicaciones de Linux</translation>
 <translation id="1417888712677507140">Bloquear los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="1418387035898607074">Saltar comprobaciones de Navegación segura para las descargas de archivos desde fuentes de confianza</translation>
+<translation id="1419945463533552043">Si se habilita, la función User-Agent Client Hints GREASE Update ajustará el algoritmo User-Agent GREASE a la últimas especificaciones.
+      Es posible que las especificaciones actualizadas impidan el funcionamiento de algunos sitios web que restrinjan los caracteres que podrían contener las solicitudes. Consulta las especificaciones para obtener más información: https://wicg.github.io/ua-client-hints/#grease
+      Si se habilita esta política o no se establece, el navegador decidirá qué algoritmo User-Agent GREASE se usará. Si la política se inhabilita, se usará el anterior algoritmo User-Agent GREASE.
+      Esta política es una medida temporal y se eliminará en una futura versión.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
 <translation id="1426170570389588560">Define el periodo, en número de días, durante el que se almacenarán los metadatos de los trabajos de impresión</translation>
@@ -570,9 +574,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
-<translation id="1697682816954321887">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre el estado de seguridad del TPM del dispositivo.
-
-      Si se inhabilita la política, los dispositivos registrados no registrarán ni informarán del estado de seguridad del TPM.</translation>
 <translation id="1698810555265314018">Controla la resolución de impresión de imágenes cuando <ph name="PRODUCT_NAME" /> imprime PDFs con rasterización.
 
       Cuando imprimes un PDF con la opción Imprimir como imagen, puede ser útil especificar una resolución de impresión distinta a los ajustes de impresión del dispositivo o a la configuración predeterminada de PDF.  Una resolución alta aumentará notablemente el tiempo de procesamiento y de impresión, mientras que una resolución baja puede reducir la calidad de la imagen.
@@ -878,9 +879,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2036522553891755455">Si se habilita esta política, la búsqueda de sistemas de archivos compartidos (la función de sistemas de archivos compartidos en red de <ph name="PRODUCT_NAME" />) usará el <ph name="NETBIOS_PROTOCOL" /> para buscar sistemas en la red. Si se inhabilita, la búsqueda de sistemas de archivos compartidos no usará ese protocolo para buscar sistemas de archivos compartidos en la red.
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
-<translation id="2037214548071298156">Si se habilita la política o no se establece, los dispositivos registrados enviarán estadísticas de hardware, como el uso de CPU/RAM.
-
-      Si se inhabilita la política, los dispositivos registrados no enviarán estadísticas de hardware.</translation>
 <translation id="2039801473506609891">Inhabilitar la compatibilidad con HTTP/0.9 en puertos no predeterminados</translation>
 <translation id="2040479044912658454">Modo de rasterización de impresión</translation>
 <translation id="2042513383871755994">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
@@ -1602,10 +1600,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="284288632677954003">URL de un archivo XML que contiene URLs que nunca deben activar un cambio de navegador.</translation>
 <translation id="2846689894646472396">Intervalo de comprobación de eventos de red en milisegundos</translation>
 <translation id="2853649500575897584">No bloquea los puntos de extensión antiguos en el proceso del navegador</translation>
-<translation id="2854607717796010700">Enviar información sobre la memoria de un dispositivo.
-
-      Si se asigna el valor "false" a esta política o no se establece ningún valor, no se enviará ninguna información.
-      Si se le asigna el valor "true", se enviará la información sobre la memoria del dispositivo.</translation>
 <translation id="285480231336205327">Habilitar modo de contraste alto</translation>
 <translation id="285627849510728211">Define la configuración diaria del modo avanzado de carga de la batería</translation>
 <translation id="2856674246949497058">Vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. Realiza un Powerwash durante el proceso.</translation>
@@ -3412,11 +3406,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5105313908130842249">Retraso de bloqueo de pantalla cuando el dispositivo funciona con la batería</translation>
 <translation id="5108031557082757679">Impresoras de dispositivos de empresa inhabilitadas</translation>
 <translation id="5109383437323376357">Determinar la disponibilidad de variaciones</translation>
-<translation id="5115168755602871392">Proporciona información sobre la CPU (o las CPU) de un dispositivo.
-
-      Si se asigna el valor "false" a esta política o no se establece, no se enviará ninguna información.
-      Si se le asigna el valor "true", se enviará información sobre el nombre del modelo, la arquitectura y la velocidad máxima de reloj
-      de cada CPU.</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios usen SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Establecer el tipo de lupa predeterminada habilitada en la pantalla de inicio de sesión</translation>
@@ -3616,9 +3605,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       En caso contrario, se le asigna uno de estos valores: "tls1.2" o "tls1.3". Si se habilita, <ph name="PRODUCT_NAME" /> no usa las versiones de SSL/TLS superiores a la versión especificada y se ignoran los valores no reconocidos.</translation>
 <translation id="5330684698007383292">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido que se indican a continuación</translation>
 <translation id="5331746669335642668">La política relativa a la nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
-<translation id="5340105431123046323">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre la lista de interfaces de red junto a sus direcciones de hardware y tipos.
-
-      Si se inhabilita la política, los dispositivos registrados no informarán sobre las interfaces de red.</translation>
 <translation id="5346587320074666194">Bloquear el acceso a los sensores en estos sitios web</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
@@ -5024,9 +5010,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Estos son los idiomas que se admiten actualmente: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk y vi.</translation>
 <translation id="6926703471186170050">Habilitar impresión de borde largo por las dos caras</translation>
-<translation id="6928305045865155732">Si se habilita la política o no se define, los dispositivos registrados informarán del volumen de audio del dispositivo.
-
-      Si se inhabilita la política, los dispositivos inscritos no registrarán ni informarán del estado del audio.</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
 <translation id="6940243892299228102">No permitir que los usuarios usen plantillas de escritorio</translation>
@@ -5956,9 +5939,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (en bytes) que activa la comprobación de patrones. Esto significa que la escritura en el portapapeles desde una URL bloqueada se permitiría si el tamaño de los datos copiados es inferior al valor especificado en este campo. El valor predeterminado es 100 bytes si el campo no se establece.
       </translation>
-<translation id="8036964468882248070">Si se habilita la política, los dispositivos registrados enviarán identificadores y estadísticas de hardware de los dispositivos de almacenamiento.
-
-      Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas de almacenamiento.</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>
 <translation id="80453040817068401">Habilitar la disponibilidad del navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>

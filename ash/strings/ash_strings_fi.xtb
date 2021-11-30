@@ -341,7 +341,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3307642347673023554">Siirrytty tietokonetilaan</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> voi silti kirjautua sisään myöhemmin.</translation>
 <translation id="3321628682574733415">Virheellinen vanhemman koodi</translation>
-<translation id="3325831752328162756">{0,plural, =0{Päivitä laite aiempaan versioon nyt}=1{Päivitä laite aiempaan versioon 1 sekunnin kuluessa}other{Päivitä laite aiempaan versioon # sekunnin kuluessa}}</translation>
 <translation id="3341303451326249809">Kuvakaappaus tallennettu</translation>
 <translation id="334252345105450327">Ota kuvakaappaus</translation>
 <translation id="3351879221545518001">Suoratoistat tällä hetkellä näyttöä.</translation>

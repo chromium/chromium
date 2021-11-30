@@ -1324,6 +1324,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2329597144923131178">Pierakstieties, lai grāmatzīmes, vēsture, paroles u.c. būtu pieejamas visās jūsu ierīcēs.</translation>
 <translation id="2332131598580221120">Skatīt veikalā</translation>
 <translation id="2332192922827071008">Atvērt preferences</translation>
+<translation id="2332515770639153015">Droša pārlūkošana ar papildu aizsardzību ir ieslēgta</translation>
 <translation id="2332742915001411729">Atiestatīt noklusējuma iestatījumus</translation>
 <translation id="2332948465534020594">Režīms “Netraucēt” ir iespējots</translation>
 <translation id="2335111415680198280">{0,plural, =1{Aizvērt # logu}zero{Aizvērt # logus}one{Aizvērt # logu}other{Aizvērt # logus}}</translation>
@@ -3637,6 +3638,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Pārdēvēt eSIM mobilo tīklu</translation>
 <translation id="4780321648949301421">Saglabāt lapu kā...</translation>
+<translation id="4781443161433589743">Jūs izmantojat visdrošāko Chrome aizsardzības funkciju.</translation>
 <translation id="4784559565779618838">Lai meklētu saturu konkrētā vietnē vai Chrome sadaļā, ierakstiet šeit minētās saīsnes adreses joslā un pēc tam nospiediet tabulēšanas vai atstarpes taustiņu.</translation>
 <translation id="4785719467058219317">Jūs izmantojat drošības atslēgu, kas nav reģistrēta šajā vietnē</translation>
 <translation id="478708757211772586">Lai ekrānā pārietu uz priekšu, izmantojiet slēdzi “Nākamais”</translation>

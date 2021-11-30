@@ -248,6 +248,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2653019840645008922">Kapturatu leihoko edukia</translation>
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2658778018866295321">Sakatu eta arrastatu</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> eta <ph name="UNAVAILABLE_APPS_TWO" /> ez daude gailuan.</translation>
 <translation id="2678852583403169292">Hautatu ozen irakurtzeko eginbidearen menua</translation>
 <translation id="2689613560355655046">8. lan-eremua</translation>
 <translation id="2700493154570097719">Zehaztu teklatua</translation>
@@ -341,7 +342,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3307642347673023554">Ordenagailu eramangarriaren modura aldatu da</translation>
 <translation id="3308453408813785101">Geroago ere has dezake saioa <ph name="USER_EMAIL_ADDRESS" /> erabiltzaileak.</translation>
 <translation id="3321628682574733415">Gurasoen kodea ez da zuzena</translation>
-<translation id="3325831752328162756">{0,plural, =0{Itzuli gailuaren aurreko bertsiora orain}=1{Itzuli gailuaren aurreko bertsiora segundo bat barru}other{Itzuli gailuaren aurreko bertsiora # segundo barru}}</translation>
 <translation id="3341303451326249809">Atera da pantaila-argazkia</translation>
 <translation id="334252345105450327">Atera pantaila-argazki bat</translation>
 <translation id="3351879221545518001">Pantailako edukia igortzen ari zara.</translation>
@@ -420,6 +420,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> eta beste <ph name="UNAVAILABLE_APPS_COUNT" /> ez daude gailuan.</translation>
 <translation id="3742055079367172538">Pantaila-argazkia hartu da</translation>
 <translation id="3744282433224562605">Chromebook-a desblokeatzeko, idatzi pasahitza</translation>
 <translation id="3771549900096082774">Kontraste handiko modua</translation>
@@ -606,6 +607,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4925542575807923399">Saio-hasiera anitzeko saioetan, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
 <translation id="4945196315133970626">Desaktibatu jakinarazpenak</translation>
 <translation id="4946376291507881335">Atera argazkia</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> ez dago gailuan.</translation>
 <translation id="495046168593986294">Egin gora</translation>
 <translation id="4952936045814352993">Telefonoa aurkitzeko aukera ez dago erabilgarri alarmen soinuak desgaituta daudenean</translation>
 <translation id="4960324571663582548"><ph name="DEVICE_TYPE" /> gailuaren aurreko bertsiora itzultzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak. Gailua berrezarri egingo da, eta datu guztiak ezabatuko dira.</translation>

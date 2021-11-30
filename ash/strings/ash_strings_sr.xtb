@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Снимање прозора</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
+<translation id="2665788051462227163">Апликације<ph name="UNAVAILABLE_APPS_ONE" /> и <ph name="UNAVAILABLE_APPS_TWO" /> нису на овом уређају.</translation>
 <translation id="2678852583403169292">Мени функције Изаберите за говор</translation>
 <translation id="2689613560355655046">Радна површина 8</translation>
 <translation id="2700493154570097719">Подесите тастатуру</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Прешли сте у режим лаптопа</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ће и даље моћи да се пријави касније.</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
-<translation id="3325831752328162756">{0,plural, =0{Промените верзију уређаја у претходну верзију одмах}=1{Промените верзију уређаја у претходну верзију у року од 1 секунде}one{Промените верзију уређаја у претходну верзију у року од # секунде}few{Промените верзију уређаја у претходну верзију у року од # секунде}other{Промените верзију уређаја у претходну верзију у року од # секунди}}</translation>
 <translation id="3341303451326249809">Снимак екрана је направљен</translation>
 <translation id="334252345105450327">Направи снимак екрана</translation>
 <translation id="3351879221545518001">Тренутно пребацујете екран.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
+<translation id="3726171378575546917">Апликације <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и још <ph name="UNAVAILABLE_APPS_COUNT" /> нису на овом уређају.</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3744282433224562605">Да бисте откључали Chromebook, унесите лозинку</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">Администратор за овај налог захтева да овај налог буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
 <translation id="4945196315133970626">Искључи обавештења</translation>
 <translation id="4946376291507881335">Сними</translation>
+<translation id="4947229553198882488">Апликација <ph name="UNAVAILABLE_APPS" />није на овом уређају.</translation>
 <translation id="495046168593986294">Помери нагоре</translation>
 <translation id="4952936045814352993">Функција Пронађи телефон није доступна када су звукови аларма онемогућени</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> захтева да вратите <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>

@@ -248,6 +248,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Klikanje i povlačenje</translation>
+<translation id="2665788051462227163">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" /> i <ph name="UNAVAILABLE_APPS_TWO" /> nisu instalirane na ovom uređaju.</translation>
 <translation id="2678852583403169292">Izbornik Odabir za govor</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
 <translation id="2700493154570097719">Postavite tipkovnicu</translation>
@@ -341,7 +342,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3307642347673023554">Prebačeno na način prijenosnog računala</translation>
 <translation id="3308453408813785101">Korisnik <ph name="USER_EMAIL_ADDRESS" /> može se prijaviti i kasnije.</translation>
 <translation id="3321628682574733415">Netočan roditeljski kôd</translation>
-<translation id="3325831752328162756">{0,plural, =0{Vratite uređaj na prethodnu verziju odmah}=1{Vratite uređaj na prethodnu verziju u roku od 1 s}one{Vratite uređaj na prethodnu verziju u roku od # s}few{Vratite uređaj na prethodnu verziju u roku od # s}other{Vratite uređaj na prethodnu verziju u roku od # s}}</translation>
 <translation id="3341303451326249809">Zaslon je snimljen</translation>
 <translation id="334252345105450327">Izradi snimku zaslona</translation>
 <translation id="3351879221545518001">Trenutačno emitirate zaslon.</translation>
@@ -420,6 +420,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvaranje nakon završetka</translation>
+<translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i njih još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu instalirane na ovom uređaju.</translation>
 <translation id="3742055079367172538">Izrađena je snimka zaslona</translation>
 <translation id="3744282433224562605">Da biste otključali Chromebook, unesite zaporku</translation>
 <translation id="3771549900096082774">Način visokog kontrasta</translation>
@@ -605,6 +606,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4925542575807923399">Administrator ovog računa zahtijeva da u sesiji s višestrukom prijavom ovaj račun bude prvi prijavljen.</translation>
 <translation id="4945196315133970626">Isključi obavijesti</translation>
 <translation id="4946376291507881335">Fotografiraj</translation>
+<translation id="4947229553198882488">Aplikacija <ph name="UNAVAILABLE_APPS" /> nije instalirana na ovom uređaju.</translation>
 <translation id="495046168593986294">Pomakni prema gore</translation>
 <translation id="4952936045814352993">Lociranje telefona nije moguće kad su onemogućeni zvukovi alarma</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahtijeva da vratite uređaj <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se vratiti na zadano i svi će se podaci izbrisati.</translation>

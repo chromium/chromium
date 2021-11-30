@@ -248,6 +248,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> y <ph name="UNAVAILABLE_APPS_TWO" /> no están en este dispositivo.</translation>
 <translation id="2678852583403169292">Menú Enunciar selección</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
 <translation id="2700493154570097719">Elegir el teclado</translation>
@@ -341,7 +342,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3307642347673023554">Se ha cambiado al modo portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> podrá iniciar sesión después de la eliminación.</translation>
 <translation id="3321628682574733415">Código parental incorrecto</translation>
-<translation id="3325831752328162756">{0,plural, =0{Cambia el dispositivo a la versión anterior ahora}=1{Cambia el dispositivo a la versión anterior en un plazo de 1 segundo}other{Cambia el dispositivo a la versión anterior en un plazo de # segundos}}</translation>
 <translation id="3341303451326249809">Captura de pantalla guardada</translation>
 <translation id="334252345105450327">Haz una captura de pantalla</translation>
 <translation id="3351879221545518001">Estás enviando la pantalla.</translation>
@@ -420,6 +420,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir al terminar</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y <ph name="UNAVAILABLE_APPS_COUNT" /> más no están en este dispositivo.</translation>
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
 <translation id="3744282433224562605">Para desbloquear tu Chromebook, escribe la contraseña</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
@@ -606,6 +607,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que esta cuenta sea la primera en la que se inicie sesión cuando se cree una sesión de inicio de sesión múltiple.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Capturar imagen</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> no está en este dispositivo.</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="4952936045814352993">La función de localizar el teléfono no está disponible si los sonidos de la alarma están inhabilitados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requiere que restaures tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>

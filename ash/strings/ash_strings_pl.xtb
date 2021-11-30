@@ -342,7 +342,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
-<translation id="3325831752328162756">{0,plural, =0{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego od razu}=1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 sekundy}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekundy}}</translation>
 <translation id="3341303451326249809">Wykonano zrzut ekranu</translation>
 <translation id="334252345105450327">Zrób zrzut ekranu</translation>
 <translation id="3351879221545518001">Obecnie przesyłasz ekran.</translation>
@@ -1018,6 +1017,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego teraz}=1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 sekundy}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekundy}}</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
 <translation id="7886277072580235377">Twoja sesja internetowa zostanie wyczyszczona, gdy się wylogujesz. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Wyślij e-maila</translation>

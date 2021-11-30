@@ -248,6 +248,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2653019840645008922">Tangkapan jendela</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2658778018866295321">Klik dan tarik</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> dan <ph name="UNAVAILABLE_APPS_TWO" /> tidak ada di perangkat ini.</translation>
 <translation id="2678852583403169292">Menu Klik untuk Diucapkan</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
 <translation id="2700493154570097719">Setel keyboard Anda</translation>
@@ -341,11 +342,11 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3307642347673023554">Beralih ke mode laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> tetap dapat login di lain waktu.</translation>
 <translation id="3321628682574733415">Kode induk salah</translation>
-<translation id="3325831752328162756">{0,plural, =0{Ubah perangkat ke versi sebelumnya sekarang juga}=1{Ubah perangkat ke versi sebelumnya dalam 1 detik}other{Ubah perangkat ke versi sebelumnya dalam # detik}}</translation>
 <translation id="3341303451326249809">Screenshot diambil</translation>
 <translation id="334252345105450327">Ambil screenshot</translation>
 <translation id="3351879221545518001">Anda sedang mentransmisi layar.</translation>
 <translation id="3364721542077212959">Alat stilus</translation>
+<translation id="3365977133351922112">Ponsel terlalu jauh. Dekatkan ponsel Anda.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3371140690572404006">Perangkat USB-C (port depan sebelah kanan)</translation>
 <translation id="3375634426936648815">Terhubung</translation>
@@ -419,6 +420,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka saat selesai</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, dan <ph name="UNAVAILABLE_APPS_COUNT" /> lainnya tidak ada di perangkat ini.</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
 <translation id="3744282433224562605">Untuk membuka kunci Chromebook, masukkan sandi</translation>
 <translation id="3771549900096082774">Mode Kontras Tinggi</translation>
@@ -604,6 +606,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4925542575807923399">Administrator akun ini mewajibkan akun ini untuk menjadi akun masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="4945196315133970626">Nonaktifkan notifikasi</translation>
 <translation id="4946376291507881335">Ambil gambar</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> tidak ada di perangkat ini.</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="4952936045814352993">Fitur temukan ponsel tidak tersedia saat suara alarm dinonaktifkan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> mengharuskan Anda me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
@@ -636,6 +639,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5176318573511391780">Rekam sebagian layar</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> digabungkan dengan <ph name="IN_PLACE_APP" /> untuk membuat folder baru.</translation>
 <translation id="5199367439331364630">Untuk login ke Chromebook, masukkan sandi</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi lainnya}other{# notifikasi lainnya}}</translation>
 <translation id="5207949376430453814">Sorot tempat penyisipan teks</translation>
 <translation id="5208059991603368177">Aktif</translation>
@@ -942,6 +946,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7398254312354928459">Koneksi jaringan dialihkan</translation>
 <translation id="7405710164030118432">Untuk membuka kunci perangkat, masukkan kode akses orang tua Family Link</translation>
 <translation id="7406608787870898861">Selesaikan penyiapan jaringan seluler Anda</translation>
+<translation id="740790383907119240">Pintasan Aplikasi</translation>
 <translation id="741244894080940828">konversi</translation>
 <translation id="7413851974711031813">Tekan escape untuk menutup</translation>
 <translation id="742594950370306541">Kamera sedang digunakan.</translation>
@@ -1049,6 +1054,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8061464966246066292">Kontras tinggi</translation>
 <translation id="8098591350844501178">Hentikan casting layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktif, semua</translation>
+<translation id="8120151603115102514">Ponsel Anda tidak memiliki layar kunci Untuk membuka kunci Chromebook, masukkan sandi.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132487352815776550">Hentikan teks tertutup</translation>
@@ -1104,6 +1110,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> telah <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tekan Alt+Search atau Shift untuk membatalkan.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" />. Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" />. Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth Chromebook Anda nonaktif. Untuk membuka kunci Chromebook, masukkan sandi.</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>

@@ -248,6 +248,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2653019840645008922">Vensteropname</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2658778018866295321">Klikken en slepen</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> en <ph name="UNAVAILABLE_APPS_TWO" /> staan niet op dit apparaat.</translation>
 <translation id="2678852583403169292">Menu Selecteer om uitgesproken te worden</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2700493154570097719">Je toetsenbord instellen</translation>
@@ -341,7 +342,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
-<translation id="3325831752328162756">{0,plural, =0{Zet het apparaat nu terug naar een oudere versie}=1{Zet het apparaat binnen 1 seconde terug naar een oudere versie}other{Zet het apparaat binnen # seconden terug naar een oudere versie}}</translation>
 <translation id="3341303451326249809">Screenshot gemaakt</translation>
 <translation id="334252345105450327">Een screenshot maken</translation>
 <translation id="3351879221545518001">Je cast momenteel een scherm.</translation>
@@ -420,6 +420,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3708186454126126312">Eerder verbonden</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3744282433224562605">Geef het wachtwoord op om je Chromebook je ontgrendelen</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
@@ -605,6 +606,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> staat niet op dit apparaat.</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="4952936045814352993">Telefoon vinden is niet beschikbaar als alarmgeluiden uitstaan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> terugzet naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>

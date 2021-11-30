@@ -1704,6 +1704,7 @@
 <translation id="2721037002783622288">ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> &amp;ಹುಡುಕಿ</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಮೇಲ್ವಿಚಾರಣೆ ಬಳಕೆದಾರರನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
+<translation id="2722540561488096675">ನಿಮ್ಮ ಸಾಧನವು <ph name="TIME_LEFT" /> ಸಮಯದೊಳಗೆ ಶಟ್ ಡೌನ್ ಆಗುತ್ತದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪುನಃ ಆನ್ ಮಾಡುವ ಮೊದಲು USB ತೆಗೆದುಹಾಕಿ. ನಂತರ ನೀವು <ph name="DEVICE_OS" /> ಬಳಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಬಹುದು.</translation>
 <translation id="2724841811573117416">WebRTC ಲಾಗ್‌ಗಳು</translation>
 <translation id="272488616838512378">ಯೂನಿಟ್ ಪರಿವರ್ತನೆ</translation>
 <translation id="2725200716980197196">ನೆಟ್‌ವರ್ಕ್‌ ಸಂಪರ್ಕತೆಯನ್ನು ಮರುಸ್ಥಾಪಿಲಾಗಿದೆ</translation>
@@ -4563,6 +4564,7 @@
 <translation id="5739235828260127894">ಪರಿಶೀಲನೆಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">ಅತ್ಯಂತ ದೊಡ್ಡದು</translation>
 <translation id="5740328398383587084">Nearby ಶೇರ್</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> ಹಾರ್ಡ್‌ವೇರ್ ಬೆಂಬಲ ಮತ್ತು ಸ್ಥಿರತೆ</translation>
 <translation id="574104302965107104">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆ</translation>
 <translation id="574209121243317957">ಪಿಚ್</translation>
 <translation id="5746169159649715125">PDF ನಂತೆ ಉಳಿಸಿ</translation>

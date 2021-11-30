@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">የመስኮት መቅረጽ</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2658778018866295321">ጠቅ ያድርጉ እና ይጎትቱ</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> እና <ph name="UNAVAILABLE_APPS_TWO" /> በዚህ መሳሪያ ላይ የሉም።</translation>
 <translation id="2678852583403169292">ለመናገር-ምረጥ ምናሌ</translation>
 <translation id="2689613560355655046">ዴስክ 8</translation>
 <translation id="2700493154570097719">የእርስዎን ቁልፍ ሰሌዳ ያቀናብሩ</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">ወደ የላፕቶፕ ሁነታ ተቀይሯል</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> አሁንም በኋላ በመለያ መግባት ይችላሉ።</translation>
 <translation id="3321628682574733415">ትክክል ያልሆነ የወላጅ ኮድ</translation>
-<translation id="3325831752328162756">{0,plural, =0{አሁን መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}=1{በ1 ሰከንድ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}one{በ# ሰከንዶች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ቀይር}other{በ# ሰከንዶች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ቀይር}}</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገጽ እይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገጽ እይታ ያንሱ</translation>
 <translation id="3351879221545518001">አሁን ላይ ማያ ገጽን cast እያደረጉ ነው።</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
 <translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="3713734891607377840">ሲጠናቀቅ ይክፈቱ</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />፣ <ph name="UNAVAILABLE_APPS_TWO" /> እና <ph name="UNAVAILABLE_APPS_COUNT" /> ሌሎች በዚህ መሳሪያ ላይ የሉም።</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገጽ እይታ ተነስቷል</translation>
 <translation id="3744282433224562605">የእርስዎን Chromebook ለመክፈት የይለፍ ቃል ያስገቡ</translation>
 <translation id="3771549900096082774">ባለከፍተኛ ንፅፅር ሁነታ</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">የዚህ መለያ አስተዳዳሪ በአንድ ባለብዙ መለያ መግቢያ ክፍለ-ጊዜ ላይ ይህ መለያ መጀምሪያ እንዲገባ ይፈልጋል።</translation>
 <translation id="4945196315133970626">ማሳወቂያዎችን አጥፋ</translation>
 <translation id="4946376291507881335">አንሳ</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" />በዚህ መሣሪያ ላይ የለም።</translation>
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
 <translation id="4952936045814352993">የማንቂያ ድምጾች ሲሰናከሉ ስልክን ማስቀመጥ አይገኝም</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል። መሣሪያዎ ዳግም ይጀመራል እና ሁሉም ውሂብ ይሰረዛል።</translation>

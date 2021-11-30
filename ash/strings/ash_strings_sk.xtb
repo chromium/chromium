@@ -248,6 +248,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2653019840645008922">Snímanie okna</translation>
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2658778018866295321">Kliknúť a presunúť</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> a <ph name="UNAVAILABLE_APPS_TWO" /> nie sú v tomto zariadení.</translation>
 <translation id="2678852583403169292">Ponuka počúvania vybraného textu</translation>
 <translation id="2689613560355655046">8. plocha</translation>
 <translation id="2700493154570097719">Nastavenie klávesnice</translation>
@@ -341,7 +342,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3307642347673023554">Prepnuté na režim laptopu</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sa bude môcť stále prihlásiť neskôr.</translation>
 <translation id="3321628682574733415">Nesprávny kód rodiča</translation>
-<translation id="3325831752328162756">{0,plural, =0{Teraz obnovte v zariadení predchádzajúcu verziu}=1{Do sekundy obnovte v zariadení predchádzajúcu verziu}few{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}many{Do # sekundy obnovte v zariadení predchádzajúcu verziu}other{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="3341303451326249809">Snímka obrazovky bola zaznamenaná</translation>
 <translation id="334252345105450327">Vytvoriť snímku obrazovky</translation>
 <translation id="3351879221545518001">Momentálne prenášate obrazovku.</translation>
@@ -420,6 +420,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
 <translation id="3713734891607377840">Po dokončení otvoriť</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> a ďalšie (<ph name="UNAVAILABLE_APPS_COUNT" />) nie sú v tomto zariadení.</translation>
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
 <translation id="3744282433224562605">Ak chcete Chromebook odomknúť, zadajte heslo</translation>
 <translation id="3771549900096082774">Režim s vysokým kontrastom</translation>
@@ -605,6 +606,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
 <translation id="4945196315133970626">Vypnúť upozornenia</translation>
 <translation id="4946376291507881335">Nasnímať</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> nie je v tomto zariadení.</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
 <translation id="4952936045814352993">Keď sú zvuky budíka vypnuté, lokalizácia telefónu nie je k dispozícii</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vyžaduje, aby ste obnovili predchádzajúcu verziu v zariadení <ph name="DEVICE_TYPE" />. Zariadenie bude resetované a všetky údaje odstránené.</translation>

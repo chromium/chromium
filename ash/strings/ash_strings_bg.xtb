@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2658778018866295321">Кликване и преместване с плъзгане</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> и <ph name="UNAVAILABLE_APPS_TWO" /> не са инсталирани на това устройство.</translation>
 <translation id="2678852583403169292">Меню на „Прочитане на глас“</translation>
 <translation id="2689613560355655046">Работен кът 8</translation>
 <translation id="2700493154570097719">Задайте клавиатура</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Превключихте към режима на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> пак може да влезе в профила си по-късно.</translation>
 <translation id="3321628682574733415">Неправилен код на родител</translation>
-<translation id="3325831752328162756">{0,plural, =0{Връщане на устройството към предишна версия сега}=1{Връщане на устройството към предишна версия в рамките на 1 секунда}other{Връщане на устройството към предишна версия в рамките на # секунди}}</translation>
 <translation id="3341303451326249809">Екранната снимка е заснета</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">Понастоящем предавате екрана.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Свързвани преди</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и още <ph name="UNAVAILABLE_APPS_COUNT" /> приложения не са инсталирани на това устройство.</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
 <translation id="3744282433224562605">За да отключите своя Chromebook, въведете паролата си</translation>
 <translation id="3771549900096082774">Режим на висок контраст</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">Този администратор изисква профилът му да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
+<translation id="4947229553198882488">Приложението <ph name="UNAVAILABLE_APPS" /> не е инсталирано на това устройство.</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
 <translation id="4952936045814352993">Функцията за намиране на телефона не е налице, когато звуците на будилниците са деактивирани</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> изисква да върнете устройството си <ph name="DEVICE_TYPE" /> към предишна версия. То ще бъде нулирано и всички данни ще бъдат изтрити.</translation>

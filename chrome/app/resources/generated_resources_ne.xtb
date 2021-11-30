@@ -1694,6 +1694,7 @@
 <translation id="2721037002783622288">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">तपाईंको प्रशासकले निरीक्षण गरिएका प्रयोगकर्ताहरूलाई असक्षम पार्नुभएको छ।</translation>
+<translation id="2722540561488096675">तपाईंको डिभाइस <ph name="TIME_LEFT" /> मा सट डाउन हुने छ। आफ्नो डिभाइस पुनः अन गर्नुअघि USB हटाउनुहोस्। त्यसपछि तपाईं <ph name="DEVICE_OS" /> चलाउन थाल्न सक्नुहुन्छ।</translation>
 <translation id="2724841811573117416">WebRTC लगहरू</translation>
 <translation id="272488616838512378">एकाइ रूपान्तरण</translation>
 <translation id="2725200716980197196">सञ्जाल जडान पुनर्स्थापित</translation>
@@ -4550,6 +4551,7 @@
 <translation id="5739235828260127894">पुष्टिका लागि प्रतीक्षा गर्दै। <ph name="LINK_BEGIN" />थप जान्नुहोस्।<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">धेरै ठुलो</translation>
 <translation id="5740328398383587084">नजिकैका डिभाइससँग सेयर गर्ने सुविधा</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> को हार्डवेयरसम्बन्धी सहायता र स्थिरता</translation>
 <translation id="574104302965107104">डिस्प्ले मिररिङ</translation>
 <translation id="574209121243317957">पिच</translation>
 <translation id="5746169159649715125">पीडीएपको रूपमा बचत गर्नुहोस्</translation>

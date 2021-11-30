@@ -270,6 +270,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1741613555002899862">A política tem de ser especificada, bem como uma string válida quando a DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">O seu navegador é gerido</translation>
 <translation id="1746113442205726301">Turno Y da imagem</translation>
+<translation id="1747819498338037826">Alterar automaticamente</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
 <translation id="1752021286346845558">Caixa de correio 8</translation>
 <translation id="1753706481035618306">Número de página</translation>
@@ -1687,6 +1688,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="643051589346665201">Alterar palavra-passe Google</translation>
 <translation id="6433490469411711332">Editar informações de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> recusou estabelecer ligação.</translation>
+<translation id="6438025220577812695">Alterar manualmente</translation>
 <translation id="6440503408713884761">Ignorado</translation>
 <translation id="6443406338865242315">As extensões e os plug-ins que instalou.</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>

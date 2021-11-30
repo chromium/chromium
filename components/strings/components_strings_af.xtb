@@ -828,6 +828,8 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
       om dit van die lys af te verwyder en dit weer by te voeg.</translation>
 <translation id="3630699740441428070">Administrateurs van hierdie toestel het jou netwerkverbinding opgestel wat hulle dalk toelaat om jou netwerkverkeer te sien, insluitend watter webwerwe jy besoek.</translation>
 <translation id="3631244953324577188">Biometrie</translation>
+<translation id="3632503704576938756">Skermdeling is hervat</translation>
+<translation id="3632892046558972264">Skemdeling is onderbreek</translation>
 <translation id="3633738897356909127">Dateer Chrome Op-knoppie; druk Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
 <translation id="3634530185120165534">Laai 5</translation>
 <translation id="3634567936866541746">Jy het sopas jou wagwoord op 'n bedrieglike werf ingevoer. Chrome beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
@@ -1062,6 +1064,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4346197816712207223">Aanvaarde kredietkaarte</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Die verbinding aan <ph name="SITE" /> is nie veilig nie</translation>
+<translation id="4349365535725594680">Kan nie vertroulike inhoud deel nie</translation>
 <translation id="4350629523305688469">Multifunksionele laai</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil vir Bluetooth-toestelle in die omtrek soek. Die volgende toestelle is gekry:</translation>
 <translation id="4351175281479794167">Voer verifikasiekode in</translation>
@@ -1652,6 +1655,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6328786501058569169">Hierdie werf is misleidend</translation>
 <translation id="6337133576188860026">Maak minder as <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk op jou volgende besoek stadiger laai.</translation>
 <translation id="6337534724793800597">Filtreer beleide volgens naam</translation>
+<translation id="6340739886198108203">Administrateursbeleid beveel nie aan dat skermskote geneem of opnames gemaak word wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wagwoord (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}=2{2 wagwoorde (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}other{# wagwoorde (vir <ph name="DOMAIN_LIST" /> gesinkroniseer)}}</translation>
 <translation id="6355392890578844978">Hierdie blaaier word nie deur 'n maatskappy of ander organisasie bestuur nie. Aktiwiteit op hierdie toestel kan buite Chromium bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -1834,6 +1838,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6972629891077993081">HID-toestelle</translation>
 <translation id="6973656660372572881">Sowel vaste instaanbedieners as 'n .pac-skrip is gespesifiseer.</translation>
 <translation id="6973932557599545801">Jammer dat ek nie kan help nie; gaan asseblief op jou eie voort.</translation>
+<translation id="6978236010531171013">Deel in elk geval</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Demp (verstek)</translation>
 <translation id="6979983982287291980">Lêers wat jy aflaai, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word.</translation>
@@ -2024,6 +2029,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7578104083680115302">Betaal vinnig op werwe en in programme op verskillende toestelle met kaarte wat jy by Google gestoor het.</translation>
 <translation id="7581199239021537589">Skuif prent langs Y-as op kant 2</translation>
 <translation id="7582602800368606489">Skep vinnig 'n nuwe geleentheid in Google Kalender</translation>
+<translation id="7591288787774558753">Deel vertroulike inhoud?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wil webkoekies en werfdata op <ph name="TOP_LEVEL_URL" /> gebruik</translation>
 <translation id="7592362899630581445">Bedienersertifikaat oortree naambeperkings.</translation>
 <translation id="7598391785903975535">Minder as <ph name="UPPER_ESTIMATE" /></translation>
@@ -2034,6 +2040,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
 <translation id="7616645509853975347">Jou administrateur het Chrome Enterprise Connectors op jou blaaier aangeskakel. Hierdie verbinders het toegang tot van jou data.</translation>
 <translation id="7619838219691048931">Eindbladsy</translation>
+<translation id="7625242817712715120">Administrateursbeleid beveel nie aan dat hierdie inhoud gedruk word nie</translation>
 <translation id="762844065391966283">Een vir een</translation>
 <translation id="7633909222644580952">Werkverrigtingdata en omvalverslae</translation>
 <translation id="7637571805876720304">Verwyder kredietkaart uit Chromium?</translation>
@@ -2187,6 +2194,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Die ongeldige kaarte is verwyder</translation>
 <translation id="8103161714697287722">Betaalmetode</translation>
+<translation id="8103643211515685474">Druk in elk geval</translation>
 <translation id="8105368624971345109">Skakel af</translation>
 <translation id="810875025413331850">Geen nabygeleë toestelle gevind nie.</translation>
 <translation id="8116925261070264013">Gedemp</translation>
@@ -2399,6 +2407,7 @@ Bykomende besonderhede:
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Onlangs toegemaak</translation>
 <translation id="8870494189203302833">Dieselfde volgorde, voorkant na onder</translation>
+<translation id="8870700989640064057">Druk vertroulike lêer?</translation>
 <translation id="8871553383647848643">Pasmaak die voorkoms van jou blaaier</translation>
 <translation id="8874824191258364635">Voer 'n geldige kaartnommer in</translation>
 <translation id="8884537526797090108">Kan nie vertroulike inhoud opneem nie</translation>
@@ -2477,6 +2486,7 @@ Bykomende besonderhede:
 <translation id="9119042192571987207">Opgelaai</translation>
 <translation id="9128016270925453879">Beleide is gelaai</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>
+<translation id="9131119348384879525">Vang vertroulike inhoud vas?</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9141013498910525015">Bestuur adresse</translation>
 <translation id="9144951720726881238">Vervaldatum:</translation>

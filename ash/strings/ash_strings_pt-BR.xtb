@@ -248,6 +248,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2653019840645008922">Captura de janela</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clicar e arrastar</translation>
+<translation id="2665788051462227163">Os apps <ph name="UNAVAILABLE_APPS_ONE" /> e <ph name="UNAVAILABLE_APPS_TWO" /> não estão no dispositivo.</translation>
 <translation id="2678852583403169292">Menu do Selecionar para ouvir</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
 <translation id="2700493154570097719">Configurar teclado</translation>
@@ -341,7 +342,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
 <translation id="3321628682574733415">Código de pai/mãe incorreto</translation>
-<translation id="3325831752328162756">{0,plural, =0{Reverta o dispositivo para a versão anterior agora mesmo}=1{Reverta o dispositivo para a versão anterior em até 1 segundo}one{Reverta o dispositivo para a versão anterior em até # segundo}other{Reverta o dispositivo para a versão anterior em até # segundos}}</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
 <translation id="334252345105450327">Fazer uma captura de tela</translation>
 <translation id="3351879221545518001">Você está transmitindo a tela.</translation>
@@ -411,6 +411,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir quando o download for concluído</translation>
+<translation id="3726171378575546917">Os apps <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> não estão no dispositivo.</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3744282433224562605">Para desbloquear o Chromebook, digite sua senha</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
@@ -596,6 +597,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
+<translation id="4947229553198882488">O app <ph name="UNAVAILABLE_APPS" /> não está no dispositivo.</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
 <translation id="4952936045814352993">O recurso "Localizar smartphone" fica indisponível quando os sons do alarme estão desativados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requer que você reverta seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>

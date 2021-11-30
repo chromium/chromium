@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">უნდა იყოს მითითებული და სწორი ფრაზა, როცა „DnsOverHttpsMode“ არის „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="1745880797583122200">თქვენი ბრაუზერი მართულია</translation>
 <translation id="1746113442205726301">სურათის წანაცვლება Y ღერძზე</translation>
+<translation id="1747819498338037826">შეიცვალოს ავტომატურად</translation>
 <translation id="17513872634828108">გახსნილი ჩანართები</translation>
 <translation id="1752021286346845558">საფოსტო ყუთი 8</translation>
 <translation id="1753706481035618306">გვერდის ნომერი</translation>
@@ -1674,6 +1675,7 @@
 <translation id="643051589346665201">Google პაროლის შეცვლა</translation>
 <translation id="6433490469411711332">საკონტაქტო ინფორმაციის რედაქტირება</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-მა უარყო დაკავშირება.</translation>
+<translation id="6438025220577812695">მე თვითონ შევცვლი</translation>
 <translation id="6440503408713884761">იგნორირებული</translation>
 <translation id="6443406338865242315">თქვენ მიერ დაინსტალირებული გაფართოებები და დანამატები</translation>
 <translation id="6446163441502663861">Kahu (კონვერტი)</translation>

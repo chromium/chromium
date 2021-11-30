@@ -14,6 +14,7 @@
 <translation id="1531155317299575425">Chromiumમાં સાઇન ઇન કરવા માટેના સંકેતો બતાવો.</translation>
 <translation id="1584569488888892906">Chromium હવે પહેલાં કરતાં વધુ સરળ, સુરક્ષિત અને ઝડપી છે</translation>
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
+<translation id="1722370509450468186">તમારો પાસવર્ડ તમારા એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="1736662517232558588">Chromium ડેટા સાફ કર્યો</translation>
 <translation id="1838412507805038478">Chromium એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર જારી કર્યું છે.</translation>
 <translation id="1843424232666537147">Chromium માં એવી સુવિધાઓ છે જે તમારા ઇન્ટરનેટ ડેટા અને તમે કેટલી ઝડપથી વેબ પૃષ્ઠોને લોડ કરવામાં સમર્થ છો તેનું સંચાલન કરવામાં તમારી સહાય કરે છે.
@@ -23,10 +24,10 @@
 <translation id="2054703085270098503">Chromiumનો ઉપયોગ કરીને સલામત રહો</translation>
 <translation id="2168108852149185974">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="2178608107313874732">Chromium, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
-<translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાની ઓફર કરવા માગો છો?</translation>
+<translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાનું ઑફર કરવા માગો છો?</translation>
 <translation id="2218146227246548550">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2426113998523353159">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
-<translation id="2450140762465183767">હવે તમે જ્યારે પણ સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="2450140762465183767">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium <ph name="END_BOLD" />પસંદ કરો</translation>
 <translation id="2567507405773541360">અગાઉ ક્યારેય ન હતું એટલા સરળ, સુરક્ષિત અને વધુ ઝડપી Chromium વડે વધુ કાર્યો પૂર્ણ કરો</translation>
 <translation id="2590893390871230428">તમારો Chromium ડેટા સિંક કરો</translation>
@@ -45,7 +46,7 @@
 <translation id="3946918322491238254">તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગને જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તેમને તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4555020257205549924">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chromium, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="4585809515399340748">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="4585809515399340748">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
 <translation id="4736424910885271643">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="4806326830773390517">Googleને વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
@@ -79,7 +80,7 @@
 <translation id="7045244423563602563">Chromium કસ્ટમાઇઝ કરો</translation>
 <translation id="7099326575020694068">Chromium, વિભાજિત દૃશ્ય મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
 <translation id="7108914401277488191">Chromium વડે વધુ કાર્યો કરો</translation>
-<translation id="7118091470949186573">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="7118091470949186573">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="7208566199746267865">વેબ પર તમારા એકાઉન્ટ લાવીને Chromium તમારો સમય બચાવે છે. તમે સેટિંગમાં એકાઉન્ટ ઉમેરી અથવા કાઢી નાખી શકો છો.</translation>
 <translation id="725427773388857052">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chromium તમારી સહાય કરી શકે છે.</translation>
 <translation id="7269362888766543920">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>

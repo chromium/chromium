@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">ဝင်းဒိုး ပုံဖမ်းယူမှု</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="2658778018866295321">နှိပ်ပြီး ဖိဆွဲပါ</translation>
+<translation id="2665788051462227163">ဤစက်တွင် <ph name="UNAVAILABLE_APPS_ONE" /> နှင့်<ph name="UNAVAILABLE_APPS_TWO" /> မရှိပါ။</translation>
 <translation id="2678852583403169292">စကားပြောရွေးရန် မီနူး</translation>
 <translation id="2689613560355655046">မျက်နှာပြင်နေရာ ၈</translation>
 <translation id="2700493154570097719">သင်၏ ကီးဘုတ်ကို သတ်မှတ်ပါ</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">လက်ပ်တော့မုဒ်သို့ ပြောင်းထားသည်</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> သည် နောက်ပိုင်းတွင် လက်မှတ်ထိုး ဝင်နိုင်ပါသေးသည်။</translation>
 <translation id="3321628682574733415">မိဘသုံးခွင့်ကုဒ် မှားနေသည်</translation>
-<translation id="3325831752328162756">{0,plural, =0{စက်ကို ယခင်ဗားရှင်းသို့ ယခု ပြောင်းပါ}=1{စက်ကို ယခင်ဗားရှင်းသို့ 1 စက္ကန့်အတွင်း ပြောင်းပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # စက္ကန့်အတွင်း ပြောင်းပါ}}</translation>
 <translation id="3341303451326249809">ဖန်သားပြင်ဓာတ်ပုံ ဖမ်းယူပြီးပြီ</translation>
 <translation id="334252345105450327">ဖန်သားပြင်ဓာတ်ပုံတစ်ပုံရိုက်ပါ</translation>
 <translation id="3351879221545518001">သင်သည် လောလောဆယ် မျက်နှာပြင်ကို ကာ့စ်လုပ်နေပါသည်။</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
 <translation id="371370241367527062">အရှေ့မိုက်ခရိုဖုန်း</translation>
 <translation id="3713734891607377840">ပြီးသွားပါက ဖွင့်မည်</translation>
+<translation id="3726171378575546917">ဤစက်တွင် <ph name="UNAVAILABLE_APPS_ONE" />၊<ph name="UNAVAILABLE_APPS_TWO" /> နှင့် အခြားအက်ပ်<ph name="UNAVAILABLE_APPS_COUNT" /> ခု မရှိပါ။</translation>
 <translation id="3742055079367172538">မျက်နှာပြင်ပုံရိပ် ရယူပြီး</translation>
 <translation id="3744282433224562605">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် စကားဝှက်ထည့်ပါ</translation>
 <translation id="3771549900096082774">အဖြူအမဲခြားနားချက် မြင့်သောမုဒ်</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">ဤအကောင့်၏ ကြီးကြပ်သူသည် ဤအကောင့်အား အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် အဖြစ်လိုအပ်သည်။</translation>
 <translation id="4945196315133970626">အကြောင်းကြားချက်များ ပိတ်ရန်</translation>
 <translation id="4946376291507881335">ရိုက်ယူရန်</translation>
+<translation id="4947229553198882488">ဤစက်တွင် <ph name="UNAVAILABLE_APPS" /> မရှိပါ။</translation>
 <translation id="495046168593986294">အပေါ်သို့ လှိမ့်ရန်</translation>
 <translation id="4952936045814352993">သတိပေးချက်အသံများ ပိတ်ထားပါက ဖုန်းရှာဖွေခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="4960324571663582548">သင့် <ph name="DEVICE_TYPE" /> ကိုနောက်ပြန်ဆုတ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်။ စက်ပြင်ဆင်သတ်မှတ်မည်ဖြစ်ပြီး ဒေတာအားလုံးကို ဖျက်ပါမည်။</translation>

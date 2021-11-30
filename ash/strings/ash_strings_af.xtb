@@ -248,6 +248,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2653019840645008922">Vensterskoot</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2658778018866295321">Klik en sleep</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> en <ph name="UNAVAILABLE_APPS_TWO" /> is nie op hierdie toestel nie.</translation>
 <translation id="2678852583403169292">Hardoplees-kieslys</translation>
 <translation id="2689613560355655046">Lessenaar 8</translation>
 <translation id="2700493154570097719">Stel jou sleutelbord</translation>
@@ -341,7 +342,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3307642347673023554">Het na skootrekenaarmodus oorgeskakel</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
-<translation id="3325831752328162756">{0,plural, =0{Verander toestel nou na vorige weergawe}=1{Verander toestel binne 1 sekonde na vorige weergawe}other{Verander toestel binne # sekondes na vorige weergawe}}</translation>
 <translation id="3341303451326249809">Skermkiekie is geneem</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
 <translation id="3351879221545518001">Jy saai tans die skerm uit.</translation>
@@ -420,6 +420,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3708186454126126312">Voorheen gekoppel</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
 <translation id="3744282433224562605">Voer wagwoord in om jou Chromebook te ontsluit</translation>
 <translation id="3771549900096082774">Hoëkontrasmodus</translation>
@@ -606,6 +607,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
 <translation id="4946376291507881335">Vang vas</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" />is nie op hierdie toestel nie.</translation>
 <translation id="495046168593986294">Rollees op</translation>
 <translation id="4952936045814352993">Spoor foon op is nie beskikbaar wanneer wekkerklanke gedeaktiveer is nie</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereis dat jy jou <ph name="DEVICE_TYPE" /> terugrol. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>

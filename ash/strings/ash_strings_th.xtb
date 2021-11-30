@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">การจับภาพหน้าต่าง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2658778018866295321">คลิกแล้วลาก</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> และ <ph name="UNAVAILABLE_APPS_TWO" /> ไม่ได้อยู่ในอุปกรณ์</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
 <translation id="2689613560355655046">เดสก์ 8</translation>
 <translation id="2700493154570097719">ตั้งค่าแป้นพิมพ์</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
-<translation id="3325831752328162756">{0,plural, =0{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายในตอนนี้}=1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วินาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วินาที}}</translation>
 <translation id="3341303451326249809">จับภาพหน้าจอแล้ว</translation>
 <translation id="334252345105450327">จับภาพหน้าจอ</translation>
 <translation id="3351879221545518001">คุณกำลังแคสต์หน้าจออยู่</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3744282433224562605">ป้อนรหัสผ่านเพื่อปลดล็อก Chromebook</translation>
 <translation id="3771549900096082774">โหมดคอนทราสต์สูง</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> ไม่ได้อยู่ในอุปกรณ์นี้</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> กำหนดให้คุณต้องย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
@@ -1015,6 +1017,7 @@
 <translation id="7868900307798234037">กำลังปลดล็อกด้วยลายนิ้วมือ</translation>
 <translation id="7872786842639831132">ปิด</translation>
 <translation id="7875575368831396199">ดูเหมือนว่าบลูทูธของ <ph name="DEVICE_TYPE" /> จะปิดอยู่ โปรดเปิดบลูทูธเพื่อใช้ฮับโทรศัพท์</translation>
+<translation id="7877557217297072640">{0,plural, =0{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าในตอนนี้}=1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วินาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วินาที}}</translation>
 <translation id="7886169021410746335">ปรับการตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="7886277072580235377">ระบบจะล้างเซสชันอินเทอร์เน็ตของคุณเมื่อออกจากระบบ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ส่งอีเมล</translation>

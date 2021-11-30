@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C சாதனம் (முன்பக்கப் போர்ட்)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> இன் தெளிவுத்திறன் <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை உறுதிசெய்ய 'உறுதிசெய்' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="1013923882670373915">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது. அந்தச் சாதனத்தில் இந்த PIN குறியீட்டை உள்ளிடவும்: <ph name="PINCODE" /></translation>
+<translation id="1014111206066007277">ஸ்க்ரீன்காஸ்ட் கருவிகள்</translation>
 <translation id="1024261588257374085">பகுதியளவு ஸ்கிரீன்ஷாட் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1032891413405719768">ஸ்டைலஸ் பேட்டரி குறைவாக உள்ளது</translation>
 <translation id="1036073649888683237">அறிவிப்புகளை நிர்வகிக்க அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -37,6 +38,7 @@
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="118532027333893379">முழுத்திரையையும் படமெடுக்க எங்கேனும் தட்டவும்</translation>
 <translation id="1190609913194133056">அறிவிப்பு மையம்</translation>
+<translation id="1190678134285018527">சாதனத்தை முந்தைய பதிப்பிற்கு மாற்ற வேண்டும்</translation>
 <translation id="1195412055398077112">ஓவர்ஸ்கேன்</translation>
 <translation id="119944043368869598">அனைத்தையும் அழி</translation>
 <translation id="1199716647557067911">’சுவிட்ச் அணுகல்’ அம்சத்தை முடக்க வேண்டுமா?</translation>
@@ -125,6 +127,7 @@
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
+<translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> சாளரம் அனைத்து டெஸ்க்குகளுக்கும் ஒதுக்கப்பட்டது</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> டெஸ்க்குகள் மட்டுமே அனுமதிக்கப்படும். புதிய டெஸ்க்கைத் திறக்க, ஏற்கெனவே உள்ள டெஸ்க்குகளில் ஒன்றை அகற்றவும்.</translation>
 <translation id="1761222317188459878">நெட்வொர்க் இணைப்பை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + Period. Insert பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + Shift + Backspace பட்டன்களை அழுத்தவும்.</translation>
@@ -245,6 +248,7 @@
 <translation id="2653019840645008922">சாளரத்தைப் படமெடுக்கும்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2658778018866295321">கிளிக் செய்து இழுக்கும்</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ஆகிய ஆப்ஸ் இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="2678852583403169292">பேசும் திரையின் மெனு</translation>
 <translation id="2689613560355655046">டெஸ்க் 8</translation>
 <translation id="2700493154570097719">எனது கீபோர்டை அமை</translation>
@@ -260,6 +264,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
 <translation id="2782591952652094792">படமெடுப்புப் பயன்முறையிலிருந்து வெளியேறும்</translation>
 <translation id="2792498699870441125">Alt+தேடல்</translation>
+<translation id="2797741504905337289">ஷெல்ஃப் பார்ட்டி</translation>
 <translation id="2803313416453193357">ஃபோல்டரைத் திற</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2814448776515246190">பகுதியளவு படமெடுக்கும்</translation>
@@ -317,6 +322,7 @@
 <translation id="3153444934357957346">பல உள்நுழைவில் <ph name="MULTI_PROFILE_USER_LIMIT" /> கணக்குகள் வரை மட்டுமே வைத்திருக்கலாம்.</translation>
 <translation id="3154351730702813399">சாதன நிர்வாகி உங்கள் உலாவல் செயல்பாட்டைக் கண்காணிக்கக்கூடும்.</translation>
 <translation id="316086887565479535">டெம்ப்ளேட்டில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
+<translation id="316356270129335934">உங்கள் <ph name="DEVICE_TYPE" /> ஐ முந்தைய பதிப்பிற்கு <ph name="MANAGER" /> மாற்றுகிறது. சாதனம் மீட்டமைக்கப்பட்டு, அனைத்துத் தரவும் நீக்கப்படும்.</translation>
 <translation id="3181441307743005334">மீண்டும் தொடங்க சிறிது நேரம் ஆகலாம்</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ஒரு சாதனத்துடன் இணைக்கப்பட்டுள்ளது}other{# சாதனங்களுடன் இணைக்கப்பட்டுள்ளது}}</translation>
 <translation id="320207200541803018">டைமரை அமை</translation>
@@ -414,6 +420,7 @@
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
 <translation id="3713734891607377840">பதிவிறக்கியதும் திற</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ஆகியவையும் மேலும் <ph name="UNAVAILABLE_APPS_COUNT" /> ஆப்ஸும் இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="3744282433224562605">Chromebookகை அன்லாக் செய்ய, கடவுச்சொல்லை டைப் செய்யவும்</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
@@ -441,6 +448,7 @@
 <translation id="3899995891769452915">குரல் உள்ளீடு</translation>
 <translation id="3900355044994618856">உங்கள் அமர்வு <ph name="SESSION_TIME_REMAINING" /> இல் முடியும்</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> க்கு இணைக்கிறது</translation>
+<translation id="3922427723338465344">{0,plural, =1{சாதனத்தை ஒரு நிமிடத்திற்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{சாதனத்தை # நிமிடங்களுக்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="3923494859158167397">மொபைல் நெட்வொர்க்குகள் எதுவும் அமைக்கப்படவில்லை</translation>
 <translation id="3932043219784172185">சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
@@ -558,6 +566,7 @@
 <translation id="4623167406982293031">கணக்கைச் சரிபார்க்கவும்</translation>
 <translation id="4628757576491864469">சாதனங்கள்</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, நட்சத்திர மதிப்பீடு: <ph name="RATING_SCORE" /></translation>
+<translation id="4633185660152240791">{0,plural, =1{சாதனத்தை ஒரு நாளுக்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{சாதனத்தை # நாட்களுக்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ஆப்ஸ் பரிந்துரை</translation>
 <translation id="4659419629803378708">ChromeVox இயக்கப்பட்டது</translation>
@@ -597,8 +606,10 @@
 <translation id="4925542575807923399">பல உள்நுழைவு அமர்வில் இந்தக் கணக்கு முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டிய தேவை இந்தக் கணக்கின் நிர்வாகிக்கு உள்ளது.</translation>
 <translation id="4945196315133970626">அறிவிப்புகளை முடக்கு</translation>
 <translation id="4946376291507881335">படமெடு</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> ஆப்ஸ் இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="495046168593986294">மேலே நகர்த்து</translation>
 <translation id="4952936045814352993">அலாரத்தின் ஒலி முடக்கப்பட்டிருக்கும்போது ’மொபைல் இருக்குமிடத்தைக் கண்டறிதல்’ அம்சத்தைப் பயன்படுத்த முடியாது</translation>
+<translation id="4960324571663582548">உங்கள் <ph name="DEVICE_TYPE" /> ஐ முந்தைய பதிப்பிற்கு மாற்றுமாறு <ph name="MANAGER" /> கோருகிறது. சாதனம் மீட்டமைக்கப்பட்டு, அனைத்துத் தரவும் நீக்கப்படும்.</translation>
 <translation id="4961318399572185831">திரையை அலைபரப்பு</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ம <ph name="MINUTES" />நி <ph name="SECONDS" />வி</translation>
 <translation id="4975771730019223894">ஆப்ஸ் பேட்ஜிங்</translation>
@@ -706,6 +717,7 @@
 <translation id="5745612484876805746">சூரிய அஸ்தமனத்தின் போது நைட் லைட் விருப்பம் தானாக இயக்கப்படும்</translation>
 <translation id="5750765938512549687">புளூடூத் முடக்கப்பட்டுள்ளது</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது ஆபத்தானது</translation>
+<translation id="5763928712329149804">'ஷெல்ஃப் பார்ட்டி' பயன்முறை முடக்கப்பட்டுள்ளது.</translation>
 <translation id="576453121877257266">நைட் லைட் ஆன் செய்யப்பட்டது.</translation>
 <translation id="5769373120130404283">தனிப்பட்ட திரை</translation>
 <translation id="5777841717266010279">திரைப் பகிர்வதை நிறுத்தவா?</translation>
@@ -722,6 +734,7 @@
 <translation id="5867217927013474703">நெட்வொர்க் தகவல்களைச் சேகரிக்கிறது</translation>
 <translation id="5876666360658629066">பெற்றோர் குறியீட்டை உள்ளிடுங்கள்</translation>
 <translation id="5881540930187678962">Phone Hubபைப் பின்னர் அமைத்திடுங்கள்</translation>
+<translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> சாளர ஒதுக்கீடு பிற டெஸ்க்குகளில் இருந்து அகற்றப்பட்டு <ph name="DESK_TITLE" />க்கு வழங்கப்பட்டுள்ளது</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="589817443623831496">பாயிண்ட் ஸ்கேனிங்</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -783,6 +796,7 @@
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6330012934079202188">எல்லா டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்டுகிறது, தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> என்பது நிர்வகிக்கப்பட்ட ஓர் அமர்வாகும், <ph name="MANAGER" /> இதை நிர்வகிக்கிறது</translation>
+<translation id="6344138931392227467"><ph name="DEVICE_NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="6351032674660237738">பயன்பாட்டுப் பரிந்துரைகள்</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6381109794406942707">சாதனத்தை அன்லாக் செய்ய உங்கள் பின்னை உள்ளிடவும்.</translation>
@@ -799,6 +813,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> க்கு திரை விரிவாக்கப்படுகிறது</translation>
 <translation id="6482559668224714696">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="6490471652906364588">USB-C சாதனம் (வலது போர்ட்)</translation>
+<translation id="6491071886865974820">காலக்கெடுவுக்கு முன்பு இந்த <ph name="DEVICE_TYPE" /> ஐப் புதுப்பிக்குமாறு <ph name="MANAGER" /> கோருகிறது</translation>
 <translation id="649452524636452238">ஸ்மார்ட் கார்டு பின்</translation>
 <translation id="6495400115277918834">பிக்ச்சர்-இன்-பிக்ச்சர் காட்டப்படுகிறது, ஃபோகஸ் செய்ய Alt+Shift+V அழுத்தவும்</translation>
 <translation id="6500818810472529210">Google Searchசில் முடிவுகளைப் பார்க்கவும்</translation>
@@ -835,6 +850,7 @@
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6696025732084565524">உங்கள் அகற்றத்தக்க கீபோர்டுக்கு முக்கியப் புதுப்பிப்பு வேண்டும்</translation>
 <translation id="6700713906295497288">IME மெனு பொத்தான்</translation>
+<translation id="6707693040195709527">சாதனத்தை முந்தைய பதிப்பிற்கு மாற்ற வேண்டிய காலக்கெடு முடிந்துவிட்டது</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
 <translation id="6713285437468012787">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />" ஆனது இணைக்கப்பட்டது மற்றும் இப்போது எல்லா பயனர்களுக்கும் கிடைக்கக்கூடியதாக உள்ளது. அமைப்புகளைப் பயன்படுத்தி இந்த இணைத்தலை நீங்கள் அகற்றலாம்.</translation>
 <translation id="6723839937902243910">ஆற்றல்</translation>
@@ -891,6 +907,7 @@
 <translation id="7067196344162293536">தானியங்கு சுழற்றல்</translation>
 <translation id="7068360136237591149">ஃபைல்களைத் திற</translation>
 <translation id="7076293881109082629">உள்நுழைகிறீர்கள்</translation>
+<translation id="7086931198345821656">புதுப்பிக்க <ph name="DEVICE_TYPE" /> ஐப் பவர்வாஷ் செய்ய வேண்டும். அனைத்துத் தரவும் நீக்கப்படும். <ph name="SYSTEM_APP_NAME" /> இன் சமீபத்திய புதுப்பிப்பைப் பற்றி மேலும் அறிக.</translation>
 <translation id="7088960765736518739">ஸ்விட்ச் அணுகல்</translation>
 <translation id="7098389117866926363">USB-C சாதனம் (பின்பக்கம் உள்ள இடது போர்ட்)</translation>
 <translation id="7106330611027933926">டெஸ்க்பாரைக் காட்டு</translation>
@@ -912,6 +929,7 @@
 <translation id="7302889331339392448">'உடனடி வசனம்' முடக்கப்பட்டது.</translation>
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="731589979057211264">'ஷெல்ஃப் பார்ட்டி' பயன்முறை இயக்கப்பட்டுள்ளது.</translation>
 <translation id="7319740667687257810">தொடக்கி, பகுதியளவு காட்சி</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchசில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="7346909386216857016">சரி, புரிந்தது</translation>
@@ -1053,12 +1071,15 @@
 <translation id="8196787716797768628">ஆப்ஸுக்கு இடையே விரைவாக மாறுவதற்கும் டேப்லெட் பயன்முறையில் உங்கள் Chromebookகை அணுகுவதற்கும் சைகைகளைப் பயன்படுத்தலாம்.</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8203795194971602413">வலது கிளிக் செய்யும்</translation>
+<translation id="8209010265547628927">மீட்டமை</translation>
 <translation id="8219451629189078428">இந்தச் சமயத்தின்போது உங்கள் Chromebook ஆனில் இருப்பதுடன் மின் பிளக்கில் செருகப்பட்டிருக்கவும் வேண்டும். சார்ஜர், அடாப்டர் கேபிள்கள் போன்றவை உங்கள் Chromebook, மின் பிளக் ஆகிய இரண்டிலும் சரியாகச் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். Chromebookகை ஆஃப் செய்ய வேண்டாம்.</translation>
 <translation id="8236042855478648955">இடைவேளைக்கான நேரம்</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ஆப்ஸ்</translation>
+<translation id="8255234195843591763">புதுப்பிக்க மீட்டமைக்கவும்</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />ஐ அன்லாக் செய்ய Enterரை அழுத்தவும்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
+<translation id="8270450402312105425">{0,plural, =1{சாதனத்தை ஒரு மணிநேரத்திற்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{சாதனத்தை # மணிநேரத்திற்குள் முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="8281279285293265212">ஸ்க்ரீன்காஸ்ட்டைச் சேமிக்க முடியவில்லை</translation>
 <translation id="8284362522226889623">முந்தைய டெஸ்க்கிற்கு மாற நான்கு விரல்களால் இடதுபுறமாக ஸ்வைப் செய்யவும்</translation>
 <translation id="828708037801473432">முடக்கப்பட்டுள்ளது</translation>
@@ -1067,6 +1088,7 @@
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
+<translation id="8364673525741149932">'ஷெல்ஃப் பார்ட்டி' பயன்முறையை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
 <translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="8375916635258623388">இந்த <ph name="DEVICE_NAME" /> உம் உங்கள் ஃபோனும் தானாக இணைக்கப்படும்</translation>
@@ -1093,6 +1115,7 @@
 <translation id="851458219935658693">தற்போதைய டெஸ்கில் உள்ள சாளரங்களைக் காட்டும், ரேடியோ பட்டன் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8517041960877371778">இயக்கப்பட்டிருக்கும் போது உங்கள் <ph name="DEVICE_TYPE" /> இல் சார்ஜ் ஏறாது.</translation>
 <translation id="8553395910833293175">எல்லா டெஸ்க்குகளுக்கும் ஏற்கெனவே ஒதுக்கப்பட்டுள்ளது.</translation>
+<translation id="856298576161209842">உங்கள் <ph name="DEVICE_TYPE" /> ஐப் புதுப்பிக்குமாறு <ph name="MANAGER" /> பரிந்துரைக்கிறது</translation>
 <translation id="8563862697512465947">அறிவிப்பு  அமைப்புகள்</translation>
 <translation id="857201607579416096">திரையின் கீழ் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -1200,6 +1223,7 @@
 <translation id="9220525904950070496">கணக்கை அகற்றுக</translation>
 <translation id="923686485342484400">வெளியேற Control Shift Q ஐ இருமுறை அழுத்தவும்.</translation>
 <translation id="925832987464884575">மாதிரிக்காட்சிகளை மறை</translation>
+<translation id="937214777182567951">உங்கள் <ph name="DEVICE_TYPE" /> ஐ உடனடியாகப் புதுப்பிக்குமாறு <ph name="MANAGER" /> கோருகிறது</translation>
 <translation id="938963181863597773">எனது கேலெண்டரில் என்ன உள்ளது?</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="951991426597076286">நிராகரி</translation>

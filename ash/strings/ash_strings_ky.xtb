@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Терезени сүрөткө тартып алуу</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2658778018866295321">Чыкылдатып, сүйрөө</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> жана <ph name="UNAVAILABLE_APPS_TWO" /> бул түзмөктө жок.</translation>
 <translation id="2678852583403169292">Басып туруп угуңуз функциясынын менюсу</translation>
 <translation id="2689613560355655046">8-иш такта</translation>
 <translation id="2700493154570097719">Баскычтобуңузду тандаңыз</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Ноутбук режимине которулду</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> аккаунтка кийинчерээк дагы кире алат.</translation>
 <translation id="3321628682574733415">Ата-эненин кирүү коду туура эмес</translation>
-<translation id="3325831752328162756">{0,plural, =0{Түзмөктү мурунку версияга азыр өзгөртүңүз}=1{Түзмөктү 1 секунддун ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # секунддун ичинде мурунку версияга өзгөртүңүз}}</translation>
 <translation id="3341303451326249809">Скриншот тартылды</translation>
 <translation id="334252345105450327">Скриншот тартып алуу</translation>
 <translation id="3351879221545518001">Учурда экраныңызды бөлүшүп жатасыз.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
 <translation id="3713734891607377840">Жүктөлүп бүткөндөн кийин ачылсын</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> жана дагы<ph name="UNAVAILABLE_APPS_COUNT" /> колдонмо бул түзмөктө жок.</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
 <translation id="3744282433224562605">Chromebook'тун кулпусун ачуу үчүн сырсөздү териңиз</translation>
 <translation id="3771549900096082774">Жогорку контраст режими</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">Бул аккаунтунун администратору анын бир нече профиль сеансындагы аккаунтка биринчи кирген каттоо эсеби болушун талап кылат.</translation>
 <translation id="4945196315133970626">Билдирмелерди өчүрүү</translation>
 <translation id="4946376291507881335">Сүрөткө тартуу</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> бул түзмөктө жок.</translation>
 <translation id="495046168593986294">Өйдө сыдыруу</translation>
 <translation id="4952936045814352993">Эскертүүлөрдүн үнү басылганда телефондун жайгашкан жерин аныктоо мүмкүн эмес</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууну талап кылууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>

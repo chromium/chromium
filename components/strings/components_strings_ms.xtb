@@ -829,6 +829,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
       semula.</translation>
 <translation id="3630699740441428070">Pentadbir peranti ini telah mengkonfigurasikan sambungan rangkaian anda yang mungkin membolehkan mereka melihat trafik rangkaian anda, termasuk laman web yang anda lawat.</translation>
 <translation id="3631244953324577188">Biometrik</translation>
+<translation id="3632503704576938756">Perkongsian skrin disambung semula</translation>
+<translation id="3632892046558972264">Perkongsian skrin dijeda</translation>
 <translation id="3633738897356909127">Butang Kemas Kini Chrome, tekan Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="3634530185120165534">Dulang 5</translation>
 <translation id="3634567936866541746">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chrome mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
@@ -1063,6 +1065,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4346197816712207223">Kad Kredit yang Diterima</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Sambungan kepada <ph name="SITE" /> tidak selamat</translation>
+<translation id="4349365535725594680">Tidak dapat berkongsi kandungan sulit</translation>
 <translation id="4350629523305688469">Dulang Berbilang Fungsi</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> mahu mengimbas untuk mengesan peranti Bluetooth berdekatan. Peranti berikut telah dijumpai:</translation>
 <translation id="4351175281479794167">Masukkan kod pengesahan</translation>
@@ -1653,6 +1656,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6328786501058569169">Tapak ini mengelirukan</translation>
 <translation id="6337133576188860026">Mengosongkan kurang daripada <ph name="SIZE" />. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="6337534724793800597">Tapis dasar mengikut nama</translation>
+<translation id="6340739886198108203">Dasar pentadbir tidak mengesyorkan mengambil tangkapan skrin atau rakaman apabila kandungan sulit kelihatan:</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
 <translation id="6355392890578844978">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -1835,6 +1839,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6972629891077993081">Peranti HID</translation>
 <translation id="6973656660372572881">Pelayan proksi tetap dan juga URL skrip .pac tidak ditetapkan.</translation>
 <translation id="6973932557599545801">Maaf, saya tidak dapat membantu. Sila teruskan sendiri.</translation>
+<translation id="6978236010531171013">Kongsi juga</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Redam (lalai)</translation>
 <translation id="6979983982287291980">Fail yang anda muat turun dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail itu mungkin diimbas untuk mencari data sensitif atau perisian hasad.</translation>
@@ -2025,6 +2030,7 @@ Butiran tambahan:
 <translation id="7578104083680115302">Bayar dengan cepat di tapak dan apl merentas peranti menggunakan kad yang telah disimpan dengan Google.</translation>
 <translation id="7581199239021537589">Anjakan Y sisi 2 imej</translation>
 <translation id="7582602800368606489">Buat acara baharu dalam Google Calendar dengan pantas</translation>
+<translation id="7591288787774558753">Kongsi kandungan sulit?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> mahu menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sijil pelayan melanggar kekangan nama.</translation>
 <translation id="7598391785903975535">Kurang daripada <ph name="UPPER_ESTIMATE" /></translation>
@@ -2035,6 +2041,7 @@ Butiran tambahan:
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="7616645509853975347">Pentadbir anda telah menghidupkan Chrome Enterprise Connectors pada penyemak imbas anda. Penyambung ini boleh mengakses sesetengah data anda.</translation>
 <translation id="7619838219691048931">Helaian akhir</translation>
+<translation id="7625242817712715120">Dasar pentadbir tidak mengesyorkan anda mencetak kandungan ini</translation>
 <translation id="762844065391966283">Satu demi satu</translation>
 <translation id="7633909222644580952">Data prestasi dan laporan ranap sistem</translation>
 <translation id="7637571805876720304">Alih keluar kad kredit daripada Chromium?</translation>
@@ -2188,6 +2195,7 @@ Butiran tambahan:
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Kad tidak sah telah dialih keluar</translation>
 <translation id="8103161714697287722">Kaedah Pembayaran</translation>
+<translation id="8103643211515685474">Cetak juga</translation>
 <translation id="8105368624971345109">Matikan</translation>
 <translation id="810875025413331850">Tiada peranti berdekatan dijumpai.</translation>
 <translation id="8116925261070264013">Diredam</translation>
@@ -2401,6 +2409,7 @@ Butiran tambahan:
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Ditutup Baru-baru Ini</translation>
 <translation id="8870494189203302833">Susunan sama menghadap ke bawah</translation>
+<translation id="8870700989640064057">Cetak kandungan fail sulit?</translation>
 <translation id="8871553383647848643">Sesuaikan rupa penyemak imbas anda</translation>
 <translation id="8874824191258364635">Masukkan nombor kad yang sah</translation>
 <translation id="8884537526797090108">Tidak dapat merakam kandungan sulit</translation>
@@ -2479,6 +2488,7 @@ Butiran tambahan:
 <translation id="9119042192571987207">Dimuat naik</translation>
 <translation id="9128016270925453879">Dasar dimuatkan</translation>
 <translation id="9128870381267983090">Sambung ke rangkaian</translation>
+<translation id="9131119348384879525">Tangkap kandungan sulit?</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9141013498910525015">Urus alamat</translation>
 <translation id="9144951720726881238">Tarikh tamat tempoh:</translation>

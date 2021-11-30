@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Снимање прозорец</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2658778018866295321">Кликни и повлечи</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> и <ph name="UNAVAILABLE_APPS_TWO" /> не се на уредов.</translation>
 <translation id="2678852583403169292">Мени за „Изберете за говор“</translation>
 <translation id="2689613560355655046">Работна површина 8</translation>
 <translation id="2700493154570097719">Поставете ја вашата тастатура</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">Се префрливте во режим на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> сепак ќе може да се најави подоцна.</translation>
 <translation id="3321628682574733415">Неточен код на родител</translation>
-<translation id="3325831752328162756">{0,plural, =0{Променете го уредот на претходната верзија сега}=1{Променете го уредот на претходната верзија во рок од 1 секунда}one{Променете го уредот на претходната верзија во рок од # секунда}other{Променете го уредот на претходната верзија во рок од # секунди}}</translation>
 <translation id="3341303451326249809">Направена е слика од екранот</translation>
 <translation id="334252345105450327">Направи слика од екранот</translation>
 <translation id="3351879221545518001">Во моментов емитувате екран.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">Претходно поврзани</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отвори кога ќе заврши преземањето</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и уште <ph name="UNAVAILABLE_APPS_COUNT" /> не се на уредов.</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
 <translation id="3744282433224562605">За да го отклучите вашиот Chromebook, внесете лозинка</translation>
 <translation id="3771549900096082774">Режим на голем контраст</translation>
@@ -606,6 +607,7 @@
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> не е на уредов.</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
 <translation id="4952936045814352993">„Лоцирај го телефонот“ не е достапна кога се оневозможени звуците на алармите</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> бара да го вратите вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
@@ -1016,6 +1018,7 @@
 <translation id="7868900307798234037">Отклучување со отпечаток</translation>
 <translation id="7872786842639831132">Исклучено</translation>
 <translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Променете го уредот на претходната верзија сега}=1{Променете го уредот на претходната верзија во рок од 1 секунда}one{Променете го уредот на претходната верзија во рок од # секунда}other{Променете го уредот на претходната верзија во рок од # секунди}}</translation>
 <translation id="7886169021410746335">ги приспособи поставките за приватност.</translation>
 <translation id="7886277072580235377">Сесијата на интернет ќе се исчисти кога ќе се одјавите. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Испрати е-порака</translation>

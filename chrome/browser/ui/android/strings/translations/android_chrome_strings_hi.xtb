@@ -801,6 +801,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="5810864297166300463">वेब सहायता</translation>
+<translation id="5813552293717797987">इस ब्राउज़र को <ph name="PARENT_NAME_1" /> और <ph name="PARENT_NAME_2" /> की मदद से, मैनेज किया जाता है.</translation>
 <translation id="5814131985548525293">शुरू करने के लिए, यहां लिखें या आवाज़ वाले आइकॉन पर टैप करें</translation>
 <translation id="5814749351757353073">अपनी पसंदीदा साइटें फ़ॉलो करते रहें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -1060,6 +1061,7 @@
 <translation id="727288900855680735">क्या आप <ph name="ONE_TIME_CODE" /> को <ph name="ORIGIN" /> पर सबमिट करना चाहते हैं?</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>
 <translation id="7286572596625053347">क्या आप <ph name="LANGUAGE" /> को बदलना चाहते हैं?</translation>
+<translation id="7286703216224610554">सिर्फ़ प्रतिक्रिया शेयर करें</translation>
 <translation id="7290209999329137901">नाम बदलने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="7291910923717764901">इस पेज पर इमेज की जानकारी जोड़ दी गई है</translation>
 <translation id="7293429513719260019">भाषा चुनें</translation>
@@ -1138,6 +1140,7 @@
 <translation id="7646772052135772216">पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही है</translation>
 <translation id="7655900163790317559">ब्लूटूथ चालू हो रहा है…</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7663313374500954251">इस ब्राउज़र को <ph name="PARENT_NAME" /> की मदद से, मैनेज किया जाता है.</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
 <translation id="766587987807204883">लेख यहां दिखाई देते हैं जिन्हें आप ऑफ़लाइन होने पर भी पढ़ सकते हैं.</translation>
 <translation id="7682724950699840886">ये सलाह आज़माएं: पक्का करें कि आपके डिवाइस पर ज़रूरी जगह उपलब्ध है, फिर दोबारा निर्यात करके देखें.</translation>

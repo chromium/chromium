@@ -341,7 +341,6 @@
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
-<translation id="3325831752328162756">{0,plural, =0{请立即将设备回滚到上一个版本}=1{请在 1 秒内将设备回滚到上一个版本}other{请在 # 秒内将设备回滚到上一个版本}}</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
 <translation id="334252345105450327">截屏</translation>
 <translation id="3351879221545518001">您目前正在投射屏幕。</translation>

@@ -270,6 +270,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
+<translation id="1747819498338037826">Change automatically</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753706481035618306">Page number</translation>
@@ -1686,6 +1687,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="643051589346665201">Change Google password</translation>
 <translation id="6433490469411711332">Edit contact info</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> refused to connect.</translation>
+<translation id="6438025220577812695">Change it myself</translation>
 <translation id="6440503408713884761">Ignored</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>

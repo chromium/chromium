@@ -813,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{۱ ساعت قبل}one{# ساعت قبل}other{# ساعت قبل}}</translation>
 <translation id="5810288467834065221">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="5810864297166300463">دستیار وب</translation>
+<translation id="5813552293717797987">این مرورگر را <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" /> مدیریت می‌کنند.</translation>
 <translation id="5814131985548525293">برای شروع، اینجا تایپ کنید یا روی نماد صدا ضربه بزنید</translation>
 <translation id="5814749351757353073">از سایت‌های محبوبتان باخبر باشید</translation>
 <translation id="583281660410589416">ناشناس</translation>
@@ -1077,6 +1078,7 @@
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> به <ph name="ORIGIN" /> ارسال شود؟</translation>
 <translation id="7274013316676448362">سایت مسدودشده</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> تغییر داده شود؟</translation>
+<translation id="7286703216224610554">فقط واکنش هم‌رسانی می‌شود</translation>
 <translation id="7290209999329137901">عدم‌دسترسی به تغییر نام</translation>
 <translation id="7291910923717764901">توضیحات تصویر برای این صفحه اضافه شد</translation>
 <translation id="7293429513719260019">انتخاب زبان</translation>
@@ -1157,6 +1159,7 @@
 <translation id="7646772052135772216">همگام‌سازی گذرواژه کار نمی‌کند</translation>
 <translation id="7655900163790317559">درحال روشن کردن بلوتوث…</translation>
 <translation id="7658239707568436148">لغو</translation>
+<translation id="7663313374500954251">این مرورگر را <ph name="PARENT_NAME" /> مدیریت می‌کند.</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>

@@ -826,6 +826,8 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
       å fjerne det fra listen og så legge det til på nytt.</translation>
 <translation id="3630699740441428070">Administratorene for denne enheten har konfigurert nettverkstilkoblingen din, noe som betyr at de kanskje kan se nettverkstrafikken din, inkludert hvilke nettsteder du besøker.</translation>
 <translation id="3631244953324577188">Biometri</translation>
+<translation id="3632503704576938756">Skjermdelingen er gjenopptatt</translation>
+<translation id="3632892046558972264">Skjermdelingen er satt på pause</translation>
 <translation id="3633738897356909127">Knappen «Oppdater Chrome» – trykk på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="3634530185120165534">Skuff 5</translation>
 <translation id="3634567936866541746">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
@@ -1060,6 +1062,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4346197816712207223">Godkjente kredittkort</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Tilkoblingen til <ph name="SITE" /> er ikke sikker</translation>
+<translation id="4349365535725594680">Kan ikke dele konfidensielt innhold</translation>
 <translation id="4350629523305688469">Flerfunksjonsskuff</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vil søke etter Bluetooth-enheter i nærheten. Fant disse enhetene:</translation>
 <translation id="4351175281479794167">Skriv inn bekreftelseskoden</translation>
@@ -1647,6 +1650,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6328786501058569169">Dette nettstedet er villedende</translation>
 <translation id="6337133576188860026">Frigjør mindre enn <ph name="SIZE" />. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6337534724793800597">Filtrér retningslinjer etter navn</translation>
+<translation id="6340739886198108203">Administratorreglene anbefaler ikke at du tar skjermdumper eller gjør opptak når konfidensielt innhold er synlig:</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
 <translation id="6355392890578844978">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -1826,6 +1830,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6972629891077993081">HID-enheter</translation>
 <translation id="6973656660372572881">Både statiske proxytjenere og en .pac-skriptnettadresse er angitt.</translation>
 <translation id="6973932557599545801">Beklager, jeg kan ikke hjelpe deg. Fortsett på egen hånd.</translation>
+<translation id="6978236010531171013">Del likevel</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6979983982287291980">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare.</translation>
@@ -2015,6 +2020,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7578104083680115302">Når du lagrer kort med Google, kan du bruke dem til å betale raskt på nettsteder og i apper – uansett hvilken enhet du bruker.</translation>
 <translation id="7581199239021537589">Y-forskyvning av bilde på side 2</translation>
 <translation id="7582602800368606489">Opprett en ny hendelse i Google Kalender raskt</translation>
+<translation id="7591288787774558753">Vil du dele konfidensielt innhold?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vil bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Tjenerens sertifikat bryter navnereglene.</translation>
 <translation id="7598391785903975535">Under <ph name="UPPER_ESTIMATE" /></translation>
@@ -2025,6 +2031,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å se og administrere passord i Chrome-innstillingene</translation>
 <translation id="7616645509853975347">Administratoren har slått på Chrome Enterprise Connectors i nettleseren din. Disse koblingene har tilgang til noen av dataene dine.</translation>
 <translation id="7619838219691048931">Sluttark</translation>
+<translation id="7625242817712715120">Administratorreglene anbefaler ikke at du skriver ut dette innholdet</translation>
 <translation id="762844065391966283">Enkeltvis</translation>
 <translation id="7633909222644580952">Ytelsesdata og programstopprapporter</translation>
 <translation id="7637571805876720304">Vil du fjerne kredittkortet fra Chromium?</translation>
@@ -2178,6 +2185,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">De ugyldige kortene er fjernet</translation>
 <translation id="8103161714697287722">Betalingsmåte</translation>
+<translation id="8103643211515685474">Skriv ut likevel</translation>
 <translation id="8105368624971345109">Slå av</translation>
 <translation id="810875025413331850">Fant ingen enheter i nærheten.</translation>
 <translation id="8116925261070264013">Kuttet lyd</translation>
@@ -2390,6 +2398,7 @@ Mer informasjon:
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Nylig lukket</translation>
 <translation id="8870494189203302833">Samme rekkefølge – forsiden ned</translation>
+<translation id="8870700989640064057">Vil du skrive ut den konfidensielle filen?</translation>
 <translation id="8871553383647848643">Tilpass nettleserens utseende</translation>
 <translation id="8874824191258364635">Angi et gyldig kortnummer</translation>
 <translation id="8884537526797090108">Kan ikke ta opp konfidensielt innhold</translation>
@@ -2468,6 +2477,7 @@ Mer informasjon:
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9128016270925453879">Regler er lastet inn</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
+<translation id="9131119348384879525">Vil du ta opp konfidensielt innhold?</translation>
 <translation id="9137013805542155359">Vis original</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>
 <translation id="9144951720726881238">Utløpsdato:</translation>

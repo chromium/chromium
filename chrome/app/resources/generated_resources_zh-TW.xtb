@@ -1323,6 +1323,7 @@
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
 <translation id="2332131598580221120">前往商店查看</translation>
 <translation id="2332192922827071008">開啟偏好設定</translation>
+<translation id="2332515770639153015">已啟用安全瀏覽強化防護功能</translation>
 <translation id="2332742915001411729">重設為預設值</translation>
 <translation id="2332948465534020594">已啟用「零打擾」</translation>
 <translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
@@ -3645,6 +3646,7 @@
 <translation id="4779136857077979611">飯糰</translation>
 <translation id="4779766576531456629">重新命名 eSIM 卡的行動網路</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
+<translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
 <translation id="4784559565779618838">如要搜尋特定網站或 Chrome，你可以在網址列中輸入以下快捷字詞，然後按下 Tab 鍵或空白鍵。</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="478708757211772586">使用代表「下一個」的外接切換裝置，前往畫面上的下一個項目</translation>

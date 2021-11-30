@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">વિન્ડો કૅપ્ચર</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2658778018866295321">ક્લિક કરો અને ખેંચો</translation>
+<translation id="2665788051462227163">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" /> અને <ph name="UNAVAILABLE_APPS_TWO" /> ઉપલબ્ધ નથી.</translation>
 <translation id="2678852583403169292">સાંભળવા માટે પસંદ કરો મેનૂ</translation>
 <translation id="2689613560355655046">ડેસ્ક 8</translation>
 <translation id="2700493154570097719">તમારું કીબોર્ડ સેટ કરો</translation>
@@ -341,7 +342,6 @@
 <translation id="3307642347673023554">લૅપટૉપ મોડ પર સ્વિચ થયા</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
-<translation id="3325831752328162756">{0,plural, =0{હમણાં જ ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}=1{1 સેકન્ડની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# સેકન્ડની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# સેકન્ડની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="3351879221545518001">તમે હાલમાં સ્ક્રીનને કાસ્ટ કરી રહ્યા છો.</translation>
@@ -420,6 +420,7 @@
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3713734891607377840">પૂર્ણ થાય ત્યારે ખોલો</translation>
+<translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
 <translation id="3742055079367172538">સ્ક્રીનશૉટ લેવાયો</translation>
 <translation id="3744282433224562605">તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો</translation>
 <translation id="3771549900096082774">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
@@ -605,6 +606,7 @@
 <translation id="4925542575807923399">આ એકાઉન્ટના એડમિન માટે જરૂરી છે કે આ એકાઉન્ટ એકથી વધુ સાઇન ઇન સત્રમાં પ્રથમ સાઇન ઇન કરેલ એકાઉન્ટ હોય.</translation>
 <translation id="4945196315133970626">નોટિફિકેશન બંધ કરો</translation>
 <translation id="4946376291507881335">કૅપ્ચર કરો</translation>
+<translation id="4947229553198882488">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS" /> ઉપલબ્ધ નથી.</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>
 <translation id="4952936045814352993">અલાર્મના સાઉન્ડ બંધ હોય ત્યારે ફોન શોધવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારું <ph name="DEVICE_TYPE" /> અગાઉના વર્ઝન પર પાછું વાળો. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>

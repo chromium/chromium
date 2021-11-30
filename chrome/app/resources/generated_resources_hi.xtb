@@ -1704,6 +1704,7 @@
 <translation id="2721037002783622288">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">निगरानी में रखे गए उपयोगकर्ताओं को आपके व्यवस्थापक ने अक्षम कर दिया है.</translation>
+<translation id="2722540561488096675"><ph name="TIME_LEFT" /> में आपका डिवाइस शट डाउन हो जाएगा. अपने डिवाइस को फिर से चालू करने से पहले, उससे जुड़ा यूएसबी डिवाइस हटाएं. इसके बाद, <ph name="DEVICE_OS" /> का इस्तेमाल शुरू किया जा सकता है.</translation>
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिविटी पुनर्स्थापित हो गई</translation>
@@ -4533,6 +4534,7 @@
 <translation id="5739235828260127894">पुष्टि होने का इंतज़ार किया जा रहा है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">बहुत बड़ा</translation>
 <translation id="5740328398383587084">आस-पास शेयर करने की सुविधा</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> के हार्डवेयर के साथ-साथ हैंग और क्रैश होने जैसी गड़बड़ियों से जुड़ा डेटा</translation>
 <translation id="574104302965107104">डिसप्ले स्क्रीन शेयर करना</translation>
 <translation id="574209121243317957">पिच</translation>
 <translation id="5746169159649715125">PDF के रूप में सेव करें</translation>

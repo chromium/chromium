@@ -813,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# तासापूर्वी}other{# तासांपूर्वी}}</translation>
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="5810864297166300463">वेब साहाय्य</translation>
+<translation id="5813552293717797987">हा ब्राउझर <ph name="PARENT_NAME_1" /> आणि <ph name="PARENT_NAME_2" /> द्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="5814131985548525293">सुरू करण्यासाठी इथे टाइप करा किंवा व्हॉइस आयकनवर टॅप करा</translation>
 <translation id="5814749351757353073">तुमच्या आवडत्या साइटचा माग ठेवा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -1077,6 +1078,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" /> ला <ph name="ONE_TIME_CODE" /> सबमिट करायचा आहे का?</translation>
 <translation id="7274013316676448362">अवरोधित केलेली साइट</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> बदलायची आहे का?</translation>
+<translation id="7286703216224610554">फक्त प्रतिक्रिया शेअर करा</translation>
 <translation id="7290209999329137901">नाव बदलणे उपलब्ध नाही</translation>
 <translation id="7291910923717764901">या पेजसाठी इमेजची वर्णने जोडली</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
@@ -1157,6 +1159,7 @@
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="7655900163790317559">ब्लूटूथ सुरू करत आहे…</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7663313374500954251">हा ब्राउझर <ph name="PARENT_NAME" /> द्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>
 <translation id="7682724950699840886">खालील टिपा वापरून पहा: तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा, पुन्हा एक्सपोर्ट करण्याचा प्रयत्न करा.</translation>

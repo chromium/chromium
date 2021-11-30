@@ -259,6 +259,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2561519700418191927">Bản xem trước video</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
+<translation id="2567545343356994513">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm</translation>
 <translation id="2571711316400087311">Đề xuất gửi các trang xuất hiện ở các ngôn ngữ khác cho Google Dịch</translation>
 <translation id="2581165646603367611">Thao tác này sẽ xóa cookie, bộ nhớ đệm và các dữ liệu khác của các trang web mà Chrome cho rằng không quan trọng.</translation>
 <translation id="2587052924345400782">Đã có phiên bản mới hơn</translation>
@@ -484,6 +485,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="395377504920307820">Sử dụng mà không cần tài khoản</translation>
 <translation id="3958287878205277013">Để xóa nhật ký duyệt web Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sẽ tải trang của bạn khi sẵn sàng}other{Chrome sẽ tải trang của bạn khi sẵn sàng}}</translation>
+<translation id="3962119236270174787">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm</translation>
 <translation id="3962957115499249330">Bạn sẽ thấy một thông báo khi tệp này bắt đầu tải xuống qua Wi-Fi.</translation>
 <translation id="3963007978381181125">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới có thể đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome không thể kiểm tra mật khẩu của bạn</translation>
@@ -949,6 +951,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
 <translation id="6633067410344541938">Mở khóa thẻ Ẩn danh</translation>
 <translation id="663674369910034433">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK1" />Đồng bộ hóa<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Các dịch vụ của Google<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Luôn chặn</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6643649862576733715">Sắp xếp theo lượng dữ liệu tiết kiệm được</translation>
 <translation id="6648459603387803038">Quản trị viên có thể thay đổi quy trình thiết lập trình duyệt của bạn từ xa. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.</translation>
@@ -1076,6 +1079,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7437998757836447326">Đăng xuất khỏi Chrome</translation>
 <translation id="7438641746574390233">Khi bạn bật Chế độ thu gọn, Chrome sẽ sử dụng máy chủ của Google để tải trang nhanh hơn. Chế độ thu gọn sẽ ghi lại các trang tốc độ rất chậm để chỉ tải nội dung cần thiết. Chế độ thu gọn không áp dụng cho Thẻ ẩn danh.</translation>
+<translation id="7443901082822119557">Ở chế độ ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để cá nhân hoá quảng cáo. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="7444811645081526538">Danh mục khác</translation>
 <translation id="7453467225369441013">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="7454641608352164238">Không đủ dung lượng</translation>
@@ -1183,6 +1187,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="799576009106109668">Bạn sẽ duyệt web nhanh hơn vì nội dung được tải chủ động dựa trên trang web bạn đang truy cập</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
+<translation id="8006818846907410687">Chặn trong khi dùng chế độ ẩn danh</translation>
 <translation id="8013372441983637696">Xóa cả dữ liệu của bạn trên Chrome khỏi thiết bị này</translation>
 <translation id="8015452622527143194">Trả lại mọi nội dung trên trang về kích thước mặc định</translation>
 <translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
@@ -1231,6 +1236,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8223642481677794647">Trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="825412236959742607">Trang này sử dụng quá nhiều bộ nhớ, nên Chrome đã xóa bớt nội dung.</translation>
+<translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="82619448491672958">Xem các thẻ khác</translation>

@@ -248,6 +248,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2653019840645008922">Tangkapan tetingkap</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2658778018866295321">Klik dan seret</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> dan <ph name="UNAVAILABLE_APPS_TWO" /> tidak tersedia pada peranti ini.</translation>
 <translation id="2678852583403169292">Menu Pilih untuk bercakap</translation>
 <translation id="2689613560355655046">Meja 8</translation>
 <translation id="2700493154570097719">Tetapkan papan kekunci anda</translation>
@@ -341,7 +342,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3307642347673023554">Bertukar kepada mod komputer riba</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> masih dapat log masuk nanti.</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
-<translation id="3325831752328162756">{0,plural, =0{Tukar peranti kepada versi sebelumnya sekarang}=1{Tukar peranti kepada versi sebelumnya dalam masa 1 saat}other{Tukar peranti kepada versi sebelumnya dalam masa # saat}}</translation>
 <translation id="3341303451326249809">Tangkapan skrin ditangkap</translation>
 <translation id="334252345105450327">Ambil tangkapan skrin</translation>
 <translation id="3351879221545518001">Anda sedang menghantar skrin.</translation>
@@ -420,6 +420,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka apabila sudah selesai</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dan <ph name="UNAVAILABLE_APPS_COUNT" /> lagi tidak tersedia pada peranti ini.</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
 <translation id="3744282433224562605">Untuk membuka kunci Chromebook anda, masukkan kata laluan</translation>
 <translation id="3771549900096082774">Mod Kontras Tinggi</translation>
@@ -606,6 +607,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
 <translation id="4946376291507881335">Tangkap</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> tidak tersedia pada peranti ini.</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
 <translation id="4952936045814352993">Kesan lokasi telefon tidak tersedia apabila bunyi penggera dilumpuhkan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> menghendaki anda mengundurkan <ph name="DEVICE_TYPE" />. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>

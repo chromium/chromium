@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
 <translation id="1745880797583122200">Серепчиңиз башкарылып жатат</translation>
 <translation id="1746113442205726301">Y сүрөтүн жылдыруу</translation>
+<translation id="1747819498338037826">Автоматтык түрдө өзгөртүү</translation>
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753706481035618306">Беттин номери</translation>
@@ -827,6 +828,8 @@
       болсо, аны тизмеден алып салып, кайра кошуп көрүңүз.</translation>
 <translation id="3630699740441428070">Бул түзмөктүн администраторлору тармакка туташууну конфигурациялап коюшту. Эми алар тармактагы трафикти, анын ичинде сиз кирген вебсайттарды көрө алышат.</translation>
 <translation id="3631244953324577188">Биометрика</translation>
+<translation id="3632503704576938756">Экран бөлүшүү улантылды</translation>
+<translation id="3632892046558972264">Экран бөлүшүү тындырылды</translation>
 <translation id="3633738897356909127">Chrome'ду жаңыртуу баскычы. Chrome жөндөөлөрүңүздөн Chrome'ду жаңыртуу үчүн, Enter баскычын басыңыз</translation>
 <translation id="3634530185120165534">5-түпкүч</translation>
 <translation id="3634567936866541746">Сырсөзүңүздү жаңы эле кооптуу сайтта киргиздиңиз. Аккаунттарыңызды коргоо үчүн Chrome сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -1061,6 +1064,7 @@
 <translation id="4346197816712207223">Кабыл алынган насыя карточкалары</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> сайты менен туташуу кооптуу</translation>
+<translation id="4349365535725594680">Купуя мазмун бөлүшүлбөй жатат</translation>
 <translation id="4350629523305688469">Көп функционалдуу түпкүч</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> сайты жакын жердеги Bluetooth түзмөктөрүн скандаганы жатат. Төмөнкү түзмөктөр табылды:</translation>
 <translation id="4351175281479794167">Текшерүү кодун киргизиңиз</translation>
@@ -1651,6 +1655,7 @@
 <translation id="6328786501058569169">Бул – жасалма сайт</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> чейин орун бошотулат. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
 <translation id="6337534724793800597">Саясаттарды аталышы боюнча чыпкалоо</translation>
+<translation id="6340739886198108203">Администратордун саясаты купуя мазмун көрүнүп турганда скриншотторду тартууну же жаздырууну сунуштабайт:</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> колдонмосун орнотуу</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жок}=1{1 сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}=2{2 сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}other{# сырсөз (<ph name="DOMAIN_LIST" /> доменде, шайкештирилген)}}</translation>
 <translation id="6355392890578844978">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1682,6 +1687,7 @@
 <translation id="643051589346665201">Google сырсөзүн өзгөртүү</translation>
 <translation id="6433490469411711332">Байланыш маалыматын түзөтүү</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> сайты туташуудан баш тартты.</translation>
+<translation id="6438025220577812695">Өзүм өзгөртөм</translation>
 <translation id="6440503408713884761">Этибарга алынган жок</translation>
 <translation id="6443406338865242315">Кайсы кеңейтүүлөрдү жана плагиндерди орнотуп алдыңыз</translation>
 <translation id="6446163441502663861">Kahu (Конверт)</translation>
@@ -1833,6 +1839,7 @@
 <translation id="6972629891077993081">HID түзмөктөрү</translation>
 <translation id="6973656660372572881">Туруктуу прокси серверлери да, .pac скрипт URL да белгиленген.</translation>
 <translation id="6973932557599545801">Кечиресиз, мен жардам бере албайм, өзүңүз улантыңыз.</translation>
+<translation id="6978236010531171013">Баары бир бөлүшүү</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Үнсүз (демейки)</translation>
 <translation id="6979983982287291980">Сиз жүктөп алган файлдар Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, аларда купуя маалыматтын же кесепеттүү программанын болуусу текшерилет.</translation>
@@ -2023,6 +2030,7 @@
 <translation id="7578104083680115302">Сайттарда жана колдонмолордо сатып алган нерселердин акысын Google'га сакталган карточкаларыңыз аркылуу төлөңүз. Мындай мүмкүнчүлүк бардык түзмөктөрүңүздө иштейт.</translation>
 <translation id="7581199239021537589">2-тараптын Y сүрөтүн жылдыруу</translation>
 <translation id="7582602800368606489">Google Жылнаамада жаңы иш-чараны тез түзүү</translation>
+<translation id="7591288787774558753">Купуя мазмунду бөлүшөсүзбү?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> cookie-файлдарын жана сайттын маалыматын <ph name="TOP_LEVEL_URL" /> доменинде колдонгону жатат</translation>
 <translation id="7592362899630581445">Сервердин тастыктамасы ысым чектөөлөрүн бузууда.</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> азыраак</translation>
@@ -2033,6 +2041,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome'дун жөндөөлөрүнө өтүп, сырсөздөрдү көрүү жана башкаруу үчүн, Tab, андан соң Enter баскычтарын басыңыз</translation>
 <translation id="7616645509853975347">Администраторуңуз серепчиңизде Chrome Enterprise туташтыргычтарын иштетти. Бул туташтыргычтардын айрым маалыматыңызга кирүү мүмкүнчүлүктөрү бар.</translation>
 <translation id="7619838219691048931">Акыркы барак</translation>
+<translation id="7625242817712715120">Администратордун саясаты бул мазмунду басып чыгарууну сунуштабайт</translation>
 <translation id="762844065391966283">Бир-бирден</translation>
 <translation id="7633909222644580952">Майнаптуулук дайындары жана ката жөнүндө кабарлоолор</translation>
 <translation id="7637571805876720304">Насыя картасы Chromium'дан алынып салынсынбы?</translation>
@@ -2186,6 +2195,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Жараксыз карталар өчүрүлдү</translation>
 <translation id="8103161714697287722">Төлөм ыкмасы</translation>
+<translation id="8103643211515685474">Баары бир басып чыгаруу</translation>
 <translation id="8105368624971345109">Өчүрүү</translation>
 <translation id="810875025413331850">Жакынкы түзмөктөр табылган жок.</translation>
 <translation id="8116925261070264013">Үнсүз кылынган</translation>
@@ -2398,6 +2408,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Жакында жабылган</translation>
 <translation id="8870494189203302833">Ошол эле иретте алдыңкы бетин ылдый каратып</translation>
+<translation id="8870700989640064057">Купуя файлды басып чыгарасызбы?</translation>
 <translation id="8871553383647848643">Cерепчинин көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="8874824191258364635">Жарактуу карточканын номерин киргизиңиз</translation>
 <translation id="8884537526797090108">Купуя мазмунду жаздырууга болбойт</translation>
@@ -2476,6 +2487,7 @@
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
 <translation id="9128016270925453879">Саясаттар жүктөлдү</translation>
 <translation id="9128870381267983090">Тармакка туташуу</translation>
+<translation id="9131119348384879525">Купуя мазмунду тартасызбы?</translation>
 <translation id="9137013805542155359">Түпверсиясын көрсөтүү</translation>
 <translation id="9141013498910525015">Даректерди башкаруу</translation>
 <translation id="9144951720726881238">Мөөнөтү аяктай турган күн:</translation>

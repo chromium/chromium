@@ -1712,6 +1712,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2721037002783622288">&amp;Search <ph name="SEARCH_ENGINE" /> for image</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Supervised users have been disabled by your administrator.</translation>
+<translation id="2722540561488096675">Your device will shut down in <ph name="TIME_LEFT" />. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="272488616838512378">Unit conversion</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
@@ -4569,6 +4570,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5739235828260127894">Waiting for verification. <ph name="LINK_BEGIN" />Find out more<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Very large</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> hardware support and stability</translation>
 <translation id="574104302965107104">Display mirroring</translation>
 <translation id="574209121243317957">Pitch</translation>
 <translation id="5746169159649715125">Save as PDF</translation>

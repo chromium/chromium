@@ -270,7 +270,7 @@
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1745880797583122200">您的瀏覽器受管理</translation>
 <translation id="1746113442205726301">圖片 Y 軸移動</translation>
-<translation id="1747819498338037826">自動變更</translation>
+<translation id="1747819498338037826">讓系統自動變更密碼</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753706481035618306">頁碼</translation>
@@ -1646,7 +1646,7 @@
 <translation id="6328786501058569169">這是欺詐網站</translation>
 <translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
-<translation id="6340739886198108203">根據管理員政策，當畫面上有機密內容時，不建議你擷取螢幕截圖或錄影：</translation>
+<translation id="6340739886198108203">當螢幕上出現機密內容時，管理員政策不建議擷取螢幕截圖或錄製內容：</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1678,7 +1678,7 @@
 <translation id="643051589346665201">變更 Google 密碼</translation>
 <translation id="6433490469411711332">編輯聯絡人資料</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 已拒絕連線。</translation>
-<translation id="6438025220577812695">我自行變更</translation>
+<translation id="6438025220577812695">我會自行變更密碼</translation>
 <translation id="6440503408713884761">已略過</translation>
 <translation id="6443406338865242315">您已安裝的擴充程式和外掛程式</translation>
 <translation id="6446163441502663861">Kahu (信封)</translation>
@@ -1830,7 +1830,7 @@
 <translation id="6972629891077993081">HID 裝置</translation>
 <translation id="6973656660372572881">已指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="6973932557599545801">很抱歉，我無法提供協助，請自行繼續。</translation>
-<translation id="6978236010531171013">一律分享</translation>
+<translation id="6978236010531171013">仍要分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6979983982287291980">您下載的檔案將會傳送給 Google Cloud 或第三方進行分析。例如，檔案可能會被掃描，以查看當中是否含有敏感資料或惡意軟件。</translation>
@@ -2032,7 +2032,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
 <translation id="7616645509853975347">管理員已在您的瀏覽器上啟用 Chrome Enterprise Connectors。這些連接器可存取您的部分資料。</translation>
 <translation id="7619838219691048931">結束工作表</translation>
-<translation id="7625242817712715120">根據管理員政策，不建議你列印這類內容</translation>
+<translation id="7625242817712715120">管理員政策不建議列印此內容</translation>
 <translation id="762844065391966283">一次一個物件</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>
@@ -2186,7 +2186,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">無效的卡已被移除</translation>
 <translation id="8103161714697287722">付款方法</translation>
-<translation id="8103643211515685474">一律列印</translation>
+<translation id="8103643211515685474">仍要列印</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="810875025413331850">找不到附近的裝置。</translation>
 <translation id="8116925261070264013">已設為靜音的網站</translation>

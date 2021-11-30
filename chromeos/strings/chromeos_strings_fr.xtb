@@ -118,6 +118,7 @@
 <translation id="2783010256799387990">RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le scanner</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
@@ -152,6 +153,7 @@
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" />… Numérisation terminée à <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" />…</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
@@ -209,6 +211,7 @@
 <translation id="4378373042927530923">Non exécuté</translation>
 <translation id="4378551569595875038">Connexion</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4418498623216225764">Mettre à jour les périphériques</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> désactivé</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
@@ -261,6 +264,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> chargés en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4950314376641394653">La version <ph name="VERSION" /> du micrologiciel <ph name="DEVICE_NAME" /> a été installée</translation>
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
@@ -402,6 +406,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">Recharge en cours, complète dans <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec - Échec de l'autorisation</translation>
@@ -415,6 +420,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
+<translation id="7240035910874241640">Tous les périphériques sont à jour</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
@@ -455,6 +461,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
 <translation id="7784116172884276937">Aucun serveur DNS configuré</translation>
+<translation id="7786540085520432425">Pendant la mise à jour, vous pouvez réduire la fenêtre, mais ne débranchez pas votre appareil. Cela peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil est compromis.</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Installer CloudReady</translation>
@@ -513,6 +520,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
+<translation id="8520963233738002436">Votre <ph name="DEVICE_NAME" /> est à jour</translation>
 <translation id="8521021929829989041">Utiliser en tant qu'appareil personnel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
@@ -552,6 +560,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
+<translation id="8994273342647807496">Installation - <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Latence élevée pour la résolution DNS</translation>

@@ -248,6 +248,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2653019840645008922">Ukuthatha iwindi</translation>
 <translation id="2653659639078652383">Hambisa</translation>
 <translation id="2658778018866295321">Chofoza uphinde uhudule</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, ne-<ph name="UNAVAILABLE_APPS_TWO" /> awekho kule divayisi.</translation>
 <translation id="2678852583403169292">Imenyu yokukhetha ukuze ukhulume</translation>
 <translation id="2689613560355655046">Itafula 8</translation>
 <translation id="2700493154570097719">Setha ikhibhodi yakho</translation>
@@ -341,7 +342,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3307642347673023554">Ishintshele kumodi yekhompuyutha ephathekayo</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> angasangena ngemvume kamuva.</translation>
 <translation id="3321628682574733415">Ikhodi yomzali engalungile</translation>
-<translation id="3325831752328162756">{0,plural, =0{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi namanje}=1{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nomzuzwana o-1}one{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nemizuzwana engu-#}other{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nemizuzwana engu-#}}</translation>
 <translation id="3341303451326249809">Umfanekiso weskrini uqoshiwe</translation>
 <translation id="334252345105450327">Thatha isithombe-skrini</translation>
 <translation id="3351879221545518001">Okwamanje usakaza isikrini.</translation>
@@ -420,6 +420,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3708186454126126312">Kuxhunywe ngaphambilini</translation>
 <translation id="371370241367527062">Imakrofoni yangaphambili</translation>
 <translation id="3713734891607377840">Vula lapho isiqedile</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, nangu-<ph name="UNAVAILABLE_APPS_COUNT" /> ngaphezulu awekho kule divayisi.</translation>
 <translation id="3742055079367172538">Kuthathwe isithombe-skrini</translation>
 <translation id="3744282433224562605">Ukuze uvule i-Chromebook yakho, faka iphasiwedi</translation>
 <translation id="3771549900096082774">Imodi yokugqama okuphezulu</translation>
@@ -605,6 +606,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4925542575807923399">Umlawuli wale akhawunti udinga le akhawunti ukuthi ibe yi-akhawunti yokuqala engene ngemvume kuseshini yokungena ngemvume eningi.</translation>
 <translation id="4945196315133970626">Vala izaziso</translation>
 <translation id="4946376291507881335">Thatha</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" />awekho kule divayisi.</translation>
 <translation id="495046168593986294">Skrolela phezulu</translation>
 <translation id="4952936045814352993">Ukuthola ifoni akutholakali uma imisindo ye-alamu ikhutshaziwe</translation>
 <translation id="4960324571663582548">I-<ph name="MANAGER" /> idinga ukuba ubuyele emuva ku-<ph name="DEVICE_TYPE" /> yakho. Idivayisi yakho izosethwa kabusha futhi yonke idatha izosulwa.</translation>

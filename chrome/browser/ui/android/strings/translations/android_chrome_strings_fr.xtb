@@ -611,6 +611,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4696983787092045100">Envoyer le SMS à vos appareils</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4714588616299687897">Économisez jusqu'à 60 % de vos données</translation>
+<translation id="471759387343966120">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Proposer de traduire</translation>
 <translation id="4720023427747327413">Ouvrir dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Aidez-nous à améliorer Chrome. <ph name="BEGIN_LINK" />Répondez à notre enquête<ph name="END_LINK" /></translation>
@@ -1043,6 +1044,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Autre</translation>
+<translation id="7143462160780459030">Impossible de prendre une capture d'écran. Réessayez.</translation>
 <translation id="7146622961999026732">Ces sites et applications semblent importants pour vous :</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
 <translation id="7155317020660659215">Pour scanner un code QR, modifiez vos paramètres afin d'autoriser Chrome à utiliser votre appareil photo</translation>
@@ -1223,6 +1225,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="808747664143081553">Connecté à l'appareil</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce code QR</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
+<translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils</translation>
 <translation id="8110024788458304985">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
@@ -1260,6 +1263,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8349013245300336738">Trier en fonction de la quantité de données utilisées</translation>
+<translation id="8352996530981010042">Impossible de télécharger les réactions. Réessayez.</translation>
 <translation id="8354977102499939946">Rechercher rapidement par commande vocale. Pour modifier ce raccourci, accédez aux paramètres.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8364299278605033898">Affichez les sites Web populaires</translation>
