@@ -132,18 +132,24 @@ std::string TranslateKeyManagement(arc::mojom::KeyManagement management) {
 arc::mojom::SecurityType TranslateWiFiSecurity(const std::string& type) {
   if (type == shill::kSecurityNone)
     return arc::mojom::SecurityType::NONE;
+
   if (type == shill::kSecurityWep)
     return arc::mojom::SecurityType::WEP_PSK;
+
   if (type == shill::kSecurityPsk)
     return arc::mojom::SecurityType::WPA_PSK;
+
   if (type == shill::kSecurityWpa)
     return arc::mojom::SecurityType::WPA_PSK;
+
   if (type == shill::kSecurity8021x)
     return arc::mojom::SecurityType::WPA_EAP;
+
   // Robust Security Network does not appear to be defined in Android.
   // Approximate it with WPA_EAP
   if (type == shill::kSecurityRsn)
     return arc::mojom::SecurityType::WPA_EAP;
+
   NET_LOG(ERROR) << "Unknown WiFi security type " << type;
   return arc::mojom::SecurityType::NONE;
 }
@@ -156,13 +162,17 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
     const std::string& state) {
   if (state == shill::kStateReady)
     return arc::mojom::ConnectionStateType::CONNECTED;
+
   if (state == shill::kStateAssociation || state == shill::kStateConfiguration)
     return arc::mojom::ConnectionStateType::CONNECTING;
+
   if ((state == shill::kStateIdle) || (state == shill::kStateFailure) ||
-      (state == shill::kStateDisconnect) || (state == ""))
+      (state == shill::kStateDisconnect) || (state == "")) {
     return arc::mojom::ConnectionStateType::NOT_CONNECTED;
+  }
   if (chromeos::NetworkState::StateIsPortalled(state))
     return arc::mojom::ConnectionStateType::PORTAL;
+
   if (state == shill::kStateOnline)
     return arc::mojom::ConnectionStateType::ONLINE;
 
@@ -189,14 +199,19 @@ bool IsActiveNetworkState(const chromeos::NetworkState* network) {
 arc::mojom::NetworkType TranslateNetworkType(const std::string& type) {
   if (type == shill::kTypeWifi)
     return arc::mojom::NetworkType::WIFI;
+
   if (type == shill::kTypeVPN)
     return arc::mojom::NetworkType::VPN;
+
   if (type == shill::kTypeEthernet)
     return arc::mojom::NetworkType::ETHERNET;
+
   if (type == shill::kTypeEthernetEap)
     return arc::mojom::NetworkType::ETHERNET;
+
   if (type == shill::kTypeCellular)
     return arc::mojom::NetworkType::CELLULAR;
+
   NOTREACHED() << "Unknown network type: " << type;
   return arc::mojom::NetworkType::ETHERNET;
 }
@@ -787,6 +802,7 @@ base::Value ArcNetHostImpl::TranslateStringListToValue(
   base::Value result(base::Value::Type::LIST);
   for (const auto& item : string_list)
     result.Append(item);
+
   return result;
 }
 
@@ -795,6 +811,7 @@ base::Value ArcNetHostImpl::TranslateLongListToStringValue(
   base::Value result(base::Value::Type::LIST);
   for (const auto& item : long_list)
     result.Append(base::NumberToString(item));
+
   return result;
 }
 
@@ -906,12 +923,12 @@ base::Value ArcNetHostImpl::TranslateEapCredentialsToDict(
     dict.SetStringKey(shill::kEapAnonymousIdentityProperty,
                       cred.anonymous_identity.value());
   }
-  if (cred.identity.has_value()) {
+  if (cred.identity.has_value())
     dict.SetStringKey(shill::kEapIdentityProperty, cred.identity.value());
-  }
-  if (cred.password.has_value()) {
+
+  if (cred.password.has_value())
     dict.SetStringKey(shill::kEapPasswordProperty, cred.password.value());
-  }
+
   dict.SetStringKey(shill::kEapKeyMgmtProperty,
                     TranslateKeyManagement(cred.key_management));
   // TODO(195262431): Provision and fill in certificates.
@@ -1018,9 +1035,8 @@ void ArcNetHostImpl::DisconnectArcVpn() {
 }
 
 void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
-  if (arc_vpn_service_path_ != service_path) {
+  if (arc_vpn_service_path_ != service_path)
     return;
-  }
 
   // This code path is taken when a user clicks the blue Disconnect button
   // in Chrome OS.  Chrome is about to send the Disconnect call to shill,
@@ -1035,8 +1051,9 @@ void ArcNetHostImpl::NetworkConnectionStateChanged(
     return;
 
   if (arc_vpn_service_path_ != shill_backed_network->path() ||
-      shill_backed_network->IsConnectingOrConnected())
+      shill_backed_network->IsConnectingOrConnected()) {
     return;
+  }
 
   // This code path is taken when shill disconnects the Android VPN
   // service.  This can happen if a user tries to connect to a Chrome OS
