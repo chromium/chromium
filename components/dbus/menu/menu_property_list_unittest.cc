@@ -16,6 +16,8 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+#include "ui/events/test/keyboard_layout.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
@@ -325,33 +327,43 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
 
 #if defined(OS_LINUX)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
-  // TODO(1136791): fix for Ozone/Wayland.
-  if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
-    GTEST_SKIP();
+  // The Wayland implementation requires the keyboard layout to be set.
+  // The ScopedKeyboardLayout does not unset the already existing layout engine,
+  // so we do so here and restore in the end of the test.
+  auto* const old_layout =
+      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  ui::KeyboardLayoutEngineManager::ResetKeyboardLayoutEngine();
 
-  auto builder = TestMenuModelBuilder();
+  {
+    ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
-  // No accelerator.
-  auto menu = builder.SetAccelerator(ui::Accelerator()).Build();
-  MenuItemProperties props;
-  EXPECT_EQ(menu->ComputeProperties(), props);
+    auto builder = TestMenuModelBuilder();
 
-  // Set a key.
-  menu = builder.SetAccelerator(ui::Accelerator(ui::VKEY_A, 0)).Build();
-  props["shortcut"] =
-      MakeDbusVariant(MakeDbusArray(MakeDbusArray(DbusString("a"))));
-  EXPECT_EQ(menu->ComputeProperties(), props);
+    // No accelerator.
+    auto menu = builder.SetAccelerator(ui::Accelerator()).Build();
+    MenuItemProperties props;
+    EXPECT_EQ(menu->ComputeProperties(), props);
 
-  // Add modifiers.
-  menu = builder
-             .SetAccelerator(ui::Accelerator(
-                 ui::VKEY_A,
-                 ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))
-             .Build();
-  props["shortcut"] = MakeDbusVariant(
-      MakeDbusArray(MakeDbusArray(DbusString("Control"), DbusString("Alt"),
-                                  DbusString("Shift"), DbusString("a"))));
-  EXPECT_EQ(menu->ComputeProperties(), props);
+    // Set a key.
+    menu = builder.SetAccelerator(ui::Accelerator(ui::VKEY_A, 0)).Build();
+    props["shortcut"] =
+        MakeDbusVariant(MakeDbusArray(MakeDbusArray(DbusString("a"))));
+    EXPECT_EQ(menu->ComputeProperties(), props);
+
+    // Add modifiers.
+    menu = builder
+               .SetAccelerator(ui::Accelerator(
+                   ui::VKEY_A,
+                   ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))
+               .Build();
+    props["shortcut"] = MakeDbusVariant(
+        MakeDbusArray(MakeDbusArray(DbusString("Control"), DbusString("Alt"),
+                                    DbusString("Shift"), DbusString("a"))));
+    EXPECT_EQ(menu->ComputeProperties(), props);
+  }
+
+  if (old_layout)
+    ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(old_layout);
 }
 #endif
 
