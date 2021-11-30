@@ -68,7 +68,7 @@ def strip_indentation_whitespace(text):
 
 def strip_all_whitespace(text):
   pattern = re.compile(r'\s+')
-  return re.sub(pattern, '', text)
+  return re.sub(pattern, '', text).replace(r'\n', '\n')
 
 
 def extract_certificates_from_pem(pem_bytes):
