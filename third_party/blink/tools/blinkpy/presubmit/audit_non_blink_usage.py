@@ -108,6 +108,7 @@ _CONFIG = [
             'absl::make_optional',
             'base::make_span',
             'absl::nullopt',
+            'absl::nullopt_t',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::size',
@@ -624,8 +625,11 @@ _CONFIG = [
             'base::(scoped_nsobject|ScopedCFTypeRef)',
 
             # absl::variant and getters:
-            'absl::variant',
+            'absl::get',
             'absl::get_if',
+            'absl::holds_alternative',
+            'absl::variant',
+            'absl::visit',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',
