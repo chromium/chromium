@@ -87,7 +87,6 @@ template("fuchsia_run_script_with_packages") {
                                ])
 
     wrapper_script = _generated_script_path
-    use_vpython3 = true
 
     deps = [ invoker.package ]
 

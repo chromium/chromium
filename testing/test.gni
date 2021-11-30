@@ -855,9 +855,6 @@ template("script_test") {
     if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
       use_vpython3 = false
       data += [ "//.vpython" ]
-    } else {
-      use_vpython3 = true
-      data += [ "//.vpython3" ]
     }
 
     if (defined(invoker.data)) {
