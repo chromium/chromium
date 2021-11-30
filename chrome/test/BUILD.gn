@@ -3897,8 +3897,6 @@ if (!is_android && !is_fuchsia) {
 
     if (enable_supervised_users) {
       sources += [
-        "../browser/supervised_user/navigation_finished_waiter.cc",
-        "../browser/supervised_user/navigation_finished_waiter.h",
         "../browser/supervised_user/permission_request_creator_mock.cc",
         "../browser/supervised_user/permission_request_creator_mock.h",
         "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",

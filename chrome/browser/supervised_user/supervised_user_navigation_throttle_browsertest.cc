@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/navigation_finished_waiter.h"
 #include "chrome/browser/supervised_user/permission_request_creator_mock.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
@@ -138,6 +137,57 @@ void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
   if (web_contents()->GetInnerWebContents().size() > 0u)
     return;
   run_loop_.Run();
+}
+
+// Helper class to wait for a particular navigation in a particular render
+// frame in tests.
+class NavigationFinishedWaiter : public content::WebContentsObserver {
+ public:
+  NavigationFinishedWaiter(content::WebContents* web_contents,
+                           int frame_id,
+                           const GURL& url);
+  NavigationFinishedWaiter(const NavigationFinishedWaiter&) = delete;
+  NavigationFinishedWaiter& operator=(const NavigationFinishedWaiter&) = delete;
+  ~NavigationFinishedWaiter() override = default;
+
+  void Wait();
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  int frame_id_;
+  GURL url_;
+  bool did_finish_ = false;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+};
+
+NavigationFinishedWaiter::NavigationFinishedWaiter(
+    content::WebContents* web_contents,
+    int frame_id,
+    const GURL& url)
+    : content::WebContentsObserver(web_contents),
+      frame_id_(frame_id),
+      url_(url) {}
+
+void NavigationFinishedWaiter::Wait() {
+  if (did_finish_)
+    return;
+  run_loop_.Run();
+}
+
+void NavigationFinishedWaiter::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted())
+    return;
+
+  if (navigation_handle->GetFrameTreeNodeId() != frame_id_ ||
+      navigation_handle->GetURL() != url_)
+    return;
+
+  did_finish_ = true;
+  run_loop_.Quit();
 }
 
 }  // namespace
