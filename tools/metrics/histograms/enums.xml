@@ -52931,6 +52931,8 @@ from previous Chrome versions.
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
   <int value="966352185" label="PrivacyAdvisor:disabled"/>
   <int value="966415988" label="SyncPseudoUSSPasswords:enabled"/>
+  <int value="966958557"
+      label="CryptAuthV2DedupDeviceLastActivityTime:enabled"/>
   <int value="968355926" label="ExportTaggedPDF:enabled"/>
   <int value="968715406"
       label="enable-experimental-accessibility-magnifier-new-focus-following"/>
@@ -54251,6 +54253,8 @@ from previous Chrome versions.
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937357350" label="MultilingualTyping:disabled"/>
+  <int value="1937435913"
+      label="CryptAuthV2DedupDeviceLastActivityTime:disabled"/>
   <int value="1937905990" label="AutofillCenterAlignedSuggestions:enabled"/>
   <int value="1938279796" label="PromosOnLocalNtp:disabled"/>
   <int value="1939413645" label="enable-invalid-cert-collection"/>

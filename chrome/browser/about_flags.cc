@@ -3063,6 +3063,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCellularUseExternalEuiccName,
      flag_descriptions::kCellularUseExternalEuiccDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCellularUseExternalEuicc)},
+    {"cryptauth-v2-dedup-device-last-activity-time",
+     flag_descriptions::kCryptAuthV2DedupDeviceLastActivityTimeName,
+     flag_descriptions::kCryptAuthV2DedupDeviceLastActivityTimeDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kCryptAuthV2DedupDeviceLastActivityTime)},
     {"disable-idle-sockets-close-on-memory-pressure",
      flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureName,
      flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureDescription,

@@ -145,6 +145,8 @@ extern const base::Feature kCryptAuthV2DeviceActivityStatus;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceActivityStatusUseConnectivity;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCryptAuthV2DedupDeviceLastActivityTime;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2Enrollment;

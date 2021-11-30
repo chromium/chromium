@@ -251,6 +251,46 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
       host_device.connectivity_status = std::get<1>(*it)->connectivity_status;
     }
   }
+
+  // Remove devices with the same non-trivial |last_activity_time|, keeping only
+  // the device with the most recent |last_update_time| or
+  // |last_update_time_millis|. Note: |eligible_active_devices_from_last_sync_|
+  // is already sorted in the preferred order.
+  if (base::FeatureList::IsEnabled(
+          features::kCryptAuthV2DedupDeviceLastActivityTime)) {
+    base::flat_set<base::Time> set_of_same_last_activity_time;
+    eligible_active_devices_from_last_sync_.erase(
+        std::remove_if(
+            eligible_active_devices_from_last_sync_.begin(),
+            eligible_active_devices_from_last_sync_.end(),
+            [&id_to_activity_status_map, &set_of_same_last_activity_time](
+                const multidevice::DeviceWithConnectivityStatus& device) {
+              auto it = id_to_activity_status_map.find(
+                  device.remote_device.instance_id());
+
+              if (it == id_to_activity_status_map.end()) {
+                return false;
+              }
+
+              base::Time last_activity_time =
+                  std::get<1>(*it)->last_activity_time;
+
+              // Do not filter out devices if the last activity time was not set
+              // by the server, as indicated by a trivial base::Time value.
+              if (last_activity_time.is_null()) {
+                return false;
+              }
+
+              if (set_of_same_last_activity_time.contains(last_activity_time)) {
+                return true;
+              }
+
+              set_of_same_last_activity_time.insert(last_activity_time);
+
+              return false;
+            }),
+        eligible_active_devices_from_last_sync_.end());
+  }
 }
 
 }  // namespace multidevice_setup

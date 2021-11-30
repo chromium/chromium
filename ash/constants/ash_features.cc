@@ -347,6 +347,13 @@ const base::Feature kCryptAuthV2DeviceActivityStatusUseConnectivity{
     "CryptAuthV2DeviceActivityStatusUseConnectivity",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables use of last activity time to deduplicate eligible host
+// phones in multidevice setup dropdown list. We assume that different copies
+// of same device share the same last activity time but different last update
+// time.
+const base::Feature kCryptAuthV2DedupDeviceLastActivityTime{
+    "CryptAuthV2DedupDeviceLastActivityTime", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables or disables the CryptAuth v2 DeviceSync flow. Regardless of this
 // flag, v1 DeviceSync will continue to operate until it is disabled via the
 // feature flag kDisableCryptAuthV1DeviceSync.
