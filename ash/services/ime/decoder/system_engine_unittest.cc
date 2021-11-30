@@ -95,8 +95,7 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
   MOCK_METHOD(void,
               SetComposition,
               (const std::u16string& text,
-               std::vector<mojom::CompositionSpanPtr> spans,
-               uint32_t new_cursor_position),
+               std::vector<mojom::CompositionSpanPtr> spans),
               (override));
   MOCK_METHOD(void,
               SetCompositionRange,
