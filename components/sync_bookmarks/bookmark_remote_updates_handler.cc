@@ -296,9 +296,7 @@ void BookmarkRemoteUpdatesHandler::Process(
     }
 
     if (tracked_entity && tracked_entity->IsUnsynced()) {
-      ProcessConflict(*update, tracked_entity);
-      // |tracked_entity| might be deleted during processing conflict.
-      tracked_entity = bookmark_tracker_->GetEntityForSyncId(update_entity.id);
+      tracked_entity = ProcessConflict(*update, tracked_entity);
       if (!tracked_entity) {
         // During conflict resolution, the entity could be dropped in case of
         // a conflict between local and remote deletions. We shouldn't worry
@@ -657,7 +655,8 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   bookmark_model_->Remove(node);
 }
 
-void BookmarkRemoteUpdatesHandler::ProcessConflict(
+const SyncedBookmarkTracker::Entity*
+BookmarkRemoteUpdatesHandler::ProcessConflict(
     const syncer::UpdateResponseData& update,
     const SyncedBookmarkTracker::Entity* tracked_entity) {
   const syncer::EntityData& update_entity = update.entity;
@@ -676,7 +675,7 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
     // Both have been deleted, delete the corresponding entity from the tracker.
     bookmark_tracker_->Remove(tracked_entity);
     DLOG(WARNING) << "Conflict: CHANGES_MATCH";
-    return;
+    return nullptr;
   }
 
   if (update_entity.is_deleted()) {
@@ -685,16 +684,17 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
     bookmark_tracker_->UpdateServerVersion(tracked_entity,
                                            update.response_version);
     DLOG(WARNING) << "Conflict: USE_LOCAL";
-    return;
+    return tracked_entity;
   }
+
+  DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
 
   if (tracked_entity->metadata()->is_deleted()) {
     // Only local node has been deleted. It should be restored from the server
     // data as a remote creation.
     bookmark_tracker_->Remove(tracked_entity);
-    ProcessCreate(update);
     DLOG(WARNING) << "Conflict: USE_REMOTE";
-    return;
+    return ProcessCreate(update);
   }
 
   // No deletions, there are potentially conflicting updates.
@@ -713,7 +713,7 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
                 << update_entity.parent_id;
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentEntityInConflict);
-    return;
+    return tracked_entity;
   }
   const bookmarks::BookmarkNode* new_parent =
       new_parent_entity->bookmark_node();
@@ -726,7 +726,7 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
         << "Could not update node. Parent node has been deleted already.";
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentNodeInConflict);
-    return;
+    return tracked_entity;
   }
   // Either local and remote data match or server wins, and in both cases we
   // should squash any pending commits.
@@ -752,6 +752,7 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
                       bookmark_model_, bookmark_tracker_, favicon_service_);
   }
   ReuploadEntityIfNeeded(update_entity, tracked_entity);
+  return tracked_entity;
 }
 
 void BookmarkRemoteUpdatesHandler::RemoveEntityAndChildrenFromTracker(
