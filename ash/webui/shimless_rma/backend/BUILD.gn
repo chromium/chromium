@@ -19,6 +19,7 @@ static_library("backend") {
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/dbus",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
     "//chromeos/dbus/update_engine",

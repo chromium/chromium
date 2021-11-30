@@ -5,7 +5,9 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
@@ -14,6 +16,7 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma_mojom_traits.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/util/version_loader.h"
@@ -75,7 +78,6 @@ mojom::QrCodePtr GenerateQRCode(const std::string& input) {
   qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
   return qr_code;
 }
-
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService(
@@ -112,9 +114,33 @@ void ShimlessRmaService::TransitionPreviousState(
 }
 
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
-  chromeos::RmadClient::Get()->AbortRma(
-      base::BindOnce(&ShimlessRmaService::OnAbortRmaResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+      &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), /*reboot=*/false));
+}
+
+// TODO(gavindodd): Work out how to catch the restart in tests and add unit test
+void ShimlessRmaService::CriticalErrorExitToLogin(
+    CriticalErrorExitToLoginCallback callback) {
+  if (!critical_error_occurred_) {
+    std::move(callback).Run(rmad::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+      &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), /*reboot=*/false));
+}
+
+// TODO(gavindodd): Work out how to catch the reboot in tests and add unit test
+void ShimlessRmaService::CriticalErrorReboot(
+    CriticalErrorRebootCallback callback) {
+  if (!critical_error_occurred_) {
+    std::move(callback).Run(rmad::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+      &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), /*reboot=*/true));
 }
 
 void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
@@ -959,8 +985,7 @@ void ShimlessRmaService::OnGetStateResponse(
     absl::optional<rmad::GetStateReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmadClient";
-    // TODO(gavindodd): This needs better handling. Maybe display an error and
-    // force a chrome update?
+    critical_error_occurred_ = true;
     std::move(callback).Run(mojom::State::kUnknown, false, false,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
@@ -974,6 +999,9 @@ void ShimlessRmaService::OnGetStateResponse(
   mojo_state_ = RmadStateToMojo(state_proto_.state_case());
   if (response->error() != rmad::RMAD_ERROR_OK) {
     LOG(ERROR) << "rmadClient returned error " << response->error();
+    if (response->error() == rmad::RMAD_ERROR_RMA_NOT_REQUIRED) {
+      critical_error_occurred_ = true;
+    }
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                             can_abort_, can_go_back_, response->error());
     return;
@@ -985,13 +1013,31 @@ void ShimlessRmaService::OnGetStateResponse(
 
 void ShimlessRmaService::OnAbortRmaResponse(
     AbortRmaCallback callback,
+    bool reboot,
     absl::optional<rmad::AbortRmaReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmad::AbortRma";
     std::move(callback).Run(rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-    return;
+  } else {
+    std::move(callback).Run(response->error());
   }
-  std::move(callback).Run(response->error());
+  // Only reboot or exit to login if abort was successful or a critical error
+  // has occurred.
+  if (critical_error_occurred_ || response->error() == rmad::RMAD_ERROR_OK) {
+    if (reboot) {
+      VLOG(1) << "Rebooting...";
+      chromeos::PowerManagerClient::Get()->RequestRestart(
+          power_manager::REQUEST_RESTART_FOR_USER,
+          critical_error_occurred_
+              ? "Rebooting after user cancelled RMA due to critical error."
+              : "Rebooting after user cancelled RMA.");
+    } else {
+      VLOG(1) << "Restarting Chrome to bypass RMA after cancel request.";
+      // TODO(gavindodd): Append ::ash::switches::kNoShimlessRma when autolaunch
+      // is implemented.
+      shimless_rma_delegate_->RestartChrome();
+    }
+  }
 }
 
 void ShimlessRmaService::OnNetworkListResponse(

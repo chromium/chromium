@@ -698,6 +698,23 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{error: !RmadErrorCode}>}
+   */
+  criticalErrorExitToLogin() {
+    return this.methods_.resolveMethodWithDelay(
+        'criticalErrorExitToLogin', this.resolveMethodDelayMs_);
+  }
+
+  /**
+   * @return {!Promise<!{error: !RmadErrorCode}>}
+   */
+  criticalErrorReboot() {
+    return this.methods_.resolveMethodWithDelay(
+        'criticalErrorReboot', this.resolveMethodDelayMs_);
+  }
+
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
    * @param {!ErrorObserverRemote} remote
    */
@@ -1171,6 +1188,10 @@ export class FakeShimlessRmaService {
     this.methods_.register('endRmaAndReboot');
     this.methods_.register('endRmaAndShutdown');
     this.methods_.register('endRmaAndCutoffBattery');
+
+    // Critical error handling
+    this.methods_.register('criticalErrorExitToLogin');
+    this.methods_.register('criticalErrorReboot');
   }
 
   /**

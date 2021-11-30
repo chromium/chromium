@@ -676,6 +676,17 @@ interface ShimlessRmaService {
           RmadErrorCode error);
 
   ///////////////////////////////////////
+  // Critical error handling
+  // These methods will fail if backend is not in critical error state.
+  // Currently the only critical error is when error is kRmaNotRequired
+  // (state is kUnknown).
+  //
+  // Attempt to cancel RMA and restart Chrome without checking RMA.
+  CriticalErrorExitToLogin() => (RmadErrorCode error);
+  // Attempt to cancel RMA and reboot the device.
+  CriticalErrorReboot() => (RmadErrorCode error);
+
+  ///////////////////////////////////////
   // Observers
   //
   // Registers an observer for any out of band error that occurs, such as a
