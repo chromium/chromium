@@ -121,9 +121,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong)
     UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
 
-// Gesture recognizer to dismiss the thumb strip.
+// Tap gesture recognizer to dismiss the thumb strip.
 @property(nonatomic, strong)
     UITapGestureRecognizer* thumbStripDismissRecognizer;
+
+// Swipe up gesture recognizer to dismiss the thumb strip.
+@property(nonatomic, strong)
+    UISwipeGestureRecognizer* thumbStripSwipeUpDismissRecognizer;
 
 // YES while batch updates and the batch update completion are being performed.
 @property(nonatomic) BOOL updating;
@@ -934,15 +938,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // If the dismiss recognizer needs to be disabled, do it now so the user won't
   // trigger it during the transformation.
-  if (!thumbStripDismissEnabled)
+  if (!thumbStripDismissEnabled) {
     self.thumbStripDismissRecognizer.enabled = NO;
+    self.thumbStripSwipeUpDismissRecognizer.enabled = NO;
+  }
 
   __weak __typeof(self) weakSelf = self;
   auto completionBlock = ^(BOOL completed, BOOL finished) {
     weakSelf.collectionView.scrollEnabled = YES;
     weakSelf.currentLayout = nextLayout;
-    if (thumbStripDismissEnabled)
+    if (thumbStripDismissEnabled) {
       self.thumbStripDismissRecognizer.enabled = YES;
+      self.thumbStripSwipeUpDismissRecognizer.enabled = YES;
+    }
     if (completion) {
       completion(completed, finished);
     }
@@ -1351,14 +1359,25 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [collectionView.backgroundView
         addGestureRecognizer:self.thumbStripDismissRecognizer];
   }
+  if (!self.thumbStripSwipeUpDismissRecognizer) {
+    self.thumbStripSwipeUpDismissRecognizer = [[UISwipeGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(handleThumbStripBackgroundSwipeUpGesture:)];
+    self.thumbStripSwipeUpDismissRecognizer.direction =
+        UISwipeGestureRecognizerDirectionUp;
+    [collectionView.backgroundView
+        addGestureRecognizer:self.thumbStripSwipeUpDismissRecognizer];
+  }
 
   if (panHandler.currentState == ViewRevealState::Revealed ||
       panHandler.currentState == ViewRevealState::Fullscreen) {
     self.thumbStripDismissRecognizer.enabled = NO;
+    self.thumbStripSwipeUpDismissRecognizer.enabled = NO;
     collectionView.collectionViewLayout = self.gridLayout;
     self.currentLayout = self.gridLayout;
   } else {
     self.thumbStripDismissRecognizer.enabled = YES;
+    self.thumbStripSwipeUpDismissRecognizer.enabled = YES;
     collectionView.collectionViewLayout = self.horizontalLayout;
     self.currentLayout = self.horizontalLayout;
   }
@@ -1380,7 +1399,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [collectionView.backgroundView
       removeGestureRecognizer:self.thumbStripDismissRecognizer];
+  [collectionView.backgroundView
+      removeGestureRecognizer:self.thumbStripSwipeUpDismissRecognizer];
   self.thumbStripDismissRecognizer = nil;
+  self.thumbStripSwipeUpDismissRecognizer = nil;
 
   collectionView.collectionViewLayout = gridLayout;
   self.currentLayout = gridLayout;
@@ -1415,6 +1437,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 
   // Handle the tap.
+  [self.thumbStripHandler closeThumbStrip];
+}
+
+- (void)handleThumbStripBackgroundSwipeUpGesture:
+    (UIGestureRecognizer*)recognizer {
   [self.thumbStripHandler closeThumbStrip];
 }
 
