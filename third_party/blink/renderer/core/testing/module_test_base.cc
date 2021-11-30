@@ -57,12 +57,9 @@ void ParametrizedModuleTest::SetUp() {
   ParametrizedModuleTestBase::SetUp(UseTopLevelAwait());
 }
 
-class SaveResultFunction final : public ScriptFunction {
+class SaveResultFunction final : public NewScriptFunction::Callable {
  public:
-  explicit SaveResultFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
+  SaveResultFunction() = default;
 
   v8::Local<v8::Value> GetResult() {
     EXPECT_TRUE(result_);
@@ -70,26 +67,20 @@ class SaveResultFunction final : public ScriptFunction {
     return result_->V8Value();
   }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     *result_ = value;
     return value;
   }
 
+ private:
   ScriptValue* result_ = nullptr;
 };
 
-class ExpectNotReached final : public ScriptFunction {
+class ExpectNotReached final : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state) {
-    auto* self = MakeGarbageCollected<ExpectNotReached>(script_state);
-    return self->BindToV8Function();
-  }
-  explicit ExpectNotReached(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  ExpectNotReached() = default;
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     ADD_FAILURE() << "ExpectNotReached was reached";
     return value;
   }
@@ -110,10 +101,12 @@ v8::Local<v8::Value> ParametrizedModuleTestBase::GetResult(
     return promise->Result();
   }
 
-  auto* resolve_function =
-      MakeGarbageCollected<SaveResultFunction>(script_state);
+  auto* resolve_function = MakeGarbageCollected<SaveResultFunction>();
   result.GetPromise(script_state)
-      .Then(resolve_function->Bind(), ExpectNotReached::Create(script_state));
+      .Then(MakeGarbageCollected<NewScriptFunction>(script_state,
+                                                    resolve_function),
+            MakeGarbageCollected<NewScriptFunction>(
+                script_state, MakeGarbageCollected<ExpectNotReached>()));
 
   v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
 
@@ -138,10 +131,11 @@ v8::Local<v8::Value> ParametrizedModuleTestBase::GetException(
     return promise->Result();
   }
 
-  auto* reject_function =
-      MakeGarbageCollected<SaveResultFunction>(script_state);
-  script_promise.Then(ExpectNotReached::Create(script_state),
-                      reject_function->Bind());
+  auto* reject_function = MakeGarbageCollected<SaveResultFunction>();
+  script_promise.Then(
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<ExpectNotReached>()),
+      MakeGarbageCollected<NewScriptFunction>(script_state, reject_function));
 
   v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
 
