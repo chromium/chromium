@@ -1618,9 +1618,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests CSS background images are redirected.
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestCSSBackgroundImageRedirect)) {
+// TODO(crbug.com/1274972): Make this work with NavigationThreadingOptimizations
+// enabled.
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
+                       DISABLED_TestCSSBackgroundImageRedirect) {
   EnableDataSaver(true);
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/css_background_image.html");
@@ -1652,9 +1653,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests CSS background image coverage metrics is recorded but not redirected,
 // when redirect is disabled.
-IN_PROC_BROWSER_TEST_F(
-    RedirectDisabledSubresourceRedirectBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestCSSBackgroundImageRedirect)) {
+// TODO(crbug.com/1274972): Make this work with NavigationThreadingOptimizations
+// enabled.
+IN_PROC_BROWSER_TEST_F(RedirectDisabledSubresourceRedirectBrowserTest,
+                       DISABLED_TestCSSBackgroundImageRedirect) {
   EnableDataSaver(true);
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/css_background_image.html");
