@@ -305,6 +305,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeIntoChromeTabbedActivity1() {
         mergeTabsAndAssert(mActivity1, mMergeIntoActivity1ExpectedTabs);
         mActivity1.finishAndRemoveTask();
@@ -313,6 +314,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeIntoChromeTabbedActivity2() {
         mergeTabsAndAssert(mActivity2, mMergeIntoActivity2ExpectedTabs);
         mActivity2.finishAndRemoveTask();
@@ -321,6 +323,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeOnColdStart() {
         String expectedSelectedUrl = ChromeTabUtils.getUrlStringOnUiThread(
                 mActivity1.getTabModelSelector().getCurrentTab());
@@ -358,6 +361,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeOnColdStartFromChromeTabbedActivity2() throws Exception {
         String expectedSelectedUrl = ChromeTabUtils.getUrlStringOnUiThread(
                 mActivity2.getTabModelSelector().getCurrentTab());
@@ -452,6 +456,7 @@ public class TabModelMergingTest {
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeWhileInTabSwitcher() {
         OverviewModeBehaviorWatcher overviewModeWatcher = new OverviewModeBehaviorWatcher(
                 mActivity1.getLayoutManager(), true, false);
@@ -467,6 +472,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeWithNoTabs() {
         // Enter the tab switcher before closing all tabs with grid tab switcher enabled, otherwise
         // the activity is killed and the test fails.
