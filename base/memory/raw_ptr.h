@@ -557,29 +557,19 @@ class raw_ptr {
     return *this += -delta_elems;
   }
 
-  // Be careful to cover all cases with raw_ptr being on both sides, left
-  // side only and right side only. If any case is missed, a more costly
-  // |operator T*()| will get called, instead of |operator==|.
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, const raw_ptr& rhs) {
-    return lhs.GetForComparison() == rhs.GetForComparison();
-  }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, const raw_ptr& rhs) {
-    return !(lhs == rhs);
-  }
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, T* rhs) {
-    return lhs.GetForComparison() == rhs;
-  }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, T* rhs) {
-    return !(lhs == rhs);
-  }
-  friend ALWAYS_INLINE bool operator==(T* lhs, const raw_ptr& rhs) {
-    return rhs == lhs;  // Reverse order to call the operator above.
-  }
-  friend ALWAYS_INLINE bool operator!=(T* lhs, const raw_ptr& rhs) {
-    return rhs != lhs;  // Reverse order to call the operator above.
-  }
-  // Needed for cases like |derived_ptr == base_ptr|. Without these, a more
-  // costly |operator U*()| will get called, instead of |operator==|.
+  // Comparison operators between raw_ptr and raw_ptr<U>/U*/std::nullptr_t.
+  // Strictly speaking, it is not necessary to provide these: the compiler can
+  // use the conversion operator implicitly to allow comparisons to fall back to
+  // comparisons between raw pointers. However, `operator T*`/`operator U*` may
+  // perform safety checks with a higher runtime cost, so to avoid this, provide
+  // explicit comparison operators for all combinations of parameters.
+
+  // Comparisons between `raw_ptr`s. This unusual declaration and separate
+  // definition below is because `GetForComparison()` is a private method. The
+  // more conventional approach of defining a comparison operator between
+  // `raw_ptr` and `raw_ptr<U>` in the friend declaration itself does not work,
+  // because a comparison operator defined inline would not be allowed to call
+  // `raw_ptr<U>`'s private `GetForComparison()` method.
   template <typename U, typename V, typename I>
   friend ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
                                        const raw_ptr<V, I>& rhs);
@@ -588,6 +578,9 @@ class raw_ptr {
                                        const raw_ptr<U, Impl>& rhs) {
     return !(lhs == rhs);
   }
+
+  // Comparisons with U*. These operators also handle the case where the RHS is
+  // T*.
   template <typename U>
   friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() == rhs;
@@ -604,9 +597,8 @@ class raw_ptr {
   friend ALWAYS_INLINE bool operator!=(U* lhs, const raw_ptr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
-  // Needed for comparisons against nullptr. Without these, a slightly more
-  // costly version would be called that extracts wrapped pointer, as opposed
-  // to plain comparison against 0.
+
+  // Comparisons with `std::nullptr_t`.
   friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, std::nullptr_t) {
     return !lhs;
   }
