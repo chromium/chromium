@@ -2920,6 +2920,12 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   // The window should have a valid capture ID.
   EXPECT_TRUE(window->subtree_capture_id().is_valid());
 
+  // Generate a couple of mouse moves, so that the second one gets throttled
+  // using the `VideoRecordingWatcher::cursor_events_throttle_timer_`. This is
+  // needed for a regression testing of https://crbug.com/1273609.
+  event_generator->MoveMouseBy(20, 30);
+  event_generator->MoveMouseBy(-10, -20);
+
   // Closing the window being recorded should end video recording.
   base::HistogramTester histogram_tester;
   window.reset();
