@@ -275,7 +275,7 @@ void LayerTreeView::DidFailToInitializeLayerTreeFrameSink() {
                                 weak_factory_.GetWeakPtr()));
 }
 
-void LayerTreeView::WillCommit(cc::CommitState*) {
+void LayerTreeView::WillCommit(const cc::CommitState&) {
   if (!delegate_)
     return;
   delegate_->WillCommitCompositorFrame();

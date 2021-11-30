@@ -117,7 +117,7 @@ class TestHooks : public AnimationDelegate {
   virtual void DidInitializeLayerTreeFrameSink() {}
   virtual void DidFailToInitializeLayerTreeFrameSink() {}
   virtual void DidAddAnimation() {}
-  virtual void WillCommit(CommitState*) {}
+  virtual void WillCommit(const CommitState&) {}
   virtual void DidCommit() {}
   virtual void DidCommitAndDrawFrame() {}
   virtual void DidReceiveCompositorFrameAck() {}

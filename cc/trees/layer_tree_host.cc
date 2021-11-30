@@ -355,29 +355,28 @@ void LayerTreeHost::RequestMainFrameUpdate(bool report_metrics) {
 // code that is logically a main thread operation, e.g. deletion of a Layer,
 // should be delayed until the LayerTreeHost::CommitComplete, which will run
 // after the commit, but on the main thread.
-void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
+void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl,
+                                             CommitState& commit_state) {
   DCHECK(task_runner_provider_->IsImplThread());
-  CommitState* state = active_commit_state();
-  DCHECK(state);
 
   TRACE_EVENT0("cc,benchmark", "LayerTreeHost::FinishCommitOnImplThread");
 
   LayerTreeImpl* sync_tree = host_impl->sync_tree();
   sync_tree->lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
 
-  if (state->next_commit_forces_redraw)
+  if (commit_state.next_commit_forces_redraw)
     sync_tree->ForceRedrawNextActivation();
-  if (state->next_commit_forces_recalculate_raster_scales)
+  if (commit_state.next_commit_forces_recalculate_raster_scales)
     sync_tree->ForceRecalculateRasterScales();
-  if (!state->pending_presentation_time_callbacks.empty()) {
+  if (!commit_state.pending_presentation_time_callbacks.empty()) {
     sync_tree->AddPresentationCallbacks(
-        std::move(state->pending_presentation_time_callbacks));
+        std::move(commit_state.pending_presentation_time_callbacks));
   }
 
-  if (state->needs_full_tree_sync)
-    TreeSynchronizer::SynchronizeTrees(state, sync_tree);
+  if (commit_state.needs_full_tree_sync)
+    TreeSynchronizer::SynchronizeTrees(&commit_state, sync_tree);
 
-  if (state->clear_caches_on_next_commit) {
+  if (commit_state.clear_caches_on_next_commit) {
     proxy_->ClearHistory();
     host_impl->ClearCaches();
   }
@@ -385,25 +384,26 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
 
-    PushPropertyTreesTo(sync_tree);
+    PushPropertyTreesTo(commit_state, sync_tree);
     sync_tree->lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedPropertyTrees);
 
-    if (state->needs_surface_ranges_sync) {
+    if (commit_state.needs_surface_ranges_sync) {
       sync_tree->ClearSurfaceRanges();
-      sync_tree->SetSurfaceRanges(state->SurfaceRanges());
+      sync_tree->SetSurfaceRanges(commit_state.SurfaceRanges());
     }
-    TreeSynchronizer::PushLayerProperties(state, sync_tree);
+    TreeSynchronizer::PushLayerProperties(&commit_state, sync_tree);
     sync_tree->lifecycle().AdvanceTo(
         LayerTreeLifecycle::kSyncedLayerProperties);
 
-    PushLayerTreePropertiesTo(state, sync_tree);
-    PushLayerTreeHostPropertiesTo(host_impl);
+    PushLayerTreePropertiesTo(&commit_state, sync_tree);
+    PushLayerTreeHostPropertiesTo(commit_state, host_impl);
 
-    sync_tree->PassSwapPromises(std::move(state->swap_promises));
+    sync_tree->PassSwapPromises(std::move(commit_state.swap_promises));
     sync_tree->AppendEventsMetricsFromMainThread(
-        std::move(state->event_metrics));
+        std::move(commit_state.event_metrics));
 
-    sync_tree->set_ui_resource_request_queue(state->ui_resource_request_queue);
+    sync_tree->set_ui_resource_request_queue(
+        commit_state.ui_resource_request_queue);
 
     // This must happen after synchronizing property trees and after pushing
     // properties, which updates the clobber_active_value flag.
@@ -422,7 +422,7 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
     TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
     DCHECK(host_impl->mutator_host());
     mutator_host_->PushPropertiesTo(host_impl->mutator_host());
-    MoveChangeTrackingToLayers(sync_tree);
+    MoveChangeTrackingToLayers(commit_state, sync_tree);
 
     // Updating elements affects whether animations are in effect based on their
     // properties so run after pushing updated animation properties.
@@ -432,11 +432,11 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
   }
 
   // Transfer image decode requests to the impl thread.
-  for (auto& entry : state->queued_image_decodes) {
+  for (auto& entry : commit_state.queued_image_decodes) {
     host_impl->QueueImageDecode(entry.first, *entry.second);
   }
 
-  for (auto& benchmark : state->benchmarks)
+  for (auto& benchmark : commit_state.benchmarks)
     host_impl->ScheduleMicroBenchmark(std::move(benchmark));
 
   property_trees_.ResetAllChangeTracking();
@@ -456,7 +456,8 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
   }
 }
 
-void LayerTreeHost::MoveChangeTrackingToLayers(LayerTreeImpl* tree_impl) {
+void LayerTreeHost::MoveChangeTrackingToLayers(const CommitState& commit_state,
+                                               LayerTreeImpl* tree_impl) {
   // This is only true for single-thread compositing (i.e. not via Blink).
   bool property_trees_changed_on_active_tree =
       tree_impl->IsActiveTree() && tree_impl->property_trees()->changed;
@@ -465,8 +466,7 @@ void LayerTreeHost::MoveChangeTrackingToLayers(LayerTreeImpl* tree_impl) {
     // Property trees may store damage status. We preserve the sync tree damage
     // status by pushing the damage status from sync tree property trees to main
     // thread property trees or by moving it onto the layers.
-    DCHECK(active_commit_state());
-    if (active_commit_state()->root_layer) {
+    if (commit_state.root_layer.get()) {
       if (property_trees_.sequence_number ==
           tree_impl->property_trees()->sequence_number)
         tree_impl->property_trees()->PushChangeTrackingTo(&property_trees_);
@@ -489,15 +489,14 @@ void LayerTreeHost::ImageDecodesFinished(
   }
 }
 
-void LayerTreeHost::PushPropertyTreesTo(LayerTreeImpl* tree_impl) {
+void LayerTreeHost::PushPropertyTreesTo(const CommitState& commit_state,
+                                        LayerTreeImpl* tree_impl) {
   bool property_trees_changed_on_active_tree =
       tree_impl->IsActiveTree() && tree_impl->property_trees()->changed;
   // Property trees may store damage status. We preserve the sync tree damage
   // status by pushing the damage status from sync tree property trees to main
   // thread property trees or by moving it onto the layers.
-  DCHECK(active_commit_state());
-  if (active_commit_state()->root_layer &&
-      property_trees_changed_on_active_tree) {
+  if (commit_state.root_layer.get() && property_trees_changed_on_active_tree) {
     if (property_trees_.sequence_number ==
         tree_impl->property_trees()->sequence_number)
       tree_impl->property_trees()->PushChangeTrackingTo(&property_trees_);
@@ -513,23 +512,22 @@ void LayerTreeHost::SetNextCommitWaitsForActivation() {
   pending_commit_state()->commit_waits_for_activation = true;
 }
 
-CommitState* LayerTreeHost::WillCommit(
+std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
     std::unique_ptr<CompletionEvent> completion,
     bool has_updates) {
   DCHECK(!commit_completion_event_);
   commit_completion_event_ = std::move(completion);
-  CommitState* result = nullptr;
+  std::unique_ptr<CommitState> result;
   if (has_updates)
     result = ActivateCommitState();
   swap_promise_manager_.WillCommit();
-  client_->WillCommit(result ? result : pending_commit_state());
+  client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   return result;
 }
 
-CommitState* LayerTreeHost::ActivateCommitState() {
+std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
   DCHECK(pending_commit_state());
-  DCHECK(!active_commit_state_);
 
   // Pull state not stored directly on LayerTreeHost
   pending_commit_state()->event_metrics =
@@ -543,9 +541,9 @@ CommitState* LayerTreeHost::ActivateCommitState() {
   pending_commit_state()->benchmarks =
       micro_benchmark_controller_.CreateImplBenchmarks();
 
-  active_commit_state_.swap(pending_commit_state_);
-  pending_commit_state_ = std::make_unique<CommitState>(*active_commit_state_);
-  return active_commit_state_.get();
+  auto active_commit_state = std::move(pending_commit_state_);
+  pending_commit_state_ = std::make_unique<CommitState>(*active_commit_state);
+  return active_commit_state;
 }
 
 void LayerTreeHost::WaitForCommitCompletion() {
@@ -575,7 +573,6 @@ void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
     client_->DidCompletePageScaleAnimation();
     did_complete_scale_animation_ = false;
   }
-  active_commit_state_ = nullptr;
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(
@@ -855,11 +852,11 @@ void LayerTreeHost::DidCompletePageScaleAnimation() {
 }
 
 void LayerTreeHost::RecordGpuRasterizationHistogram(
-    const LayerTreeHostImpl* host_impl) {
+    const LayerTreeHostImpl* host_impl,
+    const CommitState& commit_state) {
   // Gpu rasterization is only supported for Renderer compositors.
   // Checking for IsSingleThreaded() to exclude Browser compositors.
-  DCHECK(active_commit_state());
-  if (!active_commit_state()->needs_gpu_rasterization_histogram)
+  if (!commit_state.needs_gpu_rasterization_histogram)
     return;
 
   bool gpu_rasterization_enabled = false;
@@ -1788,22 +1785,23 @@ void LayerTreeHost::PushLayerTreePropertiesTo(CommitState* state,
 }
 
 void LayerTreeHost::PushLayerTreeHostPropertiesTo(
+    const CommitState& commit_state,
     LayerTreeHostImpl* host_impl) {
-  CommitState* state = active_commit_state();
-  DCHECK(state);
   // TODO(bokan): The |external_pinch_gesture_active| should not be going
   // through the LayerTreeHost but directly from InputHandler to InputHandler.
   host_impl->SetExternalPinchGestureActive(
-      state->is_external_pinch_gesture_active);
+      commit_state.is_external_pinch_gesture_active);
 
-  RecordGpuRasterizationHistogram(host_impl);
+  RecordGpuRasterizationHistogram(host_impl, commit_state);
 
-  host_impl->SetDebugState(state->debug_state);
-  host_impl->SetVisualDeviceViewportSize(state->visual_device_viewport_size);
-  host_impl->set_viewport_mobile_optimized(state->is_viewport_mobile_optimized);
-  host_impl->SetPrefersReducedMotion(state->prefers_reduced_motion);
+  host_impl->SetDebugState(commit_state.debug_state);
+  host_impl->SetVisualDeviceViewportSize(
+      commit_state.visual_device_viewport_size);
+  host_impl->set_viewport_mobile_optimized(
+      commit_state.is_viewport_mobile_optimized);
+  host_impl->SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   host_impl->SetMayThrottleIfUndrawnFrames(
-      state->may_throttle_if_undrawn_frames);
+      commit_state.may_throttle_if_undrawn_frames);
 }
 
 Layer* LayerTreeHost::LayerByElementId(ElementId element_id) {

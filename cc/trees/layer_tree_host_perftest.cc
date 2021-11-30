@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "cc/trees/layer_tree_host.h"
-
 #include <stdint.h>
 
 #include <sstream>
@@ -12,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -24,6 +22,7 @@
 #include "cc/test/layer_tree_json_parser.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -315,7 +314,7 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     ASSERT_TRUE(tab_contents_.get());
   }
 
-  void WillCommit(CommitState*) override {
+  void WillCommit(const CommitState&) override {
     if (CleanUpStarted())
       return;
     gpu::Mailbox gpu_mailbox;

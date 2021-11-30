@@ -22,13 +22,13 @@ TEST(LayerTreeHostRecordGpuHistogramTest, SingleThreaded) {
       CompositorMode::SINGLE_THREADED);
   EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
   host->CreateFakeLayerTreeHostImpl();
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
+  std::unique_ptr<CommitState> commit_state =
+      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+  EXPECT_FALSE(commit_state->needs_gpu_rasterization_histogram);
   EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
   {
     DebugScopedSetImplThread impl(host->GetTaskRunnerProvider());
-    EXPECT_FALSE(
-        host->active_commit_state()->needs_gpu_rasterization_histogram);
-    host->RecordGpuRasterizationHistogram(host->host_impl());
+    host->RecordGpuRasterizationHistogram(host->host_impl(), *commit_state);
   }
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
@@ -44,12 +44,13 @@ TEST(LayerTreeHostRecordGpuHistogramTest, Threaded) {
       CompositorMode::THREADED);
   EXPECT_TRUE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
   host->CreateFakeLayerTreeHostImpl();
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
+  std::unique_ptr<CommitState> commit_state =
+      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+  EXPECT_TRUE(commit_state->needs_gpu_rasterization_histogram);
   EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
   {
     DebugScopedSetImplThread impl(host->GetTaskRunnerProvider());
-    EXPECT_TRUE(host->active_commit_state()->needs_gpu_rasterization_histogram);
-    host->RecordGpuRasterizationHistogram(host->host_impl());
+    host->RecordGpuRasterizationHistogram(host->host_impl(), *commit_state);
   }
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);

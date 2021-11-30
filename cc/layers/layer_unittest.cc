@@ -164,8 +164,8 @@ class LayerTest : public testing::Test {
   }
 
   void CommitAndPushProperties(Layer* layer, LayerImpl* layer_impl) {
-    auto* commit_state = layer_tree_host_->WillCommit(
-        /*completion_event=*/nullptr, /*has_updates=*/true);
+    std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
+        /*completion=*/nullptr, /*has_updates=*/true);
     layer->PushPropertiesTo(layer_impl, *commit_state);
     layer_tree_host_->CommitComplete(
         {base::TimeTicks(), base::TimeTicks::Now()});
@@ -288,7 +288,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_SET_NEEDS_COMMIT(0, mask_layer1->SetBounds(arbitrary_size));
   EXPECT_CALL(*layer_tree_host_, SetNeedsFullTreeSync()).Times(1);
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetMaskLayer(mask_layer1));
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
@@ -310,8 +310,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   host_impl_.active_tree()->set_source_frame_number(
       host_impl_.active_tree()->source_frame_number() + 1);
 
-  auto* commit_state = layer_tree_host_->WillCommit(
-      /*completion_event=*/nullptr, /*has_updates=*/true);
+  std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
+      /*completion=*/nullptr, /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
       child->PushPropertiesTo(child_impl.get(), *commit_state);
@@ -329,7 +329,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetMasksToBounds(true));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -341,7 +341,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetContentsOpaque(true));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -353,7 +353,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(true));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -365,7 +365,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(false));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -378,7 +378,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   top->SetRoundedCorner({1, 2, 3, 4});
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetIsFastRoundedCorner(true));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -390,7 +390,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetHideLayerAndSubtree(true));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -402,7 +402,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetBlendMode(arbitrary_blend_mode));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -418,7 +418,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetBounds(arbitrary_size));
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(mask_layer1->SetBounds(arbitrary_size));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -432,7 +432,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetFilters(arbitrary_filters));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -445,7 +445,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(
       top->SetBackdropFilters(arbitrary_filters));
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -461,7 +461,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       top->transform_tree_index());
   EXPECT_TRUE(node->transform_changed);
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -478,7 +478,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child->transform_tree_index());
   EXPECT_TRUE(node->transform_changed);
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       child->PushPropertiesTo(child_impl.get(), *commit_state);
@@ -496,7 +496,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       top->transform_tree_index());
   EXPECT_TRUE(node->transform_changed);
 
-  commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                               /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state);
@@ -639,7 +639,7 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child2, parent->children()[1]);
   EXPECT_EQ(child3, parent->children()[2]);
 
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
@@ -1664,7 +1664,7 @@ TEST_F(LayerTest, SetElementIdNotUsingLayerLists) {
 TEST_F(LayerTest, UpdateMirrorCount) {
   scoped_refptr<Layer> test_layer = Layer::Create();
   test_layer->SetLayerTreeHost(layer_tree_host_.get());
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->property_trees()->needs_rebuild = false;
@@ -1681,7 +1681,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
                                  ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->property_trees()->needs_rebuild = false;
@@ -1695,7 +1695,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
                                  ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
@@ -1708,7 +1708,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
                                  ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+  layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                /*has_updates=*/true);
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 

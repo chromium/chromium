@@ -359,12 +359,14 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   // WillCommit(_, true) here will ensure that
   // layer_tree_host_->active_commit_state() is populated, which is required
   // during FinishCommitOnImplThread().
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
-                               /*has_updates=*/true);
+  std::unique_ptr<CommitState> commit_state =
+      layer_tree_host_->WillCommit(/*completion=*/nullptr,
+                                   /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(
         layer_tree_host_->GetTaskRunnerProvider());
-    layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl());
+    layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl(),
+                                               *commit_state);
   }
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 

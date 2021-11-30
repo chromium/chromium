@@ -3637,7 +3637,7 @@ class LayerTreeHostTestSetVisible : public LayerTreeHostTest {
     PostSetNeedsCommitToMainThread();
   }
 
-  void WillCommit(CommitState*) override {
+  void WillCommit(const CommitState&) override {
     PostSetVisibleToMainThread(false);
     // This is suppressed while we're invisible.
     PostSetNeedsRedrawToMainThread();
@@ -7845,7 +7845,7 @@ class LayerTreeHostTestNoTasksBetweenWillAndDidCommit
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(CommitState*) override {
+  void WillCommit(const CommitState&) override {
     MainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&LayerTreeHostTestNoTasksBetweenWillAndDidCommit::
@@ -7883,8 +7883,8 @@ class LayerTreeHostTestUpdateCopyRequests : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(CommitState* commit_state) override {
-    switch (commit_state->source_frame_number) {
+  void WillCommit(const CommitState& commit_state) override {
+    switch (commit_state.source_frame_number) {
       case 1:
         EXPECT_TRUE(LayerSubtreeHasCopyRequest(root.get()));
         break;

@@ -201,7 +201,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   auto completion_event_ptr = std::make_unique<CompletionEvent>(
       base::WaitableEvent::ResetPolicy::MANUAL);
   auto* completion_event = completion_event_ptr.get();
-  auto* commit_state =
+  std::unique_ptr<CommitState> commit_state =
       layer_tree_host_->WillCommit(std::move(completion_event_ptr),
                                    /*has_updates=*/true);
   devtools_instrumentation::ScopedCommitTrace commit_task(
@@ -214,7 +214,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
 
     host_impl_->BeginCommit(commit_state->source_frame_number);
 
-    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get());
+    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get(), *commit_state);
     completion_event->Signal();
 
     if (scheduler_on_impl_thread_) {

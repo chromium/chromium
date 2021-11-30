@@ -332,7 +332,7 @@ class LayerTreeHostScrollTestScrollAbortedCommit
 
   void DidBeginMainFrame() override { num_did_begin_main_frames_++; }
 
-  void WillCommit(CommitState*) override { num_will_commits_++; }
+  void WillCommit(const CommitState&) override { num_will_commits_++; }
 
   void DidCommit() override { num_did_commits_++; }
 
@@ -608,10 +608,10 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(CommitState* commit_state) override {
+  void WillCommit(const CommitState& commit_state) override {
     // Keep the test committing (otherwise the early out for no update
     // will stall the test).
-    if (commit_state->source_frame_number < 2) {
+    if (commit_state.source_frame_number < 2) {
       layer_tree_host()->SetNeedsCommit();
     }
   }
@@ -923,19 +923,19 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
     PostSetNeedsCommitToMainThread();
   }
 
-  void WillCommit(CommitState* commit_state) override {
+  void WillCommit(const CommitState& commit_state) override {
     Layer* scroll_layer =
         layer_tree_host()->OuterViewportScrollLayerForTesting();
-    switch (commit_state->source_frame_number) {
+    switch (commit_state.source_frame_number) {
       case 0:
-        EXPECT_TRUE(commit_state->layers_that_should_push_properties.contains(
+        EXPECT_TRUE(commit_state.layers_that_should_push_properties.contains(
             scroll_layer));
         break;
       case 1:
         // Even if this layer doesn't need push properties, it should
         // still pick up scrolls that happen on the active layer during
         // commit.
-        EXPECT_FALSE(commit_state->layers_that_should_push_properties.contains(
+        EXPECT_FALSE(commit_state.layers_that_should_push_properties.contains(
             scroll_layer));
         break;
     }
@@ -1094,7 +1094,7 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(CommitState*) override {
+  void WillCommit(const CommitState&) override {
     if (TestEnded())
       return;
     // Keep the test committing (otherwise the early out for no update
@@ -2084,7 +2084,7 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
 
   void DidBeginMainFrame() override { num_did_begin_main_frames_++; }
 
-  void WillCommit(CommitState*) override { num_will_commits_++; }
+  void WillCommit(const CommitState&) override { num_will_commits_++; }
 
   void DidCommit() override { num_did_commits_++; }
 

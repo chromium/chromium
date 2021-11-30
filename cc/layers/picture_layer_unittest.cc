@@ -204,8 +204,8 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   SetupRootProperties(layer_impl);
   UpdateDrawProperties(host_impl.pending_tree());
 
-  auto* commit_state =
-      host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
+  std::unique_ptr<CommitState> commit_state =
+      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
   layer->PushPropertiesTo(layer_impl, *commit_state);
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 

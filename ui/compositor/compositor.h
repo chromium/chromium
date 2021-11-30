@@ -343,7 +343,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit(cc::CommitState*) override {}
+  void WillCommit(const cc::CommitState&) override {}
   void DidCommit(base::TimeTicks, base::TimeTicks) override;
   void DidCommitAndDrawFrame() override {}
   void DidReceiveCompositorFrameAck() override;

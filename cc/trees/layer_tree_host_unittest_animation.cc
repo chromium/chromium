@@ -1019,14 +1019,10 @@ class LayerTreeHostPresentationDuringAnimation
 
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {
     PostSetNeedsCommitToMainThread();
-  }
-
-  void WillCommit(CommitState* commit_state) override {
-    if (commit_state->source_frame_number == 2) {
-      commit_state->pending_presentation_time_callbacks.push_back(
-          base::BindOnce(
-              &LayerTreeHostPresentationDuringAnimation::OnPresentation,
-              base::Unretained(this)));
+    if (layer_tree_host()->pending_commit_state()->source_frame_number == 2) {
+      layer_tree_host()->RequestPresentationTimeForNextFrame(base::BindOnce(
+          &LayerTreeHostPresentationDuringAnimation::OnPresentation,
+          base::Unretained(this)));
     }
   }
 
@@ -1898,8 +1894,8 @@ class LayerTreeHostAnimationTestAnimationFinishesDuringCommit
       AddAnimatedTransformToAnimation(animation_child_.get(), 0.04, 5, 5);
   }
 
-  void WillCommit(CommitState* commit_state) override {
-    if (commit_state->source_frame_number == 2) {
+  void WillCommit(const CommitState& commit_state) override {
+    if (commit_state.source_frame_number == 2) {
       // Block until the animation finishes on the compositor thread. Since
       // animations have already been ticked on the main thread, when the commit
       // happens the state on the main thread will be consistent with having a
@@ -1968,8 +1964,8 @@ class LayerTreeHostAnimationTestImplSideInvalidation
       AddAnimatedTransformToAnimation(animation_child_.get(), 0.04, 5, 5);
   }
 
-  void WillCommit(CommitState* commit_state) override {
-    if (commit_state->source_frame_number == 2) {
+  void WillCommit(const CommitState& commit_state) override {
+    if (commit_state.source_frame_number == 2) {
       // Block until the animation finishes on the compositor thread. Since
       // animations have already been ticked on the main thread, when the commit
       // happens the state on the main thread will be consistent with having a
@@ -2049,8 +2045,8 @@ class LayerTreeHostAnimationTestImplSideInvalidationWithoutCommit
     EndTest();
   }
 
-  void WillCommit(CommitState* commit_state) override {
-    if (commit_state->source_frame_number == 1) {
+  void WillCommit(const CommitState& commit_state) override {
+    if (commit_state.source_frame_number == 1) {
       // Block until the invalidation is done after animation finishes on the
       // compositor thread. We need to make sure the pending tree has valid
       // information based on invalidation only.

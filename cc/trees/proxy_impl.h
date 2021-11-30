@@ -70,6 +70,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion);
   void FinishGLOnImpl(CompletionEvent* completion);
   void NotifyReadyToCommitOnImpl(CompletionEvent* completion_event,
+                                 std::unique_ptr<CommitState> commit_state,
                                  LayerTreeHost* layer_tree_host,
                                  base::TimeTicks main_thread_start_time,
                                  const viz::BeginFrameArgs& commit_args,
@@ -176,7 +177,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   struct DataForCommit {
     DataForCommit(
         std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
-        CommitState* commit_state,
+        std::unique_ptr<CommitState> commit_state,
         CommitTimestamps* commit_timestamps);
 
     ~DataForCommit();
@@ -185,13 +186,13 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
     // Set when the main thread is waiting on a commit to complete.
     std::unique_ptr<ScopedCompletionEvent> commit_completion_event;
-    CommitState* commit_state;
+    std::unique_ptr<CommitState> commit_state;
     // This is passed from the main thread so the impl thread can record
     // timestamps at the beginning and end of commit.
     CommitTimestamps* commit_timestamps = nullptr;
   };
 
-  absl::optional<DataForCommit> data_for_commit_;
+  std::unique_ptr<DataForCommit> data_for_commit_;
 
   // Set when the main thread is waiting for activation to complete.
   std::unique_ptr<ScopedCompletionEvent> activation_completion_event_;

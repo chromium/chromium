@@ -165,16 +165,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state_.get();
   }
 
-  // The commit state for the frame being committed by the compositor.
-  CommitState* active_commit_state() {
-    DCHECK(task_runner_provider_->IsImplThread());
-    return active_commit_state_.get();
-  }
-  const CommitState* active_commit_state() const {
-    DCHECK(task_runner_provider_->IsImplThread());
-    return active_commit_state_.get();
-  }
-
   // The current source frame number. This is incremented for each main frame
   // update(commit) pushed to the compositor thread. The initial frame number
   // is 0, and it is incremented once commit is completed (which is before the
@@ -625,11 +615,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetPropertyTreesNeedRebuild();
 
-  void PushPropertyTreesTo(LayerTreeImpl* tree_impl);
+  void PushPropertyTreesTo(const CommitState& commit_state,
+                           LayerTreeImpl* tree_impl);
   static void PushLayerTreePropertiesTo(CommitState* commit_state,
                                         LayerTreeImpl* tree_impl);
-  void PushLayerTreeHostPropertiesTo(LayerTreeHostImpl* host_impl);
-  void MoveChangeTrackingToLayers(LayerTreeImpl* tree_impl);
+  void PushLayerTreeHostPropertiesTo(const CommitState& commit_state,
+                                     LayerTreeHostImpl* host_impl);
+  void MoveChangeTrackingToLayers(const CommitState& commit_state,
+                                  LayerTreeImpl* tree_impl);
 
   MutatorHost* mutator_host() { return mutator_host_; }
 
@@ -647,7 +640,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetElementIdsForTesting();
   void BuildPropertyTreesForTesting();
-  void ClearActiveCommitStateForTesting() { active_commit_state_ = nullptr; }
 
   // Layer iterators.
   LayerListIterator begin();
@@ -667,12 +659,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
   void RequestMainFrameUpdate(bool report_metrics);
-  void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl);
+  void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl,
+                                CommitState& commit_state);
   // If has_updates is true, returns the CommitState that will drive the commit.
   // Otherwise, returns nullptr.
-  CommitState* WillCommit(std::unique_ptr<CompletionEvent> completion,
-                          bool has_updates);
-  CommitState* ActivateCommitState();
+  std::unique_ptr<CommitState> WillCommit(
+      std::unique_ptr<CompletionEvent> completion,
+      bool has_updates);
+  std::unique_ptr<CommitState> ActivateCommitState();
   void WaitForCommitCompletion();
   void CommitComplete(const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
@@ -822,7 +816,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void OnCommitForSwapPromises();
 
-  void RecordGpuRasterizationHistogram(const LayerTreeHostImpl* host_impl);
+  void RecordGpuRasterizationHistogram(const LayerTreeHostImpl* host_impl,
+                                       const CommitState& commit_state);
 
   MicroBenchmarkController micro_benchmark_controller_;
 
@@ -869,7 +864,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       rendering_stats_instrumentation_;
 
   std::unique_ptr<CommitState> pending_commit_state_;
-  std::unique_ptr<CommitState> active_commit_state_;
 
   SwapPromiseManager swap_promise_manager_;
 
