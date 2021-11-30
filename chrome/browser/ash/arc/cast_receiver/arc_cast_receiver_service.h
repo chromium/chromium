@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/cast_receiver.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "components/arc/mojom/cast_receiver.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

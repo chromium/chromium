@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 
-#include "components/arc/mojom/clipboard.mojom.h"
+#include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

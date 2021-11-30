@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/arc/mojom/bluetooth.mojom.h"
+#include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"

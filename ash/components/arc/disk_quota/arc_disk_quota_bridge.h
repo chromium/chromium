@@ -5,10 +5,10 @@
 #ifndef ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
+#include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "base/files/file_path.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 

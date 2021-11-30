@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/arc/mojom/bluetooth.mojom.h"
+#include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

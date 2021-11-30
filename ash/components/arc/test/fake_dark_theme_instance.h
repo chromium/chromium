@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_DARK_THEME_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_DARK_THEME_INSTANCE_H_
 
-#include "components/arc/mojom/dark_theme.mojom.h"
+#include "ash/components/arc/mojom/dark_theme.mojom.h"
 
 namespace arc {
 

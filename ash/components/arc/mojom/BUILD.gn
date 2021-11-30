@@ -20,6 +20,17 @@ if (is_chromeos_ash) {
       "arc_bridge.mojom",
       "audio.mojom",
       "auth.mojom",
+      "backup_settings.mojom",
+      "bluetooth.mojom",
+      "boot_phase_monitor.mojom",
+      "camera.mojom",
+      "cast_receiver.mojom",
+      "cert_store.mojom",
+      "clipboard.mojom",
+      "crash_collector.mojom",
+      "dark_theme.mojom",
+      "digital_goods.mojom",
+      "disk_quota.mojom",
     ]
 
     public_deps = [
@@ -41,6 +52,44 @@ if (is_chromeos_ash) {
       "//ui/accessibility/mojom:ax_assistant_mojom",
       "//ui/gfx/geometry/mojom",
       "//url/mojom:url_mojom_gurl",
+    ]
+
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "arc.mojom.BluetoothDeviceType"
+            cpp = "::device::BluetoothTransport"
+          },
+          {
+            mojom = "arc.mojom.BluetoothSdpAttributeType"
+            cpp = "::bluez::BluetoothServiceAttributeValueBlueZ::Type"
+          },
+          {
+            mojom = "arc.mojom.BluetoothUUID"
+            cpp = "::device::BluetoothUUID"
+          },
+          {
+            mojom = "arc.mojom.BluetoothAdvertisement"
+            cpp = "::std::unique_ptr<::device::BluetoothAdvertisement::Data>"
+            move_only = true
+          },
+        ]
+        traits_headers = [
+          "//device/bluetooth/bluetooth_advertisement.h",
+          "//device/bluetooth/bluetooth_common.h",
+          "//device/bluetooth/public/cpp/bluetooth_uuid.h",
+          "//device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h",
+        ]
+        traits_private_headers =
+            [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.h" ]
+        traits_sources =
+            [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//device/bluetooth",
+          "//device/bluetooth/public/cpp",
+        ]
+      },
     ]
   }
 

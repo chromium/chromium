@@ -5,10 +5,10 @@
 #ifndef ASH_COMPONENTS_ARC_DARK_THEME_ARC_DARK_THEME_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_DARK_THEME_ARC_DARK_THEME_BRIDGE_H_
 
+#include "ash/components/arc/mojom/dark_theme.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/dark_theme.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 

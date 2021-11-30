@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
+#include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_bluetooth_instance.h"
@@ -18,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
-#include "components/arc/mojom/bluetooth.mojom.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"

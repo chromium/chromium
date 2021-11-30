@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/mojom/cast_receiver.mojom.h"
+#include "ash/components/arc/mojom/cast_receiver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
