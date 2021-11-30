@@ -77,16 +77,17 @@ bool ParseDefaultApplications(const GURL& manifest_url,
   DCHECK(dict);
   DCHECK(web_app_manifest_urls);
 
-  base::ListValue* list = nullptr;
-  if (!dict->GetList(kDefaultApplications, &list)) {
+  const base::Value* list = dict->FindListKey(kDefaultApplications);
+  if (!list) {
     // TODO(crbug.com/1065337): Move the error message strings to
     // components/payments/core/native_error_strings.cc.
     log.Error(
         base::StringPrintf("\"%s\" must be a list.", kDefaultApplications));
     return false;
   }
+  base::Value::ConstListView list_view = list->GetList();
 
-  size_t apps_number = list->GetList().size();
+  size_t apps_number = list_view.size();
   if (apps_number > kMaximumNumberOfItems) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entries.",
                                  kDefaultApplications, kMaximumNumberOfItems));
@@ -94,22 +95,21 @@ bool ParseDefaultApplications(const GURL& manifest_url,
   }
 
   for (size_t i = 0; i < apps_number; ++i) {
-    std::string item;
-    if (!list->GetString(i, &item) || item.empty() ||
-        !base::IsStringUTF8(item)) {
+    const std::string* item = list_view[i].GetIfString();
+    if (!item || item->empty() || !base::IsStringUTF8(*item)) {
       log.Error(base::StringPrintf("Each entry in \"%s\" must be UTF8 string.",
                                    kDefaultApplications));
       web_app_manifest_urls->clear();
       return false;
     }
 
-    GURL url = manifest_url.Resolve(item);
+    GURL url = manifest_url.Resolve(*item);
     // TODO(crbug.com/1065337): Check that |url| is the same origin with
     // |manifest_url|. Currently that's checked by callers, but the earlier this
     // is caught, the fewer resources Chrome consumes.
     if (!UrlUtil::IsValidManifestUrl(url)) {
       const std::string item_to_print =
-          ValidateAndTruncateIfNeeded(item, nullptr);
+          ValidateAndTruncateIfNeeded(*item, nullptr);
       log.Error(
           base::StringPrintf("\"%s\" entry in \"%s\" is not a valid URL with "
                              "HTTPS scheme and is "
@@ -133,14 +133,15 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
   DCHECK(dict);
   DCHECK(supported_origins);
 
-  base::ListValue* list = nullptr;
-  if (!dict->GetList(kSupportedOrigins, &list)) {
+  const base::Value* list = dict->FindListKey(kSupportedOrigins);
+  if (!list) {
     log.Error(base::StringPrintf("\"%s\" must be a list of origins.",
                                  kSupportedOrigins));
     return false;
   }
+  base::Value::ConstListView list_view = list->GetList();
 
-  size_t supported_origins_number = list->GetList().size();
+  size_t supported_origins_number = list_view.size();
   if (supported_origins_number > kMaximumNumberOfSupportedOrigins) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entires.",
                                  kSupportedOrigins,
@@ -149,11 +150,10 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
   }
 
   for (size_t i = 0; i < supported_origins_number; ++i) {
-    std::string item;
-    if (!list->GetString(i, &item) || item.empty() ||
-        !base::IsStringUTF8(item) ||
-        !(base::StartsWith(item, kHttpsPrefix, base::CompareCase::SENSITIVE) ||
-          base::StartsWith(item, kHttpPrefix, base::CompareCase::SENSITIVE))) {
+    const std::string* item = list_view[i].GetIfString();
+    if (!item || item->empty() || !base::IsStringUTF8(*item) ||
+        !(base::StartsWith(*item, kHttpsPrefix, base::CompareCase::SENSITIVE) ||
+          base::StartsWith(*item, kHttpPrefix, base::CompareCase::SENSITIVE))) {
       supported_origins->clear();
       log.Error(base::StringPrintf(
           "Each entry in \"%s\" must be UTF8 string that starts with \"%s\" or "
@@ -162,11 +162,11 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
       return false;
     }
 
-    GURL url(item);
+    GURL url(*item);
     if (!UrlUtil::IsValidSupportedOrigin(url)) {
       supported_origins->clear();
       const std::string item_to_print =
-          ValidateAndTruncateIfNeeded(item, nullptr);
+          ValidateAndTruncateIfNeeded(*item, nullptr);
       log.Error(base::StringPrintf(
           "\"%s\" entry in \"%s\" is not a valid origin with HTTPS scheme "
           "and "
