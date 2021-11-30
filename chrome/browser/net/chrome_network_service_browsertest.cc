@@ -182,10 +182,10 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::vector<base::Feature> disabled_features, enabled_features;
 #if defined(OS_WIN)
-    // On Windows, enabling the LPAC Sandbox implicitly enables network data
-    // migration. To avoid this conflicting with the test, disable the LPAC
-    // sandbox to ensure that full control is maintained of the migration code
-    // via chrome's kTriggerNetworkDataMigration feature.
+    // On Windows, the Network Sandbox requires that data migration be enabled
+    // to function correctly. Thus, in order to correctly test the case when
+    // network data migration is not happening, the network sandbox must also be
+    // disabled.
     disabled_features.push_back(
         sandbox::policy::features::kNetworkServiceSandbox);
 #endif

@@ -52,12 +52,6 @@ extern const base::Feature kSandboxExternalProtocolBlocked;
 extern const base::Feature kTabCaptureBlueBorder;
 extern const base::Feature kTriggerNetworkDataMigration;
 
-// Returns true if network context data should be migrated to the new data path.
-// Prefer using this function over querying the kTriggerNetworkDataMigration
-// feature directly, as there might be other platform specific factors that
-// determine whether data migration should occur or not.
-bool ShouldTriggerNetworkDataMigration();
-
 extern const base::Feature kWebUsbDeviceDetection;
 
 #if defined(OS_ANDROID)

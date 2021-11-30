@@ -117,19 +117,14 @@ const base::Feature kTabCaptureBlueBorder{"TabCaptureBlueBorder",
 
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
-const base::Feature kTriggerNetworkDataMigration{
-    "TriggerNetworkDataMigration", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool ShouldTriggerNetworkDataMigration() {
+const base::Feature kTriggerNetworkDataMigration {
+  "TriggerNetworkDataMigration",
 #if defined(OS_WIN)
-  // On Windows, if sandbox enabled means data must be migrated.
-  if (SystemNetworkContextManager::IsNetworkSandboxEnabled())
-    return true;
-#endif  // defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(kTriggerNetworkDataMigration))
-    return true;
-  return false;
-}
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.

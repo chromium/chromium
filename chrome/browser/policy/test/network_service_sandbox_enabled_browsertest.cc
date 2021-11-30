@@ -43,18 +43,11 @@ class NetworkServiceSandboxEnabledTest
     policy_provider_.UpdateChromePolicy(values);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
-#if defined(OS_WIN)
-    // On Windows, enabling network sandbox without also migrating data hits a
-    // (valid) DCHECK, so trigger the migration for this test.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTriggerNetworkDataMigration);
-#endif
     InProcessBrowserTest::SetUp();
   }
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(NetworkServiceSandboxEnabledTest, IsRespected) {

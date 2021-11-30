@@ -716,7 +716,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         path.Append(chrome::kNetworkDataDirname);
     network_context_params->file_paths->unsandboxed_data_path = path;
     network_context_params->file_paths->trigger_migration =
-        features::ShouldTriggerNetworkDataMigration();
+        base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration);
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
     network_context_params->file_paths->http_server_properties_file_name =

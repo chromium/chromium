@@ -7903,21 +7903,6 @@
             ]
         }
     ],
-    "TriggerNetworkDataMigration": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TriggerNetworkDataMigration",
-                    "enable_features": [
-                        "TriggerNetworkDataMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
