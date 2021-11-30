@@ -535,6 +535,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
 
+  // Indicates if we are in the middle of deleting the `context_core_` in
+  // order to start over.
+  bool is_deleting_and_starting_over_ = false;
+
   // Raw pointer to the StoragePartitionImpl owning |this|.
   raw_ptr<StoragePartitionImpl> storage_partition_ = nullptr;
 

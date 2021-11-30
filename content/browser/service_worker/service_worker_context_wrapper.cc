@@ -394,6 +394,9 @@ void ServiceWorkerContextWrapper::OnStarted(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (is_deleting_and_starting_over_)
+    return;
+
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContextCoreObserver
   // implements StorageKey.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
@@ -418,6 +421,7 @@ void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
 }
 
 void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
+  is_deleting_and_starting_over_ = true;
   ClearRunningServiceWorkers();
 }
 
@@ -1270,6 +1274,8 @@ void ServiceWorkerContextWrapper::OnStatusChangedForFindReadyRegistration(
 void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(running_service_workers_.empty());
+  is_deleting_and_starting_over_ = false;
   storage_control_.reset();
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     context_core_.reset();
