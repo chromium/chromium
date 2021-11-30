@@ -45,7 +45,7 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "read_later_api_proxy.js" ]
+  in_files = [ "read_later_api_proxy.ts" ]
 }
 
 preprocess_if_expr("preprocess_mojo") {
@@ -82,7 +82,7 @@ ts_library("build_ts") {
   in_files = [
     "app.ts",
     "icons.ts",
-    "read_later_api_proxy.js",
+    "read_later_api_proxy.ts",
     "read_later_item.ts",
     "read_later.mojom-webui.js",
 

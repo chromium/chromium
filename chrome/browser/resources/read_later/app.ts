@@ -228,4 +228,10 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'read-later-app': ReadLaterAppElement;
+  }
+}
+
 customElements.define(ReadLaterAppElement.is, ReadLaterAppElement);

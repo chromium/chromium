@@ -157,4 +157,10 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'read-later-item': ReadLaterItemElement;
+  }
+}
+
 customElements.define(ReadLaterItemElement.is, ReadLaterItemElement);

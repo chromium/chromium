@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/read_later.mojom-webui.js';
-
 import {ReadLaterApiProxy} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
+import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ReadLaterApiProxy} */
-export class TestReadLaterApiProxy extends TestBrowserProxy {
+export class TestReadLaterApiProxy extends TestBrowserProxy implements
+    ReadLaterApiProxy {
+  callbackRouter: PageCallbackRouter = new PageCallbackRouter();
+  private entries_: ReadLaterEntriesByStatus;
+
   constructor() {
     super([
       'getReadLaterEntries',
@@ -22,66 +26,54 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
       'closeUI',
     ]);
 
-    /** @type {!PageCallbackRouter} */
-    this.callbackRouter = new PageCallbackRouter();
-
-    /** @private {!ReadLaterEntriesByStatus} */
-    this.entries_;
+    this.entries_ = {
+      unreadEntries: [],
+      readEntries: [],
+    };
   }
 
-  /** @override */
   getReadLaterEntries() {
     this.methodCalled('getReadLaterEntries');
     return Promise.resolve({entries: this.entries_});
   }
 
-  /** @override */
-  openURL(url, mark_as_read, click_info) {
-    this.methodCalled('openURL', [url, mark_as_read, click_info]);
+  openURL(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers) {
+    this.methodCalled('openURL', [url, markAsRead, clickModifiers]);
   }
 
-  /** @override */
-  updateReadStatus(url, read) {
+  updateReadStatus(url: Url, read: boolean) {
     this.methodCalled('updateReadStatus', [url, read]);
   }
 
-  /** @override */
   addCurrentTab() {
     this.methodCalled('addCurrentTab');
   }
 
-  /** @override */
-  removeEntry(url) {
+  removeEntry(url: Url) {
     this.methodCalled('removeEntry', url);
   }
 
-  /** @override */
-  showContextMenuForURL(url, locationX, locationY) {
+  showContextMenuForURL(url: Url, locationX: number, locationY: number) {
     this.methodCalled('showContextMenuForURL', [url, locationX, locationY]);
   }
 
-  /** @override */
   updateCurrentPageActionButtonState() {
     this.methodCalled('updateCurrentPageActionButtonState');
   }
 
-  /** @override */
   showUI() {
     this.methodCalled('showUI');
   }
 
-  /** @override */
   closeUI() {
     this.methodCalled('closeUI');
   }
 
-  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
-  /** @param {!ReadLaterEntriesByStatus} entries */
-  setEntries(entries) {
+  setEntries(entries: ReadLaterEntriesByStatus) {
     this.entries_ = entries;
   }
 }

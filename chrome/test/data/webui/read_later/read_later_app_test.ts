@@ -3,55 +3,46 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import 'chrome://read-later.top-chrome/app.js';
 
 import {ReadLaterAppElement} from 'chrome://read-later.top-chrome/app.js';
 import {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/read_later.mojom-webui.js';
-import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
+import {ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
+import {ReadLaterItemElement} from 'chrome://read-later.top-chrome/read_later_item.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestReadLaterApiProxy} from './test_read_later_api_proxy.js';
 
 suite('ReadLaterAppTest', () => {
-  /** @type {!ReadLaterAppElement} */
-  let readLaterApp;
-  /** @type {!TestReadLaterApiProxy} */
-  let testProxy;
+  let readLaterApp: ReadLaterAppElement;
+  let testProxy: TestReadLaterApiProxy;
 
-  /**
-   * @param {!NodeList<!Element>} items
-   * @param {!Array<string>} urls
-   */
-  function assertEntryURLs(items, urls) {
+  function assertEntryURLs(items: NodeListOf<HTMLElement>, urls: string[]) {
     assertEquals(urls.length, items.length);
     items.forEach((item, index) => {
-      assertEquals(urls[index], item.dataset.url);
+      assertEquals(urls[index], item.dataset['url']);
     });
   }
 
-  /** @return {!NodeList<!Element>} */
   function queryItems() {
-    return readLaterApp.shadowRoot.querySelectorAll('read-later-item');
+    return readLaterApp.shadowRoot!.querySelectorAll('read-later-item');
   }
 
-  /** @param {string} url */
-  function clickItem(url) {
-    readLaterApp.shadowRoot.querySelector(`[data-url="${url}"]`).click();
+  function clickItem(url: string) {
+    readLaterApp.shadowRoot!.querySelector<HTMLElement>(
+                                `[data-url="${url}"]`)!.click();
   }
 
-  /** @return {!ReadLaterEntriesByStatus} */
-  function getSampleData() {
+  function getSampleData(): ReadLaterEntriesByStatus {
     const entries = {
       unreadEntries: [
         {
           title: 'Google',
           url: {url: 'https://www.google.com'},
           displayUrl: 'google.com',
-          updateTime: 0,
+          updateTime: 0n,
           read: false,
           displayTimeSinceUpdate: '2 minutes ago',
         },
@@ -59,7 +50,7 @@ suite('ReadLaterAppTest', () => {
           title: 'Apple',
           url: {url: 'https://www.apple.com'},
           displayUrl: 'apple.com',
-          updateTime: 0,
+          updateTime: 0n,
           read: false,
           displayTimeSinceUpdate: '20 minutes ago',
         },
@@ -69,7 +60,7 @@ suite('ReadLaterAppTest', () => {
           title: 'Bing',
           url: {url: 'https://www.bing.com'},
           displayUrl: 'bing.com',
-          updateTime: 0,
+          updateTime: 0n,
           read: true,
           displayTimeSinceUpdate: '5 minutes ago',
         },
@@ -77,7 +68,7 @@ suite('ReadLaterAppTest', () => {
           title: 'Yahoo',
           url: {url: 'https://www.yahoo.com'},
           displayUrl: 'yahoo.com',
-          updateTime: 0,
+          updateTime: 0n,
           read: true,
           displayTimeSinceUpdate: '7 minutes ago',
         },
@@ -116,8 +107,8 @@ suite('ReadLaterAppTest', () => {
   });
 
   test('click on item passes event info', async () => {
-    const item = readLaterApp.shadowRoot.querySelector(
-        `[data-url="https://www.apple.com"]`);
+    const item = readLaterApp.shadowRoot!.querySelector(
+        `[data-url="https://www.apple.com"]`)!;
     item.dispatchEvent(new MouseEvent('click'));
     const [, , click] = await testProxy.whenCalled('openURL');
     assertFalse(
@@ -152,9 +143,9 @@ suite('ReadLaterAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
 
     const readLaterItem =
-        readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`);
-    const readLaterItemUpdateStatusButton =
-        readLaterItem.shadowRoot.querySelector('#updateStatusButton');
+        readLaterApp.shadowRoot!.querySelector<ReadLaterItemElement>(
+            `[data-url="${expectedUrl}"]`)!;
+    const readLaterItemUpdateStatusButton = readLaterItem.$.updateStatusButton;
     readLaterItemUpdateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
     assertEquals(expectedUrl, url.url);
@@ -165,9 +156,9 @@ suite('ReadLaterAppTest', () => {
     const expectedUrl = 'https://www.bing.com';
 
     const readLaterItem =
-        readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`);
-    const readLaterItemUpdateStatusButton =
-        readLaterItem.shadowRoot.querySelector('#updateStatusButton');
+        readLaterApp.shadowRoot!.querySelector<ReadLaterItemElement>(
+            `[data-url="${expectedUrl}"]`)!;
+    const readLaterItemUpdateStatusButton = readLaterItem.$.updateStatusButton;
     readLaterItemUpdateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
     assertEquals(expectedUrl, url.url);
@@ -178,9 +169,9 @@ suite('ReadLaterAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
 
     const readLaterItem =
-        readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`);
-    const readLaterItemDeleteButton =
-        readLaterItem.shadowRoot.querySelector('#deleteButton');
+        readLaterApp.shadowRoot!.querySelector<ReadLaterItemElement>(
+            `[data-url="${expectedUrl}"]`)!;
+    const readLaterItemDeleteButton = readLaterItem.$.deleteButton;
     readLaterItemDeleteButton.click();
     const url = await testProxy.whenCalled('removeEntry');
     assertEquals(expectedUrl, url.url);
@@ -188,15 +179,16 @@ suite('ReadLaterAppTest', () => {
 
   test('Click on menu button triggers actions', async () => {
     const readLaterCloseButton =
-        readLaterApp.shadowRoot.querySelector('#closeButton');
+        readLaterApp.shadowRoot!.querySelector<HTMLElement>('#closeButton')!;
     readLaterCloseButton.click();
     await testProxy.whenCalled('closeUI');
   });
 
   test('Enter key triggers action and passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
-    const readLaterItem = /** @type {!Element} */
-        (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
+    const readLaterItem =
+        readLaterApp.shadowRoot!.querySelector<ReadLaterItemElement>(
+            `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readLaterItem, 0, [], 'Enter');
     const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
@@ -206,8 +198,9 @@ suite('ReadLaterAppTest', () => {
 
   test('Space key triggers action and passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
-    const readLaterItem = /** @type {!Element} */
-        (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
+    const readLaterItem =
+        readLaterApp.shadowRoot!.querySelector<ReadLaterItemElement>(
+            `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readLaterItem, 0, [], ' ');
     const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
@@ -220,11 +213,12 @@ suite('ReadLaterAppTest', () => {
       'https://www.google.com', 'https://www.apple.com', 'https://www.bing.com',
       'https://www.yahoo.com'
     ];
-    const selector = readLaterApp.shadowRoot.querySelector('iron-selector');
+    const selector = readLaterApp.shadowRoot!.querySelector('iron-selector')!;
 
     // Select first item.
     selector.selected =
-        readLaterApp.shadowRoot.querySelector('read-later-item').dataset.url;
+        readLaterApp.shadowRoot!.querySelector(
+                                    'read-later-item')!.dataset['url']!;
 
     keyDownOn(selector, 0, [], 'ArrowUp');
     assertEquals(urls[3], selector.selected);
@@ -243,43 +237,41 @@ suite('ReadLaterAppTest', () => {
       'Keyboard navigation left/right cycles through list item elements',
       async () => {
         const firstItem =
-            readLaterApp.shadowRoot.querySelector('read-later-item');
+            readLaterApp.shadowRoot!.querySelector('read-later-item')!;
         // Focus first item.
         firstItem.focus();
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
         assertEquals(
-            firstItem.shadowRoot.getElementById('updateStatusButton'),
-            firstItem.shadowRoot.activeElement);
+            firstItem.$.updateStatusButton,
+            firstItem.shadowRoot!.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
         assertEquals(
-            firstItem.shadowRoot.getElementById('deleteButton'),
-            firstItem.shadowRoot.activeElement);
+            firstItem.$.deleteButton, firstItem.shadowRoot!.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
-        assertEquals(firstItem, readLaterApp.shadowRoot.activeElement);
+        assertEquals(firstItem, readLaterApp.shadowRoot!.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
         assertEquals(
-            firstItem.shadowRoot.getElementById('deleteButton'),
-            firstItem.shadowRoot.activeElement);
+            firstItem.$.deleteButton, firstItem.shadowRoot!.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
         assertEquals(
-            firstItem.shadowRoot.getElementById('updateStatusButton'),
-            firstItem.shadowRoot.activeElement);
+            firstItem.$.updateStatusButton,
+            firstItem.shadowRoot!.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
-        assertEquals(firstItem, readLaterApp.shadowRoot.activeElement);
+        assertEquals(firstItem, readLaterApp.shadowRoot!.activeElement);
       });
 
   test('Favicons present in the dom', async () => {
     const readLaterItems = /** @type {!NodeList<!Element>} */
-        (readLaterApp.shadowRoot.querySelectorAll('read-later-item'));
+        (readLaterApp.shadowRoot!.querySelectorAll('read-later-item'));
 
     readLaterItems.forEach((readLaterItem) => {
-      assertTrue(!!readLaterItem.shadowRoot.querySelector('.favicon'));
+      assertTrue(!!readLaterItem.shadowRoot!.querySelector('.favicon'));
     });
   });
 
