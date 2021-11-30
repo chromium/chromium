@@ -221,6 +221,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Returns the SourceId of UKM for `app_id`.
   ukm::SourceId GetSourceId(const std::string& app_id);
 
+  // Returns the SourceId for a Borealis app_id.
+  ukm::SourceId GetSourceIdForBorealis(const std::string& app_id);
+
   // Gets the source id for a Crostini app_id.
   ukm::SourceId GetSourceIdForCrostini(const std::string& app_id);
 

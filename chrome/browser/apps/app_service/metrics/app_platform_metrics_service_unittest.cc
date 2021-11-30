@@ -15,6 +15,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -179,6 +181,26 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                  true /* should_notify_initialized */);
     deltas.clear();
 
+    deltas.push_back(MakeApp(/*app_id=*/borealis::kBorealisMainAppId,
+                             apps::mojom::AppType::kBorealis, "",
+                             apps::mojom::Readiness::kReady,
+                             apps::mojom::InstallReason::kUser,
+                             apps::mojom::InstallSource::kUnknown));
+    cache.OnApps(std::move(deltas), apps::mojom::AppType::kBorealis,
+                 true /* should_notify_initialized */);
+    deltas.clear();
+
+    borealis::CreateFakeApp(testing_profile_.get(), "borealistest",
+                            "borealis/123");
+    std::string borealis_app(borealis::FakeAppId("borealistest"));
+    deltas.push_back(MakeApp(
+        /*app_id=*/borealis_app.c_str(), apps::mojom::AppType::kBorealis, "",
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
+        apps::mojom::InstallSource::kUnknown));
+    cache.OnApps(std::move(deltas), apps::mojom::AppType::kBorealis,
+                 true /* should_notify_initialized */);
+    deltas.clear();
+
     deltas.push_back(MakeApp(/*app_id=*/crostini::kCrostiniTerminalSystemAppId,
                              apps::mojom::AppType::kCrostini, "",
                              apps::mojom::Readiness::kReady,
@@ -236,10 +258,6 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*app_id=*/"r", apps::mojom::AppType::kRemote, "",
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kPolicy,
         apps::mojom::InstallSource::kUnknown));
-    deltas.push_back(MakeApp(/*app_id=*/"bo", apps::mojom::AppType::kBorealis,
-                             "", apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallReason::kOem,
-                             apps::mojom::InstallSource::kUnknown));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -276,6 +294,28 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBuiltIn, apps::mojom::InstallReason::kSystem),
         /*expected_count=*/1);
+
+    // Should be 3 Borealis apps: The installer/launcher created by the
+    // BorealisApps class, plus the two created in this test.
+    const int borealis_apps_count = 3;
+    histogram_tester_.ExpectUniqueSample(
+        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
+            AppTypeName::kBorealis),
+        /*sample=*/borealis_apps_count,
+        /*bucket_count=*/1);
+
+    // The installer/launcher is preinstalled, the others are user-installed.
+    histogram_tester_.ExpectUniqueSample(
+        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
+            AppTypeName::kBorealis, apps::mojom::InstallReason::kDefault),
+        /*sample=*/1,
+        /*bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
+            AppTypeName::kBorealis, apps::mojom::InstallReason::kUser),
+        /*sample=*/borealis_apps_count - 1,
+        /*bucket_count=*/1);
+
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kCrostini),
@@ -345,14 +385,6 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kRemote, apps::mojom::InstallReason::kPolicy),
-        /*expected_count=*/1);
-    histogram_tester_.ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kBorealis),
-        /*expected_count=*/1);
-    histogram_tester_.ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBorealis, apps::mojom::InstallReason::kOem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -1448,6 +1480,24 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
 TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+
+  proxy->Launch(
+      /*app_id=*/borealis::kBorealisMainAppId, ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://borealis/client", AppTypeName::kBorealis,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kBorealis);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kBorealis);
+
+  proxy->Launch(
+      /*app_id=*/borealis::FakeAppId("borealistest"), ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://borealis/123", AppTypeName::kBorealis,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+
+  VerifyAppLaunchPerAppTypeHistogram(2, AppTypeName::kBorealis);
+  VerifyAppLaunchPerAppTypeV2Histogram(2, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
       /*app_id=*/crostini::kCrostiniTerminalSystemAppId,

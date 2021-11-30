@@ -46,6 +46,7 @@ enum class AppType {
   kExtension,
   kChromeApp,
   kCrostini,
+  kBorealis,
 };
 
 namespace internal {

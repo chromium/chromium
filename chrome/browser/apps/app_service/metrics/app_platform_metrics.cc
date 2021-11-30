@@ -8,9 +8,11 @@
 
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -1011,16 +1013,52 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
     case apps::mojom::AppType::kCrostini:
       source_id = GetSourceIdForCrostini(app_id);
       break;
+    case apps::mojom::AppType::kBorealis:
+      source_id = GetSourceIdForBorealis(app_id);
+      break;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kStandaloneBrowserExtension:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
       return ukm::kInvalidSourceId;
   }
   return source_id;
+}
+
+ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
+    const std::string& app_id) {
+  // Most Borealis apps are identified by a numeric ID, except these.
+  if (app_id == borealis::kBorealisMainAppId) {
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("client");
+  } else if (app_id == borealis::kBorealisAppId) {
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("installer");
+  } else if (app_id.find(borealis::kIgnoredAppIdPrefix) != std::string::npos) {
+    // These are not real apps from a user's point of view,
+    // so it doesn't make sense to record metrics for them.
+    return ukm::kInvalidSourceId;
+  }
+
+  auto* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
+  auto registration = registry->GetRegistration(app_id);
+  if (!registration) {
+    // If there's no registration then we're not allowed to record anything that
+    // could identify the app (and we don't know the app name anyway), but
+    // recording every unregistered app in one big bucket is fine.
+    //
+    // In general all Borealis apps should be registered, so if we do see this
+    // Source ID being reported, that's a bug.
+    LOG(WARNING) << "Couldn't get Borealis ID for UNREGISTERED app " << app_id;
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("UNREGISTERED");
+  }
+  absl::optional<int> borealis_id =
+      borealis::GetBorealisAppId(registration->Exec());
+  if (!borealis_id)
+    LOG(WARNING) << "Couldn't get Borealis ID for registered app " << app_id;
+  return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis(
+      borealis_id ? base::NumberToString(borealis_id.value()) : "NoId");
 }
 
 ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(

@@ -24,6 +24,7 @@ namespace borealis {
 
 const char kBorealisAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
 const char kBorealisMainAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
+const char kIgnoredAppIdPrefix[] = "org.chromium.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "c3RlYW0=";
 const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
@@ -51,10 +52,6 @@ static constexpr char kSlrVersionKey[] = "entry.300735843";
 // App IDs prefixed with this are identified with a numeric "Borealis ID".
 const base::StringPiece kBorealisWindowWithIdPrefix(
     "org.chromium.borealis.xprop.");
-
-// App IDs prefixed with this are unidentified and probably aren't games.
-// Don't prompt for feedback for them.
-static constexpr char kNonGameWindowPrefix[] = "org.chromium.borealis.xid.";
 
 // Windows with these app IDs are not games. Don't prompt for feedback for them.
 // Hashed by crx_file::id_util::GenerateId().
@@ -187,7 +184,7 @@ void FeedbackFormUrl(Profile* const profile,
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
 
   // Exclude windows that aren't games.
-  if (app_id.find(kNonGameWindowPrefix) != std::string::npos ||
+  if (app_id.find(kIgnoredAppIdPrefix) != std::string::npos ||
       app_id == kBorealisMainAppId) {
     std::move(url_callback).Run(GURL());
     return;

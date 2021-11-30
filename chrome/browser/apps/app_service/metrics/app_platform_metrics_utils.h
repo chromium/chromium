@@ -107,10 +107,10 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
 bool ShouldRecordUkm(Profile* profile);
 
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
-// system web apps, builtin apps and Crostini apps are recorded because they are
-// synced to server/cloud, or part of OS. Other app types, e.g. remote apps,
-// etc, are not recorded. So returns true if the app_type_name is allowed to
-// record UKM. Otherwise, returns false.
+// system web apps, builtin apps, Borealis apps, and Crostini apps are recorded
+// because they are synced to server/cloud, or part of OS. Other app types,
+// e.g. remote apps, etc, are not recorded. So returns true if the
+// app_type_name is allowed to record UKM. Otherwise, returns false.
 //
 // See DD: go/app-platform-metrics-using-ukm for details.
 bool ShouldRecordUkmForAppTypeName(AppType app_type_name);
