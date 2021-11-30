@@ -184,13 +184,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   if (!policy)
     return;
 
-  if (!RuntimeEnabledFeatures::FeaturePolicyForClientHintsEnabled() &&
-      !base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty) &&
-      !is_1p_origin) {
-    // No client hints for 3p origins.
-    return;
-  }
-
   // The next 4 hints should be enabled if we're allowing legacy hints to third
   // parties, or if PermissionsPolicy delegation says they are allowed.
   if (ShouldSendClientHint(
@@ -693,7 +686,7 @@ bool BaseFetchContext::ShouldSendClientHint(
   if (mode == ClientHintsMode::kLegacy &&
       base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
     origin_ok = true;
-  } else if (RuntimeEnabledFeatures::FeaturePolicyForClientHintsEnabled()) {
+  } else {
     // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
     // then send Sec-CH-UA-Reduced in the fetch request, regardless of the
     // permissions policy.
@@ -701,8 +694,6 @@ bool BaseFetchContext::ShouldSendClientHint(
                 (policy && policy->IsFeatureEnabledForOrigin(
                                GetClientHintToPolicyFeatureMap().at(type),
                                resource_origin));
-  } else {
-    origin_ok = is_1p_origin;
   }
 
   if (!origin_ok)

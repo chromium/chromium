@@ -47,8 +47,7 @@ CreateContentBrowserURLLoaderThrottles(
 
   ClientHintsControllerDelegate* client_hint_delegate =
       browser_context->GetClientHintsControllerDelegate();
-  if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints) &&
-      (base::FeatureList::IsEnabled(features::kCriticalClientHint) ||
+  if ((base::FeatureList::IsEnabled(features::kCriticalClientHint) ||
        base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) &&
       request.is_main_frame && net::HttpUtil::IsMethodSafe(request.method) &&
       client_hint_delegate &&

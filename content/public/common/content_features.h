@@ -80,7 +80,6 @@ CONTENT_EXPORT extern const base::Feature
     kExperimentalContentSecurityPolicyFeatures;
 CONTENT_EXPORT extern const base::Feature
     kExtraSafelistedRequestHeadersForOutOfBlinkCors;
-CONTENT_EXPORT extern const base::Feature kFeaturePolicyForClientHints;
 CONTENT_EXPORT extern const base::Feature kFontManagerEarlyInit;
 CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
 #if !defined(OS_ANDROID)

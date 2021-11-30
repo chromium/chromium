@@ -73,53 +73,43 @@
     {
       name: "ClientHintDPR",
       permissions_policy_name: "ch-dpr",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintDeviceMemory",
       permissions_policy_name: "ch-device-memory",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintDownlink",
       permissions_policy_name: "ch-downlink",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintECT",
       permissions_policy_name: "ch-ect",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintPrefersColorScheme",
       permissions_policy_name: "ch-prefers-color-scheme",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintRTT",
       permissions_policy_name: "ch-rtt",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUA",
       permissions_policy_name: "ch-ua",
       feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAArch",
       permissions_policy_name: "ch-ua-arch",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUABitness",
       permissions_policy_name: "ch-ua-bitness",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAPlatform",
       permissions_policy_name: "ch-ua-platform",
-      depends_on: ["FeaturePolicyForClientHints"],
       default_value_behind_flag: [
         ["UACHPlatformEnabledByDefault", "EnableForAll"],
       ],
@@ -127,33 +117,29 @@
     {
       name: "ClientHintUAModel",
       permissions_policy_name: "ch-ua-model",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAMobile",
       permissions_policy_name: "ch-ua-mobile",
       feature_default: "EnableForAll",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAFullVersion",
       permissions_policy_name: "ch-ua-full-version",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAFullVersionList",
       permissions_policy_name: "ch-ua-full-version-list",
-      depends_on: ["FeaturePolicyForClientHints", "UserAgentClientHintFullVersionList"],
+      depends_on: ["UserAgentClientHintFullVersionList"],
     },
     {
       name: "ClientHintUAPlatformVersion",
       permissions_policy_name: "ch-ua-platform-version",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintUAReduced",
       permissions_policy_name: "ch-ua-reduced",
-      depends_on: ["FeaturePolicyForClientHints", "UserAgentReduction"],
+      depends_on: ["UserAgentReduction"],
     },
     {
       name: "ClientHintViewportHeight",
@@ -163,12 +149,10 @@
     {
       name: "ClientHintViewportWidth",
       permissions_policy_name: "ch-viewport-width",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClientHintWidth",
       permissions_policy_name: "ch-width",
-      depends_on: ["FeaturePolicyForClientHints"],
     },
     {
       name: "ClipboardRead",

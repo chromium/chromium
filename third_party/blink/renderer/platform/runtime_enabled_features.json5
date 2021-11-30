@@ -1023,10 +1023,6 @@
       status: "test",
     },
     {
-      name: "FeaturePolicyForClientHints",
-      status: "stable",
-    },
-    {
       name: "FeaturePolicyReporting",
       status: "experimental"
     },

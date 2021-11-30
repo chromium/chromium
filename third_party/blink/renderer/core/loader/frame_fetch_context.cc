@@ -122,20 +122,10 @@ namespace blink {
 
 namespace {
 
-// Client hints sent to third parties are controlled through two mechanisms,
-// based on the state of the experimental flag "FeaturePolicyForClientHints".
-//
-// If that flag is disabled (the default), then all hints are always sent for
-// first-party subresources, and the kAllowClientHintsToThirdParty feature
-// controls whether some specific hints are sent to third parties. (Only
-// device-memory, resource-width, viewport-width and DPR are sent under this
-// model). This feature is enabled by default on Android, and disabled by
-// default on all other platforms.
-//
-// When the runtime flag is enabled, all client hints except UA are controlled
-// entirely by permissions policy on all platforms. In that case, hints will
-// generally be sent for first-party resources, and not for third-party
-// resources, unless specifically enabled by policy.
+// Client hints sent to third parties are controlled entirely by permissions
+// policy on all platforms. In that case, hints will generally be sent for
+// first-party resources, and not for third-party resources, unless specifically
+// enabled by policy.
 
 // Determines FetchCacheMode for |frame|. This FetchCacheMode should be a base
 // policy to consider one of each resource belonging to the frame, and should
@@ -454,9 +444,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
     return;
   }
 
-  // When the runtime flag "FeaturePolicyForClientHints" is enabled, permissions
-  // policy is used to enable hints for all subresources, based on the policy of
-  // the requesting document, and the origin of the resource.
+  // The Permissions policy is used to enable hints for all subresources, based
+  // on the policy of the requesting document, and the origin of the resource.
   const PermissionsPolicy* policy =
       document_
           ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()

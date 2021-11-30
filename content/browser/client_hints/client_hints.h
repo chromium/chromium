@@ -110,8 +110,7 @@ ParseAndPersistAcceptCHForNavigation(
 // `persist_duration` can be nullptr, in which case, a long-enough expiration
 // time is chosen such that the hints won't expire.
 //
-// TODO(crbug.com/1243060): Remove `persist_duration` as an argument when
-// FeaturePolicyForClientHints is removed.
+// TODO(crbug.com/1243060): Remove `persist_duration`.
 CONTENT_EXPORT void PersistAcceptCH(
     const GURL& url,
     ClientHintsControllerDelegate* delegate,

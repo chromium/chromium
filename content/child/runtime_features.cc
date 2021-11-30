@@ -351,8 +351,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           // the feature is in stable with no issues.
           {"DialogFocusNewSpecBehavior",
            blink::features::kDialogFocusNewSpecBehavior},
-          {"FeaturePolicyForClientHints",
-           features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
           {"FileHandling", blink::features::kFileHandlingAPI},
           {"Fledge", blink::features::kFledge},

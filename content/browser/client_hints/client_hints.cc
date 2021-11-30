@@ -450,10 +450,6 @@ const std::string SerializeHeaderString(const T& value) {
       .value_or(std::string());
 }
 
-bool IsPermissionsPolicyForClientHintsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints);
-}
-
 bool IsSameOrigin(const GURL& url1, const GURL& url2) {
   return url::Origin::Create(url1).IsSameOriginWith(url::Origin::Create(url2));
 }
@@ -586,7 +582,7 @@ struct ClientHintsExtendedData {
 
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          WebClientHintsType type) {
-  if (!IsPermissionsPolicyForClientHintsEnabled() || data.is_main_frame)
+  if (data.is_main_frame)
     return data.is_1p_origin;
   return (data.is_embedder_ua_reduced &&
           type == WebClientHintsType::kUAReduced) ||
@@ -967,24 +963,8 @@ void PersistAcceptCH(const GURL& url,
                      const std::vector<WebClientHintsType>& hints,
                      base::TimeDelta* persist_duration) {
   DCHECK(delegate);
-
-  // TODO(https://crbug.com/1243060): Remove the checking and persistence of the
-  // expiration time.
-  const bool use_persist_duration =
-      persist_duration && !IsPermissionsPolicyForClientHintsEnabled();
-
-  if (use_persist_duration && persist_duration->is_zero())
-    return;
-
-  // JSON cannot store "non-finite" values (i.e. NaN or infinite) so
-  // base::TimeDelta::Max cannot be used. As this will be removed once the
-  // FeaturePolicyForClientHints feature is shipped, a reasonably large value
-  // was chosen instead.
-  base::TimeDelta duration =
-      use_persist_duration ? *persist_duration : base::Days(1000000);
-
   delegate->PersistClientHints(url::Origin::Create(url), hints,
-                               std::move(duration));
+                               base::Days(1000000));
 }
 
 std::vector<WebClientHintsType> LookupAcceptCHForCommit(

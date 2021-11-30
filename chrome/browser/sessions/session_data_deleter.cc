@@ -121,13 +121,8 @@ void SessionDataDeleterInternal::Run(
         // Fire and forget. Session cookies will be cleaned up on start as well.
         // (SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup)
         base::DoNothing());
-
-    // If the permissions policy feature is enabled, delete the client hint
-    // preferences
-    if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints)) {
-      host_content_settings_map->ClearSettingsForOneType(
-          ContentSettingsType::CLIENT_HINTS);
-    }
+    host_content_settings_map->ClearSettingsForOneType(
+        ContentSettingsType::CLIENT_HINTS);
   }
 
   if (!storage_policy_.get() || !storage_policy_->HasSessionOnlyOrigins())

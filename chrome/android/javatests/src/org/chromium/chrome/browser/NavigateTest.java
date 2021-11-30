@@ -314,8 +314,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @CommandLineFlags.
-    Add({"enable-features=UserAgentClientHint, FeaturePolicyForClientHints, CriticalClientHint"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint, CriticalClientHint"})
     // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteCriticalClientHints() throws Exception {
         // TODO(https://crbug.com/1138913): Move EchoCriticalHeader request handler here when
