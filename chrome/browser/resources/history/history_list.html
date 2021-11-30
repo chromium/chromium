@@ -75,6 +75,11 @@
               on-click="onRemoveFromHistoryTap_">
             $i18n{removeFromHistory}
           </button>
+          <button id="menuRemoveBookmarkButton" class="dropdown-item"
+              hidden="[[!actionMenuModel_.item.starred]]"
+              on-click="onRemoveBookmarkTap_">
+            $i18n{removeBookmark}
+          </button>
         </cr-action-menu>
       </template>
     </cr-lazy-render>

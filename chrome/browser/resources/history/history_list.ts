@@ -426,6 +426,13 @@ export class HistoryListElement extends HistoryListElementBase {
     return BrowserService.getInstance().removeVisits(removalList);
   }
 
+  private onRemoveBookmarkTap_() {
+    const browserService = BrowserService.getInstance();
+    browserService.removeBookmark(this.actionMenuModel_!.item.url);
+    this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
+    this.closeMenu_();
+  }
+
   private onRemoveFromHistoryTap_() {
     const browserService = BrowserService.getInstance();
     browserService.recordAction('EntryMenuRemoveFromHistory');

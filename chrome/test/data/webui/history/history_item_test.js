@@ -143,8 +143,6 @@ suite('<history-item> integration test', function() {
           items[1].$$('#bookmark-star').focus();
           items[1].$$('#bookmark-star').click();
 
-          // Check that focus is shifted to overflow menu icon.
-          assertEquals(items[1].root.activeElement, items[1].$['menu-button']);
           // Check that all items matching this url are unstarred.
           assertEquals(element.historyData_[1].starred, false);
           assertEquals(element.historyData_[5].starred, false);
