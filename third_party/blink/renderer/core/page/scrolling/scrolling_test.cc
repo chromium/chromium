@@ -1829,7 +1829,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   ForceFullCompositingUpdate();
 
   auto* scrollable_area = ScrollableAreaByDOMElementId("container");
-  ASSERT_EQ(0, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(0, scrollable_area->GetScrollOffset().y());
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
 
   // Simulate 100px of scroll coming from the compositor thread during a commit.

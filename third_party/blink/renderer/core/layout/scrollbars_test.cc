@@ -241,11 +241,11 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     event.SetPositionInWidget(gfx::PointF(position.x(), position.y()));
 
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
-      event.data.scroll_update.delta_x = offset.width();
-      event.data.scroll_update.delta_y = offset.height();
+      event.data.scroll_update.delta_x = offset.x();
+      event.data.scroll_update.delta_y = offset.y();
     } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
-      event.data.scroll_begin.delta_x_hint = offset.width();
-      event.data.scroll_begin.delta_y_hint = offset.height();
+      event.data.scroll_begin.delta_x_hint = offset.x();
+      event.data.scroll_begin.delta_y_hint = offset.y();
     }
     return WebCoalescedInputEvent(event, ui::LatencyInfo());
   }
@@ -1724,7 +1724,7 @@ TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
 
   Compositor().BeginFrame();
 
-  int scroll_y = scrollable_area->GetScrollOffset().height();
+  int scroll_y = scrollable_area->GetScrollOffset().y();
   ASSERT_EQ(9999000, scroll_y);
 
   Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
@@ -2819,7 +2819,7 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 400),
                                    mojom::blink::ScrollType::kProgrammatic,
                                    mojom::blink::ScrollBehavior::kInstant);
-  EXPECT_EQ(scrollable_area->ScrollOffsetInt(), IntSize(0, 200));
+  EXPECT_EQ(scrollable_area->ScrollOffsetInt(), gfx::Vector2d(0, 200));
 
   HandleMouseMoveEvent(195, 195);
   HandleMousePressEvent(195, 195);

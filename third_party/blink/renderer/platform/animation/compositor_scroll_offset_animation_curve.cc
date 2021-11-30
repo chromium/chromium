@@ -37,9 +37,9 @@ gfx::PointF CompositorScrollOffsetAnimationCurve::GetValue(double time) const {
   return curve_->GetValue(base::Seconds(time));
 }
 
-void CompositorScrollOffsetAnimationCurve::ApplyAdjustment(IntSize adjustment) {
-  curve_->ApplyAdjustment(
-      gfx::Vector2dF(adjustment.width(), adjustment.height()));
+void CompositorScrollOffsetAnimationCurve::ApplyAdjustment(
+    gfx::Vector2d adjustment) {
+  curve_->ApplyAdjustment(adjustment);
 }
 
 base::TimeDelta CompositorScrollOffsetAnimationCurve::Duration() const {

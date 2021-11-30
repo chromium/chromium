@@ -348,6 +348,7 @@ _CONFIG = [
             'gfx::ToEnclosingRect',
             'gfx::ToFlooredPoint',
             'gfx::ToFlooredSize',
+            'gfx::ToFlooredVector2d',
             'gfx::ToRoundedPoint',
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',

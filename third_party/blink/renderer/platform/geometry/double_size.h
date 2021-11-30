@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -27,6 +28,8 @@ class PLATFORM_EXPORT DoubleSize {
   constexpr DoubleSize(const FloatSize& s)
       : width_(s.width()), height_(s.height()) {}
   explicit DoubleSize(const LayoutSize&);
+  explicit DoubleSize(const gfx::Vector2dF& v)
+      : width_(v.x()), height_(v.y()) {}
 
   constexpr double Width() const { return width_; }
   constexpr double Height() const { return height_; }

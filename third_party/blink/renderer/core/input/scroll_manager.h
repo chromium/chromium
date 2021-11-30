@@ -186,7 +186,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // customization.
   Member<Node> previous_gesture_scrolled_node_;
 
-  FloatSize last_scroll_delta_for_scroll_gesture_;
+  ScrollOffset last_scroll_delta_for_scroll_gesture_;
 
   // True iff some of the delta has been consumed for the current
   // scroll sequence in this frame, or any child frames. Only used

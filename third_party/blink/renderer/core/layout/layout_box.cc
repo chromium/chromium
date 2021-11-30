@@ -663,14 +663,13 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
     PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
     DCHECK(scrollable_area);
-    // We use getScrollOffset() rather than scrollPosition(), because scroll
+    // We use GetScrollOffset() rather than ScrollPosition(), because scroll
     // offset is the distance from the beginning of flow for the box, which is
     // the dimension we want to preserve.
-    ScrollOffset old_offset = scrollable_area->GetScrollOffset();
-    if (old_offset.width() || old_offset.height()) {
-      ScrollOffset new_offset = old_offset.ScaledBy(new_style.EffectiveZoom() /
-                                                    old_style->EffectiveZoom());
-      scrollable_area->SetScrollOffsetUnconditionally(new_offset);
+    ScrollOffset offset = scrollable_area->GetScrollOffset();
+    if (!offset.IsZero()) {
+      offset.Scale(new_style.EffectiveZoom() / old_style->EffectiveZoom());
+      scrollable_area->SetScrollOffsetUnconditionally(offset);
     }
   }
 
@@ -1905,15 +1904,13 @@ bool LayoutBox::NeedsPreferredWidthsRecalculation() const {
          StyleRef().PaddingEnd().IsPercentOrCalc();
 }
 
-IntSize LayoutBox::OriginAdjustmentForScrollbars() const {
+gfx::Vector2d LayoutBox::OriginAdjustmentForScrollbars() const {
   NOT_DESTROYED();
-  if (CanSkipComputeScrollbars()) {
-    return IntSize();
-  } else {
-    NGPhysicalBoxStrut scrollbars =
-        ComputeScrollbarsInternal(kClampToContentBox);
-    return IntSize(scrollbars.left.ToInt(), scrollbars.top.ToInt());
-  }
+  if (CanSkipComputeScrollbars())
+    return gfx::Vector2d();
+
+  NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(kClampToContentBox);
+  return gfx::Vector2d(scrollbars.left.ToInt(), scrollbars.top.ToInt());
 }
 
 gfx::Point LayoutBox::ScrollOrigin() const {
@@ -1926,7 +1923,7 @@ PhysicalOffset LayoutBox::ScrolledContentOffset() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
   DCHECK(GetScrollableArea());
-  return PhysicalOffset::FromFloatSizeFloor(
+  return PhysicalOffset::FromVector2dFFloor(
       GetScrollableArea()->GetScrollOffset());
 }
 
@@ -1934,7 +1931,7 @@ gfx::Vector2d LayoutBox::PixelSnappedScrolledContentOffset() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
   DCHECK(GetScrollableArea());
-  return ToGfxVector2d(GetScrollableArea()->ScrollOffsetInt());
+  return GetScrollableArea()->ScrollOffsetInt();
 }
 
 PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {

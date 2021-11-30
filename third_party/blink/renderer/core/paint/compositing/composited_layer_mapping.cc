@@ -733,7 +733,7 @@ void CompositedLayerMapping::ComputeGraphicsLayerParentLocation(
         layout_box.PixelSnappedScrolledContentOffset();
     gfx::Point scroll_origin =
         compositing_container->GetScrollableArea()->ScrollOrigin();
-    scroll_origin -= ToGfxVector2d(layout_box.OriginAdjustmentForScrollbars());
+    scroll_origin -= layout_box.OriginAdjustmentForScrollbars();
     scroll_origin.Offset(-layout_box.BorderLeft().ToInt(),
                          -layout_box.BorderTop().ToInt());
     graphics_layer_parent_location = gfx::PointAtOffsetFromOrigin(
@@ -1813,7 +1813,7 @@ bool CompositedLayerMapping::AdjustForCompositedScrolling(
         // offsetFromLayoutObject adds the origin offset from top/left to the
         // beginning of flow.
         ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
-        offset.Enlarge(-scroll_offset.width(), -scroll_offset.height());
+        offset.Enlarge(-scroll_offset.x(), -scroll_offset.y());
         return true;
       }
     }

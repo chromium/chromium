@@ -91,7 +91,7 @@ void ScrollManager::ClearGestureScrollState() {
   last_gesture_scroll_over_embedded_content_view_ = false;
   scroll_gesture_handling_node_ = nullptr;
   previous_gesture_scrolled_node_ = nullptr;
-  last_scroll_delta_for_scroll_gesture_ = FloatSize();
+  last_scroll_delta_for_scroll_gesture_ = ScrollOffset();
   delta_consumed_for_scroll_sequence_ = false;
   did_scroll_x_for_scroll_gesture_ = false;
   did_scroll_y_for_scroll_gesture_ = false;
@@ -381,8 +381,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         break;
       }
       case ScrollGranularity::kScrollByDocument: {
-        gfx::PointF end_position =
-            scrollable_area->ScrollPosition() + ToGfxVector2dF(delta);
+        gfx::PointF end_position = scrollable_area->ScrollPosition() + delta;
         bool scrolled_x = physical_direction == kScrollLeft ||
                           physical_direction == kScrollRight;
         bool scrolled_y = physical_direction == kScrollUp ||
@@ -625,9 +624,10 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   // scrolling occurs in the direction opposite the finger's movement
   // direction. e.g. Finger moving up has negative event delta but causes the
   // page to scroll down causing positive scroll delta.
-  FloatSize delta(-gesture_event.DeltaXInRootFrame(),
-                  -gesture_event.DeltaYInRootFrame());
-  FloatSize velocity(-gesture_event.VelocityX(), -gesture_event.VelocityY());
+  ScrollOffset delta(-gesture_event.DeltaXInRootFrame(),
+                     -gesture_event.DeltaYInRootFrame());
+  gfx::Vector2dF velocity(-gesture_event.VelocityX(),
+                          -gesture_event.VelocityY());
   gfx::PointF position = gesture_event.PositionInRootFrame();
 
   if (delta.IsZero())
@@ -653,11 +653,11 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  scroll_state_data->delta_x = delta.width();
-  scroll_state_data->delta_y = delta.height();
+  scroll_state_data->delta_x = delta.x();
+  scroll_state_data->delta_y = delta.y();
   scroll_state_data->delta_granularity = gesture_event.DeltaUnits();
-  scroll_state_data->velocity_x = velocity.width();
-  scroll_state_data->velocity_y = velocity.height();
+  scroll_state_data->velocity_x = velocity.x();
+  scroll_state_data->velocity_y = velocity.y();
   scroll_state_data->position_x = position.x();
   scroll_state_data->position_y = position.y();
   scroll_state_data->is_in_inertial_phase =
@@ -689,8 +689,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   last_scroll_delta_for_scroll_gesture_ = delta;
 
-  bool did_scroll_x = scroll_state->deltaX() != delta.width();
-  bool did_scroll_y = scroll_state->deltaY() != delta.height();
+  bool did_scroll_x = scroll_state->deltaX() != delta.x();
+  bool did_scroll_y = scroll_state->deltaY() != delta.y();
 
   did_scroll_x_for_scroll_gesture_ |= did_scroll_x;
   did_scroll_y_for_scroll_gesture_ |= did_scroll_y;
@@ -709,7 +709,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
     if (Node* overscroll_target = GetScrollEventTarget()) {
       overscroll_target->GetDocument().EnqueueOverscrollEventForNode(
-          overscroll_target, delta.width(), delta.height());
+          overscroll_target, delta.x(), delta.y());
     }
   }
 
@@ -852,8 +852,10 @@ LayoutBox* ScrollManager::LayoutBoxForSnapping() const {
   return previous_gesture_scrolled_node_->GetLayoutBox();
 }
 
-ScrollOffset GetScrollDirection(FloatSize delta) {
-  return delta.ShrunkTo(FloatSize(1, 1)).ExpandedTo(FloatSize(-1, -1));
+ScrollOffset GetScrollDirection(ScrollOffset delta) {
+  delta.SetToMax(ScrollOffset(-1, -1));
+  delta.SetToMin(ScrollOffset(1, 1));
+  return delta;
 }
 
 bool ScrollManager::SnapAtGestureScrollEnd(

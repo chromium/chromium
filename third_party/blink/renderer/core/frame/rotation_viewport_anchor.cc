@@ -147,8 +147,8 @@ void RotationViewportAnchor::SetAnchor() {
   // Normalize by the size of the outer rect
   DCHECK(!outer_view_rect.IsEmpty());
   normalized_visual_viewport_offset_ = gfx::ScaleVector2d(
-      ToGfxVector2dF(visual_viewport_->GetScrollOffset()),
-      1.0 / outer_view_rect.width(), 1.0 / outer_view_rect.height());
+      visual_viewport_->GetScrollOffset(), 1.0 / outer_view_rect.width(),
+      1.0 / outer_view_rect.height());
 
   // Note, we specifically use the unscaled visual viewport size here as the
   // conversion into content-space below will apply the scale.
@@ -197,7 +197,7 @@ void RotationViewportAnchor::RestoreToAnchor() {
                  visual_viewport_origin);
 
   LayoutViewport().SetScrollOffset(
-      ToScrollOffset(gfx::PointF(main_frame_origin)),
+      ScrollOffset(main_frame_origin.OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic);
 
   // Set scale before location, since location can be clamped on setting scale.
@@ -231,8 +231,8 @@ void RotationViewportAnchor::ComputeOrigins(
 
   MoveToEncloseRect(outer_rect, inner_rect);
 
-  outer_rect.set_origin(ToGfxPoint(
-      LayoutViewport().ClampScrollOffset(ToIntSize(outer_rect.origin()))));
+  outer_rect.set_origin(gfx::PointAtOffsetFromOrigin(
+      LayoutViewport().ClampScrollOffset(outer_rect.OffsetFromOrigin())));
 
   MoveIntoRect(inner_rect, outer_rect);
 

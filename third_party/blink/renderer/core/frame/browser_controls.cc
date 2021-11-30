@@ -31,23 +31,23 @@ void BrowserControls::ScrollBegin() {
   ResetBaseline();
 }
 
-FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
+ScrollOffset BrowserControls::ScrollBy(ScrollOffset pending_delta) {
   // If one or both of the top/bottom controls are showing, the shown ratio
   // needs to be computed.
   if (!TopHeight() && !BottomHeight())
     return pending_delta;
 
   if ((permitted_state_ == cc::BrowserControlsState::kShown &&
-       pending_delta.height() > 0) ||
+       pending_delta.y() > 0) ||
       (permitted_state_ == cc::BrowserControlsState::kHidden &&
-       pending_delta.height() < 0))
+       pending_delta.y() < 0))
     return pending_delta;
 
   float page_scale = page_->GetVisualViewport().Scale();
 
   // Update accumulated vertical scroll and apply it to browser controls
   // Compute scroll delta in viewport space by applying page scale
-  accumulated_scroll_delta_ += pending_delta.height() * page_scale;
+  accumulated_scroll_delta_ += pending_delta.y() * page_scale;
 
   // We want to base our calculations on top or bottom controls. After consuming
   // the scroll delta, we will calculate a shown ratio for the controls. The
@@ -89,7 +89,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
 
   // We negate the difference because scrolling down (positive delta) causes
   // browser controls to hide (negative offset difference).
-  FloatSize applied_delta(
+  ScrollOffset applied_delta(
       0, base_on_top_controls
              ? (old_top_offset - new_content_offset) / page_scale
              : 0);

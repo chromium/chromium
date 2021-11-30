@@ -799,8 +799,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
     scale = frame->GetPage()->PageScaleFactor();
     if (const RootFrameViewport* root_frame_viewport =
             frame->View()->GetRootFrameViewport()) {
-      gfx::Vector2d scroll_offset = ToGfxVector2d(FlooredIntSize(
-          root_frame_viewport->LayoutViewport().GetScrollOffset()));
+      gfx::Vector2d scroll_offset = gfx::ToFlooredVector2d(
+          root_frame_viewport->LayoutViewport().GetScrollOffset());
       // Accunt for the layout scroll (different from viewport scroll offset).
       p1 += scroll_offset;
       p2 += scroll_offset;

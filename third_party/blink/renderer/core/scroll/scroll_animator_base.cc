@@ -58,14 +58,14 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   ScrollOffset consumed_delta = ComputeDeltaToConsume(delta);
   ScrollOffset new_pos = current_offset_ + consumed_delta;
   if (current_offset_ == new_pos)
-    return ScrollResult(false, false, delta.width(), delta.height());
+    return ScrollResult(false, false, delta.x(), delta.y());
 
   SetCurrentOffset(new_pos);
   ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 
-  return ScrollResult(consumed_delta.width(), consumed_delta.height(),
-                      delta.width() - consumed_delta.width(),
-                      delta.height() - consumed_delta.height());
+  return ScrollResult(consumed_delta.x(), consumed_delta.y(),
+                      delta.x() - consumed_delta.x(),
+                      delta.y() - consumed_delta.y());
 }
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(

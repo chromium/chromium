@@ -51,6 +51,8 @@ class PLATFORM_EXPORT LayoutSize {
   constexpr LayoutSize() = default;
   constexpr explicit LayoutSize(const IntSize& size)
       : width_(size.width()), height_(size.height()) {}
+  constexpr explicit LayoutSize(const gfx::Size& size)
+      : width_(size.width()), height_(size.height()) {}
   constexpr LayoutSize(LayoutUnit width, LayoutUnit height)
       : width_(width), height_(height) {}
   constexpr LayoutSize(int width, int height)
@@ -62,6 +64,8 @@ class PLATFORM_EXPORT LayoutSize {
       : width_(size.width()), height_(size.height()) {}
   constexpr explicit LayoutSize(const gfx::SizeF& size)
       : width_(size.width()), height_(size.height()) {}
+  constexpr explicit LayoutSize(const gfx::Vector2dF& vector)
+      : width_(vector.x()), height_(vector.y()) {}
   constexpr explicit LayoutSize(const DoubleSize& size)
       : width_(size.Width()), height_(size.Height()) {}
 

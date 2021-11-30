@@ -157,7 +157,7 @@ ScrollResult ScrollAnimator::UserScroll(
   // animation rather than animating multiple scrollers at the same time.
   if (on_finish_)
     std::move(on_finish_).Run();
-  return ScrollResult(false, false, delta.width(), delta.height());
+  return ScrollResult(false, false, delta.x(), delta.y());
 }
 
 bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
@@ -220,7 +220,7 @@ bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
   return true;
 }
 
-void ScrollAnimator::AdjustAnimation(const IntSize& adjustment) {
+void ScrollAnimator::AdjustAnimation(const gfx::Vector2d& adjustment) {
   if (run_state_ == RunState::kIdle) {
     AdjustImplOnlyScrollOffsetAnimation(adjustment);
   } else if (HasRunningAnimation()) {

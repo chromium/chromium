@@ -183,9 +183,9 @@ void MacScrollbarAnimatorV2::WillRemoveHorizontalScrollbar(
 
 void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
     const ScrollOffset& new_offset) {
-  if (horizontal_scrollbar_ && new_offset.width() != 0)
+  if (horizontal_scrollbar_ && new_offset.x() != 0)
     horizontal_scrollbar_->DidScroll();
-  if (vertical_scrollbar_ && new_offset.height() != 0)
+  if (vertical_scrollbar_ && new_offset.y() != 0)
     vertical_scrollbar_->DidScroll();
 }
 

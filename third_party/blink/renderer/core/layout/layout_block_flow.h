@@ -425,7 +425,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit XPositionForFloatIncludingMargin(
       const FloatingObject& child) const {
     NOT_DESTROYED();
-    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().width());
+    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().x());
     if (IsHorizontalWritingMode()) {
       return child.X() + child.GetLayoutObject()->MarginLeft() +
              scrollbar_adjustment;

@@ -136,8 +136,7 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
                       page_logical_height);
     if (!is_horizontal)
       page_rect = page_rect.TransposedRect();
-    IntSize frame_scroll = scrollable_area->ScrollOffsetInt();
-    page_rect.Offset(-frame_scroll.width(), -frame_scroll.height());
+    page_rect.Offset(-scrollable_area->ScrollOffsetInt());
     page_rects_.push_back(page_rect);
   }
 }

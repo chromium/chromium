@@ -2092,8 +2092,8 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
   if (root_scroller != MainFrameImpl()->GetFrame()->GetDocument() &&
       controller.RootScrollerArea()) {
     ScrollOffset offset = controller.RootScrollerArea()->GetScrollOffset();
-    element_bounds_in_content.Offset(FlooredIntSize(offset));
-    caret_bounds_in_content.Offset(FlooredIntSize(offset));
+    element_bounds_in_content.Offset(gfx::ToFlooredVector2d(offset));
+    caret_bounds_in_content.Offset(gfx::ToFlooredVector2d(offset));
   }
 
   if (!zoom_into_legible_scale) {

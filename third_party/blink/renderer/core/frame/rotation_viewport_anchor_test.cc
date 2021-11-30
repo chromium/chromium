@@ -61,8 +61,8 @@ TEST_F(RotationViewportAnchorTest, SimpleAbsolutePosition) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(600, 400));
   Compositor().BeginFrame();
 
-  EXPECT_EQ(3050 - 200, layout_viewport->GetScrollOffset().width());
-  EXPECT_EQ(4050, layout_viewport->GetScrollOffset().height());
+  EXPECT_EQ(3050 - 200, layout_viewport->GetScrollOffset().x());
+  EXPECT_EQ(4050, layout_viewport->GetScrollOffset().y());
 }
 
 TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
@@ -117,8 +117,8 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
           WebView().MainFrameViewWidget()->Size().width() / 2 + 25,
       target_position.y());
 
-  EXPECT_EQ(expected_offset.x(), layout_viewport->GetScrollOffset().width());
-  EXPECT_EQ(expected_offset.y(), layout_viewport->GetScrollOffset().height());
+  EXPECT_EQ(expected_offset.x(), layout_viewport->GetScrollOffset().x());
+  EXPECT_EQ(expected_offset.y(), layout_viewport->GetScrollOffset().y());
 }
 
 }  // namespace

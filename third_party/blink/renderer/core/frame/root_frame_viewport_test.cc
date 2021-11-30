@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -41,11 +43,11 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
 
   // ScrollableArea Impl
   int ScrollSize(ScrollbarOrientation orientation) const override {
-    IntSize scroll_dimensions =
+    gfx::Vector2d scroll_dimensions =
         MaximumScrollOffsetInt() - MinimumScrollOffsetInt();
 
-    return (orientation == kHorizontalScrollbar) ? scroll_dimensions.width()
-                                                 : scroll_dimensions.height();
+    return (orientation == kHorizontalScrollbar) ? scroll_dimensions.x()
+                                                 : scroll_dimensions.y();
   }
 
   void SetUserInputScrollable(bool x, bool y) {
@@ -53,19 +55,23 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
     user_input_scrollable_y_ = y;
   }
 
-  IntSize ScrollOffsetInt() const override {
-    return FlooredIntSize(scroll_offset_);
+  gfx::Vector2d ScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(scroll_offset_);
   }
   ScrollOffset GetScrollOffset() const override { return scroll_offset_; }
-  IntSize MinimumScrollOffsetInt() const override { return IntSize(); }
+  gfx::Vector2d MinimumScrollOffsetInt() const override {
+    return gfx::Vector2d();
+  }
   ScrollOffset MinimumScrollOffset() const override { return ScrollOffset(); }
-  IntSize MaximumScrollOffsetInt() const override {
-    return FlooredIntSize(MaximumScrollOffset());
+  gfx::Vector2d MaximumScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(MaximumScrollOffset());
   }
 
   IntRect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override {
-    return IntRect(ToGfxPoint(FlooredIntSize(scroll_offset_)), viewport_size_);
+    return IntRect(
+        gfx::ToFlooredPoint(gfx::PointAtOffsetFromOrigin(scroll_offset_)),
+        viewport_size_);
   }
 
   IntSize ContentsSize() const override { return contents_size_; }
@@ -115,10 +121,10 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
   ScrollOffset ClampedScrollOffset(const ScrollOffset& offset) {
     ScrollOffset min_offset = MinimumScrollOffset();
     ScrollOffset max_offset = MaximumScrollOffset();
-    float width = std::min(std::max(offset.width(), min_offset.width()),
-                           max_offset.width());
-    float height = std::min(std::max(offset.height(), min_offset.height()),
-                            max_offset.height());
+    float width =
+        std::min(std::max(offset.x(), min_offset.x()), max_offset.x());
+    float height =
+        std::min(std::max(offset.y(), min_offset.y()), max_offset.y());
     return ScrollOffset(width, height);
   }
 
@@ -137,12 +143,13 @@ class RootLayoutViewportStub : public ScrollableAreaStub {
       : ScrollableAreaStub(viewport_size, contents_size) {}
 
   ScrollOffset MaximumScrollOffset() const override {
-    return ScrollOffset(ContentsSize() - ViewportSize());
+    IntSize diff = ContentsSize() - ViewportSize();
+    return ScrollOffset(diff.width(), diff.height());
   }
 
   PhysicalRect DocumentToFrame(const PhysicalRect& rect) const {
     PhysicalRect ret = rect;
-    ret.Move(-PhysicalOffset::FromFloatSizeRound(GetScrollOffset()));
+    ret.Move(-PhysicalOffset::FromVector2dFRound(GetScrollOffset()));
     return ret;
   }
 
@@ -157,11 +164,10 @@ class VisualViewportStub : public ScrollableAreaStub {
       : ScrollableAreaStub(viewport_size, contents_size), scale_(1) {}
 
   ScrollOffset MaximumScrollOffset() const override {
-    ScrollOffset visible_viewport(ViewportSize());
-    visible_viewport.Scale(1 / scale_);
-
-    ScrollOffset max_offset = ScrollOffset(ContentsSize()) - visible_viewport;
-    return ScrollOffset(max_offset);
+    IntSize viewport_size = ViewportSize();
+    viewport_size.Scale(1 / scale_);
+    IntSize diff = ContentsSize() - viewport_size;
+    return ScrollOffset(diff.width(), diff.height());
   }
 
   void SetScale(float scale) { scale_ = scale; }
@@ -174,8 +180,9 @@ class VisualViewportStub : public ScrollableAreaStub {
   IntRect VisibleContentRect(IncludeScrollbarsInRect) const override {
     FloatSize size(viewport_size_);
     size.Scale(1 / scale_);
-    return IntRect(ToGfxPoint(FlooredIntSize(GetScrollOffset())),
-                   ExpandedIntSize(size));
+    return IntRect(
+        gfx::ToFlooredPoint(gfx::PointAtOffsetFromOrigin(GetScrollOffset())),
+        ExpandedIntSize(size));
   }
 
   float scale_;
@@ -215,7 +222,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // Layout viewport shouldn't scroll since it's not horizontally scrollable,
   // but visual viewport should.
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(300, 0),
+                                  ScrollOffset(300, 0),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 0), visual_viewport->GetScrollOffset());
@@ -223,7 +230,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
 
   // Vertical scrolling should be unaffected.
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(0, 300),
+                                  ScrollOffset(0, 300),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 150), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 75), visual_viewport->GetScrollOffset());
@@ -247,7 +254,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
   // Layout viewport shouldn't scroll since it's not vertically scrollable,
   // but visual viewport should.
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(0, 300),
+                                  ScrollOffset(0, 300),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 75), visual_viewport->GetScrollOffset());
@@ -255,7 +262,7 @@ TEST_F(RootFrameViewportTest, UserInputScrollable) {
 
   // Horizontal scrolling should be unaffected.
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(300, 0),
+                                  ScrollOffset(300, 0),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(100, 0), layout_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(50, 75), visual_viewport->GetScrollOffset());
@@ -295,7 +302,7 @@ TEST_F(RootFrameViewportTest, TestScrollAnimatorUpdatedBeforeScroll) {
   EXPECT_EQ(ScrollOffset(50, 75), root_frame_viewport->GetScrollOffset());
 
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(-50, 0),
+                                  ScrollOffset(-50, 0),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 75), root_frame_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 75), visual_viewport->GetScrollOffset());
@@ -309,7 +316,7 @@ TEST_F(RootFrameViewportTest, TestScrollAnimatorUpdatedBeforeScroll) {
   EXPECT_EQ(ScrollOffset(100, 150), root_frame_viewport->GetScrollOffset());
 
   root_frame_viewport->UserScroll(ScrollGranularity::kScrollByPrecisePixel,
-                                  FloatSize(-100, 0),
+                                  ScrollOffset(-100, 0),
                                   ScrollableArea::ScrollCallback());
   EXPECT_EQ(ScrollOffset(0, 150), root_frame_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 150), layout_viewport->GetScrollOffset());
@@ -479,15 +486,15 @@ TEST_F(RootFrameViewportTest, VisibleContentRect) {
 
   EXPECT_EQ(gfx::Point(100, 75),
             root_frame_viewport->VisibleContentRect().origin());
-  EXPECT_EQ(ScrollOffset(500, 401),
-            DoubleSize(root_frame_viewport->VisibleContentRect().size()));
+  EXPECT_EQ(IntSize(500, 401),
+            root_frame_viewport->VisibleContentRect().size());
 
   visual_viewport->SetScale(2);
 
   EXPECT_EQ(gfx::Point(100, 75),
             root_frame_viewport->VisibleContentRect().origin());
-  EXPECT_EQ(ScrollOffset(250, 201),
-            DoubleSize(root_frame_viewport->VisibleContentRect().size()));
+  EXPECT_EQ(IntSize(250, 201),
+            root_frame_viewport->VisibleContentRect().size());
 }
 
 // Tests that scrolls on the root frame scroll the visual viewport before

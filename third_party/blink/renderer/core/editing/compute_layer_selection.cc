@@ -83,7 +83,7 @@ static gfx::Point LocalToInvalidationBackingPoint(
   // is a scroller.
   if (paint_invalidation_container->GetLayoutObject()
           .UsesCompositedScrolling()) {
-    container_point += PhysicalOffset::FromFloatSizeRound(
+    container_point += PhysicalOffset::FromVector2dFRound(
         paint_invalidation_container->GetScrollableArea()->GetScrollOffset());
   }
 

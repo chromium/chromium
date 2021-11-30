@@ -539,7 +539,7 @@ void Node::NativeApplyScroll(ScrollState& scroll_state) {
   if (scroll_state.FullyConsumed())
     return;
 
-  FloatSize delta(scroll_state.deltaX(), scroll_state.deltaY());
+  ScrollOffset delta(scroll_state.deltaX(), scroll_state.deltaY());
 
   if (delta.IsZero())
     return;
@@ -585,7 +585,7 @@ void Node::NativeApplyScroll(ScrollState& scroll_state) {
 
   // FIXME: Native scrollers should only consume the scroll they
   // apply. See crbug.com/457765.
-  scroll_state.ConsumeDeltaNative(delta.width(), delta.height());
+  scroll_state.ConsumeDeltaNative(delta.x(), delta.y());
 
   // We need to setCurrentNativeScrollingElement in both the
   // distributeScroll and applyScroll default implementations so

@@ -267,9 +267,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
   {
-    ScrollOffset scroll_position = GetScrollOffset();
-    TransformPaintPropertyNode::State state{
-        gfx::Vector2dF(-scroll_position.width(), -scroll_position.height())};
+    TransformPaintPropertyNode::State state{-GetScrollOffset()};
     state.scroll = scroll_node_;
     state.direct_compositing_reasons = CompositingReason::kViewport;
     if (!scroll_translation_node_) {
@@ -449,16 +447,15 @@ FloatRect VisualViewport::VisibleRect(
   visible_size.Enlarge(0, browser_controls_adjustment_);
   visible_size.Scale(1 / scale_);
 
-  return FloatRect(
-      gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(GetScrollOffset())),
-      visible_size);
+  return FloatRect(gfx::PointAtOffsetFromOrigin(GetScrollOffset()),
+                   visible_size);
 }
 
 gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
     const gfx::PointF& point) const {
   // Note, this is in CSS Pixels so we don't apply scale.
   gfx::PointF point_in_root_frame = point;
-  point_in_root_frame += ToGfxVector2dF(GetScrollOffset());
+  point_in_root_frame += GetScrollOffset();
   return point_in_root_frame;
 }
 
@@ -467,12 +464,12 @@ void VisualViewport::SetLocation(const gfx::PointF& new_location) {
 }
 
 void VisualViewport::Move(const ScrollOffset& delta) {
-  SetLocation(gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_ + delta)));
+  SetLocation(gfx::PointAtOffsetFromOrigin(offset_ + delta));
 }
 
 void VisualViewport::SetScale(float scale) {
   SetScaleAndLocation(scale, is_pinch_gesture_active_,
-                      gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_)));
+                      gfx::PointAtOffsetFromOrigin(offset_));
 }
 
 double VisualViewport::OffsetLeft() const {
@@ -570,15 +567,14 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   if (notify_page_scale_factor_changed)
     GetPage().GetChromeClient().PageScaleFactorChanged();
 
-  ScrollOffset clamped_offset = ClampScrollOffset(ToScrollOffset(location));
+  ScrollOffset clamped_offset = ClampScrollOffset(location.OffsetFromOrigin());
 
   // TODO(bokan): If the offset is invalid, we might end up in an infinite
   // recursion as we reenter this function on clamping. It would be cleaner to
   // avoid reentrancy but for now just prevent the stack overflow.
   // crbug.com/702771.
-  if (std::isnan(clamped_offset.width()) ||
-      std::isnan(clamped_offset.height()) ||
-      std::isinf(clamped_offset.width()) || std::isinf(clamped_offset.height()))
+  if (std::isnan(clamped_offset.x()) || std::isnan(clamped_offset.y()) ||
+      std::isinf(clamped_offset.x()) || std::isinf(clamped_offset.y()))
     return false;
 
   if (clamped_offset != offset_) {
@@ -785,18 +781,18 @@ PhysicalRect VisualViewport::ScrollIntoView(
 }
 
 int VisualViewport::ScrollSize(ScrollbarOrientation orientation) const {
-  IntSize scroll_dimensions =
+  gfx::Vector2d scroll_dimensions =
       MaximumScrollOffsetInt() - MinimumScrollOffsetInt();
-  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.width()
-                                               : scroll_dimensions.height();
+  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.x()
+                                               : scroll_dimensions.y();
 }
 
-IntSize VisualViewport::MinimumScrollOffsetInt() const {
-  return IntSize();
+gfx::Vector2d VisualViewport::MinimumScrollOffsetInt() const {
+  return gfx::Vector2d();
 }
 
-IntSize VisualViewport::MaximumScrollOffsetInt() const {
-  return FlooredIntSize(MaximumScrollOffset());
+gfx::Vector2d VisualViewport::MaximumScrollOffsetInt() const {
+  return gfx::ToFlooredVector2d(MaximumScrollOffset());
 }
 
 ScrollOffset VisualViewport::MaximumScrollOffset() const {
@@ -821,7 +817,7 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
 
   FloatSize max_position = frame_view_size - viewport_size;
   max_position.Scale(1 / scale_);
-  return ScrollOffset(max_position);
+  return ScrollOffset(ToGfxVector2dF(max_position));
 }
 
 gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
@@ -836,15 +832,16 @@ gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
 
   IntSize visual_viewport_max =
       FlooredIntSize(FloatSize(ContentsSize()) - scaled_size);
-  IntSize max =
-      view->LayoutViewport()->MaximumScrollOffsetInt() + visual_viewport_max;
-  IntSize min =
+  gfx::Vector2d max =
+      view->LayoutViewport()->MaximumScrollOffsetInt() +
+      gfx::Vector2d(visual_viewport_max.width(), visual_viewport_max.height());
+  gfx::Vector2d min =
       view->LayoutViewport()
           ->MinimumScrollOffsetInt();  // VisualViewportMin should be (0, 0)
 
   gfx::Point clamped = offset;
-  clamped.SetToMin(ToGfxPoint(max));
-  clamped.SetToMax(ToGfxPoint(min));
+  clamped.SetToMin(gfx::PointAtOffsetFromOrigin(max));
+  clamped.SetToMax(gfx::PointAtOffsetFromOrigin(min));
   return clamped;
 }
 
@@ -902,9 +899,8 @@ mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
 
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         mojom::blink::ScrollType scroll_type) {
-  if (!DidSetScaleOrLocation(
-          scale_, is_pinch_gesture_active_,
-          gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(position)))) {
+  if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
+                             gfx::PointAtOffsetFromOrigin(position))) {
     return;
   }
   if (IsExplicitScrollType(scroll_type))
@@ -951,7 +947,7 @@ bool VisualViewport::ScheduleAnimation() {
 }
 
 void VisualViewport::ClampToBoundaries() {
-  SetLocation(gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_)));
+  SetLocation(gfx::PointAtOffsetFromOrigin(offset_));
 }
 
 FloatRect VisualViewport::ViewportToRootFrame(
@@ -986,14 +982,14 @@ gfx::PointF VisualViewport::ViewportToRootFrame(
     const gfx::PointF& point_in_viewport) const {
   gfx::PointF point_in_root_frame = point_in_viewport;
   point_in_root_frame.Scale(1 / Scale());
-  point_in_root_frame += ToGfxVector2dF(GetScrollOffset());
+  point_in_root_frame += GetScrollOffset();
   return point_in_root_frame;
 }
 
 gfx::PointF VisualViewport::RootFrameToViewport(
     const gfx::PointF& point_in_root_frame) const {
   gfx::PointF point_in_viewport = point_in_root_frame;
-  point_in_viewport -= ToGfxVector2dF(GetScrollOffset());
+  point_in_viewport -= GetScrollOffset();
   point_in_viewport.Scale(Scale());
   return point_in_viewport;
 }

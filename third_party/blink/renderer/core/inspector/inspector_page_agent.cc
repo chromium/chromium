@@ -1562,9 +1562,9 @@ Response InspectorPageAgent::getLayoutMetrics(
                              .setOffsetY(AdjustForAbsoluteZoom::AdjustScroll(
                                  visible_rect.y(), page_zoom))
                              .setPageX(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.width(), page_zoom))
+                                 page_offset.x(), page_zoom))
                              .setPageY(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.height(), page_zoom))
+                                 page_offset.y(), page_zoom))
                              .setClientWidth(visible_rect.width())
                              .setClientHeight(visible_rect.height())
                              .setScale(scale)
@@ -1577,10 +1577,10 @@ Response InspectorPageAgent::getLayoutMetrics(
               AdjustForAbsoluteZoom::AdjustScroll(visible_rect.x(), page_zoom))
           .setOffsetY(
               AdjustForAbsoluteZoom::AdjustScroll(visible_rect.y(), page_zoom))
-          .setPageX(AdjustForAbsoluteZoom::AdjustScroll(page_offset.width(),
-                                                        page_zoom))
-          .setPageY(AdjustForAbsoluteZoom::AdjustScroll(page_offset.height(),
-                                                        page_zoom))
+          .setPageX(
+              AdjustForAbsoluteZoom::AdjustScroll(page_offset.x(), page_zoom))
+          .setPageY(
+              AdjustForAbsoluteZoom::AdjustScroll(page_offset.y(), page_zoom))
           .setClientWidth(AdjustForAbsoluteZoom::AdjustScroll(
               visible_rect.width(), page_zoom))
           .setClientHeight(AdjustForAbsoluteZoom::AdjustScroll(

@@ -66,8 +66,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
       MockScrollableArea::Create(ScrollOffset(0, 100));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 10000),
                                    mojom::blink::ScrollType::kCompositor);
-  EXPECT_EQ(100.0,
-            scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(100.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
 }
 
 TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
@@ -304,8 +303,8 @@ TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
       MockScrollableArea::Create(ScrollOffset(100, 100));
   scrollable_area->DidCompositorScroll(gfx::PointF(40, 51));
 
-  EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().width());
-  EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().height());
+  EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().x());
+  EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().y());
 }
 
 TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
@@ -322,7 +321,7 @@ TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
     scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                      mojom::blink::ScrollType::kProgrammatic,
                                      mojom::blink::ScrollBehavior::kSmooth);
-    EXPECT_EQ(100, scrollable_area->GetScrollOffset().height());
+    EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
   Mock::VerifyAndClearExpectations(scrollable_area);
   // Enable animations. A smooth programmatic scroll should now schedule an
@@ -335,7 +334,7 @@ TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
                                      mojom::blink::ScrollType::kProgrammatic,
                                      mojom::blink::ScrollBehavior::kSmooth);
     // Offset is unchanged.
-    EXPECT_EQ(100, scrollable_area->GetScrollOffset().height());
+    EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
 }
 
@@ -386,10 +385,10 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
       mojom::blink::ScrollBehavior::kSmooth,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->CancelProgrammaticScrollAnimation();
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
 
@@ -407,7 +406,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
       mojom::blink::ScrollBehavior::kInstant,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
 
@@ -425,14 +424,14 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
       mojom::blink::ScrollBehavior::kSmooth,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->UpdateCompositorScrollAnimations();
   scrollable_area->ServiceScrollAnimations(1);
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->ServiceScrollAnimations(1000000);
-  EXPECT_EQ(9.0, scrollable_area->GetScrollAnimator().CurrentOffset().height());
+  EXPECT_EQ(9.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
 

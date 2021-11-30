@@ -31,17 +31,17 @@ namespace {
 
 // Accumulated scroll offset of all frames up to the local root frame.
 int AccumulatedScrollOffset(const HTMLAnchorElement& anchor_element) {
-  IntSize offset;
+  int offset = 0;
   Frame* frame = anchor_element.GetDocument().GetFrame();
   while (frame && frame->View()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
     if (!local_frame)
       break;
 
-    offset += local_frame->View()->LayoutViewport()->ScrollOffsetInt();
+    offset += local_frame->View()->LayoutViewport()->ScrollOffsetInt().y();
     frame = frame->Tree().Parent();
   }
-  return offset.height();
+  return offset;
 }
 
 // Whether the element is inside an iframe.
@@ -228,8 +228,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
                         ->ContentsSize()
                         .height();
 
-  int root_scrolled =
-      root_frame_view->LayoutViewport()->ScrollOffsetInt().height();
+  int root_scrolled = root_frame_view->LayoutViewport()->ScrollOffsetInt().y();
   float ratio_distance_root_bottom =
       (root_height - root_scrolled - target.y() - target.height()) /
       base_height;

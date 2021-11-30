@@ -207,9 +207,9 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
   ScrollOffset scroll_delta(20, 30);
 
   const int expected_x =
-      (rect_in_document.x() - scroll_delta.width()) * kScaleFactor;
+      (rect_in_document.x() - scroll_delta.x()) * kScaleFactor;
   const int expected_y =
-      (rect_in_document.y() - scroll_delta.height()) * kScaleFactor;
+      (rect_in_document.y() - scroll_delta.y()) * kScaleFactor;
 
   WebView()->SetPageScaleFactor(kScaleFactor);
   visual_viewport.Move(scroll_delta);

@@ -1003,8 +1003,7 @@ TEST_P(TextFragmentAnchorScrollMetricsTest, TimeToScrollToTop) {
   const int64_t time_to_scroll_to_top = 500;
   tick_clock.Advance(base::Milliseconds(time_to_scroll_to_top));
 
-  ASSERT_GT(GetDocument().View()->LayoutViewport()->GetScrollOffset().height(),
-            100);
+  ASSERT_GT(GetDocument().View()->LayoutViewport()->GetScrollOffset().y(), 100);
 
   // Ensure scrolling but not to the top isn't counted.
   {

@@ -561,8 +561,8 @@ void ScrollAnchor::NotifyBeforeLayout() {
   ScrollOffset scroll_offset = scroller_->GetScrollOffset();
   float block_direction_scroll_offset =
       ScrollerLayoutBox(scroller_)->IsHorizontalWritingMode()
-          ? scroll_offset.height()
-          : scroll_offset.width();
+          ? scroll_offset.y()
+          : scroll_offset.x();
   if (block_direction_scroll_offset == 0) {
     ClearSelf();
     return;
@@ -590,7 +590,7 @@ void ScrollAnchor::NotifyBeforeLayout() {
   queued_ = true;
 }
 
-IntSize ScrollAnchor::ComputeAdjustment() const {
+gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
   // The anchor node can report fractional positions, but it is DIP-snapped when
   // painting (crbug.com/610805), so we must round the offsets to determine the
   // visual delta. If we scroll by the delta in LayoutUnits, the snapping of the
@@ -598,38 +598,38 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // (For example, anchor moving from 2.4px -> 2.6px is really 2px -> 3px, so we
   // should scroll by 1px instead of 0.2px.) This is true regardless of whether
   // the ScrollableArea actually uses fractional scroll positions.
-  IntSize delta = RoundedIntSize(ComputeRelativeOffset(anchor_object_,
-                                                       scroller_, corner_)) -
-                  RoundedIntSize(saved_relative_offset_);
+  gfx::Vector2d delta = ToRoundedVector2d(ComputeRelativeOffset(
+                            anchor_object_, scroller_, corner_)) -
+                        ToRoundedVector2d(saved_relative_offset_);
 
   LayoutRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
 
   // Only adjust on the block layout axis.
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller_);
   if (scroller_box->IsHorizontalWritingMode())
-    delta.set_width(0);
+    delta.set_x(0);
   else
-    delta.set_height(0);
+    delta.set_y(0);
 
   if (anchor_is_cv_auto_without_layout_) {
     // See the effect delta would have on the anchor rect.
     // If the anchor is now off-screen (in block direction) then make sure it's
     // just at the edge.
-    anchor_rect.Move(-delta);
+    anchor_rect.Move(-LayoutSize(delta));
     if (scroller_box->IsHorizontalWritingMode()) {
       if (anchor_rect.MaxY() < 0)
-        delta.set_height(delta.height() + anchor_rect.MaxY().ToInt());
+        delta.set_y(delta.y() + anchor_rect.MaxY().ToInt());
     } else {
       // For the flipped blocks writing mode, we need to adjust the offset to
       // align the opposite edge of the block (MaxX edge instead of X edge).
       if (scroller_box->HasFlippedBlocksWritingMode()) {
         auto visible_rect = GetVisibleRect(scroller_);
         if (anchor_rect.X() > visible_rect.MaxX()) {
-          delta.set_width(delta.width() - (anchor_rect.X().ToInt() -
-                                           visible_rect.MaxX().ToInt()));
+          delta.set_x(delta.x() -
+                      (anchor_rect.X().ToInt() - visible_rect.MaxX().ToInt()));
         }
       } else if (anchor_rect.MaxX() < 0) {
-        delta.set_width(delta.width() + anchor_rect.MaxX().ToInt());
+        delta.set_x(delta.x() + anchor_rect.MaxX().ToInt());
       }
     }
   }
@@ -638,7 +638,7 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // make it physical.
   if (!scroller_box->IsHorizontalWritingMode() &&
       scroller_box->HasFlippedBlocksWritingMode()) {
-    delta.set_width(-delta.width());
+    delta.set_x(-delta.x());
   }
   return delta;
 }
@@ -650,7 +650,7 @@ void ScrollAnchor::Adjust() {
   DCHECK(scroller_);
   if (!anchor_object_)
     return;
-  IntSize adjustment = ComputeAdjustment();
+  gfx::Vector2d adjustment = ComputeAdjustment();
 
   // We should pick a new anchor if we had an unlaid-out content-visibility
   // auto. It should have been laid out, so if it is still the best candidate,
@@ -670,7 +670,7 @@ void ScrollAnchor::Adjust() {
   }
 
   scroller_->SetScrollOffset(
-      scroller_->GetScrollOffset() + FloatSize(adjustment),
+      scroller_->GetScrollOffset() + ScrollOffset(adjustment),
       mojom::blink::ScrollType::kAnchoring);
 
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
@@ -735,12 +735,11 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
         anchor_object->Style()->IsFlippedBlocksWritingMode()
             ? bounding_box.top_right()
             : bounding_box.origin();
-    gfx::PointF desired_point = location_point + ToGfxVector2dF(current_offset);
+    gfx::PointF desired_point = location_point + current_offset;
 
-    ScrollOffset desired_offset =
-        ScrollOffset(desired_point.x(), desired_point.y());
+    ScrollOffset desired_offset = desired_point.OffsetFromOrigin();
     ScrollOffset delta =
-        ScrollOffset(RoundedIntSize(serialized_anchor.relative_offset));
+        ScrollOffset(ToRoundedVector2d(serialized_anchor.relative_offset));
     desired_offset -= delta;
     scroller_->SetScrollOffset(desired_offset,
                                mojom::blink::ScrollType::kAnchoring);

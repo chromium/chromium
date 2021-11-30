@@ -1806,7 +1806,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool NeedsPreferredWidthsRecalculation() const;
 
   // See README.md for an explanation of scroll origin.
-  IntSize OriginAdjustmentForScrollbars() const;
+  gfx::Vector2d OriginAdjustmentForScrollbars() const;
   gfx::Point ScrollOrigin() const;
   PhysicalOffset ScrolledContentOffset() const;
 

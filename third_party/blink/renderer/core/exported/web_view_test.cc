@@ -2454,12 +2454,12 @@ TEST_F(WebViewTest, HistoryResetScrollAndScaleState) {
                     .GetDocumentLoader()
                     ->GetHistoryItem()
                     ->GetViewState()
-                    ->scroll_offset_.width());
+                    ->scroll_offset_.x());
   EXPECT_EQ(111, main_frame_local->Loader()
                      .GetDocumentLoader()
                      ->GetHistoryItem()
                      ->GetViewState()
-                     ->scroll_offset_.height());
+                     ->scroll_offset_.y());
 
   // Confirm that resetting the page state resets the saved scroll position.
   web_view_impl->ResetScrollAndScaleState();

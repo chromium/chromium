@@ -139,12 +139,12 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // We would like calculate the ScrollPosition to move |expose_rect| inside
   // the scroll_snapport, which is based on the scroll_origin of the scroller.
   non_zero_visible_rect.Move(
-      -PhysicalOffset::FromFloatSizeRound(current_scroll_offset));
+      -PhysicalOffset::FromVector2dFRound(current_scroll_offset));
 
   // Given the X behavior, compute the X coordinate.
   float x;
   if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    x = current_scroll_offset.width();
+    x = current_scroll_offset.x();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kRight) {
     x = (expose_rect.Right() - non_zero_visible_rect.Right()).ToFloat();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kCenter) {
@@ -159,7 +159,7 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // Given the Y behavior, compute the Y coordinate.
   float y;
   if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    y = current_scroll_offset.height();
+    y = current_scroll_offset.y();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kBottom) {
     y = (expose_rect.Bottom() - non_zero_visible_rect.Bottom()).ToFloat();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kCenter) {

@@ -11,6 +11,7 @@
 
 namespace gfx {
 class PointF;
+class Vector2dF;
 }
 
 namespace blink {
@@ -37,7 +38,7 @@ class OverscrollController : public GarbageCollected<OverscrollController> {
   // it has momentum.
   void HandleOverscroll(const ScrollResult&,
                         const gfx::PointF& position_in_root_frame,
-                        const FloatSize& velocity_in_root_frame);
+                        const gfx::Vector2dF& velocity_in_root_frame);
 
   void Trace(Visitor*) const;
 

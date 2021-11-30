@@ -204,6 +204,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -2058,8 +2059,9 @@ IntSize LocalFrame::GetMainFrameViewportSize() const {
 gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
   LocalFrame& local_root = LocalFrameRoot();
   return local_root.IsMainFrame()
-             ? FlooredIntPoint(
-                   local_root.View()->GetScrollableArea()->GetScrollOffset())
+             // TODO(crbug.com/1274078): Should this return ScrollPosition()?
+             ? gfx::ToFlooredPoint(gfx::PointAtOffsetFromOrigin(
+                   local_root.View()->GetScrollableArea()->GetScrollOffset()))
              : local_root.intersection_state_.main_frame_scroll_offset;
 }
 

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
 class AnimationHost;
@@ -197,10 +198,12 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   int ScrollSize(ScrollbarOrientation) const override;
   bool IsScrollCornerVisible() const override { return false; }
   IntRect ScrollCornerRect() const override { return IntRect(); }
-  IntSize ScrollOffsetInt() const override { return FlooredIntSize(offset_); }
+  gfx::Vector2d ScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(offset_);
+  }
   ScrollOffset GetScrollOffset() const override { return offset_; }
-  IntSize MinimumScrollOffsetInt() const override;
-  IntSize MaximumScrollOffsetInt() const override;
+  gfx::Vector2d MinimumScrollOffsetInt() const override;
+  gfx::Vector2d MaximumScrollOffsetInt() const override;
   ScrollOffset MaximumScrollOffset() const override;
   // Note: Because scrollbars are conceptually owned by the LayoutView,
   // ContentsSize includes the main frame's scrollbars. This is necessary for

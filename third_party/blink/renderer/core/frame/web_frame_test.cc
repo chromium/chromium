@@ -8253,7 +8253,7 @@ TEST_F(WebFrameTest, MaximumScrollPositionCanBeNegative) {
 
   LocalFrameView* frame_view = web_view_helper.LocalMainFrame()->GetFrameView();
   ScrollableArea* layout_viewport = frame_view->LayoutViewport();
-  EXPECT_LT(layout_viewport->MaximumScrollOffset().width(), 0);
+  EXPECT_LT(layout_viewport->MaximumScrollOffset().x(), 0);
 }
 
 TEST_F(WebFrameTest, FullscreenLayerSize) {
@@ -12411,9 +12411,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   EXPECT_EQ(1, WebView().FakePageScaleAnimationPageScaleForTesting());
 
   frame_view->LayoutViewport()->SetScrollOffset(
-      FloatSize(gfx::PointF(
-                    WebView().FakePageScaleAnimationTargetPositionForTesting())
-                    .OffsetFromOrigin()),
+      ScrollOffset(WebView()
+                       .FakePageScaleAnimationTargetPositionForTesting()
+                       .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
@@ -12443,9 +12443,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
       ->FrameWidget()
       ->ScrollFocusedEditableElementIntoView();
   frame_view->GetScrollableArea()->SetScrollOffset(
-      FloatSize(gfx::PointF(
-                    WebView().FakePageScaleAnimationTargetPositionForTesting())
-                    .OffsetFromOrigin()),
+      ScrollOffset(WebView()
+                       .FakePageScaleAnimationTargetPositionForTesting()
+                       .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
@@ -12530,8 +12530,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
 
   EXPECT_EQ(1, WebView().FakePageScaleAnimationPageScaleForTesting());
 
-  ScrollOffset target_offset = FloatSize(
-      gfx::PointF(WebView().FakePageScaleAnimationTargetPositionForTesting())
+  ScrollOffset target_offset(
+      WebView()
+          .FakePageScaleAnimationTargetPositionForTesting()
           .OffsetFromOrigin());
 
   rs_controller.RootScrollerArea()->SetScrollOffset(
@@ -12750,8 +12751,10 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
     gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
     WebView().AnimateDoubleTapZoom(point, block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
-    ScrollOffset new_offset = ToScrollOffset(gfx::PointF(
-        WebView().FakePageScaleAnimationTargetPositionForTesting()));
+    ScrollOffset new_offset(
+        WebView()
+            .FakePageScaleAnimationTargetPositionForTesting()
+            .OffsetFromOrigin());
     float new_scale = WebView().FakePageScaleAnimationPageScaleForTesting();
     visual_viewport.SetScale(new_scale);
     frame_view->GetScrollableArea()->SetScrollOffset(

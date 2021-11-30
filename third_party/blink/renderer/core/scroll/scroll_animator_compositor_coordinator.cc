@@ -270,13 +270,12 @@ void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
   if (host && element_id) {
     if (!impl_only_animation_adjustment_.IsZero()) {
       host->scroll_offset_animations().AddAdjustmentUpdate(
-          element_id, gfx::Vector2dF(impl_only_animation_adjustment_.width(),
-                                     impl_only_animation_adjustment_.height()));
+          element_id, gfx::Vector2dF(impl_only_animation_adjustment_));
     }
     if (impl_only_animation_takeover_)
       host->scroll_offset_animations().AddTakeoverUpdate(element_id);
   }
-  impl_only_animation_adjustment_ = IntSize();
+  impl_only_animation_adjustment_ = gfx::Vector2d();
   impl_only_animation_takeover_ = false;
 }
 
@@ -295,13 +294,11 @@ void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
 }
 
 void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
-    const IntSize& adjustment) {
+    const gfx::Vector2d& adjustment) {
   if (!GetScrollableArea()->ScrollAnimatorEnabled())
     return;
 
-  impl_only_animation_adjustment_.Enlarge(adjustment.width(),
-                                          adjustment.height());
-
+  impl_only_animation_adjustment_ += adjustment;
   GetScrollableArea()->RegisterForAnimation();
 }
 

@@ -75,7 +75,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
 
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      FloatSize(700.5f, 500.6f), mojom::blink::ScrollType::kProgrammatic,
+      ScrollOffset(700.5f, 500.6f), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
@@ -132,7 +132,7 @@ TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
 
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      FloatSize(0.f, 100.5f), mojom::blink::ScrollType::kProgrammatic,
+      ScrollOffset(0.f, 100.5f), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
@@ -184,7 +184,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
   // This offset is specifically chosen since it doesn't land on a LayoutUnit
   // boundary and reproduced https://crbug.com/1010961.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      FloatSize(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
+      ScrollOffset(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant);
   Compositor().BeginFrame();
   EXPECT_EQ(0, sticky->getBoundingClientRect()->top());
@@ -231,7 +231,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // Scroll on the layout viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(100, 300),
+      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -275,7 +275,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // Scroll on the visual viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(100, 300),
+      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -319,7 +319,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   // Scroll on both the layout and visual viewports.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(0, 1000),
+      ScrollGranularity::kScrollByLine, ScrollOffset(0, 1000),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -370,7 +370,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
   PaintLayerScrollableArea* scrollable_area =
       To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
   scrollable_area->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(0, 100),
+      ScrollGranularity::kScrollByLine, ScrollOffset(0, 100),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -410,7 +410,7 @@ TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
 
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(0, 300),
+      ScrollGranularity::kScrollByLine, ScrollOffset(0, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -447,7 +447,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   // Scroll on the layout viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, FloatSize(100, 300),
+      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.

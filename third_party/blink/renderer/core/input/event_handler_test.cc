@@ -1783,12 +1783,12 @@ TEST_F(EventHandlerSimTest, MAYBE_GestureTapWithScrollSnaps) {
   for (int i = 0; i < kFramesToRun; i++)
     Compositor().BeginFrame();
 
-  EXPECT_NE(scrollable_area->GetScrollOffset().height(), 0);
+  EXPECT_NE(scrollable_area->GetScrollOffset().y(), 0);
 
   // Finish the animation, verify that we're back at 0 and not animating.
   Compositor().BeginFrame(0.3);
 
-  EXPECT_EQ(scrollable_area->GetScrollOffset().height(), 0);
+  EXPECT_EQ(scrollable_area->GetScrollOffset().y(), 0);
   EXPECT_FALSE(
       scrollable_area->ExistingScrollAnimator()->HasRunningAnimation());
 }
@@ -2046,7 +2046,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
   WebView().MainFrameWidget()->ApplyViewportChangesForTesting(
       {gfx::Vector2dF(), gfx::Vector2dF(), 1.0f, false, 0, 0,
        cc::BrowserControlsState::kBoth, true});
-  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().height());
+  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().y());
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2113,7 +2113,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
   InjectScrollFromGestureEvents(
       frame_view->LayoutViewport()->GetScrollElementId().GetStableId(), 0,
       delta_y);
-  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().height());
+  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().y());
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2187,8 +2187,8 @@ TEST_F(EventHandlerSimTest,
   InjectScrollFromGestureEvents(
       iframe_scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().height());
-  ASSERT_EQ(1000, iframe_scrollable_area->ScrollOffsetInt().height());
+  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());
+  ASSERT_EQ(1000, iframe_scrollable_area->ScrollOffsetInt().y());
   EXPECT_TRUE(element->IsHovered());
 
   // The fake mouse move event is dispatched at the begin frame to update hover.
@@ -2237,19 +2237,19 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().height());
+  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());
   ASSERT_FALSE(finished);
   // Scrolling is in progress but the hover is not updated yet.
   Compositor().BeginFrame();
   // Start scroll animation, but it is not finished.
   Compositor().BeginFrame();
-  ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().height(), 0);
+  ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().y(), 0);
   ASSERT_FALSE(finished);
 
   // Mark hover state dirty but the hover state does not change after the
   // animation finishes.
   Compositor().BeginFrame(1);
-  ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().height());
+  ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().y());
   ASSERT_TRUE(finished);
   EXPECT_TRUE(element->IsHovered());
 
@@ -2316,7 +2316,7 @@ TEST_F(EventHandlerSimTest,
   constexpr float delta_y = 300;
   InjectScrollFromGestureEvents(
       scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
-  ASSERT_EQ(300, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(300, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
@@ -2324,20 +2324,20 @@ TEST_F(EventHandlerSimTest,
   // not finished.
   Compositor().BeginFrame();
   Compositor().BeginFrame();
-  ASSERT_EQ(300, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(300, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The programmatic scroll animation finishes and the hover state is set to
   // dirty.
   Compositor().BeginFrame(1);
-  ASSERT_EQ(400, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(400, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The hover effect on targets is updated after the next begin frame.
   Compositor().BeginFrame();
-  ASSERT_EQ(400, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(400, scrollable_area->GetScrollOffset().y());
   EXPECT_FALSE(target1->IsHovered());
   EXPECT_TRUE(target2->IsHovered());
 }
@@ -2395,17 +2395,17 @@ TEST_F(EventHandlerSimTest,
   // snap point.
   ScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
-  ASSERT_EQ(0, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(0, scrollable_area->GetScrollOffset().y());
   constexpr float delta_y = 500;
   InjectScrollFromGestureEvents(
       scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
-  ASSERT_EQ(500, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(500, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The hover effect on targets is updated after the next begin frame.
   Compositor().BeginFrame();
-  ASSERT_EQ(500, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(500, scrollable_area->GetScrollOffset().y());
   EXPECT_FALSE(target1->IsHovered());
   EXPECT_TRUE(target2->IsHovered());
 }
@@ -2678,7 +2678,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   // Arrow key caused scroll down in post event dispatch process. Ensure page
   // scrolled.
   ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
-  EXPECT_GT(scrollable_area->ScrollOffsetInt().height(), 0);
+  EXPECT_GT(scrollable_area->ScrollOffsetInt().y(), 0);
 }
 
 TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
@@ -2868,7 +2868,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), delta_y);
 
   // Switch to the element_id-based targeting for GSB, then resend GSU
   // and validate that the subscroller scrolled (and that the viewport
@@ -2885,8 +2885,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       gesture_scroll_end);
 
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().height(), delta_y);
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
+  ASSERT_EQ(scrollable_area->ScrollOffsetInt().y(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), delta_y);
 
   // Remove the scroller, update layout, and ensure the same gestures
   // don't crash or scroll the layout viewport.
@@ -2899,7 +2899,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       gesture_scroll_end);
 
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), delta_y);
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
@@ -2958,8 +2958,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), 0);
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), 0);
+  ASSERT_EQ(scrollable_area->ScrollOffsetInt().y(), delta_y);
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrameNoCrash) {
@@ -3053,8 +3053,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), 400);
-  ASSERT_EQ(visual_viewport.GetScrollOffset().height(), 300);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), 400);
+  ASSERT_EQ(visual_viewport.GetScrollOffset().y(), 300);
 }
 
 TEST_F(EventHandlerSimTest, SelecteTransformedTextWhenCapturing) {
@@ -3444,10 +3444,8 @@ TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 0",
             element.InnerHTML().Utf8());
-  ASSERT_EQ(0,
-            GetDocument().View()->LayoutViewport()->GetScrollOffset().height());
-  ASSERT_EQ(0,
-            GetDocument().View()->LayoutViewport()->GetScrollOffset().width());
+  ASSERT_EQ(0, GetDocument().View()->LayoutViewport()->GetScrollOffset().y());
+  ASSERT_EQ(0, GetDocument().View()->LayoutViewport()->GetScrollOffset().x());
 }
 
 // The mouse wheel events which have the phases of "MayBegin" or "Cancel"

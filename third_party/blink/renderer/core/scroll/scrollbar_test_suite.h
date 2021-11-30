@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -80,14 +81,17 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
   void UpdateScrollOffset(const ScrollOffset& offset,
                           mojom::blink::ScrollType) override {
-    scroll_offset_ = offset.ShrunkTo(maximum_scroll_offset_);
+    scroll_offset_ = offset;
+    scroll_offset_.SetToMin(maximum_scroll_offset_);
   }
-  IntSize ScrollOffsetInt() const override {
-    return FlooredIntSize(scroll_offset_);
+  gfx::Vector2d ScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(scroll_offset_);
   }
-  IntSize MinimumScrollOffsetInt() const override { return IntSize(); }
-  IntSize MaximumScrollOffsetInt() const override {
-    return ExpandedIntSize(maximum_scroll_offset_);
+  gfx::Vector2d MinimumScrollOffsetInt() const override {
+    return gfx::Vector2d();
+  }
+  gfx::Vector2d MaximumScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(maximum_scroll_offset_);
   }
   int VisibleHeight() const override { return 768; }
   int VisibleWidth() const override { return 1024; }

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -90,28 +91,37 @@ void WebHistoryItem::SetTarget(const WebString& target) {
 
 gfx::PointF WebHistoryItem::VisualViewportScrollOffset() const {
   const auto& scroll_and_view_state = private_->GetViewState();
-  ScrollOffset offset =
-      scroll_and_view_state
-          ? scroll_and_view_state->visual_viewport_scroll_offset_
-          : ScrollOffset();
-  return gfx::PointF(offset.width(), offset.height());
+  if (!scroll_and_view_state)
+    return gfx::PointF();
+
+  // TODO(crbug.com/1274078): Is this conversion from blink scroll offset to
+  // gfx::PointF correct?
+  return gfx::PointAtOffsetFromOrigin(
+      scroll_and_view_state->visual_viewport_scroll_offset_);
 }
 
 void WebHistoryItem::SetVisualViewportScrollOffset(
     const gfx::PointF& scroll_offset) {
-  private_->SetVisualViewportScrollOffset(ToScrollOffset(scroll_offset));
+  // TODO(crbug.com/1274078): Is this conversion from gfx::PointF to blink
+  // scroll offset correct?
+  private_->SetVisualViewportScrollOffset(scroll_offset.OffsetFromOrigin());
 }
 
 gfx::Point WebHistoryItem::GetScrollOffset() const {
   const auto& scroll_and_view_state = private_->GetViewState();
-  ScrollOffset offset = scroll_and_view_state
-                            ? scroll_and_view_state->scroll_offset_
-                            : ScrollOffset();
-  return gfx::Point(offset.width(), offset.height());
+  if (!scroll_and_view_state)
+    return gfx::Point();
+
+  // TODO(crbug.com/1274078): Is this conversion from blink scroll offset to
+  // gfx::Point correct?
+  return gfx::ToFlooredPoint(
+      gfx::PointAtOffsetFromOrigin(scroll_and_view_state->scroll_offset_));
 }
 
 void WebHistoryItem::SetScrollOffset(const gfx::Point& scroll_offset) {
-  private_->SetScrollOffset(ScrollOffset(scroll_offset.x(), scroll_offset.y()));
+  // TODO(crbug.com/1274078): Is this conversion from gfx::Point to blink
+  // scroll offset correct?
+  private_->SetScrollOffset(ScrollOffset(scroll_offset.OffsetFromOrigin()));
 }
 
 float WebHistoryItem::PageScaleFactor() const {

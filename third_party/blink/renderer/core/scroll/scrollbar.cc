@@ -124,10 +124,9 @@ bool Scrollbar::IsLeftSideVerticalScrollbar() const {
 }
 
 int Scrollbar::Maximum() const {
-  IntSize max_offset = scrollable_area_->MaximumScrollOffsetInt() -
-                       scrollable_area_->MinimumScrollOffsetInt();
-  return orientation_ == kHorizontalScrollbar ? max_offset.width()
-                                              : max_offset.height();
+  gfx::Vector2d max_offset = scrollable_area_->MaximumScrollOffsetInt() -
+                             scrollable_area_->MinimumScrollOffsetInt();
+  return orientation_ == kHorizontalScrollbar ? max_offset.x() : max_offset.y();
 }
 
 void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {
@@ -275,8 +274,8 @@ void Scrollbar::MoveThumb(int pos, bool dragging_document) {
     ScrollOffset current_position =
         scrollable_area_->GetScrollAnimator().CurrentOffset();
     float destination_position =
-        (orientation_ == kHorizontalScrollbar ? current_position.width()
-                                              : current_position.height()) +
+        (orientation_ == kHorizontalScrollbar ? current_position.x()
+                                              : current_position.y()) +
         delta;
     destination_position =
         scrollable_area_->ClampScrollOffset(orientation_, destination_position);
@@ -613,10 +612,10 @@ void Scrollbar::InjectGestureScrollUpdateForThumbMove(
       pending_injected_delta_;
   float desired_x = orientation_ == kHorizontalScrollbar
                         ? single_axis_target_offset
-                        : current_offset.width();
+                        : current_offset.x();
   float desired_y = orientation_ == kVerticalScrollbar
                         ? single_axis_target_offset
-                        : current_offset.height();
+                        : current_offset.y();
   ScrollOffset desired_offset(desired_x, desired_y);
   ScrollOffset scroll_delta = desired_offset - current_offset;
 
@@ -674,8 +673,7 @@ void Scrollbar::InjectScrollGesture(WebInputEvent::Type gesture_type,
 
 bool Scrollbar::DeltaWillScroll(ScrollOffset delta) const {
   ScrollOffset current_offset = scrollable_area_->GetScrollOffset();
-  ScrollOffset target_offset =
-      current_offset + ScrollOffset(delta.width(), delta.height());
+  ScrollOffset target_offset = current_offset + delta;
   ScrollOffset clamped_offset =
       scrollable_area_->ClampScrollOffset(target_offset);
   return clamped_offset != current_offset;
@@ -776,12 +774,12 @@ float Scrollbar::ScrollableAreaCurrentPos() const {
     return 0;
 
   if (orientation_ == kHorizontalScrollbar) {
-    return scrollable_area_->GetScrollOffset().width() -
-           scrollable_area_->MinimumScrollOffset().width();
+    return scrollable_area_->GetScrollOffset().x() -
+           scrollable_area_->MinimumScrollOffset().x();
   }
 
-  return scrollable_area_->GetScrollOffset().height() -
-         scrollable_area_->MinimumScrollOffset().height();
+  return scrollable_area_->GetScrollOffset().y() -
+         scrollable_area_->MinimumScrollOffset().y();
 }
 
 float Scrollbar::ScrollableAreaTargetPos() const {
@@ -789,12 +787,12 @@ float Scrollbar::ScrollableAreaTargetPos() const {
     return 0;
 
   if (orientation_ == kHorizontalScrollbar) {
-    return scrollable_area_->GetScrollAnimator().DesiredTargetOffset().width() -
-           scrollable_area_->MinimumScrollOffset().width();
+    return scrollable_area_->GetScrollAnimator().DesiredTargetOffset().x() -
+           scrollable_area_->MinimumScrollOffset().x();
   }
 
-  return scrollable_area_->GetScrollAnimator().DesiredTargetOffset().height() -
-         scrollable_area_->MinimumScrollOffset().height();
+  return scrollable_area_->GetScrollAnimator().DesiredTargetOffset().y() -
+         scrollable_area_->MinimumScrollOffset().y();
 }
 
 void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {

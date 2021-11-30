@@ -335,24 +335,21 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ConvertFromRootFrameToVisualViewport(
       const gfx::Point&) const override;
   int ScrollSize(ScrollbarOrientation) const override;
-  gfx::PointF ScrollPosition() const override {
-    return gfx::PointF(ScrollOrigin()) + ToGfxVector2dF(GetScrollOffset());
-  }
   gfx::PointF ScrollOffsetToPosition(
       const ScrollOffset& offset) const override {
-    return gfx::PointF(ScrollOrigin()) + ToGfxVector2dF(offset);
+    return gfx::PointF(ScrollOrigin()) + offset;
   }
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override {
     return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
   }
-  IntSize ScrollOffsetInt() const override;
+  gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
   // Commits a final scroll offset for the frame, if it might have changed.
   // If it did change, enqueues a scroll event.
   void EnqueueScrollEventIfNeeded();
-  IntSize MinimumScrollOffsetInt() const override;
-  IntSize MaximumScrollOffsetInt() const override;
+  gfx::Vector2d MinimumScrollOffsetInt() const override;
+  gfx::Vector2d MaximumScrollOffsetInt() const override;
   IntRect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   PhysicalRect VisibleScrollSnapportRect(

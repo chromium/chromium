@@ -254,8 +254,8 @@ bool CanScrollDirection(LayoutBox* layout_box,
         page->GetVisualViewport().MaximumScrollOffset();
     can_scroll =
         can_scroll || (orientation == ScrollOrientation::kHorizontalScroll
-                           ? maximum_scroll_offset.width() > 0
-                           : maximum_scroll_offset.height() > 0);
+                           ? maximum_scroll_offset.x() > 0
+                           : maximum_scroll_offset.y() > 0);
   }
 
   return can_scroll;

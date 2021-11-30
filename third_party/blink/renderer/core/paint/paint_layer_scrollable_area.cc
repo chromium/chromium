@@ -517,10 +517,10 @@ gfx::Point PaintLayerScrollableArea::ConvertFromRootFrameToVisualViewport(
 
 int PaintLayerScrollableArea::ScrollSize(
     ScrollbarOrientation orientation) const {
-  IntSize scroll_dimensions =
+  gfx::Vector2d scroll_dimensions =
       MaximumScrollOffsetInt() - MinimumScrollOffsetInt();
-  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.width()
-                                               : scroll_dimensions.height();
+  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.x()
+                                               : scroll_dimensions.y();
 }
 
 void PaintLayerScrollableArea::UpdateScrollOffset(
@@ -530,7 +530,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
     return;
 
   TRACE_EVENT2("blink", "PaintLayerScrollableArea::UpdateScrollOffset", "x",
-               new_offset.width(), "y", new_offset.height());
+               new_offset.x(), "y", new_offset.y());
   TRACE_EVENT_INSTANT1("blink", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
 
@@ -695,8 +695,8 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
     Layer()->SetNeedsRepaint();
 }
 
-IntSize PaintLayerScrollableArea::ScrollOffsetInt() const {
-  return FlooredIntSize(scroll_offset_);
+gfx::Vector2d PaintLayerScrollableArea::ScrollOffsetInt() const {
+  return gfx::ToFlooredVector2d(scroll_offset_);
 }
 
 ScrollOffset PaintLayerScrollableArea::GetScrollOffset() const {
@@ -716,13 +716,13 @@ void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
     node->GetDocument().EnqueueScrollEventForNode(node);
 }
 
-IntSize PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
-  return -ToIntSize(ScrollOrigin());
+gfx::Vector2d PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
+  return -ScrollOrigin().OffsetFromOrigin();
 }
 
-IntSize PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
+gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer())
-    return -ToIntSize(ScrollOrigin());
+    return -ScrollOrigin().OffsetFromOrigin();
 
   IntSize content_size = ContentsSize();
 
@@ -749,7 +749,9 @@ IntSize PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   // based on stale layout overflow data (http://crbug.com/576933).
   content_size = content_size.ExpandedTo(visible_size);
 
-  return -ToIntSize(ScrollOrigin()) + (content_size - visible_size);
+  return -ScrollOrigin().OffsetFromOrigin() +
+         gfx::Vector2d(content_size.width() - visible_size.width(),
+                       content_size.height() - visible_size.height());
 }
 
 void PaintLayerScrollableArea::VisibleSizeChanged() {
@@ -986,9 +988,8 @@ void PaintLayerScrollableArea::UpdateScrollOrigin() {
   PhysicalRect scrollable_overflow = overflow_rect_;
   scrollable_overflow.Move(-PhysicalOffset(GetLayoutBox()->BorderLeft(),
                                            GetLayoutBox()->BorderTop()));
-  gfx::Point new_origin =
-      ToFlooredPoint(-scrollable_overflow.offset) +
-      ToGfxVector2d(GetLayoutBox()->OriginAdjustmentForScrollbars());
+  gfx::Point new_origin = ToFlooredPoint(-scrollable_overflow.offset) +
+                          GetLayoutBox()->OriginAdjustmentForScrollbars();
   if (new_origin != scroll_origin_) {
     scroll_origin_changed_ = true;
     // ScrollOrigin affects paint offsets of the scrolling contents.
@@ -2347,12 +2348,12 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
                                                 -GetLayoutBox()->BorderTop());
   // There might be scroll bar between border_origin and scroll_origin.
-  IntSize scroll_bar_adjustment =
+  gfx::Vector2d scroll_bar_adjustment =
       GetLayoutBox()->OriginAdjustmentForScrollbars();
-  border_origin_to_scroll_origin.left -= scroll_bar_adjustment.width();
-  border_origin_to_scroll_origin.top -= scroll_bar_adjustment.height();
+  border_origin_to_scroll_origin.left -= scroll_bar_adjustment.x();
+  border_origin_to_scroll_origin.top -= scroll_bar_adjustment.y();
   border_origin_to_scroll_origin +=
-      PhysicalOffset::FromFloatSizeFloor(GetScrollOffset());
+      PhysicalOffset::FromVector2dFFloor(GetScrollOffset());
   // Represent the rect in the container's scroll-origin coordinate.
   local_expose_rect.Move(border_origin_to_scroll_origin);
   PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
@@ -2361,14 +2362,14 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
       scroll_snapport_rect, local_expose_rect, *params->align_x.get(),
       *params->align_y.get(), GetScrollOffset());
   ScrollOffset new_scroll_offset(
-      ClampScrollOffset(RoundedIntSize(target_offset)));
+      ClampScrollOffset(gfx::ToRoundedVector2d(target_offset)));
 
   ScrollOffset old_scroll_offset = GetScrollOffset();
   if (params->type == mojom::blink::ScrollType::kUser) {
     if (!UserInputScrollable(kHorizontalScrollbar))
-      new_scroll_offset.set_width(old_scroll_offset.width());
+      new_scroll_offset.set_x(old_scroll_offset.x());
     if (!UserInputScrollable(kVerticalScrollbar))
-      new_scroll_offset.set_height(old_scroll_offset.height());
+      new_scroll_offset.set_y(old_scroll_offset.y());
   }
 
   gfx::PointF end_point = ScrollOffsetToPosition(new_scroll_offset);
@@ -2394,7 +2395,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   // To calculate the result from the scroll, we move the |local_expose_rect| to
   // the will-be-scrolled location.
   local_expose_rect.Move(
-      -PhysicalOffset::FromFloatSizeRound(scroll_offset_difference));
+      -PhysicalOffset::FromVector2dFRound(scroll_offset_difference));
 
   // Represent the rects in the container's border-box coordinate.
   local_expose_rect.Move(-border_origin_to_scroll_origin);

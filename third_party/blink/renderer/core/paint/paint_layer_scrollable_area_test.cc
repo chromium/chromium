@@ -474,7 +474,7 @@ TEST_P(PaintLayerScrollableAreaTest, IncludeOverlayScrollbarsInVisibleWidth) {
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(100, 0),
                                    mojom::blink::ScrollType::kClamping);
-  EXPECT_EQ(scrollable_area->GetScrollOffset().width(), 0);
+  EXPECT_EQ(scrollable_area->GetScrollOffset().x(), 0);
 }
 
 TEST_P(PaintLayerScrollableAreaTest, ShowAutoScrollbarsForVisibleContent) {
@@ -589,7 +589,7 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
 
   // No scroll offset translation is needed when scroll offset is zero.
   EXPECT_EQ(nullptr, properties->ScrollTranslation());
-  EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
   // A property update is needed when scroll offset changes.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
@@ -599,7 +599,7 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
   EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
 
   // A scroll offset translation is needed when scroll offset is non-zero.
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 
   UpdateAllLifecyclePhasesForTest();
@@ -611,7 +611,7 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
   EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
 
   // A scroll offset translation is still needed when scroll offset is non-zero.
-  EXPECT_EQ(FloatSize(0, 2), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 2), scrollable_area->GetScrollOffset());
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 
   UpdateAllLifecyclePhasesForTest();
@@ -624,7 +624,7 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
 
   // No scroll offset translation is needed when scroll offset is zero.
   EXPECT_EQ(nullptr, properties->ScrollTranslation());
-  EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 }
 
 TEST_P(PaintLayerScrollableAreaTest, ScrollDoesNotInvalidate) {
@@ -649,7 +649,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollDoesNotInvalidate) {
   const auto* properties = scroller->FirstFragment().PaintProperties();
   // Scroll offset translation is needed even when scroll offset is zero.
   EXPECT_NE(nullptr, properties->ScrollTranslation());
-  EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
   // Changing the scroll offset should not require paint invalidation.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
@@ -657,7 +657,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollDoesNotInvalidate) {
   EXPECT_FALSE(scroller->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 }
 
@@ -684,7 +684,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   )HTML");
 
   auto* scrollable_area = GetLayoutView().GetScrollableArea();
-  EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
   // Changing the scroll offset requires a compositing inputs update to rerun
   // overlap testing.
@@ -692,7 +692,7 @@ TEST_P(PaintLayerScrollableAreaTest,
                                    mojom::blink::ScrollType::kProgrammatic);
   EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
@@ -718,7 +718,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   )HTML");
 
   auto* scrollable_area = GetLayoutView().GetScrollableArea();
-  EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 0), scrollable_area->GetScrollOffset());
 
   // Changing the scroll offset should not require compositing inputs update
   // even though fixed-pos content is present as fixed bounds is already
@@ -730,7 +730,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_FALSE(
       GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
@@ -767,7 +767,7 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
   const auto* properties = scroller->FirstFragment().PaintProperties();
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 }
@@ -826,7 +826,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_TRUE(scroller->BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
+  EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
   const auto* properties = scroller->FirstFragment().PaintProperties();
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 }
@@ -1201,12 +1201,12 @@ TEST_P(PaintLayerScrollableAreaTest, RtlScrollOriginSnapping) {
   UpdateAllLifecyclePhasesForTest();
   LayoutBox* scroller = GetLayoutBoxByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  EXPECT_EQ(scrollable_area->MaximumScrollOffsetInt(), IntSize(0, 100));
+  EXPECT_EQ(scrollable_area->MaximumScrollOffsetInt(), gfx::Vector2d(0, 100));
 
   Element* first_child = GetElementById("first-child");
   first_child->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(scrollable_area->MaximumScrollOffsetInt(), IntSize(0, 100));
+  EXPECT_EQ(scrollable_area->MaximumScrollOffsetInt(), gfx::Vector2d(0, 100));
 }
 
 TEST_P(PaintLayerScrollableAreaTest, ShowCustomResizerInTextarea) {

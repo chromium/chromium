@@ -43,7 +43,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      gfx::PointF(scrollable_area->ScrollOffsetInt().width(), 50));
+      gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
   sticky->UpdateStickyPositionConstraints();
@@ -84,7 +84,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLConstraints) {
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      gfx::PointF(scrollable_area->ScrollOffsetInt().width(), 50));
+      gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
   sticky->UpdateStickyPositionConstraints();
@@ -132,7 +132,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      gfx::PointF(scrollable_area->ScrollOffsetInt().width(), 50));
+      gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   EXPECT_EQ(50.f, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
 
@@ -231,7 +231,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      gfx::PointF(scrollable_area->ScrollOffsetInt().width(), 50));
+      gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
   sticky->UpdateStickyPositionConstraints();

@@ -573,8 +573,7 @@ TEST_F(MapCoordinatesTest, FixedPosInFixedPosScrollView) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50,
-            GetDocument().View()->LayoutViewport()->ScrollOffsetInt().height());
+  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, view, PhysicalOffset());
@@ -608,8 +607,7 @@ TEST_F(MapCoordinatesTest, FixedPosInAbsolutePosScrollView) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50,
-            GetDocument().View()->LayoutViewport()->ScrollOffsetInt().height());
+  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, view, PhysicalOffset());
@@ -637,8 +635,7 @@ TEST_F(MapCoordinatesTest, FixedPosInTransform) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50,
-            GetDocument().View()->LayoutViewport()->ScrollOffsetInt().height());
+  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
   auto* target = GetLayoutBoxByElementId("target");
   auto* container = GetLayoutBoxByElementId("container");
@@ -677,8 +674,7 @@ TEST_F(MapCoordinatesTest, FixedPosInContainPaint) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50,
-            GetDocument().View()->LayoutViewport()->ScrollOffsetInt().height());
+  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
   auto* target = GetLayoutBoxByElementId("target");
   auto* container = GetLayoutBoxByElementId("container");

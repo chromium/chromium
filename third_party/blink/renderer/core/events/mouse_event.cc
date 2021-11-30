@@ -59,8 +59,8 @@ DoubleSize ContentsScrollOffset(AbstractView* abstract_view) {
   if (!scrollable_area)
     return DoubleSize();
   float scale_factor = frame->PageZoomFactor();
-  return DoubleSize(scrollable_area->ScrollOffsetInt().width() / scale_factor,
-                    scrollable_area->ScrollOffsetInt().height() / scale_factor);
+  return DoubleSize(scrollable_area->ScrollOffsetInt().x() / scale_factor,
+                    scrollable_area->ScrollOffsetInt().y() / scale_factor);
 }
 
 float PageZoomFactor(const UIEvent* event) {

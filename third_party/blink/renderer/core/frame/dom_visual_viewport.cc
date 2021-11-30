@@ -93,8 +93,8 @@ float DOMVisualViewport::pageLeft() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_x = page->GetVisualViewport().GetScrollOffset().width() +
-                     view->LayoutViewport()->GetScrollOffset().width();
+  float viewport_x = page->GetVisualViewport().GetScrollOffset().x() +
+                     view->LayoutViewport()->GetScrollOffset().x();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
                                              frame->PageZoomFactor());
 }
@@ -113,8 +113,8 @@ float DOMVisualViewport::pageTop() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_y = page->GetVisualViewport().GetScrollOffset().height() +
-                     view->LayoutViewport()->GetScrollOffset().height();
+  float viewport_y = page->GetVisualViewport().GetScrollOffset().y() +
+                     view->LayoutViewport()->GetScrollOffset().y();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
                                              frame->PageZoomFactor());
 }

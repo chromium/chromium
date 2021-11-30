@@ -2940,8 +2940,8 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
       ScrollOffset min_scroll_delta =
           current_scroll_offset - scrollable_area->MinimumScrollOffset();
       abs_bounds.Expand(
-          IntRectOutsets(min_scroll_delta.height(), max_scroll_delta.width(),
-                         max_scroll_delta.height(), min_scroll_delta.width()));
+          IntRectOutsets(min_scroll_delta.y(), max_scroll_delta.x(),
+                         max_scroll_delta.y(), min_scroll_delta.x()));
     }
   }
   return abs_bounds;

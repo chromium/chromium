@@ -339,25 +339,25 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // of blink renderer, we should pass "scroll origin". Similarly, when "scroll
   // offset" is set from outside of blink renderer, we should set "scroll
   // position" here.
-  virtual gfx::PointF ScrollPosition() const {
+  gfx::PointF ScrollPosition() const {
     return ScrollOffsetToPosition(GetScrollOffset());
   }
   virtual gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const {
-    return gfx::PointF(offset.width(), offset.height());
+    return gfx::PointAtOffsetFromOrigin(offset);
   }
   virtual ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const {
-    return ToScrollOffset(position);
+    return position.OffsetFromOrigin();
   }
-  virtual IntSize ScrollOffsetInt() const = 0;
+  virtual gfx::Vector2d ScrollOffsetInt() const = 0;
   virtual ScrollOffset GetScrollOffset() const {
     return ScrollOffset(ScrollOffsetInt());
   }
-  virtual IntSize MinimumScrollOffsetInt() const = 0;
+  virtual gfx::Vector2d MinimumScrollOffsetInt() const = 0;
   virtual ScrollOffset MinimumScrollOffset() const {
     return ScrollOffset(MinimumScrollOffsetInt());
   }
-  virtual IntSize MaximumScrollOffsetInt() const = 0;
+  virtual gfx::Vector2d MaximumScrollOffsetInt() const = 0;
   virtual ScrollOffset MaximumScrollOffset() const {
     return ScrollOffset(MaximumScrollOffsetInt());
   }
@@ -390,10 +390,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool ScrollAnimatorEnabled() const { return false; }
 
   // NOTE: Only called from Internals for testing.
-  void UpdateScrollOffsetFromInternals(const IntSize&);
+  void UpdateScrollOffsetFromInternals(const gfx::Vector2d&);
 
-  virtual IntSize ClampScrollOffset(const IntSize&) const;
-  virtual ScrollOffset ClampScrollOffset(const ScrollOffset&) const;
+  gfx::Vector2d ClampScrollOffset(const gfx::Vector2d&) const;
+  ScrollOffset ClampScrollOffset(const ScrollOffset&) const;
 
   // Let subclasses provide a way of asking for and servicing scroll
   // animations.
@@ -432,12 +432,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Convenience functions
   float MinimumScrollOffset(ScrollbarOrientation orientation) {
-    return orientation == kHorizontalScrollbar ? MinimumScrollOffset().width()
-                                               : MinimumScrollOffset().height();
+    return orientation == kHorizontalScrollbar ? MinimumScrollOffset().x()
+                                               : MinimumScrollOffset().y();
   }
   float MaximumScrollOffset(ScrollbarOrientation orientation) {
-    return orientation == kHorizontalScrollbar ? MaximumScrollOffset().width()
-                                               : MaximumScrollOffset().height();
+    return orientation == kHorizontalScrollbar ? MaximumScrollOffset().x()
+                                               : MaximumScrollOffset().y();
   }
   float ClampScrollOffset(ScrollbarOrientation orientation, float offset) {
     return ClampTo(offset, MinimumScrollOffset(orientation),
@@ -615,7 +615,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void ProgrammaticScrollHelper(const ScrollOffset&,
                                 mojom::blink::ScrollBehavior,
                                 bool is_sequenced_scroll,
-                                IntSize animation_adjustment,
+                                gfx::Vector2d animation_adjustment,
                                 ScrollCallback on_finish);
   void UserScrollHelper(const ScrollOffset&, mojom::blink::ScrollBehavior);
 

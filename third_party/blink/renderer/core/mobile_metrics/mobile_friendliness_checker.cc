@@ -311,7 +311,7 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 
   // This is like DOMWindow::scrollY() but without layout update.
   const int scroll_y = AdjustForAbsoluteZoom::AdjustScroll(
-      frame_view_->LayoutViewport()->GetScrollOffset().height(),
+      frame_view_->LayoutViewport()->GetScrollOffset().y(),
       frame_view_->GetFrame().PageZoomFactor());
   const int screen_height =
       frame_view_->LayoutViewport()->GetLayoutBox()->Size().Height().ToInt();

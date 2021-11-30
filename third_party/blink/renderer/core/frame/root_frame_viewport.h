@@ -79,13 +79,11 @@ class CORE_EXPORT RootFrameViewport final
   IntRect ScrollCornerRect() const override;
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType) override;
-  IntSize ScrollOffsetInt() const override;
+  gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
-  IntSize MinimumScrollOffsetInt() const override;
-  IntSize MaximumScrollOffsetInt() const override;
+  gfx::Vector2d MinimumScrollOffsetInt() const override;
+  gfx::Vector2d MaximumScrollOffsetInt() const override;
   ScrollOffset MaximumScrollOffset() const override;
-  IntSize ClampScrollOffset(const IntSize&) const override;
-  ScrollOffset ClampScrollOffset(const ScrollOffset&) const override;
   IntSize ContentsSize() const override;
   bool UsesCompositedScrolling() const override;
   bool ShouldScrollOnMainThread() const override;
@@ -102,7 +100,7 @@ class CORE_EXPORT RootFrameViewport final
   int VerticalScrollbarWidth(OverlayScrollbarClipBehavior =
                                  kIgnoreOverlayScrollbarSize) const override;
   ScrollResult UserScroll(ScrollGranularity,
-                          const FloatSize&,
+                          const ScrollOffset&,
                           ScrollableArea::ScrollCallback on_finish) override;
   CompositorElementId GetScrollElementId() const override;
   CompositorElementId GetScrollbarElementId(

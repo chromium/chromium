@@ -117,8 +117,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   void ScrollOffsetChanged(const ScrollOffset&, mojom::blink::ScrollType);
 
-  void AdjustImplOnlyScrollOffsetAnimation(const IntSize& adjustment);
-  IntSize ImplOnlyAnimationAdjustmentForTesting() {
+  void AdjustImplOnlyScrollOffsetAnimation(const gfx::Vector2d& adjustment);
+  gfx::Vector2d ImplOnlyAnimationAdjustmentForTesting() {
     return impl_only_animation_adjustment_;
   }
 
@@ -183,7 +183,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   // An adjustment to the scroll offset on the main thread that may affect
   // impl-only scroll offset animations.
-  IntSize impl_only_animation_adjustment_;
+  gfx::Vector2d impl_only_animation_adjustment_;
 
   // If set to true, sends a cc::ScrollOffsetAnimationUpdate to cc which will
   // abort the impl-only scroll offset animation and continue it on main

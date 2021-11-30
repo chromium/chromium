@@ -49,7 +49,7 @@ bool ViewportScrollCallback::ShouldScrollBrowserControls(
   // the direction to show the browser controls. If it's in the
   // direction to hide the browser controls, only give the delta to the
   // browser controls when the frame can scroll.
-  return delta.height() < 0 || scroll_offset.height() < max_scroll.height();
+  return delta.y() < 0 || scroll_offset.y() < max_scroll.y();
 }
 
 bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
@@ -58,12 +58,12 @@ bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
     if (state.isBeginning())
       browser_controls_->ScrollBegin();
 
-    FloatSize delta(state.deltaX(), state.deltaY());
+    ScrollOffset delta(state.deltaX(), state.deltaY());
     ScrollGranularity granularity = state.delta_granularity();
     if (ShouldScrollBrowserControls(delta, granularity)) {
-      FloatSize remaining_delta = browser_controls_->ScrollBy(delta);
-      FloatSize consumed = delta - remaining_delta;
-      state.ConsumeDeltaNative(consumed.width(), consumed.height());
+      ScrollOffset remaining_delta = browser_controls_->ScrollBy(delta);
+      ScrollOffset consumed = delta - remaining_delta;
+      state.ConsumeDeltaNative(consumed.x(), consumed.y());
       return !consumed.IsZero();
     }
   }
@@ -86,7 +86,7 @@ void ViewportScrollCallback::Invoke(ScrollState* state) {
   // Handle Overscroll.
   if (overscroll_controller_) {
     gfx::PointF position(state->positionX(), state->positionY());
-    FloatSize velocity(state->velocityX(), state->velocityY());
+    gfx::Vector2dF velocity(state->velocityX(), state->velocityY());
     overscroll_controller_->HandleOverscroll(result, position, velocity);
   }
 }
@@ -99,7 +99,7 @@ void ViewportScrollCallback::SetScroller(ScrollableArea* scroller) {
 ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   DCHECK(root_frame_viewport_);
 
-  FloatSize delta(state.deltaX(), state.deltaY());
+  ScrollOffset delta(state.deltaX(), state.deltaY());
   ScrollGranularity granularity = state.delta_granularity();
 
   ScrollResult result = root_frame_viewport_->UserScroll(
@@ -108,8 +108,8 @@ ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   // The viewport consumes everything.
   // TODO(bokan): This isn't actually consuming everything but doing so breaks
   // the main thread pull-to-refresh action. crbug.com/607210.
-  state.ConsumeDeltaNative(delta.width() - result.unused_scroll_delta_x,
-                           delta.height() - result.unused_scroll_delta_y);
+  state.ConsumeDeltaNative(delta.x() - result.unused_scroll_delta_x,
+                           delta.y() - result.unused_scroll_delta_y);
 
   return result;
 }

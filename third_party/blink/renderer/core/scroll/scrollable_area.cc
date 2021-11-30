@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -205,23 +206,22 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(ScrollGranularity granularity,
     step.Scale(page_scale_factor);
 
     gfx::Vector2dF pixel_delta =
-        cc::ScrollUtils::ResolveScrollPercentageToPixels(ToGfxVector2dF(delta),
-                                                         step, viewport);
+        cc::ScrollUtils::ResolveScrollPercentageToPixels(delta, step, viewport);
 
     // Rescale back to rootframe coordinates.
     pixel_delta.Scale(1 / page_scale_factor);
 
-    return ScrollOffset(pixel_delta.x(), pixel_delta.y());
+    return pixel_delta;
   }
 
-  return delta.ScaledBy(step.width(), step.height());
+  return gfx::ScaleVector2d(delta, step.width(), step.height());
 }
 
 ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
                                         const ScrollOffset& delta,
                                         ScrollCallback on_finish) {
-  TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.width(), "y",
-               delta.height());
+  TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.x(), "y",
+               delta.y());
 
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
@@ -232,13 +232,11 @@ ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
   ScrollOffset pixel_delta = ResolveScrollDelta(granularity, delta);
 
   ScrollOffset scrollable_axis_delta(
-      UserInputScrollable(kHorizontalScrollbar) ? pixel_delta.width() : 0,
-      UserInputScrollable(kVerticalScrollbar) ? pixel_delta.height() : 0);
+      UserInputScrollable(kHorizontalScrollbar) ? pixel_delta.x() : 0,
+      UserInputScrollable(kVerticalScrollbar) ? pixel_delta.y() : 0);
 
-  if (scrollable_axis_delta.IsZero()) {
-    return ScrollResult(false, false, pixel_delta.width(),
-                        pixel_delta.height());
-  }
+  if (scrollable_axis_delta.IsZero())
+    return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
 
   CancelProgrammaticScrollAnimation();
   if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer())
@@ -250,8 +248,8 @@ ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
   // Delta that wasn't scrolled because the axis is !userInputScrollable
   // should count as unusedScrollDelta.
   ScrollOffset unscrollable_axis_delta = pixel_delta - scrollable_axis_delta;
-  result.unused_scroll_delta_x += unscrollable_axis_delta.width();
-  result.unused_scroll_delta_y += unscrollable_axis_delta.height();
+  result.unused_scroll_delta_x += unscrollable_axis_delta.x();
+  result.unused_scroll_delta_y += unscrollable_axis_delta.y();
 
   return result;
 }
@@ -288,7 +286,7 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   }
 
   TRACE_EVENT2("blink", "ScrollableArea::SetScrollOffset", "cur_x",
-               GetScrollOffset().width(), "cur_y", GetScrollOffset().height());
+               GetScrollOffset().x(), "cur_y", GetScrollOffset().y());
   TRACE_EVENT_INSTANT1("blink", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
   TRACE_EVENT_INSTANT1("blink", "Behavior", TRACE_EVENT_SCOPE_THREAD,
@@ -297,8 +295,8 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   if (behavior == mojom::blink::ScrollBehavior::kAuto)
     behavior = ScrollBehaviorStyle();
 
-  IntSize animation_adjustment =
-      RoundedIntSize(clamped_offset) - RoundedIntSize(previous_offset);
+  gfx::Vector2d animation_adjustment = gfx::ToRoundedVector2d(clamped_offset) -
+                                       gfx::ToRoundedVector2d(previous_offset);
 
   switch (scroll_type) {
     case mojom::blink::ScrollType::kCompositor:
@@ -347,7 +345,7 @@ void ScrollableArea::ProgrammaticScrollHelper(
     const ScrollOffset& offset,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_sequenced_scroll,
-    IntSize animation_adjustment,
+    gfx::Vector2d animation_adjustment,
     ScrollCallback on_finish) {
   bool should_use_animation =
       scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
@@ -394,11 +392,11 @@ void ScrollableArea::UserScrollHelper(
     sequencer->AbortAnimations();
 
   float x = UserInputScrollable(kHorizontalScrollbar)
-                ? offset.width()
-                : GetScrollAnimator().CurrentOffset().width();
+                ? offset.x()
+                : GetScrollAnimator().CurrentOffset().x();
   float y = UserInputScrollable(kVerticalScrollbar)
-                ? offset.height()
-                : GetScrollAnimator().CurrentOffset().height();
+                ? offset.y()
+                : GetScrollAnimator().CurrentOffset().y();
 
   // Smooth user scrolls (keyboard, wheel clicks) are handled via the userScroll
   // method.
@@ -420,15 +418,16 @@ PhysicalRect ScrollableArea::ScrollIntoView(
 
 void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
                                          mojom::blink::ScrollType scroll_type) {
-  TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x",
-               offset.width(), "y", offset.height());
+  TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x", offset.x(),
+               "y", offset.y());
   TRACE_EVENT_INSTANT1("input", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
 
   ScrollOffset old_offset = GetScrollOffset();
-  ScrollOffset truncated_offset = ShouldUseIntegerScrollOffset()
-                                      ? ScrollOffset(FlooredIntSize(offset))
-                                      : offset;
+  ScrollOffset truncated_offset =
+      ShouldUseIntegerScrollOffset()
+          ? ScrollOffset(gfx::ToFlooredVector2d(offset))
+          : offset;
 
   // Tell the derived class to scroll its contents.
   UpdateScrollOffset(truncated_offset, scroll_type);
@@ -491,7 +490,8 @@ bool ScrollableArea::ScrollBehaviorFromString(
 }
 
 // NOTE: Only called from Internals for testing.
-void ScrollableArea::UpdateScrollOffsetFromInternals(const IntSize& offset) {
+void ScrollableArea::UpdateScrollOffsetFromInternals(
+    const gfx::Vector2d& offset) {
   ScrollOffsetChanged(ScrollOffset(offset),
                       mojom::blink::ScrollType::kProgrammatic);
 }
@@ -846,15 +846,20 @@ const Document* ScrollableArea::GetDocument() const {
   return nullptr;
 }
 
-IntSize ScrollableArea::ClampScrollOffset(const IntSize& scroll_offset) const {
-  return scroll_offset.ShrunkTo(MaximumScrollOffsetInt())
-      .ExpandedTo(MinimumScrollOffsetInt());
+gfx::Vector2d ScrollableArea::ClampScrollOffset(
+    const gfx::Vector2d& scroll_offset) const {
+  gfx::Vector2d result = scroll_offset;
+  result.SetToMin(MaximumScrollOffsetInt());
+  result.SetToMax(MinimumScrollOffsetInt());
+  return result;
 }
 
 ScrollOffset ScrollableArea::ClampScrollOffset(
     const ScrollOffset& scroll_offset) const {
-  return scroll_offset.ShrunkTo(MaximumScrollOffset())
-      .ExpandedTo(MinimumScrollOffset());
+  ScrollOffset result = scroll_offset;
+  result.SetToMin(MaximumScrollOffset());
+  result.SetToMax(MinimumScrollOffset());
+  return result;
 }
 
 int ScrollableArea::LineStep(ScrollbarOrientation) const {
@@ -987,7 +992,7 @@ bool ScrollableArea::SnapForDirection(const ScrollOffset& delta,
   gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          current_position, ToGfxVector2dF(delta),
+          current_position, delta,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
@@ -998,7 +1003,7 @@ bool ScrollableArea::SnapForEndAndDirection(const ScrollOffset& delta) {
   gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          current_position, ToGfxVector2dF(delta),
+          current_position, delta,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy);
 }
@@ -1060,8 +1065,7 @@ void ScrollableArea::InjectGestureScrollEvent(
   }
 
   GetChromeClient()->InjectGestureScrollEvent(
-      *GetLayoutBox()->GetFrame(), device,
-      gfx::Vector2dF(delta.width(), delta.height()), granularity,
+      *GetLayoutBox()->GetFrame(), device, delta, granularity,
       GetScrollElementId(), gesture_type);
 }
 

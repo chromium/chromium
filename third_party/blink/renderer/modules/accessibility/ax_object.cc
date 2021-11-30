@@ -4990,24 +4990,27 @@ gfx::Point AXObject::GetScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return gfx::Point();
-
-  return ToGfxPoint(area->ScrollOffsetInt());
+  // TODO(crbug.com/1274078): Should this be converted to scroll position, or
+  // should the result type be gfx::Vector2d?
+  return gfx::PointAtOffsetFromOrigin(area->ScrollOffsetInt());
 }
 
 gfx::Point AXObject::MinimumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return gfx::Point();
-
-  return ToGfxPoint(area->MinimumScrollOffsetInt());
+  // TODO(crbug.com/1274078): Should this be converted to scroll position, or
+  // should the result type be gfx::Vector2d?
+  return gfx::PointAtOffsetFromOrigin(area->MinimumScrollOffsetInt());
 }
 
 gfx::Point AXObject::MaximumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return gfx::Point();
-
-  return ToGfxPoint(area->MaximumScrollOffsetInt());
+  // TODO(crbug.com/1274078): Should this be converted to scroll position, or
+  // should the result type be gfx::Vector2d?
+  return gfx::PointAtOffsetFromOrigin(area->MaximumScrollOffsetInt());
 }
 
 void AXObject::SetScrollOffset(const gfx::Point& offset) const {

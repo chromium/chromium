@@ -19,8 +19,6 @@ class ScrollOffsetAnimationCurve;
 
 namespace blink {
 
-class IntSize;
-
 class PLATFORM_EXPORT CompositorScrollOffsetAnimationCurve
     : public CompositorAnimationCurve {
  public:
@@ -40,7 +38,7 @@ class PLATFORM_EXPORT CompositorScrollOffsetAnimationCurve
   gfx::PointF GetValue(double time) const;
   base::TimeDelta Duration() const;
   gfx::PointF TargetValue() const;
-  void ApplyAdjustment(IntSize);
+  void ApplyAdjustment(gfx::Vector2d);
   void UpdateTarget(base::TimeDelta time, gfx::PointF new_target);
 
   // CompositorAnimationCurve implementation.

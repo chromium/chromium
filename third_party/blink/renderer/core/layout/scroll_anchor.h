@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace gfx {
+class Vector2d;
+}
+
 namespace blink {
 
 class LayoutObject;
@@ -147,7 +151,7 @@ class CORE_EXPORT ScrollAnchor final {
   // given object and the scroller.
   ExamineResult ExaminePriorityCandidate(const LayoutObject*) const;
 
-  IntSize ComputeAdjustment() const;
+  gfx::Vector2d ComputeAdjustment() const;
 
   // The scroller to be adjusted by this ScrollAnchor. This is also the scroller
   // that owns us, unless it is the RootFrameViewport in which case we are owned

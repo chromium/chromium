@@ -204,6 +204,13 @@ inline IntSize PixelSnappedIntSize(const LayoutSize& s, const LayoutPoint& p) {
                  SnapSizeToPixel(s.Height(), p.Y()));
 }
 
+inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
+  return gfx::Vector2d(p.X().Round(), p.Y().Round());
+}
+inline gfx::Size ToRoundedSize(const LayoutPoint& p) {
+  return gfx::Size(p.X().Round(), p.Y().Round());
+}
+
 inline IntSize RoundedIntSize(const LayoutPoint& p) {
   return IntSize(p.X().Round(), p.Y().Round());
 }

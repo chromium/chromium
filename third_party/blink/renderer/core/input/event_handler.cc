@@ -2162,9 +2162,10 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     location_in_root_frame =
         visual_viewport.ViewportToRootFrame(clipped_rect.CenterPoint());
   } else {
-    location_in_root_frame = gfx::Point(
-        visual_viewport.GetScrollOffset().width() + kContextMenuMargin,
-        visual_viewport.GetScrollOffset().height() + kContextMenuMargin);
+    // TODO(crbug.com/1274078): Should this use ScrollPosition()?
+    location_in_root_frame =
+        gfx::Point(visual_viewport.GetScrollOffset().x() + kContextMenuMargin,
+                   visual_viewport.GetScrollOffset().y() + kContextMenuMargin);
   }
 
   frame_->View()->SetCursor(PointerCursor());

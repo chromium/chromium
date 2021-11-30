@@ -3538,7 +3538,7 @@ gfx::PointF LocalFrameView::RootFrameToDocument(
     return point_in_root_frame;
 
   gfx::PointF local_frame = ConvertFromRootFrame(point_in_root_frame);
-  return local_frame + ToGfxVector2dF(layout_viewport->GetScrollOffset());
+  return local_frame + layout_viewport->GetScrollOffset();
 }
 
 IntRect LocalFrameView::DocumentToFrame(const IntRect& rect_in_document) const {
@@ -3553,7 +3553,7 @@ DoublePoint LocalFrameView::DocumentToFrame(
   if (!layout_viewport)
     return point_in_document;
 
-  return point_in_document - layout_viewport->GetScrollOffset();
+  return point_in_document - DoubleSize(layout_viewport->GetScrollOffset());
 }
 
 gfx::Point LocalFrameView::DocumentToFrame(
@@ -3573,7 +3573,7 @@ PhysicalOffset LocalFrameView::DocumentToFrame(
     return offset_in_document;
 
   return offset_in_document -
-         PhysicalOffset::FromFloatSizeRound(layout_viewport->GetScrollOffset());
+         PhysicalOffset::FromVector2dFRound(layout_viewport->GetScrollOffset());
 }
 
 PhysicalRect LocalFrameView::DocumentToFrame(
@@ -3594,7 +3594,7 @@ PhysicalOffset LocalFrameView::FrameToDocument(
     return offset_in_frame;
 
   return offset_in_frame +
-         PhysicalOffset::FromFloatSizeRound(layout_viewport->GetScrollOffset());
+         PhysicalOffset::FromVector2dFRound(layout_viewport->GetScrollOffset());
 }
 
 IntRect LocalFrameView::FrameToDocument(const IntRect& rect_in_frame) const {

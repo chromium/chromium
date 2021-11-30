@@ -436,8 +436,8 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
 
   if (document->View() && document->View()->LayoutViewport()) {
     auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-    document_->setScrollOffsetX(offset.width());
-    document_->setScrollOffsetY(offset.height());
+    document_->setScrollOffsetX(offset.x());
+    document_->setScrollOffsetY(offset.y());
     auto contents_size = document->View()->LayoutViewport()->ContentsSize();
     document_->setContentWidth(contents_size.width());
     document_->setContentHeight(contents_size.height());

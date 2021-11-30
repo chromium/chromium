@@ -2241,8 +2241,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       TransformPaintPropertyNode::State state{
           -scroll_position.OffsetFromOrigin()};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
-        context_.current.pending_scroll_anchor_adjustment += ToGfxVector2dF(
-            box.GetScrollableArea()->PendingScrollAnchorAdjustment());
+        context_.current.pending_scroll_anchor_adjustment +=
+            box.GetScrollableArea()->PendingScrollAnchorAdjustment();
         box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
       }
       state.flags.flattens_inherited_transform =
