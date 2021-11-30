@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -83,7 +84,9 @@ class ParkableStringTest : public ::testing::Test {
   }
 
   void WaitForDelayedParking() {
+    // First wait for the string to get older.
     WaitForAging();
+    // Now wait for the string to get parked.
     WaitForAging();
   }
 
@@ -421,6 +424,33 @@ TEST_F(ParkableStringTest, LockParkedString) {
   EXPECT_EQ(0, impl->lock_depth_for_testing());
   EXPECT_TRUE(ParkAndWait(parkable));
   EXPECT_TRUE(impl->is_parked());
+}
+
+TEST_F(ParkableStringTest, DelayFirstParkingOfString) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kDelayFirstParkingOfStrings);
+
+  auto& manager = ParkableStringManager::Instance();
+  EXPECT_EQ(0u, manager.Size());
+
+  // Create a large string that will end up parked.
+  ParkableString parkable(MakeLargeString().Impl());
+  ASSERT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_EQ(1u, manager.Size());
+
+  // When under the kDelayFirstParkingOfStrings experiment this is how long it
+  // will take for the first aging to happen.
+  task_environment_.FastForwardBy(ParkableStringManager::kFirstParkingDelay);
+
+  // String is aged but not parked.
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+
+  // Now that the first aging took place the next aging task will take place
+  // after the normal interval.
+  task_environment_.FastForwardBy(
+      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
+
+  EXPECT_TRUE(parkable.Impl()->is_parked());
 }
 
 TEST_F(ParkableStringTest, ManagerSimple) {

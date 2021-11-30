@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "base/time/time.h"
 
 // parkable_string.h is a widely included header and its size impacts build
 // time. Try not to raise this limit unless necessary. See
