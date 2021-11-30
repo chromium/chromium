@@ -204,26 +204,7 @@ mojom::PrintPagesParamsPtr CreateEmptyPrintPagesParamsPtr() {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #if defined(OS_WIN)
-content::WebContents* GetWebContentsForRenderFrame(int render_process_id,
-                                                   int render_frame_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderFrameHost* frame =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return frame ? content::WebContents::FromRenderFrameHost(frame) : nullptr;
-}
-
-PrintViewManager* GetPrintViewManager(int render_process_id,
-                                      int render_frame_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* web_contents =
-      GetWebContentsForRenderFrame(render_process_id, render_frame_id);
-  return web_contents ? PrintViewManager::FromWebContents(web_contents)
-                      : nullptr;
-}
-
-void NotifySystemDialogCancelled(int render_process_id, int routing_id) {
-  PrintViewManager* manager =
-      GetPrintViewManager(render_process_id, routing_id);
+void NotifySystemDialogCancelled(base::WeakPtr<PrintViewManagerBase> manager) {
   if (manager)
     manager->SystemDialogCancelled();
 }
@@ -233,8 +214,7 @@ void UpdatePrintSettingsReplyOnIO(
     scoped_refptr<PrintQueriesQueue> queue,
     std::unique_ptr<PrinterQuery> printer_query,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
-    int process_id,
-    int routing_id) {
+    base::WeakPtr<PrintViewManagerBase> manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(printer_query);
   mojom::PrintPagesParamsPtr params = CreateEmptyPrintPagesParamsPtr();
@@ -249,7 +229,7 @@ void UpdatePrintSettingsReplyOnIO(
   if (canceled) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&NotifySystemDialogCancelled, process_id, routing_id));
+        base::BindOnce(&NotifySystemDialogCancelled, std::move(manager)));
   }
 #endif
 
@@ -269,8 +249,7 @@ void UpdatePrintSettingsOnIO(
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
     scoped_refptr<PrintQueriesQueue> queue,
     base::Value job_settings,
-    int process_id,
-    int routing_id) {
+    base::WeakPtr<PrintViewManagerBase> manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(cookie);
   if (!printer_query) {
@@ -281,8 +260,8 @@ void UpdatePrintSettingsOnIO(
   printer_query_ptr->SetSettings(
       std::move(job_settings),
       base::BindOnce(&UpdatePrintSettingsReplyOnIO, queue,
-                     std::move(printer_query), std::move(callback), process_id,
-                     routing_id));
+                     std::move(printer_query), std::move(callback),
+                     std::move(manager)));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -689,16 +668,14 @@ void PrintViewManagerBase::UpdatePrintSettings(
       job_settings.SetIntKey(kSettingRasterizePdfDpi, value);
   }
 
-  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
   auto callback_wrapper =
       base::BindOnce(&PrintViewManagerBase::UpdatePrintSettingsReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&UpdatePrintSettingsOnIO, cookie,
-                                std::move(callback_wrapper), queue_,
-                                std::move(job_settings),
-                                render_frame_host->GetProcess()->GetID(),
-                                render_frame_host->GetRoutingID()));
+      FROM_HERE,
+      base::BindOnce(&UpdatePrintSettingsOnIO, cookie,
+                     std::move(callback_wrapper), queue_,
+                     std::move(job_settings), weak_ptr_factory_.GetWeakPtr()));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
