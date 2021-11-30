@@ -44,6 +44,7 @@ struct CONTENT_EXPORT SyntheticGestureParams {
   // platform.
   static bool IsGestureSourceTypeSupported(
       content::mojom::GestureSourceType gesture_source_type);
+  bool from_devtools_debugger = false;
 };
 
 }  // namespace content

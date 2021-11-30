@@ -45,6 +45,8 @@ void SyntheticTouchDriver::Press(float x,
                               force, tangential_pressure, tilt_x, tilt_y);
   touch_event_.touches[touch_index].id = index;
   pointer_id_map_[index] = touch_index;
+  if (from_devtools_debugger_)
+    key_modifiers |= blink::WebInputEvent::kFromDebugger;
   touch_event_.SetModifiers(key_modifiers);
 }
 
@@ -65,6 +67,8 @@ void SyntheticTouchDriver::Move(float x,
   touch_event_.MovePoint(pointer_id_map_[index], x, y, width / 2.f,
                          height / 2.f, rotation_angle, force,
                          tangential_pressure, tilt_x, tilt_y);
+  if (from_devtools_debugger_)
+    key_modifiers |= blink::WebInputEvent::kFromDebugger;
   touch_event_.SetModifiers(key_modifiers);
 }
 
@@ -74,6 +78,8 @@ void SyntheticTouchDriver::Release(int index,
   DCHECK_GE(index, 0);
   DCHECK(pointer_id_map_.find(index) != pointer_id_map_.end());
   touch_event_.ReleasePoint(pointer_id_map_[index]);
+  if (from_devtools_debugger_)
+    key_modifiers |= blink::WebInputEvent::kFromDebugger;
   touch_event_.SetModifiers(key_modifiers);
   pointer_id_map_.erase(index);
 }
@@ -84,6 +90,8 @@ void SyntheticTouchDriver::Cancel(int index,
   DCHECK_GE(index, 0);
   DCHECK(pointer_id_map_.find(index) != pointer_id_map_.end());
   touch_event_.CancelPoint(pointer_id_map_[index]);
+  if (from_devtools_debugger_)
+    key_modifiers |= blink::WebInputEvent::kFromDebugger;
   touch_event_.SetModifiers(key_modifiers);
   touch_event_.dispatch_type =
       blink::WebInputEvent::DispatchType::kEventNonBlocking;
