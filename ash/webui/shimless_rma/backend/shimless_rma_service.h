@@ -96,10 +96,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
+  void GetWhiteLabelList(GetWhiteLabelListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;
   void GetOriginalRegion(GetOriginalRegionCallback callback) override;
   void GetOriginalSku(GetOriginalSkuCallback callback) override;
+  void GetOriginalWhiteLabel(GetOriginalWhiteLabelCallback callback) override;
   void SetDeviceInformation(const std::string& serial_number,
                             uint8_t region_index,
                             uint8_t sku_index,

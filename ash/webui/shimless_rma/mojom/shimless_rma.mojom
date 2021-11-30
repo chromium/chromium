@@ -575,13 +575,17 @@ interface ShimlessRmaService {
   // Get the list of OEM regions for this device.
   GetRegionList() => (array<string> regions);
   // Get the list of OEM SKUs for this device.
-  GetSkuList() => (array<string> skus);
+  GetSkuList() => (array<uint64> skus);
+  // Get the list of valid white-labels for this device.
+  GetWhiteLabelList() => (array<string> whiteLabels);
   // Get the device serial number at RMA start.
   GetOriginalSerialNumber() => (string serial_number);
   // Get the device region index at RMA start.
   GetOriginalRegion() => (uint8 region_index);
   // Get the device SKU index at RMA start.
   GetOriginalSku() => (uint8 sku_index);
+  // Get the device white-label index at RMA start.
+  GetOriginalWhiteLabel() => (uint8 whiteLabel_index);
   // Attempt to set device info and transition to the next state.
   // Returns the next state to display and an error code.
   SetDeviceInformation(

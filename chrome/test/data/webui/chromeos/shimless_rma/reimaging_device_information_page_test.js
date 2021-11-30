@@ -55,7 +55,7 @@ export function reimagingDeviceInformationPageTest() {
     assertFalse(!!component);
     service.setGetOriginalSerialNumberResult(serialNumber);
     service.setGetRegionListResult(fakeDeviceRegions);
-    service.setGetOriginalRegionResult(0);
+    service.setGetOriginalRegionResult(2);
     service.setGetSkuListResult(fakeDeviceSkus);
     service.setGetOriginalSkuResult(1);
 
@@ -69,23 +69,23 @@ export function reimagingDeviceInformationPageTest() {
 
   test('ReimagingDeviceInformationPageInitializes', async () => {
     await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+    // A flush tasks is required to wait for the drop lists to render and set
+    // the initial selected index.
+    await flushTasks();
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
-    // TODO selectedIndex does not get set correctly
-    // const regionSelectComponent =
-    //     component.shadowRoot.querySelector('#regionSelect');
-    // const skuSelectComponent =
-    //     component.shadowRoot.querySelector('#skuSelect');
+    const regionSelectComponent =
+        component.shadowRoot.querySelector('#regionSelect');
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
     const resetSerialNumberComponent =
         component.shadowRoot.querySelector('#resetSerialNumber');
     const resetRegionComponent =
         component.shadowRoot.querySelector('#resetRegion');
     const resetSkuComponent = component.shadowRoot.querySelector('#resetSku');
 
-    assertEquals(serialNumberComponent.value, fakeSerialNumber);
-    // TODO selectedIndex does not get set correctly
-    // assertEquals(regionSelectComponent.selectedIndex, 1);
-    // assertEquals(skuSelectComponent.selectedIndex, 1);
+    assertEquals(fakeSerialNumber, serialNumberComponent.value);
+    assertEquals(2, regionSelectComponent.selectedIndex);
+    assertEquals(1, skuSelectComponent.selectedIndex);
     assertTrue(resetSerialNumberComponent.disabled);
     assertTrue(resetRegionComponent.disabled);
     assertTrue(resetSkuComponent.disabled);

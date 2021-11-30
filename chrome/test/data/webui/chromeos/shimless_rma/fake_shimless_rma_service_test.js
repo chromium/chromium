@@ -515,10 +515,25 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetSkuListResultUpdatesResult', () => {
-    let skuList = ['skuA', 'skuB', 'skuC'];
+    let skuList = [1, 202, 33];
     service.setGetSkuListResult(skuList);
     return service.getSkuList().then((skus) => {
       assertDeepEquals(skus.skus, skuList);
+    });
+  });
+
+  test('GetWhiteLabelListDefaultUndefined', () => {
+    return service.getWhiteLabelList().then((whiteLabels) => {
+      assertEquals(whiteLabels, undefined);
+    });
+  });
+
+  test('SetGetWhiteLabelListResultUpdatesResult', () => {
+    const whiteLabelList =
+        ['White-label 10', 'White-label 0', 'White-label 9999'];
+    service.setGetWhiteLabelListResult(whiteLabelList);
+    return service.getWhiteLabelList().then((whiteLabels) => {
+      assertDeepEquals(whiteLabels.whiteLabels, whiteLabelList);
     });
   });
 
@@ -561,6 +576,20 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setGetOriginalSkuResult(expected_sku);
     return service.getOriginalSku().then((sku) => {
       assertEquals(sku.skuIndex, expected_sku);
+    });
+  });
+
+  test('GetOriginalWhiteLabelDefaultUndefined', () => {
+    return service.getOriginalWhiteLabel().then((whiteLabel) => {
+      assertEquals(whiteLabel, undefined);
+    });
+  });
+
+  test('SetGetOriginalRegionResultUpdatesResult', () => {
+    const expected_whiteLabel = 1;
+    service.setGetOriginalWhiteLabelResult(expected_whiteLabel);
+    return service.getOriginalWhiteLabel().then((whiteLabel) => {
+      assertEquals(whiteLabel.whiteLabelIndex, expected_whiteLabel);
     });
   });
 

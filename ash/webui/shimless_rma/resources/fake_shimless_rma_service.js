@@ -503,17 +503,31 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{skus: !Array<string>}>}
+   * @return {!Promise<!{skus: !Array<bigint>}>}
    */
   getSkuList() {
     return this.methods_.resolveMethod('getSkuList');
   }
 
   /**
-   * @param {!Array<string>} skus
+   * @param {!Array<bigint>} skus
    */
   setGetSkuListResult(skus) {
     this.methods_.setResult('getSkuList', {skus: skus});
+  }
+
+  /**
+   * @return {!Promise<!{whiteLabels: !Array<string>}>}
+   */
+  getWhiteLabelList() {
+    return this.methods_.resolveMethod('getWhiteLabelList');
+  }
+
+  /**
+   * @param {!Array<string>} whiteLabels
+   */
+  setGetWhiteLabelListResult(whiteLabels) {
+    this.methods_.setResult('getWhiteLabelList', {whiteLabels: whiteLabels});
   }
 
   /**
@@ -557,6 +571,21 @@ export class FakeShimlessRmaService {
    */
   setGetOriginalSkuResult(skuIndex) {
     this.methods_.setResult('getOriginalSku', {skuIndex: skuIndex});
+  }
+
+  /**
+   * @return {!Promise<!{whiteLabelIndex: number}>}
+   */
+  getOriginalWhiteLabel() {
+    return this.methods_.resolveMethod('getOriginalWhiteLabel');
+  }
+
+  /**
+   * @param {number} whiteLabelIndex
+   */
+  setGetOriginalWhiteLabelResult(whiteLabelIndex) {
+    this.methods_.setResult(
+        'getOriginalWhiteLabel', {whiteLabelIndex: whiteLabelIndex});
   }
 
   /**
@@ -1166,9 +1195,11 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('getRegionList');
     this.methods_.register('getSkuList');
+    this.methods_.register('getWhiteLabelList');
     this.methods_.register('getOriginalSerialNumber');
     this.methods_.register('getOriginalRegion');
     this.methods_.register('getOriginalSku');
+    this.methods_.register('getOriginalWhiteLabel');
     this.methods_.register('setDeviceInformation');
 
     this.methods_.register('getCalibrationComponentList');

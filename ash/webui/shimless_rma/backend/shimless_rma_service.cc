@@ -557,8 +557,46 @@ void ShimlessRmaService::ContinueFinalizationAfterRestock(
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::GetRegionList(GetRegionListCallback callback) {}
-void ShimlessRmaService::GetSkuList(GetSkuListCallback callback) {}
+void ShimlessRmaService::GetRegionList(GetRegionListCallback callback) {
+  std::vector<std::string> regions;
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetRegionList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    regions.reserve(state_proto_.update_device_info().region_list_size());
+    regions.assign(state_proto_.update_device_info().region_list().begin(),
+                   state_proto_.update_device_info().region_list().end());
+  }
+  std::move(callback).Run(std::move(regions));
+}
+
+void ShimlessRmaService::GetSkuList(GetSkuListCallback callback) {
+  std::vector<uint64_t> skus;
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetSkuList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    skus.reserve(state_proto_.update_device_info().sku_list_size());
+    skus.assign(state_proto_.update_device_info().sku_list().begin(),
+                state_proto_.update_device_info().sku_list().end());
+  }
+  std::move(callback).Run(std::move(skus));
+}
+
+void ShimlessRmaService::GetWhiteLabelList(GetWhiteLabelListCallback callback) {
+  std::vector<std::string> whiteLabels;
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetSkuList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    whiteLabels.reserve(
+        state_proto_.update_device_info().whitelabel_list_size());
+    whiteLabels.assign(
+        state_proto_.update_device_info().whitelabel_list().begin(),
+        state_proto_.update_device_info().whitelabel_list().end());
+  }
+  std::move(callback).Run(std::move(whiteLabels));
+}
 
 void ShimlessRmaService::GetOriginalSerialNumber(
     GetOriginalSerialNumberCallback callback) {
@@ -592,6 +630,20 @@ void ShimlessRmaService::GetOriginalSku(GetOriginalSkuCallback callback) {
   }
   std::move(callback).Run(
       state_proto_.update_device_info().original_sku_index());
+}
+
+void ShimlessRmaService::GetOriginalWhiteLabel(
+    GetOriginalWhiteLabelCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    // TODO(gavindodd): Consider replacing all invalid call handling with
+    // mojo::ReportBadMessage("error message");
+    LOG(ERROR) << "GetOriginalWhiteLabel called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(0);
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_whitelabel_index());
 }
 
 void ShimlessRmaService::SetDeviceInformation(

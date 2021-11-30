@@ -1719,6 +1719,172 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumberFromWrongStateEmpty) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetRegionList) {
+  rmad::GetStateReply update_device_info_state =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_region_list("EMEA");
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_region_list("AMER");
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_device_info_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateDeviceInformation);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetRegionList(
+      base::BindLambdaForTesting([&](const std::vector<std::string>& regions) {
+        EXPECT_EQ(regions.size(), 2UL);
+        EXPECT_EQ(regions[0], "EMEA");
+        EXPECT_EQ(regions[1], "AMER");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetRegionListWrongStateEmpty) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetRegionList(
+      base::BindLambdaForTesting([&](const std::vector<std::string>& regions) {
+        EXPECT_EQ(regions.size(), 0UL);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetSkuList) {
+  rmad::GetStateReply update_device_info_state =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(1UL);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(7UL);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(2UL);
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_device_info_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateDeviceInformation);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetSkuList(
+      base::BindLambdaForTesting([&](const std::vector<uint64_t>& skus) {
+        EXPECT_EQ(skus.size(), 3UL);
+        EXPECT_EQ(skus[0], 1UL);
+        EXPECT_EQ(skus[1], 7UL);
+        EXPECT_EQ(skus[2], 2UL);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetSkuListWrongStateEmpty) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetSkuList(
+      base::BindLambdaForTesting([&](const std::vector<uint64_t>& skus) {
+        EXPECT_EQ(skus.size(), 0UL);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetWhiteLabelList) {
+  rmad::GetStateReply update_device_info_state =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_whitelabel_list("White-label 1");
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->add_whitelabel_list("White-label 5");
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_device_info_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateDeviceInformation);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetWhiteLabelList(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& whiteLabels) {
+        EXPECT_EQ(whiteLabels.size(), 2UL);
+        EXPECT_EQ(whiteLabels[0], "White-label 1");
+        EXPECT_EQ(whiteLabels[1], "White-label 5");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetWhiteLabelListWrongStateEmpty) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetWhiteLabelList(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& whiteLabels) {
+        EXPECT_EQ(whiteLabels.size(), 0UL);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 TEST_F(ShimlessRmaServiceTest, GetOriginalRegion) {
   rmad::GetStateReply update_device_info_state =
       CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
@@ -1797,6 +1963,58 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSku) {
   shimless_rma_provider_->GetOriginalSku(
       base::BindLambdaForTesting([&](uint8_t sku) {
         EXPECT_EQ(4, sku);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabel) {
+  rmad::GetStateReply update_device_info_state =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_whitelabel_index(3);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->set_whitelabel_index(1);
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_device_info_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateDeviceInformation);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetOriginalWhiteLabel(
+      base::BindLambdaForTesting([&](uint8_t whiteLabel) {
+        EXPECT_EQ(3, whiteLabel);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetOriginalWhiteLabel(
+      base::BindLambdaForTesting([&](uint8_t whiteLabel) {
+        EXPECT_EQ(0, whiteLabel);
         run_loop.Quit();
       }));
   run_loop.Run();

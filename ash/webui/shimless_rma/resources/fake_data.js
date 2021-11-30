@@ -195,9 +195,12 @@ export const fakeNetworks = [
 /** @type {!Array<string>} */
 export const fakeDeviceRegions = ['EMEA', 'APAC', 'AMER'];
 
-/** @type {!Array<string>} */
-export const fakeDeviceSkus = ['SKU 1', 'SKU 2', 'SKU 3'];
+/** @type {!Array<bigint>} */
+export const fakeDeviceSkus = [1, 2, 3];
 
+/** @type {!Array<string>} */
+export const fakeDeviceWhiteLabels =
+    ['White-label 1', 'White-label 2', 'White-label 3'];
 
 /** @type {string} */
 export const fakeLog =
