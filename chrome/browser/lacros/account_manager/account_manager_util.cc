@@ -4,11 +4,15 @@
 
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 
 namespace {
 
@@ -75,25 +79,6 @@ void GetAccountsAvailableAsSecondaryImpl(
 }
 
 }  // namespace
-
-bool IsAccountManagerAvailable(const Profile* profile) {
-  // Account Manager / Mirror is only enabled on Lacros's Main Profile for now.
-  if (!profile->IsMainProfile())
-    return base::FeatureList::IsEnabled(kMultiProfileAccountConsistency);
-
-  // TODO(anastasiian): check for Web kiosk mode.
-
-  // Account Manager is unavailable on Guest (Incognito) Sessions.
-  if (profile->IsGuestSession() || profile->IsOffTheRecord())
-    return false;
-
-  // Account Manager is unavailable on Managed Guest Sessions / Public Sessions.
-  if (profiles::IsPublicSession())
-    return false;
-
-  // Available in all other cases.
-  return true;
-}
 
 void GetAccountsAvailableAsPrimary(
     AccountProfileMapper* mapper,

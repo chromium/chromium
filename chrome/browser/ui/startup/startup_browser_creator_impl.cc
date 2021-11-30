@@ -34,6 +34,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -92,7 +93,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -377,7 +377,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsAccountManagerAvailable(profile_))
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
     welcome_enabled = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

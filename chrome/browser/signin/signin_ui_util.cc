@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,7 +53,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -247,7 +247,7 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     signin_metrics::AccessPoint access_point,
     account_manager::AccountManagerFacade* account_manager_facade) {
   Profile* profile = browser->profile();
-  if (IsAccountManagerAvailable(profile)) {
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     CoreAccountInfo primary_account_info =
@@ -289,14 +289,14 @@ void ShowExtensionSigninPrompt(
   }
 
   // This may be called in incognito. Redirect to the original profile.
-  Profile* original_profile = profile->GetOriginalProfile();
+  profile = profile->GetOriginalProfile();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(https://crbug.com/1233933): remove the fallback to DICE once the
   // feature is deleted.
   if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    // There is no sign-in without an account manager.
-    if (!IsAccountManagerAvailable(original_profile))
+    // There is no sign-in without Mirror.
+    if (!AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile))
       return;
 
     if (email_hint.empty()) {
@@ -314,7 +314,7 @@ void ShowExtensionSigninPrompt(
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  chrome::ScopedTabbedBrowserDisplayer displayer(original_profile);
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
 
   // Cannot sign in if browser cannot be displayed.

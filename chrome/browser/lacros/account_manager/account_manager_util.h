@@ -7,10 +7,7 @@
 
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 
-class Profile;
 class ProfileAttributesStorage;
-
-bool IsAccountManagerAvailable(const Profile* profile);
 
 // Lists accounts that are available as primary accounts for a new profile. This
 // passes back all accounts in the OS that are not used as syncing accounts in

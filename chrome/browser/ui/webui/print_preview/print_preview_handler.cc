@@ -37,6 +37,7 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/printer_manager_dialog.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -84,22 +85,17 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
 using content::RenderFrameHost;
 using content::WebContents;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-using ash::IsAccountManagerAvailable;
-#endif
 
 namespace printing {
 
@@ -858,7 +854,7 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
   DCHECK(profile);
 
 #if defined(OS_CHROMEOS)
-  if (IsAccountManagerAvailable(profile)) {
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
     // tabbed browser window.

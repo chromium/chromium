@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -26,10 +27,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -174,7 +171,7 @@ void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
   SetAccountsInCookie();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsAccountManagerAvailable(profile_))
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
     SetAccountsInCookie();
 #endif
 }

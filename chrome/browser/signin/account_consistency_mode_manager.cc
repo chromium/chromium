@@ -13,8 +13,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -24,10 +26,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #endif
 
 using signin::AccountConsistencyMethod;
@@ -188,8 +186,18 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Mirror / Account Manager is available only for the first / Main Profile.
-  if (IsAccountManagerAvailable(profile))
+  bool is_account_manager_available = true;
+  // Account consistency is unavailable on Managed Guest Sessions and Public
+  // Sessions.
+  if (profiles::IsPublicSession())
+    is_account_manager_available = false;
+
+  if (!profile->IsMainProfile() &&
+      !base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+    is_account_manager_available = false;
+  }
+
+  if (is_account_manager_available)
     return AccountConsistencyMethod::kMirror;
     // else: Fall through to ENABLE_DICE_SUPPORT section below.
     // TODO(crbug.com/1198490): Return `AccountConsistencyMethod::kDisabled` if

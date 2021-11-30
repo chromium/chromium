@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
@@ -93,7 +94,6 @@
 #include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -1341,8 +1341,9 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean("isAccountManagerEnabled",
                           ash::IsAccountManagerAvailable(profile));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean("isAccountManagerEnabled",
-                          IsAccountManagerAvailable(profile));
+  html_source->AddBoolean(
+      "isAccountManagerEnabled",
+      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
   // On Lacros, signout is only supported for secondary profiles without account
   // consistency.
   html_source->AddBoolean(
