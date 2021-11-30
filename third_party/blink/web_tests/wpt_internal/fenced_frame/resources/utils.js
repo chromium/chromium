@@ -67,6 +67,7 @@ const KEYS = {
   "permission.geolocation"                      : "00000000-0000-0000-0000-000000000020",
 
   "presentation.receiver"                       : "00000000-0000-0000-0000-000000000021",
+  "background-sync"                             : "00000000-0000-0000-0000-000000000022",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
