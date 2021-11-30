@@ -184,6 +184,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // GL_FRAMEBUFFER, GL_READ_FRAMEBUFFER, or GL_DRAW_FRAMEBUFFER.
   void Bind(GLenum target);
   IntSize Size() const { return size_; }
+  GLenum StorageFormat() const;
 
   // Resolves the multisample color buffer to the normal color buffer and leaves
   // the resolved color buffer bound to GL_READ_FRAMEBUFFER and

@@ -2177,6 +2177,7 @@ interface WebGL2RenderingContext
     attribute WAIT_FAILED
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -2257,6 +2258,7 @@ interface WebGL2RenderingContext
     method drawElements
     method drawElementsInstanced
     method drawRangeElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method endQuery
@@ -2726,6 +2728,7 @@ interface WebGLRenderingContext
     attribute VIEWPORT
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -2776,6 +2779,7 @@ interface WebGLRenderingContext
     method disableVertexAttribArray
     method drawArrays
     method drawElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method finish

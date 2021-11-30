@@ -173,6 +173,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
+  GLenum drawingBufferFormat() const;
 
   void activeTexture(GLenum texture);
   void attachShader(WebGLProgram*, WebGLShader*);
@@ -641,6 +642,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+
+  void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 
   void commit();
 

@@ -464,6 +464,7 @@ interface mixin WebGLRenderingContextBase {
 
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
+    [RuntimeEnabled=CanvasColorManagementV2] readonly attribute GLenum drawingBufferFormat;
 
     void activeTexture(GLenum texture);
     void attachShader(WebGLProgram program, WebGLShader shader);
@@ -711,6 +712,8 @@ interface mixin WebGLRenderingContextBase {
                                                     GLsizei stride, GLintptr offset);
 
     [NoAllocDirectCall] void viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+
+    [RuntimeEnabled=CanvasColorManagementV2] void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 
     [RuntimeEnabled=OffscreenCanvasCommit] void commit();
 

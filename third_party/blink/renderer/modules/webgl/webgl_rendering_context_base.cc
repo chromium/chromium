@@ -594,6 +594,15 @@ ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
       GetDrawingBuffer()->TransferToStaticBitmapImage());
 }
 
+void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
+                                                     GLsizei width,
+                                                     GLsizei height) {
+  if (!GetDrawingBuffer())
+    return;
+
+  NOTIMPLEMENTED();
+}
+
 void WebGLRenderingContextBase::commit() {
   if (!GetDrawingBuffer() || (Host() && Host()->IsOffscreenCanvas()))
     return;
@@ -1834,6 +1843,10 @@ int WebGLRenderingContextBase::drawingBufferWidth() const {
 
 int WebGLRenderingContextBase::drawingBufferHeight() const {
   return isContextLost() ? 0 : GetDrawingBuffer()->Size().height();
+}
+
+GLenum WebGLRenderingContextBase::drawingBufferFormat() const {
+  return isContextLost() ? 0 : GetDrawingBuffer()->StorageFormat();
 }
 
 void WebGLRenderingContextBase::activeTexture(GLenum texture) {

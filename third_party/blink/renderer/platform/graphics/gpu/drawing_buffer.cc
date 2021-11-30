@@ -1614,6 +1614,10 @@ void DrawingBuffer::Bind(GLenum target) {
   gl_->BindFramebuffer(target, WantExplicitResolve() ? multisample_fbo_ : fbo_);
 }
 
+GLenum DrawingBuffer::StorageFormat() const {
+  return want_alpha_channel_ ? GL_RGBA8 : GL_RGB8;
+}
+
 sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   ScopedStateRestorer scoped_state_restorer(this);
