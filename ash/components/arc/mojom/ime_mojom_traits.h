@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
 #define ASH_COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/ime.mojom-shared.h"
+#include "ash/components/arc/mojom/ime.mojom-shared.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 

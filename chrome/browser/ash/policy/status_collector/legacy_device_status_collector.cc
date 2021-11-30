@@ -17,6 +17,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/audio/cras_audio_handler.h"
@@ -84,7 +85,6 @@
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"

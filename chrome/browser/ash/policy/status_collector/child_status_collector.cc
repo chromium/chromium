@@ -14,6 +14,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -42,7 +43,6 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"

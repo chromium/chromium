@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_IIO_SENSOR_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_IIO_SENSOR_INSTANCE_H_
 
-#include "components/arc/mojom/iio_sensor.mojom.h"
+#include "ash/components/arc/mojom/iio_sensor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

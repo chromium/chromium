@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
-#include "components/arc/mojom/ime.mojom.h"
+#include "ash/components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/arc/mojom/kiosk.mojom.h"
+#include "ash/components/arc/mojom/kiosk.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

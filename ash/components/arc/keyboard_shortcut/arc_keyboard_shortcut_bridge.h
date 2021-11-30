@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
 
-#include "components/arc/mojom/keyboard_shortcut.mojom.h"
+#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserContextKeyedServiceFactory;

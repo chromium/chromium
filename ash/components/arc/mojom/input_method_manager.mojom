@@ -8,7 +8,7 @@ module arc.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "ash/components/arc/mojom/gfx.mojom";
-import "components/arc/mojom/ime.mojom";
+import "ash/components/arc/mojom/ime.mojom";
 
 // Represents the information of an Android IME.
 struct ImeInfo {
