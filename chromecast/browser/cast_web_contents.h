@@ -126,6 +126,12 @@ class CastWebContents : public mojom::CastWebContents {
     virtual void MainFrameReadyToCommitNavigation(
         content::NavigationHandle* navigation_handle) {}
 
+    // Notify that an inner WebContents was created. |inner_contents| is created
+    // in a default-initialized state with no delegate, and can be safely
+    // initialized by the delegate.
+    virtual void InnerContentsCreated(CastWebContents* inner_contents,
+                                      CastWebContents* outer_contents) {}
+
     // Sets |cast_web_contents_| to |nullptr| but does not remove the Observer
     // from the ObserverList. Called for each Observer during CastWebContents
     // destruction; we don't use Observe(nullptr) since it would mutate the

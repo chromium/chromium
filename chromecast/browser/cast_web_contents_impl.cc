@@ -901,11 +901,18 @@ void CastWebContentsImpl::InnerWebContentsCreated(
   params->background_color = params_->background_color;
   auto result = inner_contents_.insert(std::make_unique<CastWebContentsImpl>(
       inner_web_contents, std::move(params)));
+
+  // Notifies remote observers.
   for (auto& observer : observers_) {
     mojo::PendingRemote<mojom::CastWebContents> pending_remote;
     result.first->get()->BindSharedReceiver(
         pending_remote.InitWithNewPipeAndPassReceiver());
     observer->InnerContentsCreated(std::move(pending_remote));
+  }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.InnerContentsCreated(result.first->get(), this);
   }
 }
 
