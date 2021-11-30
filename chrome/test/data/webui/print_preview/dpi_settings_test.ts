@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
+import {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -11,29 +12,26 @@ import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('DpiSettingsTest', function() {
-  /** @type {!PrintPreviewDpiSettingsElement} */
-  let dpiSection;
+  let dpiSection: PrintPreviewDpiSettingsElement;
 
-  /** @type {{ option: Array<!SelectOption> }} */
-  const dpiCapability =
-      assert(getCddTemplate('FooPrinter').capabilities.printer.dpi);
+  const dpiCapability: LabelledDpiCapability =
+      assert(getCddTemplate('FooPrinter')!.capabilities!.printer!.dpi!) as
+      LabelledDpiCapability;
 
-  /** @type {{ option: Array<!SelectOption> }} */
-  const expectedCapabilityWithLabels =
-      assert(getCddTemplate('FooPrinter').capabilities.printer.dpi);
+  const expectedCapabilityWithLabels: LabelledDpiCapability =
+      assert(getCddTemplate('FooPrinter')!.capabilities!.printer!.dpi!) as
+      LabelledDpiCapability;
+
   expectedCapabilityWithLabels.option.forEach(option => {
     option.name = option.horizontal_dpi.toString() + ' dpi';
   });
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    const model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    dpiSection = /** @type {!PrintPreviewDpiSettingsElement} */ (
-        document.createElement('print-preview-dpi-settings'));
+    dpiSection = document.createElement('print-preview-dpi-settings');
     dpiSection.settings = model.settings;
     dpiSection.capability = dpiCapability;
     dpiSection.disabled = false;
@@ -43,8 +41,8 @@ suite('DpiSettingsTest', function() {
   });
 
   test('settings select', function() {
-    const settingsSelect = /** @type {!PrintPreviewSettingsSelectElement} */ (
-        dpiSection.shadowRoot.querySelector('print-preview-settings-select'));
+    const settingsSelect =
+        dpiSection.shadowRoot!.querySelector('print-preview-settings-select')!;
     assertFalse(settingsSelect.disabled);
 
     assertDeepEquals(expectedCapabilityWithLabels, settingsSelect.capability);
@@ -61,8 +59,8 @@ suite('DpiSettingsTest', function() {
     dpiSection.setSetting('dpi', highQualityOption);
 
     // Default is 200 dpi.
-    const settingsSelect = /** @type {!PrintPreviewSettingsSelectElement} */ (
-        dpiSection.shadowRoot.querySelector('print-preview-settings-select'));
+    const settingsSelect =
+        dpiSection.shadowRoot!.querySelector('print-preview-settings-select')!;
     assertDeepEquals(
         highQualityWithLabel, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(highQualityOption, dpiSection.getSettingValue('dpi'));

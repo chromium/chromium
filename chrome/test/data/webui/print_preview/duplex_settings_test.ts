@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {DuplexMode, PrintPreviewDuplexSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,24 +11,19 @@ import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {selectOption} from './print_preview_test_utils.js';
 
 suite('DuplexSettingsTest', function() {
-  /** @type {!PrintPreviewDuplexSettingsElement} */
-  let duplexSection;
+  let duplexSection: PrintPreviewDuplexSettingsElement;
 
-  /** @type {!PrintPreviewModelElement} */
-  let model;
+  let model: PrintPreviewModelElement;
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.duplex.available', true);
     model.set('settings.duplex.value', false);
     model.set('settings.duplexShortEdge.available', true);
 
-    duplexSection = /** @type {!PrintPreviewDuplexSettingsElement} */ (
-        document.createElement('print-preview-duplex-settings'));
+    duplexSection = document.createElement('print-preview-duplex-settings');
     duplexSection.settings = model.settings;
     duplexSection.disabled = false;
     fakeDataBind(model, duplexSection, 'settings');
@@ -41,9 +34,7 @@ suite('DuplexSettingsTest', function() {
   // Tests that making short edge unavailable prevents the collapse from
   // showing.
   test('short edge unavailable', function() {
-    const collapse =
-        /** @type {!IronCollapseElement} */ (
-            duplexSection.shadowRoot.querySelector('iron-collapse'));
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     duplexSection.setSetting('duplex', true);
     assertTrue(collapse.opened);
 
@@ -55,12 +46,8 @@ suite('DuplexSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const checkbox =
-        /** @type {!CrCheckboxElement} */ (
-            duplexSection.shadowRoot.querySelector('cr-checkbox'));
-    const collapse =
-        /** @type {!IronCollapseElement} */ (
-            duplexSection.shadowRoot.querySelector('iron-collapse'));
+    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
 
@@ -68,7 +55,7 @@ suite('DuplexSettingsTest', function() {
     assertTrue(checkbox.checked);
     assertTrue(collapse.opened);
 
-    const select = duplexSection.shadowRoot.querySelector('select');
+    const select = duplexSection.shadowRoot!.querySelector('select')!;
     assertEquals(DuplexMode.LONG_EDGE.toString(), select.value);
 
     duplexSection.setSetting('duplexShortEdge', true);
@@ -79,59 +66,54 @@ suite('DuplexSettingsTest', function() {
   // Tests that checking the box or selecting a new option in the dropdown
   // updates the setting.
   test('select option', async () => {
-    const checkbox = duplexSection.shadowRoot.querySelector('cr-checkbox');
-    const collapse = duplexSection.shadowRoot.querySelector('iron-collapse');
+    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
-    assertFalse(
-        /** @type {boolean} */ (duplexSection.getSettingValue('duplex')));
-    assertFalse(/** @type {boolean} */ (
-        duplexSection.getSettingValue('duplexShortEdge')));
+    assertFalse(duplexSection.getSettingValue('duplex') as boolean);
+    assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);
     assertFalse(duplexSection.getSetting('duplex').setFromUi);
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
     checkbox.checked = true;
-    checkbox.dispatchEvent(new CustomEvent('change'));
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
     assertTrue(collapse.opened);
-    assertTrue(
-        /** @type {boolean} */ (duplexSection.getSettingValue('duplex')));
-    assertFalse(/** @type {boolean} */ (
-        duplexSection.getSettingValue('duplexShortEdge')));
+    assertTrue(duplexSection.getSettingValue('duplex') as boolean);
+    assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);
     assertTrue(duplexSection.getSetting('duplex').setFromUi);
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
-    const select = duplexSection.shadowRoot.querySelector('select');
+    const select = duplexSection.shadowRoot!.querySelector('select')!;
     assertEquals(DuplexMode.LONG_EDGE.toString(), select.value);
     assertEquals(2, select.options.length);
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(duplexSection, DuplexMode.SHORT_EDGE.toString());
-    assertTrue(
-        /** @type {boolean} */ (duplexSection.getSettingValue('duplex')));
-    assertTrue(/** @type {boolean} */ (
-        duplexSection.getSettingValue('duplexShortEdge')));
+    assertTrue(duplexSection.getSettingValue('duplex') as boolean);
+    assertTrue(duplexSection.getSettingValue('duplexShortEdge') as boolean);
     assertTrue(duplexSection.getSetting('duplex').setFromUi);
     assertTrue(duplexSection.getSetting('duplexShortEdge').setFromUi);
   });
 
-  if (isChromeOS || isLacros) {
-    // Tests that if settings are enforced by enterprise policy the
-    // appropriate UI is disabled.
-    test('disabled by policy', function() {
-      const checkbox = duplexSection.shadowRoot.querySelector('cr-checkbox');
-      assertFalse(checkbox.disabled);
+  // <if expr="chromeos or lacros">
+  // Tests that if settings are enforced by enterprise policy the
+  // appropriate UI is disabled.
+  test('disabled by policy', function() {
+    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
+    assertFalse(checkbox.disabled);
 
-      duplexSection.setSetting('duplex', true);
-      const select = duplexSection.shadowRoot.querySelector('select');
-      assertFalse(select.disabled);
+    duplexSection.setSetting('duplex', true);
+    const select = duplexSection.shadowRoot!.querySelector('select')!;
+    assertFalse(select.disabled);
 
-      model.set('settings.duplex.setByPolicy', true);
-      assertTrue(checkbox.disabled);
-      assertFalse(select.disabled);
+    model.set('settings.duplex.setByPolicy', true);
+    assertTrue(checkbox.disabled);
+    assertFalse(select.disabled);
 
-      model.set('settings.duplexShortEdge.setByPolicy', true);
-      assertTrue(checkbox.disabled);
-      assertTrue(select.disabled);
-    });
-  }
+    model.set('settings.duplexShortEdge.setByPolicy', true);
+    assertTrue(checkbox.disabled);
+    assertTrue(select.disabled);
+  });
+  // </if>
 });

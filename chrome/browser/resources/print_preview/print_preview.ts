@@ -56,7 +56,7 @@ export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
 export {PrintPreviewDestinationSelectCrosElement} from './ui/destination_select_cros.js';
 // </if>
 export {DestinationState, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement} from './ui/destination_settings.js';
-export {PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
+export {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
 export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
 export {PrintPreviewHeaderElement} from './ui/header.js';
 export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';

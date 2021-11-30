@@ -16,7 +16,7 @@ import {DpiCapability, DpiOption, SelectOption} from '../data/cdd.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 type LabelledDpiOption = DpiOption&SelectOption;
-type LabelledDpiCapability = {
+export type LabelledDpiCapability = {
   option: LabelledDpiOption[],
 };
 
@@ -102,6 +102,12 @@ export class PrintPreviewDpiSettingsElement extends
         this.capabilityWithLabels_.option.find(o => !!o.is_default) ||
         this.capabilityWithLabels_.option[0];
     this.setSetting('dpi', defaultOption);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-dpi-settings': PrintPreviewDpiSettingsElement;
   }
 }
 

@@ -121,5 +121,11 @@ export class PrintPreviewDuplexSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-duplex-settings': PrintPreviewDuplexSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDuplexSettingsElement.is, PrintPreviewDuplexSettingsElement);
