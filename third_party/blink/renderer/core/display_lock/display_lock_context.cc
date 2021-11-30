@@ -333,9 +333,12 @@ void DisplayLockContext::DidStyleSelf() {
 }
 
 void DisplayLockContext::DidStyleChildren() {
-  // TODO(vmpstr): Is this needed here?
-  if (element_->ChildNeedsReattachLayoutTree())
-    element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
+  if (!element_->ChildNeedsReattachLayoutTree())
+    return;
+  auto* parent = element_->GetReattachParent();
+  if (!parent || parent->ChildNeedsReattachLayoutTree())
+    return;
+  element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
 bool DisplayLockContext::ShouldLayoutChildren() const {

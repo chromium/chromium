@@ -1292,6 +1292,12 @@ void Node::MarkAncestorsWithChildNeedsReattachLayoutTree() {
   DCHECK(isConnected());
   Element* ancestor = GetReattachParent();
   bool parent_dirty = ancestor && ancestor->IsDirtyForRebuildLayoutTree();
+  DCHECK(!ancestor || !ChildNeedsReattachLayoutTree() ||
+         !ancestor->ChildNeedsReattachLayoutTree() || NeedsReattachLayoutTree())
+      << "If both this and the parent are already marked with "
+         "ChildNeedsReattachLayoutTree(), something is broken and "
+         "UpdateLayoutTreeRebuildRoot() will be confused about common "
+         "ancestors.";
   for (; ancestor && !ancestor->ChildNeedsReattachLayoutTree();
        ancestor = ancestor->GetReattachParent()) {
     ancestor->SetChildNeedsReattachLayoutTree();

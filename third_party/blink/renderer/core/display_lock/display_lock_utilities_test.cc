@@ -331,4 +331,24 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
             PhysicalRect());
 }
 
+TEST_F(DisplayLockUtilitiesTest, ContainerQueryCrash) {
+  ScopedCSSContainerQueriesForTest cq_enabled(true);
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #container {
+        content-visibility: hidden;
+        container-type: size;
+      }
+    </style>
+    <div id="container"><div id="child"></div></div>
+  )HTML");
+
+  auto* child = DynamicTo<HTMLElement>(GetDocument().getElementById("child"));
+  ASSERT_TRUE(child);
+
+  // Should not fail DCHECKs or crash.
+  child->offsetTopForBinding();
+}
+
 }  // namespace blink
