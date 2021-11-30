@@ -5,7 +5,7 @@
 import {PageCallbackRouter, ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/read_later.mojom-webui.js';
 
 import {ReadLaterApiProxy} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {ReadLaterApiProxy} */
 export class TestReadLaterApiProxy extends TestBrowserProxy {

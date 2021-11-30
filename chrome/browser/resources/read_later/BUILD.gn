@@ -78,6 +78,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   in_files = [
     "app.ts",
     "icons.ts",

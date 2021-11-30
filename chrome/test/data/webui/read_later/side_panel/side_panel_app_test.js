@@ -6,10 +6,11 @@
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/side_panel/app.js';
+import 'chrome://read-later.top-chrome/side_panel/app.js';
 
-import {assertEquals} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/side_panel/app.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {assertEquals} from 'chrome:/webui-test/chai_assert.js';
 
 suite('SidePanelAppElementTest', () => {
   /** @type {!SidePanelAppElement} */
