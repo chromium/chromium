@@ -164,11 +164,6 @@ trust_anchors {
   filename: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2.pem"
 }
 
-# Cybertrust Global Root
-trust_anchors {
-  filename: "960adf0063e96356750c2965dd0a0867da0b9cbd6e77714aeafb2349ab393da3.pem"
-}
-
 # DigiCert Global Root G2
 trust_anchors {
   filename: "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f.pem"
@@ -319,11 +314,6 @@ trust_anchors {
   filename: "c45d7bb08e6d67e62e4235110b564e5f78fd92ef058c840aea4e6455d7585c60.pem"
 }
 
-# GlobalSign
-trust_anchors {
-  filename: "ca42dd41745fd0b81eb902362cf9d8bf719da1bd1b1efc946f5b4c99f42c1b9e.pem"
-}
-
 # Hongkong Post Root CA 3
 trust_anchors {
   filename: "5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6.pem"
@@ -372,11 +362,6 @@ trust_anchors {
 # Hellenic Academic and Research Institutions RootCA 2011
 trust_anchors {
   filename: "bc104f15a48be709dca542a7e1d4b9df6f054527e802eaa92d595444258afe71.pem"
-}
-
-# DST Root CA X3
-trust_anchors {
-  filename: "0687260331a72403d909f105e69bcf0d32e1bd2493ffc6d9206d11bcd6770739.pem"
 }
 
 # IdenTrust Public Sector Root CA 1
@@ -462,11 +447,6 @@ trust_anchors {
 # QuoVadis Root CA 2 G3
 trust_anchors {
   filename: "8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840.pem"
-}
-
-# QuoVadis Root Certification Authority
-trust_anchors {
-  filename: "a45ede3bbbf09c8ae15c72efc07268d693a21c996fd51e67ca079460fd6d8873.pem"
 }
 
 # Security Communication RootCA2
@@ -587,11 +567,6 @@ trust_anchors {
 # TWCA Root Certification Authority
 trust_anchors {
   filename: "bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44.pem"
-}
-
-# Sonera Class2 CA
-trust_anchors {
-  filename: "7908b40314c138100b518d0735807ffbfcf8518a0095337105ba386b153dd927.pem"
 }
 
 # TeliaSonera Root CA v1
