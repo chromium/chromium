@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -238,7 +239,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPoint) {
   V8TestingScope scope;
   DOMPoint* point = DOMPoint::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8(point, scope.GetContext()->Global(), scope.GetIsolate());
+      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
+          .ToLocalChecked();
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ASSERT_TRUE(V8DOMPoint::HasInstance(result, scope.GetIsolate()));
   DOMPoint* new_point = V8DOMPoint::ToImpl(result.As<v8::Object>());
