@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -57,6 +55,13 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace {
 
@@ -304,6 +309,14 @@ class DownloadNotificationTestBase
   ~DownloadNotificationTestBase() override = default;
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params(crosapi::mojom::BrowserInitParams::New());
+    init_params
+        ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
+        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+#endif
     ASSERT_TRUE(embedded_test_server()->Start());
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
@@ -336,7 +349,7 @@ class DownloadNotificationTestBase
   // Returns whether holding space in-progress downloads notification
   // suppression is enabled given test parameterization.
   bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     return GetParam();
 #else
     return false;

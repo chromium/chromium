@@ -11,6 +11,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 #include "base/guid.h"
@@ -59,6 +62,10 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()
+      ->init_params()
+      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
 #else
   return false;
 #endif
@@ -78,6 +85,13 @@ class DownloadItemNotificationTest : public testing::Test {
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         is_holding_space_in_progress_downloads_notification_suppression_enabled);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params(crosapi::mojom::BrowserInitParams::New());
+    init_params
+        ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
+        is_holding_space_in_progress_downloads_notification_suppression_enabled;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
 #endif
   }
 
@@ -178,6 +192,10 @@ class DownloadItemNotificationTest : public testing::Test {
   std::unique_ptr<DownloadNotificationManager> download_notification_manager_;
   DownloadItemNotification* download_item_notification_;
   std::unique_ptr<NotificationDisplayServiceTester> service_tester_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
 };
 
 class DownloadItemNotificationParameterizedTest

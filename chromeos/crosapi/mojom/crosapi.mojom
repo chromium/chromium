@@ -606,8 +606,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 34
-// Next id: 33
+// Next version: 35
+// Next id: 35
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -823,6 +823,20 @@ struct BrowserInitParams {
   // Added in M97.
   [MinVersion=33]
   array<url.mojom.Url>? accepted_internal_ash_urls@32;
+
+  // Whether incognito profile integration is enabled with the feature that aims
+  // to reduce context switching by enabling users to collect content and
+  // transfer or access it later.
+  // See `ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()`.
+  [MinVersion=34]
+  bool is_holding_space_incognito_profile_integration_enabled@33;
+
+  // Whether in-progress downloads notification suppression is enabled with the
+  // feature that aims to reduce context switching by enabling users to collect
+  // content and transfer or access it later.
+  // See `ash::features::IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()`.
+  [MinVersion=34]
+  bool is_holding_space_in_progress_downloads_notification_suppression_enabled@34;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
