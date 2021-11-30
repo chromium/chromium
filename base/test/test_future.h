@@ -148,7 +148,7 @@ class TestFuture {
   //
   // Example usage:
   //
-  //   TestFutureTuple<int, std::string> future;
+  //   TestFuture<int, std::string> future;
   //   int first = future.Get<0>();
   //   std::string second = future.Get<1>();
   //
