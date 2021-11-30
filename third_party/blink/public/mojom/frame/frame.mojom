@@ -1157,7 +1157,8 @@ interface LocalMainFrame {
   //
   InstallCoopAccessMonitor(
       blink.mojom.FrameToken accessed_window,
-      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info);
+      bool register_metrics,
+      network.mojom.CrossOriginOpenerPolicyReporterParams? coop_reporter_info);
 
   // Called on the main frame of a page embedded in a Portal when it is
   // activated. The frame has the option to adopt the previous page as a portal

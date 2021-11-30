@@ -42,7 +42,9 @@ class CrossOriginOpenerPolicyAccessReportManager {
   // Install the CoopAccessMonitors monitoring accesses from |accessing_node|
   // toward |accessed_node|.
   void MonitorAccesses(FrameTreeNode* accessing_node,
-                       FrameTreeNode* accessed_node);
+                       FrameTreeNode* accessed_node,
+                       bool send_reports,
+                       bool register_metrics);
 
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
 };

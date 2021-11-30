@@ -1293,3 +1293,144 @@ IN_PROC_BROWSER_TEST_F(
 // In particular, it would be interesting knowing what happens with iframes?
 // Are CoopCoepOriginIsolated nested document counted as CoopAndCoepIsolated?
 // Not doing it would underestimate the usage metric.
+
+// Check reports for COOP same-origin-allow-popups between two top-level pages.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       COOPSOAPByDefaultTopLevel) {
+  GURL url1 = https_server().GetURL("a.com", "/empty.html");
+  GURL url1_soap = https_server().GetURL(
+      "a.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin-allow-popups");
+  GURL url1_unsafe_none = https_server().GetURL(
+      "a.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  GURL url2 = https_server().GetURL("b.com", "/empty.html");
+  GURL url2_unsafe_none = https_server().GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  const struct {
+    GURL start_url;
+    GURL popup_url;
+    bool expect_report;
+  } kTestCases[] = {{url1, url1, false},
+                    {url1, url1_unsafe_none, false},
+                    {url1_unsafe_none, url1, true},
+                    {url1_unsafe_none, url1_unsafe_none, false},
+                    {url1_soap, url1, false},
+                    {url1, url2, true},
+                    {url1, url2_unsafe_none, false},
+                    {url1_unsafe_none, url2, true},
+                    {url1_unsafe_none, url2_unsafe_none, false},
+                    {url1_soap, url2, true}};
+
+  int expected_count = 0;
+  for (auto const& test : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << test.start_url.spec() + " opens " + test.popup_url.spec());
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), test.start_url));
+    content::WebContents* popup = OpenPopup(test.popup_url);
+    EXPECT_TRUE(WaitForLoadStop(popup));
+    EXPECT_TRUE(content::ExecJs(popup, "window.opener.top"));
+
+    if (test.expect_report) {
+      ++expected_count;
+    }
+    CheckCounter(WebFeature::kCrossPageAccessBrokenByCOOPSOAPByDefault,
+                 expected_count);
+  }
+}
+
+// Check reports for COOP same-origin-allow-popups between coming from a
+// same-origin subframe.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       COOPSOAPByDefaultSameOriginIframe) {
+  GURL url1 = https_server().GetURL("a.com", "/empty.html");
+  GURL url1_soap = https_server().GetURL(
+      "a.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin-allow-popups");
+  GURL url1_unsafe_none = https_server().GetURL(
+      "a.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  GURL url2 = https_server().GetURL("b.com", "/empty.html");
+  GURL url2_unsafe_none = https_server().GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  const struct {
+    GURL start_url;
+    GURL popup_url;
+    bool expect_report;
+  } kTestCases[] = {{url1, url1, false},
+                    {url1, url1_unsafe_none, false},
+                    {url1_unsafe_none, url1, true},
+                    {url1_unsafe_none, url1_unsafe_none, false},
+                    {url1_soap, url1, false},
+                    {url1, url2, true},
+                    {url1, url2_unsafe_none, false},
+                    {url1_unsafe_none, url2, true},
+                    {url1_unsafe_none, url2_unsafe_none, false},
+                    {url1_soap, url2, true}};
+
+  int expected_count = 0;
+  for (auto const& test : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << test.start_url.spec() + " opens " + test.popup_url.spec());
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), test.start_url));
+    content::WebContents* popup = OpenPopup(test.popup_url);
+    EXPECT_TRUE(WaitForLoadStop(popup));
+    LoadIFrameInWebContents(popup, test.popup_url);
+    content::RenderFrameHost* subframe = ChildFrameAt(popup->GetMainFrame(), 0);
+    EXPECT_TRUE(content::ExecJs(subframe, "window.top.opener.top"));
+
+    if (test.expect_report) {
+      ++expected_count;
+    }
+    CheckCounter(WebFeature::kCrossPageAccessBrokenByCOOPSOAPByDefault,
+                 expected_count);
+  }
+}
+
+// Check reports for COOP same-origin-allow-popups between coming from a
+// cross-origin subframe.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       COOPSOAPByDefaultCrossOriginIframe) {
+  GURL url1 = https_server().GetURL("a.com", "/empty.html");
+  GURL url1_soap = https_server().GetURL(
+      "a.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin-allow-popups");
+  GURL url1_unsafe_none = https_server().GetURL(
+      "a.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  GURL url2 = https_server().GetURL("b.com", "/empty.html");
+  GURL url2_unsafe_none = https_server().GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  GURL url3 = https_server().GetURL("c.com", "/empty.html");
+  const struct {
+    GURL start_url;
+    GURL popup_url;
+    bool expect_report;
+  } kTestCases[] = {{url1, url1, false},
+                    {url1, url1_unsafe_none, false},
+                    {url1_unsafe_none, url1, true},
+                    {url1_unsafe_none, url1_unsafe_none, false},
+                    {url1_soap, url1, false},
+                    {url1, url2, true},
+                    {url1, url2_unsafe_none, false},
+                    {url1_unsafe_none, url2, true},
+                    {url1_unsafe_none, url2_unsafe_none, false},
+                    {url1_soap, url2, true}};
+
+  int expected_count = 0;
+  for (auto const& test : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << test.start_url.spec() + " opens " + test.popup_url.spec());
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), test.start_url));
+    content::WebContents* popup = OpenPopup(test.popup_url);
+    EXPECT_TRUE(WaitForLoadStop(popup));
+    LoadIFrameInWebContents(popup, url3);
+    content::RenderFrameHost* subframe = ChildFrameAt(popup->GetMainFrame(), 0);
+    EXPECT_TRUE(content::ExecJs(subframe, "window.top.opener.top"));
+
+    // TODO(https://crbug.com/1238824): Currently, accesses from cross-origin
+    // frames are not logging use counters. This is because the underlying
+    // architecture for COOP reporting does not support reports from
+    // cross-origin frames. This should be modified so that accesses from
+    // cross-origin frames are also logged in metrics.
+    CheckCounter(WebFeature::kCrossPageAccessBrokenByCOOPSOAPByDefault,
+                 expected_count);
+  }
+}

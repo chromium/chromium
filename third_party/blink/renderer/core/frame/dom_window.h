@@ -137,10 +137,13 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
                              ExceptionState&);
 
   // Cross-Origin-Opener-Policy (COOP):
-  // Check accesses from |accessing_frame| and every same-origin iframe toward
-  // this window. A report is sent to |reporter| when this happens.
+  // Check accesses from |accessing_frame| and every iframe toward this window.
+  // If |register_metrics| is true, metrics will be registered upon access. If
+  // a |coop_reporter_info| is provided, a report will be sent upon access from
+  // |accessing_frame| or its cross-origin iframes.
   void InstallCoopAccessMonitor(
       LocalFrame* accessing_frame,
+      bool register_metrics,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
           coop_reporter_params);
   // Whenever we detect that the enforcement of a report-only COOP policy would
@@ -201,6 +204,8 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Check accesses made toward this window from |accessing_main_frame|. If this
   // happens a report will sent to |reporter|.
   struct CoopAccessMonitor {
+    bool register_metrics;
+    bool send_reports;
     network::mojom::blink::CoopAccessReportType report_type;
     blink::LocalFrameToken accessing_main_frame;
     mojo::Remote<network::mojom::blink::CrossOriginOpenerPolicyReporter>

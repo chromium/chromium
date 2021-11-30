@@ -35674,6 +35674,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4082" label="CSSMatchMediaUnknown"/>
   <int value="4083" label="CSSMediaListUnknown"/>
   <int value="4084" label="CSSOMMediaConditionUnknown"/>
+  <int value="4085" label="CrossPageAccessBrokenByCOOPSOAPByDefault"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

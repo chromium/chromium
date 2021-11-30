@@ -34,25 +34,49 @@ absl::optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
   return absl::nullopt;
 }
 
+// Used to keep track of windows for which we need to send report or register
+// metrics upon access.
+struct WindowToMonitor {
+  WindowToMonitor(FrameTreeNode* top_level_frame,
+                  bool send_reports,
+                  bool register_metrics)
+      : top_level_frame(top_level_frame),
+        send_reports(send_reports),
+        register_metrics(register_metrics) {}
+
+  FrameTreeNode* top_level_frame = nullptr;
+  bool send_reports = false;
+  bool register_metrics = false;
+};
+
 // Find all the related windows that might try to access the new document in
 // |frame|, but are in a different virtual browsing context group.
-std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
+std::vector<WindowToMonitor> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
   DCHECK(frame->IsMainFrame());
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
+  int soap_by_default_virtual_browsing_context_group =
+      frame->current_frame_host()
+          ->soap_by_default_virtual_browsing_context_group();
 
-  std::vector<FrameTreeNode*> out;
+  std::vector<WindowToMonitor> out;
   for (RenderFrameHostImpl* rfh :
        frame->current_frame_host()
            ->delegate()
            ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
                frame->current_frame_host())) {
     // Filter out windows from the same virtual browsing context group.
-    if (rfh->virtual_browsing_context_group() == virtual_browsing_context_group)
+    bool send_reports =
+        rfh->virtual_browsing_context_group() != virtual_browsing_context_group;
+    bool register_metrics =
+        rfh->soap_by_default_virtual_browsing_context_group() !=
+        soap_by_default_virtual_browsing_context_group;
+    if (!send_reports && !register_metrics)
       continue;
 
-    out.push_back(rfh->frame_tree_node());
+    out.emplace_back(WindowToMonitor(rfh->frame_tree_node(), send_reports,
+                                     register_metrics));
   }
   return out;
 }
@@ -73,38 +97,50 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
 
   // Find all the related windows that might try to access the new document,
   // but are from a different virtual browsing context group.
-  std::vector<FrameTreeNode*> other_main_frames =
+  std::vector<WindowToMonitor> other_windows =
       CollectOtherWindowForCoopAccess(frame);
 
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
 
-  for (FrameTreeNode* other : other_main_frames) {
+  for (WindowToMonitor& other : other_windows) {
     CrossOriginOpenerPolicyAccessReportManager* access_manager_other =
-        other->current_frame_host()->coop_access_report_manager();
+        other.top_level_frame->current_frame_host()
+            ->coop_access_report_manager();
 
     // If the current frame has a reporter, install the access monitors to
     // monitor the accesses between this frame and the other frame.
-    access_manager_frame->MonitorAccesses(frame, other);
-    access_manager_frame->MonitorAccesses(other, frame);
+    access_manager_frame->MonitorAccesses(frame, other.top_level_frame,
+                                          other.send_reports,
+                                          other.register_metrics);
+    access_manager_frame->MonitorAccesses(other.top_level_frame, frame,
+                                          other.send_reports,
+                                          other.register_metrics);
 
     // If the other frame has a reporter, install the access monitors to monitor
     // the accesses between this frame and the other frame.
-    access_manager_other->MonitorAccesses(frame, other);
-    access_manager_other->MonitorAccesses(other, frame);
+    access_manager_other->MonitorAccesses(frame, other.top_level_frame,
+                                          other.send_reports,
+                                          other.register_metrics);
+    access_manager_other->MonitorAccesses(other.top_level_frame, frame,
+                                          other.send_reports,
+                                          other.register_metrics);
   }
 }
 
 void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
     FrameTreeNode* accessing_node,
-    FrameTreeNode* accessed_node) {
+    FrameTreeNode* accessed_node,
+    bool send_reports,
+    bool register_metrics) {
   DCHECK_NE(accessing_node, accessed_node);
   DCHECK(accessing_node->current_frame_host()->coop_access_report_manager() ==
              this ||
          accessed_node->current_frame_host()->coop_access_report_manager() ==
              this);
+
   if (!coop_reporter_.get())
-    return;
+    send_reports = false;
 
   // TODO(arthursonzogni): DCHECK same browsing context group.
   // TODO(arthursonzogni): DCHECK different virtual browsing context group.
@@ -130,9 +166,11 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
   accessing_node->current_frame_host()
       ->GetAssociatedLocalMainFrame()
       ->InstallCoopAccessMonitor(
-          *accessed_window_token,
-          coop_reporter_->CreateReporterParams(access_from_coop_page,
-                                               accessing_node, accessed_node));
+          *accessed_window_token, register_metrics,
+          send_reports
+              ? coop_reporter_->CreateReporterParams(
+                    access_from_coop_page, accessing_node, accessed_node)
+              : nullptr);
 }
 
 // static
