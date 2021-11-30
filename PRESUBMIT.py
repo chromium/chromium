@@ -5514,3 +5514,28 @@ def CheckRawPtrUsage(input_api, output_api):
               'section in //base/memory/raw_ptr.md)'.format(
                   path=f.LocalPath(), line=line_num)))
   return errors
+
+
+def CheckPythonShebang(input_api, output_api):
+    """Checks that python scripts use #!/usr/bin/env instead of hardcoding a
+    system-wide python.
+    """
+    errors = []
+    sources = lambda affected_file: input_api.FilterSourceFile(
+        affected_file,
+        files_to_skip=((_THIRD_PARTY_EXCEPT_BLINK,
+                        r'third_party/blink/web_tests/external/') + input_api.
+                       DEFAULT_FILES_TO_SKIP),
+        files_to_check=[r'.*\.py$'])
+    for f in input_api.AffectedSourceFiles(sources):
+        [line_num, line] = f.ChangedContents()[0]
+        if line_num == 1 and line.startswith('#!/usr/bin/python'):
+            errors.append(f.LocalPath())
+
+    result = []
+    for file in errors:
+        result.append(
+            output_api.PresubmitError(
+                "Please use '#!/usr/bin/env python/2/3' as the shebang of %s" %
+                file))
+    return result

@@ -4057,5 +4057,28 @@ class CheckRawPtrUsageTest(unittest.TestCase):
           error.message)
 
 
+class AssertPythonShebangTest(unittest.TestCase):
+    def testError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/test.py', ['#!/usr/bin/python']),
+            MockFile('chrome/test.py', ['#!/usr/bin/python2']),
+            MockFile('third_party/blink/test.py', ['#!/usr/bin/python3']),
+        ]
+        errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
+        self.assertEqual(3, len(errors))
+
+    def testNonError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('chrome/browser/BUILD.gn', ['#!/usr/bin/python']),
+            MockFile('third_party/blink/web_tests/external/test.py',
+                     ['#!/usr/bin/python2']),
+            MockFile('third_party/test/test.py', ['#!/usr/bin/python3']),
+        ]
+        errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+
 if __name__ == '__main__':
   unittest.main()
