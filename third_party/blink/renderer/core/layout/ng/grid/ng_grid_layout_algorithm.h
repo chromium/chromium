@@ -251,10 +251,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridBlockTrackCollection& column_block_track_collection,
       const NGGridBlockTrackCollection& row_block_track_collection,
       GridItems* grid_items,
-      NGGridProperties* grid_properties,
+      LayoutUnit* intrinsic_block_size,
       NGGridLayoutAlgorithmTrackCollection* column_track_collection,
-      NGGridLayoutAlgorithmTrackCollection* row_track_collection,
-      LayoutUnit* intrinsic_block_size);
+      NGGridLayoutAlgorithmTrackCollection* row_track_collection);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
 
@@ -271,8 +270,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridTrackSizingDirection track_direction) const;
 
   void ConstructAndAppendGridItems(GridItems* grid_items,
-                                   NGGridPlacement* grid_placement,
-                                   NGGridProperties* grid_properties) const;
+                                   NGGridPlacement* grid_placement) const;
 
   void BuildBlockTrackCollections(
       const NGGridPlacement& grid_placement,
@@ -285,12 +283,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItems* grid_items,
       NGGridBlockTrackCollection* track_collection) const;
 
-  // For every grid item, caches properties of the track sizing functions it
-  // spans (i.e. whether an item spans intrinsic or flexible tracks).
-  void CacheGridItemsTrackSpanProperties(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      GridItems* grid_items) const;
-
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |grid_geometry|.
   void CalculateAlignmentBaselines(
@@ -302,6 +294,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Initializes the given track collection, and returns the base set geometry.
   SetGeometry InitializeTrackSizes(
+      const NGGridProperties& grid_properties,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
   // Calculates from the min and max track sizing functions the used track size.
