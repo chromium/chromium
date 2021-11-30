@@ -643,6 +643,7 @@ export class Preview {
           AndroidStatisticsFaceDetectMode
               .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
         dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
+        this.faceOverlay_.clear();
         return;
       }
       assert(rects.length % 4 === 0);
