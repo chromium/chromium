@@ -570,7 +570,7 @@
   'CROS_ATLAS_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R97-14324.13.0',
+      'cros_img': 'atlas-release/R98-14359.0.0',
     },
     'identifier': 'ATLAS_DEV',
   },
@@ -598,7 +598,7 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R97-14324.13.0',
+      'cros_img': 'eve-release/R98-14359.0.0',
     },
     'identifier': 'EVE_DEV',
   },
@@ -633,7 +633,7 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R97-14324.13.0',
+      'cros_img': 'octopus-release/R98-14359.0.0',
     },
     'identifier': 'OCTOPUS_DEV',
   },
