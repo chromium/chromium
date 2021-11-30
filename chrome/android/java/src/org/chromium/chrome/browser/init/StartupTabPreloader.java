@@ -69,7 +69,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         int DISABLED_BY_FEATURE = 6;
         int ALL_SATISFIED = 7;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 8;
     }
 
     private final Supplier<Intent> mIntentSupplier;
