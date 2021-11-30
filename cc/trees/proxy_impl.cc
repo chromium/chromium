@@ -278,7 +278,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     const viz::BeginFrameArgs& commit_args,
     CommitTimestamps* commit_timestamps) {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
-  DCHECK(!commit_completion_event_);
+  DCHECK(!data_for_commit_.has_value());
   DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
@@ -287,7 +287,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // Inform the layer tree host that the commit has started, so that metrics
   // can determine how long we waited for thread synchronization.
   commit_timestamps->start = base::TimeTicks::Now();
-  commit_timestamps_ = commit_timestamps;
 
   if (!host_impl_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoLayerTree",
@@ -300,12 +299,13 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // But, we can avoid a PostTask in here.
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
 
-  auto& begin_main_frame_metrics =
-      layer_tree_host->active_commit_state()->begin_main_frame_metrics;
+  auto* commit_state = layer_tree_host->active_commit_state();
+  auto& begin_main_frame_metrics = commit_state->begin_main_frame_metrics;
   host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
-  commit_completion_event_ =
-      std::make_unique<ScopedCompletionEvent>(completion_event);
+  data_for_commit_.emplace(
+      std::make_unique<ScopedCompletionEvent>(completion_event), commit_state,
+      commit_timestamps);
 
   DCHECK(!blocked_main_commit().layer_tree_host);
   blocked_main_commit().layer_tree_host = layer_tree_host;
@@ -676,7 +676,8 @@ void ProxyImpl::ScheduledActionCommit() {
   TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionCommit");
   DCHECK(IsImplThread());
   DCHECK(IsMainThreadBlocked());
-  DCHECK(commit_completion_event_);
+  DCHECK(data_for_commit_.has_value());
+  DCHECK(data_for_commit_->IsValid());
 
   // Relax the cross-thread access restriction to non-thread-safe RefCount.
   // It's safe since the main thread is blocked while a main-thread-bound
@@ -684,14 +685,11 @@ void ProxyImpl::ScheduledActionCommit() {
   base::ScopedAllowCrossThreadRefCountAccess
       allow_cross_thread_ref_count_access;
 
-  LayerTreeHost* layer_tree_host = blocked_main_commit().layer_tree_host;
-  bool commit_waits_for_activation =
-      layer_tree_host->active_commit_state()->commit_waits_for_activation;
-  host_impl_->BeginCommit(
-      layer_tree_host->active_commit_state()->source_frame_number);
-  layer_tree_host->FinishCommitOnImplThread(host_impl_.get());
-  DCHECK(commit_timestamps_);
-  commit_timestamps_->finish = base::TimeTicks::Now();
+  CommitState* commit_state = data_for_commit_->commit_state;
+  host_impl_->BeginCommit(commit_state->source_frame_number);
+  blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
+      host_impl_.get());
+  data_for_commit_->commit_timestamps->finish = base::TimeTicks::Now();
 
   // Remove the LayerTreeHost reference before the completion event is signaled
   // and cleared. This is necessary since blocked_main_commit() allows access
@@ -699,17 +697,17 @@ void ProxyImpl::ScheduledActionCommit() {
   // blocked for a commit.
   blocked_main_commit().layer_tree_host = nullptr;
 
-  if (commit_waits_for_activation) {
+  if (commit_state->commit_waits_for_activation) {
     // For some layer types in impl-side painting, the commit is held until the
     // sync tree is activated.  It's also possible that the sync tree has
     // already activated if there was no work to be done.
     TRACE_EVENT_INSTANT0("cc", "HoldCommit", TRACE_EVENT_SCOPE_THREAD);
-    activation_completion_event_ = std::move(commit_completion_event_);
+    activation_completion_event_ =
+        std::move(data_for_commit_->commit_completion_event);
   }
-  commit_completion_event_ = nullptr;
 
+  data_for_commit_.reset();
   scheduler_->DidCommit();
-
   // Delay this step until afer the main thread has been released as it's
   // often a good bit of work to update the tree and prepare the new frame.
   host_impl_->CommitComplete();
@@ -841,7 +839,7 @@ bool ProxyImpl::IsMainThreadBlocked() const {
 }
 
 ProxyImpl::BlockedMainCommitOnly& ProxyImpl::blocked_main_commit() {
-  DCHECK(IsMainThreadBlocked() && commit_completion_event_);
+  DCHECK(IsMainThreadBlocked() && data_for_commit_.has_value());
   return main_thread_blocked_commit_vars_unsafe_;
 }
 
@@ -875,6 +873,20 @@ void ProxyImpl::SetRenderFrameObserver(
 void ProxyImpl::SetEnableFrameRateThrottling(
     bool enable_frame_rate_throttling) {
   host_impl_->SetEnableFrameRateThrottling(enable_frame_rate_throttling);
+}
+
+ProxyImpl::DataForCommit::DataForCommit(
+    std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
+    CommitState* commit_state,
+    CommitTimestamps* commit_timestamps)
+    : commit_completion_event(std::move(commit_completion_event)),
+      commit_state(commit_state),
+      commit_timestamps(commit_timestamps) {}
+
+ProxyImpl::DataForCommit::~DataForCommit() = default;
+
+bool ProxyImpl::DataForCommit::IsValid() const {
+  return commit_completion_event.get() && commit_state && commit_timestamps;
 }
 
 }  // namespace cc

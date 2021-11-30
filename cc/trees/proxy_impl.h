@@ -173,11 +173,25 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   std::unique_ptr<Scheduler> scheduler_;
 
-  // Set while commit is running or scheduled.
-  CommitTimestamps* commit_timestamps_ = nullptr;
+  struct DataForCommit {
+    DataForCommit(
+        std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
+        CommitState* commit_state,
+        CommitTimestamps* commit_timestamps);
 
-  // Set when the main thread is waiting on a commit to complete.
-  std::unique_ptr<ScopedCompletionEvent> commit_completion_event_;
+    ~DataForCommit();
+
+    bool IsValid() const;
+
+    // Set when the main thread is waiting on a commit to complete.
+    std::unique_ptr<ScopedCompletionEvent> commit_completion_event;
+    CommitState* commit_state;
+    // This is passed from the main thread so the impl thread can record
+    // timestamps at the beginning and end of commit.
+    CommitTimestamps* commit_timestamps = nullptr;
+  };
+
+  absl::optional<DataForCommit> data_for_commit_;
 
   // Set when the main thread is waiting for activation to complete.
   std::unique_ptr<ScopedCompletionEvent> activation_completion_event_;
