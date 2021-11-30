@@ -60,7 +60,9 @@ mojom::KeyEventResult HandleEngineResult(
     std::vector<mojom::CompositionSpanPtr> spans;
     spans.push_back(mojom::CompositionSpan::New(
         0, text.length(), mojom::CompositionSpanStyle::kDefault));
-    host->SetComposition(std::move(text), std::move(spans));
+    const int new_cursor_position = text.length();
+    host->SetComposition(std::move(text), std::move(spans),
+                         new_cursor_position);
   }
   return result.key_handled ? mojom::KeyEventResult::kConsumedByIme
                             : mojom::KeyEventResult::kNeedsHandlingBySystem;

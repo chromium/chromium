@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module chromeos.ime.mojom;
 
@@ -244,9 +244,20 @@ interface InputMethodHost {
   // Asks the focused input field to set composition with `text`.
   // Replaces the current composition if there is one. Otherwise, start a
   // new composition at the current cursor position, deleting any text in the
-  // current selection if any. The cursor is moved to the end of `text`.
+  // current selection if any.
+  //
   // `spans` is used to style `text`.
-  SetComposition@1(mojo_base.mojom.String16 text, array<CompositionSpan> spans);
+  //
+  // The cursor then moves based on `new_cursor_position`, which is the relative
+  // UTF-16 offset of the new cursor position from the front of `text`.
+  // For example, if `new_cursor_position` is 3, then the cursor is placed
+  // between `text[3]` and `text[4]`. A `new_cursor_position` of 0 places the
+  // cursor immediately before `text`, and a value of `text.length()` places the
+  // cursor immediately after `text`.
+  // If `new_cursor_position > text.length()`, then this is a no-op.
+  SetComposition@1(mojo_base.mojom.String16 text,
+                   array<CompositionSpan> spans,
+                   [MinVersion=5] uint32 new_cursor_position);
 
   // Asks the focused input field to mark the range of text spanned by
   // `start_index` and `end_index` as the current composition, where index 0
