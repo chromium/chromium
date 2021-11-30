@@ -37,9 +37,10 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   ~CrossOriginOpenerPolicyStatus() override;
 
   // Sanitize the COOP header from the `response`.
-  // Return an error when COOP is used on sandboxed popups.
+  // Return an error, and swap browsing context group when COOP is used on
+  // sandboxed popups.
   absl::optional<network::mojom::BlockedByResponseReason> SanitizeResponse(
-      network::mojom::URLResponseHead* response) const;
+      network::mojom::URLResponseHead* response);
 
   // Called when receiving a redirect or the final response.
   void EnforceCOOP(const network::CrossOriginOpenerPolicy& response_coop,

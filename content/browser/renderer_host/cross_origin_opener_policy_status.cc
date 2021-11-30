@@ -142,7 +142,7 @@ void CrossOriginOpenerPolicyStatus::RenderProcessHostDestroyed(
 
 absl::optional<network::mojom::BlockedByResponseReason>
 CrossOriginOpenerPolicyStatus::SanitizeResponse(
-    network::mojom::URLResponseHead* response) const {
+    network::mojom::URLResponseHead* response) {
   const GURL& response_url = navigation_request_->common_params().url;
   SanitizeCoopHeaders(response_url, response);
 
@@ -164,6 +164,15 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
     DCHECK(!response_url.SchemeIsBlob());
     DCHECK(!response_url.SchemeIsFileSystem());
     DCHECK(!response_url.SchemeIs(url::kDataScheme));
+
+    // We should force a COOP browsing instance swap to avoid certain
+    // opener+error pages exploits, see https://crbug.com/1256823 and
+    // https://github.com/whatwg/html/issues/7345.
+    require_browsing_instance_swap_ = true;
+    virtual_browsing_context_group_ =
+        CrossOriginOpenerPolicyAccessReportManager::
+            NextVirtualBrowsingContextGroup();
+
     return network::mojom::BlockedByResponseReason::
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
   }
