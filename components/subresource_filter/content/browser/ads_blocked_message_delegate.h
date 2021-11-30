@@ -83,7 +83,7 @@ class AdsBlockedMessageDelegate
   // explicitly in the code or automatically.
   void HandleDialogDismissed();
 
-  void ShowDialog();
+  void ShowDialog(bool should_post_dialog);
 
   std::unique_ptr<messages::MessageWrapper> message_;
 

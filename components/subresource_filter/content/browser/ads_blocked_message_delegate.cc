@@ -34,7 +34,7 @@ void AdsBlockedMessageDelegate::OnWebContentsFocused(
     // Upon returning to the original tab from the redirected tab,
     // the dialog will be restored.
     reprompt_required_ = false;
-    ShowDialog();
+    ShowDialog(/*should_post_dialog=*/true);
   }
 }
 
@@ -101,7 +101,7 @@ void AdsBlockedMessageDelegate::HandleMessageOkClicked() {}
 
 void AdsBlockedMessageDelegate::HandleMessageManageClicked() {
   DismissMessage(messages::DismissReason::SECONDARY_ACTION);
-  ShowDialog();
+  ShowDialog(/*should_post_dialog=*/false);
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kDetailsShown);
 }
@@ -139,7 +139,7 @@ void AdsBlockedMessageDelegate::HandleDialogDismissed() {
   ads_blocked_dialog_.reset();
 }
 
-void AdsBlockedMessageDelegate::ShowDialog() {
+void AdsBlockedMessageDelegate::ShowDialog(bool should_post_dialog) {
   DCHECK(!reprompt_required_);
   // Binding with base::Unretained(this) is safe here because
   // AdsBlockedMessageDelegate owns ads_blocked_dialog_. Callbacks won't be
@@ -157,7 +157,7 @@ void AdsBlockedMessageDelegate::ShowDialog() {
   // is not attached to a window. See crbug.com/1049090 for details.
   if (!ads_blocked_dialog_)
     return;
-  ads_blocked_dialog_->Show();
+  ads_blocked_dialog_->Show(should_post_dialog);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AdsBlockedMessageDelegate);
