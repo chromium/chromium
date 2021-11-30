@@ -732,6 +732,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.MiniDiag.Launch" units="launches"
+    expires_after="2022-05-18">
+  <owner>roccochen@chromium.org</owner>
+  <owner>chromeos-minidiag-eng@google.com</owner>
+  <summary>
+    Total number of launches of the MiniDiag (pre-boot diagnostic tool) since
+    the last upload. This metrics is recorded right after booting into ChromeOS.
+    This metrics leverages a coreboot command, elogtool, to retrieve the event
+    log and count launch events.
+  </summary>
+</histogram>
+
 <histogram name="Platform.MountEncrypted.EncryptionKeyStatus"
     enum="MountEncryptedEncryptionKeyStatus" expires_after="2022-04-24">
   <owner>apronin@chromium.org</owner>
