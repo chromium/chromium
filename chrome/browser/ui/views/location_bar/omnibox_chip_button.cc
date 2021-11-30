@@ -7,10 +7,12 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -128,19 +130,38 @@ void OmniboxChipButton::UpdateIconAndColors() {
 
 SkColor OmniboxChipButton::GetTextAndIconColor() {
   switch (theme_) {
-    case Theme::kBlue:
-      // TODO(crbug.com/1003612): ui::kColorButtonBackgroundProminent does not
-      // always represent the blue color we need, but it is OK to use for now.
-      return GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent);
-    case Theme::kGray:
+    case Theme::kBlue: {
+      // TODO(crbug.com/1274118) Instead of using constants or toolbar colors,
+      // add the chip's properties.
+      return color_utils::IsDark(
+                 GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR))
+                 ? gfx::kGoogleBlue300
+                 : gfx::kGoogleBlue600;
+    }
+    case Theme::kGray: {
       return GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED);
+          ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE);
+    }
   }
 }
 
 SkColor OmniboxChipButton::GetBackgroundColor() {
-  return views::style::GetColor(*this, label()->GetTextContext(),
-                                views::style::STYLE_DIALOG_BUTTON_DEFAULT);
+  SkColor active_tab_color =
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+
+  if (theme_ == Theme::kGray) {
+    return active_tab_color;
+  }
+
+  // TODO(crbug.com/1274118) Instead of using constants or toolbar colors, add
+  // the chip's properties.
+  if (color_utils::IsDark(active_tab_color)) {
+    return ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_TOOLBAR, false,
+        /*dark_mode=*/color_utils::IsDark(active_tab_color));
+  } else {
+    return SK_ColorWHITE;
+  }
 }
 
 void OmniboxChipButton::SetForceExpandedForTesting(
