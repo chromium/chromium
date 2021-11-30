@@ -66,7 +66,6 @@ export class ReimagingCalibrationRunPage extends
        */
       calibrationStatusMessage_: {
         type: String,
-        // TODO(gavindodd): update for i18n
         value: '',
       }
     };
