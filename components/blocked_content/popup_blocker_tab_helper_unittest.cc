@@ -51,13 +51,17 @@ class BlockedUrlListObserver : public UrlListManager::Observer {
 
 class PopupBlockerTabHelperTest : public content::RenderViewHostTestHarness {
  public:
+  PopupBlockerTabHelperTest() {
+    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
+    // This needs to be done as early as possible to avoid tsan data races
+    // caused by other threads trying to access the feature list.
+    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
+  }
   ~PopupBlockerTabHelperTest() override { settings_map_->ShutdownOnUIThread(); }
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
-    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
 
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
