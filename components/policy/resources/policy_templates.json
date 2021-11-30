@@ -19854,8 +19854,7 @@
         'type': 'array',
         'items': { 'type': 'string' }
       },
-      'supported_on': ['android:65-'],
-      'future_on': ['ios'],
+      'supported_on': ['android:65-', 'ios:97-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
