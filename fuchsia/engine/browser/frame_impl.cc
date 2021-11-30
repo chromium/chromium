@@ -294,7 +294,6 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                                                : std::string()),
       params_for_popups_(std::move(params)),
       navigation_controller_(web_contents_.get()),
-      url_request_rewrite_rules_manager_(web_contents_.get()),
       permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
@@ -313,6 +312,8 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
   web_contents_->SetDelegate(this);
   web_contents_->SetPageBaseBackgroundColor(SK_AlphaTRANSPARENT);
   Observe(web_contents_.get());
+
+  url_request_rewrite_rules_manager_.AddWebContents(web_contents_.get());
 
   binding_.set_error_handler([this](zx_status_t status) {
     ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)

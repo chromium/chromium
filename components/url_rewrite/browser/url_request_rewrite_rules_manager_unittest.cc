@@ -14,25 +14,9 @@ using ::testing::ContainerEq;
 using ::testing::IsNull;
 using ::testing::SizeIs;
 
-class UrlRequestRewriteRulesManagerTest : public testing::Test {
- public:
-  UrlRequestRewriteRulesManagerTest()
-      : url_request_rewrite_rules_manager_(
-            url_rewrite::UrlRequestRewriteRulesManager::CreateForTesting()) {}
-
-  UrlRequestRewriteRulesManagerTest(const UrlRequestRewriteRulesManagerTest&) =
-      delete;
-  UrlRequestRewriteRulesManagerTest& operator=(
-      const UrlRequestRewriteRulesManagerTest&) = delete;
-
-  ~UrlRequestRewriteRulesManagerTest() override = default;
-
-  std::unique_ptr<url_rewrite::UrlRequestRewriteRulesManager>
-      url_request_rewrite_rules_manager_;
-};
-
-TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedSucceeds) {
-  ASSERT_THAT(url_request_rewrite_rules_manager_->GetCachedRules(), IsNull());
+TEST(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedSucceeds) {
+  url_rewrite::UrlRequestRewriteRulesManager url_request_rewrite_rules_manager;
+  ASSERT_THAT(url_request_rewrite_rules_manager.GetCachedRules(), IsNull());
 
   auto add_headers = mojom::UrlRequestRewriteAddHeaders::New();
   auto header = mojom::UrlHeader::New("Test", "Value");
@@ -45,11 +29,11 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedSucceeds) {
   auto rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
   ASSERT_TRUE(
-      url_request_rewrite_rules_manager_->OnRulesUpdated(std::move(rules)));
+      url_request_rewrite_rules_manager.OnRulesUpdated(std::move(rules)));
 
   // Verify the rules got updated.
   mojom::UrlRequestRewriteRules* cached_rules =
-      url_request_rewrite_rules_manager_->GetCachedRules()->data.get();
+      url_request_rewrite_rules_manager.GetCachedRules()->data.get();
   ASSERT_THAT(cached_rules->rules, SizeIs(1));
   ASSERT_TRUE(cached_rules->rules[0]->hosts_filter);
   ASSERT_THAT(cached_rules->rules[0]->hosts_filter.value(),
@@ -67,8 +51,9 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedSucceeds) {
   ASSERT_EQ(headers[0]->value, "Value");
 }
 
-TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedFailsWithInvalidRules) {
-  ASSERT_THAT(url_request_rewrite_rules_manager_->GetCachedRules(), IsNull());
+TEST(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedFailsWithInvalidRules) {
+  url_rewrite::UrlRequestRewriteRulesManager url_request_rewrite_rules_manager;
+  ASSERT_THAT(url_request_rewrite_rules_manager.GetCachedRules(), IsNull());
 
   auto remove_header =
       mojom::UrlRequestRewriteRemoveHeader::New("Query", "TestHeader");
@@ -78,11 +63,11 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedFailsWithInvalidRules) {
   auto rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
   ASSERT_TRUE(
-      url_request_rewrite_rules_manager_->OnRulesUpdated(std::move(rules)));
+      url_request_rewrite_rules_manager.OnRulesUpdated(std::move(rules)));
 
   // Verify the rule got updated.
   mojom::UrlRequestRewriteRules* cached_rules =
-      url_request_rewrite_rules_manager_->GetCachedRules()->data.get();
+      url_request_rewrite_rules_manager.GetCachedRules()->data.get();
   ASSERT_THAT(cached_rules->rules, SizeIs(1));
   ASSERT_FALSE(cached_rules->rules[0]->hosts_filter);
   ASSERT_FALSE(cached_rules->rules[0]->schemes_filter);
@@ -101,14 +86,15 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesUpdatedFailsWithInvalidRules) {
   rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(mojom::UrlRequestRule::New());
   ASSERT_FALSE(
-      url_request_rewrite_rules_manager_->OnRulesUpdated(std::move(rules)));
+      url_request_rewrite_rules_manager.OnRulesUpdated(std::move(rules)));
   mojom::UrlRequestRewriteRules* updated_rules =
-      url_request_rewrite_rules_manager_->GetCachedRules()->data.get();
+      url_request_rewrite_rules_manager.GetCachedRules()->data.get();
   EXPECT_EQ(updated_rules, cached_rules);
 }
 
-TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesRenewal) {
-  ASSERT_THAT(url_request_rewrite_rules_manager_->GetCachedRules(), IsNull());
+TEST(UrlRequestRewriteRulesManagerTest, OnRulesRenewal) {
+  url_rewrite::UrlRequestRewriteRulesManager url_request_rewrite_rules_manager;
+  ASSERT_THAT(url_request_rewrite_rules_manager.GetCachedRules(), IsNull());
 
   auto append_to_query =
       mojom::UrlRequestRewriteAppendToQuery::New("TestQuery");
@@ -118,11 +104,11 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesRenewal) {
   auto rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
   ASSERT_TRUE(
-      url_request_rewrite_rules_manager_->OnRulesUpdated(std::move(rules)));
+      url_request_rewrite_rules_manager.OnRulesUpdated(std::move(rules)));
 
   // Verify the rule got updated.
   mojom::UrlRequestRewriteRules* cached_rules =
-      url_request_rewrite_rules_manager_->GetCachedRules()->data.get();
+      url_request_rewrite_rules_manager.GetCachedRules()->data.get();
   ASSERT_THAT(cached_rules->rules, SizeIs(1));
   ASSERT_FALSE(cached_rules->rules[0]->hosts_filter);
   ASSERT_FALSE(cached_rules->rules[0]->schemes_filter);
@@ -140,10 +126,9 @@ TEST_F(UrlRequestRewriteRulesManagerTest, OnRulesRenewal) {
   rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
   ASSERT_TRUE(
-      url_request_rewrite_rules_manager_->OnRulesUpdated(std::move(rules)));
+      url_request_rewrite_rules_manager.OnRulesUpdated(std::move(rules)));
 
-  cached_rules =
-      url_request_rewrite_rules_manager_->GetCachedRules()->data.get();
+  cached_rules = url_request_rewrite_rules_manager.GetCachedRules()->data.get();
   ASSERT_THAT(cached_rules->rules, SizeIs(1));
   ASSERT_FALSE(cached_rules->rules[0]->hosts_filter);
   ASSERT_FALSE(cached_rules->rules[0]->schemes_filter);

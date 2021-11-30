@@ -21,40 +21,65 @@ namespace url_rewrite {
 
 // Adapts the UrlRequestRewrite FIDL API to be sent to the renderers over the
 // over the UrlRequestRewrite Mojo API.
-class UrlRequestRewriteRulesManager final
-    : public content::WebContentsObserver {
+class UrlRequestRewriteRulesManager {
  public:
-  static std::unique_ptr<UrlRequestRewriteRulesManager> CreateForTesting();
-
-  explicit UrlRequestRewriteRulesManager(content::WebContents* web_contents);
-
+  UrlRequestRewriteRulesManager();
   UrlRequestRewriteRulesManager(const UrlRequestRewriteRulesManager&) = delete;
   UrlRequestRewriteRulesManager& operator=(
       const UrlRequestRewriteRulesManager&) = delete;
+  ~UrlRequestRewriteRulesManager();
 
-  ~UrlRequestRewriteRulesManager() override;
+  // Observes the frames created in the |web_contents| and updates their URL
+  // request rewrite rules. Returns true on success, false otherwise.
+  bool AddWebContents(content::WebContents* web_contents);
 
-  // Signals |rules| have been updated. Returns true if rules have been
-  // successfully validated and updated, false otherwise.
+  // Removes the |web_contents| from the observer list. Returns true on success,
+  // false otherwise.
+  bool RemoveWebContents(content::WebContents* web_contents);
+
+  // Signals |rules| have been updated. Returns true if
+  // rules have been successfully validated and updated, false otherwise.
   bool OnRulesUpdated(mojom::UrlRequestRewriteRulesPtr rules);
 
   scoped_refptr<UrlRequestRewriteRules>& GetCachedRules();
 
- private:
-  // Test-only constructor.
-  UrlRequestRewriteRulesManager();
+  // Used for testing.
+  size_t GetUpdatersSizeForTesting() const;
 
-  // content::WebContentsObserver implementation.
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+ private:
+  // Observes render frame creation and destruction for a certain WebContents
+  // and updates the URL request rewrite rules for each frame.
+  class Updater final : public content::WebContentsObserver {
+   public:
+    Updater(content::WebContents* web_contents,
+            scoped_refptr<UrlRequestRewriteRules>& cached_rules);
+    Updater(const Updater&) = delete;
+    Updater& operator=(const Updater&) = delete;
+    ~Updater() override;
+
+    // Notifies UrlRequestRulesReceivers that URL rewrite rules are updated.
+    void OnRulesUpdated(scoped_refptr<UrlRequestRewriteRules>& cached_rules);
+
+   private:
+    // content::WebContentsObserver implementation.
+    void RenderFrameCreated(
+        content::RenderFrameHost* render_frame_host) override;
+    void RenderFrameDeleted(
+        content::RenderFrameHost* render_frame_host) override;
+
+    scoped_refptr<UrlRequestRewriteRules> cached_rules_;
+
+    // Map of GlobalRoutingID to their current associated remote.
+    std::map<content::GlobalRenderFrameHostId,
+             mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>>
+        active_remotes_;
+    SEQUENCE_CHECKER(sequence_checker_);
+  };
 
   scoped_refptr<UrlRequestRewriteRules> cached_rules_;
 
-  // Map of GlobalRoutingID to their current associated remote.
-  std::map<content::GlobalRenderFrameHostId,
-           mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>>
-      active_remotes_;
-
+  // Map of WebContent to their URL request rewrite rules updater.
+  std::map<content::WebContents*, std::unique_ptr<Updater>> updaters_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

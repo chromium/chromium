@@ -9,18 +9,38 @@
 
 namespace url_rewrite {
 
-// static
-std::unique_ptr<UrlRequestRewriteRulesManager>
-UrlRequestRewriteRulesManager::CreateForTesting() {
-  return base::WrapUnique(new UrlRequestRewriteRulesManager());
-}
-
-UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() = default;
 
 UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+bool UrlRequestRewriteRulesManager::AddWebContents(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(web_contents);
+
+  if (updaters_.count(web_contents) > 0) {
+    return false;
+  }
+
+  auto updater = std::make_unique<Updater>(web_contents, cached_rules_);
+  updaters_.emplace(web_contents, std::move(updater));
+  return true;
+}
+
+bool UrlRequestRewriteRulesManager::RemoveWebContents(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(web_contents);
+
+  auto iter = updaters_.find(web_contents);
+  if (iter == updaters_.end()) {
+    return false;
+  }
+
+  updaters_.erase(iter);
+  return true;
 }
 
 bool UrlRequestRewriteRulesManager::OnRulesUpdated(
@@ -33,9 +53,10 @@ bool UrlRequestRewriteRulesManager::OnRulesUpdated(
 
   cached_rules_ =
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules));
+
   // Send the updated rules to the receivers.
-  for (const auto& receiver_pair : active_remotes_) {
-    receiver_pair.second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
+  for (const auto& updater_pair : updaters_) {
+    updater_pair.second->OnRulesUpdated(cached_rules_);
   }
 
   return true;
@@ -47,9 +68,33 @@ UrlRequestRewriteRulesManager::GetCachedRules() {
   return cached_rules_;
 }
 
-UrlRequestRewriteRulesManager::UrlRequestRewriteRulesManager() = default;
+size_t UrlRequestRewriteRulesManager::GetUpdatersSizeForTesting() const {
+  return updaters_.size();
+}
 
-void UrlRequestRewriteRulesManager::RenderFrameCreated(
+UrlRequestRewriteRulesManager::Updater::Updater(
+    content::WebContents* web_contents,
+    scoped_refptr<UrlRequestRewriteRules>& cached_rules)
+    : content::WebContentsObserver(web_contents), cached_rules_(cached_rules) {}
+
+UrlRequestRewriteRulesManager::Updater::~Updater() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void UrlRequestRewriteRulesManager::Updater::OnRulesUpdated(
+    scoped_refptr<UrlRequestRewriteRules>& cached_rules) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(cached_rules);
+
+  cached_rules_ = cached_rules;
+
+  // Send the updated rules to the updaters.
+  for (const auto& receiver_pair : active_remotes_) {
+    receiver_pair.second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
+  }
+}
+
+void UrlRequestRewriteRulesManager::Updater::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -67,7 +112,7 @@ void UrlRequestRewriteRulesManager::RenderFrameCreated(
   }
 }
 
-void UrlRequestRewriteRulesManager::RenderFrameDeleted(
+void UrlRequestRewriteRulesManager::Updater::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
