@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,7 +31,9 @@ constexpr CGFloat kLogoWidth = 180;
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  if (base::FeatureList::IsEnabled(kIOSEnablePasswordManagerBrandingUpdate)) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
     self.image = [UIImage imageNamed:@"password_breach_illustration"];
     self.secondaryActionString = l10n_util::GetNSString(IDS_NOT_NOW);
     self.showDismissBarButton = NO;

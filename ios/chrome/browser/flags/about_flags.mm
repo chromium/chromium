@@ -807,7 +807,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateName,
      flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSEnablePasswordManagerBrandingUpdate)},
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

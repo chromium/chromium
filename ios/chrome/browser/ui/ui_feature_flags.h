@@ -49,10 +49,6 @@ extern const base::Feature kIncognitoNtpRevamp;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
-// Feature flag that updates icons, strings, and views for Google Password
-// Manager.
-extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
-
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.
 extern const base::Feature kIOSLocationBarUseNativeContextMenu;

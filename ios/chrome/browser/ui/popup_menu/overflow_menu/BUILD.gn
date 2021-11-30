@@ -103,6 +103,7 @@ source_set("feature_flags") {
   ]
   deps = [
     "//base",
+    "//components/password_manager/core/common",
     "//ios/chrome/browser/ui:feature_flags",
   ]
 }

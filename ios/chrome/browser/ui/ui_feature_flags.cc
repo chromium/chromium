@@ -40,12 +40,6 @@ const base::Feature kDefaultBrowserFullscreenPromoExperiment{
     "DefaultBrowserFullscreenPromoExperiment",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature flag that updates icons, strings, and views for Google Password
-// Manager.
-const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
-    "IOSEnablePasswordManagerBrandingUpdate",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kIOSNewOmniboxImplementation{
     "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
 

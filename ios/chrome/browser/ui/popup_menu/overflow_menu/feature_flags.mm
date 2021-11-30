@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,7 +25,7 @@ bool IsNewOverflowMenuEnabled() {
 bool IsPasswordManagerBrandingUpdateEnabled() {
   if (IsNewOverflowMenuEnabled()) {
     return base::FeatureList::IsEnabled(
-        kIOSEnablePasswordManagerBrandingUpdate);
+        password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
   }
 
   return false;
