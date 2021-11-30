@@ -342,9 +342,6 @@ extern const char kCompositingBasedThrottlingDescription[];
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 
-extern const char kDecodeJpeg420ImagesToYUVName[];
-extern const char kDecodeJpeg420ImagesToYUVDescription[];
-
 extern const char kDetectTargetEmbeddingLookalikesName[];
 extern const char kDetectTargetEmbeddingLookalikesDescription[];
 

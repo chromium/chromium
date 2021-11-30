@@ -589,11 +589,6 @@ const char kDarkLightTestDescription[] =
     "Enables the dark/light mode of system UI, which includes shelf, launcher, "
     "system tray etc.";
 
-const char kDecodeJpeg420ImagesToYUVName[] = "YUV decoding for JPEG";
-const char kDecodeJpeg420ImagesToYUVDescription[] =
-    "Decode and render 4:2:0 formatted jpeg images from YUV instead of RGB."
-    "This feature requires GPU or OOP rasterization to also be enabled.";
-
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";

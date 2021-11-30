@@ -6036,11 +6036,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"decode-jpeg-images-to-yuv",
-     flag_descriptions::kDecodeJpeg420ImagesToYUVName,
-     flag_descriptions::kDecodeJpeg420ImagesToYUVDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDecodeJpeg420ImagesToYUV)},
-
     {"dns-httpssvc", flag_descriptions::kDnsHttpssvcName,
      flag_descriptions::kDnsHttpssvcDescription,
      kOsMac | kOsWin | kOsCrOS | kOsAndroid,
