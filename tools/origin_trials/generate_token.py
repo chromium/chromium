@@ -21,13 +21,15 @@ from __future__ import print_function
 
 import argparse
 import base64
-from datetime import datetime
 import json
-import re
 import os
+import re
 import struct
 import sys
 import time
+from datetime import datetime
+
+from six import raise_from
 
 try:
   from urllib.parse import urlparse
@@ -38,7 +40,6 @@ except ImportError:
 script_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(script_dir, 'third_party', 'ed25519'))
 import ed25519
-
 
 # Matches a valid DNS name label (alphanumeric plus hyphens, except at the ends,
 # no longer than 63 ASCII characters)
@@ -105,8 +106,8 @@ def OriginFromArg(arg):
   try:
     port = origin.port
   except ValueError as e:
-    raise argparse.ArgumentTypeError("%s is not a hostname or a URL" %
-                                     arg) from e
+    raise_from(
+        argparse.ArgumentTypeError("%s is not a hostname or a URL" % arg), e)
   if not port:
     port = {"https": 443, "http": 80}[origin.scheme]
   # Strip any extra components and return the origin URL:
@@ -142,7 +143,8 @@ def FormatToken(version, signature, data):
   return base64.b64encode(version + signature +
                           struct.pack(">I",len(data)) + data)
 
-def main():
+
+def ParseArgs():
   default_key_file_absolute = os.path.join(script_dir, DEFAULT_KEY_FILE)
 
   parser = argparse.ArgumentParser(
@@ -208,7 +210,11 @@ def main():
                                  "00:00:00 UTC) when the token should expire",
                             type=int)
 
-  args = parser.parse_args()
+  return parser.parse_args()
+
+
+def GenerateTokenAndSignature():
+  args = ParseArgs()
   expiry = ExpiryFromArgs(args)
 
   key_file = open(os.path.expanduser(args.key_file), mode="rb")
@@ -255,6 +261,17 @@ def main():
     print("(The original error was: %s)" % exc)
     sys.exit(1)
 
+  token_data = GenerateTokenData(args.version[0], args.origin,
+                                 args.is_subdomain, args.is_third_party,
+                                 args.usage_restriction, args.trial_name,
+                                 expiry)
+  data_to_sign = GenerateDataToSign(args.version[1], token_data)
+  signature = Sign(private_key, data_to_sign)
+  return args, token_data, signature
+
+
+def main():
+  args, token_data, signature = GenerateTokenAndSignature()
 
   # Output the token details
   print("Token details:")

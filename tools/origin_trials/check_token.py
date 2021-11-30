@@ -63,7 +63,7 @@ DEFAULT_KEY_FILE = 'eftest.key'
 
 class OverrideKeyFileAction(argparse.Action):
   def __init__(self, option_strings, dest, **kwargs):
-    super().__init__(option_strings, dest, **kwargs)
+    super(OverrideKeyFileAction, self).__init__(option_strings, dest, **kwargs)
 
   def __call__(self, parser, namespace, values, option_string=None):
     setattr(namespace, "use_chrome_key", None)

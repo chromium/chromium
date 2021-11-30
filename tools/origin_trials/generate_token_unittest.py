@@ -8,6 +8,8 @@
 import argparse
 import generate_token
 import unittest
+# TODO(https://crbug.com/1274995): Use unittest.mock after migrating to Python3.
+from mock import patch as mock_patch
 
 
 class GenerateTokenTest(unittest.TestCase):
@@ -63,6 +65,12 @@ class GenerateTokenTest(unittest.TestCase):
       self.assertRaises(argparse.ArgumentTypeError,
                         generate_token.OriginFromArg,
                         invalid_hostname)
+
+  def test_end_to_end(self):
+    with mock_patch('sys.argv',
+                    ['generate-token.py', 'example.com', 'example']):
+      generate_token.GenerateTokenAndSignature()
+
 
 if __name__ == '__main__':
   unittest.main()
