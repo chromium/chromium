@@ -23,6 +23,7 @@ import describe
 import diff
 import file_format
 import models
+import pakfile
 import test_util
 
 
@@ -38,8 +39,11 @@ _TEST_MAP_PATH = os.path.join(_TEST_DATA_DIR, 'test.map')
 _TEST_PAK_INFO_PATH = os.path.join(
     _TEST_OUTPUT_DIR, 'size-info/test.apk.pak.info')
 _TEST_ELF_FILE_BEGIN = os.path.join(_TEST_OUTPUT_DIR, 'elf.begin')
-_TEST_APK_LOCALE_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'assets/en-US.pak')
-_TEST_APK_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'assets/resources.pak')
+_TEST_APK_LOCALE_PAK_SUBPATH = 'assets/en-US.pak'
+_TEST_APK_PAK_SUBPATH = 'assets/resources.pak'
+_TEST_APK_LOCALE_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR,
+                                         _TEST_APK_LOCALE_PAK_SUBPATH)
+_TEST_APK_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, _TEST_APK_PAK_SUBPATH)
 _TEST_ON_DEMAND_MANIFEST_PATH = os.path.join(_TEST_DATA_DIR,
                                              'AndroidManifest_OnDemand.xml')
 _TEST_ALWAYS_INSTALLED_MANIFEST_PATH = os.path.join(
@@ -202,6 +206,17 @@ class IntegrationTest(unittest.TestCase):
       output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
 
       def iter_specs():
+        pak_spec = None
+        if use_pak or use_apk or use_minimal_apks:
+          pak_spec = archive.PakSpec()
+          if use_pak:
+            pak_spec.pak_paths = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
+            pak_spec.pak_info_path = _TEST_PAK_INFO_PATH
+          else:
+            pak_spec.apk_pak_paths = [
+                _TEST_APK_LOCALE_PAK_SUBPATH, _TEST_APK_PAK_SUBPATH
+            ]
+
         native_spec = archive.NativeSpec(tool_prefix=_TEST_TOOL_PREFIX)
 
         # TODO(crbug.com/1193507): Remove when we implement string literal
@@ -232,16 +247,11 @@ class IntegrationTest(unittest.TestCase):
                   '.minimal.apks', '.aab')
             apk_spec.size_info_prefix = os.path.join(
                 output_directory, 'size-info', os.path.basename(orig_path))
-        pak_files = None
-        pak_info_file = None
-        if use_pak:
-          pak_files = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
-          pak_info_file = _TEST_PAK_INFO_PATH
 
         container_name = ''
         if use_minimal_apks:
           container_name = 'Bundle.minimal.apks/base.apk'
-        yield container_name, apk_spec, native_spec, pak_files, pak_info_file
+        yield container_name, apk_spec, pak_spec, native_spec
 
         if use_minimal_apks:
           for split_name, apk_path in [
@@ -254,10 +264,11 @@ class IntegrationTest(unittest.TestCase):
                 split_name=split_name,
                 size_info_prefix=apk_spec.size_info_prefix)
             native_spec = None
+            pak_spec = None
             container_name = 'Bundle.minimal.apks/%s.apk' % split_name
             if split_name == 'on_demand':
               container_name += '?'
-            yield container_name, apk_spec, native_spec, None, None
+            yield container_name, apk_spec, pak_spec, native_spec
 
       container_list = []
       raw_symbols_list = []
@@ -269,8 +280,8 @@ class IntegrationTest(unittest.TestCase):
       knobs.max_same_name_alias_count = 3
 
       with _AddMocksToPath():
-        for (container_name, apk_spec, native_spec, pak_files,
-             pak_info_file) in iter_specs():
+        pak_id_map = pakfile.PakIdMap()
+        for container_name, apk_spec, pak_spec, native_spec in iter_specs():
           metadata = archive.CreateMetadata(build_config=build_config,
                                             apk_spec=apk_spec,
                                             native_spec=native_spec,
@@ -281,11 +292,11 @@ class IntegrationTest(unittest.TestCase):
               container_name=container_name,
               metadata=metadata,
               apk_spec=apk_spec,
+              pak_spec=pak_spec,
               native_spec=native_spec,
               source_directory=_TEST_SOURCE_DIR,
               output_directory=output_directory,
-              pak_files=pak_files,
-              pak_info_file=pak_info_file)
+              pak_id_map=pak_id_map)
           container_list.append(container)
           raw_symbols_list.append(raw_symbols)
 

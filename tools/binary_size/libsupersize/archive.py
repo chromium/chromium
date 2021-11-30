@@ -23,7 +23,6 @@ import sys
 import tempfile
 import time
 import zipfile
-import zlib
 
 import apkanalyzer
 import ar
@@ -39,17 +38,13 @@ import models
 import ninja_parser
 import nm
 import obj_analyzer
+import pakfile
 import parallel
 import path_util
 import readelf
 import string_extract
 import zip_util
 
-
-sys.path.insert(1, os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'grit'))
-from grit.format import data_pack
-
-_UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
 
 # Holds computation state that is live only when an output directory exists.
 _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
@@ -129,6 +124,14 @@ class NativeSpec:
   elf_path: str = None  # Unstripped .so path.
   linker_name: str = None
   track_string_literals: bool = True
+
+
+@dataclasses.dataclass
+class PakSpec:
+  # One of pak_paths or apk_pak_paths must be non-None.
+  pak_paths: list = None
+  apk_pak_paths: list = None
+  pak_info_path: str = None
 
 
 @dataclasses.dataclass
@@ -309,7 +312,7 @@ def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
       + 'FindSourceForTextAddress() likely has a bug.')
 
 
-def _NormalizeObjectPaths(raw_symbols):
+def _NormalizePaths(raw_symbols):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
   logging.info('Normalizing source and object paths')
   for symbol in raw_symbols:
@@ -975,60 +978,6 @@ def _ParseElfInfo(native_spec, outdir_context=None):
           raw_symbols, object_paths_by_name)
 
 
-def _ComputePakFileSymbols(file_name, contents, res_info, symbols_by_id):
-  # Reversed so that aliases are clobbered by the entries they are aliases of.
-  id_map = {id(v): k for k, v in reversed(contents.resources.items())}
-  alias_map = {
-      k: id_map[id(v)]
-      for k, v in contents.resources.items() if id_map[id(v)] != k
-  }
-  name = posixpath.basename(file_name)
-  # Hyphens used for language regions. E.g.: en-GB.pak, sr-Latn.pak, ...
-  # Longest translated .pak file without hyphen: fil.pak
-  if '-' in name or len(name) <= 7:
-    section_name = models.SECTION_PAK_TRANSLATIONS
-  else:
-    # E.g.: resources.pak, chrome_100_percent.pak.
-    section_name = models.SECTION_PAK_NONTRANSLATED
-  overhead = 12 + 6  # Header size plus extra offset
-  # Key just needs to be unique from other IDs and pak overhead symbols.
-  symbols_by_id[-len(symbols_by_id) - 1] = models.Symbol(
-      section_name, overhead, full_name='Overhead: {}'.format(file_name))
-  for resource_id in sorted(contents.resources):
-    aliased_resource_id = alias_map.get(resource_id)
-    if aliased_resource_id is not None:
-      # 4 extra bytes of metadata (2 16-bit ints)
-      size = 4
-      resource_id = aliased_resource_id
-    else:
-      resource_data = contents.resources[resource_id]
-      # 6 extra bytes of metadata (1 32-bit int, 1 16-bit int)
-      size = len(resource_data) + 6
-      name, source_path = res_info[resource_id]
-      if resource_id not in symbols_by_id:
-        full_name = '{}: {}'.format(source_path, name)
-        new_symbol = models.Symbol(
-            section_name, 0, address=resource_id, full_name=full_name)
-        if (section_name == models.SECTION_PAK_NONTRANSLATED and
-            _IsPakContentUncompressed(resource_data)):
-          new_symbol.flags |= models.FLAG_UNCOMPRESSED
-        symbols_by_id[resource_id] = new_symbol
-
-    symbols_by_id[resource_id].size += size
-  return section_name
-
-
-def _IsPakContentUncompressed(content):
-  raw_size = len(content)
-  # Assume anything less than 100 bytes cannot be compressed.
-  if raw_size < 100:
-    return False
-
-  compressed_size = len(zlib.compress(content, 1))
-  compression_ratio = compressed_size / float(raw_size)
-  return compression_ratio < _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD
-
-
 class _ResourceSourceMapper:
   def __init__(self, size_info_prefix, knobs):
     self._knobs = knobs
@@ -1064,40 +1013,6 @@ class _ResourceSourceMapper:
     if ret:
       return ret
     return None
-
-
-def _ParsePakInfoFile(pak_info_path):
-  with open(pak_info_path, 'r') as info_file:
-    res_info = {}
-    for line in info_file.readlines():
-      name, res_id, path = line.split(',')
-      res_info[int(res_id)] = (name, path.strip())
-  return res_info
-
-
-def _ParsePakSymbols(symbols_by_id, object_paths_by_pak_id):
-  raw_symbols = []
-  for resource_id, symbol in symbols_by_id.items():
-    raw_symbols.append(symbol)
-    paths = object_paths_by_pak_id.get(resource_id)
-    if not paths:
-      continue
-    symbol.object_path = paths[0]
-    if len(paths) == 1:
-      continue
-    aliases = symbol.aliases or [symbol]
-    symbol.aliases = aliases
-    for path in paths[1:]:
-      new_sym = models.Symbol(
-          symbol.section_name, symbol.size, address=symbol.address,
-          full_name=symbol.full_name, object_path=path, aliases=aliases)
-      aliases.append(new_sym)
-      raw_symbols.append(new_sym)
-
-  # Pre-sort to make final sort faster.
-  # Note: _SECTION_SORT_ORDER[] for pak symbols matches section_name ordering.
-  raw_symbols.sort(key=lambda s: (s.section_name, s.address, s.object_path))
-  return raw_symbols
 
 
 class _ResourcePathDeobfuscator:
@@ -1198,56 +1113,6 @@ def _ParseApkOtherSymbols(*, apk_spec, native_spec, section_ranges,
   _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                       sum(s.size for s in apk_symbols))
   return dex_size, apk_symbols
-
-
-def _CreatePakObjectMap(object_paths_by_name):
-  # IDS_ macro usages result in templated function calls that contain the
-  # resource ID in them. These names are collected along with all other symbols
-  # by running "nm" on them. We just need to extract the values from them.
-  object_paths_by_pak_id = {}
-  PREFIX = 'void ui::AllowlistedResource<'
-  id_start_idx = len(PREFIX)
-  id_end_idx = -len('>()')
-  for name in object_paths_by_name:
-    if name.startswith(PREFIX):
-      pak_id = int(name[id_start_idx:id_end_idx])
-      object_paths_by_pak_id[pak_id] = object_paths_by_name[name]
-  return object_paths_by_pak_id
-
-
-def _FindPakSymbolsFromApk(section_ranges, apk_path, size_info_prefix):
-  with zipfile.ZipFile(apk_path) as z:
-    pak_zip_infos = (f for f in z.infolist() if f.filename.endswith('.pak'))
-    pak_info_path = size_info_prefix + '.pak.info'
-    res_info = _ParsePakInfoFile(pak_info_path)
-    symbols_by_id = {}
-    for zip_info in pak_zip_infos:
-      contents = data_pack.ReadDataPackFromString(z.read(zip_info))
-      if zip_info.compress_type != zipfile.ZIP_STORED:
-        logging.warning(
-            'Expected .pak files to be STORED, but this one is compressed: %s',
-            zip_info.filename)
-      section_name = _ComputePakFileSymbols(zip_info.filename, contents,
-                                            res_info, symbols_by_id)
-      _ExtendSectionRange(section_ranges, section_name, zip_info.compress_size)
-
-  return symbols_by_id
-
-
-def _FindPakSymbolsFromFiles(section_ranges, pak_files, pak_info_path,
-                             output_directory):
-  """Uses files from args to find and add pak symbols."""
-  res_info = _ParsePakInfoFile(pak_info_path)
-  symbols_by_id = {}
-  for pak_file_path in pak_files:
-    with open(pak_file_path, 'rb') as f:
-      contents = data_pack.ReadDataPackFromString(f.read())
-    section_name = _ComputePakFileSymbols(
-        os.path.relpath(pak_file_path, output_directory), contents, res_info,
-        symbols_by_id)
-    _ExtendSectionRange(section_ranges, section_name,
-                        os.path.getsize(pak_file_path))
-  return symbols_by_id
 
 
 def _CalculateElfOverhead(section_ranges, elf_path):
@@ -1355,12 +1220,12 @@ def CreateContainerAndSymbols(*,
                               container_name,
                               metadata,
                               apk_spec,
+                              pak_spec,
                               native_spec,
                               source_directory,
                               output_directory=None,
                               resources_pathmap_path=None,
-                              pak_files=None,
-                              pak_info_file=None):
+                              pak_id_map=None):
   """Creates a Container (with sections sizes) and symbols for a SizeInfo.
 
   Args:
@@ -1368,15 +1233,15 @@ def CreateContainerAndSymbols(*,
     container_name: Name for the created Container. May be '' if only one
         Container exists.
     metadata: Metadata dict from CreateMetadata().
-    apk_spec: Instance of ApkSpec.
-    native_spec: Instance of NativeSpec.
+    apk_spec: Instance of ApkSpec, or None.
+    pak_spec: Instance of PakSpec, or None.
+    native_spec: Instance of NativeSpec, or None.
     output_directory: Build output directory. If None, source_paths and symbol
         alias information will not be recorded.
     source_directory: Path to source root.
     resources_pathmap_path: Path to the pathmap file that maps original
         resource paths to shortened resource paths.
-    pak_files: List of paths to .pak files.
-    pak_info_file: Path to a .pak.info file.
+    pak_id_map: Instance of PakIdMap, or None.
 
   Returns:
     A tuple of (container, raw_symbols).
@@ -1442,6 +1307,13 @@ def CreateContainerAndSymbols(*,
       section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
           native_spec, outdir_context=outdir_context)
 
+      if pak_id_map and native_spec.map_path:
+        # For trichrome, pak files are in different apks than native library,
+        # so need to pass along pak_id_map separately and ensure
+        # TrichromeLibrary appears first in .ssargs file.
+        logging.debug('Extracting pak IDs from symbol names')
+        pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
+
   if apk_elf_result:
     logging.debug('Extracting section sizes from .so within .apk')
     apk_build_id, section_ranges, elf_overhead_size = apk_elf_result.get()
@@ -1464,14 +1336,8 @@ def CreateContainerAndSymbols(*,
     raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
         raw_symbols, section_ranges)
 
-  pak_symbols_by_id = None
   other_symbols = []
   if apk_spec and apk_spec.size_info_prefix:
-    # Can modify |section_ranges|.
-    pak_symbols_by_id = _FindPakSymbolsFromApk(section_ranges,
-                                               apk_spec.apk_path,
-                                               apk_spec.size_info_prefix)
-
     # Can modify |section_ranges|.
     dex_size, other_symbols = _ParseApkOtherSymbols(
         apk_spec=apk_spec,
@@ -1513,10 +1379,23 @@ def CreateContainerAndSymbols(*,
                 full_name='** .dex (unattributed - includes string literals)'))
       raw_symbols.extend(dex_symbols)
 
-  elif pak_files and pak_info_file:
-    # Can modify |section_ranges|.
-    pak_symbols_by_id = _FindPakSymbolsFromFiles(
-        section_ranges, pak_files, pak_info_file, output_directory)
+  if pak_spec:
+    logging.debug('Creating Pak symbols')
+    if pak_spec.apk_pak_paths:
+      assert apk_spec.size_info_prefix
+      # Can modify |section_ranges|.
+      raw_symbols += pakfile.CreatePakSymbolsFromApk(section_ranges,
+                                                     apk_spec.apk_path,
+                                                     pak_spec.apk_pak_paths,
+                                                     apk_spec.size_info_prefix,
+                                                     pak_id_map)
+    else:
+      # Can modify |section_ranges|.
+      raw_symbols += pakfile.CreatePakSymbolsFromFiles(section_ranges,
+                                                       pak_spec.pak_paths,
+                                                       pak_spec.pak_info_path,
+                                                       output_directory,
+                                                       pak_id_map)
 
   if native_spec:
     other_symbols.extend(other_elf_symbols)
@@ -1528,15 +1407,6 @@ def CreateContainerAndSymbols(*,
                           elf_overhead_size)
       other_symbols.append(elf_overhead_symbol)
 
-  if pak_symbols_by_id:
-    logging.debug('Extracting pak IDs from symbol names, and creating symbols')
-    object_paths_by_pak_id = {}
-    if object_paths_by_name:
-      object_paths_by_pak_id = _CreatePakObjectMap(object_paths_by_name)
-    pak_raw_symbols = _ParsePakSymbols(
-        pak_symbols_by_id, object_paths_by_pak_id)
-    raw_symbols.extend(pak_raw_symbols)
-
   # Always have .other come last.
   other_symbols.sort(key=lambda s: (s.IsOverhead(), s.full_name.startswith(
       '**'), s.address, s.full_name))
@@ -1546,7 +1416,7 @@ def CreateContainerAndSymbols(*,
     _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols)
   elif dwarf_source_mapper:
     _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols)
-  _NormalizeObjectPaths(raw_symbols)
+  _NormalizePaths(raw_symbols)
 
   dir_metadata.PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
@@ -1672,6 +1542,7 @@ def _AddContainerArguments(parser, is_top_args=False):
                      '--elf-file, no size metadata will be recorded.')
   group.add_argument('--pak-file',
                      action='append',
+                     default=[],
                      dest='pak_files',
                      help='Paths to pak files.')
   if is_top_args:
@@ -1730,7 +1601,8 @@ def _AddContainerArguments(parser, is_top_args=False):
   group = parser.add_argument_group(title='Analysis Options for Pak Files')
   group.add_argument('--pak-info-file',
                      help='This file should contain all ids found in the pak '
-                     'files that have been passed in.')
+                     'files that have been passed in. If not specified, '
+                     '${pak_file}.info is assumed.')
 
   group = parser.add_argument_group(title='Analysis Options (shared)')
   group.add_argument('--source-directory',
@@ -2003,8 +1875,8 @@ def _ProcessContainerArgs(top_args,
 
   apk_spec = None
   if apk_prefix:
-    apk_spec = ApkSpec(minimal_apks_path=sub_args.minimal_apks_file,
-                       apk_path=apk_path,
+    apk_spec = ApkSpec(apk_path=apk_path,
+                       minimal_apks_path=sub_args.minimal_apks_file,
                        mapping_path=mapping_path,
                        split_name=split_name)
     if top_args.output_directory:
@@ -2013,6 +1885,18 @@ def _ProcessContainerArgs(top_args,
                                                os.path.basename(apk_prefix))
     apk_spec.analyze_dex = not (sub_args.native_only or sub_args.no_java
                                 or top_args.native_only or top_args.no_java)
+
+  pak_spec = None
+  apk_pak_paths = None
+  if apk_spec:
+    with zipfile.ZipFile(apk_spec.apk_path) as z:
+      apk_pak_paths = [
+          f.filename for f in z.infolist() if f.filename.endswith('.pak')
+      ]
+  if apk_pak_paths or sub_args.pak_files:
+    pak_spec = PakSpec(pak_paths=sub_args.pak_files,
+                       pak_info_path=sub_args.pak_info_file,
+                       apk_pak_paths=apk_pak_paths)
 
   if analyze_native:
     tool_prefix_finder = path_util.ToolPrefixFinder(
@@ -2050,7 +1934,7 @@ def _ProcessContainerArgs(top_args,
     native_specs = []
 
   logging.info('Container Params: %r', sub_args.__dict__)
-  return (sub_args, apk_spec, native_specs, container_name,
+  return (sub_args, apk_spec, pak_spec, native_specs, container_name,
           resources_pathmap_path)
 
 
@@ -2147,9 +2031,10 @@ def Run(top_args, on_config_error):
   seen_container_names = set()
   container_list = []
   raw_symbols_list = []
+  pak_id_map = pakfile.PakIdMap()
 
   # Iterate over each container.
-  for (sub_args, apk_spec, native_specs, container_name,
+  for (sub_args, apk_spec, pak_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
     if not native_specs:
       native_specs = [None]
@@ -2169,12 +2054,12 @@ def Run(top_args, on_config_error):
           container_name=container_name,
           metadata=metadata,
           apk_spec=apk_spec,
+          pak_spec=pak_spec,
           native_spec=native_spec,
           source_directory=sub_args.source_directory,
           output_directory=sub_args.output_directory,
           resources_pathmap_path=resources_pathmap_path,
-          pak_files=sub_args.pak_files,
-          pak_info_file=sub_args.pak_info_file)
+          pak_id_map=pak_id_map)
 
       container_list.append(container)
       raw_symbols_list.append(raw_symbols)
