@@ -25,7 +25,8 @@ def _CheckChange(input_api, output_api):
             stderr=input_api.subprocess.PIPE).communicate()
         if output or error:
           results.append(output_api.PresubmitError(
-              files_config_path + " syntax error: \n" + output + error))
+              files_config_path + " syntax error: \n" + bytes.decode(output) +
+              bytes.decode(error)))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
