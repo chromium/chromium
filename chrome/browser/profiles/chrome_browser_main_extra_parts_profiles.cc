@@ -155,6 +155,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
@@ -270,6 +271,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AdaptiveQuietNotificationPermissionUiEnabler::Factory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableServiceFactory::GetInstance();
+  ash::AccountAppsAvailabilityFactory::GetInstance();
 #endif
 #if !defined(OS_ANDROID)
   apps::AppServiceProxyFactory::GetInstance();
