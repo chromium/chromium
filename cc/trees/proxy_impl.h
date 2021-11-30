@@ -6,6 +6,7 @@
 #define CC_TREES_PROXY_IMPL_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -37,6 +38,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
  public:
   ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
             LayerTreeHost* layer_tree_host,
+            int id,
+            const LayerTreeSettings* settings,
+            RenderingStatsInstrumentation* rendering_stats_instrumentation,
             TaskRunnerProvider* task_runner_provider);
   ProxyImpl(const ProxyImpl&) = delete;
   ~ProxyImpl() override;

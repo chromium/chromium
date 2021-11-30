@@ -62,10 +62,14 @@ class ScopedCompletionEvent {
   const raw_ptr<CompletionEvent> event_;
 };
 
-ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
-                     LayerTreeHost* layer_tree_host,
-                     TaskRunnerProvider* task_runner_provider)
-    : layer_tree_host_id_(layer_tree_host->GetId()),
+ProxyImpl::ProxyImpl(
+    base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
+    LayerTreeHost* layer_tree_host,
+    int id,
+    const LayerTreeSettings* settings,
+    RenderingStatsInstrumentation* rendering_stats_instrumentation,
+    TaskRunnerProvider* task_runner_provider)
+    : layer_tree_host_id_(id),
       next_frame_is_newly_committed_frame_(false),
       inside_draw_(false),
       task_runner_provider_(task_runner_provider),
@@ -80,17 +84,16 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
   DCHECK(IsMainThreadBlocked());
 
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
-  const LayerTreeSettings& settings = layer_tree_host->GetSettings();
-  send_compositor_frame_ack_ = settings.send_compositor_frame_ack;
+  send_compositor_frame_ack_ = settings->send_compositor_frame_ack;
   last_raster_priority_ = SAME_PRIORITY_FOR_BOTH_TREES;
 
-  SchedulerSettings scheduler_settings(settings.ToSchedulerSettings());
+  SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history(
       new CompositorTimingHistory(
           scheduler_settings.using_synchronous_renderer_compositor,
           CompositorTimingHistory::RENDERER_UMA,
-          layer_tree_host->rendering_stats_instrumentation()));
+          rendering_stats_instrumentation));
   scheduler_ = std::make_unique<Scheduler>(
       this, scheduler_settings, layer_tree_host_id_,
       task_runner_provider_->ImplThreadTaskRunner(),
