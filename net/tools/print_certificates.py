@@ -367,8 +367,8 @@ def parse_outputs(outputs):
       return []
     pretty_printers.append(output_map[output_name])
   if der_printer in pretty_printers and len(pretty_printers) > 1:
-      sys.stderr.write("Output type der must be used alone.\n")
-      return []
+    sys.stderr.write("Output type der must be used alone.\n")
+    return []
   return pretty_printers
 
 
