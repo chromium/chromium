@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -369,7 +370,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (index == WebStateList::kInvalidIndex)
     return;
 
-  LogPriceDropMetrics(self.webStateList->GetWebStateAt(index));
+  if (IsPriceAlertsEnabled())
+    LogPriceDropMetrics(self.webStateList->GetWebStateAt(index));
 
   // Don't attempt a no-op activation. Normally this is not an issue, but it's
   // possible that this method (-selectItemWithID:) is being called as part of
