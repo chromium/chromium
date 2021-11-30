@@ -3,53 +3,25 @@
 // found in the LICENSE file.
 
 #include <fuchsia/ui/policy/cpp/fidl.h>
-#include <fuchsia/web/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
-#include <string>
-
-#include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
-#include "base/check.h"
 #include "base/fuchsia/mem_buffer_util.h"
-#include "base/fuchsia/process_context.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_piece_forward.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
-#include "fuchsia/base/test/url_request_rewrite_test_util.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/fake_semantics_manager.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
-#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/frame_for_test.h"
-#include "net/http/http_response_headers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "net/url_request/url_request_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
-#include "url/url_constants.h"
 
 using testing::_;
 using testing::AllOf;

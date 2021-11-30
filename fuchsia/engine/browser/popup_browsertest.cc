@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/web/cpp/fidl.h>
-
-#include "base/fuchsia/mem_buffer_util.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
 #include "fuchsia/engine/test/frame_for_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
