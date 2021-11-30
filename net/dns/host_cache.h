@@ -38,7 +38,6 @@
 #include "url/scheme_host_port.h"
 
 namespace base {
-class ListValue;
 class TickClock;
 }  // namespace base
 
@@ -379,16 +378,16 @@ class NET_EXPORT HostCache {
   void ClearForHosts(
       const base::RepeatingCallback<bool(const std::string&)>& host_filter);
 
-  // Fills the provided base::ListValue with the contents of the cache for
-  // serialization. |entry_list| must be non-null and will be cleared before
-  // adding the cache contents.
-  void GetAsListValue(base::ListValue* entry_list,
-                      bool include_staleness,
-                      SerializationType serialization_type) const;
-  // Takes a base::ListValue representing cache entries and stores them in the
+  // Fills the provided base::Value with the contents of the cache for
+  // serialization. `entry_list` must be non-null list, and will be cleared
+  // before adding the cache contents.
+  void GetList(base::Value* entry_list,
+               bool include_staleness,
+               SerializationType serialization_type) const;
+  // Takes a base::Value list representing cache entries and stores them in the
   // cache, skipping any that already have entries. Returns true on success,
   // false on failure.
-  bool RestoreFromListValue(const base::ListValue& old_cache);
+  bool RestoreFromListValue(const base::Value& old_cache);
   // Returns the number of entries that were restored in the last call to
   // RestoreFromListValue().
   size_t last_restore_size() const { return restore_size_; }

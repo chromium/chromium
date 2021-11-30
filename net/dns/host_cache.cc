@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/bind.h"
@@ -731,10 +732,11 @@ void HostCache::ClearForHosts(
     delegate_->ScheduleWrite();
 }
 
-void HostCache::GetAsListValue(base::ListValue* entry_list,
-                               bool include_staleness,
-                               SerializationType serialization_type) const {
+void HostCache::GetList(base::Value* entry_list,
+                        bool include_staleness,
+                        SerializationType serialization_type) const {
   DCHECK(entry_list);
+  DCHECK(entry_list->is_list());
   entry_list->ClearList();
 
   for (const auto& pair : entries_) {
@@ -775,11 +777,11 @@ void HostCache::GetAsListValue(base::ListValue* entry_list,
                        std::move(network_isolation_key_value));
     entry_dict->SetBoolKey(kSecureKey, static_cast<bool>(key.secure));
 
-    entry_list->Append(std::move(entry_dict));
+    entry_list->Append(std::move(*entry_dict));
   }
 }
 
-bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
+bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
   // Reset the restore size to 0.
   restore_size_ = 0;
 

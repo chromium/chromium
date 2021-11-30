@@ -372,10 +372,10 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
                                 static_cast<int>(cache->max_entries()));
       cache_info_dict.SetIntKey("network_changes", cache->network_changes());
 
-      base::ListValue* list_value = nullptr;
-      if (cache_contents_list.GetAsList(&list_value))
-        cache->GetAsListValue(list_value, true /* include_staleness */,
-                              HostCache::SerializationType::kDebug);
+      if (cache_contents_list.is_list()) {
+        cache->GetList(&cache_contents_list, true /* include_staleness */,
+                       HostCache::SerializationType::kDebug);
+      }
       cache_info_dict.SetKey("entries", std::move(cache_contents_list));
 
       dict.SetKey("cache", std::move(cache_info_dict));

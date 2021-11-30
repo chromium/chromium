@@ -74,21 +74,19 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
     return;
   ++valid_json_count;
 
-  const base::ListValue& list_input = base::Value::AsListValue(*value);
-
   // Parse the HostCache.
   constexpr size_t kMaxEntries = 1000;
   HostCache host_cache(kMaxEntries);
-  if (!host_cache.RestoreFromListValue(list_input))
+  if (!host_cache.RestoreFromListValue(*value))
     return;
 
   // Serialize the HostCache.
-  base::ListValue serialized;
-  host_cache.GetAsListValue(
+  base::Value serialized(base::Value::Type::LIST);
+  host_cache.GetList(
       &serialized /* entry_list */, true /* include_staleness */,
       HostCache::SerializationType::kRestorable /* serialization_type */);
 
-  CHECK_EQ(list_input, serialized);
+  CHECK_EQ(*value, serialized);
   return;
 }
 }  // namespace net
