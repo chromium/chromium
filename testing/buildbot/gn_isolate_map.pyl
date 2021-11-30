@@ -1288,7 +1288,6 @@
     "type": "console_test_launcher",
   },
   "monochrome_public_apk_checker": {
-    "python3": False,
     "args": [
       "../../chrome/android/monochrome/scripts/monochrome_python_tests.py",
       "--chrome-apk",
@@ -1859,7 +1858,6 @@
     "label": "//chrome/updater:updater_tests_win_uac",
     "type": "script",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
-    "python3": "true",
     "args": [
       "test_service/run_command_as_standard_user.py",
       "--command=updater_tests.exe",
@@ -2094,7 +2092,6 @@
     "type": "console_test_launcher",
   },
   "xr_browser_tests": {
-    "python3": False,
     "label": "//chrome/test:xr_browser_tests",
     # We can't use the "script" type since we need to be run from the output
     # directory (or at least given the path). Thus, we need to tell mb.py to not
