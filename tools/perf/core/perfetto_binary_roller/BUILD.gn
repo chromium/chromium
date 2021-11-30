@@ -13,7 +13,7 @@ generate_wrapper("upload_trace_processor") {
   data = [
     "//tools/perf/core/",
     "//DEPS",
-    "//.vpython",
+    "//.vpython3",
   ]
 
   if (is_win) {
