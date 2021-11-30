@@ -415,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 // Checks that the NTP is navigated to the logout URL, instead of creating
 // another tab.
 // Flaky on Linux, at least. crbug.com/1116606
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Flaky on Mac because of crbug.com/1273102.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 #define MAYBE_SignoutFromNTP DISABLED_SignoutFromNTP
 #else
 #define MAYBE_SignoutFromNTP SignoutFromNTP
