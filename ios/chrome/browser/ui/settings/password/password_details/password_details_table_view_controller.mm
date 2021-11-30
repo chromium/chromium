@@ -272,14 +272,25 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
       if (self.password.isCompromised) {
         [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::
+                    kIOSEnablePasswordManagerBrandingUpdate)) {
+          [model addItem:[self changePasswordRecommendationItem]
+              toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
 
-        if (self.password.changePasswordURL.is_valid()) {
-          [model addItem:[self changePasswordItem]
+          if (self.password.changePasswordURL.is_valid()) {
+            [model addItem:[self changePasswordItem]
+                toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+          }
+        } else {
+          if (self.password.changePasswordURL.is_valid()) {
+            [model addItem:[self changePasswordItem]
+                toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+          }
+
+          [model addItem:[self changePasswordRecommendationItem]
               toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
         }
-
-        [model addItem:[self changePasswordRecommendationItem]
-            toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
       }
     }
   }
@@ -419,8 +430,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (SettingsImageDetailTextItem*)changePasswordRecommendationItem {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeChangePasswordRecommendation];
-  item.detailText =
-      l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    item.detailText = l10n_util::GetNSString(
+        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
+  } else {
+    item.detailText =
+        l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION);
+  }
   item.image = [self compromisedIcon];
   return item;
 }
@@ -851,16 +869,22 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Applies tint colour and resizes image.
 - (UIImage*)compromisedIcon {
-  UIImage* image = [UIImage imageNamed:@"settings_unsafe_state"];
-  UIImage* newImage =
-      [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  UIGraphicsBeginImageContextWithOptions(
-      CGSizeMake(kWarningIconSize, kWarningIconSize), NO, 0.0);
-  [[UIColor colorNamed:kTextSecondaryColor] set];
-  [newImage drawInRect:CGRectMake(0, 0, kWarningIconSize, kWarningIconSize)];
-  newImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return newImage;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    return [UIImage imageNamed:@"round_settings_unsafe_state"];
+  } else {
+    UIImage* image = [UIImage imageNamed:@"settings_unsafe_state"];
+    UIImage* newImage =
+        [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIGraphicsBeginImageContextWithOptions(
+        CGSizeMake(kWarningIconSize, kWarningIconSize), NO, 0.0);
+    [[UIColor colorNamed:kTextSecondaryColor] set];
+    [newImage drawInRect:CGRectMake(0, 0, kWarningIconSize, kWarningIconSize)];
+    newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+  }
 }
 
 // Shows reauthentication dialog if needed. If the reauthentication is

@@ -32,6 +32,16 @@ imageset("enterprise_icon") {
   ]
 }
 
+imageset("round_settings_unsafe_state") {
+  sources = [
+    "round_settings_unsafe_state.imageset/Contents.json",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state@2x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state@3x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state_dark@2x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state_dark@3x.png",
+  ]
+}
+
 imageset("settings") {
   sources = [
     "settings.imageset/Contents.json",
