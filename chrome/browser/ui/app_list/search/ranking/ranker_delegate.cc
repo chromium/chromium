@@ -15,36 +15,9 @@
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
-namespace {
-
-// A standard write delay used for protos without time-sensitive writes. This is
-// intended to be slightly longer than the longest conceivable latency for a
-// search.
-constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
-
-// No write delay for protos with time-sensitive writes.
-constexpr base::TimeDelta kNoWriteDelay = base::Seconds(0);
-
-}  // namespace
 
 RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
-  const auto state_dir = RankerStateDirectory(profile);
-
-  // Main result and category ranking.
-  AddRanker(std::make_unique<ScoreNormalizingRanker>(
-      PersistentProto<ScoreNormalizerProto>(
-          state_dir.AppendASCII("score_norm.pb"), kStandardWriteDelay)));
-  AddRanker(std::make_unique<FtrlResultRanker>());
-  AddRanker(std::make_unique<FtrlCategoryRanker>());
-
-  // Result post-processing.
-  AddRanker(std::make_unique<TopMatchRanker>());
-  AddRanker(std::make_unique<FilteringRanker>());
-
-  // Result removal.
-  AddRanker(std::make_unique<RemovedResultsRanker>(
-      PersistentProto<RemovedResultsProto>(
-          state_dir.AppendASCII("removed_results.pb"), kNoWriteDelay)));
+  // TODO(crbug.com/1274853): Ranking removed due to stability concerns.
 }
 
 RankerDelegate::~RankerDelegate() {}
