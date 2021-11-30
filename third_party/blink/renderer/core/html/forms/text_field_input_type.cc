@@ -163,14 +163,24 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
   else
     GetElement().SetNonAttributeValueByUserEdit(sanitized_value);
 
+  // Visible value needs update if it differs from sanitized value,
+  // if it was set with setValue().
+  // event_behavior == kDispatchNoEvent usually means this call is
+  // not a user edit.
+  bool need_editor_update =
+      value_changed ||
+      (event_behavior == TextFieldEventBehavior::kDispatchNoEvent &&
+       sanitized_value != GetElement().InnerEditorValue());
+
+  if (need_editor_update)
+    GetElement().UpdateView();
   // The following early-return can't be moved to the beginning of this
   // function. We need to update non-attribute value even if the value is not
   // changed.  For example, <input type=number> has a badInput string, that is
   // to say, IDL value=="", and new value is "", which should clear the badInput
-  // string and update validiity.
+  // string and update validity.
   if (!value_changed)
     return;
-  GetElement().UpdateView();
 
   if (selection == TextControlSetValueSelection::kSetSelectionToEnd) {
     unsigned max = VisibleValue().length();
