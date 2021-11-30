@@ -4456,8 +4456,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
       PrerenderHost::FinalStatus::kCrossOriginNavigation, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       CancelEmbedderTriggerPrerenderingSameOriginRedirection) {
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    CancelEmbedderTriggeredPrerenderingSameOriginRedirection) {
   base::HistogramTester histogram_tester;
   const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
   const GURL kPrerenderingUrl =
@@ -4477,7 +4478,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kEmbedderTriggeredAndRedirected, 1);
+      PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4502,7 +4503,8 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kEmbedderTriggeredAndRedirected, 1);
+      PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected,
+      1);
 }
 
 namespace {

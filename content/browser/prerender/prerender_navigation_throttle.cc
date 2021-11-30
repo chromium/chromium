@@ -128,9 +128,15 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // redirection can be same-origin or cross-origin to the initial
     // prerendering URL.
     if (is_redirection) {
+      url::Origin initial_origin =
+          url::Origin::Create(prerender_host->GetInitialUrl());
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          PrerenderHost::FinalStatus::kEmbedderTriggeredAndRedirected);
+          initial_origin == prerendering_origin
+              ? PrerenderHost::FinalStatus::
+                    kEmbedderTriggeredAndSameOriginRedirected
+              : PrerenderHost::FinalStatus::
+                    kEmbedderTriggeredAndCrossOriginRedirected);
       return CANCEL;
     }
 

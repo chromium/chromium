@@ -69548,6 +69548,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="30" label="kMixedContent"/>
   <int value="31" label="kTriggerBackgrounded"/>
   <int value="32" label="kEmbedderTriggeredAndRedirected"/>
+  <int value="33" label="kEmbedderTriggeredAndSameOriginRedirected"/>
+  <int value="34" label="kEmbedderTriggeredAndCrossOriginRedirected"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

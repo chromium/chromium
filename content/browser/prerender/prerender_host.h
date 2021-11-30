@@ -84,8 +84,12 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kAudioOutputDeviceRequested = 29,
     kMixedContent = 30,
     kTriggerBackgrounded = 31,
-    kEmbedderTriggeredAndRedirected = 32,
-    kMaxValue = kEmbedderTriggeredAndRedirected,
+    // Break down into kEmbedderTriggeredAndSameOriginRedirected and
+    // kEmbedderTriggeredAndCrossOriginRedirected for investigation.
+    // kEmbedderTriggeredAndRedirected = 32,
+    kEmbedderTriggeredAndSameOriginRedirected = 33,
+    kEmbedderTriggeredAndCrossOriginRedirected = 34,
+    kMaxValue = kEmbedderTriggeredAndCrossOriginRedirected,
   };
 
   PrerenderHost(const PrerenderAttributes& attributes,
