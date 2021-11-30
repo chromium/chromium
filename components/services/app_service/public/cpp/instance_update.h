@@ -67,9 +67,6 @@ class InstanceUpdate {
   aura::Window* Window() const;
   bool WindowChanged() const;
 
-  // TODO(crbug.com/1251501): Deprecated field. Will be removed soon.
-  const Instance::InstanceKey& InstanceKey() const;
-
   const std::string& LaunchId() const;
   bool LaunchIdChanged() const;
 

@@ -124,10 +124,6 @@ bool InstanceUpdate::WindowChanged() const {
   IS_VALUE_CHANGED(Window);
 }
 
-const Instance::InstanceKey& InstanceUpdate::InstanceKey() const {
-  return delta_ ? delta_->GetInstanceKey() : state_->GetInstanceKey();
-}
-
 const std::string& InstanceUpdate::LaunchId() const {
   GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LaunchId, empty, base::EmptyString());
 }

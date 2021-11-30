@@ -34,10 +34,6 @@ class InstanceRegistryTest : public testing::Test,
     instance_registry_.CreateOrUpdateInstance(std::move(params));
   }
 
-  static apps::Instance::InstanceKey MakeInstanceKey(aura::Window* window) {
-    return apps::Instance::InstanceKey(window);
-  }
-
   void CallForEachInstance(apps::InstanceRegistry& instance_registry) {
     instance_registry.ForEachInstance(
         [this](const apps::InstanceUpdate& update) {
@@ -65,7 +61,7 @@ class InstanceRegistryTest : public testing::Test,
       num_running_apps_++;
     }
     updated_ids_.insert(update.AppId());
-    updated_enclosing_windows_.insert(update.InstanceKey().Window());
+    updated_enclosing_windows_.insert(update.Window());
   }
 
   void OnInstanceRegistryWillBeDestroyed(

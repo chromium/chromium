@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
@@ -225,10 +226,9 @@ void AppActivityRegistry::OnAppBlocked(const AppId& app_id) {
   SetAppState(app_id, AppState::kBlocked);
 }
 
-void AppActivityRegistry::OnAppActive(
-    const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
-    base::Time timestamp) {
+void AppActivityRegistry::OnAppActive(const AppId& app_id,
+                                      const base::UnguessableToken& instance_id,
+                                      base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
 
@@ -242,10 +242,10 @@ void AppActivityRegistry::OnAppActive(
     // If the instance is in |app_details.paused_instances| then
     // AppActivityRegistry has already notified its observers to pause it.
     // Return.
-    if (base::Contains(app_details.paused_instances, instance_key))
+    if (base::Contains(app_details.paused_instances, instance_id))
       return;
 
-    app_details.paused_instances.insert(instance_key);
+    app_details.paused_instances.insert(instance_id);
     NotifyLimitReached(app_id, /* was_active */ true);
     return;
   }
@@ -253,13 +253,13 @@ void AppActivityRegistry::OnAppActive(
   if (!IsAppAvailable(app_id))
     return;
 
-  std::set<apps::Instance::InstanceKey>& active_instances =
+  std::set<base::UnguessableToken>& active_instances =
       app_details.active_instances;
 
-  if (base::Contains(active_instances, instance_key))
+  if (base::Contains(active_instances, instance_id))
     return;
 
-  active_instances.insert(instance_key);
+  active_instances.insert(instance_id);
 
   // No need to set app as active if there were already active instances for the
   // app
@@ -271,7 +271,7 @@ void AppActivityRegistry::OnAppActive(
 
 void AppActivityRegistry::OnAppInactive(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
@@ -279,13 +279,13 @@ void AppActivityRegistry::OnAppInactive(
   if (app_id == GetChromeAppId())
     return;
 
-  std::set<apps::Instance::InstanceKey>& active_instances =
+  std::set<base::UnguessableToken>& active_instances =
       activity_registry_[app_id].active_instances;
 
-  if (!base::Contains(active_instances, instance_key))
+  if (!base::Contains(active_instances, instance_id))
     return;
 
-  active_instances.erase(instance_key);
+  active_instances.erase(instance_id);
   if (active_instances.size() > 0)
     return;
 
@@ -294,7 +294,7 @@ void AppActivityRegistry::OnAppInactive(
 
 void AppActivityRegistry::OnAppDestroyed(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
@@ -303,8 +303,8 @@ void AppActivityRegistry::OnAppDestroyed(
     return;
 
   AppDetails& app_details = activity_registry_.at(app_id);
-  if (base::Contains(app_details.paused_instances, instance_key))
-    app_details.paused_instances.erase(instance_key);
+  if (base::Contains(app_details.paused_instances, instance_id))
+    app_details.paused_instances.erase(instance_id);
 }
 
 bool AppActivityRegistry::IsAppInstalled(const AppId& app_id) const {

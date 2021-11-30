@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -296,15 +297,15 @@ void AppServiceWrapper::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   bool is_destroyed = update.State() & apps::InstanceState::kDestroyed;
   for (auto& listener : listeners_) {
     if (is_active) {
-      listener.OnAppActive(app_id, update.InstanceKey(),
+      listener.OnAppActive(app_id, update.InstanceId(),
                            update.LastUpdatedTime());
     } else {
-      listener.OnAppInactive(app_id, update.InstanceKey(),
+      listener.OnAppInactive(app_id, update.InstanceId(),
                              update.LastUpdatedTime());
     }
 
     if (is_destroyed) {
-      listener.OnAppDestroyed(app_id, update.InstanceKey(),
+      listener.OnAppDestroyed(app_id, update.InstanceId(),
                               update.LastUpdatedTime());
     }
   }

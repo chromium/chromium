@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
@@ -56,29 +60,29 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
 
     // Called when app with |app_id| becomes active.
     // Active means that the app is in usage (visible in foreground).
-    // If the app is launched multiple times, |instance_key| indicates which
+    // If the app is launched multiple times, |instance_id| indicates which
     // of the instances is active.
     // |timestamp| indicates the time when the app became active.
     virtual void OnAppActive(const AppId& app_id,
-                             const apps::Instance::InstanceKey& instance_key,
+                             const base::UnguessableToken& instance_id,
                              base::Time timestamp) {}
 
     // Called when app with |app_id| becomes inactive.
     // Inactive means that the app is not in the foreground. It still can run
     // and be partially visible. |timestamp| indicates the time when the app
-    // became inactive. |instance_key| to specify which of the application's
+    // became inactive. |instance_id| to specify which of the application's
     // potentially multiple instances became inactive. Note: This can be called
     // for the app that is already inactive.
     virtual void OnAppInactive(const AppId& app_id,
-                               const apps::Instance::InstanceKey& instance_key,
+                               const base::UnguessableToken& instance_id,
                                base::Time timestamp) {}
 
     // Called when app with |app_id| is destroyed.
     // |timestamp| indicates the time when the app is destroyed.
-    // |instance_key| to specify which of the application's potentially multiple
+    // |instance_id| to specify which of the application's potentially multiple
     // instances was destroyed.
     virtual void OnAppDestroyed(const AppId& app_id,
-                                const apps::Instance::InstanceKey& instance_key,
+                                const base::UnguessableToken& instance_id,
                                 base::Time timestamp) {}
   };
 
@@ -151,10 +155,11 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  apps::InstanceRegistry& GetInstanceRegistry() const;
+
  private:
   apps::AppServiceProxy* GetAppProxy() const;
   apps::AppRegistryCache& GetAppCache() const;
-  apps::InstanceRegistry& GetInstanceRegistry() const;
 
   // Return whether app with |app_id| should be included for per-app time
   // limits.

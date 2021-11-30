@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
@@ -25,7 +26,17 @@ namespace app_time {
 
 namespace {
 
-const Browser* GetBrowserForWindow(const aura::Window* window) {
+const Browser* GetBrowserForInstance(
+    const apps::InstanceRegistry& instance_registry,
+    const base::UnguessableToken& instance_id) {
+  aura::Window* window = nullptr;
+  instance_registry.ForOneInstance(
+      instance_id,
+      [&](const apps::InstanceUpdate& update) { window = update.Window(); });
+
+  if (!window)
+    return nullptr;
+
   BrowserList* list = BrowserList::GetInstance();
   for (const Browser* browser : *list) {
     if (browser->window()->GetNativeWindow() == window)
@@ -143,12 +154,13 @@ void WebTimeActivityProvider::OnBrowserRemoved(Browser* browser) {
 
 void WebTimeActivityProvider::OnAppActive(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (app_id != GetChromeAppId())
     return;
 
-  const Browser* browser = GetBrowserForWindow(instance_key.Window());
+  const Browser* browser = GetBrowserForInstance(
+      app_service_wrapper_->GetInstanceRegistry(), instance_id);
   if (!browser)
     return;
 
@@ -158,12 +170,13 @@ void WebTimeActivityProvider::OnAppActive(
 
 void WebTimeActivityProvider::OnAppInactive(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (app_id != GetChromeAppId())
     return;
 
-  const Browser* browser = GetBrowserForWindow(instance_key.Window());
+  const Browser* browser = GetBrowserForInstance(
+      app_service_wrapper_->GetInstanceRegistry(), instance_id);
   if (!browser)
     return;
 

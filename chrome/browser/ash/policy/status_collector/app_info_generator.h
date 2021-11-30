@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/default_clock.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -85,7 +86,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
     ~AppInstances();
 
     const base::Time start_time;
-    std::unordered_set<apps::Instance::InstanceKey, apps::InstanceKeyHash>
+    std::unordered_set<base::UnguessableToken, base::UnguessableTokenHash>
         running_instances;
   };
   struct AppInfoProvider {
@@ -107,11 +108,11 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
   void SetIdleDurationsToOpen();
 
   void OpenUsageInterval(const std::string& app_id,
-                         const apps::Instance::InstanceKey& instance_key,
+                         const base::UnguessableToken& instance_key,
                          const base::Time start_time);
 
   void CloseUsageInterval(const std::string& app_id,
-                          const apps::Instance::InstanceKey& instance_key,
+                          const base::UnguessableToken& instance_key,
                           const base::Time end_time);
 
   std::unique_ptr<AppInfoProvider> provider_;

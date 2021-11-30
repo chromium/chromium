@@ -21,6 +21,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
@@ -318,14 +319,14 @@ class ChildStatusCollectorTest : public testing::Test {
     app_registry->OnAppInstalled(app_id);
 
     // Window instance is irrelevant for tests here.
-    auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
-    app_registry->OnAppActive(app_id, instance_key, Time::Now());
+    auto instance_id = base::UnguessableToken::Create();
+    app_registry->OnAppActive(app_id, instance_id, Time::Now());
     if (should_run_tasks) {
       task_environment_.FastForwardBy(duration);
     } else {
       task_environment_.AdvanceClock(duration);
     }
-    app_registry->OnAppInactive(app_id, instance_key, Time::Now());
+    app_registry->OnAppInactive(app_id, instance_id, Time::Now());
   }
 
   virtual void RestartStatusCollector(
