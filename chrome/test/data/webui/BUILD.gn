@@ -658,6 +658,7 @@ ts_definitions("generate_definitions") {
   out_dir = "$target_gen_dir/tsc"
   js_files = [
     "chai_assert.js",
+    "fake_chrome_event.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_plural_string_proxy.js",

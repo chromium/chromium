@@ -9,7 +9,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
-import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -64,7 +64,7 @@ suite('SidePanelBookmarkFolderTest', () => {
     document.body.innerHTML = '';
 
     bookmarksApi = new TestBookmarksApiProxy();
-    BookmarksApiProxy.setInstance(bookmarksApi);
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));

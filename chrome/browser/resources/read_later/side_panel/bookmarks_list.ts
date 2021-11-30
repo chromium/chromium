@@ -5,7 +5,7 @@
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
-import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 
 // Key for localStorage object that refers to all the open folders.
@@ -34,7 +34,8 @@ export class BookmarksListElement extends PolymerElement {
     };
   }
 
-  private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
+  private bookmarksApi_: BookmarksApiProxy =
+      BookmarksApiProxyImpl.getInstance();
   private bookmarksDragManager_: BookmarksDragManager =
       new BookmarksDragManager(this);
   private listeners_ = new Map<string, Function>();

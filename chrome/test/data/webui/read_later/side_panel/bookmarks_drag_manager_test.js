@@ -5,7 +5,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
-import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {BookmarksDragManager, DROP_POSITION_ATTR, DropPosition, overrideFolderOpenerTimeoutDelay} from 'chrome://read-later.top-chrome/side_panel/bookmarks_drag_manager.js';
 import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -96,7 +96,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     bookmarksApi.setFolders(
         /** @type {!Array<!chrome.bookmarks.BookmarkTreeNode>} */ (
             JSON.parse(JSON.stringify(folders))));
-    BookmarksApiProxy.setInstance(bookmarksApi);
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
         JSON.stringify(['1', '4']);

@@ -12,7 +12,18 @@ import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmar
 
 let instance: BookmarksApiProxy|null = null;
 
-export class BookmarksApiProxy {
+export interface BookmarksApiProxy {
+  callbackRouter: {[key: string]: ChromeEvent<Function>};
+  cutBookmark(id: string): void;
+  copyBookmark(id: string): Promise<void>;
+  getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
+  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers):
+      void;
+  pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
+  showContextMenu(id: string, x: number, y: number): void;
+}
+
+export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
   handler: BookmarksPageHandlerRemote;
 
@@ -32,34 +43,34 @@ export class BookmarksApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  cutBookmark(id: string): Promise<void> {
+  cutBookmark(id: string) {
     chrome.bookmarkManagerPrivate.cut([id]);
-    return Promise.resolve();
   }
 
-  copyBookmark(id: string): Promise<void> {
-    return new Promise(resolve => {
+  copyBookmark(id: string) {
+    return new Promise<void>(resolve => {
       chrome.bookmarkManagerPrivate.copy([id], resolve);
     });
   }
 
-  getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
-    return new Promise(resolve => chrome.bookmarks.getTree(results => {
-      if (results[0] && results[0].children) {
-        resolve(results[0].children);
-        return;
-      }
-      resolve([]);
-    }));
+  getFolders() {
+    return new Promise<chrome.bookmarks.BookmarkTreeNode[]>(
+        resolve => chrome.bookmarks.getTree(results => {
+          if (results[0] && results[0].children) {
+            resolve(results[0].children);
+            return;
+          }
+          resolve([]);
+        }));
   }
 
   openBookmark(url: string, depth: number, clickModifiers: ClickModifiers) {
     this.handler.openBookmark({url}, depth, clickModifiers);
   }
 
-  pasteToBookmark(parentId: string, destinationId?: string): Promise<void> {
+  pasteToBookmark(parentId: string, destinationId?: string) {
     const destination = destinationId ? [destinationId] : [];
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       chrome.bookmarkManagerPrivate.paste(parentId, destination, resolve);
     });
   }
@@ -68,8 +79,8 @@ export class BookmarksApiProxy {
     this.handler.showContextMenu(id, {x, y});
   }
 
-  static getInstance() {
-    return instance || (instance = new BookmarksApiProxy());
+  static getInstance(): BookmarksApiProxy {
+    return instance || (instance = new BookmarksApiProxyImpl());
   }
 
   static setInstance(obj: BookmarksApiProxy) {

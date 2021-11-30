@@ -32,7 +32,7 @@ ts_library("build_ts") {
     "side_panel/bookmarks_drag_manager_test.js",
     "side_panel/bookmarks_list_test.js",
     "side_panel/side_panel_app_test.js",
-    "side_panel/test_bookmarks_api_proxy.js",
+    "side_panel/test_bookmarks_api_proxy.ts",
     "test_read_later_api_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]

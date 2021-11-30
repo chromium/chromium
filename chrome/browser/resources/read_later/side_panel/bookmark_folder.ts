@@ -11,7 +11,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
-import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterMouseEvent extends MouseEvent {
@@ -70,7 +70,8 @@ export class BookmarkFolderElement extends PolymerElement {
   folder: chrome.bookmarks.BookmarkTreeNode;
   private open_: boolean;
   openFolders: string[];
-  private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
+  private bookmarksApi_: BookmarksApiProxy =
+      BookmarksApiProxyImpl.getInstance();
 
   static get observers() {
     return [
