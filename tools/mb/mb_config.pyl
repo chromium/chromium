@@ -950,6 +950,7 @@
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
+      'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
       'linux-lacros-rel-rts': 'lacros_on_linux_release_trybot',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
     },
@@ -2548,6 +2549,11 @@
 
     'lacros_on_linux_release_trybot': [
       'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
+    ],
+
+    'lacros_on_linux_release_trybot_coverage': [
+      'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'lacros_on_linux_release_bot_reclient': [

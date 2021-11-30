@@ -910,6 +910,18 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-lacros-rel-code-coverage",
+    cores = 16,
+    ssd = True,
+    goma_jobs = goma.jobs.J300,
+    main_list_view = "try",
+    os = os.LINUX_BIONIC_REMOVE,
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel-rts",
     builderless = False,
     cores = 16,
