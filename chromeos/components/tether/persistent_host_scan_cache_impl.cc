@@ -78,11 +78,12 @@ std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
   }
   builder.SetSignalStrength(signal_strength);
 
-  bool setup_required;
-  if (!dictionary.GetBoolean(kSetupRequiredKey, &setup_required)) {
+  absl::optional<bool> setup_required =
+      dictionary.FindBoolPath(kSetupRequiredKey);
+  if (!setup_required)
     return nullptr;
-  }
-  builder.SetSetupRequired(setup_required);
+
+  builder.SetSetupRequired(*setup_required);
 
   return builder.Build();
 }
