@@ -22,13 +22,8 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
         ->GetInstalledBrowserVersion(base::BindOnce(
             [](InstalledVersionCallback callback,
                const std::string& version_str) {
-              // TODO(crbug.com/1237235): Temporarily default to returning the
-              // currently running Lacros version until Lacros relaunch
-              // operations are capable of starting the latest updated/installed
-              // version. This will disable the InstalledVersionPoller from
-              // triggering the UpgradeDetector's Lacros upgrade notifications.
               std::move(callback).Run(
-                  InstalledAndCriticalVersion(version_info::GetVersion()));
+                  InstalledAndCriticalVersion(base::Version(version_str)));
             },
             std::move(callback)));
   } else {
