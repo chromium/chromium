@@ -49,16 +49,10 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   ~AuraWindowVideoCaptureDeviceBrowserTest() override = default;
 
   aura::Window* GetCapturedWindow() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Since the LameWindowCapturerChromeOS will be used, just return the normal
-    // shell window.
-    return shell()->window();
-#else
     // Note: The Window with an associated compositor frame sink (required for
     // capture) is the root window, which is an immediate ancestor of the
     // aura::Window provided by shell()->window().
     return shell()->window()->GetRootWindow();
-#endif
   }
 
   // Returns the location of the content within the window.
@@ -106,14 +100,6 @@ class AuraWindowVideoCaptureDeviceBrowserTest
         const gfx::RectF webcontents_in_frame_rect_f = TransformSimilarly(
             gfx::Rect(window_size), window_in_frame_rect_f, webcontents_rect);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        // Browser window capture on ChromeOS uses the
-        // LameWindowCapturerChromeOS, which takes RGB snapshots and then
-        // software-converts them to YUV, and color accuracy is greatly reduced.
-        // See comments in viz::CopyOutputResult::ReadI420Planes() for further
-        // details on why this has to be.
-        constexpr int max_color_diff = kVeryLooseMaxColorDifference;
-#else
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
         // TODO(crbug/795132): SkiaRenderer temporarily uses same code as
@@ -122,7 +108,6 @@ class AuraWindowVideoCaptureDeviceBrowserTest
             (IsSoftwareCompositingTest() || features::IsUsingSkiaRenderer())
                 ? kVeryLooseMaxColorDifference
                 : kMaxColorDifference;
-#endif
 
         // Determine the average RGB color in the three regions of the frame.
         const auto average_webcontents_rgb = ComputeAverageColor(
