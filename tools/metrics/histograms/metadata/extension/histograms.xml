@@ -32,48 +32,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlacklistInstalled"
-    enum="ExtensionLocation" expires_after="2021-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
+    enum="ExtensionLocation" expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    The number of extensions that were blacklisted when already installed,
-    grouped by Extension::Location. Logged when ExtensionService blackists and
+    The number of extensions that were blocklisted when already installed,
+    grouped by Extension::Location. Logged when ExtensionService blockists and
     unloads an installed extension.
   </summary>
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2022-02-06">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
+    expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of extensions that have been blocked from installing grouped by
     Extension::Location. Logged when ExtensionService refuses to install a
-    blacklisted extension.
+    blocklisted extension.
   </summary>
 </histogram>
 
 <histogram name="ExtensionBlacklist.SilentInstall" enum="ExtensionLocation"
-    expires_after="2022-04-24">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
+    expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    The number of extensions that have been silently installed in a blacklisted
+    The number of extensions that have been silently installed in a blocklisted
     state, grouped by Extension::Location. Logged when ExtensionService installs
-    a blacklisted extension without blocking it (ExtensionBlacklist.BlockCRX
+    a blocklisted extension without blocking it (ExtensionBlacklist.BlockCRX
     would be logged otherwise). Typically this will be when a user has a
-    blacklisted extension synced.
+    blocklisted extension synced.
   </summary>
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2022-04-03">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
+    enum="ExtensionLocation" expires_after="2022-11-18">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    The number of extensions that were unblacklisted when installed, grouped by
-    Extension::Location. Logged when ExtensionService unblacklists and loads a
-    blacklisted extension.
+    The number of extensions that were unblocklisted when installed, grouped by
+    Extension::Location. Logged when ExtensionService unblocklists and loads a
+    blocklisted extension.
   </summary>
 </histogram>
 
