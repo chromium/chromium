@@ -16,12 +16,20 @@ AX_EXPORT constexpr NSString* const NSAccessibilityARIAAtomicAttribute =
     @"AXARIAAtomic";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIABusyAttribute =
     @"AXARIABusy";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIAColumnCountAttribute =
+    @"AXARIAColumnCount";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIAColumnIndexAttribute =
+    @"AXARIAColumnIndex";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIACurrentAttribute =
     @"AXARIACurrent";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIALiveAttribute =
     @"AXARIALive";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIARelevantAttribute =
     @"AXARIARelevant";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIARowCountAttribute =
+    @"AXARIARowCount";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIARowIndexAttribute =
+    @"AXARIARowIndex";
 AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
 AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =

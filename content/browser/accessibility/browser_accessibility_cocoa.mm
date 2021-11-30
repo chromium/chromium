@@ -61,11 +61,7 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityARIAColumnCountAttribute = @"AXARIAColumnCount";
-NSString* const NSAccessibilityARIAColumnIndexAttribute = @"AXARIAColumnIndex";
 NSString* const NSAccessibilityARIAPosInSetAttribute = @"AXARIAPosInSet";
-NSString* const NSAccessibilityARIARowCountAttribute = @"AXARIARowCount";
-NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
@@ -776,11 +772,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityARIAColumnCountAttribute, @"ariaColumnCount"},
-      {NSAccessibilityARIAColumnIndexAttribute, @"ariaColumnIndex"},
       {NSAccessibilityARIAPosInSetAttribute, @"ariaPosInSet"},
-      {NSAccessibilityARIARowCountAttribute, @"ariaRowCount"},
-      {NSAccessibilityARIARowIndexAttribute, @"ariaRowIndex"},
       {NSAccessibilityARIASetSizeAttribute, @"ariaSetSize"},
       {NSAccessibilityBlockQuoteLevelAttribute, @"blockQuoteLevel"},
       {NSAccessibilityChildrenAttribute, @"children"},
@@ -892,24 +884,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   [super detach];
 }
 
-- (NSNumber*)ariaColumnCount {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> aria_col_count = _owner->node()->GetTableAriaColCount();
-  if (!aria_col_count)
-    return nil;
-  return @(*aria_col_count);
-}
-
-- (NSNumber*)ariaColumnIndex {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> ariaColIndex = _owner->node()->GetTableCellAriaColIndex();
-  if (!ariaColIndex)
-    return nil;
-  return @(*ariaColIndex);
-}
-
 - (NSNumber*)ariaPosInSet {
   if (![self instanceActive])
     return nil;
@@ -917,24 +891,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (!posInSet)
     return nil;
   return @(*posInSet);
-}
-
-- (NSNumber*)ariaRowCount {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> ariaRowCount = _owner->node()->GetTableAriaRowCount();
-  if (!ariaRowCount)
-    return nil;
-  return @(*ariaRowCount);
-}
-
-- (NSNumber*)ariaRowIndex {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> ariaRowIndex = _owner->node()->GetTableCellAriaRowIndex();
-  if (!ariaRowIndex)
-    return nil;
-  return @(*ariaRowIndex);
 }
 
 - (NSNumber*)ariaSetSize {
@@ -3199,8 +3155,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       NSAccessibilityVisibleCellsAttribute,
       NSAccessibilityHeaderAttribute,
       NSAccessibilityRowHeaderUIElementsAttribute,
-      NSAccessibilityARIAColumnCountAttribute,
-      NSAccessibilityARIARowCountAttribute,
     ]];
   } else if ([role isEqualToString:NSAccessibilityColumnRole]) {
     [ret addObjectsFromArray:@[
@@ -3211,8 +3165,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     [ret addObjectsFromArray:@[
       NSAccessibilityColumnIndexRangeAttribute,
       NSAccessibilityRowIndexRangeAttribute,
-      NSAccessibilityARIAColumnIndexAttribute,
-      NSAccessibilityARIARowIndexAttribute,
       @"AXSortDirection",
     ]];
     if ([self internalRole] != ax::mojom::Role::kRowHeader)

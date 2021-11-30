@@ -1,0 +1,3 @@
+tableAuto.AXARIARowCount=1
+table.AXARIARowCount=2
+div.AXARIARowCount=n/a
