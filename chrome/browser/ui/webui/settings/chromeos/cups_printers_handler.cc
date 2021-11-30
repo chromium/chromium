@@ -630,9 +630,8 @@ void CupsPrintersHandler::HandleReconfigureCupsPrinter(
 
 void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
                                                   bool is_printer_edit) {
-  std::string callback_id;
   CHECK_EQ(2U, args->GetList().size());
-  CHECK(args->GetString(0, &callback_id));
+  std::string callback_id = args->GetList()[0].GetString();
   const base::Value& printer_value = args->GetList()[1];
   CHECK(printer_value.is_dict());
   const base::DictionaryValue& printer_dict =
