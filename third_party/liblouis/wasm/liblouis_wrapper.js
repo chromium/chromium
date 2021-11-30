@@ -23,7 +23,7 @@ WasmMemPool.prototype = {
   },
 
   allocate: function(array, type) {
-    const ptr = this.module.allocate(array, type, this.module.ALLOC_NORMAL);
+    const ptr = this.module.allocate(array, this.module.ALLOC_NORMAL);
     this.ptrs_.push(ptr);
     return ptr;
   },
@@ -84,7 +84,7 @@ LiblouisWrapper.prototype = {
 
     const tableNames = command['table_names'];
     const tableNamesPtr =
-        this.pool_.allocate(this.module.intArrayFromString(tableNames), 'i8');
+        this.pool_.allocate(this.module.intArrayFromString(tableNames));
     const tableCount = this.module._lou_checkTable(tableNamesPtr);
     this.pool_.freeAll();
     const msg = {in_reply_to: command['message_id'], success: tableCount > 0};
@@ -106,7 +106,7 @@ LiblouisWrapper.prototype = {
   translateOrBackTranslate_: function(
       tableNames, contents, messageId, formTypeMap, backTranslate) {
     const tableNamesPtr =
-        this.pool_.allocate(this.module.intArrayFromString(tableNames), 'i8');
+        this.pool_.allocate(this.module.intArrayFromString(tableNames));
 
     let formTypeMapPtr = 0;
     if (formTypeMap) {

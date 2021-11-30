@@ -93,17 +93,16 @@ def CheckTables(tables_file):
     for name in table['fileNames'].split(','):
       actual_set.add(name)
   expected_set = FindAllTableFiles("src/tables")
-  output = []
+  errors = []
   for table in actual_set:
     if table not in expected_set and table not in IGNORE_TABLES:
-      output.append("Error: obsolete table not in liblouis " + table)
+      errors.append("Error: obsolete table not in liblouis " + table)
 
   new_tables = []
   for table in expected_set:
     if table not in actual_set and table not in IGNORE_TABLES:
-      output.append("Error: table not found in tables file " + table)
       new_tables.append(table)
-  return (output, new_tables)
+  return (errors, new_tables)
 
 def DoMain(argv):
   "Entry point for gyp's pymod_do_main command."

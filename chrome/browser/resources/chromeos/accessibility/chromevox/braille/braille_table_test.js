@@ -19,7 +19,7 @@ ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {};
  */
 TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
-    expectEquals(169, tables.length);
+    expectEquals(161, tables.length);
     assertNotNullNorUndefined(
         BrailleTable.forId(tables, 'en-US-g1'),
         'Can\'t find US English grade 1 table');

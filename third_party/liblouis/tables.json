@@ -162,12 +162,6 @@
     "fileNames": "fi-fi-8dot.ctb"
   },
   {
-    "id": "he-comp8",
-    "locale": "he",
-    "dots": "8",
-    "fileNames": "he.ctb"
-  },
-  {
     "id": "hi-g1",
     "locale": "hi",
     "dots": "6",
@@ -299,13 +293,6 @@
     "locale": "ru",
     "dots": "8",
     "fileNames": "ru-compbrl.ctb"
-  },
-  {
-    "id": "ru-g1",
-    "locale": "ru",
-    "dots": "6",
-    "grade": "1",
-    "fileNames": "ru-litbrl.ctb"
   },
   {
     "id": "sk-g1",
@@ -489,13 +476,6 @@
     "id": "en-us-comp8",
     "grade": "1",
     "fileNames": "en-us-comp8.ctb"
-  },
-  {
-    "locale": "vi",
-    "dots": "6",
-    "id": "vi-g1",
-    "grade": "1",
-    "fileNames": "vi-g1.ctb"
   },
   {
     "locale": "as",
@@ -729,13 +709,6 @@
     "fileNames": "ka-in-g1.utb"
   },
   {
-    "locale": "ru",
-    "dots": "6",
-    "id": "ru-ru-g1",
-    "grade": "1",
-    "fileNames": "ru-ru-g1.utb"
-  },
-  {
     "locale": "en",
     "dots": "6",
     "id": "haw-us-g1",
@@ -778,20 +751,6 @@
     "fileNames": "ta-ta-g1.ctb"
   },
   {
-    "locale": "da",
-    "dots": "6",
-    "id": "da-lt",
-    "grade": "1",
-    "fileNames": "da-lt.ctb"
-  },
-  {
-    "locale": "fi",
-    "dots": "6",
-    "id": "fi1",
-    "grade": "1",
-    "fileNames": "fi1.ctb"
-  },
-  {
     "locale": "tsn",
     "dots": "6",
     "id": "afr-za-g1",
@@ -818,13 +777,6 @@
     "id": "en-us-comp8-ext",
     "grade": "1",
     "fileNames": "en-us-comp8-ext.utb"
-  },
-  {
-    "locale": "fi",
-    "dots": "6",
-    "id": "fi1",
-    "grade": "1",
-    "fileNames": "fi1.ctb"
   },
   {
     "locale": "el",
@@ -1035,13 +987,6 @@
     "id": "te-in-g1",
     "grade": "1",
     "fileNames": "te-in-g1.utb"
-  },
-  {
-    "locale": "fi",
-    "dots": "6",
-    "id": "fi2",
-    "grade": "2",
-    "fileNames": "fi2.ctb"
   },
   {
     "locale": "sk",

@@ -50,7 +50,7 @@ def CheckChangeOnUpload(input_api, output_api):
           "grade": grade,
           "fileNames": table
       })
-    results.append(output_api.PresubmitError("Suggested additions to " +
-                                             "tables.json (please edit and validate):"))
-    results.append(output_api.PresubmitError(json.dumps(new_json, indent=2)))
+    results.append(output_api.PresubmitNotifyResult("Suggested additions to " +
+                                             "tables.json (please edit and validate):\n" +
+                                             json.dumps(new_json, indent=2)))
   return results
