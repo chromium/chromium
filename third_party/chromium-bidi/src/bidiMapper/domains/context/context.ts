@@ -23,6 +23,7 @@ import {
   Script,
 } from '../../bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
+import ArgumentValue = Script.PROTO.ArgumentValue;
 
 export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
@@ -243,12 +244,12 @@ export class Context {
     };
   }
 
-  public async callFunction(
+  public async _executeCallFunction(
     functionDeclaration: string,
     _this: Script.PROTO.ArgumentValue,
     args: Script.PROTO.ArgumentValue[],
     awaitPromise: boolean
-  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
+  ): Promise<Protocol.Runtime.CallFunctionOnResponse> {
     // TODO sadym: add error handling for serialization/deserialization errors.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const callFunctionAndSerializeScript = `async (serializedThis, serializedArgs)=>{ return _callFunction((\n${functionDeclaration}\n),
@@ -264,15 +265,27 @@ export class Context {
         }
         return evaluator.serialize(resultValue);
       }}`;
-
-    const cdpCallFunctionResult = await this._cdpClient.Runtime.callFunctionOn({
+    return await this._cdpClient.Runtime.callFunctionOn({
       functionDeclaration: callFunctionAndSerializeScript,
       arguments: [{ value: _this }, { value: args }], // this, arguments.
       awaitPromise: true,
       returnByValue: true,
       objectId: await this._getDummyContextId(),
     });
+  }
 
+  public async callFunction(
+    functionDeclaration: string,
+    _this: Script.PROTO.ArgumentValue,
+    args: Script.PROTO.ArgumentValue[],
+    awaitPromise: boolean
+  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
+    const cdpCallFunctionResult = await this._executeCallFunction(
+      functionDeclaration,
+      _this,
+      args,
+      awaitPromise
+    );
     if (cdpCallFunctionResult.exceptionDetails) {
       // Serialize exception details.
       return await this._serializeCdpExceptionDetails(
@@ -283,6 +296,35 @@ export class Context {
 
     return {
       result: cdpCallFunctionResult.result.value,
+    };
+  }
+
+  public async findElement(
+    selector: string
+  ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
+    const functionDeclaration =
+      '(resultsSelector) => document.querySelector(resultsSelector)';
+    const args: ArgumentValue[] = [{ type: 'string', value: selector }];
+
+    const findElemendCommandResult = await this._executeCallFunction(
+      functionDeclaration,
+      {
+        type: 'undefined',
+      },
+      args,
+      true
+    );
+
+    if (findElemendCommandResult.exceptionDetails) {
+      // Serialize exception details.
+      return await this._serializeCdpExceptionDetails(
+        findElemendCommandResult.exceptionDetails,
+        this._callFunctionStacktraceLineOffset
+      );
+    }
+
+    return {
+      result: findElemendCommandResult.result.value,
     };
   }
 }

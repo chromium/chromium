@@ -16,7 +16,7 @@
  */
 
 import { log } from '../../../utils/log';
-import { CdpConnection, CdpClient } from '../../../cdp';
+import { CdpClient, CdpConnection } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
@@ -246,6 +246,15 @@ export class BrowsingContextProcessor {
       params.args || [], // `args` is `[]` by default.
       params.awaitPromise !== false // `awaitPromise` by default is `true`.
     );
+  }
+
+  async PROTO_browsingContext_findElement(
+    commandData: BrowsingContext.PROTO.BrowsingContextFindElementCommand
+  ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
+    const selector = commandData.params.selector;
+    const context = await this._getKnownContext(commandData.params.context);
+
+    return await context.findElement(selector);
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

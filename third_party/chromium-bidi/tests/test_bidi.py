@@ -1278,6 +1278,56 @@ async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisI
                 "type": "string",
                 "value": "Number"}}}
 
+@pytest.mark.asyncio
+async def test_PROTO_browsingContextFindElement_findsElement(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    command = {
+        "id": 58,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>",
+            "wait": "none",
+            "context": contextID}}
+    await send_JSON_command(websocket, command)
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 58
+
+    # time.sleep(5)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 59,
+        "method": "PROTO.browsingContext.findElement",
+        "params": {
+            "selector": ".container",
+            "context": contextID}})
+
+    resp = await read_JSON_message(websocket)
+    recursiveCompare({
+        "id": 59,
+        "result": {
+            "result": {
+                "objectId": "__SOME_OBJECT_ID_1__",
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "childNodeCount": 3},
+                "children": [{
+                    "objectId": "__CHILD_OBJECT_1__",
+                    "type": "node"
+                }, {
+                    "objectId": "__CHILD_OBJECT_2__",
+                    "type": "node"
+                }, {
+                    "objectId": "__CHILD_OBJECT_3__",
+                    "type": "node"}],
+                "attributes": {"class": "container"}}}},
+        resp, ["objectId"])
+
 # Testing serialization.
 async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
     contextID = await get_open_context_id(websocket)

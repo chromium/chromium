@@ -45,6 +45,7 @@ export namespace CommonDataTypes {
 
   export type LocalValue =
     | PrimitiveProtocolValue
+    | RemoteReference
     | ArrayLocalValue
     | DateLocalValue
     | MapLocalValue
@@ -244,8 +245,10 @@ export namespace Script {
     params: ScriptEvaluateParameters;
   };
 
-  export type ScriptExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  export type ScriptEvaluateParameters = {
+    expression: string;
+    awaitPromise?: boolean;
+    target: Target;
   };
 
   export type ScriptEvaluateResult =
@@ -256,10 +259,8 @@ export namespace Script {
     result: CommonDataTypes.RemoteValue;
   };
 
-  export type ScriptEvaluateParameters = {
-    expression: string;
-    awaitPromise?: boolean;
-    target: Target;
+  export type ScriptExceptionResult = {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export namespace PROTO {
@@ -388,6 +389,30 @@ export namespace BrowsingContext {
 
     export type BrowsingContextCreateResult = {
       context: BrowsingContext;
+    };
+
+    // `browsingContext.findElement`:
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
+    export type BrowsingContextFindElementCommand = {
+      method: 'PROTO.browsingContext.findElement';
+      params: BrowsingContextFindElementParameters;
+    };
+
+    export type BrowsingContextFindElementParameters = {
+      selector: string;
+      context: BrowsingContext;
+    };
+
+    export type BrowsingContextFindElementResult =
+      | BrowsingContextFindElementSuccessResult
+      | BrowsingContextFindElementExceptionResult;
+
+    export type BrowsingContextFindElementSuccessResult = {
+      result: CommonDataTypes.NodeRemoteValue;
+    };
+
+    export type BrowsingContextFindElementExceptionResult = {
+      exceptionDetails: CommonDataTypes.ExceptionDetails;
     };
   }
 }

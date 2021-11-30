@@ -168,6 +168,10 @@ export class CommandProcessor {
         return await this._contextProcessor.process_PROTO_script_callFunction(
           commandData as Script.PROTO.ScriptCallFunctionCommand
         );
+      case 'PROTO.browsingContext.findElement':
+        return await this._contextProcessor.PROTO_browsingContext_findElement(
+          commandData as BrowsingContext.PROTO.BrowsingContextFindElementCommand
+        );
 
       case 'DEBUG.Page.close':
         return await this._process_DEBUG_Page_close(commandData.params as any);
