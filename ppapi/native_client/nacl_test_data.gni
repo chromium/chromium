@@ -9,11 +9,7 @@ import("//components/nacl/features.gni")
 assert(enable_nacl)
 
 if (current_cpu == "pnacl") {
-  if (is_nacl_nonsfi) {
-    nacl_toolchain_variant = "nonsfi"
-  } else {
-    nacl_toolchain_variant = "pnacl"
-  }
+  nacl_toolchain_variant = "pnacl"
 } else if (is_nacl_glibc) {
   nacl_toolchain_variant = "glibc"
 } else {
@@ -60,7 +56,7 @@ template("nacl_test_data") {
     if (defined(invoker.pretranslate_pexe)) {
       pretranslate_pexe = invoker.pretranslate_pexe
     } else {
-      pretranslate_pexe = is_nacl_nonsfi
+      pretranslate_pexe = false
     }
   } else {
     pretranslate_pexe = false
@@ -70,7 +66,7 @@ template("nacl_test_data") {
   # toolchain context where is_win==false because current_os=="nacl".
   # It tests target_cpu rather than current_cpu because it's also
   # needed in the current_cpu=="pnacl" && pretranslate_pexe case.
-  if (target_os == "win" && target_cpu == "x86" && !is_nacl_nonsfi &&
+  if (target_os == "win" && target_cpu == "x86" &&
       (current_cpu == "x86" || pretranslate_pexe)) {
     # x86 Windows builds of Chrome run on both x86 Windows and x64
     # Windows.  On x64 Windows, only x64 NaCl is supported, so those
@@ -119,7 +115,7 @@ template("nacl_test_data") {
   }
   nexe_target_name = target_name + "_nexe"
   nexe_copy_target_name = target_name + "_copy_nexe"
-  if (current_cpu == "pnacl" && !is_nacl_nonsfi) {
+  if (current_cpu == "pnacl") {
     if (defined(invoker.debug_pexe) && invoker.debug_pexe) {
       pexe_copy_debug_target_name = target_name + "_copy_pexe_debug"
     }
@@ -147,11 +143,7 @@ template("nacl_test_data") {
   } else {
     target_dir = root_build_dir
     if (generate_nmf) {
-      if (is_nacl_nonsfi) {
-        nacl_toolchain_name = "pnacl_${nacl_toolchain_variant}"
-      } else {
-        nacl_toolchain_name = nacl_toolchain_variant
-      }
+      nacl_toolchain_name = nacl_toolchain_variant
       nmf_name = "${output_name}_${nacl_toolchain_name}"
     }
   }
@@ -195,53 +187,35 @@ template("nacl_test_data") {
 
         pexe = get_label_info(tests, "root_out_dir") +
                "/${suffixed_output_name}.pexe"
-        if (translate_cpu == "x86" ||
-            (is_nacl_nonsfi &&
-             (translate_cpu == "x86" || translate_cpu == "x64"))) {
+        if (translate_cpu == "x86") {
           nmf_cpu = "x32"
         } else {
           nmf_cpu = translate_cpu
         }
-        if (is_nacl_nonsfi) {
-          suffix = "pnacl_newlib_${nmf_cpu}_nonsfi"
-        } else {
-          suffix = "pnacl_newlib_${nmf_cpu}"
-        }
+        suffix = "pnacl_newlib_${nmf_cpu}"
         nexe = "${root_out_dir}/${output_name}_${suffix}.nexe"
 
         script = "${nacl_toolchain_bindir}/pydir/loader.py"
         sources = [ pexe ]
         outputs = [ nexe ]
 
-        if (is_nacl_nonsfi) {
-          if (translate_cpu == "x86" || translate_cpu == "x64") {
-            arch = "x86-32-nonsfi"
-          } else if (translate_cpu == "arm") {
-            arch = "arm-nonsfi"
-          }
-        } else {
-          # TODO(phosek): remove the following once change 1360243003 is rolled
-          # into Chrome and use translate_cpu directly.
-          if (translate_cpu == "x86") {
-            arch = "i686"
-          } else if (translate_cpu == "x64") {
-            arch = "x86-64"
-          } else if (translate_cpu == "arm") {
-            arch = "armv7"
-          } else if (translate_cpu == "mipsel") {
-            arch = "mipsel"
-          }
+        # TODO(phosek): remove the following once change 1360243003 is rolled
+        # into Chrome and use translate_cpu directly.
+        if (translate_cpu == "x86") {
+          arch = "i686"
+        } else if (translate_cpu == "x64") {
+          arch = "x86-64"
+        } else if (translate_cpu == "arm") {
+          arch = "armv7"
+        } else if (translate_cpu == "mipsel") {
+          arch = "mipsel"
         }
 
         # The pre-translated object file has to be linked with an IRT shim to
         # get a runnable nexe. This is handled by pnacl-translate, which passes
         # -l:libpnacl_irt_shim.a to native linker, and we need to ensure the
         # linker can find the correct library.
-        if (is_nacl_nonsfi) {
-          pnacl_irt_shim = "//ppapi/native_client/src/untrusted/pnacl_irt_shim:aot(//build/toolchain/nacl:newlib_pnacl_nonsfi)"
-        } else {
-          pnacl_irt_shim = "//ppapi/native_client/src/untrusted/pnacl_irt_shim:aot(//build/toolchain/nacl:clang_newlib_${translate_cpu})"
-        }
+        pnacl_irt_shim = "//ppapi/native_client/src/untrusted/pnacl_irt_shim:aot(//build/toolchain/nacl:clang_newlib_${translate_cpu})"
 
         args = [
           "pnacl-translate",
@@ -310,7 +284,7 @@ template("nacl_test_data") {
     }
   }
 
-  if (current_cpu == "pnacl" && !is_nacl_nonsfi) {
+  if (current_cpu == "pnacl") {
     if (defined(invoker.debug_pexe) && invoker.debug_pexe) {
       copy(pexe_copy_debug_target_name) {
         visibility = [ ":$final_target_name" ]
@@ -323,27 +297,16 @@ template("nacl_test_data") {
   }
 
   if (generate_nmf) {
-    if (is_nacl_nonsfi) {
-      generate_nonsfi_test_nmf(nmf_target_name) {
-        visibility = [ ":$final_target_name" ]
-        forward_variables_from(invoker, [ "nmfflags" ])
-        nmf = "${target_dir}/${nmf_name}.nmf"
-        files = get_target_outputs(":$nexe_copy_target_name")
-        executable = files[0]
-        deps = [ ":$nexe_copy_target_name" ]
+    generate_nmf(nmf_target_name) {
+      visibility = [ ":$final_target_name" ]
+      forward_variables_from(invoker, [ "nmfflags" ])
+      nmf = "${target_dir}/${nmf_name}.nmf"
+      executables = get_target_outputs(":$nexe_copy_target_name")
+      if (is_nacl_glibc) {
+        lib_prefix = "${output_name}_libs"
+        stage_dependencies = target_dir
       }
-    } else {
-      generate_nmf(nmf_target_name) {
-        visibility = [ ":$final_target_name" ]
-        forward_variables_from(invoker, [ "nmfflags" ])
-        nmf = "${target_dir}/${nmf_name}.nmf"
-        executables = get_target_outputs(":$nexe_copy_target_name")
-        if (is_nacl_glibc) {
-          lib_prefix = "${output_name}_libs"
-          stage_dependencies = target_dir
-        }
-        deps = [ ":$nexe_copy_target_name" ]
-      }
+      deps = [ ":$nexe_copy_target_name" ]
     }
   }
 
@@ -357,7 +320,7 @@ template("nacl_test_data") {
 
   group(final_target_name) {
     data_deps = [ ":$nexe_copy_target_name" ]
-    if (current_cpu == "pnacl" && !is_nacl_nonsfi) {
+    if (current_cpu == "pnacl") {
       if (defined(invoker.debug_pexe) && invoker.debug_pexe) {
         data_deps += [ ":$pexe_copy_debug_target_name" ]
       }

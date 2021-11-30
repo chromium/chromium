@@ -70,7 +70,7 @@ enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
     (is_mac || is_win ||
      (is_linux && !is_chromeos_ash && !is_chromecast && !is_chromeos_lacros) ||
-     ((enable_nacl || is_nacl || is_nacl_nonsfi) &&
+     ((enable_nacl || is_nacl) &&
       (target_os != "chromeos" && !chromeos_is_browser_only)))
 
 _mojom_tools_root = "//mojo/public/tools"

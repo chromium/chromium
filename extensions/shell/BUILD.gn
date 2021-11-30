@@ -265,10 +265,6 @@ source_set("app_shell_lib") {
 
     if (is_linux || is_chromeos) {
       deps += [ "//components/nacl/loader:nacl_helper" ]
-
-      if (enable_nacl_nonsfi) {
-        deps += [ "//components/nacl/loader:helper_nonsfi" ]
-      }
     }
   }
 }

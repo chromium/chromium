@@ -17,9 +17,6 @@ declare_args() {
       !(is_mac && (host_os != "mac" || target_cpu != "x64"))
 }
 
-# TODO(crbug.com/1273132): Remove all code referenced by this.
-enable_nacl_nonsfi = false
-
 assert(!(is_win && host_os != "win") || !enable_nacl,
        "NaCl doesn't work in win cross builds, crbug.com/774186")
 assert(!enable_nacl || checkout_nacl)

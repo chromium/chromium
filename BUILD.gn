@@ -592,13 +592,6 @@ group("gn_all") {
       if (is_linux || is_chromeos) {
         # TODO(dpranke): Figure out what platforms should actually have this.
         deps += [ "//components/nacl/loader:nacl_helper" ]
-
-        if (enable_nacl_nonsfi) {
-          deps += [
-            "//components/nacl/loader:helper_nonsfi",
-            "//components/nacl/loader:nacl_helper_nonsfi_unittests",
-          ]
-        }
       }
     }
 

@@ -52,6 +52,7 @@ component("ipc") {
       "ipc_message_macros.h",
       "ipc_message_pipe_reader.cc",
       "ipc_message_pipe_reader.h",
+      "ipc_message_protobuf_utils.h",
       "ipc_message_start.h",
       "ipc_message_templates.h",
       "ipc_message_templates_impl.h",
@@ -73,7 +74,7 @@ component("ipc") {
     ]
   }
 
-  if (is_nacl && !is_nacl_nonsfi) {
+  if (is_nacl) {
     sources += [
       "ipc_channel_nacl.cc",
       "ipc_channel_nacl.h",
@@ -95,13 +96,8 @@ component("ipc") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp",
+    "//third_party/protobuf:protobuf_lite",
   ]
-
-  if (!is_nacl_nonsfi) {
-    sources += [ "ipc_message_protobuf_utils.h" ]
-
-    public_deps += [ "//third_party/protobuf:protobuf_lite" ]
-  }
 
   deps = [ "//base" ]
 
@@ -261,6 +257,7 @@ if (!is_ios) {
       "ipc_channel_proxy_unittest.cc",
       "ipc_channel_reader_unittest.cc",
       "ipc_fuzzing_tests.cc",
+      "ipc_message_protobuf_utils_unittest.cc",
       "ipc_message_unittest.cc",
       "ipc_message_utils_unittest.cc",
       "ipc_mojo_bootstrap_unittest.cc",
@@ -301,10 +298,6 @@ if (!is_ios) {
         # No AF_UNIX domain sockets on Fuchsia.
         "sync_socket_unittest.cc",
       ]
-    }
-
-    if (!is_nacl_nonsfi) {
-      sources += [ "ipc_message_protobuf_utils_unittest.cc" ]
     }
   }
 

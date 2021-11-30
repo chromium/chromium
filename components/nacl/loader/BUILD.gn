@@ -103,20 +103,6 @@ test("nacl_loader_unittests") {
     "//ppapi/c",
     "//testing/gtest",
   ]
-
-  if (is_nacl_nonsfi) {
-    sources += [
-      # TODO(hamaji): Currently, we build them twice. Stop building
-      # them for components_unittests. See crbug.com/364751
-      "nonsfi/nonsfi_sandbox_sigsys_unittest.cc",
-      "nonsfi/nonsfi_sandbox_unittest.cc",
-    ]
-
-    deps += [
-      ":nacl_linux",
-      "//sandbox/linux:sandbox_linux_test_utils",
-    ]
-  }
 }
 
 if (is_linux || is_chromeos) {
@@ -173,23 +159,6 @@ if (is_linux || is_chromeos) {
     public = [ "nacl_helper_linux.h" ]
     data_deps = [ ":nacl_helper" ]
   }
-
-  if (enable_nacl_nonsfi) {
-    test("nacl_helper_nonsfi_unittests") {
-      sources = [ "nonsfi/nacl_helper_nonsfi_unittests.cc" ]
-      deps = [
-        "//base",
-        "//base/test:test_launcher_nacl_nonsfi",
-      ]
-      data_deps = [ ":nacl_helper_nonsfi_unittests_main_copy(//build/toolchain/nacl:newlib_pnacl_nonsfi)" ]
-    }
-
-    group("helper_nonsfi") {
-      data_deps = [
-        ":nacl_helper_nonsfi_copy(//build/toolchain/nacl:newlib_pnacl_nonsfi)",
-      ]
-    }
-  }
 }
 
 if (is_win && target_cpu == "x86" && current_cpu == "x64") {
@@ -211,94 +180,5 @@ if (is_win && target_cpu == "x86" && current_cpu == "x64") {
       "//sandbox",
       "//sandbox/policy",
     ]
-  }
-}
-
-if (is_nacl_nonsfi) {
-  executable("nacl_helper_nonsfi_nexe") {
-    output_name = "nacl_helper_nonsfi"
-    sources = [
-      "nacl_helper_linux.cc",
-      "nacl_helper_linux.h",
-      "nacl_trusted_listener.cc",
-      "nacl_trusted_listener.h",
-      "nonsfi/nonsfi_listener.cc",
-      "nonsfi/nonsfi_listener.h",
-      "nonsfi/nonsfi_main.cc",
-      "nonsfi/nonsfi_main.h",
-    ]
-    deps = [
-      ":nacl_helper_nonsfi_sandbox",
-      "//base",
-      "//components/nacl/common:minimal",
-      "//components/nacl/common:mojo_bindings",
-      "//components/nacl/common:switches",
-      "//content",
-      "//ipc",
-      "//mojo/core/embedder",
-      "//native_client/src/nonsfi/irt:nacl_sys_private",
-      "//native_client/src/nonsfi/loader:elf_loader",
-
-      # Normally libnacl is included implicitly by libc and is part of the
-      # toolchain. But //build/config/nacl:compiler uses -nodefaultlibs and so
-      # omits the default libnacl. When the nonsfi toolchain is more complete
-      # and that kludge is no longer required, this dependency should be
-      # removed.
-      "//native_client/src/untrusted/nacl",
-      "//ppapi/proxy",
-      "//sandbox/linux:sandbox",
-      "//sandbox/policy",
-      "//services/service_manager/public/cpp",
-    ]
-  }
-
-  source_set("nacl_helper_nonsfi_sandbox") {
-    sources = [
-      "nonsfi/nonsfi_sandbox.cc",
-      "nonsfi/nonsfi_sandbox.h",
-      "sandbox_linux/nacl_sandbox_linux.cc",
-      "sandbox_linux/nacl_sandbox_linux.h",
-    ]
-    deps = [
-      "//base",
-      "//components/nacl/common:minimal",
-      "//components/nacl/common:switches",
-      "//content",
-      "//sandbox/linux:sandbox",
-      "//sandbox/linux:sandbox_services_headers",
-    ]
-  }
-
-  copy("nacl_helper_nonsfi_copy") {
-    sources = [ "${root_out_dir}/nacl_helper_nonsfi" ]
-    outputs = [ "${root_build_dir}/{{source_file_part}}" ]
-    deps = [ ":nacl_helper_nonsfi_nexe" ]
-  }
-
-  test("nacl_helper_nonsfi_unittests_main") {
-    sources = [
-      "nonsfi/nonsfi_sandbox_sigsys_unittest.cc",
-      "nonsfi/nonsfi_sandbox_unittest.cc",
-      "nonsfi/run_all_unittests.cc",
-    ]
-    deps = [
-      ":nacl_helper_nonsfi_sandbox",
-      "//base",
-      "//base/test:test_support",
-      "//content",
-      "//native_client/src/nonsfi/irt:nacl_sys_private",
-      "//native_client/src/untrusted/nacl:nacl",
-      "//sandbox/linux:sandbox",
-      "//sandbox/linux:sandbox_linux_test_utils",
-      "//sandbox/linux:sandbox_services_headers",
-      "//testing/gtest",
-    ]
-  }
-
-  copy("nacl_helper_nonsfi_unittests_main_copy") {
-    testonly = true
-    sources = [ "${root_out_dir}/nacl_helper_nonsfi_unittests_main" ]
-    outputs = [ "${root_build_dir}/{{source_file_part}}" ]
-    deps = [ ":nacl_helper_nonsfi_unittests_main" ]
   }
 }

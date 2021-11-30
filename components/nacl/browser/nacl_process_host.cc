@@ -388,21 +388,11 @@ void NaClProcessHost::Launch(
   }
 
   if (uses_nonsfi_mode_) {
-    bool nonsfi_mode_forced_by_command_line = false;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    nonsfi_mode_forced_by_command_line =
-        cmd->HasSwitch(switches::kEnableNaClNonSfiMode);
-#endif
-    bool nonsfi_mode_enabled =
-        nonsfi_mode_forced_by_command_line || nonsfi_mode_allowed_;
-
-    if (!nonsfi_mode_enabled) {
-      SendErrorToRenderer(
-          "NaCl non-SFI mode is not available for this platform"
-          " and NaCl module.");
-      delete this;
-      return;
-    }
+    SendErrorToRenderer(
+        "NaCl non-SFI mode is not available for this platform"
+        " and NaCl module.");
+    delete this;
+    return;
   }
 
   // Launch the process

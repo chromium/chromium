@@ -421,10 +421,5 @@ if (enable_nacl) {
       data_deps +=
           [ ":ppapi_nacl_tests(//build/toolchain/nacl:glibc_${target_cpu})" ]
     }
-
-    if ((is_linux || is_chromeos) && enable_nacl_nonsfi) {
-      data_deps +=
-          [ ":ppapi_nacl_tests(//build/toolchain/nacl:newlib_pnacl_nonsfi)" ]
-    }
   }
 }

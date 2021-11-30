@@ -5,9 +5,7 @@
 #ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FUTEX_H_
 #define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FUTEX_H_
 
-#if !defined(__native_client_nonsfi__)
 #include <linux/futex.h>
-#endif  // !defined(__native_client_nonsfi__)
 
 #if !defined(FUTEX_WAIT)
 #define FUTEX_WAIT 0

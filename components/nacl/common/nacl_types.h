@@ -85,7 +85,7 @@ struct NaClStartParams {
   IPC::PlatformFileForTransit debug_stub_server_bound_socket;
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // These are for Non-SFI mode IPC channels.
   // For security hardening, unlike in SFI mode, we cannot create socket pairs
   // in a NaCl loader process. Thus, the browser process creates the

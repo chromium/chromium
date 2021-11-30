@@ -28,13 +28,6 @@ static library using GYP.
 4) The directories WIN32-Code and WIN32-Prj are not included.
 5) The configs for android were copied from Linux's which were very close to
    android one with the exception of HAVE_FD_MASK and HAVE_STRLCPY.
-6) Add files to support building with the PNaCl toolchain. Added
-   libevent_nacl_nonsfi.gyp for build rule. nacl_nonsfi/config.h and
-   nacl_nonsfi/event-config.h are derived from linux/ counterparts.
-   nacl_nonsfi/random.c is also added to provide the random() function,
-   which is missing in the newlib-based PNaCl toolchain.
-7) Stub out signal.c for nacl_helper_nonsfi. socketpair() will be prohibited
-   by sandbox in nacl_helper_nonsfi.
-8) Remove an unnecessary workaround for OS X 10.4 from kqueue.c. It was causing
+6) Remove an unnecessary workaround for OS X 10.4 from kqueue.c. It was causing
    problems on macOS Sierra.
-9) Change buffer.c to not redefine _GNU_SOURCE.
+7) Change buffer.c to not redefine _GNU_SOURCE.

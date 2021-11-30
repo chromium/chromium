@@ -84,8 +84,7 @@ assert(!is_nacl || is_nacl_saigo,
        "base must not be built in most nacl toolchains")
 
 # Determines whether libevent should be dep.
-dep_libevent =
-    !is_fuchsia && !is_win && !is_mac && !(is_nacl && !is_nacl_nonsfi)
+dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
 
 # Determines whether message_pump_libevent should be used.
 use_libevent = dep_libevent && !is_ios
@@ -1843,14 +1842,21 @@ component("base") {
       "debug/crash_logging.h",
       "debug/stack_trace.cc",
       "debug/stack_trace_posix.cc",
+      "files/file_descriptor_watcher_posix.cc",
+      "files/file_descriptor_watcher_posix.h",
       "files/file_enumerator.cc",
       "files/file_enumerator_posix.cc",
       "files/file_proxy.cc",
+      "files/file_util.cc",
+      "files/file_util.h",
+      "files/file_util_posix.cc",
       "files/important_file_writer.cc",
       "files/important_file_writer.h",
       "files/important_file_writer_cleaner.cc",
       "files/important_file_writer_cleaner.h",
       "files/scoped_temp_dir.cc",
+      "json/json_file_value_serializer.cc",
+      "json/json_file_value_serializer.h",
       "memory/discardable_memory.cc",
       "memory/discardable_memory.h",
       "memory/discardable_memory_allocator.cc",
@@ -1865,8 +1871,13 @@ component("base") {
       "native_library.cc",
       "native_library_posix.cc",
       "path_service.cc",
+      "posix/unix_domain_socket.cc",
       "process/kill.cc",
       "process/kill.h",
+      "process/kill_posix.cc",
+      "process/launch.cc",
+      "process/launch.h",
+      "process/launch_posix.cc",
       "process/memory.cc",
       "process/memory.h",
       "process/process_iterator.cc",
@@ -1875,35 +1886,16 @@ component("base") {
       "process/process_metrics_posix.cc",
       "process/process_posix.cc",
       "profiler/module_cache_posix.cc",
+      "rand_util_posix.cc",
       "scoped_native_library.cc",
       "sync_socket_posix.cc",
       "system/sys_info.cc",
       "system/sys_info_posix.cc",
       "task/thread_pool/initialization_util.cc",
       "task/thread_pool/initialization_util.h",
+      "task/thread_pool/task_tracker_posix.cc",
+      "task/thread_pool/task_tracker_posix.h",
     ]
-
-    if (is_nacl_nonsfi) {
-      sources -= [ "rand_util_nacl.cc" ]
-    } else {
-      sources -= [
-        "files/file_descriptor_watcher_posix.cc",
-        "files/file_descriptor_watcher_posix.h",
-        "files/file_util.cc",
-        "files/file_util.h",
-        "files/file_util_posix.cc",
-        "json/json_file_value_serializer.cc",
-        "json/json_file_value_serializer.h",
-        "posix/unix_domain_socket.cc",
-        "process/kill_posix.cc",
-        "process/launch.cc",
-        "process/launch.h",
-        "process/launch_posix.cc",
-        "rand_util_posix.cc",
-        "task/thread_pool/task_tracker_posix.cc",
-        "task/thread_pool/task_tracker_posix.h",
-      ]
-    }
   } else {
     # Remove NaCl stuff.
     sources -= [

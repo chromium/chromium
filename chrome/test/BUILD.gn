@@ -2485,9 +2485,6 @@ if (!is_android && !is_fuchsia) {
           "//ppapi/native_client:irt",
           "//third_party/liblouis:liblouis_test_data",
         ]
-        if (enable_nacl_nonsfi) {
-          data_deps += [ "//components/nacl/loader:helper_nonsfi" ]
-        }
       }
 
       if (is_win || is_linux || is_chromeos) {
@@ -2501,10 +2498,6 @@ if (!is_android && !is_fuchsia) {
       }
       if (is_linux || is_chromeos) {
         data_deps += [ "//components/nacl/loader:nacl_helper" ]
-
-        if (enable_nacl_nonsfi) {
-          data_deps += [ "//components/nacl/loader:helper_nonsfi" ]
-        }
       }
     }
 

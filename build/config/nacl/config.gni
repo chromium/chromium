@@ -16,7 +16,6 @@ declare_args() {
 }
 
 is_nacl_irt = false
-is_nacl_nonsfi = false
 
 nacl_toolchain_dir = "//native_client/toolchain/${host_os}_x86"
 
@@ -54,8 +53,3 @@ nacl_toolprefix = "${nacl_toolchain_bindir}/${_nacl_tuple}-"
 
 nacl_irt_toolchain = "//build/toolchain/nacl:irt_" + target_cpu
 is_nacl_irt = current_toolchain == nacl_irt_toolchain
-
-# Non-SFI mode is a lightweight sandbox used by Chrome OS for running ARC
-# applications.
-nacl_nonsfi_toolchain = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
-is_nacl_nonsfi = current_toolchain == nacl_nonsfi_toolchain

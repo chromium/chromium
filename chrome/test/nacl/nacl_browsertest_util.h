@@ -135,18 +135,6 @@ class NaClBrowserTestPnaclSubzero : public NaClBrowserTestPnacl {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
-class NaClBrowserTestPnaclNonSfi : public NaClBrowserTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-  base::FilePath::StringType Variant() override;
-};
-
-class NaClBrowserTestNonSfiMode : public NaClBrowserTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-  base::FilePath::StringType Variant() override;
-};
-
 // A NaCl browser test only using static files.
 class NaClBrowserTestStatic : public NaClBrowserTestBase {
  public:
@@ -187,10 +175,6 @@ class NaClBrowserTestGLibcExtension : public NaClBrowserTestGLibc {
 #else
 #  define MAYBE_GLIBC(test_name) test_name
 #endif
-
-// TODO(crbug.com/1273132): Remove all code referenced by this.
-#define MAYBE_NONSFI(test_case) DISABLED_##test_case
-#define MAYBE_PNACL_NONSFI(test_case) DISABLED_##test_case
 
 #define NACL_BROWSER_TEST_F(suite, name, body) \
 IN_PROC_BROWSER_TEST_F(suite##Newlib, name) \

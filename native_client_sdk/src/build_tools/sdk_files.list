@@ -483,8 +483,6 @@ tools/nacl_gcc.mk
 tools/nacl_llvm.mk
 tools/ncval${EXE_EXT}
 tools/ncval.py
-[linux]tools/nonsfi_loader_arm${EXE_EXT}
-[linux]tools/nonsfi_loader_x86_32${EXE_EXT}
 tools/oshelpers.py
 [linux]tools/qemu-arm
 tools/run.py

@@ -241,6 +241,7 @@ component("proxy") {
     "//mojo/core/embedder",
     "//ppapi/c",
     "//ppapi/shared_impl",
+    "//third_party/icu",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/geometry",
   ]
@@ -253,10 +254,6 @@ component("proxy") {
       "//ui/events:events_base",
       "//ui/surface",
     ]
-  }
-
-  if (!is_nacl_nonsfi) {
-    deps += [ "//third_party/icu" ]
   }
 }
 

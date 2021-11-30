@@ -70,10 +70,6 @@ static_library("browser") {
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:suid_sandbox_client",
     ]
-
-    if (enable_nacl_nonsfi) {
-      data_deps += [ "//components/nacl/loader:helper_nonsfi" ]
-    }
   }
 
   if (is_win && current_cpu == "x86") {

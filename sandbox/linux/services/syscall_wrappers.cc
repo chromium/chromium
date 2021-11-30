@@ -157,112 +157,11 @@ int sys_sigprocmask(int how, const sigset_t* set, std::nullptr_t oldset) {
                  sizeof(linux_value));
 }
 
-// When this is built with PNaCl toolchain, we should always use sys_sigaction
-// below, because sigaction() provided by the toolchain is incompatible with
-// Linux's ABI.
-#if !defined(OS_NACL_NONSFI)
 int sys_sigaction(int signum,
                   const struct sigaction* act,
                   struct sigaction* oldact) {
   return sigaction(signum, act, oldact);
 }
-#else
-#if defined(ARCH_CPU_X86_FAMILY)
-
-// On x86_64, sa_restorer is required. We specify it on x86 as well in order to
-// support kernels with VDSO disabled.
-#if !defined(SA_RESTORER)
-#define SA_RESTORER 0x04000000
-#endif
-
-// XSTR(__NR_foo) expands to a string literal containing the value value of
-// __NR_foo.
-#define STR(x) #x
-#define XSTR(x) STR(x)
-
-// rt_sigreturn is a special system call that interacts with the user land
-// stack. Thus, here prologue must not be created, which implies syscall()
-// does not work properly, too. Note that rt_sigreturn does not return.
-// TODO(rickyz): These assembly functions may still break stack unwinding on
-// nonsfi NaCl builds.
-#if defined(ARCH_CPU_X86_64)
-
-extern "C" {
-  void sys_rt_sigreturn();
-}
-
-asm(
-    ".text\n"
-    "sys_rt_sigreturn:\n"
-    "mov $" XSTR(__NR_rt_sigreturn) ", %eax\n"
-    "syscall\n");
-
-#elif defined(ARCH_CPU_X86)
-extern "C" {
-  void sys_sigreturn();
-  void sys_rt_sigreturn();
-}
-
-asm(
-    ".text\n"
-    "sys_rt_sigreturn:\n"
-    "mov $" XSTR(__NR_rt_sigreturn) ", %eax\n"
-    "int $0x80\n"
-
-    "sys_sigreturn:\n"
-    "pop %eax\n"
-    "mov $" XSTR(__NR_sigreturn) ", %eax\n"
-    "int $0x80\n");
-#else
-#error "Unsupported architecture."
-#endif
-
-#undef STR
-#undef XSTR
-
-#endif  // defined(ARCH_CPU_X86_FAMILY)
-
-int sys_sigaction(int signum,
-                  const struct sigaction* act,
-                  struct sigaction* oldact) {
-  LinuxSigAction linux_act = {};
-  if (act) {
-    linux_act.kernel_handler = act->sa_handler;
-    std::memcpy(&linux_act.sa_mask, &act->sa_mask,
-                std::min(sizeof(linux_act.sa_mask), sizeof(act->sa_mask)));
-    linux_act.sa_flags = act->sa_flags;
-
-#if defined(ARCH_CPU_X86_FAMILY)
-    if (!(linux_act.sa_flags & SA_RESTORER)) {
-      linux_act.sa_flags |= SA_RESTORER;
-#if defined(ARCH_CPU_X86_64)
-      linux_act.sa_restorer = sys_rt_sigreturn;
-#elif defined(ARCH_CPU_X86)
-      linux_act.sa_restorer =
-          linux_act.sa_flags & SA_SIGINFO ? sys_rt_sigreturn : sys_sigreturn;
-#else
-#error "Unsupported architecture."
-#endif
-    }
-#endif  // defined(ARCH_CPU_X86_FAMILY)
-  }
-
-  LinuxSigAction linux_oldact = {};
-  int result = syscall(__NR_rt_sigaction, signum, act ? &linux_act : nullptr,
-                       oldact ? &linux_oldact : nullptr,
-                       sizeof(LinuxSigSet));
-
-  if (result == 0 && oldact) {
-    oldact->sa_handler = linux_oldact.kernel_handler;
-    sigemptyset(&oldact->sa_mask);
-    std::memcpy(&oldact->sa_mask, &linux_oldact.sa_mask,
-                std::min(sizeof(linux_act.sa_mask), sizeof(act->sa_mask)));
-    oldact->sa_flags = linux_oldact.sa_flags;
-  }
-  return result;
-}
-
-#endif  // !defined(OS_NACL_NONSFI)
 
 int sys_stat(const char* path, struct kernel_stat* stat_buf) {
   int res;

@@ -252,12 +252,7 @@ class SyncCallRestrictions;
 namespace core {
 class ScopedIPCSupport;
 }
-}
-namespace nacl {
-namespace nonsfi {
-class PluginMainDelegate;
-}
-}  // namespace nacl
+}  // namespace mojo
 namespace printing {
 class LocalPrinterHandlerDefault;
 #if defined(OS_MAC)
@@ -828,8 +823,6 @@ class BASE_EXPORT PermanentSingletonAllowance {
   PermanentSingletonAllowance() = delete;
 
  private:
-  friend class nacl::nonsfi::PluginMainDelegate;
-
   // Re-allow singletons on this thread. Since //base APIs DisallowSingleton()
   // when they risk running past shutdown, this should only be called in rare
   // cases where the caller knows the process will be killed rather than

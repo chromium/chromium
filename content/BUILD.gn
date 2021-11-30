@@ -59,48 +59,24 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //content")
 # //content/browser target only in non-component builds (when there are no
 # linking problems) for when check is enabled.
 
-if (!is_nacl_nonsfi) {
-  content_shared_components = [
-    "//content/gpu:gpu_sources",
-    "//content/public/browser:browser_sources",
-    "//content/public/child:child_sources",
-    "//content/public/common:common_sources",
-    "//content/public/gpu:gpu_sources",
-    "//content/public/renderer:renderer_sources",
-    "//content/public/utility:utility_sources",
-  ]
+content_shared_components = [
+  "//content/gpu:gpu_sources",
+  "//content/public/browser:browser_sources",
+  "//content/public/child:child_sources",
+  "//content/public/common:common_sources",
+  "//content/public/gpu:gpu_sources",
+  "//content/public/renderer:renderer_sources",
+  "//content/public/utility:utility_sources",
+]
 
-  if (enable_plugins) {
-    content_shared_components +=
-        [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
-  }
+if (enable_plugins) {
+  content_shared_components += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
 }
 
 if (is_component_build) {
   component("content") {
     public_deps =
         content_shared_components + [ "//content/public/app:app_sources" ]
-  }
-} else if (is_nacl_nonsfi) {
-  source_set("content") {
-    sources = [
-      "//sandbox/policy/linux/sandbox_seccomp_bpf_linux.cc",
-      "common/sandbox_init_linux.cc",
-      "common/zygote/send_zygote_child_ping_linux.cc",
-      "public/common/content_switches.cc",
-      "public/common/content_switches.h",
-    ]
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//media:media_buildflags",
-      "//ppapi/buildflags:buildflags",
-      "//printing/buildflags",
-      "//sandbox:sandbox_buildflags",
-      "//sandbox/linux:sandbox",
-      "//sandbox/policy",
-      "//sandbox/policy/mojom",
-    ]
   }
 } else {
   group("content") {

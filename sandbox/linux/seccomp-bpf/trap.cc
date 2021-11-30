@@ -167,7 +167,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
 
   // Obtain the siginfo information that is specific to SIGSYS.
   struct arch_sigsys sigsys;
-#if defined(si_call_addr) && !defined(__native_client_nonsfi__)
+#if defined(si_call_addr)
   sigsys.ip = info->si_call_addr;
   sigsys.nr = info->si_syscall;
   sigsys.arch = info->si_arch;

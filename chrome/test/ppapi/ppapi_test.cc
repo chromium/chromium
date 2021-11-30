@@ -465,27 +465,6 @@ void PPAPIPrivateNaClPNaClTest::SetUpCommandLine(
   AddPrivateSwitches(command_line);
 }
 
-void PPAPINaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(ENABLE_NACL)
-  command_line->AppendSwitch(switches::kEnableNaClNonSfiMode);
-#endif
-}
-
-std::string PPAPINaClPNaClNonSfiTest::BuildQuery(
-    const std::string& base,
-    const std::string& test_case) {
-  return base::StringPrintf("%smode=nacl_pnacl_nonsfi&testcase=%s",
-                            base.c_str(), test_case.c_str());
-}
-
-void PPAPIPrivateNaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClPNaClNonSfiTest::SetUpCommandLine(command_line);
-  AddPrivateSwitches(command_line);
-}
-
 void PPAPINaClTestDisallowedSockets::SetUpCommandLine(
     base::CommandLine* command_line) {
   PPAPITestBase::SetUpCommandLine(command_line);

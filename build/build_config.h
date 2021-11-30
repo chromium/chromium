@@ -6,7 +6,7 @@
 //
 //  Operating System:
 //    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
-//    OS_LINUX / OS_MAC / OS_NACL (SFI or NONSFI) / OS_NETBSD / OS_OPENBSD /
+//    OS_LINUX / OS_MAC / OS_NACL / OS_NETBSD / OS_OPENBSD /
 //    OS_QNX / OS_SOLARIS / OS_WIN
 //  Operating System family:
 //    OS_APPLE: IOS or MAC
@@ -40,14 +40,7 @@
 #if defined(__native_client__)
 // __native_client__ must be first, so that other OS_ defines are not set.
 #define OS_NACL 1
-// OS_NACL comes in two sandboxing technology flavors, SFI or Non-SFI.
-// PNaCl toolchain defines __native_client_nonsfi__ macro in Non-SFI build
-// mode, while it does not in SFI build mode.
-#if defined(__native_client_nonsfi__)
-#define OS_NACL_NONSFI
-#else
 #define OS_NACL_SFI
-#endif
 #elif defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)

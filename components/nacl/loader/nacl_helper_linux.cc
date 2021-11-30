@@ -8,6 +8,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <link.h>
 #include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -35,6 +36,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_switches.h"
+#include "components/nacl/loader/nacl_listener.h"
 #include "components/nacl/loader/sandbox_linux/nacl_sandbox_linux.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/zygote/send_zygote_child_ping_linux.h"
@@ -43,33 +45,12 @@
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 
-#if defined(OS_NACL_NONSFI)
-#include "components/nacl/loader/nonsfi/nonsfi_listener.h"
-#include "native_client/src/public/nonsfi/irt_exception_handling.h"
-#else
-#include <link.h>
-#include "components/nacl/loader/nacl_listener.h"
-#endif
-
 namespace {
 
 struct NaClLoaderSystemInfo {
   size_t prereserved_sandbox_size;
   long number_of_cores;
 };
-
-#if defined(OS_NACL_NONSFI)
-// Replace |file_descriptor| with the reading end of a closed pipe.
-void ReplaceFDWithDummy(int file_descriptor) {
-  // Make sure that file_descriptor is an open descriptor.
-  PCHECK(-1 != fcntl(file_descriptor, F_GETFD, 0));
-  int pipefd[2];
-  PCHECK(0 == pipe(pipefd));
-  PCHECK(-1 != dup2(pipefd[0], file_descriptor));
-  PCHECK(0 == IGNORE_EINTR(close(pipefd[0])));
-  PCHECK(0 == IGNORE_EINTR(close(pipefd[1])));
-}
-#endif
 
 // The child must mimic the behavior of zygote_main_linux.cc on the child
 // side of the fork. See zygote_main_linux.cc:HandleForkRequest from
@@ -83,26 +64,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   // Close or shutdown IPC channels that we don't need anymore.
   PCHECK(0 == IGNORE_EINTR(close(kNaClZygoteDescriptor)));
 
-#if defined(OS_NACL_NONSFI)
-  // In Non-SFI mode, it's important to close any non-expected IPC channels.
-  CHECK(uses_nonsfi_mode);
-  // The low-level kSandboxIPCChannel is used by renderers and NaCl for
-  // various operations. See the SandboxLinux::METHOD_* methods. NaCl uses
-  // SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT in SFI mode, so this
-  // should only be closed in Non-SFI mode.
-  // This file descriptor is insidiously used by a number of APIs. Closing it
-  // could lead to difficult to debug issues. Instead of closing it, replace
-  // it with a dummy.
-  const int sandbox_ipc_channel =
-      base::GlobalDescriptors::kBaseDescriptor + kSandboxIPCChannel;
-
-  ReplaceFDWithDummy(sandbox_ipc_channel);
-
-  // Install crash signal handlers before disallowing system calls.
-  nonsfi_initialize_signal_handler();
-#else
   CHECK(!uses_nonsfi_mode);
-#endif
 
   // Always ignore SIGPIPE, for consistency with other Chrome processes and
   // because some IPC code, such as sync_socket_posix.cc, requires this.
@@ -122,17 +84,12 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   mojo::core::Init();
 
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
-#if defined(OS_NACL_NONSFI)
-  CHECK(uses_nonsfi_mode);
-  nacl::nonsfi::NonSfiListener listener;
-  listener.Listen();
-#else
   CHECK(!uses_nonsfi_mode);
   NaClListener listener;
   listener.set_prereserved_sandbox_size(system_info.prereserved_sandbox_size);
   listener.set_number_of_cores(system_info.number_of_cores);
   listener.Listen();
-#endif
+
   _exit(0);
 }
 
@@ -200,15 +157,6 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
   }
 
   if (child_pid == 0) {
-    // Install termiantion signal handlers for nonsfi NaCl. The SFI NaCl runtime
-    // will install signal handlers for SIGINT, SIGTERM, etc. so we do not need
-    // to install termination signal handlers ourselves (in fact, it will crash
-    // if signal handlers for these are present).
-    if (uses_nonsfi_mode && getpid() == 1) {
-      // Note that nonsfi NaCl may override some of these signal handlers, which
-      // is fine.
-      sandbox::NamespaceSandbox::InstallDefaultTerminationSignalHandlers();
-    }
     ChildNaClLoaderInit(std::move(child_fds), system_info, uses_nonsfi_mode,
                         nacl_sandbox, channel_id);
     NOTREACHED();
@@ -328,7 +276,6 @@ bool HandleZygoteRequest(int zygote_ipc_fd,
                               system_info, nacl_sandbox, &read_iter);
 }
 
-#if !defined(OS_NACL_NONSFI)
 static const char kNaClHelperReservedAtZero[] = "reserved_at_zero";
 static const char kNaClHelperRDebug[] = "r_debug";
 
@@ -399,7 +346,6 @@ static size_t CheckReservedAtZero() {
   }
   return prereserved_sandbox_size;
 }
-#endif
 
 }  // namespace
 
@@ -416,17 +362,10 @@ int main(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
   base::RandUint64();  // acquire /dev/urandom fd before sandbox is raised
 
-  const NaClLoaderSystemInfo system_info = {
-#if !defined(OS_NACL_NONSFI)
-    // These are not used by nacl_helper_nonsfi.
-    CheckReservedAtZero(),
-    sysconf(_SC_NPROCESSORS_ONLN)
-#endif
-  };
+  const NaClLoaderSystemInfo system_info = {CheckReservedAtZero(),
+                                            sysconf(_SC_NPROCESSORS_ONLN)};
 
-#if !defined(OS_NACL_NONSFI)
   CheckRDebug(argv[0]);
-#endif
 
   std::unique_ptr<nacl::NaClSandbox> nacl_sandbox(new nacl::NaClSandbox);
   // Make sure that the early initialization did not start any spurious

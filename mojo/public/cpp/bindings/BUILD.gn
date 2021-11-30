@@ -230,7 +230,7 @@ component("bindings") {
     ]
   }
 
-  if (enable_ipc_fuzzer && !is_nacl_nonsfi) {
+  if (enable_ipc_fuzzer) {
     sources += [
       "lib/message_dumper.cc",
       "message_dumper.h",

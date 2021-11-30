@@ -119,7 +119,7 @@ template("core_impl_source_set") {
     }
 
     if (is_posix && !is_mac) {
-      if (!is_nacl || is_nacl_nonsfi) {
+      if (!is_nacl) {
         sources += [
           "broker_posix.cc",
           "channel_posix.cc",
@@ -141,7 +141,7 @@ template("core_impl_source_set") {
       sources += [ "channel_mac.cc" ]
     }
 
-    if (!is_nacl || is_nacl_nonsfi) {
+    if (!is_nacl) {
       sources += [
         "broker_host.cc",
         "broker_host.h",

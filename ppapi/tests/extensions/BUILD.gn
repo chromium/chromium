@@ -19,14 +19,9 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
-  if ((target_cpu == "x86" || target_cpu == "x64") &&
-      (is_linux || is_chromeos) && enable_nacl_nonsfi) {
-    nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
-    data_deps += [ ":ppapi_tests_extensions_packaged_app($nonsfi)" ]
-  }
 }
 
-if (is_nacl && !is_nacl_nonsfi) {
+if (is_nacl) {
   nacl_test_data("ppapi_tests_extensions_background_keepalive") {
     sources = [ "background_keepalive/background.cc" ]
     deps = [ "//ppapi/cpp" ]

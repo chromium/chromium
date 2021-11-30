@@ -22,7 +22,7 @@ component("platform") {
     "platform_handle.cc",
   ]
 
-  if (is_posix && !is_mac && (!is_nacl || is_nacl_nonsfi)) {
+  if (is_posix && !is_mac && !is_nacl) {
     public += [ "socket_utils_posix.h" ]
     sources += [ "socket_utils_posix.cc" ]
   }

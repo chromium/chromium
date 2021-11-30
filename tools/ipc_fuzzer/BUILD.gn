@@ -6,9 +6,7 @@ import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 config("ipc_fuzzer_config") {
-  if (!is_nacl_nonsfi) {
-    defines = [ "ENABLE_IPC_FUZZER" ]
-  }
+  defines = [ "ENABLE_IPC_FUZZER" ]
 }
 
 config("ipc_fuzzer_tool_config") {

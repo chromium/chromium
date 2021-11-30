@@ -83,17 +83,6 @@ group("nacl") {
       ":sysconf_nprocessors_onln_test($glibc)",
     ]
   }
-  if ((is_linux || is_chromeos) && enable_nacl_nonsfi) {
-    nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
-    data_deps += [
-      ":irt_exception_test($nonsfi)",
-      ":irt_manifest_file($nonsfi)",
-      ":shared_test_files($nonsfi)",
-    ]
-    if (is_clang) {
-      data_deps += [ ":nonsfi_libc_free" ]
-    }
-  }
 }
 
 if (is_nacl) {
@@ -170,7 +159,7 @@ if (is_nacl) {
   }
 }
 
-if (is_nacl && !is_nacl_nonsfi) {
+if (is_nacl) {
   nacl_test_data("simple_test") {
     output_name = "simple"
     sources = [ "simple.cc" ]
@@ -433,6 +422,7 @@ if ((is_linux || is_chromeos) && is_clang) {
     arch = target_cpu
   }
 
+  # TODO(https://crbug.com/1273132): Can this be deleted?
   config("nonsfi_libc_free_nexe_config") {
     cflags = [
       "-Wno-sign-compare",
