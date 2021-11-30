@@ -22,11 +22,14 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 namespace {
+
+using ::testing::Optional;
 
 constexpr char kTestAppUrl[] = "https://www.example.com/";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
@@ -143,9 +146,7 @@ class AppLauncherHandlerTest : public testing::Test {
     app_info->GetString(kKeyAppId, &app_id);
     EXPECT_EQ(app_id, installed_app_id);
 
-    bool is_locally_installed = false;
-    app_info->GetBoolean(kKeyIsLocallyInstalled, &is_locally_installed);
-    EXPECT_TRUE(is_locally_installed);
+    EXPECT_THAT(app_info->FindBoolPath(kKeyIsLocallyInstalled), Optional(true));
   }
 
   std::unique_ptr<content::TestWebUI> CreateTestWebUI(
