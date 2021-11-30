@@ -75,9 +75,15 @@ def extract_certificates_from_pem(pem_bytes):
   certificates_der = []
 
   regex = re.compile(
-      r'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)-----END \1-----', re.DOTALL)
+      r'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)(-----END \1-----|$)',
+      re.DOTALL)
 
   for match in regex.finditer(pem_bytes):
+    if not match.group(3):
+      sys.stderr.write(
+          "\nUnterminated %s block, input is corrupt or truncated\n" %
+          match.group(1))
+      continue
     der = base64.b64decode(strip_all_whitespace(match.group(2)))
     if match.group(1) == 'CERTIFICATE':
       certificates_der.append(der)
