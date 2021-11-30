@@ -926,6 +926,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MoveTabToAppWindow) {
   });
 }
 
+// TODO(crbug.com/1220420): test tab replace (portals)
+
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   // Setup: two regular browsers, and one app window browser.
   auto* browser1 = CreateBrowser();
