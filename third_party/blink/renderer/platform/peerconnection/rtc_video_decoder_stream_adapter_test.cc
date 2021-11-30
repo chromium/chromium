@@ -191,6 +191,9 @@ class RTCVideoDecoderStreamAdapterTest
     decoder_factory_ = std::make_unique<MockDecoderFactory>();
     // Create one hw decoder.
     decoder_factory_->CreatePendingDecoder(true);
+    // Unless specifically overridden by a test, the gpu claims to support any
+    // decoder config.
+    SetGpuFactorySupport(true);
   }
 
   RTCVideoDecoderStreamAdapterTest(const RTCVideoDecoderStreamAdapterTest&) =
@@ -246,7 +249,6 @@ class RTCVideoDecoderStreamAdapterTest
     SetUpMockDecoder(decoder, init_cb_result);
   }
 
-  // Create a DecoderStreamAdapter in `adapter_` using the decoder factory.
   bool CreateDecoderStream() {
     adapter_ = RTCVideoDecoderStreamAdapter::Create(
         use_hw_decoders_ ? &gpu_factories_ : nullptr, decoder_factory_.get(),
@@ -301,6 +303,27 @@ class RTCVideoDecoderStreamAdapterTest
 
   int32_t Release() { return adapter_->Release(); }
 
+  // Notify `gpu_factories_` if it is supposed to claim to support all decoder
+  // config or none of them.
+  void SetGpuFactorySupport(bool supported) {
+    // Use EXPECT_CALL rather than ON_CALL so it doesn't warn.
+    EXPECT_CALL(gpu_factories_, IsDecoderConfigSupported(_))
+        .Times(AtLeast(0))
+        .WillRepeatedly(Return(
+            supported
+                ? media::GpuVideoAcceleratorFactories::Supported::kTrue
+                : media::GpuVideoAcceleratorFactories::Supported::kFalse));
+  }
+
+  bool GetUseHwDecoders() const { return use_hw_decoders_; }
+
+  // Override our use of hw decoders.  Generally you should not use this -- it
+  // will be set by the test parameters.  However, we allow it for the very few
+  // tests that actually care.
+  void OverrideHwDecoders(bool use_hw_decoders) {
+    use_hw_decoders_ = use_hw_decoders;
+  }
+
   webrtc::EncodedImage GetEncodedImageWithColorSpace(uint32_t timestamp) {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
@@ -320,7 +343,7 @@ class RTCVideoDecoderStreamAdapterTest
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> media_thread_task_runner_;
 
-  const bool use_hw_decoders_;
+  bool use_hw_decoders_;
   StrictMock<media::MockGpuVideoAcceleratorFactories> gpu_factories_{
       nullptr /* SharedImageInterface* */};
   std::unique_ptr<MockDecoderFactory> decoder_factory_;
@@ -349,6 +372,17 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
   ASSERT_FALSE(adapter);
 }
 
+TEST_P(RTCVideoDecoderStreamAdapterTest, FailInitIfNoHwNorSwDecoders) {
+  // If the adapter is configured to use neither hw nor sw decoders, then Create
+  // should fail immediately.
+  const bool allow_sw = GetParam().use_chrome_sw_decoders ==
+                        TestParams::UseChromeSwDecoders::kYes;
+  if (!allow_sw) {
+    OverrideHwDecoders(false);
+    EXPECT_FALSE(CreateDecoderStream());
+  }  // else pass trivially
+}
+
 TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
   // If decoder initialization fails after InitDecode runs, then the first
   // Decode should fail.  If chrome sw decoders are allowed, then it should
@@ -373,6 +407,15 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
     EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
     EXPECT_FALSE(BasicTeardown());
   }
+}
+
+TEST_P(RTCVideoDecoderStreamAdapterTest, UnsupportedGpuConfigFailsImmediately) {
+  // If the gpu factories don't claim to support a config, then it shouldn't
+  // create the decoder.
+  if (GetUseHwDecoders()) {
+    SetGpuFactorySupport(false);
+    EXPECT_FALSE(CreateDecoderStream());
+  }  // else pass.
 }
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, MissingFramesRequestsKeyframe) {
@@ -543,7 +586,7 @@ INSTANTIATE_TEST_SUITE_P(
     UseHwDecoding,
     RTCVideoDecoderStreamAdapterTest,
     ::testing::Values(TestParams{TestParams::UseHwDecoders::kNo,
-                                 TestParams::UseChromeSwDecoders::kNo},
+                                 TestParams::UseChromeSwDecoders::kYes},
                       TestParams{TestParams::UseHwDecoders::kYes,
                                  TestParams::UseChromeSwDecoders::kNo},
                       TestParams{TestParams::UseHwDecoders::kYes,

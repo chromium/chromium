@@ -228,6 +228,14 @@ RTCVideoDecoderStreamAdapter::Create(
   if (WebRtcToMediaVideoCodec(video_codec_type) == media::VideoCodec::kUnknown)
     return nullptr;
 
+  if (!gpu_factories &&
+      !base::FeatureList::IsEnabled(media::kExposeSwDecodersToWebRTC)) {
+    // Interpret "no gpu factories" to mean "sw only", even though we don't
+    // technically know if `decoder_factory` can create hw decoders or not.  To
+    // make it unambiguous, and probably save a thread hop, fail immediately.
+    return nullptr;
+  }
+
   // Avoid the thread hop if the decoder is known not to support the config.
   // TODO(sandersd): Predict size from level.
   media::VideoDecoderConfig config(
@@ -239,6 +247,14 @@ RTCVideoDecoderStreamAdapter::Create(
       media::EncryptionScheme::kUnencrypted);
 
   config.set_is_rtc(true);
+
+  // TODO(https://crbug.com/1274904): Fail early to match DecoderAdapter.
+  if (gpu_factories &&
+      gpu_factories->IsDecoderConfigSupported(config) ==
+          media::GpuVideoAcceleratorFactories::Supported::kFalse) {
+    base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess", false);
+    return nullptr;
+  }
 
   // InitializeSync doesn't really initialize anything; it just posts the work
   // to the media thread.  If init fails, then we'll fall back on the first
@@ -324,6 +340,10 @@ bool RTCVideoDecoderStreamAdapter::Configure(const Settings& settings) {
 
   base::AutoLock auto_lock(lock_);
   init_decode_complete_ = true;
+  // Interpret "no gpu factories" to mean "no hw decoders", regardless of
+  // whether or not the decoder factory can produce them.  Probably, it can't.
+  if (!gpu_factories_)
+    prefer_software_decoders_ = true;
   const webrtc::RenderResolution& resolution = settings.max_render_resolution();
   if (resolution.Valid()) {
     // This lets our initial decoder selection see something that's at least
