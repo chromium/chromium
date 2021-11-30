@@ -79,9 +79,9 @@ class BrowserContext;
 class BrowserMessageFilter;
 class IsolationContext;
 class ProcessLock;
+class RenderFrameHost;
 class RenderProcessHostObserver;
 class StoragePartition;
-class RenderFrameHost;
 struct GlobalRenderFrameHostId;
 #if defined(OS_ANDROID)
 enum class ChildProcessImportance;
@@ -514,6 +514,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // content.
   virtual void SetProcessLock(const IsolationContext& isolation_context,
                               const ProcessLock& process_lock) = 0;
+
+  // Returns the ProcessLock associated with this process.
+  // This method is public so that it can be called from SiteInstanceImpl, and
+  // used by MockRenderProcessHost. It isn't meant to be called outside of
+  // content.
+  virtual ProcessLock GetProcessLock() = 0;
 
   // Returns true if this process is locked to a particular site-specific
   // ProcessLock.  See the SetProcessLock() call above.

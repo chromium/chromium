@@ -500,6 +500,10 @@ void MockRenderProcessHost::SetProcessLock(
     is_renderer_locked_to_site_ = true;
 }
 
+ProcessLock MockRenderProcessHost::GetProcessLock() {
+  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+}
+
 bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
   ProcessLock lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());

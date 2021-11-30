@@ -187,6 +187,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool HostHasNotBeenUsed() override;
   void SetProcessLock(const IsolationContext& isolation_context,
                       const ProcessLock& process_lock) override;
+  ProcessLock GetProcessLock() override;
   bool IsProcessLockedToSiteForTesting() override;
   void StopTrackingProcessForShutdownDelay() override {}
   void BindCacheStorage(

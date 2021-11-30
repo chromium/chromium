@@ -844,9 +844,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       RenderProcessHost* host = GetAllHosts().Lookup(host_info.first);
       DCHECK(host);
 
-      bool is_locked_to_site = ChildProcessSecurityPolicyImpl::GetInstance()
-                                   ->GetProcessLock(host->GetID())
-                                   .is_locked_to_site();
+      bool is_locked_to_site = host->GetProcessLock().is_locked_to_site();
       output += base::StringPrintf("\tProcess Host ID %d (PID %s, %s):\n",
                                    host_info.first,
                                    GetRendererPidAsString(host).c_str(),
@@ -2204,9 +2202,7 @@ void RenderProcessHostImpl::
 
 std::string
 RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  std::string ret = " pl='" + policy->GetProcessLock(GetID()).ToString() + "'";
+  std::string ret = " pl='" + GetProcessLock().ToString() + "'";
 
   if (HostHasNotBeenUsed())
     ret += " hnbu";
@@ -2248,18 +2244,14 @@ void RenderProcessHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   // perfetto::TracedValue` and the one taking `perfetto::TracedProto<...>`).
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetID());
-  dict.Add("process_lock", ChildProcessSecurityPolicyImpl::GetInstance()
-                               ->GetProcessLock(GetID())
-                               .ToString());
+  dict.Add("process_lock", GetProcessLock().ToString());
 }
 
 void RenderProcessHostImpl::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
   int id = GetID();
   proto->set_id(id);
-  proto->set_process_lock(ChildProcessSecurityPolicyImpl::GetInstance()
-                              ->GetProcessLock(id)
-                              .ToString());
+  proto->set_process_lock(GetProcessLock().ToString());
   if (browser_context_) {
     browser_context_->WriteIntoTrace(
         proto.WriteNestedMessage<perfetto::protos::pbzero::RenderProcessHost::
@@ -2761,6 +2753,10 @@ mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
   return renderer_interface_.get();
 }
 
+ProcessLock RenderProcessHostImpl::GetProcessLock() {
+  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+}
+
 // static
 void RenderProcessHostImpl::SetNetworkFactoryForTesting(
     const CreateNetworkFactoryCallback& create_network_factory_callback) {
@@ -3112,14 +3108,11 @@ void RenderProcessHostImpl::SetProcessLock(
 }
 
 bool RenderProcessHostImpl::IsProcessLockedToSiteForTesting() {
-  ProcessLock lock =
-      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-  return lock.is_locked_to_site();
+  return GetProcessLock().is_locked_to_site();
 }
 
 void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
-  ProcessLock process_lock =
-      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+  ProcessLock process_lock = GetProcessLock();
 
   if (process_lock.is_invalid())
     return;
@@ -4191,9 +4184,10 @@ bool RenderProcessHostImpl::IsSuitableHost(
 
   // Check WebUI bindings and origin locks.  Note that |lock_url| may differ
   // from |site_url| if an effective URL is used.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  bool host_has_web_ui_bindings = policy->HasWebUIBindings(host->GetID());
-  ProcessLock process_lock = policy->GetProcessLock(host->GetID());
+  bool host_has_web_ui_bindings =
+      ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+          host->GetID());
+  ProcessLock process_lock = host->GetProcessLock();
   if (host->HostHasNotBeenUsed()) {
     // If the host hasn't been used, it won't have the expected WebUI bindings
     // or origin locks just *yet* - skip the checks in this case.  One example
