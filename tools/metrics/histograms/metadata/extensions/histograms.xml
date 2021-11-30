@@ -82,6 +82,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ApiBindingGenerationTime" units="ms"
     expires_after="2021-06-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -95,6 +98,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ApiBindingObjectGenerationTime"
     units="microseconds" expires_after="2021-06-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -191,6 +197,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.AttemptedToDowngradeVersionType"
     enum="ExtensionType" expires_after="2021-06-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1395,6 +1404,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionServiceInitTime" units="units"
     expires_after="2021-12-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1407,6 +1419,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionServiceNotifyReadyListenersTime"
     units="units" expires_after="2021-06-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3789,6 +3804,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.UninstallDialogAction"
     enum="ExtensionUninstallDialogAction" expires_after="2021-12-01">
+  <obsolete>
+    Code removed 2021-11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

@@ -224,12 +224,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   // closed.
   registry_observation_.Reset();
 
-  // We don't want to artificially weight any of the options, so only record if
-  // a checkbox was shown.
-  if (show_report_abuse_checkbox_) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallDialogAction", action,
-                              CLOSE_ACTION_LAST);
-  } else if (show_remove_data_checkbox_) {
+  if (show_remove_data_checkbox_) {
     // TODO(crbug.com/1065748): Delete Webapp recording in extensions dialog.
     UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action,
                               CLOSE_ACTION_LAST);

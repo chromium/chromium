@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -578,19 +577,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
       ->UninstallExtension(
           app_id, GetExtensionUninstallReason(uninstall_source), &error);
 
-  if (!report_abuse) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Extensions.UninstallDialogAction",
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_UNINSTALL,
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
+  if (!report_abuse)
     return;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.UninstallDialogAction",
-      extensions::ExtensionUninstallDialog::
-          CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED,
-      extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
 
   // If the extension specifies a custom uninstall page via
   // chrome.runtime.setUninstallURL, then at uninstallation its uninstall

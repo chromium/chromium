@@ -134,11 +134,6 @@ void ExtensionAppsChromeOs::RecordUninstallCanceledAction(
         "Webapp.UninstallDialogAction",
         extensions::ExtensionUninstallDialog::CLOSE_ACTION_CANCELED,
         extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Extensions.UninstallDialogAction",
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_CANCELED,
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
   }
 }
 

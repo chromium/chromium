@@ -8,10 +8,8 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
@@ -396,7 +394,6 @@ void ModuleSystem::LazyFieldGetterInner(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info,
     RequireFunction require_function) {
-  base::ElapsedTimer timer;
   CHECK(!info.Data().IsEmpty());
   CHECK(info.Data()->IsObject());
   v8::Isolate* isolate = info.GetIsolate();
@@ -502,8 +499,6 @@ void ModuleSystem::LazyFieldGetterInner(
     NOTREACHED();
   }
   info.GetReturnValue().Set(new_field);
-
-  UMA_HISTOGRAM_TIMES("Extensions.ApiBindingGenerationTime", timer.Elapsed());
 }
 
 void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,

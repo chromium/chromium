@@ -68,8 +68,6 @@ void ExtensionRegistrar::AddExtension(
       UMA_HISTOGRAM_ENUMERATION(
           "Extensions.AttemptedToDowngradeVersionLocation",
           extension->location());
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AttemptedToDowngradeVersionType",
-                                extension->GetType(), Manifest::NUM_LOAD_TYPES);
 
       // TODO(https://crbug.com/810799): It would be awfully nice to CHECK this,
       // but that's caused problems. There are apparently times when this
