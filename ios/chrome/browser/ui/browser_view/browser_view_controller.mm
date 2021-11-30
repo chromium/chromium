@@ -2892,7 +2892,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             : [self.tabStripView
                   adjustTransformForRTL:CGAffineTransformMakeTranslation(
                                             0, self.tabStripView.frame.size
-                                                   .height)];
+                                                       .height +
+                                                   self.headerOffset)];
+    self.tabStripSnapshot.alpha =
+        currentViewRevealState == ViewRevealState::Revealed ||
+                currentViewRevealState == ViewRevealState::Fullscreen
+            ? 0
+            : 1;
     [self.contentArea addSubview:self.tabStripSnapshot];
     AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
   }
@@ -2966,6 +2972,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
+        self.tabStripSnapshot.alpha = 1;
       }
       break;
     case ViewRevealState::Peeked:
@@ -2975,6 +2982,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             CGAffineTransformMakeTranslation(0, tabStripHeight);
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
+        self.tabStripSnapshot.alpha = 1;
       }
       break;
     case ViewRevealState::Revealed:
@@ -2985,6 +2993,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             CGAffineTransformMakeTranslation(0, tabStripHeight);
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
+        self.tabStripSnapshot.alpha = 0;
       }
       break;
   }

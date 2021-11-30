@@ -139,10 +139,12 @@ enum class LayoutTransitionState {
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee {
   [self.animatees addObject:animatee];
   // Make sure the newly added animatee is in the correct state.
-  [animatee willAnimateViewRevealFromState:self.currentState
-                                   toState:self.currentState];
-  [animatee animateViewReveal:self.currentState];
-  [animatee didAnimateViewReveal:self.currentState];
+  [UIView performWithoutAnimation:^{
+    [animatee willAnimateViewRevealFromState:self.currentState
+                                     toState:self.currentState];
+    [animatee animateViewReveal:self.currentState];
+    [animatee didAnimateViewReveal:self.currentState];
+  }];
 }
 
 - (void)setBaseViewHeight:(CGFloat)baseViewHeight {
