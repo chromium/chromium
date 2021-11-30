@@ -8,7 +8,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_id_logout_request.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_id_request_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webid/web_id_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
