@@ -492,9 +492,8 @@ void OnIntentPickerClosed(
     apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
         Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
     if (context) {
-      apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-          context, selected_app_package, entry_type, reason,
-          apps::Source::kExternalProtocol, should_persist);
+      apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
+          context, entry_type, reason, should_persist);
     }
     return;
   }
@@ -590,9 +589,8 @@ void OnIntentPickerClosed(
       url_scheme, entry_type, protocol_accepted, should_persist);
 
   if (context) {
-    apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-        context, selected_app_package, entry_type, reason,
-        apps::Source::kExternalProtocol, should_persist);
+    apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
+        context, entry_type, reason, should_persist);
   }
 }
 
@@ -703,10 +701,9 @@ void OnUrlHandlerList(int render_process_host_id,
   if (HandleUrl(render_process_host_id, routing_id, url, handlers,
                 handlers.size(), &result, safe_to_bypass_ui)) {
     if (context && result == GetActionResult::HANDLE_URL_IN_ARC) {
-      apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-          context, std::string(), apps::PickerEntryType::kArc,
+      apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
+          context, apps::PickerEntryType::kArc,
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
-          apps::Source::kExternalProtocol,
           /*should_persist=*/false);
     }
     return std::move(handled_cb).Run(/*handled=*/true);

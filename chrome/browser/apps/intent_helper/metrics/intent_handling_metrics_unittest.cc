@@ -28,16 +28,6 @@ TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
 
   IntentHandlingMetrics test = IntentHandlingMetrics();
   test.RecordIntentPickerMetrics(
-      Source::kExternalProtocol, false,
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
-      IntentHandlingMetrics::Platform::ARC);
-
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Apps.ExternalProtocolDialog",
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED, 1);
-
-  test.RecordIntentPickerMetrics(
-      Source::kHttpOrHttps, true,
       IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
       IntentHandlingMetrics::Platform::ARC);
 
@@ -77,13 +67,13 @@ class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
 };
 
 TEST_F(IntentHandlingMetricsTestWithMetricsService,
-       TestRecordIntentPickerUserInteractionMetrics) {
+       TestRecordExternalProtocolUserInteractionMetrics) {
   base::HistogramTester histogram_tester;
 
   IntentHandlingMetrics test = IntentHandlingMetrics();
-  test.RecordIntentPickerUserInteractionMetrics(
-      profile(), "app_package", PickerEntryType::kArc,
-      IntentPickerCloseReason::OPEN_APP, Source::kExternalProtocol, true);
+  test.RecordExternalProtocolUserInteractionMetrics(
+      profile(), PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
+      true);
 
   histogram_tester.ExpectBucketCount(
       "Arc.UserInteraction", arc::UserInteractionType::APP_STARTED_FROM_LINK,
@@ -326,77 +316,69 @@ TEST(IntentHandlingMetricsTest, TestGetDestinationPlatform) {
 
   // When the PickerAction is either ERROR or DIALOG_DEACTIVATED we MUST stay
   // in Chrome not taking into account the selected_app_package.
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED));
+  EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
+            IntentHandlingMetrics::GetDestinationPlatform(
+                IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER));
+  EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
+            IntentHandlingMetrics::GetDestinationPlatform(
+                IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER));
+  EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
+            IntentHandlingMetrics::GetDestinationPlatform(
+                IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED));
 
   // When stay in chrome is selected, or when user remember the stay in
   // chrome selection, always expect the platform to be CHROME.
   EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
             IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::CHROME_PRESSED));
+                IntentHandlingMetrics::PickerAction::CHROME_PRESSED));
   EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
             IntentHandlingMetrics::GetDestinationPlatform(
-                app_id,
+
                 IntentHandlingMetrics::PickerAction::CHROME_PREFERRED_PRESSED));
   EXPECT_EQ(
       IntentHandlingMetrics::Platform::CHROME,
       IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
+
           IntentHandlingMetrics::PickerAction::PREFERRED_CHROME_BROWSER_FOUND));
 
   // When user select PWA or PWA auto launched, always expect the platform to
   // be PWA.
   EXPECT_EQ(IntentHandlingMetrics::Platform::PWA,
             IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::PWA_APP_PRESSED));
+                IntentHandlingMetrics::PickerAction::PWA_APP_PRESSED));
 
   EXPECT_EQ(
       IntentHandlingMetrics::Platform::PWA,
       IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
           IntentHandlingMetrics::PickerAction::PWA_APP_PREFERRED_PRESSED));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::PWA,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::PREFERRED_PWA_FOUND));
+  EXPECT_EQ(IntentHandlingMetrics::Platform::PWA,
+            IntentHandlingMetrics::GetDestinationPlatform(
+                IntentHandlingMetrics::PickerAction::PREFERRED_PWA_FOUND));
 
   // When user select ARC app or ARC app auto launched, always expect the
   // platform to be ARC.
   EXPECT_EQ(IntentHandlingMetrics::Platform::ARC,
             IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::ARC_APP_PRESSED));
+                IntentHandlingMetrics::PickerAction::ARC_APP_PRESSED));
 
   EXPECT_EQ(
       IntentHandlingMetrics::Platform::ARC,
       IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
           IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED));
   EXPECT_EQ(
       IntentHandlingMetrics::Platform::ARC,
       IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
           IntentHandlingMetrics::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND));
 
   // When user select Mac OS app, expect the platform to be MAC_OS.
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::MAC_OS,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::MAC_OS_APP_PRESSED));
+  EXPECT_EQ(IntentHandlingMetrics::Platform::MAC_OS,
+            IntentHandlingMetrics::GetDestinationPlatform(
+                IntentHandlingMetrics::PickerAction::MAC_OS_APP_PRESSED));
 
   // When user select a device, expect the platform to be DEVICE.
   EXPECT_EQ(IntentHandlingMetrics::Platform::DEVICE,
             IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::DEVICE_PRESSED));
+                IntentHandlingMetrics::PickerAction::DEVICE_PRESSED));
 }
 
 }  // namespace apps

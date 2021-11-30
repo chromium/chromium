@@ -13,44 +13,23 @@
 
 namespace apps {
 
-IntentHandlingMetrics::IntentHandlingMetrics() {}
+IntentHandlingMetrics::IntentHandlingMetrics() = default;
 
-void IntentHandlingMetrics::RecordIntentPickerMetrics(Source source,
-                                                      bool should_persist,
-                                                      PickerAction action,
+void IntentHandlingMetrics::RecordIntentPickerMetrics(PickerAction action,
                                                       Platform platform) {
-  // TODO(crbug.com/985233) For now External Protocol Dialog is only querying
-  // ARC apps.
-  if (source == Source::kExternalProtocol) {
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.ExternalProtocolDialog", action);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.IntentPickerAction", action);
-
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.IntentPickerDestinationPlatform",
-                              platform);
-  }
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.IntentPickerAction", action);
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.IntentPickerDestinationPlatform",
+                            platform);
 }
 
 void IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-    content::BrowserContext* context,
-    const std::string& selected_app_package,
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
-    Source source,
     bool should_persist) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (entry_type == PickerEntryType::kArc &&
-      source == Source::kExternalProtocol &&
-      (close_reason == IntentPickerCloseReason::PREFERRED_APP_FOUND ||
-       close_reason == IntentPickerCloseReason::OPEN_APP)) {
-    arc::ArcMetricsService::RecordArcUserInteraction(
-        context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   PickerAction action =
       GetPickerAction(entry_type, close_reason, should_persist);
-  Platform platform = GetDestinationPlatform(selected_app_package, action);
-  RecordIntentPickerMetrics(source, should_persist, action, platform);
+  Platform platform = GetDestinationPlatform(action);
+  RecordIntentPickerMetrics(action, platform);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,6 +48,26 @@ void IntentHandlingMetrics::RecordExternalProtocolMetrics(
                               action);
   }
 }
+
+void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
+    content::BrowserContext* context,
+    PickerEntryType entry_type,
+    IntentPickerCloseReason close_reason,
+    bool should_persist) {
+  if (entry_type == PickerEntryType::kArc &&
+      (close_reason == IntentPickerCloseReason::PREFERRED_APP_FOUND ||
+       close_reason == IntentPickerCloseReason::OPEN_APP)) {
+    arc::ArcMetricsService::RecordArcUserInteraction(
+        context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
+  }
+
+  // TODO(crbug.com/985233) For now External Protocol Dialog is only querying
+  // ARC apps, so there's no need to record a destination platform.
+  PickerAction action =
+      GetPickerAction(entry_type, close_reason, should_persist);
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.ExternalProtocolDialog", action);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void IntentHandlingMetrics::RecordOpenBrowserMetrics(AppType type) {
@@ -77,7 +76,6 @@ void IntentHandlingMetrics::RecordOpenBrowserMetrics(AppType type) {
 
 // static
 IntentHandlingMetrics::Platform IntentHandlingMetrics::GetDestinationPlatform(
-    const std::string& selected_launch_name,
     PickerAction picker_action) {
   switch (picker_action) {
     case PickerAction::ARC_APP_PRESSED:

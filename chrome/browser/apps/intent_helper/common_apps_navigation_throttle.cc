@@ -232,11 +232,9 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
     web_contents->ClosePage();
 
   IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      profile,
-      /*selected_app_package=*/preferred_app_id.value(),
       GetPickerEntryType(app_type),
       apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      apps::Source::kHttpOrHttps, /*should_persist=*/false);
+      /*should_persist=*/false);
   return true;
 }
 

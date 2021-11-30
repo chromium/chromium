@@ -45,7 +45,6 @@ enum class PreferredPlatform {
   // The preferred app is an ARC app.
   ARC,
 
-  // TODO(crbug.com/826982) Not needed until app registry is in use.
   // The preferred app is a PWA app.
   PWA,
 };
@@ -56,13 +55,6 @@ enum class AppsNavigationAction {
 
   // The current navigation should resume.
   RESUME,
-};
-
-// This enum backs an UMA histogram and must be treated as append-only.
-enum class Source {
-  kHttpOrHttps = 0,
-  kExternalProtocol = 1,
-  kMaxValue = kExternalProtocol
 };
 
 // The type of an entry in the intent picker for the user to choose from.

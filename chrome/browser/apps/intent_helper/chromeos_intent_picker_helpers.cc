@@ -220,9 +220,8 @@ void OnIntentPickerClosedChromeOs(
       IntentHandlingMetrics::GetPickerAction(entry_type, close_reason,
                                              should_persist);
   IntentHandlingMetrics::Platform platform =
-      IntentHandlingMetrics::GetDestinationPlatform(launch_name, action);
-  IntentHandlingMetrics::RecordIntentPickerMetrics(
-      Source::kHttpOrHttps, should_persist, action, platform);
+      IntentHandlingMetrics::GetDestinationPlatform(action);
+  IntentHandlingMetrics::RecordIntentPickerMetrics(action, platform);
 }
 
 }  // namespace apps

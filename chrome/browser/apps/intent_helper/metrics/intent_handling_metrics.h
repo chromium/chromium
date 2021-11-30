@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 
-#include <string>
-#include <utility>
-
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -80,15 +77,13 @@ class IntentHandlingMetrics {
     kMaxValue = MAC_OS,
   };
 
-  // TODO(ajlinker): move these two functions below to IntentHandlingMetrics.
+  IntentHandlingMetrics();
+
   // Determines the destination of the current navigation. We know that if the
   // |picker_action| is either ERROR or DIALOG_DEACTIVATED the navigation MUST
-  // stay in Chrome, and when |picker_action| is PWA_APP_PRESSED the navigation
-  // goes to a PWA. Otherwise we can assume the navigation goes to ARC with the
-  // exception of the |selected_launch_name| being Chrome.
-  static Platform GetDestinationPlatform(
-      const std::string& selected_launch_name,
-      PickerAction picker_action);
+  // stay in Chrome, otherwise the platform is directly encoded in the action
+  // (like ARC_APP_PRESSED).
+  static Platform GetDestinationPlatform(PickerAction picker_action);
 
   // Converts the provided |entry_type|, |close_reason| and |should_persist|
   // boolean to a PickerAction value for recording in UMA.
@@ -96,18 +91,11 @@ class IntentHandlingMetrics {
                                       IntentPickerCloseReason close_reason,
                                       bool should_persist);
 
-  IntentHandlingMetrics();
-  static void RecordIntentPickerMetrics(Source source,
-                                        bool should_persist,
-                                        PickerAction action,
-                                        Platform platform);
+  static void RecordIntentPickerMetrics(PickerAction action, Platform platform);
 
   static void RecordIntentPickerUserInteractionMetrics(
-      content::BrowserContext* context,
-      const std::string& selected_app_package,
       PickerEntryType entry_type,
       IntentPickerCloseReason close_reason,
-      Source source,
       bool should_persist);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -115,6 +103,13 @@ class IntentHandlingMetrics {
                                             apps::PickerEntryType entry_type,
                                             bool accepted,
                                             bool persisted);
+
+  static void RecordExternalProtocolUserInteractionMetrics(
+      content::BrowserContext* context,
+      PickerEntryType entry_type,
+      IntentPickerCloseReason close_reason,
+      bool should_persist);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static void RecordOpenBrowserMetrics(AppType type);
