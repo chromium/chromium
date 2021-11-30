@@ -8,6 +8,27 @@ import("//build/config/ui.gni")
 assert(is_chromeos_ash)
 assert(use_ozone)
 
+source_set("browser_util") {
+  sources = [
+    "browser_util.cc",
+    "browser_util.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/mojom",
+    "//components/exo",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/version_info",
+    "//google_apis",
+  ]
+}
+
 source_set("crosapi") {
   sources = [
     "arc_ash.cc",
@@ -28,8 +49,6 @@ source_set("crosapi") {
     "browser_service_host_ash.cc",
     "browser_service_host_ash.h",
     "browser_service_host_observer.h",
-    "browser_util.cc",
-    "browser_util.h",
     "browser_version_service_ash.cc",
     "browser_version_service_ash.h",
     "cert_database_ash.cc",
@@ -47,6 +66,8 @@ source_set("crosapi") {
     "crosapi_id.h",
     "crosapi_manager.cc",
     "crosapi_manager.h",
+    "crosapi_util.cc",
+    "crosapi_util.h",
     "device_attributes_ash.cc",
     "device_attributes_ash.h",
     "device_settings_ash.cc",
@@ -203,6 +224,8 @@ source_set("crosapi") {
   # depend on //chrome/browser/chromeos. However, that creates a circular
   # dependency, so add this indirect dependency to make it work as intended.
   deps += [ "//ash/webui/print_management/mojom" ]
+
+  public_deps = [ ":browser_util" ]
 }
 
 source_set("test_support") {
@@ -235,6 +258,7 @@ source_set("unit_tests") {
     "browser_util_unittest.cc",
     "browser_version_service_ash_unittest.cc",
     "chrome_app_window_tracker_ash_unittest.cc",
+    "crosapi_util_unittest.cc",
     "download_controller_ash_unittest.cc",
     "fake_migration_progress_tracker.h",
     "field_trial_service_ash_unittest.cc",

@@ -24,8 +24,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
@@ -296,7 +296,7 @@ std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsWebAppsCrosapiEnabled() {
   return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||
-         base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+         crosapi::browser_util::IsLacrosPrimaryBrowser();
 }
 #endif
 

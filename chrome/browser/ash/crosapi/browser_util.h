@@ -5,20 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 
-#include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
+#include <string>
+
 #include "base/feature_list.h"
-#include "base/token.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class AccountId;
 class PrefRegistrySimple;
 class PrefService;
-class Profile;
-class AccountId;
 
 namespace aura {
 class Window;
@@ -26,12 +20,9 @@ class Window;
 
 namespace base {
 class FilePath;
+class Value;
 class Version;
 }  // namespace base
-
-namespace mojo {
-class PlatformChannelEndpoint;
-}  // namespace mojo
 
 namespace version_info {
 enum class Channel;
@@ -203,54 +194,6 @@ bool IsLacrosWindow(const aura::Window* window);
 // account_manager logic.
 bool DoesMetadataSupportNewAccountManager(base::Value* metadata);
 
-// Checks for the given profile if the user is affiliated or belongs to the
-// sign-in profile.
-bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
-
-// Returns the UUID and version for all tracked interfaces. Exposed for testing.
-base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
-
-// Represents how to launch Lacros Chrome.
-struct InitialBrowserAction {
-  explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
-  InitialBrowserAction(crosapi::mojom::InitialBrowserAction action,
-                       std::vector<GURL> urls);
-  InitialBrowserAction(InitialBrowserAction&&);
-  InitialBrowserAction& operator=(InitialBrowserAction&&);
-  ~InitialBrowserAction();
-
-  // Mode how to launch Lacros chrome.
-  crosapi::mojom::InitialBrowserAction action;
-
-  // If action is kOpenWindowWithUrls, URLs here is passed to Lacros Chrome,
-  // and they will be opened.
-  std::vector<GURL> urls;
-};
-
-// Returns the initial parameter to be passed to Crosapi client,
-// such as lacros-chrome.
-mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
-
-// Invite the lacros-chrome to the mojo universe.
-// Queue messages to establish the mojo connection, so that the passed IPC is
-// available already when lacros-chrome accepts the invitation.
-mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
-    ::crosapi::EnvironmentProvider* environment_provider,
-    mojo::PlatformChannelEndpoint local_endpoint,
-    base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
-        crosapi_callback);
-
-// Creates a memory backed file containing the serialized |params|,
-// and returns its FD.
-base::ScopedFD CreateStartupData(
-    ::crosapi::EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
-
 // Reads `kDataVerPref` and gets corresponding data version for `user_id_hash`.
 // If no such version is registered yet, returns `Version` that is invalid.
 // Should only be called on UI thread since it reads from `LocalState`.
@@ -288,9 +231,6 @@ ComponentInfo GetLacrosComponentInfo();
 // Returns the update channel associated with the given loaded lacros selection.
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
-
-// Returns the device settings needed for Lacros.
-mojom::DeviceSettingsPtr GetDeviceSettings();
 
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.

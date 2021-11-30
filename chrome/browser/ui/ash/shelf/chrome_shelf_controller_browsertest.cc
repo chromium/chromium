@@ -93,6 +93,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -644,15 +645,19 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
+  DCHECK(web_app::IsWebAppsCrosapiEnabled());
+
   EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
   EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(
                     ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
+  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_APP));
 
   CreateBrowser(profile());
 
   EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
-  EXPECT_NE(-1, shelf_model()->GetItemIndexForType(
+  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(
                     ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
+  EXPECT_NE(-1, shelf_model()->GetItemIndexForType(ash::TYPE_APP));
 }
 
 // Test that we can launch a platform app with more than one window.

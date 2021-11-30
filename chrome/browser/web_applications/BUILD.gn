@@ -328,6 +328,7 @@ source_set("web_applications") {
       "//ash/webui/personalization_app",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
+      "//chrome/browser/ash/crosapi:browser_util",
       "//chromeos/strings",
       "//components/arc/mojom",
     ]

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
