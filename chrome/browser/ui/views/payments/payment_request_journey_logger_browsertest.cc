@@ -1310,26 +1310,6 @@ class PaymentRequestJourneyLoggerWithoutBasicCardTestBase
     feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
   }
 
-  // Install the payment app specified by `hostname`, e.g., "a.com". Note that
-  // the origin has to be initialized first to be supported here. The payment
-  // method of the installed payment app will be outputted in
-  // `url_method_output`, e.g., "https://a.com:12345".
-  void InstallPaymentApp(const std::string& hostname,
-                         std::string* url_method_output) {
-    NavigateTo(hostname, "/payment_handler_installer.html");
-    *url_method_output = https_server()->GetURL(hostname, "/").spec();
-    *url_method_output =
-        url_method_output->substr(0, url_method_output->length() - 1);
-    ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
-    ASSERT_EQ(
-        "success",
-        content::EvalJs(
-            GetActiveWebContents(),
-            content::JsReplace(
-                "install('payment_request_success_responder.js', [$1], false)",
-                *url_method_output)));
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1343,10 +1323,12 @@ IN_PROC_BROWSER_TEST_F(
     PaymentRequestJourneyLoggerAllSectionStatsWithoutBasicCardTest,
     NumberOfSuggestionsShown_Completed) {
   std::string a_method_name;
-  InstallPaymentApp("a.com", &a_method_name);
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
 
   std::string b_method_name;
-  InstallPaymentApp("b.com", &b_method_name);
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
 
   NavigateTo("c.com",
              "/payment_request_contact_details_and_free_shipping_test.html");

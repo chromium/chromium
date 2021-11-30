@@ -97,6 +97,8 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
  * Queries CanMakePayment and the shows the PaymentRequest after. This request
  * will be sent with url-based methods only.
  * @param {Array<Object>} methods An array of payment method objects.
+ * @return {string} 'success' if show() has been successfully called; otherwise,
+ *         return the error message.
  */
  async function queryShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
   try {
@@ -116,8 +118,10 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
         .catch(function(error) {
           print(error);
         });
+    return 'success';
   } catch (error) {
     print(error.message);
+    return error.message;
   }
 }
 

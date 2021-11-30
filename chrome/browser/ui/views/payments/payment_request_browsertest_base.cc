@@ -274,6 +274,29 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
     event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED);
 }
 
+// Install the payment app specified by `hostname`, e.g., "a.com". Specify the
+// filename of the service worker with `service_worker_filename`. Note that
+// the origin has to be initialized first to be supported here. The payment
+// method of the installed payment app will be outputted in
+// `url_method_output`, e.g., "https://a.com:12345".
+void PaymentRequestBrowserTestBase::InstallPaymentApp(
+    const std::string& hostname,
+    const std::string& service_worker_filename,
+    std::string* url_method_output) {
+  NavigateTo(hostname, "/payment_handler_installer.html");
+  *url_method_output = https_server()->GetURL(hostname, "/").spec();
+  *url_method_output =
+      url_method_output->substr(0, url_method_output->length() - 1);
+  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("install($1, [$2], false)",
+                                               service_worker_filename,
+                                               *url_method_output)));
+  // We can't output `url_method_output` by return because the ASSERTs require
+  // the method to return void.
+}
+
 void PaymentRequestBrowserTestBase::InvokePaymentRequestUI() {
   InvokePaymentRequestUIWithJs(
       "(function() { document.getElementById('buy').click(); })();");
