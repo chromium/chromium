@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/mojom/obb_mounter.mojom.h"
+#include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

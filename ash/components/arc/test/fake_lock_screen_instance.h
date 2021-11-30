@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_LOCK_SCREEN_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_LOCK_SCREEN_INSTANCE_H_
 
-#include "components/arc/mojom/lock_screen.mojom.h"
+#include "ash/components/arc/mojom/lock_screen.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {

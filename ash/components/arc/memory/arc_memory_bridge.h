@@ -5,9 +5,9 @@
 #ifndef ASH_COMPONENTS_ARC_MEMORY_ARC_MEMORY_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_MEMORY_ARC_MEMORY_BRIDGE_H_
 
+#include "ash/components/arc/mojom/memory.mojom.h"
 #include "base/callback_forward.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/memory.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

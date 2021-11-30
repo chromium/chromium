@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_stream_adapter.h"
-#include "components/arc/mojom/nearby_share.mojom.h"
 #include "content/public/browser/browser_thread.h"
 
 class GURL;

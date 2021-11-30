@@ -38,6 +38,15 @@ if (is_chromeos_ash) {
       "keyboard_shortcut.mojom",
       "keymaster.mojom",
       "kiosk.mojom",
+      "lock_screen.mojom",
+      "media_session.mojom",
+      "memory.mojom",
+      "midis.mojom",
+      "nearby_share.mojom",
+      "net.mojom",
+      "obb_mounter.mojom",
+      "payment_app.mojom",
+      "pip.mojom",
     ]
 
     public_deps = [

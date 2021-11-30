@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_NET_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_NET_INSTANCE_H_
 
-#include "components/arc/mojom/net.mojom.h"
+#include "ash/components/arc/mojom/net.mojom.h"
 
 namespace arc {
 

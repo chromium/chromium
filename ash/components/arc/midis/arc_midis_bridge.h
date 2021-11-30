@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "components/arc/mojom/midis.mojom.h"
+#include "ash/components/arc/mojom/midis.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

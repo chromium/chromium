@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_PIP_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_PIP_INSTANCE_H_
 
-#include "components/arc/mojom/pip.mojom.h"
+#include "ash/components/arc/mojom/pip.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

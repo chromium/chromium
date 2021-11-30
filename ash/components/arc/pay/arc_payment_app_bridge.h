@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "base/callback_forward.h"
-#include "components/arc/mojom/payment_app.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

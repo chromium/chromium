@@ -4,8 +4,8 @@
 
 #include "ash/components/arc/test/fake_nearby_share_instance.h"
 
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/callback_helpers.h"
-#include "components/arc/mojom/nearby_share.mojom.h"
 
 namespace arc {
 

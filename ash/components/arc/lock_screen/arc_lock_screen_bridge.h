@@ -5,9 +5,9 @@
 #ifndef ASH_COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 
+#include "ash/components/arc/mojom/lock_screen.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 

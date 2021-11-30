@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_NEARBY_SHARE_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_NEARBY_SHARE_INSTANCE_H_
 
-#include "components/arc/mojom/nearby_share.mojom.h"
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {

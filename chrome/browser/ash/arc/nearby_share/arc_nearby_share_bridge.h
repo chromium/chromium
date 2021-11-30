@@ -9,9 +9,9 @@
 #include <map>
 #include <memory>
 
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
-#include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
