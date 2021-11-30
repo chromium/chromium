@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -57,7 +58,16 @@ class TraceableStateForTest
 
 // TODO(kraynov): TraceableCounter tests.
 
-TEST(TracingHelperTest, TraceableState) {
+// crbug.com/1275221: tests are flaky on CrOS and Linux
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#define MAYBE_TraceableState DISABLED_TraceableState
+#define MAYBE_TraceableStateOperators DISABLED_TraceableStateOperators
+#else
+#define MAYBE_TraceableState TraceableState
+#define MAYBE_TraceableStateOperators TraceableStateOperators
+#endif
+
+TEST(TracingHelperTest, MAYBE_TraceableState) {
   TraceableVariableController controller;
   TraceableStateForTest state(&controller);
   controller.OnTraceLogEnabled();
@@ -70,7 +80,7 @@ TEST(TracingHelperTest, TraceableState) {
   ExpectTraced("negative");
 }
 
-TEST(TracingHelperTest, TraceableStateOperators) {
+TEST(TracingHelperTest, MAYBE_TraceableStateOperators) {
   TraceableVariableController controller;
   TraceableState<int, TracingCategoryName::kDebug> x(-1, "X", &controller,
                                                      SignOfInt);
