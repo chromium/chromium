@@ -1403,7 +1403,7 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByNotNow) {
 TEST_F(TriggerScriptCoordinatorTest, StoppingTwiceDoesNotCrash) {
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
-  EXPECT_CALL(*mock_ui_delegate_, Detach).Times(1);
+  EXPECT_CALL(*mock_ui_delegate_, Detach).Times(2);
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
