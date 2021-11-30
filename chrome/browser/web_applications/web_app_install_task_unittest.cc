@@ -564,6 +564,35 @@ TEST_F(WebAppInstallTaskTest, WebContentsDestroyed) {
   EXPECT_TRUE(callback_called);
 }
 
+TEST_F(WebAppInstallTaskTest, InstallTaskDestroyed) {
+  const GURL url = GURL("https://example.com/path");
+  CreateDefaultDataToRetrieve(url);
+  CreateRendererAppInfo(url, "Name", "Description");
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+  const bool force_shortcut_app = false;
+
+  install_task_->InstallWebAppFromManifestWithFallback(
+      web_contents(), force_shortcut_app,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(InstallResultCode::kInstallTaskDestroyed, code);
+            EXPECT_EQ(AppId(), installed_app_id);
+            callback_called = true;
+            run_loop.Quit();
+          }));
+
+  // Destroy install task.
+  install_task_.reset();
+
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+}
+
 TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   const std::string renderer_description = "RendererDescription";
   CreateRendererAppInfo(GURL("https://renderer.com/path"), "RendererName",

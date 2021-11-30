@@ -93,6 +93,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kPreviouslyUninstalled";
     case InstallResultCode::kWebContentsDestroyed:
       return os << "kWebContentsDestroyed";
+    case InstallResultCode::kInstallTaskDestroyed:
+      return os << "kInstallTaskDestroyed";
     case InstallResultCode::kWriteDataFailed:
       return os << "kWriteDataFailed";
     case InstallResultCode::kUserInstallDeclined:

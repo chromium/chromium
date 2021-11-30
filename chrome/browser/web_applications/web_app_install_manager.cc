@@ -339,10 +339,12 @@ void WebAppInstallManager::
     return;
   }
 
-  // The web contents getting destroyed indicates we could be shutting down;
-  // don't enqueue another task.
-  if (code == InstallResultCode::kWebContentsDestroyed)
+  // The install task or web contents getting destroyed indicates we could be
+  // shutting down; don't enqueue another task.
+  if (code == InstallResultCode::kWebContentsDestroyed ||
+      code == InstallResultCode::kInstallTaskDestroyed) {
     return;
+  }
 
   // Install failed. Do the fallback install from info fetching just icon URLs.
   auto task = std::make_unique<WebAppInstallTask>(

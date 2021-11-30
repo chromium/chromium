@@ -115,7 +115,12 @@ enum class InstallResultCode {
   kSuccessOfflineOnlyInstall = 23,
   kSuccessOfflineFallbackInstall = 24,
 
-  kMaxValue = kSuccessOfflineFallbackInstall,
+  // Failure category:
+  // The install task was destroyed, most likely due to WebAppInstallManager
+  // shutdown.
+  kInstallTaskDestroyed = 25,
+
+  kMaxValue = kInstallTaskDestroyed,
 };
 
 // Checks if InstallResultCode is not a failure.

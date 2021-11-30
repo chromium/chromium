@@ -104,7 +104,12 @@ WebAppInstallTask::WebAppInstallTask(
     error_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 }
 
-WebAppInstallTask::~WebAppInstallTask() = default;
+WebAppInstallTask::~WebAppInstallTask() {
+  // If this task is still observing a WebContents, then the callbacks haven't
+  // yet been run.  Run them before the task is destroyed.
+  if (web_contents())
+    CallInstallCallback(AppId(), InstallResultCode::kInstallTaskDestroyed);
+}
 
 void WebAppInstallTask::ExpectAppId(const AppId& expected_app_id) {
   expected_app_id_ = expected_app_id;
