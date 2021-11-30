@@ -941,8 +941,10 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
   EXPECT_EQ(1u, entries.size());
 }
 
+// TODO(crbug.com/1274972): Make this work with NavigationThreadingOptimizations
+// enabled.
 IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
-                       PrerenderingShouldNotUpdateBlocklists) {
+                       DISABLED_PrerenderingShouldNotUpdateBlocklists) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
