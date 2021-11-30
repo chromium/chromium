@@ -270,18 +270,17 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 
 // Use this code in your class declaration in its .h file to declare an
 // identifier that is scoped to your class.
-#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName) \
-  static constexpr ui::internal::ElementIdentifierImpl                    \
-      IdentifierName##Provider{#ClassName "::" #IdentifierName};          \
-  static constexpr ui::ElementIdentifier IdentifierName {                 \
-    &IdentifierName##Provider                                             \
+#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
+  static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  static constexpr ui::ElementIdentifier IdentifierName {                    \
+    &IdentifierName##Provider                                                \
   }
 
 // Use this code in your class definition .cc file to define the member
 // variables
-#define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName) \
-  constexpr ui::internal::ElementIdentifierImpl                          \
-      ClassName::IdentifierName##Provider;                               \
+#define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
+  const ui::internal::ElementIdentifierImpl                                 \
+      ClassName::IdentifierName##Provider{#ClassName "::" #IdentifierName}; \
   constexpr ui::ElementIdentifier ClassName::IdentifierName
 
 // Declaring local identifiers in functions, class methods, or local to a .cc
