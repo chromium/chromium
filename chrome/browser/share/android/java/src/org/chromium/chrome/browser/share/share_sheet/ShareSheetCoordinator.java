@@ -70,6 +70,15 @@ import java.util.Set;
 public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptionShareCallback,
                                               ConfigurationChangedObserver,
                                               View.OnLayoutChangeListener {
+    // Knobs to allow for overriding the layout behavior of the share sheet row,
+    // as used for deciding how to rank share targets. These are here to allow
+    // tests not to depend on either the real physical dimensions of the test
+    // device or the real layout values, which are in the resource bundle and
+    // may vary depending on screen DPI.
+    public static int FORCED_SCREEN_WIDTH_FOR_TEST;
+    public static int FORCED_TILE_WIDTH_FOR_TEST;
+    public static int FORCED_TILE_MARGIN_FOR_TEST;
+
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mTabProvider;
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
@@ -485,12 +494,17 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     private int numberOf3PTilesThatFitOnScreen(Activity activity) {
-        int screenWidth =
-                ContextUtils.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-        int tileWidth =
-                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
-        int tileMargin =
-                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
+        int screenWidth = FORCED_SCREEN_WIDTH_FOR_TEST != 0 ? FORCED_SCREEN_WIDTH_FOR_TEST
+                                                            : ContextUtils.getApplicationContext()
+                                                                      .getResources()
+                                                                      .getDisplayMetrics()
+                                                                      .widthPixels;
+        int tileWidth = FORCED_TILE_WIDTH_FOR_TEST != 0
+                ? FORCED_TILE_WIDTH_FOR_TEST
+                : activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
+        int tileMargin = FORCED_TILE_MARGIN_FOR_TEST != 0
+                ? FORCED_TILE_MARGIN_FOR_TEST
+                : activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
         // In 'fix more' mode, ask for as many tiles as can fit; this will probably end up looking a
         // bit strange since there will likely be an uneven amount of padding on the right edge.
         // When not in that mode, the default is 10 tiles.

@@ -247,4 +247,12 @@ void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
   if (instance)
     instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
 }
+
+void JNI_ShareHistoryBridge_Clear(JNIEnv* env,
+                                  const JavaParamRef<jobject>& jprofile) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  auto* instance = sharing::ShareHistory::Get(profile);
+  if (instance)
+    instance->Clear();
+}
 #endif

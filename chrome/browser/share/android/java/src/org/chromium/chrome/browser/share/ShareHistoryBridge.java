@@ -17,8 +17,14 @@ public class ShareHistoryBridge {
         ShareHistoryBridgeJni.get().addShareEntry(profile, target);
     }
 
+    public static void clear(Profile profile) {
+        assert profile != null;
+        ShareHistoryBridgeJni.get().clear(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         void addShareEntry(Profile profile, String string);
+        void clear(Profile profile);
     }
 }
