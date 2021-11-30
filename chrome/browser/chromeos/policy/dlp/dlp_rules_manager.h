@@ -140,7 +140,7 @@ class DlpRulesManager : public KeyedService {
 
   // Returns a list of files inodes disallowed to be transferred to
   // |destination|.
-  virtual std::vector<uint64_t> GetDisallowedTransfers(
+  virtual std::vector<uint64_t> GetDisallowedFileTransfers(
       const std::vector<FileMetadata>& transferred_files,
       const GURL& destination) const = 0;
 };

@@ -53,7 +53,7 @@ class DlpRulesManagerImpl : public DlpRulesManager {
                                   Restriction restriction,
                                   Level level) const override;
   size_t GetClipboardCheckSizeLimitInBytes() const override;
-  std::vector<uint64_t> GetDisallowedTransfers(
+  std::vector<uint64_t> GetDisallowedFileTransfers(
       const std::vector<FileMetadata>& transferred_files,
       const GURL& destination) const override;
 

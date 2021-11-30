@@ -848,7 +848,7 @@ TEST_F(DlpRulesManagerImplTest, ReportPriority) {
                 DlpRulesManager::Restriction::kScreenShare));
 }
 
-TEST_F(DlpRulesManagerImplTest, GetDisallowedTransfers) {
+TEST_F(DlpRulesManagerImplTest, GetDisallowedFileTransfers) {
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls_1(base::Value::Type::LIST);
@@ -881,7 +881,7 @@ TEST_F(DlpRulesManagerImplTest, GetDisallowedTransfers) {
 
   std::vector<uint64_t> expected_output = {inode_1, inode_2};
 
-  EXPECT_EQ(expected_output, dlp_rules_manager_.GetDisallowedTransfers(
+  EXPECT_EQ(expected_output, dlp_rules_manager_.GetDisallowedFileTransfers(
                                  transferred_files, GURL(kExampleUrl)));
 }
 
