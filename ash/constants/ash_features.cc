@@ -721,6 +721,11 @@ const base::Feature kImeMozcProto{"ImeMozcProto",
 const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, used to configure the heuristic rules for some advanced IME
+// features (e.g. auto-correct).
+const base::Feature kImeRuleConfig{"ImeRuleConfig",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable system emoji picker.
 const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

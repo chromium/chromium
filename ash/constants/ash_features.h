@@ -274,6 +274,7 @@ extern const base::Feature kLeaveDetection;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeMozcProto;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeRuleConfig;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeSystemEmojiPicker;
 COMPONENT_EXPORT(ASH_CONSTANTS)
