@@ -36,39 +36,27 @@ base::TimeDelta WindowInteractionTimeout() {
 
 }  // anonymous namespace
 
-class WaitUntilObserver::ThenFunction final : public ScriptFunction {
+class WaitUntilObserver::ThenFunction final
+    : public NewScriptFunction::Callable {
  public:
   enum ResolveType {
     kFulfilled,
     kRejected,
   };
 
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      WaitUntilObserver* observer,
-      ResolveType type,
-      PromiseSettledCallback callback) {
-    ThenFunction* self = MakeGarbageCollected<ThenFunction>(
-        script_state, observer, type, std::move(callback));
-    return self->BindToV8Function();
-  }
-
-  ThenFunction(ScriptState* script_state,
-               WaitUntilObserver* observer,
+  ThenFunction(WaitUntilObserver* observer,
                ResolveType type,
                PromiseSettledCallback callback)
-      : ScriptFunction(script_state),
-        observer_(observer),
+      : observer_(observer),
         resolve_type_(type),
         callback_(std::move(callback)) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(observer_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     DCHECK(observer_);
     DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     if (callback_)
@@ -79,7 +67,7 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
     // substeps: Decrement the pending promises count by one."
 
     scoped_refptr<scheduler::EventLoop> event_loop =
-        ExecutionContext::From(GetScriptState())->GetAgent()->event_loop();
+        ExecutionContext::From(script_state)->GetAgent()->event_loop();
 
     // At this time point the microtask A running resolve/reject function of
     // this promise has already been queued, in order to allow microtask A to
@@ -93,7 +81,7 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
           WTF::Bind(&WaitUntilObserver::OnPromiseRejected,
                     WrapPersistent(observer_.Get())));
       observer_ = nullptr;
-      return ScriptPromise::Reject(GetScriptState(), value).AsScriptValue();
+      return ScriptPromise::Reject(script_state, value).AsScriptValue();
     }
 
     event_loop->EnqueueMicrotask(
@@ -103,6 +91,7 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
     return value;
   }
 
+ private:
   Member<WaitUntilObserver> observer_;
   ResolveType resolve_type_;
   PromiseSettledCallback callback_;
@@ -166,11 +155,14 @@ bool WaitUntilObserver::WaitUntil(ScriptState* script_state,
   // 3. `Add f to the extend lifetime promises.`
   // 4. `Increment the pending promises count by one.`
   IncrementPendingPromiseCount();
-  script_promise.Then(
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::kFulfilled,
-                                   std::move(on_promise_fulfilled)),
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::kRejected,
-                                   std::move(on_promise_rejected)));
+  script_promise.Then(MakeGarbageCollected<NewScriptFunction>(
+                          script_state, MakeGarbageCollected<ThenFunction>(
+                                            this, ThenFunction::kFulfilled,
+                                            std::move(on_promise_fulfilled))),
+                      MakeGarbageCollected<NewScriptFunction>(
+                          script_state, MakeGarbageCollected<ThenFunction>(
+                                            this, ThenFunction::kRejected,
+                                            std::move(on_promise_rejected))));
   return true;
 }
 
