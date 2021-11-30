@@ -1709,6 +1709,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.Mid.Size" units="characters"
+    expires_after="2022-11-29">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Records the length of the SDP mid attribute in order to limit its length to
+    16 characters.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.OfferExtmapAllowMixed"
     enum="PeerConnectionOfferExtmapAllowMixed" expires_after="2022-01-02">
   <obsolete>
