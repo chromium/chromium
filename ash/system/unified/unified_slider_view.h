@@ -5,9 +5,8 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/view.h"
 

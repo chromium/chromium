@@ -9,11 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -127,8 +127,8 @@ class BluetoothDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  ash::TopShortcutButton* FindPairNewDeviceClickableView() {
-    return FindViewById<ash::TopShortcutButton*>(
+  ash::IconButton* FindPairNewDeviceClickableView() {
+    return FindViewById<ash::IconButton*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
             kPairNewDeviceClickableView);
   }
@@ -251,8 +251,7 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   EXPECT_FALSE(pair_new_device_view->GetVisible());
@@ -266,8 +265,7 @@ TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);

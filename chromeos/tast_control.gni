@@ -93,6 +93,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1271310: Flaky.
   "quicksettings.OpenSettings",
+  "quicksettings.LockScreen",
 
   # https://crbug.com/1273485: Flaky.
   "printer.ProxyAdd.epson_software_collate",

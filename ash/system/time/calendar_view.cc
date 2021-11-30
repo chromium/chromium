@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -76,24 +77,6 @@ constexpr int kDefaultWeekTitles[] = {
     IDS_ASH_CALENDAR_SUN, IDS_ASH_CALENDAR_MON, IDS_ASH_CALENDAR_TUE,
     IDS_ASH_CALENDAR_WED, IDS_ASH_CALENDAR_THU, IDS_ASH_CALENDAR_FRI,
     IDS_ASH_CALENDAR_SAT};
-
-// The button on the header view.
-class HeaderButton : public TopShortcutButton {
- public:
-  HeaderButton(views::Button::PressedCallback callback,
-               const gfx::VectorIcon& icon,
-               int accessible_name_id)
-      : TopShortcutButton(std::move(callback), icon, accessible_name_id) {}
-  HeaderButton(const HeaderButton&) = delete;
-  HeaderButton& operator=(const HeaderButton&) = delete;
-  ~HeaderButton() override = default;
-
-  // Does not need the background color from `TopShortcutButton`.
-  void PaintButtonContents(gfx::Canvas* canvas) override {
-    views::ImageButton::PaintButtonContents(canvas);
-  }
-};
-
 // The overridden `Label` view used in `CalendarView`.
 class CalendarLabel : public views::Label {
  public:
@@ -290,15 +273,15 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                                                kContentHorizontalPadding));
   tri_view->AddView(TriView::Container::START, header_);
 
-  down_button_ = new HeaderButton(
+  down_button_ = new IconButton(
       base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
                           base::Unretained(this), /*is_scrolling_up=*/false),
-      vector_icons::kCaretDownIcon,
+      IconButton::Type::kSmallFloating, vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
-  up_button_ = new HeaderButton(
+  up_button_ = new IconButton(
       base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
                           base::Unretained(this), /*is_scrolling_up=*/true),
-      vector_icons::kCaretUpIcon,
+      IconButton::Type::kSmallFloating, vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
 
   tri_view->AddView(TriView::Container::END, down_button_);
