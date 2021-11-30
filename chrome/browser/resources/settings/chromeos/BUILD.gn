@@ -570,9 +570,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_toolbar/os_toolbar.js",
     "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
     "chromeos/parental_controls_page/parental_controls_page.m.js",
-    "chromeos/personalization_page/change_picture.m.js",
-    "chromeos/personalization_page/dark_mode_subpage.m.js",
-    "chromeos/personalization_page/personalization_page.m.js",
+    "chromeos/personalization_page/change_picture.js",
+    "chromeos/personalization_page/dark_mode_subpage.js",
+    "chromeos/personalization_page/personalization_page.js",
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
     "chromeos/search_handler.m.js",
@@ -794,7 +794,7 @@ group("polymer3_elements") {
     "os_settings_ui:web_components",
     "os_toolbar:web_components",
     "parental_controls_page:polymer3_elements",
-    "personalization_page:polymer3_elements",
+    "personalization_page:web_components",
     "settings_scheduler_slider:web_components",
 
     # Local targets

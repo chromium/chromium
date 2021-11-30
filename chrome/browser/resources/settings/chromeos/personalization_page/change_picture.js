@@ -7,12 +7,34 @@
  * 'settings-change-picture' is the settings subpage containing controls to
  * edit a ChromeOS user's picture.
  */
+import '//resources/cr_elements/chromeos/cr_picture/cr_picture_list.js';
+import '//resources/cr_elements/chromeos/cr_picture/cr_picture_pane.js';
+import '../../settings_shared_css.js';
+
+import {CrPicture} from '//resources/cr_elements/chromeos/cr_picture/cr_picture_types.js';
+import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from '//resources/cr_elements/chromeos/cr_picture/png.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl, DefaultImage} from './change_picture_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-change-picture',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     I18nBehavior,
     WebUIListenerBehavior,
   ],
@@ -40,7 +62,7 @@ Polymer({
 
     /**
      * The current set of the default user images.
-     * @private {?Array<!settings.DefaultImage>}
+     * @private {?Array<!DefaultImage>}
      */
     currentDefaultImages_: {
       type: Object,
@@ -93,7 +115,7 @@ Polymer({
     'switch-mode': 'onSwitchMode_',
   },
 
-  /** @private {?settings.ChangePictureBrowserProxy} */
+  /** @private {?ChangePictureBrowserProxy} */
   browserProxy_: null,
 
   /** @private {?CrPictureListElement} */
@@ -104,7 +126,7 @@ Polymer({
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.ChangePictureBrowserProxyImpl.getInstance();
+    this.browserProxy_ = ChangePictureBrowserProxyImpl.getInstance();
     this.pictureList_ =
         /** @type {CrPictureListElement} */ (this.$.pictureList);
   },
@@ -126,7 +148,7 @@ Polymer({
         'camera-presence-changed', this.receiveCameraPresence_.bind(this));
 
     // Initialize the announcer once.
-    Polymer.IronA11yAnnouncer.requestAvailability();
+    IronA11yAnnouncer.requestAvailability();
   },
 
   /**
@@ -146,7 +168,7 @@ Polymer({
 
   /** @protected */
   currentRouteChanged(newRoute) {
-    if (newRoute === settings.routes.CHANGE_PICTURE) {
+    if (newRoute === routes.CHANGE_PICTURE) {
       this.browserProxy_.initialize();
       this.browserProxy_.requestSelectedImage();
       this.pictureList_.setFocus();
@@ -159,7 +181,7 @@ Polymer({
 
   /**
    * Handler for the 'default-images-changed' event.
-   * @param {{current_default_images: !Array<!settings.DefaultImage>}} info
+   * @param {{current_default_images: !Array<!DefaultImage>}} info
    * @private
    */
   receiveDefaultImages_(info) {
@@ -185,7 +207,7 @@ Polymer({
    */
   receiveOldImage_(imageUrl) {
     this.oldImageLabel_ = this.i18n(
-        cr.png.isEncodedPngDataUrlAnimated(imageUrl) ? 'oldVideo' : 'oldPhoto');
+        isEncodedPngDataUrlAnimated(imageUrl) ? 'oldVideo' : 'oldPhoto');
     this.oldImagePending_ = false;
     this.pictureList_.setOldImageUrl(imageUrl);
   },
@@ -248,19 +270,19 @@ Polymer({
         break;
       case CrPicture.SelectionTypes.FILE:
         this.browserProxy_.chooseFile();
-        settings.recordSettingChange();
+        recordSettingChange();
         break;
       case CrPicture.SelectionTypes.PROFILE:
         this.browserProxy_.selectProfileImage();
-        settings.recordSettingChange();
+        recordSettingChange();
         break;
       case CrPicture.SelectionTypes.OLD:
         this.browserProxy_.selectOldImage();
-        settings.recordSettingChange();
+        recordSettingChange();
         break;
       case CrPicture.SelectionTypes.DEFAULT:
         this.browserProxy_.selectDefaultImage(image.dataset.url);
-        settings.recordSettingChange();
+        recordSettingChange();
         break;
       default:
         assertNotReached('Selected unknown image type');
