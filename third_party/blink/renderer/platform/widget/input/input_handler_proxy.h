@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_INPUT_HANDLER_PROXY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_INPUT_HANDLER_PROXY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_INPUT_HANDLER_PROXY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_INPUT_HANDLER_PROXY_H_
 
 #include <memory>
 
@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/platform/input/synchronous_input_handler_proxy.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
 class TickClock;
@@ -60,10 +61,9 @@ class CursorControlHandler;
 // the main thread in web tests where only a single thread is used.
 // Each InputHandler instance handles input events intended for a specific
 // WebWidget.
-class BLINK_PLATFORM_EXPORT InputHandlerProxy
-    : public cc::InputHandlerClient,
-      public SynchronousInputHandlerProxy,
-      public cc::SnapFlingClient {
+class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
+                                          public SynchronousInputHandlerProxy,
+                                          public cc::SnapFlingClient {
  public:
   InputHandlerProxy(cc::InputHandler& input_handler,
                     InputHandlerProxyClient* client);
@@ -377,4 +377,4 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_INPUT_HANDLER_PROXY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_INPUT_HANDLER_PROXY_H_

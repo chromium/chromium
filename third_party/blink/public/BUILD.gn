@@ -126,8 +126,6 @@ source_set("blink_headers") {
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
     "platform/impression_conversions.h",
-    "platform/input/input_handler_proxy.h",
-    "platform/input/input_handler_proxy_client.h",
     "platform/input/predictor_factory.h",
     "platform/input/synchronous_input_handler_proxy.h",
     "platform/interface_registry.h",
