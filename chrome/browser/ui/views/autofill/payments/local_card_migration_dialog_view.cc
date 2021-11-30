@@ -388,7 +388,7 @@ END_METADATA
 LocalCardMigrationDialogView::LocalCardMigrationDialogView(
     LocalCardMigrationDialogController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   SetButtons(controller_->AllCardsInvalid()
                  ? ui::DIALOG_BUTTON_OK
                  : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
@@ -414,6 +414,13 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
 LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
 
 void LocalCardMigrationDialogView::ShowDialog() {
+  if (!web_contents_) {
+    // If web_contents does not exist, delete this because at this step this
+    // View is not owned by any class.
+    delete this;
+    return;
+  }
+
   ConstructView();
   constrained_window::CreateBrowserModalDialogViews(
       this, web_contents_->GetTopLevelNativeWindow())
