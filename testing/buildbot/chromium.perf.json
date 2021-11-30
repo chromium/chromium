@@ -1804,7 +1804,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:1638-10.0.19041.868",
+              "gpu": "1002:1638-30.0.13033.1000",
               "os": "Windows-10-19043.1052",
               "pool": "chrome.tests.perf",
               "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
