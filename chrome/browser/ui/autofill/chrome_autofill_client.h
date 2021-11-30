@@ -195,6 +195,8 @@ class ChromeAutofillClient
   // content::WebContentsObserver implementation.
   void PrimaryMainFrameWasResized(bool width_changed) override;
   void WebContentsDestroyed() override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
 
@@ -236,6 +238,9 @@ class ChromeAutofillClient
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
+
+  // True if and only if the associated web_contents() is currently focused.
+  bool has_focus_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
