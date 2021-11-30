@@ -22,6 +22,7 @@ extern const char kPopularSitesVersionPref[];
 
 extern const char kCustomLinksList[];
 extern const char kCustomLinksInitialized[];
+extern const char kCustomLinksForPreinstalledAppsRemoved[];
 
 }  // namespace prefs
 }  // namespace ntp_tiles

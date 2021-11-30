@@ -2019,10 +2019,6 @@ const char kWebAppsAppAgnosticIphState[] = "web_apps.app_agnostic_iph_state";
 const char kWebAppsLastPreinstallSynchronizeVersion[] =
     "web_apps.last_preinstall_synchronize_version";
 
-// A list of all apps that have been migrated to web apps.
-const char kWebAppsMigratedPreinstalledApps[] =
-    "web_apps.migrated_default_apps";
-
 // A list of migrated features for migrating default chrome apps.
 const char kWebAppsDidMigrateDefaultChromeApps[] =
     "web_apps.did_migrate_default_chrome_apps";

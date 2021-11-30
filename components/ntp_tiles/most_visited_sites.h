@@ -30,6 +30,7 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
+#include "components/webapps/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -112,7 +113,8 @@ class MostVisitedSites : public history::TopSitesObserver,
                    std::unique_ptr<PopularSites> popular_sites,
                    std::unique_ptr<CustomLinksManager> custom_links,
                    std::unique_ptr<IconCacher> icon_cacher,
-                   std::unique_ptr<MostVisitedSitesSupervisor> supervisor);
+                   std::unique_ptr<MostVisitedSitesSupervisor> supervisor,
+                   bool is_default_chrome_app_migrated);
 
   MostVisitedSites(const MostVisitedSites&) = delete;
   MostVisitedSites& operator=(const MostVisitedSites&) = delete;
@@ -227,6 +229,12 @@ class MostVisitedSites : public history::TopSitesObserver,
                                    NTPTilesVector popular_tiles,
                                    absl::optional<NTPTile> explore_tile);
 
+  // Verifies if NTPTile App was migrated to a WebApp.
+  static bool WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url);
+
+  // Verifies if NTPTile App comes from a PreInstalledApp.
+  static bool IsNtpTileFromPreinstalledApp(GURL url);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesTest,
                            ShouldDeduplicateDomainWithNoWwwDomain);
@@ -290,6 +298,9 @@ class MostVisitedSites : public history::TopSitesObserver,
   // |SaveTilesAndNotify| at the end.
   void MergeMostVisitedTiles(NTPTilesVector personal_tiles);
 
+  // Removes pre installed apps which turn invalid because of migration.
+  NTPTilesVector RemoveInvalidPreinstallApps(NTPTilesVector new_tiles);
+
   // Saves the new tiles and notifies the observer if the tiles were actually
   // changed.
   void SaveTilesAndNotify(NTPTilesVector new_tiles,
@@ -327,6 +338,7 @@ class MostVisitedSites : public history::TopSitesObserver,
                        ChangeReason change_reason) override;
 
   raw_ptr<PrefService> prefs_;
+
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;
@@ -334,6 +346,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   std::unique_ptr<MostVisitedSitesSupervisor> supervisor_;
   std::unique_ptr<HomepageClient> homepage_client_;
   std::unique_ptr<ExploreSitesClient> explore_sites_client_;
+  bool is_default_chrome_app_migrated_;
 
   base::ObserverList<Observer> observers_;
 

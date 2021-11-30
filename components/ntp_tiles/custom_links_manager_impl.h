@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 #include "components/ntp_tiles/custom_links_store.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,6 +70,10 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // Stores the current list to the profile's preferences. Does not notify
   // |OnPreferenceChanged|.
   void StoreLinks();
+
+  // Checks during instantiation to remove custom shortcut links
+  // created through preinstalled apps.
+  void RemoveCustomLinksForPreinstalledApps();
 
   // Returns an iterator into |custom_links_|.
   std::vector<Link>::iterator FindLinkWithUrl(const GURL& url);

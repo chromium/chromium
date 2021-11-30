@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
@@ -18,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+
 class GURL;
 class Profile;
 
@@ -27,7 +29,8 @@ class WebContents;
 
 // Handles bidirectional communication between MV tiles and the browser.
 class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
-                           public ntp_tiles::MostVisitedSites::Observer {
+                           public ntp_tiles::MostVisitedSites::Observer,
+                           public web_app::PreinstalledWebAppManager::Observer {
  public:
   MostVisitedHandler(
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
@@ -78,6 +81,10 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   void OnIconMadeAvailable(const GURL& site_url) override;
 
   raw_ptr<Profile> profile_;
+  // web_app::PreinstalledWebAppManager::Observer
+  void OnMigrationRun() override;
+  void OnDestroyed() override;
+
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
   raw_ptr<content::WebContents> web_contents_;
   NTPUserDataLogger logger_;
@@ -86,6 +93,10 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
 
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandler> page_handler_;
   mojo::Remote<most_visited::mojom::MostVisitedPage> page_;
+
+  base::ScopedObservation<web_app::PreinstalledWebAppManager,
+                          web_app::PreinstalledWebAppManager::Observer>
+      preinstalled_web_app_observer_{this};
 
   base::WeakPtrFactory<MostVisitedHandler> weak_ptr_factory_{this};
 };

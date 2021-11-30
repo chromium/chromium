@@ -8,10 +8,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/search/ntp_features.h"
@@ -55,6 +58,13 @@ MostVisitedHandler::MostVisitedHandler(
       page_(std::move(pending_page)) {
   most_visited_sites_->AddMostVisitedURLsObserver(
       this, ntp_tiles::kMaxNumMostVisited);
+
+  web_app::WebAppProvider* web_app_provider_ =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider_) {
+    preinstalled_web_app_observer_.Observe(
+        &web_app_provider_->preinstalled_web_app_manager());
+  }
 }
 
 MostVisitedHandler::~MostVisitedHandler() = default;
@@ -217,3 +227,12 @@ void MostVisitedHandler::OnURLsAvailable(
 }
 
 void MostVisitedHandler::OnIconMadeAvailable(const GURL& site_url) {}
+
+void MostVisitedHandler::OnMigrationRun() {
+  most_visited_sites_->RefreshTiles();
+}
+
+void MostVisitedHandler::OnDestroyed() {
+  if (preinstalled_web_app_observer_.IsObserving())
+    preinstalled_web_app_observer_.Reset();
+}

@@ -593,6 +593,7 @@ static_library("ui") {
     "//components/web_cache/browser",
     "//components/web_resource",
     "//components/webapps/browser",
+    "//components/webapps/common",
     "//components/webrtc_logging/browser",
     "//components/zoom",
     "//content/app/resources",

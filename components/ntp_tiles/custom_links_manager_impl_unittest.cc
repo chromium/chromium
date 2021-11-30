@@ -51,6 +51,10 @@ const char kTestTitle[] = "Test";
 const char16_t kTestTitle16[] = u"Test";
 const char kTestUrl[] = "http://test.com/";
 
+const char16_t kTestGmail16[] = u"Gmail";
+const char kTestGmailURL[] =
+    "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html";
+
 base::Value::ListStorage FillTestListStorage(const char* url,
                                              const char* title,
                                              const bool is_most_visited) {
@@ -92,6 +96,11 @@ class CustomLinksManagerImplTest : public testing::Test {
  public:
   CustomLinksManagerImplTest() {
     CustomLinksManagerImpl::RegisterProfilePrefs(prefs_.registry());
+    base::Value::ListStorage defaults;
+    defaults.emplace_back("pjkljhegncpnkpknbcohdijeoejaedia");
+    prefs_.registry()->RegisterListPref(
+        webapps::kWebAppsMigratedPreinstalledApps,
+        base::Value(std::move(defaults)));
   }
 
   CustomLinksManagerImplTest(const CustomLinksManagerImplTest&) = delete;
@@ -310,6 +319,34 @@ TEST_F(CustomLinksManagerImplTest, DeleteLink) {
   // Delete link.
   EXPECT_TRUE(custom_links_->DeleteLink(GURL(kTestUrl)));
   EXPECT_TRUE(custom_links_->GetLinks().empty());
+}
+
+TEST_F(CustomLinksManagerImplTest, MigratedDefaultAppDeletedSingle) {
+  NTPTilesVector initial_tiles;
+  AddTile(&initial_tiles, kTestGmailURL, kTestGmail16);
+  // Initialize tile with Gmail URL and then remove them.
+  ASSERT_TRUE(custom_links_->Initialize(initial_tiles));
+  // Create new instance of CustomLinksManagerImpl to trigger the logic.
+  std::unique_ptr<CustomLinksManagerImpl> custom_links_test_ =
+      std::make_unique<CustomLinksManagerImpl>(&prefs_, history_service_.get());
+  // Should be empty as NTP Default App is Removed.
+  ASSERT_TRUE(custom_links_test_->GetLinks().empty());
+}
+
+TEST_F(CustomLinksManagerImplTest, DeletedMigratedDefaultAppMultiLink) {
+  // Initialize tiles vector with random links + Gmail.
+  NTPTilesVector initial_tiles = FillTestTiles(kTestCase2);
+  AddTile(&initial_tiles, kTestGmailURL, kTestGmail16);
+  // Initialize tiles and fill up custom links.
+  ASSERT_TRUE(custom_links_->Initialize(initial_tiles));
+  // Create new instance of CustomLinksManagerImpl to trigger the logic.
+  std::unique_ptr<CustomLinksManagerImpl> custom_links_test_ =
+      std::make_unique<CustomLinksManagerImpl>(&prefs_, history_service_.get());
+  // Verify that Gmail does not exist in the custom links.
+  ASSERT_EQ(std::vector<Link>(
+                {Link{GURL(kTestCase2[0].url), kTestCase2[0].title, true},
+                 Link{GURL(kTestCase2[1].url), kTestCase2[1].title, true}}),
+            custom_links_test_->GetLinks());
 }
 
 TEST_F(CustomLinksManagerImplTest, DeleteLinkWhenUrlDoesNotExist) {

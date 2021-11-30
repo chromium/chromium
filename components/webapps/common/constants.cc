@@ -8,4 +8,7 @@ namespace webapps {
 
 const size_t kMaxMetaTagAttributeLength = 2000;
 
+const char kWebAppsMigratedPreinstalledApps[] =
+    "web_apps.migrated_default_apps";
+
 }  // namespace webapps

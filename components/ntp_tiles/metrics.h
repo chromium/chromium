@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NTP_TILES_METRICS_H_
 #define COMPONENTS_NTP_TILES_METRICS_H_
 
+#include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 
 namespace ntp_tiles {
@@ -19,6 +20,10 @@ void RecordTileImpression(const NTPTileImpression& impression);
 
 // Records a click on a tile.
 void RecordTileClick(const NTPTileImpression& impression);
+
+// Records when a default app tile is deleted with the type of tile.
+void RecordsMigratedDefaultAppDeleted(
+    const DeletedTileType& most_visited_app_type);
 
 }  // namespace metrics
 }  // namespace ntp_tiles

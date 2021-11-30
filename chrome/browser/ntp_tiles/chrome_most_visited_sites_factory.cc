@@ -28,6 +28,8 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/explore_sites/most_visited_client.h"
+#else
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -128,9 +130,14 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess())),
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      std::make_unique<SupervisorBridge>(profile)
+      std::make_unique<SupervisorBridge>(profile),
 #else
-      nullptr
+      nullptr,
+#endif
+#if !defined(OS_ANDROID)
+      web_app::IsAnyChromeAppToWebAppMigrationEnabled(*profile)
+#else
+      false
 #endif
   );
 #if defined(OS_ANDROID)

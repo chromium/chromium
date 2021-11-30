@@ -1215,6 +1215,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"
+    enum="TypeOfDeletedMostVisitedApp" expires_after="M103">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    This records the type of most visited app on the ntp-tile, whether it is
+    from a default app or a custom link. Triggered as soon as a migrated default
+    app or custom link is deleted.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MostVisitedTime" units="ms" expires_after="M77">
   <owner>treib@chromium.org</owner>
   <summary>

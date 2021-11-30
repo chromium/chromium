@@ -51,11 +51,13 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/version_info/version_info.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -348,7 +350,7 @@ void PreinstalledWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
                                "");
-  registry->RegisterListPref(prefs::kWebAppsMigratedPreinstalledApps);
+  registry->RegisterListPref(webapps::kWebAppsMigratedPreinstalledApps);
   registry->RegisterListPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
   registry->RegisterListPref(prefs::kWebAppsUninstalledDefaultChromeApps);
 }
@@ -383,7 +385,11 @@ PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
   }
 }
 
-PreinstalledWebAppManager::~PreinstalledWebAppManager() = default;
+PreinstalledWebAppManager::~PreinstalledWebAppManager() {
+  for (auto& observer : observers_) {
+    observer.OnDestroyed();
+  }
+}
 
 void PreinstalledWebAppManager::SetSubsystems(
     WebAppRegistrar* registrar,
@@ -402,6 +408,16 @@ void PreinstalledWebAppManager::Start() {
 
 void PreinstalledWebAppManager::LoadForTesting(ConsumeInstallOptions callback) {
   Load(std::move(callback));
+}
+
+void PreinstalledWebAppManager::AddObserver(
+    PreinstalledWebAppManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PreinstalledWebAppManager::RemoveObserver(
+    PreinstalledWebAppManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
@@ -656,6 +672,11 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
       IsPreinstalledAppInstallFeatureEnabled(
           kMigrateDefaultChromeAppToWebAppsNonGSuite.name, *profile_));
+  if (uninstall_and_replace_count > 0) {
+    for (auto& observer : observers_) {
+      observer.OnMigrationRun();
+    }
+  }
 
   if (callback) {
     std::move(callback).Run(std::move(install_results),

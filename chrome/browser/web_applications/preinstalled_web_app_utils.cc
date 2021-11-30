@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/common/constants.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -586,7 +587,7 @@ bool IsReinstallPastMilestoneNeeded(
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
   const base::ListValue* migrated_apps =
-      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedPreinstalledApps);
+      profile->GetPrefs()->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   if (!migrated_apps)
     return false;
 
@@ -602,7 +603,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
   ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsMigratedPreinstalledApps);
+                        webapps::kWebAppsMigratedPreinstalledApps);
   if (was_migrated)
     EnsureContains(update, app_id);
   else

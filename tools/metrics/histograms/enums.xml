@@ -86178,6 +86178,15 @@ Full version information for the fingerprint enum values:
              HTTPS load succeeded or failed."/>
 </enum>
 
+<enum name="TypeOfDeletedMostVisitedApp">
+  <summary>
+    This enum denotes the type of app on the deleted ntp_tile as part of bug fix
+    for crbug.com/1250463
+  </summary>
+  <int value="0" label="Default App from most visited links"/>
+  <int value="1" label="Default App with custom links"/>
+</enum>
+
 <enum name="TypeOfVideoInFrame">
   <int value="0" label="Frame do not have video"/>
   <int value="1" label="Frame has video (either inline or fullscreen)"/>
