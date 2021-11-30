@@ -199,6 +199,13 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("Foo serial number 123"));
   EXPECT_EQ("Foo Serial Number <Serial: 7>",
             RedactCustomPatterns("Foo Serial Number 123"));
+  // redact serial number separated by a | with the label "serial"
+  EXPECT_EQ("serial               | <Serial: 8>",
+            RedactCustomPatterns("serial               | 0x1cc04416"));
+  EXPECT_EQ("serial               |<Serial: 9>",
+            RedactCustomPatterns("serial               |0x1cc04417"));
+  EXPECT_EQ("serial|<Serial: 10>", RedactCustomPatterns("serial|0x1cc04418"));
+  EXPECT_EQ("serial|<Serial: 11>", RedactCustomPatterns("serial|agnagna"));
 
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));

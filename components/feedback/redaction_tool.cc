@@ -65,7 +65,7 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // edid-decode, where if we genericized it further then we would catch too
     // many other cases that we don't want to redact.
     {"Serial",
-     "(?i-s)(\\bserial\\s*_?(?:number)?['\"]?\\s*[:=]\\s*['\"]?)"
+     "(?i-s)(\\bserial\\s*_?(?:number)?['\"]?\\s*[:=|]\\s*['\"]?)"
      "([0-9a-zA-Z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)"},
     {"Serial", "( Serial Number )(\\d+)(\\b)"},
 
