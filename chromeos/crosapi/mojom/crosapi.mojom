@@ -808,15 +808,15 @@ struct BrowserInitParams {
   [MinVersion=31]
   bool is_unfiltered_bluetooth_device_enabled@30;
 
-  // Ash publishes the list of workarounds it has implemented to Lacros so
+  // Ash publishes the list of capabilities it has implemented to Lacros so
   // that Lacros can dynamically change its behavior. This should typically take
   // the format of a bug identifier, e.g. "crbug/123" or "b/456". This is
   // primarily necessary for backporting behavior changes and fixes to older
-  // branches. When adding a new workaround, please indicate with a comment when
-  // we can stop publishing the workaround -- e.g. once Ash and Lacros are both
-  // past M100, then we can remove this workaround.
+  // branches. If applicable, when adding a new capability, please indicate with
+  // a comment when we can stop publishing the capability -- e.g. once Ash and
+  // Lacros are both past M100, then we can remove this capability.
   [MinVersion=32]
-  array<string>? ash_workarounds@31;
+  array<string>? ash_capabilities@31;
 
   // Internal chrome:// URLs which can be handled by Ash. These are sent from
   // Ash to Lacros at startup so Lacros knows which URLs are OK to forward.

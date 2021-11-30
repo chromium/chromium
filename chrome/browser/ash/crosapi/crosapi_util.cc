@@ -91,6 +91,10 @@ namespace browser_util {
 
 namespace {
 
+// Capability to support reloading the lacros browser on receiving a
+// notification that the browser component was successfully updated.
+constexpr char kBrowserManagerReloadBrowserCapability[] = "crbug/1237235";
+
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
 absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
@@ -381,6 +385,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
       ash::features::
           IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+
+  params->ash_capabilities = {{kBrowserManagerReloadBrowserCapability}};
 
   return params;
 }
