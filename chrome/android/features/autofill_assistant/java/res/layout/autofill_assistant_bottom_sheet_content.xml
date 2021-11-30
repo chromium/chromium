@@ -14,6 +14,7 @@
         android:id="@+id/scrollable_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:importantForAccessibility="no"
         android:layout_weight="1">
         <LinearLayout
             android:id="@+id/scrollable_content_container"
@@ -21,6 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:clipChildren="false"
+            android:importantForAccessibility="no"
             android:clipToPadding="false" />
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 </org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer>
