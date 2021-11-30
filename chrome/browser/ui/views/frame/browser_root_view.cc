@@ -73,7 +73,6 @@ std::string FindURLMimeType(const GURL& url) {
 
 void OnFindURLMimeType(const GURL& url,
                        int process_id,
-                       int routing_id,
                        FileSupportedCallback callback,
                        const std::string& mime_type) {
   // Check whether the mime type, if given, is known to be supported or whether
@@ -84,9 +83,9 @@ void OnFindURLMimeType(const GURL& url,
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   content::WebPluginInfo plugin;
-  result = result || content::PluginService::GetInstance()->GetPluginInfo(
-                         process_id, routing_id, url, url::Origin(), mime_type,
-                         false, nullptr, &plugin, nullptr);
+  result = result ||
+           content::PluginService::GetInstance()->GetPluginInfo(
+               process_id, url, mime_type, false, nullptr, &plugin, nullptr);
 #endif
 
   std::move(callback).Run(url, result);
@@ -177,7 +176,6 @@ void BrowserRootView::OnDragEntered(const ui::DropTargetEvent& event) {
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&FindURLMimeType, url),
           base::BindOnce(&OnFindURLMimeType, url, rfh->GetProcess()->GetID(),
-                         rfh->GetRoutingID(),
                          base::BindOnce(&BrowserRootView::OnFileSupported,
                                         weak_ptr_factory_.GetWeakPtr())));
     }

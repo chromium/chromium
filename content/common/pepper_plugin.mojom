@@ -29,7 +29,6 @@ interface PepperHost {
   // found plugin.
   [Sync]
   GetPluginInfo(url.mojom.Url url,
-                url.mojom.Origin main_frame_origin,
                 string mime_type) =>
                (bool found,
                 content.mojom.WebPluginInfo plugin_info,

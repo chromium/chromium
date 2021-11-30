@@ -62,12 +62,10 @@ bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
                         bool* is_stale) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   int process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-  int routing_id = web_contents->GetMainFrame()->GetRoutingID();
 
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(
-      process_id, routing_id, navigation_handle->GetURL(),
-      web_contents->GetMainFrame()->GetLastCommittedOrigin(), kPDFMimeType,
+      process_id, navigation_handle->GetURL(), kPDFMimeType,
       false /* allow_wildcard */, is_stale, &plugin_info,
       nullptr /* actual_mime_type */);
 }

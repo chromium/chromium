@@ -820,10 +820,9 @@ void NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse(
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   int render_process_id =
       frame_tree_node->current_frame_host()->GetProcess()->GetID();
-  int routing_id = frame_tree_node->current_frame_host()->GetRoutingID();
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
-      render_process_id, routing_id, resource_request_->url, url::Origin(),
-      head->mime_type, /*allow_wildcard=*/false, &stale, &plugin, nullptr);
+      render_process_id, resource_request_->url, head->mime_type,
+      /*allow_wildcard=*/false, &stale, &plugin, nullptr);
 
   if (stale) {
     // Refresh the plugins asynchronously.
