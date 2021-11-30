@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
@@ -39,12 +40,13 @@ TEST(AnimationEffectInputTest, SortedOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   Element* element = AppendElement(scope.GetDocument());
   KeyframeEffectModelBase* effect = EffectInput::Convert(
-      element, js_keyframes, EffectModel::kCompositeReplace,
-      scope.GetScriptState(), scope.GetExceptionState());
+      element, js_keyframes, EffectModel::kCompositeReplace, script_state,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(1.0, effect->GetFrames()[1]->CheckedOffset());
 }
@@ -64,11 +66,12 @@ TEST(AnimationEffectInputTest, UnsortedOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,
-                       scope.GetScriptState(), scope.GetExceptionState());
+                       script_state, scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
             scope.GetExceptionState().CodeAs<ESErrorType>());
@@ -92,12 +95,13 @@ TEST(AnimationEffectInputTest, LooslySorted) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   Element* element = AppendElement(scope.GetDocument());
   KeyframeEffectModelBase* effect = EffectInput::Convert(
-      element, js_keyframes, EffectModel::kCompositeReplace,
-      scope.GetScriptState(), scope.GetExceptionState());
+      element, js_keyframes, EffectModel::kCompositeReplace, script_state,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(1, effect->GetFrames()[2]->CheckedOffset());
 }
@@ -124,11 +128,12 @@ TEST(AnimationEffectInputTest, OutOfOrderWithNullOffsets) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,
-                       scope.GetScriptState(), scope.GetExceptionState());
+                       script_state, scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
 
@@ -151,11 +156,12 @@ TEST(AnimationEffectInputTest, Invalid) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   Element* element = AppendElement(scope.GetDocument());
   EffectInput::Convert(element, js_keyframes, EffectModel::kCompositeReplace,
-                       scope.GetScriptState(), scope.GetExceptionState());
+                       script_state, scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
             scope.GetExceptionState().CodeAs<ESErrorType>());

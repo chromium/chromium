@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
@@ -134,7 +135,8 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   KeyframeEffect* animation =
       CreateAnimationFromTiming(script_state, element.Get(), js_keyframes, 0);
@@ -211,7 +213,8 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
 
   ScriptValue js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
 
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
@@ -357,7 +360,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
       V8ObjectBuilder(script_state).AddString("width", "0px").GetScriptValue()};
   ScriptValue new_js_keyframes(
       scope.GetIsolate(),
-      ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
+      ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes)
+          .ToLocalChecked());
   effect->setKeyframes(script_state, new_js_keyframes, exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(effect->Model()->Composite(), EffectModel::kCompositeReplace);
