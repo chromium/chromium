@@ -31,8 +31,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       const BluetoothSerialDeviceEnumerator&) = delete;
   ~BluetoothSerialDeviceEnumerator() override;
 
-  void PortAdded(const std::string& device_address,
-                 mojom::SerialPortInfoPtr port);
+  void PortAdded(const std::string& device_address);
   void PortRemoved(const std::string& device_address);
 
   scoped_refptr<BluetoothAdapter> GetAdapter();
@@ -50,14 +49,15 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
  private:
   class AdapterHelper;
 
-  // Map BluetoothDevice address to Port token.
+  // Map BluetoothDevice address to port token.
   using DevicePortsMap =
       std::unordered_map<std::string, base::UnguessableToken>;
 
-  void SetClassicAdapter(
-      scoped_refptr<device::BluetoothAdapter> adapter,
-      std::unordered_map<std::string, base::UnguessableToken> device_ports,
-      std::vector<mojom::SerialPortInfoPtr> ports);
+  // Set the "classic" `adapter`. `port_device_addresses` is a collection of
+  // all known ports device addresses at the time the adapter is detected.
+  // Called once during initialization.
+  void SetClassicAdapter(scoped_refptr<device::BluetoothAdapter> adapter,
+                         std::vector<std::string> port_device_addresses);
 
   base::OnceClosure got_adapter_callback_;
   scoped_refptr<BluetoothAdapter> adapter_;

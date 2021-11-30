@@ -52,26 +52,20 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::OnGotClassicAdapter(
   SEQUENCE_CHECKER(sequence_checker_);
   DCHECK(adapter);
   adapter->AddObserver(this);
-  std::unordered_map<std::string, base::UnguessableToken> device_ports;
+  std::vector<std::string> port_device_addresses;
   BluetoothAdapter::DeviceList devices = adapter->GetDevices();
-  std::vector<mojom::SerialPortInfoPtr> ports;
   for (auto* device : devices) {
     BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
     if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
-      auto port = mojom::SerialPortInfo::New();
-      port->token = base::UnguessableToken::Create();
-      port->path = base::FilePath::FromUTF8Unsafe(device->GetAddress());
-      port->type = mojom::DeviceType::SPP_DEVICE;
-      device_ports.insert(std::make_pair(device->GetAddress(), port->token));
-      ports.push_back(std::move(port));
+      port_device_addresses.push_back(device->GetAddress());
     }
   }
 
   enumerator_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSerialDeviceEnumerator::SetClassicAdapter,
-                     enumerator_, std::move(adapter), std::move(device_ports),
-                     std::move(ports)));
+                     enumerator_, std::move(adapter),
+                     std::move(port_device_addresses)));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceAdded(
@@ -82,14 +76,9 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceAdded(
   if (!base::Contains(device_uuids, GetSerialPortProfileUUID()))
     return;
 
-  auto port = mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  port->path = base::FilePath::FromUTF8Unsafe(device->GetAddress());
-  port->type = mojom::DeviceType::SPP_DEVICE;
   enumerator_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BluetoothSerialDeviceEnumerator::PortAdded, enumerator_,
-                     device->GetAddress(), std::move(port)));
+      FROM_HERE, base::BindOnce(&BluetoothSerialDeviceEnumerator::PortAdded,
+                                enumerator_, device->GetAddress()));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
@@ -115,15 +104,13 @@ BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;
 
 void BluetoothSerialDeviceEnumerator::SetClassicAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter,
-    std::unordered_map<std::string, base::UnguessableToken> device_ports,
-    std::vector<mojom::SerialPortInfoPtr> ports) {
+    std::vector<std::string> port_device_addresses) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(adapter);
-  DCHECK(device_ports_.empty());
   adapter_ = std::move(adapter);
-  device_ports_ = std::move(device_ports);
-  for (auto& port : ports) {
-    AddPort(std::move(port));
+  DCHECK(device_ports_.empty());
+  for (const auto& device_address : port_device_addresses) {
+    PortAdded(device_address);
   }
   if (got_adapter_callback_) {
     std::move(got_adapter_callback_).Run();
@@ -131,10 +118,13 @@ void BluetoothSerialDeviceEnumerator::SetClassicAdapter(
 }
 
 void BluetoothSerialDeviceEnumerator::PortAdded(
-    const std::string& device_address,
-    mojom::SerialPortInfoPtr port) {
+    const std::string& device_address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base::Contains(device_ports_, device_address));
+  auto port = mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->path = base::FilePath::FromUTF8Unsafe(device_address);
+  port->type = mojom::DeviceType::SPP_DEVICE;
   device_ports_.insert(std::make_pair(device_address, port->token));
   AddPort(std::move(port));
 }
