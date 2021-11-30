@@ -1,4 +1,36 @@
-<h1>Cast Receiver</h1>
-<div id="castingPin">Casting PIN: [[pin]]</div>
-<button id="newPin" on-click="requestPin">Generate New PIN</button>
-<button on-click="close">Close</button>
+<style>
+  .button-image {
+    margin-inline-end: 8px;
+  }
+
+  .text-button:not(:focus) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .text-button:hover {
+    background-color: transparent;
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 32px 0;
+  }
+</style>
+<h1>Cast to a new display</h1>
+<div id="codeInputView">
+  <p>Typed input view</p>
+  <cr-button on-click="switchToQrInput" class="text-button">
+    <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+    Use camera instead
+  </cr-button>
+</div>
+<div id="qrInputView">
+  <p>Camera input view</p>
+</div>
+<div id="button-container">
+  <cr-button on-click="close">Close</cr-button>
+  <cr-button id="castButton" class="action-button">Cast</cr-button>
+  <cr-button id="backButton" on-click="switchToCodeInput" class="action-button">Back</cr-button>
+</div>
