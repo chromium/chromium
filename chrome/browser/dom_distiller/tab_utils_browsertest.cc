@@ -174,8 +174,9 @@ class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
   GURL article_url_;
 };
 
+// Disabled as flaky: https://crbug.com/1275025
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       DistillCurrentPageSwapsWebContents) {
+                       DISABLED_DistillCurrentPageSwapsWebContents) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestDistillabilityObserver distillability_observer(initial_web_contents);
