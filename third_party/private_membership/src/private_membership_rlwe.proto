@@ -18,6 +18,8 @@ option optimize_for = LITE_RUNTIME;
 
 package private_membership.rlwe;
 
+option go_package = "github.com/google/private-membership";
+
 import "private_membership.proto";
 import "serialization.proto";
 
