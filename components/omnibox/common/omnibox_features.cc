@@ -260,6 +260,11 @@ const base::Feature kNtpRealboxPedals{"NtpRealboxPedals",
 const base::Feature kNtpRealboxSuggestionAnswers{
     "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable the first batch of Pedals on Android. The Pedals,
+// which will be enabled on Android, should be already enabled on desktop.
+const base::Feature kOmniboxPedalsAndroidBatch1{
+    "OmniboxPedalsAndroidBatch1", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the second batch of Pedals (Safety Check, etc.)
 // for non-English locales (English locales are 'en' and 'en-GB').
 // This feature is only meaningful if `OmniboxPedalsBatch2` is enabled.

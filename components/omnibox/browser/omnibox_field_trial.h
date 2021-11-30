@@ -356,6 +356,9 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // Returns true if the tab switch suggestions flag is enabled.
 bool IsTabSwitchSuggestionsEnabled();
 
+// Returns true if the first batch of Pedals on Android is enabled.
+bool IsPedalsAndroidBatch1Enabled();
+
 // Returns true if the second batch of Pedals is enabled for non-English
 // locales. This is only meaningful if batch 2 is enabled.
 bool IsPedalsBatch2NonEnglishEnabled();

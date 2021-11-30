@@ -4141,6 +4141,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "omnibox-pedals-android-batch1",
+    "owners": [ "gangwu", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "omnibox-pedals-batch2-nonenglish",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 101

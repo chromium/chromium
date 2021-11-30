@@ -2095,6 +2095,9 @@ extern const char kXsurfaceMetricsReportingDescription[];
 extern const char kWebNotesPublishName[];
 extern const char kWebNotesPublishDescription[];
 
+extern const char kOmniboxPedalsAndroidBatch1Name[];
+extern const char kOmniboxPedalsAndroidBatch1Description[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

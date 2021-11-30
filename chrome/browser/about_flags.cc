@@ -4454,6 +4454,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTabSwitchSuggestionsName,
      flag_descriptions::kOmniboxTabSwitchSuggestionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxTabSwitchSuggestions)},
+    {"omnibox-pedals-android-batch1",
+     flag_descriptions::kOmniboxPedalsAndroidBatch1Name,
+     flag_descriptions::kOmniboxPedalsAndroidBatch1Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxPedalsAndroidBatch1)},
 #endif  // defined(OS_ANDROID)
 
     {"omnibox-clobber-triggers-contextual-web-zero-suggest",

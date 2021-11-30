@@ -3643,6 +3643,10 @@ const char kWebNotesPublishName[] = "WebNotes Publish";
 const char kWebNotesPublishDescription[] =
     "Allows users to save their created notes.";
 
+const char kOmniboxPedalsAndroidBatch1Name[] = "Omnibox Pedals Android batch 1";
+const char kOmniboxPedalsAndroidBatch1Description[] =
+    "Enable the first batch of Omnibox Pedals on Android.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)
