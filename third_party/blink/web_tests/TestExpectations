@@ -7391,3 +7391,5 @@ crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollect
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
 crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
 
+# Sheriff 2021-11-30
+crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
