@@ -9,8 +9,6 @@
 
 namespace prefs {
 
-extern const char kComponentUpdatesEnabled[];
-
 extern const char kRecoveryComponentVersion[];
 extern const char kRecoveryComponentUnpackPath[];
 

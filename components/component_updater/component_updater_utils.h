@@ -11,15 +11,18 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace component_updater {
-struct ComponentRegistration;
+namespace update_client {
+struct CrxComponent;
+}  // namespace update_client
 
-absl::optional<ComponentRegistration> GetComponent(
-    const base::flat_map<std::string, ComponentRegistration>& components,
+namespace component_updater {
+
+absl::optional<update_client::CrxComponent> GetComponent(
+    const base::flat_map<std::string, update_client::CrxComponent>& components,
     const std::string& id);
 
-std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
-    const base::flat_map<std::string, ComponentRegistration>&
+std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
+    const base::flat_map<std::string, update_client::CrxComponent>&
         registered_components,
     const std::vector<std::string>& ids);
 

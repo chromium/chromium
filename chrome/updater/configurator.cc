@@ -151,6 +151,10 @@ bool Configurator::EnabledDeltas() const {
   return false;
 }
 
+bool Configurator::EnabledComponentUpdates() const {
+  return false;
+}
+
 bool Configurator::EnabledBackgroundDownloader() const {
   return false;
 }

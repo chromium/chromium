@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "components/component_updater/component_updater_service.h"
+#include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
-absl::optional<ComponentRegistration> GetComponent(
-    const base::flat_map<std::string, ComponentRegistration>& components,
+absl::optional<update_client::CrxComponent> GetComponent(
+    const base::flat_map<std::string, update_client::CrxComponent>& components,
     const std::string& id) {
   const auto it = components.find(id);
   if (it != components.end())
@@ -22,11 +22,11 @@ absl::optional<ComponentRegistration> GetComponent(
   return absl::nullopt;
 }
 
-std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
-    const base::flat_map<std::string, ComponentRegistration>&
+std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
+    const base::flat_map<std::string, update_client::CrxComponent>&
         registered_components,
     const std::vector<std::string>& ids) {
-  std::vector<absl::optional<ComponentRegistration>> components;
+  std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids)
     components.push_back(GetComponent(registered_components, id));
   return components;

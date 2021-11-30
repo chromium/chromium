@@ -25,13 +25,9 @@ namespace base {
 class TimeTicks;
 }
 
-namespace component_updater {
-struct ComponentRegistration;
-}
-
 namespace android_webview {
-using RegisterComponentsCallback = base::RepeatingCallback<bool(
-    const component_updater::ComponentRegistration&)>;
+using RegisterComponentsCallback =
+    base::RepeatingCallback<bool(update_client::CrxComponent)>;
 
 class TestAwComponentUpdateService;
 
@@ -47,8 +43,7 @@ class AwComponentUpdateService {
 
   void StartComponentUpdateService(UpdateCallback finished_callback,
                                    bool on_demand_update);
-  bool RegisterComponent(
-      const component_updater::ComponentRegistration& component);
+  bool RegisterComponent(update_client::CrxComponent component);
   void CheckForUpdates(UpdateCallback on_finished, bool on_demand_update);
 
   void IncrementComponentsUpdatedCount();
@@ -73,9 +68,7 @@ class AwComponentUpdateService {
   void OnUpdateComplete(update_client::Callback callback,
                         const base::TimeTicks& start_time,
                         update_client::Error error);
-  update_client::CrxComponent ToCrxComponent(
-      const component_updater::ComponentRegistration& component) const;
-  absl::optional<component_updater::ComponentRegistration> GetComponent(
+  absl::optional<update_client::CrxComponent> GetComponent(
       const std::string& id) const;
   std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
@@ -89,8 +82,7 @@ class AwComponentUpdateService {
   scoped_refptr<update_client::UpdateClient> update_client_;
 
   // A collection of every registered component.
-  base::flat_map<std::string, component_updater::ComponentRegistration>
-      components_;
+  base::flat_map<std::string, update_client::CrxComponent> components_;
 
   // Maintains the order in which components have been registered. The
   // position of a component id in this sequence indicates the priority of the

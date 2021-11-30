@@ -253,6 +253,10 @@ bool ChromeUpdateClientConfig::EnabledDeltas() const {
   return impl_.EnabledDeltas();
 }
 
+bool ChromeUpdateClientConfig::EnabledComponentUpdates() const {
+  return impl_.EnabledComponentUpdates();
+}
+
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
   return impl_.EnabledBackgroundDownloader();
 }
