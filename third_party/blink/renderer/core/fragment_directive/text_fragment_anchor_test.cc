@@ -95,7 +95,7 @@ class TextFragmentAnchorTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   void SimulateRightClick(int x, int y) {
@@ -105,7 +105,7 @@ class TextFragmentAnchorTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   void SimulateTap(int x, int y) {
@@ -145,7 +145,7 @@ class TextFragmentAnchorTest : public SimTest {
       event.SetFrameScale(1);
 
       WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-          WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+          WebCoalescedInputEvent(event, ui::LatencyInfo()));
     } else if (WebInputEvent::IsTouchEventType(type)) {
       WebTouchEvent event(type, WebInputEvent::kNoModifiers,
                           base::TimeTicks::Now());
@@ -161,7 +161,7 @@ class TextFragmentAnchorTest : public SimTest {
         event.touches[0].state = WebTouchPoint::State::kStateReleased;
 
       WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-          WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+          WebCoalescedInputEvent(event, ui::LatencyInfo()));
       WebView().MainFrameWidget()->DispatchBufferedTouchEvents();
     } else {
       NOTREACHED() << "Only needed to support Gesture/Touch until now. "

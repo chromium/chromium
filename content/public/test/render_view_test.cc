@@ -629,8 +629,7 @@ void RenderViewTest::SendNativeKeyEvent(
 
 void RenderViewTest::SendInputEvent(const blink::WebInputEvent& input_event) {
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(input_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(input_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SendWebKeyboardEvent(
@@ -711,12 +710,10 @@ void RenderViewTest::SimulatePointClick(const gfx::Point& point) {
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 }
 
 bool RenderViewTest::SimulateElementRightClick(const std::string& element_id) {
@@ -734,12 +731,10 @@ void RenderViewTest::SimulatePointRightClick(const gfx::Point& point) {
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SimulateRectTap(const gfx::Rect& rect) {
@@ -751,8 +746,7 @@ void RenderViewTest::SimulateRectTap(const gfx::Rect& rect) {
   gesture_event.data.tap.width = rect.width();
   gesture_event.data.tap.height = rect.height();
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SetFocused(const blink::WebElement& element) {

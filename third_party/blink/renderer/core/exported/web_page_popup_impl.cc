@@ -480,10 +480,9 @@ void WebPagePopupImpl::SetHandlingInputEvent(bool handling) {
 }
 
 void WebPagePopupImpl::ProcessInputEventSynchronouslyForTesting(
-    const WebCoalescedInputEvent& event,
-    HandledEventCallback callback) {
+    const WebCoalescedInputEvent& event) {
   widget_base_->input_handler().HandleInputEvent(event, nullptr,
-                                                 std::move(callback));
+                                                 base::DoNothing());
 }
 
 void WebPagePopupImpl::UpdateTextInputState() {

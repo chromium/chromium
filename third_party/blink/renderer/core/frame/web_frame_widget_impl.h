@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -187,6 +188,12 @@ class CORE_EXPORT WebFrameWidgetImpl
   void NotifySwapAndPresentationTimeForTesting(
       base::OnceCallback<void(base::TimeTicks)> swap_callback,
       base::OnceCallback<void(base::TimeTicks)> presentation_callback);
+
+  // Process the input event, invoking the callback when complete. This
+  // method will call the callback synchronously.
+  void ProcessInputEventSynchronouslyForTesting(
+      const WebCoalescedInputEvent&,
+      WidgetBaseInputHandler::HandledEventCallback);
 
   // FrameWidget overrides.
   cc::AnimationHost* AnimationHost() const final;
@@ -354,8 +361,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
-  void ProcessInputEventSynchronouslyForTesting(const WebCoalescedInputEvent&,
-                                                HandledEventCallback) override;
+  void ProcessInputEventSynchronouslyForTesting(
+      const WebCoalescedInputEvent&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void UpdateTextInputState() override;

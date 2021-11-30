@@ -214,7 +214,7 @@ class MockHandledEventCallback {
                       InputHandlerProxy::DidOverscrollParams*,
                       absl::optional<cc::TouchAction>));
 
-  WebWidget::HandledEventCallback GetCallback() {
+  WidgetBaseInputHandler::HandledEventCallback GetCallback() {
     return base::BindOnce(&MockHandledEventCallback::HandleCallback,
                           base::Unretained(this));
   }
@@ -283,7 +283,7 @@ class WebFrameWidgetImplSimTest : public SimTest {
   }
 
   void SendInputEvent(const WebInputEvent& event,
-                      WebWidget::HandledEventCallback callback) {
+                      WidgetBaseInputHandler::HandledEventCallback callback) {
     MockMainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
         WebCoalescedInputEvent(event.Clone(), {}, {}, ui::LatencyInfo()),
         std::move(callback));

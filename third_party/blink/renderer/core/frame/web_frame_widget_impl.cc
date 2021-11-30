@@ -2400,9 +2400,14 @@ void WebFrameWidgetImpl::SetHandlingInputEvent(bool handling) {
 
 void WebFrameWidgetImpl::ProcessInputEventSynchronouslyForTesting(
     const WebCoalescedInputEvent& event,
-    HandledEventCallback callback) {
+    WidgetBaseInputHandler::HandledEventCallback callback) {
   widget_base_->input_handler().HandleInputEvent(event, nullptr,
                                                  std::move(callback));
+}
+
+void WebFrameWidgetImpl::ProcessInputEventSynchronouslyForTesting(
+    const WebCoalescedInputEvent& event) {
+  ProcessInputEventSynchronouslyForTesting(event, base::DoNothing());
 }
 
 WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {

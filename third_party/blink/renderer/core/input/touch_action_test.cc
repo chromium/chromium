@@ -414,7 +414,7 @@ void TouchActionTest::SendTouchEvent(WebView* web_view,
     event.touch_start_or_first_touch_move = true;
 
   web_view->MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+      WebCoalescedInputEvent(event, ui::LatencyInfo()));
   web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
   RunPendingTasks();
 }

@@ -58,7 +58,7 @@ class CssSelectorFragmentAnchorTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   bool IsVisibleInViewport(Element& element) {
