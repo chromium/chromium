@@ -181,6 +181,12 @@ class DisplayLockContextTest
     return context->render_affecting_state_[static_cast<int>(
         DisplayLockContext::RenderAffectingState::kSubtreeHasSelection)];
   }
+  DisplayLockUtilities::ScopedForcedUpdate GetScopedForcedUpdate(
+      const Node* node,
+      DisplayLockContext::ForcedPhase phase,
+      bool include_self = false) {
+    return DisplayLockUtilities::ScopedForcedUpdate(node, phase, include_self);
+  }
 
   const int FAKE_FIND_ID = 1;
 
@@ -3516,6 +3522,57 @@ TEST_F(DisplayLockContextTest, BlockedReattachWhitespaceSibling) {
   EXPECT_FALSE(locked->firstChild()->firstChild()->GetLayoutObject());
   EXPECT_TRUE(locked->nextSibling()->GetLayoutObject());
   EXPECT_TRUE(locked->nextSibling()->nextSibling()->GetLayoutObject());
+}
+
+TEST_F(DisplayLockContextTest, ReattachPropagationBlockedByDisplayLock) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #locked { content-visibility: hidden; }
+    </style>
+    <div id=parent>
+      <div id=locked>
+        <div id=child>
+          <div id=grandchild></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* locked = GetDocument().getElementById("locked");
+  auto* grandchild = GetDocument().getElementById("grandchild");
+  auto* parent = GetDocument().getElementById("parent");
+
+  // Force update all layout objects
+  grandchild->getBoundingClientRect();
+
+  ASSERT_TRUE(locked->GetLayoutObject());
+  ASSERT_TRUE(grandchild->GetLayoutObject());
+  ASSERT_TRUE(parent->GetLayoutObject());
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  grandchild->SetNeedsReattachLayoutTree();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+
+  EXPECT_TRUE(locked->ChildNeedsReattachLayoutTree());
+  EXPECT_TRUE(grandchild->NeedsReattachLayoutTree());
+  EXPECT_FALSE(parent->ChildNeedsReattachLayoutTree());
+
+  EXPECT_FALSE(GetDocument().GetStyleEngine().NeedsLayoutTreeRebuild());
+
+  auto scope = GetScopedForcedUpdate(
+      grandchild, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+  // Pretend we styled the children.
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  locked->GetDisplayLockContext()->DidStyleChildren();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+
+  EXPECT_TRUE(locked->ChildNeedsReattachLayoutTree());
+  EXPECT_TRUE(grandchild->NeedsReattachLayoutTree());
+  EXPECT_TRUE(parent->ChildNeedsReattachLayoutTree());
+
+  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsLayoutTreeRebuild());
 }
 
 }  // namespace blink

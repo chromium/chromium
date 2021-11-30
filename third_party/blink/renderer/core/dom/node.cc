@@ -1303,11 +1303,31 @@ void Node::MarkAncestorsWithChildNeedsReattachLayoutTree() {
     ancestor->SetChildNeedsReattachLayoutTree();
     if (ancestor->IsDirtyForRebuildLayoutTree())
       break;
+
+    // If we reach a locked ancestor, we should abort since the ancestor marking
+    // will be done when the context is unlocked.
+    if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
+      break;
   }
   // If the parent node is already dirty, we can keep the same rebuild root. The
   // early return here is a performance optimization.
   if (parent_dirty)
     return;
+
+  // If we're in a locked subtree, then we should not update the layout tree
+  // rebuild root. It would be updated when we unlock the context. In other
+  // words, the only way we have a node in the locked subtree is if the ancestor
+  // has a locked display lock context or it is dirty for reattach. In either of
+  // those cases, we have a dirty bit trail up to the display lock context,
+  // which will be propagated when the lock is removed.
+  if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
+      0) {
+    for (Element* ancestor_copy = ancestor; ancestor_copy;
+         ancestor_copy = ancestor_copy->GetReattachParent()) {
+      if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock())
+        return;
+    }
+  }
   GetDocument().GetStyleEngine().UpdateLayoutTreeRebuildRoot(ancestor, this);
 }
 

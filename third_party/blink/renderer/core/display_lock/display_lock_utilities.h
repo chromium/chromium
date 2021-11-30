@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_UTILITIES_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -61,6 +62,7 @@ class CORE_EXPORT DisplayLockUtilities {
 
     // Test friends.
     friend class DisplayLockContextRenderingTest;
+    friend class DisplayLockContextTest;
 
     explicit ScopedForcedUpdate(const Node* node,
                                 DisplayLockContext::ForcedPhase phase,
@@ -212,6 +214,13 @@ class CORE_EXPORT DisplayLockUtilities {
   static Element* LockedAncestorPreventingPaint(const Node& node);
   static Element* LockedAncestorPreventingPrePaint(const LayoutObject& object);
   static Element* LockedAncestorPreventingStyle(const Node& element);
+
+  // Returns true if the style is allowed on this node. Note that this can
+  // provide false positives if the flat tree traversal is forbidden, so this is
+  // only appropriate for us in DCHECKs.
+#if DCHECK_IS_ON()
+  static bool AssertStyleAllowed(const Node& node);
+#endif
 
   // Use these functions to check for locked node preventing paint if the
   // actual Element that has the lock is not important. These functions can be

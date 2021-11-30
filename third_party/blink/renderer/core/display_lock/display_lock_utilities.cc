@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -769,6 +770,18 @@ Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {
     return !context->ShouldStyleChildren();
   });
 }
+
+#if DCHECK_IS_ON()
+bool DisplayLockUtilities::AssertStyleAllowed(const Node& node) {
+  if (node.GetDocument().IsFlatTreeTraversalForbidden() ||
+      node.GetDocument()
+          .GetSlotAssignmentEngine()
+          .HasPendingSlotAssignmentRecalc()) {
+    return true;
+  }
+  return !LockedAncestorPreventingStyle(node);
+}
+#endif
 
 bool DisplayLockUtilities::PrePaintBlockedInParentFrame(LayoutView* view) {
   auto* owner = view->GetFrameView()->GetFrame().OwnerLayoutObject();
