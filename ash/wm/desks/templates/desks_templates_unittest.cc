@@ -1264,4 +1264,41 @@ TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
   EXPECT_FALSE(InOverviewSession());
 }
 
+// Tests that if we open the desks templates grid a second time during an
+// overview session, we can still see the template items. Opening a second time
+// can be done after deleting all the templates from the first open. Regression
+// test for https://crbug.com/1275179.
+TEST_F(DesksTemplatesTest, TemplatesAreVisibleAfterSecondSave) {
+  // Create a test minimized window.
+  auto window = CreateAppWindow();
+
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  std::vector<DeskTemplate*> entries = GetAllEntries();
+  ASSERT_EQ(1ul, entries.size());
+
+  // Delete the one and only template, which should hide the templates grid but
+  // remain in overview.
+  DeleteTemplate(entries[0]->uuid(), /*expected_current_item_count=*/1);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Open overview and save a template again.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  ASSERT_TRUE(grid_widget);
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  ASSERT_TRUE(templates_grid_view);
+
+  std::vector<DesksTemplatesItemView*> grid_items =
+      DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+  ASSERT_EQ(1ul, grid_items.size());
+
+  // Tests that bounds of the views are not empty.
+  EXPECT_FALSE(templates_grid_view->bounds().IsEmpty());
+  EXPECT_FALSE(grid_items[0]->bounds().IsEmpty());
+}
+
 }  // namespace ash

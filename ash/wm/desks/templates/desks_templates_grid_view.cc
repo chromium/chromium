@@ -139,9 +139,18 @@ void DesksTemplatesGridView::UpdateGridUI(
         AddChildView(std::make_unique<DesksTemplatesItemView>(desk_template)));
   }
 
+  const gfx::Size previous_size = size();
+
   gfx::Rect widget_bounds(grid_bounds);
   widget_bounds.ClampToCenteredSize(GetPreferredSize());
   GetWidget()->SetBounds(widget_bounds);
+
+  // The children won't be layoutted if the size remains the same, which may
+  // happen when we reshow the widget after it was hidden. Force a layout in
+  // this case. If the size changes, the children will be layoutted so we can
+  // avoid double work in that case. See https://crbug.com/1275179.
+  if (size() == previous_size)
+    Layout();
 }
 
 void DesksTemplatesGridView::AddedToWidget() {
