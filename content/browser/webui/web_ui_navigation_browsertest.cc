@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
       webui_site_instance->GetSiteInfo().process_lock_url().is_empty());
   EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   TestUntrustedDataSourceHeaders headers;
   std::vector<std::string> frame_ancestors({"chrome://web-ui"});
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       webui_rfh->GetProcess()->GetID()));
   EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
   std::string script =
@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       root->current_frame_host()->GetProcess()->GetID()));
   EXPECT_NE(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }
 
 #if !defined(OS_ANDROID)

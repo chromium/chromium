@@ -1841,7 +1841,8 @@ void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
     int child_id,
     const GURL& url) {
   SiteInfo site_info = SiteInfo::CreateForTesting(isolation_context, url);
-  LockProcess(isolation_context, child_id, ProcessLock(site_info));
+  LockProcess(isolation_context, child_id,
+              ProcessLock::FromSiteInfo(site_info));
 }
 
 ProcessLock ChildProcessSecurityPolicyImpl::GetProcessLock(int child_id) {

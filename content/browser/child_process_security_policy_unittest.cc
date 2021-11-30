@@ -102,7 +102,7 @@ void LockProcessIfNeeded(int process_id,
           site_instance->GetIsolationContext())) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
         site_instance->GetIsolationContext(), process_id,
-        site_instance->GetProcessLock());
+        ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
   }
 }
 
@@ -3044,13 +3044,14 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
-                   foo_instance->GetProcessLock());
+                   ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
 
     EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
     EXPECT_TRUE(p->GetProcessLock(kRendererID).is_origin_keyed_process());
     EXPECT_EQ(foo.GetURL(), p->GetProcessLock(kRendererID).lock_url());
 
-    EXPECT_TRUE(foo_instance->GetProcessLock().is_origin_keyed_process());
+    EXPECT_TRUE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
+                    .is_origin_keyed_process());
     EXPECT_TRUE(p->DetermineOriginAgentClusterIsolation(
                      foo_instance->GetIsolationContext(), foo,
                      OriginAgentClusterIsolationState::CreateNonIsolated())
@@ -3096,14 +3097,15 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
     scoped_refptr<SiteInstanceImpl> foo_instance =
         SiteInstanceImpl::CreateForUrlInfo(&context, url_info);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
-                   foo_instance->GetProcessLock());
+                   ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
 
     EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
     EXPECT_FALSE(p->GetProcessLock(kRendererID).is_origin_keyed_process());
     EXPECT_EQ(SiteInfo::GetSiteForOrigin(foo),
               p->GetProcessLock(kRendererID).lock_url());
 
-    EXPECT_FALSE(foo_instance->GetProcessLock().is_origin_keyed_process());
+    EXPECT_FALSE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
+                     .is_origin_keyed_process());
     EXPECT_FALSE(p->DetermineOriginAgentClusterIsolation(
                       foo_instance->GetIsolationContext(), foo,
                       OriginAgentClusterIsolationState::CreateNonIsolated())

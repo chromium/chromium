@@ -1175,8 +1175,8 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // TODO(creis): Remove this check after we've gathered enough information to
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  const ProcessLock process_lock =
-      navigation_rfh->GetSiteInstance()->GetProcessLock();
+  const ProcessLock process_lock = ProcessLock::FromSiteInfo(
+      navigation_rfh->GetSiteInstance()->GetSiteInfo());
   if (!process_lock.is_error_page() &&
       request->common_params().url.IsStandard() &&
       // TODO(https://crbug.com/888079): Replace `common_params().url` with

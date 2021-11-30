@@ -14145,11 +14145,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   int process_id = root->current_frame_host()->GetProcess()->GetID();
   IsolationContext isolation_context(
       shell()->web_contents()->GetBrowserContext());
-  ProcessLock start_url_lock(
+  ProcessLock start_url_lock = ProcessLock::FromSiteInfo(
       SiteInfo::CreateForTesting(isolation_context, start_url));
-  ProcessLock another_url_lock(
+  ProcessLock another_url_lock = ProcessLock::FromSiteInfo(
       SiteInfo::CreateForTesting(isolation_context, another_url));
-  ProcessLock bad_url_lock(
+  ProcessLock bad_url_lock = ProcessLock::FromSiteInfo(
       SiteInfo::CreateForTesting(isolation_context, bad_url));
   EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));
   EXPECT_EQ(another_url_lock, policy->GetProcessLock(process_id));

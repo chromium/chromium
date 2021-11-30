@@ -2076,7 +2076,8 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
 
 RenderFrameHost::WebExposedIsolationLevel
 RenderFrameHostImpl::GetWebExposedIsolationLevel() {
-  ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
+  ProcessLock process_lock =
+      ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
   if (process_lock.is_invalid())
     return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
 
@@ -7823,7 +7824,8 @@ void RenderFrameHostImpl::CommitNavigation(
   // TODO(creis): Remove this check after we've gathered enough information to
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  const ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
+  const ProcessLock process_lock =
+      ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
   if (!process_lock.is_error_page() && common_params->url.IsStandard() &&
       !is_mhtml_subframe &&
       // TODO(https://crbug.com/888079): Replace `common_params().url` with
@@ -11295,7 +11297,8 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
   static auto* const site_lock_key = base::debug::AllocateCrashKeyString(
       "site_lock", base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(
-      site_lock_key, GetSiteInstance()->GetProcessLock().ToString());
+      site_lock_key,
+      ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo()).ToString());
 
   if (!GetSiteInstance()->IsDefaultSiteInstance()) {
     static auto* const original_url_origin_key =

@@ -34,7 +34,6 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class BrowsingInstance;
-class ProcessLock;
 class RenderProcessHostFactory;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
@@ -289,11 +288,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // SiteInstance. It should be refactored and/or renamed to make its behavior
   // more obvious.
   SiteInfo DeriveSiteInfo(const UrlInfo& url_info, bool is_related = false);
-
-  // Returns a ProcessLock that can be used with SetProcessLock to lock a
-  // process to this SiteInstance's SiteInfo. The ProcessLock relies heavily on
-  // the SiteInfo's process_lock_url() for security decisions.
-  const ProcessLock GetProcessLock() const;
 
   // Helper function that returns the storage partition domain for this
   // object.

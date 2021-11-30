@@ -4228,7 +4228,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
 
       // If the destination requires a different process lock, this process
       // cannot be used.
-      if (process_lock != ProcessLock(site_info))
+      if (process_lock != ProcessLock::FromSiteInfo(site_info))
         return false;
     } else {
       // Even when this process is not locked to a site, it is still associated
@@ -4482,7 +4482,8 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         render_process_host->StopTrackingProcessForShutdownDelay();
       } else {
         RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-            reusable_host_lookup_time, site_instance->GetProcessLock(),
+            reusable_host_lookup_time,
+            ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
             site_instance->GetBrowserContext());
       }
       break;

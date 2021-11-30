@@ -119,7 +119,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
 
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
-    return ProcessLock(SiteInfo(
+    return ProcessLock::FromSiteInfo(SiteInfo(
         GURL(url), GURL(url), false /* requires_origin_keyed_process */,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
@@ -141,7 +141,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock GetStrictProcessLock(const GURL& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     GURL origin_url = url::Origin::Create(url).GetURL();
-    return ProcessLock(SiteInfo(
+    return ProcessLock::FromSiteInfo(SiteInfo(
         origin_url, origin_url, false /* requires_origin_keyed_process */,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
@@ -765,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
-  auto expected_isolated_suborigin_lock = ProcessLock(SiteInfo(
+  auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(SiteInfo(
       origin_url, origin_url, true /* requires_origin_keyed_process */,
       StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
@@ -789,12 +789,12 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       expected_isolated_sub_origin,
       child_frame_node->current_frame_host()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(expected_isolated_suborigin_lock,
-            child_frame_node->current_frame_host()
-                ->GetSiteInstance()
-                ->GetProcessLock());
-  EXPECT_EQ(child_frame_node->current_frame_host()
-                ->GetSiteInstance()
-                ->GetProcessLock(),
+            ProcessLock::FromSiteInfo(child_frame_node->current_frame_host()
+                                          ->GetSiteInstance()
+                                          ->GetSiteInfo()));
+  EXPECT_EQ(ProcessLock::FromSiteInfo(child_frame_node->current_frame_host()
+                                          ->GetSiteInstance()
+                                          ->GetSiteInfo()),
             ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 child_frame_node->current_frame_host()->GetProcess()->GetID()));
 
@@ -910,8 +910,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(child_frame_node->current_frame_host()
                   ->GetSiteInstance()
                   ->RequiresDedicatedProcess());
-  ProcessLock root_process_lock =
-      root->current_frame_host()->GetSiteInstance()->GetProcessLock();
+  ProcessLock root_process_lock = ProcessLock::FromSiteInfo(
+      root->current_frame_host()->GetSiteInstance()->GetSiteInfo());
   EXPECT_TRUE(root_process_lock.is_locked_to_site());
   EXPECT_EQ(root_process_lock.lock_url(), GURL("https://foo.com/"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2348,8 +2348,9 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
 
   auto foo_process_id = web_contents()->GetMainFrame()->GetProcess()->GetID();
   SiteInstanceImpl* foo_site_instance = web_contents()->GetSiteInstance();
-  EXPECT_EQ(expected_foo_lock, foo_site_instance->GetProcessLock());
-  EXPECT_EQ(foo_site_instance->GetProcessLock(),
+  EXPECT_EQ(expected_foo_lock,
+            ProcessLock::FromSiteInfo(foo_site_instance->GetSiteInfo()));
+  EXPECT_EQ(ProcessLock::FromSiteInfo(foo_site_instance->GetSiteInfo()),
             policy->GetProcessLock(foo_process_id));
 
   GURL sub_foo_url =
@@ -2359,8 +2360,9 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
   auto sub_foo_process_id =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
   SiteInstanceImpl* sub_foo_site_instance = web_contents()->GetSiteInstance();
-  EXPECT_EQ(expected_sub_foo_lock, sub_foo_site_instance->GetProcessLock());
-  EXPECT_EQ(sub_foo_site_instance->GetProcessLock(),
+  EXPECT_EQ(expected_sub_foo_lock,
+            ProcessLock::FromSiteInfo(sub_foo_site_instance->GetSiteInfo()));
+  EXPECT_EQ(ProcessLock::FromSiteInfo(sub_foo_site_instance->GetSiteInfo()),
             policy->GetProcessLock(sub_foo_process_id));
 
   EXPECT_NE(foo_process_id, sub_foo_process_id);
@@ -2378,9 +2380,10 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
       web_contents()->GetSiteInstance();
   EXPECT_NE(another_foo_process_id, sub_foo_process_id);
   EXPECT_NE(another_foo_process_id, foo_process_id);
-  EXPECT_EQ(expected_another_foo_lock,
-            another_foo_site_instance->GetProcessLock());
-  EXPECT_EQ(another_foo_site_instance->GetProcessLock(),
+  EXPECT_EQ(
+      expected_another_foo_lock,
+      ProcessLock::FromSiteInfo(another_foo_site_instance->GetSiteInfo()));
+  EXPECT_EQ(ProcessLock::FromSiteInfo(another_foo_site_instance->GetSiteInfo()),
             policy->GetProcessLock(another_foo_process_id));
   EXPECT_NE(another_foo_site_instance, foo_site_instance);
 

@@ -56,8 +56,13 @@ class CONTENT_EXPORT ProcessLock {
   static ProcessLock Create(const IsolationContext& isolation_context,
                             const UrlInfo& url_info);
 
+  // Returns a ProcessLock representing what the given |site_info| requires.
+  // Note that this may be different from the actual ProcessLock of the
+  // resulting process, in cases where a locked process is not required (e.g.,
+  // SiteInfos for chrome-guest:// or http://unisolated.invalid).
+  static ProcessLock FromSiteInfo(const SiteInfo& site_info);
+
   ProcessLock();
-  explicit ProcessLock(const SiteInfo& site_info);
   ProcessLock(const ProcessLock& rhs);
   ProcessLock& operator=(const ProcessLock& rhs);
 
@@ -148,6 +153,8 @@ class CONTENT_EXPORT ProcessLock {
   std::string ToString() const;
 
  private:
+  explicit ProcessLock(const SiteInfo& site_info);
+
   // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
   // (e.g., multiple extensions). This can better restrict what the process has
   // access to in cases that we don't currently use a ProcessLock.

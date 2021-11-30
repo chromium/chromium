@@ -1584,7 +1584,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
 namespace {
 
 ProcessLock ProcessLockFromString(const std::string& url) {
-  return ProcessLock(SiteInfo(
+  return ProcessLock::FromSiteInfo(SiteInfo(
       GURL(url), GURL(url), false /* requires_origin_keyed_process */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,

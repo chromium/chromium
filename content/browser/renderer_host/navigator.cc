@@ -333,8 +333,10 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     // Verify `site_info`'s process lock matches the RFH's process lock, if one
     // is in place.
     if (should_lock_process) {
-      if (!url_origin.opaque() && process_lock != ProcessLock(site_info))
+      if (!url_origin.opaque() &&
+          process_lock != ProcessLock::FromSiteInfo(site_info)) {
         return false;
+      }
     }
   }
 

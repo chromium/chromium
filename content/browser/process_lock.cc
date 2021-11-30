@@ -35,6 +35,11 @@ ProcessLock ProcessLock::Create(const IsolationContext& isolation_context,
   return ProcessLock(SiteInfo::CreateOnIOThread(isolation_context, url_info));
 }
 
+// static
+ProcessLock ProcessLock::FromSiteInfo(const SiteInfo& site_info) {
+  return ProcessLock(site_info);
+}
+
 ProcessLock::ProcessLock(const SiteInfo& site_info) : site_info_(site_info) {}
 
 ProcessLock::ProcessLock() = default;

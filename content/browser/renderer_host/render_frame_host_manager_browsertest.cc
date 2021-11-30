@@ -8645,7 +8645,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(GURL("http://foo.com"),
             web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(
-      ProcessLock(SiteInfo(
+      ProcessLock::FromSiteInfo(SiteInfo(
           GURL("http://foo.com"), GURL("http://foo.com"),
           false /* requires_origin_keyed_process */,
           StoragePartitionConfig::CreateDefault(browser_context),

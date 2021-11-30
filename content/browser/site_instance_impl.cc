@@ -598,10 +598,6 @@ SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
   return SiteInfo::Create(GetIsolationContext(), overridden_url_info);
 }
 
-const ProcessLock SiteInstanceImpl::GetProcessLock() const {
-  return ProcessLock(site_info_);
-}
-
 bool SiteInstanceImpl::HasSite() const {
   return has_site_;
 }
@@ -1211,7 +1207,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
     // process, which can't be locked.
     CHECK(!process_->IsForGuestsOnly());
 
-    ProcessLock lock_to_set = GetProcessLock();
+    ProcessLock lock_to_set = ProcessLock::FromSiteInfo(GetSiteInfo());
     if (!process_lock.is_locked_to_site()) {
       // TODO(nick): When all sites are isolated, this operation provides
       // strong protection. If only some sites are isolated, we need
