@@ -28,8 +28,8 @@ void PinDialogManager::AddSignRequestId(
                                            authenticating_user_account_id)));
 }
 
-void PinDialogManager::AbortSignRequest(const std::string& extension_id,
-                                        int sign_request_id) {
+void PinDialogManager::RemoveSignRequest(const std::string& extension_id,
+                                         int sign_request_id) {
   if (active_dialog_state_ &&
       active_dialog_state_->extension_id == extension_id &&
       active_dialog_state_->sign_request_id == sign_request_id) {
