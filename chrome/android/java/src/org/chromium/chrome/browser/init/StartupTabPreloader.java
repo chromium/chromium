@@ -110,6 +110,9 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         return mTabMatches || mPreloadPreventedOnlyByFeatureWouldHaveMatched;
     }
 
+    // The time at which the first navigation start occurred.
+    private long mFirstNavigationStartMs;
+
     @Override
     public void onDestroy() {
         if (mTab != null) mTab.destroy();
@@ -122,17 +125,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
     @Override
     public void onFirstNavigationStart() {
-        if (mLoadDecisionMs == 0) return;
-
-        long currentTimeMs = SystemClock.uptimeMillis();
-        long triggerpointToFirstNavigationStartMs = currentTimeMs - mLoadDecisionMs;
-
-        // Note that we don't use recordDurationFromLoadDecisionIntoHistogram() here as this
-        // point is reached before tab matching occurs.
-        String suffix = preloadWasViable() ? ".Load" : ".NoLoad";
-        RecordHistogram.recordMediumTimesHistogram(
-                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart" + suffix,
-                triggerpointToFirstNavigationStartMs);
+        mFirstNavigationStartMs = SystemClock.uptimeMillis();
     }
 
     @Override
@@ -145,6 +138,20 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     public void onFirstNavigationCommit() {
         recordDurationFromLoadDecisionIntoHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit");
+
+        // We record the metric for navigation start here as well, as we want that metric to be
+        // recorded only for navigations that result in the first navigation commit startup metric
+        // being recorded.
+        if (mLoadDecisionMs == 0) return;
+        assert mFirstNavigationStartMs > 0;
+        long triggerpointToFirstNavigationStartMs = mFirstNavigationStartMs - mLoadDecisionMs;
+
+        // Note that we don't use recordDurationFromLoadDecisionIntoHistogram() here as first
+        // navigation start was reached before tab matching occurred.
+        String suffix = preloadWasViable() ? ".Load" : ".NoLoad";
+        RecordHistogram.recordMediumTimesHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart" + suffix,
+                triggerpointToFirstNavigationStartMs);
     }
 
     @Override
