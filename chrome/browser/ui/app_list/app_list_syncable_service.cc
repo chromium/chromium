@@ -649,14 +649,21 @@ void AppListSyncableService::AddItem(
   if (!app_item->position().IsValid())
     InitNewItemPosition(app_item.get());
 
+  // When `app_item` is installed from the local device, `app_item`'s sync data
+  // does not exist until `FindOrAddSyncItem()` is called.
+  const bool is_item_new = !FindSyncItem(app_item->id());
+
   SyncItem* sync_item = FindOrAddSyncItem(app_item.get());
   if (!sync_item)
     return;  // Item is not valid.
 
-  if (AppIsOem(app_item->id())) {
+  if (app_item->is_folder() || app_item->is_page_break()) {
+    model_updater_->AddItem(std::move(app_item));
+  } else if (AppIsOem(app_item->id())) {
     VLOG(2) << this << ": AddItem to OEM folder: " << sync_item->ToString();
     EnsureOemFolderExists();
-    model_updater_->AddItemToFolder(std::move(app_item), ash::kOemFolderId);
+    model_updater_->AddAppItemToFolder(std::move(app_item), ash::kOemFolderId,
+                                       is_item_new);
   } else {
     std::string folder_id = sync_item->parent_id;
     VLOG(2) << this << ": AddItem: " << sync_item->ToString() << " Folder: '"
@@ -669,7 +676,8 @@ void AppListSyncableService::AddItem(
     if (!folder_id.empty())
       MaybeCreateFolderBeforeAddingItem(app_item.get(), folder_id);
 
-    model_updater_->AddItemToFolder(std::move(app_item), folder_id);
+    model_updater_->AddAppItemToFolder(std::move(app_item), folder_id,
+                                       is_item_new);
   }
 
   // Calculate this early since |sync_item| could be deleted in
@@ -1283,6 +1291,11 @@ void AppListSyncableService::SetAppListPreferredOrder(
   }
 }
 
+syncer::StringOrdinal AppListSyncableService::CalculateGlobalFrontPosition()
+    const {
+  return reorder::CalculateFrontPosition(sync_items_);
+}
+
 // AppListSyncableService private
 
 bool AppListSyncableService::ProcessSyncItemSpecifics(
@@ -1663,7 +1676,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // should be placed at front. Also reset the sorting order.
   if (!is_successful) {
     DCHECK(!position.IsValid());
-    position = reorder::CalculateFrontPosition(sync_items_);
+    position = CalculateGlobalFrontPosition();
     profile()->GetPrefs()->SetInteger(
         prefs::kAppListPreferredOrder,
         static_cast<int>(ash::AppListSortOrder::kCustom));

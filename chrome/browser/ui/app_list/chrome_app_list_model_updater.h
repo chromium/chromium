@@ -43,8 +43,9 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   // AppListModelUpdater:
   void AddItem(std::unique_ptr<ChromeAppListItem> app_item) override;
-  void AddItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
-                       const std::string& folder_id) override;
+  void AddAppItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
+                          const std::string& folder_id,
+                          bool add_from_local) override;
   void RemoveItem(const std::string& id) override;
   void RemoveUninstalledItem(const std::string& id) override;
   void SetStatus(ash::AppListModelStatus status) override;

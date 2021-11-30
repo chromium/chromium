@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_REORDER_APP_LIST_REORDER_DELEGATE_H_
 #define CHROME_BROWSER_UI_APP_LIST_REORDER_APP_LIST_REORDER_DELEGATE_H_
 
+#include "components/sync/model/string_ordinal.h"
+
 namespace ash {
 enum class AppListSortOrder;
 }
@@ -19,6 +21,9 @@ class AppListReorderDelegate {
 
   // Sets the preferred sorting order.
   virtual void SetAppListPreferredOrder(ash::AppListSortOrder order) = 0;
+
+  // Returns the front position among all sync items.
+  virtual syncer::StringOrdinal CalculateGlobalFrontPosition() const = 0;
 };
 
 }  // namespace reorder

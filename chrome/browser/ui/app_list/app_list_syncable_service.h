@@ -230,6 +230,7 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // reorder::AppListReorderDelegate:
   void SetAppListPreferredOrder(ash::AppListSortOrder order) override;
+  syncer::StringOrdinal CalculateGlobalFrontPosition() const override;
 
  private:
   class ModelUpdaterObserver;

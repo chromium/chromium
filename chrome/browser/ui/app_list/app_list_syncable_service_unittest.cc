@@ -1792,12 +1792,12 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
 
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "A", "B", "C", "C", "D"}));
 
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"D", "C", "C", "B", "A", "A"}));
 }
 
@@ -1829,7 +1829,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
             GetSortOrderFromPrefs());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"E", "C", "B", "A"}));
 
   // Insert another app. Verify the order.
@@ -1837,7 +1837,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   scoped_refptr<extensions::Extension> app5 =
       MakeApp("D", kItemId5, extensions::Extension::NO_FLAGS);
   InstallExtension(app5.get());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"E", "D", "C", "B", "A"}));
 
   // The longest subsequence in reverse alphabetical order is the whole
@@ -1856,11 +1856,11 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "D", "E"}));
 
   ChangeItemName(kItemId3, "Z");
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "Z", "D", "E"}));
 
   // The longest subsequence in order is ["A", "B", "D", "E"] so the entropy is
@@ -1874,12 +1874,12 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   scoped_refptr<extensions::Extension> app6 =
       MakeApp("C", kItemId6, extensions::Extension::NO_FLAGS);
   InstallExtension(app6.get());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "Z", "D", "E"}));
 
   // Change another app's name.
   ChangeItemName(kItemId2, "F");
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "F", "C", "Z", "D", "E"}));
 
   // The longest subsequence in order is ["A", "C", "D", "E"] so the entropy is
@@ -1896,7 +1896,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   InstallExtension(app7.get());
 
   // The entropy is too high so the new app is inserted at the front.
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"G", "A", "F", "C", "Z", "D", "E"}));
 
   // The sort order is reset.
@@ -1909,7 +1909,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   InstallExtension(app8.get());
 
   // Because the sort order is kCustom, the new app is placed at the front.
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"H", "G", "A", "F", "C", "Z", "D", "E"}));
 }
 
@@ -1955,7 +1955,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
   // Sort sync items then verify the item order.
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"", "Folder1", "Folder2"}));
 
   // Install a new app.
@@ -1965,7 +1965,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
   InstallExtension(app.get());
 
   // Verify that the app is placed after folders.
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"", "Folder1", "Folder2", "B"}));
 
   // Verify that the entropy is zero.
@@ -1980,13 +1980,13 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
   InstallExtension(app2.get());
 
   // Verify that the app is placed after folders.
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"", "Folder1", "Folder2", "B", "C"}));
 
   // Change folders' names so that folders are out of order.
   ChangeItemName(kFolderItemId1, "Folder2");
   ChangeItemName(kFolderItemId2, "Folder1");
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"", "Folder2", "Folder1", "B", "C"}));
 
   // There is one folder item out of order so the entropy should be 1/5 = 0.2.
@@ -2000,7 +2000,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
       MakeApp("D", kNewAppId3, extensions::Extension::NO_FLAGS);
   InstallExtension(app3.get());
   EXPECT_EQ(
-      GetNamesOfSortedItemsFromSyncableService(),
+      GetOrderedNamesFromSyncableService(),
       std::vector<std::string>({"", "Folder2", "Folder1", "B", "C", "D"}));
 
   // Install the forth app. Verify that the new item is inserted between a
@@ -2010,7 +2010,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
       MakeApp("A", kNewAppId4, extensions::Extension::NO_FLAGS);
   InstallExtension(app4.get());
   EXPECT_EQ(
-      GetNamesOfSortedItemsFromSyncableService(),
+      GetOrderedNamesFromSyncableService(),
       std::vector<std::string>({"", "Folder2", "Folder1", "A", "B", "C", "D"}));
 }
 
@@ -2035,13 +2035,13 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   InstallExtension(app3.get());
 
   // The sort order is not set. Therefore an app is always placed at the front.
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"D", "A", "C"}));
 
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "C", "D"}));
 
   // A hacky way to emulate that an item is disabled locally (in other words,
@@ -2054,7 +2054,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   scoped_refptr<extensions::Extension> app4 =
       MakeApp("B", kItemId4, extensions::Extension::NO_FLAGS);
   InstallExtension(app4.get());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "D"}));
 
   // Remove another item from the model. Now only "A" and "B" are in the model.
@@ -2065,7 +2065,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   scoped_refptr<extensions::Extension> app5 =
       MakeApp("F", kItemId5, extensions::Extension::NO_FLAGS);
   InstallExtension(app5.get());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "D", "F"}));
 
   // Remove another item from the model. Now only "A" and "B" are in the model.
@@ -2076,7 +2076,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   scoped_refptr<extensions::Extension> app6 =
       MakeApp("E", kItemId6, extensions::Extension::NO_FLAGS);
   InstallExtension(app6.get());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "D", "E", "F"}));
 }
 
@@ -2119,7 +2119,7 @@ TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppsDontFillUpAPage) {
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
-  EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
             std::vector<std::string>({"A", "B", "C", "D"}));
 }
 

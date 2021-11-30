@@ -54,8 +54,9 @@ class AppListModelUpdater {
 
   // For AppListModel:
   virtual void AddItem(std::unique_ptr<ChromeAppListItem> item) {}
-  virtual void AddItemToFolder(std::unique_ptr<ChromeAppListItem> item,
-                               const std::string& folder_id) {}
+  virtual void AddAppItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
+                                  const std::string& folder_id,
+                                  bool add_from_local) {}
   virtual void RemoveItem(const std::string& id) {}
   virtual void RemoveUninstalledItem(const std::string& id) {}
   virtual void SetStatus(ash::AppListModelStatus status) {}

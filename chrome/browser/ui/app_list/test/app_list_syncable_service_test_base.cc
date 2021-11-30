@@ -80,6 +80,16 @@ AppListSyncableServiceTestBase::GetOrderedItemIdsFromModelUpdater() {
 }
 
 std::vector<std::string>
+AppListSyncableServiceTestBase::GetOrderedNamesFromModelUpdater() {
+  const std::vector<std::string> ids = GetOrderedItemIdsFromModelUpdater();
+  std::vector<std::string> names;
+  for (const auto& id : ids) {
+    names.push_back(GetModelUpdater()->FindItem(id)->name());
+  }
+  return names;
+}
+
+std::vector<std::string>
 AppListSyncableServiceTestBase::GetOrderedItemIdsFromSyncableService() {
   std::vector<std::string> ids;
   app_list::AppListSyncableService* service = app_list_syncable_service();
@@ -98,7 +108,7 @@ AppListSyncableServiceTestBase::GetOrderedItemIdsFromSyncableService() {
 }
 
 std::vector<std::string>
-AppListSyncableServiceTestBase::GetNamesOfSortedItemsFromSyncableService() {
+AppListSyncableServiceTestBase::GetOrderedNamesFromSyncableService() {
   const std::vector<std::string> ids = GetOrderedItemIdsFromSyncableService();
   std::vector<std::string> names;
   for (const auto& id : ids) {

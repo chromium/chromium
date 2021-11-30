@@ -39,6 +39,9 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   // position.
   std::vector<std::string> GetOrderedItemIdsFromModelUpdater();
 
+  // Gets the names of the items in model updater ordered by item's ordinal.
+  std::vector<std::string> GetOrderedNamesFromModelUpdater();
+
   // Similar to `GetOrderedItemIdsFromModelUpdater()`. But items are from
   // `AppListSyncableService` and they are ordered by positions in sync data.
   // Note that an item's position in model updater could be different from that
@@ -46,7 +49,7 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   std::vector<std::string> GetOrderedItemIdsFromSyncableService();
 
   // Gets the names of the items ordered by the positions stored in sync data.
-  std::vector<std::string> GetNamesOfSortedItemsFromSyncableService();
+  std::vector<std::string> GetOrderedNamesFromSyncableService();
 
   // Gets the names of items ordered by the positions stored in sync data,
   // grouped in pages (as defined by page break items). Lists themselves will

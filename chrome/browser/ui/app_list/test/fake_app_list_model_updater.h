@@ -27,8 +27,9 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   // For AppListModel:
   void AddItem(std::unique_ptr<ChromeAppListItem> item) override;
-  void AddItemToFolder(std::unique_ptr<ChromeAppListItem> item,
-                       const std::string& folder_id) override;
+  void AddAppItemToFolder(std::unique_ptr<ChromeAppListItem> item,
+                          const std::string& folder_id,
+                          bool add_from_local) override;
   void UpdateAppItemFromSyncItem(
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,

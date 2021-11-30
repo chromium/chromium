@@ -24,9 +24,10 @@ void FakeAppListModelUpdater::AddItem(std::unique_ptr<ChromeAppListItem> item) {
   items_.push_back(std::move(item));
 }
 
-void FakeAppListModelUpdater::AddItemToFolder(
+void FakeAppListModelUpdater::AddAppItemToFolder(
     std::unique_ptr<ChromeAppListItem> item,
-    const std::string& folder_id) {
+    const std::string& folder_id,
+    bool add_from_local) {
   ChromeAppListItem::TestApi test_api(item.get());
   test_api.SetFolderId(folder_id);
   items_.push_back(std::move(item));
