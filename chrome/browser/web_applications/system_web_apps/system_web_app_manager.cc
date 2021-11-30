@@ -316,14 +316,18 @@ void SystemWebAppManager::Start() {
   }
 
   const bool exceeded_retries = CheckAndIncrementRetryAttempts();
-  if (!exceeded_retries) {
-    externally_managed_app_manager_->SynchronizeInstalledApps(
-        std::move(install_options_list),
-        ExternalInstallSource::kSystemInstalled,
-        base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       should_force_install_apps, install_start_time));
+  if (exceeded_retries) {
+    LOG(ERROR)
+        << "Exceeded SWA install retry attempts.  Skipping installation, will "
+           "retry on next OS update or when locale changes.";
+    return;
   }
+
+  externally_managed_app_manager_->SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kSystemInstalled,
+      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
+                     weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
+                     install_start_time));
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
