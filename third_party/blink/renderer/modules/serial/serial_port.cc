@@ -112,25 +112,17 @@ DOMException* DOMExceptionFromReceiveError(SerialReceiveError error) {
 }
 
 // A ScriptFunction that calls ContinueClose() on the provided SerialPort.
-class ContinueCloseFunction : public ScriptFunction {
+class ContinueCloseFunction : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        SerialPort* port) {
-    auto* self =
-        MakeGarbageCollected<ContinueCloseFunction>(script_state, port);
-    return self->BindToV8Function();
-  }
+  explicit ContinueCloseFunction(SerialPort* port) : port_(port) {}
 
-  ContinueCloseFunction(ScriptState* script_state, SerialPort* port)
-      : ScriptFunction(script_state), port_(port) {}
-
-  ScriptValue Call(ScriptValue) override {
-    return port_->ContinueClose(GetScriptState()).AsScriptValue();
+  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+    return port_->ContinueClose(script_state).AsScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -138,25 +130,18 @@ class ContinueCloseFunction : public ScriptFunction {
 };
 
 // A ScriptFunction that calls AbortClose() on the provided SerialPort.
-class AbortCloseFunction : public ScriptFunction {
+class AbortCloseFunction : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        SerialPort* port) {
-    auto* self = MakeGarbageCollected<AbortCloseFunction>(script_state, port);
-    return self->BindToV8Function();
-  }
+  explicit AbortCloseFunction(SerialPort* port) : port_(port) {}
 
-  AbortCloseFunction(ScriptState* script_state, SerialPort* port)
-      : ScriptFunction(script_state), port_(port) {}
-
-  ScriptValue Call(ScriptValue) override {
+  ScriptValue Call(ScriptState*, ScriptValue) override {
     port_->AbortClose();
     return ScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -431,8 +416,11 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
   }
 
   return ScriptPromise::All(script_state, promises)
-      .Then(ContinueCloseFunction::Create(script_state, this),
-            AbortCloseFunction::Create(script_state, this));
+      .Then(
+          MakeGarbageCollected<NewScriptFunction>(
+              script_state, MakeGarbageCollected<ContinueCloseFunction>(this)),
+          MakeGarbageCollected<NewScriptFunction>(
+              script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
 }
 
 ScriptPromise SerialPort::ContinueClose(ScriptState* script_state) {
