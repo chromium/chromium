@@ -15,12 +15,15 @@
 
 namespace webapps {
 
+using Purpose = blink::mojom::ManifestImageResource_Purpose;
+
 blink::Manifest::ImageResource CreateImage(const std::string& url,
-                                           const gfx::Size& size) {
+                                           const gfx::Size& size,
+                                           Purpose purpose) {
   blink::Manifest::ImageResource image;
   image.src = GURL("https://example.com" + url);
   image.sizes.push_back(size);
-  image.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+  image.purpose.push_back(purpose);
   return image;
 }
 
@@ -130,17 +133,19 @@ TEST_F(ShortcutInfoTest, IgnoreEmptyNameAndShortName) {
 TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
   manifest_.shortcuts.push_back(CreateShortcut(
       "shortcut_1",
-      {CreateImage("/i1_1", {16, 16}), CreateImage("/i1_2", {64, 64}),
-       CreateImage("/i1_3", {192, 192}),  // best icon.
-       CreateImage("/i1_4", {256, 256})}));
+      {CreateImage("/i1_1", {16, 16}, Purpose::ANY),
+       CreateImage("/i1_2", {64, 64}, Purpose::ANY),
+       CreateImage("/i1_3", {192, 192}, Purpose::ANY),  // best icon.
+       CreateImage("/i1_4", {256, 256}, Purpose::ANY)}));
 
   manifest_.shortcuts.push_back(CreateShortcut(
-      "shortcut_2", {CreateImage("/i2_1", {192, 194}),  // not square.
-                     CreateImage("/i2_2", {194, 194})}));
+      "shortcut_2",
+      {CreateImage("/i2_1", {192, 194}, Purpose::ANY),  // not square.
+       CreateImage("/i2_2", {194, 194}, Purpose::ANY)}));
 
   // Nothing chosen.
-  manifest_.shortcuts.push_back(
-      CreateShortcut("shortcut_3", {CreateImage("/i3_1", {16, 16})}));
+  manifest_.shortcuts.push_back(CreateShortcut(
+      "shortcut_3", {CreateImage("/i3_1", {16, 16}, Purpose::ANY)}));
 
   WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
   info_.UpdateFromManifest(manifest_);
@@ -162,6 +167,39 @@ TEST_F(ShortcutInfoTest, ShortcutShortNameBackfilled) {
 
   ASSERT_EQ(info_.shortcut_items.size(), 1u);
   EXPECT_EQ(info_.shortcut_items[0].short_name, u"name");
+}
+
+TEST_F(ShortcutInfoTest, FindMaskableSplashIcon) {
+  manifest_.icons.push_back(
+      CreateImage("/icon_48.png", {48, 48}, Purpose::ANY));
+  manifest_.icons.push_back(
+      CreateImage("/icon_96.png", {96, 96}, Purpose::ANY));
+  manifest_.icons.push_back(
+      CreateImage("/icon_144.png", {144, 144}, Purpose::MASKABLE));
+
+  info_.UpdateBestSplashIcon(manifest_);
+
+  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    EXPECT_EQ(info_.splash_image_url.path(), "/icon_144.png");
+    EXPECT_TRUE(info_.is_splash_image_maskable);
+  } else {
+    EXPECT_EQ(info_.splash_image_url.path(), "/icon_96.png");
+    EXPECT_FALSE(info_.is_splash_image_maskable);
+  }
+}
+
+TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
+  manifest_.icons.push_back(
+      CreateImage("/icon_48.png", {48, 48}, Purpose::ANY));
+  manifest_.icons.push_back(
+      CreateImage("/icon_96.png", {96, 96}, Purpose::ANY));
+  manifest_.icons.push_back(
+      CreateImage("/icon_144.png", {144, 144}, Purpose::ANY));
+
+  info_.UpdateBestSplashIcon(manifest_);
+
+  EXPECT_EQ(info_.splash_image_url.path(), "/icon_144.png");
+  EXPECT_FALSE(info_.is_splash_image_maskable);
 }
 
 }  // namespace webapps

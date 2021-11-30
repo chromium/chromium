@@ -252,15 +252,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   shortcut_info_.best_primary_icon_url = data.primary_icon_url;
 
   // Save the splash screen URL for the later download.
-  shortcut_info_.ideal_splash_image_size_in_px =
-      WebappsIconUtils::GetIdealSplashImageSizeInPx();
-  shortcut_info_.minimum_splash_image_size_in_px =
-      WebappsIconUtils::GetMinimumSplashImageSizeInPx();
-  shortcut_info_.splash_image_url =
-      blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-          data.manifest.icons, shortcut_info_.ideal_splash_image_size_in_px,
-          shortcut_info_.minimum_splash_image_size_in_px,
-          blink::mojom::ManifestImageResource_Purpose::ANY);
+  shortcut_info_.UpdateBestSplashIcon(data.manifest);
 
   installable_manager_->GetData(
       ParamsToPerformInstallableCheck(),
