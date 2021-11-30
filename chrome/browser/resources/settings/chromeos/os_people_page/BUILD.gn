@@ -143,7 +143,7 @@ js_library("os_people_page.m") {
     "..:os_route.m",
     "..:route_observer_behavior",
     "../..:router",
-    "../parental_controls_page:parental_controls_page.m",
+    "../parental_controls_page:parental_controls_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
