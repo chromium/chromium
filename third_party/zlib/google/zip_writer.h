@@ -58,7 +58,9 @@ class ZipWriter {
   }
 
   // Should ignore missing files and directories?
-  void ContinueOnError(bool b) { continue_on_error_ = b; }
+  void ContinueOnError(bool continue_on_error) {
+    continue_on_error_ = continue_on_error;
+  }
 
   // Sets the recursive flag, indicating whether the contents of subdirectories
   // should be included.
