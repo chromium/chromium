@@ -458,6 +458,11 @@ bool IsPartialRasterEnabled() {
 }
 
 bool IsGpuMemoryBufferCompositorResourcesEnabled() {
+  // To use Raw Draw, the Raw Draw shared image backing should be used, so
+  // not use GPU memory buffer shared image backings for compositor resources.
+  if (features::IsUsingRawDraw()) {
+    return false;
+  }
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(
