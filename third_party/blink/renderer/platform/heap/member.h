@@ -63,7 +63,7 @@ static constexpr bool kBlinkMemberGCHasDebugChecks =
 
 namespace WTF {
 
-// PtrHash is the default hash for hash tables with Member<>-derived elements.
+// Default hash for hash tables with Member<>-derived elements.
 template <typename T>
 struct MemberHash : PtrHash<T> {
   STATIC_ONLY(MemberHash);

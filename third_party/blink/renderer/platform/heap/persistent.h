@@ -7,8 +7,9 @@
 
 #include "base/bind.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "v8/include/cppgc/cross-thread-persistent.h"
@@ -167,28 +168,44 @@ template <typename T>
 struct HashTraits<blink::CrossThreadWeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
 
+// Default hash for hash tables with Persistent<>-derived elements.
+template <typename T>
+struct PersistentHashBase : PtrHash<T> {
+  STATIC_ONLY(PersistentHashBase);
+
+  template <typename U>
+  static unsigned GetHash(const U& key) {
+    return PtrHash<T>::GetHash(key);
+  }
+
+  template <typename U, typename V>
+  static bool Equal(const U& a, const V& b) {
+    return a == b;
+  }
+};
+
 template <typename T>
 struct DefaultHash<blink::Persistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::WeakPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::CrossThreadPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::CrossThreadWeakPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
