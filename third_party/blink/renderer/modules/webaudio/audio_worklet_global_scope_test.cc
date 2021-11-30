@@ -214,7 +214,8 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
     EXPECT_TRUE(processor);
     EXPECT_EQ(processor->Name(), "testProcessor");
     v8::Local<v8::Value> processor_value =
-        ToV8(processor, script_state->GetContext()->Global(), isolate);
+        ToV8Traits<AudioWorkletProcessor>::ToV8(script_state, processor)
+            .ToLocalChecked();
     EXPECT_TRUE(processor_value->IsObject());
 
     wait_event->Signal();
