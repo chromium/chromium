@@ -240,7 +240,7 @@ def _dump_chart_json(output_dir, chartjson):
 
   histogram_path = os.path.join(output_dir, 'perf_results.json')
   logging.critical('Dumping histograms to %s', histogram_path)
-  with open(histogram_path, 'w') as json_file:
+  with open(histogram_path, 'wb') as json_file:
     json_file.write(histogram_result.stdout)
 
 
