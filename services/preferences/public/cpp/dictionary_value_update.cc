@@ -135,7 +135,12 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
 
 bool DictionaryValueUpdate::GetBoolean(base::StringPiece path,
                                        bool* out_value) const {
-  return value_->GetBoolean(path, out_value);
+  absl::optional<bool> value = value_->FindBoolPath(path);
+  if (!value.has_value())
+    return false;
+  if (out_value)
+    *out_value = value.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
