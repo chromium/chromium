@@ -5,14 +5,19 @@
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 
 #include <functional>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -98,6 +103,16 @@ GetMutableShortcutOverrideForTesting() {
   return g_shortcut_override;
 }
 
+std::string GetAllFilesInDir(const base::FilePath& file_path) {
+  std::vector<std::string> files_as_strs;
+  base::FileEnumerator files(file_path, true, base::FileEnumerator::FILES);
+  for (base::FilePath current = files.Next(); !current.empty();
+       current = files.Next()) {
+    files_as_strs.push_back(current.AsUTF8Unsafe());
+  }
+  return base::JoinString(base::make_span(files_as_strs), "\n  ");
+}
+
 }  // namespace
 
 ScopedShortcutOverrideForTesting::ScopedShortcutOverrideForTesting() = default;
@@ -123,10 +138,13 @@ ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
   directories = {&desktop};
 #endif
   for (base::ScopedTempDir* dir : directories) {
-    DCHECK(!dir->IsValid() || base::IsDirectoryEmpty(dir->GetPath()))
+    if (!dir->IsValid())
+      continue;
+    DCHECK(base::IsDirectoryEmpty(dir->GetPath()))
         << "Directory not empty: " << dir->GetPath().AsUTF8Unsafe()
         << ". Please uninstall all webapps that have been installed while "
-           "shortcuts were overriden.";
+           "shortcuts were overriden. Contents:\n"
+        << GetAllFilesInDir(dir->GetPath());
   }
   GetMutableShortcutOverrideForTesting() = absl::nullopt;  // IN-TEST
 }
