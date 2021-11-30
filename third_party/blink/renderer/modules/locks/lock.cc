@@ -21,31 +21,22 @@ const char* kLockModeNameExclusive = "exclusive";
 const char* kLockModeNameShared = "shared";
 }  // namespace
 
-class Lock::ThenFunction final : public ScriptFunction {
+class Lock::ThenFunction final : public NewScriptFunction::Callable {
  public:
   enum ResolveType {
     kFulfilled,
     kRejected,
   };
 
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                Lock* lock,
-                                                ResolveType type) {
-    ThenFunction* self =
-        MakeGarbageCollected<ThenFunction>(script_state, lock, type);
-    return self->BindToV8Function();
-  }
-
-  ThenFunction(ScriptState* script_state, Lock* lock, ResolveType type)
-      : ScriptFunction(script_state), lock_(lock), resolve_type_(type) {}
+  ThenFunction(Lock* lock, ResolveType type)
+      : lock_(lock), resolve_type_(type) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(lock_);
-    ScriptFunction::Trace(visitor);
+    NewScriptFunction::Callable::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     DCHECK(lock_);
     DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     lock_->ReleaseIfHeld();
@@ -57,6 +48,7 @@ class Lock::ThenFunction final : public ScriptFunction {
     return value;
   }
 
+ private:
   Member<Lock> lock_;
   ResolveType resolve_type_;
 };
@@ -98,10 +90,12 @@ void Lock::HoldUntil(ScriptPromise promise, ScriptPromiseResolver* resolver) {
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
-  promise.Then(ThenFunction::CreateFunction(script_state, this,
-                                            ThenFunction::kFulfilled),
-               ThenFunction::CreateFunction(script_state, this,
-                                            ThenFunction::kRejected));
+  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+                   script_state, MakeGarbageCollected<ThenFunction>(
+                                     this, ThenFunction::kFulfilled)),
+               MakeGarbageCollected<NewScriptFunction>(
+                   script_state, MakeGarbageCollected<ThenFunction>(
+                                     this, ThenFunction::kRejected)));
 }
 
 // static
