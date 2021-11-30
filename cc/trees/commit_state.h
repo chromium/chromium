@@ -146,12 +146,14 @@ struct CC_EXPORT CommitState {
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
+};
 
-  // -------------------------------------------------------------------------
-  // These values are populated on the impl thread during commit. They are
-  // read on the main thread after commit is finished.
-  base::TimeTicks impl_commit_start_time;
-  base::TimeTicks impl_commit_finish_time;
+struct CC_EXPORT CommitTimestamps {
+  // Time when the compositor first became aware that a commit was requested by
+  // the main thread.
+  base::TimeTicks start;
+  // Time when the compositor finished the commit.
+  base::TimeTicks finish;
 };
 
 }  // namespace cc

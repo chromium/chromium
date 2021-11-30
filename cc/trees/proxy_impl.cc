@@ -275,7 +275,8 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
-    const viz::BeginFrameArgs& commit_args) {
+    const viz::BeginFrameArgs& commit_args,
+    CommitTimestamps* commit_timestamps) {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!commit_completion_event_);
   DCHECK(IsImplThread() && IsMainThreadBlocked());
@@ -285,8 +286,8 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   // Inform the layer tree host that the commit has started, so that metrics
   // can determine how long we waited for thread synchronization.
-  layer_tree_host->active_commit_state()->impl_commit_start_time =
-      base::TimeTicks::Now();
+  commit_timestamps->start = base::TimeTicks::Now();
+  commit_timestamps_ = commit_timestamps;
 
   if (!host_impl_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoLayerTree",
@@ -689,6 +690,8 @@ void ProxyImpl::ScheduledActionCommit() {
   host_impl_->BeginCommit(
       layer_tree_host->active_commit_state()->source_frame_number);
   layer_tree_host->FinishCommitOnImplThread(host_impl_.get());
+  DCHECK(commit_timestamps_);
+  commit_timestamps_->finish = base::TimeTicks::Now();
 
   // Remove the LayerTreeHost reference before the completion event is signaled
   // and cleared. This is necessary since blocked_main_commit() allows access

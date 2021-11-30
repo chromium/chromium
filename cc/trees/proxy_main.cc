@@ -355,7 +355,8 @@ void ProxyMain::BeginMainFrame(
     // Although the commit is internally aborted, this is because it has been
     // detected to be a no-op.  From the perspective of an embedder, this commit
     // went through, and input should no longer be throttled, etc.
-    layer_tree_host_->CommitComplete();
+    layer_tree_host_->CommitComplete(
+        {base::TimeTicks(), base::TimeTicks::Now()});
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
@@ -368,6 +369,7 @@ void ProxyMain::BeginMainFrame(
   // begin the commit process, which is blocking from the main thread's
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
+  CommitTimestamps commit_timestamps;
   {
     TRACE_EVENT0("cc,raf_investigation", "ProxyMain::BeginMainFrame::commit");
 
@@ -378,7 +380,8 @@ void ProxyMain::BeginMainFrame(
         base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
                        base::Unretained(proxy_impl_.get()), completion_event,
                        layer_tree_host_, begin_main_frame_start_time,
-                       begin_main_frame_state->begin_frame_args));
+                       begin_main_frame_state->begin_frame_args,
+                       &commit_timestamps));
     layer_tree_host_->WaitForCommitCompletion();
   }
 
@@ -387,7 +390,7 @@ void ProxyMain::BeginMainFrame(
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
-  layer_tree_host_->CommitComplete();
+  layer_tree_host_->CommitComplete(commit_timestamps);
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);

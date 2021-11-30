@@ -441,8 +441,6 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
 
   property_trees_.ResetAllChangeTracking();
 
-  state->impl_commit_finish_time = base::TimeTicks::Now();
-
   // Dump property trees and layers if run with:
   //   --vmodule=layer_tree_host=3
   if (VLOG_IS_ON(3)) {
@@ -568,17 +566,11 @@ bool LayerTreeHost::IsUsingLayerLists() const {
   return settings_.use_layer_lists;
 }
 
-void LayerTreeHost::CommitComplete() {
+void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
   // This DCHECK ensures that WaitForCommitCompletion() will not block.
   DCHECK(!in_commit());
   WaitForCommitCompletion();
-  auto* commit_state = active_commit_state_.get();
-  if (commit_state) {
-    client_->DidCommit(commit_state->impl_commit_start_time,
-                       commit_state->impl_commit_finish_time);
-  } else {
-    client_->DidCommit(base::TimeTicks(), base::TimeTicks::Now());
-  }
+  client_->DidCommit(commit_timestamps.start, commit_timestamps.finish);
   if (did_complete_scale_animation_) {
     client_->DidCompletePageScaleAnimation();
     did_complete_scale_animation_ = false;

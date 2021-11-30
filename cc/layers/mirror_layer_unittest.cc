@@ -89,7 +89,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
 
   layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
                                /*has_updates=*/true);
-  layer_tree_host_->CommitComplete();
+  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->property_trees()->needs_rebuild = false;
   EXPECT_EQ(0, mirrored->mirror_count());
 

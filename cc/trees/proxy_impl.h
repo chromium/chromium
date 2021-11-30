@@ -72,7 +72,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void NotifyReadyToCommitOnImpl(CompletionEvent* completion_event,
                                  LayerTreeHost* layer_tree_host,
                                  base::TimeTicks main_thread_start_time,
-                                 const viz::BeginFrameArgs& commit_args);
+                                 const viz::BeginFrameArgs& commit_args,
+                                 CommitTimestamps* commit_timestamps);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
@@ -171,6 +172,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
+
+  // Set while commit is running or scheduled.
+  CommitTimestamps* commit_timestamps_ = nullptr;
 
   // Set when the main thread is waiting on a commit to complete.
   std::unique_ptr<ScopedCompletionEvent> commit_completion_event_;

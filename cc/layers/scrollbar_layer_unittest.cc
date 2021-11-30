@@ -366,7 +366,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
         layer_tree_host_->GetTaskRunnerProvider());
     layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl());
   }
-  layer_tree_host_->CommitComplete();
+  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());

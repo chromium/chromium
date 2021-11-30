@@ -210,7 +210,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_TRUE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
   }
-  host->CommitComplete();
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_TRUE(layer->contents_opaque());
   layer->SetBackgroundColor(SkColorSetARGB(254, 10, 20, 30));
@@ -240,7 +240,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_FALSE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
   }
-  host->CommitComplete();
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 }
 
 TEST_F(SolidColorLayerImplTest, Occlusion) {

@@ -52,9 +52,9 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/false);
+  host->WillCommit(/*completion=*/nullptr, /*has_updates=*/false);
   EXPECT_EQ(1, host->SourceFrameNumber());
-  host->CommitComplete();
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_EQ(1, host->SourceFrameNumber());
 
   layer->SetBounds(gfx::Size(0, 0));
@@ -180,8 +180,8 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/false);
-  host->CommitComplete();
+  host->WillCommit(/*completion=*/nullptr, /*has_updates=*/false);
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_EQ(1, host->SourceFrameNumber());
 
   layer->Update();
@@ -207,7 +207,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   auto* commit_state =
       host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
   layer->PushPropertiesTo(layer_impl, *commit_state);
-  host->CommitComplete();
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_EQ(2, host->SourceFrameNumber());
 

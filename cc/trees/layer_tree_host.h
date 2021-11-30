@@ -674,7 +674,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                           bool has_updates);
   CommitState* ActivateCommitState();
   void WaitForCommitCompletion();
-  void CommitComplete();
+  void CommitComplete(const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
   void DidFailToInitializeLayerTreeFrameSink();

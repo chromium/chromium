@@ -251,7 +251,7 @@ void SingleThreadProxy::CommitComplete() {
 
   DebugScopedSetMainThread main(task_runner_provider_);
   layer_tree_host_->DidBeginMainFrame();
-  layer_tree_host_->CommitComplete();
+  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   next_frame_is_newly_committed_frame_ = true;
 }
