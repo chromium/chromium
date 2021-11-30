@@ -432,9 +432,11 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   // We should wait for RenderFrameCreated() to happen, to avoid sending this
   // message twice.
   if (render_frame_host->IsRenderFrameCreated()) {
+    SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
+    CHECK(id.is_valid());
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrame(render_frame_host)
-        ->SetTabId(sessions::SessionTabHelper::IdForTab(web_contents()).id());
+        ->SetTabId(id.id());
   }
 }
 
