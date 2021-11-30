@@ -45,11 +45,18 @@
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/type_entities_count.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
 
 namespace {
+
+// Allows refreshing the recoverability state from the server when a persistent
+// auth error is resolved.
+const base::Feature kTrustedVaultUpdateRecoverabilityUponResolvedAuthError{
+    "TrustedVaultUpdateRecoverabilityUponResolvedAuthError",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The initial state of sync, for the Sync.InitialState histogram. Even if
 // this value is CAN_START, sync startup might fail for reasons that we may
@@ -1447,6 +1454,27 @@ void SyncServiceImpl::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   OnAccountsInCookieUpdatedWithCallback(
       accounts_in_cookie_jar_info.signed_in_accounts, base::NullCallback());
+}
+
+void SyncServiceImpl::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  if (error.state() == GoogleServiceAuthError::NONE &&
+      last_error_state_of_refresh_token_.IsPersistentError() &&
+      base::FeatureList::IsEnabled(
+          kTrustedVaultUpdateRecoverabilityUponResolvedAuthError)) {
+    // Resolving a persistent error may or may not necessarily imply changes in
+    // the recoverability state. However, over-triggering
+    // OnTrustedVaultRecoverabilityChanged() is totally fine and should lead to
+    // no user-facing changes, either because it's a strict no-op, e.g. if the
+    // passphrase type != kTrustedVaultPassphrase, or because the recoverability
+    // hasn't changed.
+    // TODO(crbug.com/1156584): This is only needed because currently not all
+    // persistent errors stop the sync engine.
+    crypto_.OnTrustedVaultRecoverabilityChanged();
+  }
+
+  last_error_state_of_refresh_token_ = error;
 }
 
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
