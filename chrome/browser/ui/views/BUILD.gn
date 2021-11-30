@@ -46,3 +46,22 @@ component("views") {
     deps += [ "//ash" ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+  public = [ "global_media_controls/media_dialog_ui_for_test.h" ]
+  sources = [ "global_media_controls/media_dialog_ui_for_test.cc" ]
+  deps = [
+    ":views",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//components/global_media_controls:global_media_controls",
+    "//components/media_message_center:media_message_center",
+    "//components/media_router/browser:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

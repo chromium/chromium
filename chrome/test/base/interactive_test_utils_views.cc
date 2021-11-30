@@ -72,15 +72,17 @@ bool IsViewFocused(const Browser* browser, ViewID vid) {
   return focus_manager->GetFocusedView()->GetID() == vid;
 }
 
-void ClickOnView(const Browser* browser, ViewID vid) {
-  views::View* view =
-      BrowserView::GetBrowserViewForBrowser(browser)->GetViewByID(vid);
+void ClickOnView(views::View* view) {
   DCHECK(view);
   base::RunLoop loop;
   MoveMouseToCenterAndPress(view, ui_controls::LEFT,
                             ui_controls::DOWN | ui_controls::UP,
                             loop.QuitClosure());
   loop.Run();
+}
+
+void ClickOnView(const Browser* browser, ViewID vid) {
+  ClickOnView(BrowserView::GetBrowserViewForBrowser(browser)->GetViewByID(vid));
 }
 
 void FocusView(const Browser* browser, ViewID vid) {

@@ -8585,6 +8585,7 @@ if (!is_android && !is_fuchsia) {
         sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc" ]
         deps += [
           "../browser/media/router:test_support",
+          "../browser/ui/views:test_support",
           "//components/media_router/browser:test_support",
         ]
       }

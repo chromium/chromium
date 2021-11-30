@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
-
+#include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
+#include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -385,31 +386,6 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
                 context, base::BindRepeating(&TestMediaRouter::Create)));
   }
 
-  void LayoutBrowser() {
-    BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetWidget()
-        ->LayoutRootViewIfNecessary();
-  }
-
-  MediaToolbarButtonView* GetToolbarIcon() {
-    LayoutBrowser();
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->media_button();
-  }
-
-  void ClickToolbarIcon() { ClickButton(GetToolbarIcon()); }
-
-  bool IsToolbarIconVisible() { return GetToolbarIcon()->GetVisible(); }
-
-  WARN_UNUSED_RESULT bool WaitForToolbarIconShown() {
-    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonShown();
-  }
-
-  WARN_UNUSED_RESULT bool WaitForToolbarIconHidden() {
-    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonHidden();
-  }
-
   void OpenTestURL() {
     GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("media/session")),
@@ -478,48 +454,30 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     observer.Wait();
   }
 
-  WARN_UNUSED_RESULT bool WaitForDialogOpened() {
-    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForDialogOpened();
-  }
-
-  bool IsDialogVisible() { return MediaDialogView::IsShowing(); }
-
-  void WaitForDialogToContainText(const std::u16string& text) {
-    MediaToolbarButtonWatcher(GetToolbarIcon())
-        .WaitForDialogToContainText(text);
-  }
-
-  void WaitForItemCount(int count) {
-    MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForItemCount(count);
-  }
-
-  void WaitForPictureInPictureButtonVisibility(bool visible) {
-    MediaToolbarButtonWatcher(GetToolbarIcon())
-        .WaitForPictureInPictureButtonVisibility(visible);
-  }
-
   void ClickPauseButtonOnDialog() {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    ClickButton(GetButtonForAction(MediaSessionAction::kPause));
+    ui_test_utils::ClickOnView(GetButtonForAction(MediaSessionAction::kPause));
   }
 
   void ClickPlayButtonOnDialog() {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    ClickButton(GetButtonForAction(MediaSessionAction::kPlay));
+    ui_test_utils::ClickOnView(GetButtonForAction(MediaSessionAction::kPlay));
   }
 
   void ClickEnterPictureInPictureButtonOnDialog() {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    ClickButton(GetButtonForAction(MediaSessionAction::kEnterPictureInPicture));
+    ui_test_utils::ClickOnView(
+        GetButtonForAction(MediaSessionAction::kEnterPictureInPicture));
   }
 
   void ClickExitPictureInPictureButtonOnDialog() {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    ClickButton(GetButtonForAction(MediaSessionAction::kExitPictureInPicture));
+    ui_test_utils::ClickOnView(
+        GetButtonForAction(MediaSessionAction::kExitPictureInPicture));
   }
 
   void ClickEnableLiveCaptionOnDialog() {
@@ -527,14 +485,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(MediaDialogView::IsShowing());
     views::Button* live_caption_button = static_cast<views::Button*>(
         MediaDialogView::GetDialogViewForTesting()->live_caption_button_);
-    ClickButton(live_caption_button);
+    ui_test_utils::ClickOnView(live_caption_button);
   }
 
   void ClickItemByTitle(const std::u16string& title) {
     ASSERT_TRUE(MediaDialogView::IsShowing());
     global_media_controls::MediaItemUIView* item = GetItemByTitle(title);
     ASSERT_NE(nullptr, item);
-    ClickButton(item);
+    ui_test_utils::ClickOnView(item);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -595,16 +553,10 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
   raw_ptr<TestMediaRouter> media_router_ = nullptr;
+  MediaDialogUiForTest ui_{base::BindRepeating(&InProcessBrowserTest::browser,
+                                               base::Unretained(this))};
 
  private:
-  void ClickButton(views::Button* button) {
-    base::RunLoop closure_loop;
-    ui_test_utils::MoveMouseToCenterAndPress(
-        button, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        closure_loop.QuitClosure());
-    closure_loop.Run();
-  }
-
   // Recursively tries to find a views::ImageButton for the given
   // MediaSessionAction. This operates under the assumption that
   // media_message_center::MediaNotificationViewImpl sets the tags of its action
@@ -648,35 +600,35 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
                        DISABLED_ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
-  EXPECT_FALSE(IsToolbarIconVisible());
+  EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
   // Opening a page with media that hasn't played yet should not make the
   // toolbar icon visible.
   OpenTestURL();
-  LayoutBrowser();
-  EXPECT_FALSE(IsToolbarIconVisible());
+  ui_.LayoutBrowserIfNecessary();
+  EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
   // Once playback starts, the icon should be visible, but the dialog should not
   // appear if it hasn't been clicked.
   StartPlayback();
   WaitForStart();
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  EXPECT_TRUE(IsToolbarIconVisible());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  EXPECT_TRUE(ui_.IsToolbarIconVisible());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // At this point, the toolbar icon has been set visible. Layout the
   // browser to ensure it can be clicked.
-  LayoutBrowser();
+  ui_.LayoutBrowserIfNecessary();
 
   // Clicking on the toolbar icon should open the dialog.
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(u"Big Buck Bunny");
-  WaitForDialogToContainText(u"Blender Foundation");
+  ui_.WaitForDialogToContainText(u"Big Buck Bunny");
+  ui_.WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -689,9 +641,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForStart();
 
   // Clicking on the toolbar icon again should hide the dialog.
-  EXPECT_TRUE(IsDialogVisible());
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
@@ -708,30 +660,30 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   ASSERT_TRUE(base::i18n::IsRTL());
 
   // The toolbar icon should not start visible.
-  EXPECT_FALSE(IsToolbarIconVisible());
+  EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
   // Opening a page with media that hasn't played yet should not make the
   // toolbar icon visible.
   OpenTestURL();
-  LayoutBrowser();
-  EXPECT_FALSE(IsToolbarIconVisible());
+  ui_.LayoutBrowserIfNecessary();
+  EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
   // Once playback starts, the icon should be visible, but the dialog should not
   // appear if it hasn't been clicked.
   StartPlayback();
   WaitForStart();
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  EXPECT_TRUE(IsToolbarIconVisible());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  EXPECT_TRUE(ui_.IsToolbarIconVisible());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // At this point, the toolbar icon has been set visible. Layout the
   // browser to ensure it can be clicked.
-  LayoutBrowser();
+  ui_.LayoutBrowserIfNecessary();
 
   // Clicking on the toolbar icon should open the dialog.
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // The view containing playback controls should not be mirrored.
   EXPECT_FALSE(MediaDialogView::GetDialogViewForTesting()
@@ -743,8 +695,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(u"Big Buck Bunny");
-  WaitForDialogToContainText(u"Blender Foundation");
+  ui_.WaitForDialogToContainText(u"Big Buck Bunny");
+  ui_.WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -771,9 +723,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
       GetButtonForAction(MediaSessionAction::kEnterPictureInPicture)));
 
   // Clicking on the toolbar icon again should hide the dialog.
-  EXPECT_TRUE(IsDialogVisible());
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
@@ -788,15 +740,15 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   WaitForStart();
 
   // Open the media dialog.
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // The dialog should show both media sessions.
-  WaitForDialogToContainText(u"Big Buck Bunny");
-  WaitForDialogToContainText(u"Blender Foundation");
-  WaitForDialogToContainText(u"Different Title");
-  WaitForDialogToContainText(u"Another Artist");
+  ui_.WaitForDialogToContainText(u"Big Buck Bunny");
+  ui_.WaitForDialogToContainText(u"Blender Foundation");
+  ui_.WaitForDialogToContainText(u"Different Title");
+  ui_.WaitForDialogToContainText(u"Another Artist");
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
@@ -819,13 +771,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   ASSERT_NE(first_web_contents, second_web_contents);
 
   // Open the media dialog.
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Wait for the dialog to be populated.
-  WaitForDialogToContainText(u"Big Buck Bunny");
-  WaitForDialogToContainText(u"Different Title");
+  ui_.WaitForDialogToContainText(u"Big Buck Bunny");
+  ui_.WaitForDialogToContainText(u"Different Title");
 
   // The second tab should be the active tab.
   EXPECT_EQ(second_web_contents, GetActiveWebContents());
@@ -857,12 +809,12 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   base::RunLoop().RunUntilIdle();
   presentation_manager_->NotifyMediaRoutesChanged({route});
 
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  WaitForDialogToContainText(
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  ui_.WaitForDialogToContainText(
       base::UTF8ToUTF16(route_description + " \xC2\xB7 " + sink_name));
-  WaitForItemCount(1);
+  ui_.WaitForItemCount(1);
 }
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
@@ -879,10 +831,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_PictureInPicture) {
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   ClickEnterPictureInPictureButtonOnDialog();
   WaitForEnterPictureInPicture();
@@ -899,16 +851,16 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   DisablePictureInPicture();
-  WaitForPictureInPictureButtonVisibility(false);
+  ui_.WaitForPictureInPictureButtonVisibility(false);
 
   EnablePictureInPicture();
-  WaitForPictureInPictureButtonVisibility(true);
+  ui_.WaitForPictureInPictureButtonVisibility(true);
 }
 
 // Flaky on linux (https://crbug.com/1218003).
@@ -930,23 +882,23 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   StartPlayback();
   WaitForStart();
 
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  EXPECT_TRUE(IsToolbarIconVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  EXPECT_TRUE(ui_.IsToolbarIconVisible());
 
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Pause the first session.
   ClickPauseButtonOnDialog();
   WaitForStop(first_web_contents);
 
   // Reopen dialog.
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
@@ -965,10 +917,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // The Live Caption title should appear.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
@@ -992,13 +944,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Close dialog and enable live caption preference. Reopen dialog.
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption - English",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -1027,10 +979,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
@@ -1072,10 +1024,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Live Caption is disabled, so the title should not show the language.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
@@ -1089,13 +1041,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Close dialog and change live caption language. Reopen dialog.
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
   browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
                                               "de-DE");
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Live Caption is enabled so the title should show the new language.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
@@ -1169,29 +1121,29 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Navigate to another page. The original page is cached.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh->GetLifecycleState());
-  EXPECT_TRUE(WaitForToolbarIconHidden());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // Go back to the original page. The original page is restored from the cache.
   GetActiveWebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh->GetLifecycleState());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
@@ -1207,38 +1159,38 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Pause the media.
   ClickPauseButtonOnDialog();
   WaitForStop();
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Close the dialog.
-  ClickToolbarIcon();
-  EXPECT_FALSE(IsDialogVisible());
+  ui_.ClickToolbarIcon();
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // Navigate to another page. The original page is cached.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh->GetLifecycleState());
-  EXPECT_TRUE(WaitForToolbarIconHidden());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // Go back to the original page. The original page is restored from the cache.
   GetActiveWebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh->GetLifecycleState());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
@@ -1257,17 +1209,17 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  EXPECT_TRUE(WaitForToolbarIconShown());
-  ClickToolbarIcon();
-  EXPECT_TRUE(WaitForDialogOpened());
-  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
 
   // Navigate to another page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh1->GetLifecycleState());
-  EXPECT_TRUE(WaitForToolbarIconHidden());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
+  EXPECT_FALSE(ui_.IsDialogVisible());
   content::RenderFrameHost* rfh2 = GetMainFrame();
 
   StartPlayback();
@@ -1277,8 +1229,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url3));
   EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh2->GetLifecycleState());
-  EXPECT_TRUE(WaitForToolbarIconHidden());
-  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
+  EXPECT_FALSE(ui_.IsDialogVisible());
 
   // Go back.
   GetActiveWebContents()->GetController().GoBack();

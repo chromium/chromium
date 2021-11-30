@@ -84,6 +84,7 @@ bool BringBrowserWindowToFront(const Browser* browser) WARN_UNUSED_RESULT;
 bool IsViewFocused(const Browser* browser, ViewID vid);
 
 // Simulates a mouse click on a View in the browser.
+void ClickOnView(views::View* view);
 void ClickOnView(const Browser* browser, ViewID vid);
 
 // Makes focus shift to the given View without clicking it.
