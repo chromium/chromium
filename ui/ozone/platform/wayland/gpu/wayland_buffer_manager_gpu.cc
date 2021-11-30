@@ -18,7 +18,7 @@
 #include "ui/ozone/public/overlay_plane.h"
 
 #if defined(WAYLAND_GBM)
-#include "ui/gfx/linux/gbm_wrapper.h"
+#include "ui/gfx/linux/gbm_wrapper.h"  // nogncheck
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #endif
