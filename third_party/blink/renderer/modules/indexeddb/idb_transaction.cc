@@ -386,6 +386,11 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
 
   if (transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
+
+  // Once IDBtransaction.commit() is called, the page should no longer be
+  // prevented from entering back/forward cache for having outstanding IDB
+  // connections. Commit ends the inflight IDB transactions.
+  feature_handle_for_scheduler_.reset();
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {

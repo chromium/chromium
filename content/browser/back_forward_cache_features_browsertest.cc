@@ -1601,6 +1601,116 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebDatabase) {
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfOpenIndexedDBConnection) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to A and use IndexedDB.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  RenderFrameDeletedObserver deleted(rfh_a.get());
+
+  // 2) Navigate away.
+  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  // The page has an open IndexedDB connection so it should be deleted.
+  deleted.WaitUntilDeleted();
+
+  // 3) Go back to the page with IndexedDB.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection}, {},
+      {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfIndexedDBConnectionClosedInPagehide) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to A and use IndexedDB, and close the connection on pagehide.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  // This registers a pagehide handler to close the IDB connection. This should
+  // remove the bfcache blocking.
+  EXPECT_TRUE(
+      ExecJs(rfh_a.get(), "registerPagehideToCloseIndexedDBConnection()"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back to the page with IndexedDB. The connection is closed so it
+  // should be restored from bfcache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotCacheIfIndexedDBTransactionNotCommitted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to A and use IndexedDB.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  // This registers a pagehide handler to start a new transaction. This will
+  // block bfcache because there is an inflight transaction.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "registerPagehideToStartTransaction()"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Go back to the page with IndexedDB.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::
+           kOutstandingIndexedDBTransaction},
+      {}, {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfIndexedDBConnectionTransactionCommit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to A and use IndexedDB.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  // This registers a pagehide handler to start and commit the IDB transactions.
+  // Since the transactions are ended inside the handler, the page is no longer
+  // blocked for inflight IDB transactions.
+  EXPECT_TRUE(
+      ExecJs(rfh_a.get(), "registerPagehideToStartAndCommitTransaction()"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back to the page with IndexedDB.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheIfBroadcastChannelStillOpen) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
