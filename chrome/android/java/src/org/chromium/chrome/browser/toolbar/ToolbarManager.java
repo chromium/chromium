@@ -1537,7 +1537,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
-        if (mLogoLoadHelper != null) mLogoLoadHelper.destroy();
+        if (mLogoLoadHelper != null) {
+            mLogoLoadHelper.destroy();
+            mLogoLoadHelper = null;
+        }
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         mComponentCallbacks = null;
