@@ -118,6 +118,7 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
                            DesksBarView* bar_view,
                            const bool to_zero_state)
       : removed_mini_view_(removed_mini_view) {
+    removed_mini_view_->set_is_animating_to_remove(true);
     ui::Layer* layer = removed_mini_view_->layer();
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kRemovedMiniViewsFadeOutDuration);

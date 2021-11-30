@@ -60,6 +60,11 @@ class ASH_EXPORT DeskMiniView : public views::View,
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
   DeskPreviewView* desk_preview() { return desk_preview_; }
 
+  bool is_animating_to_remove() const { return is_animating_to_remove_; }
+  void set_is_animating_to_remove(bool value) {
+    is_animating_to_remove_ = value;
+  }
+
   gfx::Rect GetPreviewBoundsInScreen() const;
 
   // Returns the associated desk's container window on the display this
@@ -149,6 +154,9 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   // The close button that shows on hover.
   CloseButton* close_desk_button_;
+
+  // True when this mini view is being animated to be removed from the bar.
+  bool is_animating_to_remove_ = false;
 
   // We force showing the close button when the mini_view is long pressed or
   // tapped using touch gestures.
