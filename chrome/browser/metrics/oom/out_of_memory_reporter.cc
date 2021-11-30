@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/time/default_tick_clock.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -98,7 +97,7 @@ void OutOfMemoryReporter::PrimaryMainFrameRenderProcessGone(
 // deterine OOM.
 #if !defined(OS_ANDROID)
   if (status == base::TERMINATION_STATUS_OOM
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       || status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM
 #endif
   ) {

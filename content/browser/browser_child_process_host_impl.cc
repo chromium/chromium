@@ -468,7 +468,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
                                   PROCESS_TYPE_MAX);
         break;
       }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED: {
@@ -495,7 +495,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     UMA_HISTOGRAM_ENUMERATION("ChildProcess.Disconnected2",
                               static_cast<ProcessType>(data_.process_type),
                               PROCESS_TYPE_MAX);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     if (info.status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM) {
       UMA_HISTOGRAM_ENUMERATION("ChildProcess.Killed2.OOM",
                                 static_cast<ProcessType>(data_.process_type),

@@ -36,7 +36,6 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/os_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -719,7 +718,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
   exit_code = 42;
   TerminationStatus status =
       WaitForChildTermination(process.Handle(), &exit_code);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM, status);
 #else
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED, status);

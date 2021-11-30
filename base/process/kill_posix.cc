@@ -18,7 +18,6 @@
 #include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -56,7 +55,7 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
       case SIGSYS:
         return TERMINATION_STATUS_PROCESS_CRASHED;
       case SIGKILL:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
         // On ChromeOS, only way a process gets kill by SIGKILL
         // is by oom-killer.
         return TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM;
