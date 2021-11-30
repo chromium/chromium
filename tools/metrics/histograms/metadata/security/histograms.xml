@@ -938,6 +938,324 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.BrowsingInstance.MaxCountPerProcess"
+    units="units" expires_after="2021-12-19">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The maximum number of BrowsingInstances seen in a RenderProcessHost over its
+    lifetime. Recorded once when
+    ChildProcessImpl::SecurityState::~SecurityState() is invoked.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.BrowsingInstanceCount" units="units"
+    expires_after="2022-05-01">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The count of all current BrowsingInstances. Recorded once per UMA ping.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SiteIsolation.CORBProtection.CacheHeuristic"
+    enum="CrossOriginProtectionDecision" expires_after="M83">
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The blocking decision CORB would have made on the response, if the request
+    was cross-origin. Reported if the response looked sensitive under the cache
+    heuristic (i.e. had Cache-Control: Private and Vary: Origin response
+    headers).
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType"
+    enum="BooleanSupported" expires_after="M83">
+<!-- suffixed with Block*WithRangeSupport -->
+
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    True if the response has an Accept-Ranges header, which indicates the server
+    supports range requests on the resource and could be used to bypass CORB.
+    Only reported if the resource looked sensitive under the Cache heuristic and
+    was a protected MIME type.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SiteIsolation.CORBProtection.CORSHeuristic"
+    enum="CrossOriginProtectionDecision" expires_after="M83">
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The blocking decision CORB would have made on the response, if the request
+    was cross-origin. Reported if the response looked sensitive under the CORS
+    heuristic (i.e. had the Access-Control-Allow-Origin header with a value
+    other than * or null).
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType"
+    enum="BooleanSupported" expires_after="M83">
+<!-- suffixed with Block*WithRangeSupport -->
+
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    True if the response has an Accept-Ranges header, which indicates the server
+    supports range requests on the resource and could be used to bypass CORB.
+    Only reported if the resource looked sensitive under the CORS heuristic and
+    was a protected MIME type.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SiteIsolation.CORBProtection.ProtectedMimeType.BlockedWithoutSniffing.HasNoSniff"
+    enum="BooleanHasNoSniff" expires_after="M83">
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    True if the response has a nosniff header. If the nosniff header is not
+    present, then CORB must have decided to block without sniffing due to a
+    partial response, or because the MIME type was a never sniff type. Only
+    reported on resources CORB would have blocked/protected without sniffing
+    that have a protected MIME type.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.CORBProtection.SensitiveResource"
+    enum="BooleanSensitive" expires_after="M83">
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    True if the resource was found to be sensitive by either the CORS or Cache
+    heuristics. Recorded for every resource CORB sees.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.CORBProtection.SensitiveWithRangeSupport"
+    enum="BooleanSupported" expires_after="M83">
+  <owner>krstnmnlsn@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    True if the response has an Accept-Ranges header, which indicates the server
+    supports range requests on the resource. Only reported if the response
+    looked sensitive under the cache or CORS heuristics.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.FileSystemApi.CanAccessDataForOriginFailure.IsHttpBasedScheme"
+    enum="BooleanHttpBasedOrOtherScheme" expires_after="2020-12-21">
+  <obsolete>
+    Removed in Dec 2020 / M89.
+  </obsolete>
+  <owner>lukasza@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Logged when FileSystemManagerImpl::Open fails CanAccessDataForOrigin check.
+    The value indicates whether the requested origin came from a http/https
+    origin VS from another origin (possibly from a Chrome App).
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.IsPasswordFormSubmittedInDedicatedProcess"
+    enum="SiteIsolationIsDedicatedProcess" expires_after="2022-04-03">
+  <owner>alexmos@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logs whether or not a password form was submitted from a site-isolated
+    process that's dedicated to a single site. Recorded when a password form is
+    submitted.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.Decision"
+    enum="OpaqueResponseBlocking_ResponseHeadersHeuristic" expires_after="M92">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The approximation of a route that Opaque Response Blocking (ORB) algorithm
+    would have taken to decide whether to block the response or not. The logged
+    value is based on heuristics that only look at the HTTP response headers,
+    and attempt to approximate if the full ORB algorithm would need to parse the
+    response body as Javascript (vs also reaching a decision purely based on the
+    HTTP response headers).
+
+    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
+    multimedia sniffing and/or 206-response processing is done). This means that
+    the results overestimate how many responses need Javascript parsing.
+
+    Logged for each final HTTP/HTTPS response processed by the NetworkService.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.{OrbDecision}"
+    enum="RequestDestination" expires_after="M92">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The request destination (e.g. script vs image) of a response that Opaque
+    Response Blocking (ORB) algorithm processed {OrbDecision}.
+
+    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
+    multimedia sniffing and/or 206-response processing is done). This means that
+    the results overestimate how many responses need Javascript parsing.
+
+    Logged for each final HTTP/HTTPS response processed by the NetworkService.
+  </summary>
+  <token key="OrbDecision">
+    <variant name="ProcessedBasedOnHeaders"
+        summary="based on HTTP response headers"/>
+    <variant name="RequiresJavascriptParsing"
+        summary="with required Javascript parsing"/>
+  </token>
+</histogram>
+
+<histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
+    expires_after="2022-04-10">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The count of all out-of-process iframes. Recorded once per UMA ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.OutOfProcessInnerFrameTrees" units="frame trees"
+    expires_after="2022-04-10">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The count of all out-of-process inner frame trees. Recorded once per UMA
+    ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ProxyCount" units="proxies"
+    expires_after="2022-04-17">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The count of all RenderFrameProxyHosts. Recorded once per UMA ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ProxyCountPerBrowsingInstance" units="units"
+    expires_after="2022-08-18">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The count of RenderFrameProxyHosts in each BrowsingInstance. Recorded each
+    UMA ping, once per BrowsingInstance.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ReusePendingOrCommittedSite.CouldReuse"
+    enum="ReusePendingOrCommittedSiteEnum" expires_after="M77">
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Whether SiteInstances with a ProcessReusePolicy of
+    REUSE_PENDING_OR_COMMITTED_SITE could reuse an existing RenderProcessHost or
+    they had to create a new one. True when they reused an existing process,
+    false when they created a new one.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
+    units="ms" expires_after="2022-04-10">
+  <owner>jessemckenna@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Recorded on navigations with a ProcessReusePolicy of
+    REUSE_PENDING_OR_COMMITTED_SITE (mostly subframe navigations). Measures the
+    time since a RenderProcessHost hosting the destination URL was last
+    destroyed, up to 10 seconds. If no host matching the destination was
+    recently destroyed, a sentinel value of 20 seconds is used.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.SavedOAuthSites.Size" units="origins"
+    expires_after="2022-04-03">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The number of currently saved sites that had been isolated due to OAuth.
+    This is only used by Site Isolation on Android. Recorded once on browser
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
+    units="origins" expires_after="2022-04-03">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The number of currently saved user-triggered isolated sites. This includes
+    sites where the user has entered a password while using Site Isolation for
+    password sites (which is a currently active site isolation mode on Android).
+    Recorded once on browser startup.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
+    units="origins" expires_after="2022-04-03">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The number of currently saved web-triggered isolated sites. This includes
+    sites that were isolated due to Cross-Origin-Opener-Policy headers, which is
+    a heuristic used for site isolation on Android. Recorded once on browser
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.SiteInstancesPerBrowsingInstance" units="units"
+    expires_after="2022-04-10">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The count of SiteInstances in a single BrowsingInstance. Recorded each UMA
+    ping, once per BrowsingInstance.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.XSD.Browser.Action"
+    enum="SiteIsolationResponseAction" expires_after="2020-06-01">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Various actions related to cross-site document blocking in the browser
+    process, indicating whether the response was blocked from the renderer.
+    Recorded as the response is processed in the network stack.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.XSD.Browser.Blocked.CanonicalMimeType"
+    enum="CorbCanonicalMimeType" expires_after="M81">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The total count of responses that were blocked by the cross-site document
+    blocking logic in the browser process. Recorded with a canonical MIME type
+    when the response is blocked.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
