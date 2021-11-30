@@ -1559,6 +1559,7 @@ component("platform") {
     "widget/input/prediction/predictor_factory.cc",
     "widget/input/scroll_predictor.cc",
     "widget/input/scroll_predictor.h",
+    "widget/input/synchronous_input_handler_proxy.h",
     "widget/input/widget_base_input_handler.cc",
     "widget/input/widget_base_input_handler.h",
     "widget/input/widget_input_handler_impl.cc",

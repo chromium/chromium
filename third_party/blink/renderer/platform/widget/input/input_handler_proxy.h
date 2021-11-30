@@ -12,9 +12,9 @@
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/platform/input/synchronous_input_handler_proxy.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/widget/input/synchronous_input_handler_proxy.h"
 
 namespace base {
 class TickClock;

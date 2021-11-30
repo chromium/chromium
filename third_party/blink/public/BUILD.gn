@@ -127,7 +127,6 @@ source_set("blink_headers") {
     "platform/file_path_conversion.h",
     "platform/impression_conversions.h",
     "platform/input/predictor_factory.h",
-    "platform/input/synchronous_input_handler_proxy.h",
     "platform/interface_registry.h",
     "platform/internet_disconnected_web_url_loader.h",
     "platform/media/webmediaplayer_delegate.h",

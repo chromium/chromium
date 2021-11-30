@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
-
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
 
 namespace gfx {
 class Point;
@@ -32,6 +31,7 @@ class SynchronousInputHandler {
 // This interface provides support for that behaviour. The WebView embedder will
 // act as the InputHandler for controlling the timing of input (fling)
 // animations.
+// TODO(crbug.com/1274909): Remove this class.
 class SynchronousInputHandlerProxy {
  public:
   virtual ~SynchronousInputHandlerProxy() {}
@@ -57,4 +57,4 @@ class SynchronousInputHandlerProxy {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_SYNCHRONOUS_INPUT_HANDLER_PROXY_H_
