@@ -65,7 +65,7 @@ class CORE_EXPORT DataObjectItem final
                                         const KURL& base_url);
   static DataObjectItem* CreateFromFileSharedBuffer(
       scoped_refptr<SharedBuffer>,
-      bool is_accessible_from_start_frame,
+      bool is_image_accessible,
       const KURL&,
       const String& file_extension,
       const AtomicString& content_disposition);
@@ -88,9 +88,7 @@ class CORE_EXPORT DataObjectItem final
   // Used to support legacy DataTransfer APIs and renderer->browser
   // serialization.
   scoped_refptr<SharedBuffer> GetSharedBuffer() const { return shared_buffer_; }
-  bool IsAccessibleFromStartFrame() const {
-    return is_accessible_from_start_frame;
-  }
+  bool IsImageAccessible() const { return is_image_accessible_; }
   String FilenameExtension() const { return filename_extension_; }
   String Title() const { return title_; }
   KURL BaseURL() const { return base_url_; }
@@ -119,7 +117,7 @@ class CORE_EXPORT DataObjectItem final
   String data_;
   Member<File> file_;
   scoped_refptr<SharedBuffer> shared_buffer_;
-  bool is_accessible_from_start_frame;
+  bool is_image_accessible_ = false;
   // Optional metadata. Currently used for URL, HTML, and dragging files in.
   String filename_extension_;
   String title_;

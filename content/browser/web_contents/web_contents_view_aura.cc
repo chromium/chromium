@@ -743,6 +743,7 @@ void WebContentsViewAura::PrepareDropData(
     data.GetFileContents(&filename, &file_contents);
     if (!filename.empty()) {
       drop_data->file_contents = std::move(file_contents);
+      drop_data->file_contents_image_accessible = true;
       drop_data->file_contents_source_url =
           GURL(ui::FilePathToFileURL(filename));
       base::FilePath::StringType extension = filename.Extension();
@@ -1125,7 +1126,7 @@ void WebContentsViewAura::StartDragging(
   drag_start_ =
       DragStart(source_rwh->GetProcess()->GetID(),
                 GetRenderViewHostID(web_contents_->GetRenderViewHost()),
-                drop_data.file_contents_accessible_from_start_frame);
+                drop_data.file_contents_image_accessible);
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)
