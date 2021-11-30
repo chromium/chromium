@@ -5474,3 +5474,43 @@ def CheckAssertAshOnlyCode(input_api, output_api):
                     'as:\n  # TODO(https://crbug.com/XXX): add '
                     'assert(is_chromeos_ash) when ...' % f.LocalPath()))
     return errors
+
+
+def _IsRendererOnlyCppFile(input_api, affected_file):
+  path = affected_file.LocalPath()
+  if not _IsCPlusPlusFile(input_api, path):
+    return False
+
+  # Any code under a "renderer" subdirectory is assumed to be Renderer-only.
+  if "/renderer/" in path:
+    return True
+
+  # Blink's public/web API is only used/included by Renderer-only code.  Note
+  # that public/platform API may be used in non-Renderer processes (e.g. there
+  # are some includes in code used by Utility, PDF, or Plugin processes).
+  if "/blink/public/web/" in path:
+    return True
+
+  # We assume that everything else may be used outside of Renderer processes.
+  return False
+
+# TODO(https://crbug.com/1273182): Remove these checks, once they are replaced
+# by the Chromium Clang Plugin (which will be preferable because it will
+# 1) report errors earlier - at compile-time and 2) cover more rules).
+def CheckRawPtrUsage(input_api, output_api):
+  """Rough checks that raw_ptr<T> usage guidelines are followed."""
+  errors = []
+  # The regex below matches "raw_ptr<" following a word boundary, but not in a
+  # C++ comment.
+  raw_ptr_matcher = input_api.re.compile(r'^((?!//).)*\braw_ptr<')
+  file_filter = lambda f: _IsRendererOnlyCppFile(input_api, f)
+  for f, line_num, line in input_api.RightHandSideLines(file_filter):
+    if raw_ptr_matcher.search(line):
+      errors.append(
+          output_api.PresubmitError(
+              'Problem on {path}:{line} - '\
+              'raw_ptr<T> should not be used in Renderer-only code '\
+              '(as documented in the "Pointers to unprotected memory" '\
+              'section in //base/memory/raw_ptr.md)'.format(
+                  path=f.LocalPath(), line=line_num)))
+  return errors

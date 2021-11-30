@@ -89,6 +89,13 @@ class MockInputApi(object):
         continue
       yield file
 
+  def RightHandSideLines(self, source_file_filter=None):
+    affected_files = self.AffectedSourceFiles(source_file_filter)
+    for af in affected_files:
+      lines = af.ChangedContents()
+      for line in lines:
+        yield (af, line[0], line[1])
+
   def AffectedSourceFiles(self, file_filter=None):
     return self.AffectedFiles(file_filter=file_filter)
 

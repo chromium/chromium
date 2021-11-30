@@ -4019,5 +4019,43 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
         self.assertEqual(0, len(errors))
 
 
+class CheckRawPtrUsageTest(unittest.TestCase):
+  def testAllowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # Browser-side files are allowed.
+        MockAffectedFile('test10/browser/foo.h', ['raw_ptr<int>']),
+        MockAffectedFile('test11/browser/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test12/blink/common/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test13/blink/public/common/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test14/blink/public/platform/foo.cc',
+                         ['raw_ptr<int>']),
+
+        # Non-C++ files are allowed.
+        MockAffectedFile('test20/renderer/foo.md', ['raw_ptr<int>']),
+
+        # Mentions in a comment are allowed.
+        MockAffectedFile('test30/renderer/foo.cc', ['//raw_ptr<int>']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
+    self.assertFalse(errors)
+
+  def testDisallowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('test1/renderer/foo.h', ['raw_ptr<int>']),
+        MockAffectedFile('test2/renderer/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test3/blink/public/web/foo.cc', ['raw_ptr<int>']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
+    self.assertEqual(len(mock_input_api.files), len(errors))
+    for error in errors:
+      self.assertTrue(
+          'raw_ptr<T> should not be used in Renderer-only code' in
+          error.message)
+
+
 if __name__ == '__main__':
   unittest.main()

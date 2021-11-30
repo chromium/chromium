@@ -65,11 +65,11 @@ android_webview/public/
 # Also, note that isInThirdPartyLocation AST matcher in
 # RewriteRawPtrFields.cpp explicitly includes third_party/blink
 # (because it is in the same git repository as the rest of Chromium),
-# but we go ahead and exclude it below.
-/renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/).
-third_party/blink/
-!third_party/blink/public/common/
-!third_party/blink/common/
+# but we go ahead and exclude most of it below (as Renderer-only code).
+/renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/
+            #  or //third_party/blink/renderer)
+third_party/blink/public/web/  # TODO: Consider renaming this directory to
+                               # public/renderer?
 
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory
