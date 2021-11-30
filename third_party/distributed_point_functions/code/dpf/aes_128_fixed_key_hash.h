@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_PSEUDORANDOM_GENERATOR_H_
-#define DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_PSEUDORANDOM_GENERATOR_H_
+#ifndef DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_AES_128_FIXED_KEY_HASH_H_
+#define DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_AES_128_FIXED_KEY_HASH_H_
 
 #include <openssl/cipher.h>
 
@@ -23,24 +23,27 @@
 #include "absl/status/statusor.h"
 
 namespace distributed_point_functions {
-namespace dpf_internal {
 
-// PseudorandomGenerator (PRG) based on AES. For key `key`, input `in` and
-// output `out`, the PRG is defined as
+// Aes128FixedKeyHash is a circular correlation-robust hash function based on
+// AES. For key `key`, input `in` and output `out`, the hash function is defined
+// as
 //
 //     out[i] = AES.Encrypt(key, sigma(in[i])) ^ sigma(in[i]),
 //
 // where sigma(x) = (x.high64 ^ x.low64, x.high64). This is the
-// correlation-robust MMO construction from https://eprint.iacr.org/2019/074.pdf
-// (pp. 18-19).
-class PseudorandomGenerator {
+// circular correlation-robust MMO construction from
+// https://eprint.iacr.org/2019/074.pdf (pp. 18-19). Note that unlike
+// cryptographic hash functions such as SHA-256, this hash function is *not*
+// compressing and is not designed to provide any security guarantees beyond
+// circular correlation-robustness. Use with appropriate caution.
+class Aes128FixedKeyHash {
  public:
-  // Creates a new PseudorandomGenerator with the given `key`.
+  // Creates a new Aes128FixedKeyHash with the given `key`.
   //
   // Returns INTERNAL in case of allocation failures or OpenSSL errors.
-  static absl::StatusOr<PseudorandomGenerator> Create(absl::uint128 key);
+  static absl::StatusOr<Aes128FixedKeyHash> Create(absl::uint128 key);
 
-  // Computes pseudorandom values from `in` and writing the output to `out`.
+  // Computes hash values of each block in `in`, writing the output to `out`.
   // It is safe to call this method if `in` and `out` overlap.
   //
   // Returns INVALID_ARGUMENT if sizes of `in` and `out` don't match or their
@@ -48,28 +51,27 @@ class PseudorandomGenerator {
   absl::Status Evaluate(absl::Span<const absl::uint128> in,
                         absl::Span<absl::uint128> out) const;
 
-  // PseudorandomGenerator is not copyable.
-  PseudorandomGenerator(const PseudorandomGenerator&) = delete;
-  PseudorandomGenerator& operator=(const PseudorandomGenerator&) = delete;
+  // Aes128FixedKeyHash is not copyable.
+  Aes128FixedKeyHash(const Aes128FixedKeyHash&) = delete;
+  Aes128FixedKeyHash& operator=(const Aes128FixedKeyHash&) = delete;
 
-  // PseudorandomGenerator is movable (it just wraps a bssl::UniquePtr).
-  PseudorandomGenerator(PseudorandomGenerator&&) = default;
-  PseudorandomGenerator& operator=(PseudorandomGenerator&&) = default;
+  // Aes128FixedKeyHash is movable (it just wraps a bssl::UniquePtr).
+  Aes128FixedKeyHash(Aes128FixedKeyHash&&) = default;
+  Aes128FixedKeyHash& operator=(Aes128FixedKeyHash&&) = default;
 
   // The maximum number of AES blocks encrypted at once. Chosen to pipeline AES
   // as much as possible, while still allowing both source and destination to
-  // comfortably fit in the L2 CPU cache.
-  static constexpr int kBatchSize = 4096;
+  // comfortably fit in the L1 CPU cache.
+  static constexpr int kBatchSize = 64;
 
  private:
   // Called by `Create`.
-  PseudorandomGenerator(bssl::UniquePtr<EVP_CIPHER_CTX> prg_ctx);
+  Aes128FixedKeyHash(bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx);
 
   // The OpenSSL encryption context used by `Evaluate`.
-  bssl::UniquePtr<EVP_CIPHER_CTX> prg_ctx_;
+  bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx_;
 };
 
-}  // namespace dpf_internal
 }  // namespace distributed_point_functions
 
-#endif  // DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_PSEUDORANDOM_GENERATOR_H_
+#endif  // DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_AES_128_FIXED_KEY_HASH_H_

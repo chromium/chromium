@@ -1,6 +1,7 @@
 include_rules = [
   "+absl",
   "+benchmark",
+  "+dcf",
   "+dpf",
   "+google/protobuf",
 ]

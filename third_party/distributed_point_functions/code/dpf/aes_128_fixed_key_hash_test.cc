@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "dpf/internal/pseudorandom_generator.h"
+#include "dpf/aes_128_fixed_key_hash.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -22,8 +22,9 @@
 #include "dpf/internal/status_matchers.h"
 
 namespace distributed_point_functions {
-namespace dpf_internal {
 namespace {
+
+using dpf_internal::StatusIs;
 
 // Test blocks for keys, inputs, and outputs.
 constexpr absl::uint128 kKey0 =
@@ -40,16 +41,16 @@ constexpr absl::uint128 kSeed3 =
     absl::MakeUint128(0xcdefcdefcdefcdef, 0xcdefcdefcdefcdef);
 
 TEST(PseudorandomGeneratorTest, CreateSucceeds) {
-  DPF_EXPECT_OK(PseudorandomGenerator::Create(kKey0));
+  DPF_EXPECT_OK(Aes128FixedKeyHash::Create(kKey0));
 }
 
 TEST(PseudorandomGeneratorTest, SameKeysAndSeedsGenerateSameOutput) {
   std::vector<absl::uint128> in;
 
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_0,
-                           PseudorandomGenerator::Create(kKey0));
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_1,
-                           PseudorandomGenerator::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_0,
+                           Aes128FixedKeyHash::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_1,
+                           Aes128FixedKeyHash::Create(kKey0));
   in = {kSeed0};
   // Initialize output arrays with different values, to make sure they are the
   // same afterwards.
@@ -63,10 +64,10 @@ TEST(PseudorandomGeneratorTest, SameKeysAndSeedsGenerateSameOutput) {
 TEST(PseudorandomGeneratorTest, DifferentKeysGenerateDifferentOutput) {
   std::vector<absl::uint128> in{kSeed0};
 
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_0,
-                           PseudorandomGenerator::Create(kKey0));
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_1,
-                           PseudorandomGenerator::Create(kKey1));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_0,
+                           Aes128FixedKeyHash::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_1,
+                           Aes128FixedKeyHash::Create(kKey1));
   // Initialize output arrays with the same values, to make sure they are
   // different afterwards.
   std::vector<absl::uint128> out_0(in.size(), kSeed2), out_1(in.size(), kSeed2);
@@ -77,8 +78,8 @@ TEST(PseudorandomGeneratorTest, DifferentKeysGenerateDifferentOutput) {
 }
 
 TEST(PseudorandomGeneratorTest, DifferentSeedsGenerateDifferentOutput) {
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg,
-                           PseudorandomGenerator::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg,
+                           Aes128FixedKeyHash::Create(kKey0));
   std::vector<absl::uint128> in_0, in_1;
 
   in_0 = {kSeed0};
@@ -94,8 +95,8 @@ TEST(PseudorandomGeneratorTest, DifferentSeedsGenerateDifferentOutput) {
 }
 
 TEST(PseudorandomGeneratorTest, BatchedEvaluationEqualsBlockWiseEvaluation) {
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg,
-                           PseudorandomGenerator::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg,
+                           Aes128FixedKeyHash::Create(kKey0));
   std::vector<absl::uint128> in_0, in_1, in_2;
 
   in_0 = {kSeed0};
@@ -113,10 +114,10 @@ TEST(PseudorandomGeneratorTest, BatchedEvaluationEqualsBlockWiseEvaluation) {
 TEST(PseudorandomGeneratorTest, TestSpecificOutputValues) {
   std::vector<absl::uint128> in, out_0, out_1;
 
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_0,
-                           PseudorandomGenerator::Create(kKey0));
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg_1,
-                           PseudorandomGenerator::Create(kKey1));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_0,
+                           Aes128FixedKeyHash::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg_1,
+                           Aes128FixedKeyHash::Create(kKey1));
   in = {kSeed0, kSeed1};
   out_0.resize(in.size());
   out_1.resize(in.size());
@@ -135,8 +136,8 @@ TEST(PseudorandomGeneratorTest, TestSpecificOutputValues) {
 
 TEST(PseudorandomGeneratorTest, EvaluateFailsWhenSizesDontMatch) {
   std::vector<absl::uint128> in{kSeed0};
-  DPF_ASSERT_OK_AND_ASSIGN(PseudorandomGenerator prg,
-                           PseudorandomGenerator::Create(kKey0));
+  DPF_ASSERT_OK_AND_ASSIGN(Aes128FixedKeyHash prg,
+                           Aes128FixedKeyHash::Create(kKey0));
 
   std::vector<absl::uint128> out(in.size() + 1);
 
@@ -146,5 +147,4 @@ TEST(PseudorandomGeneratorTest, EvaluateFailsWhenSizesDontMatch) {
 }
 
 }  // namespace
-}  // namespace dpf_internal
 }  // namespace distributed_point_functions

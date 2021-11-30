@@ -23,23 +23,21 @@ config("distributed_point_functions_includes") {
   ]
 }
 
-config("distributed_point_functions_warnings") {
-  if (is_clang) {
-    # distributed_point_functions.cc (intentionally) does
-    # `control_bits[0] & control_bit_correction[keep]` where both args
-    # are of type bool.
-    cflags = [ "-Wno-bitwise-instead-of-logical" ]
-  }
-}
-
 source_set("distributed_point_functions") {
   sources = [
+    "code/dpf/aes_128_fixed_key_hash.cc",
+    "code/dpf/aes_128_fixed_key_hash.h",
     "code/dpf/distributed_point_function.cc",
     "code/dpf/distributed_point_function.h",
-    "code/dpf/internal/array_conversions.h",
-    "code/dpf/internal/pseudorandom_generator.cc",
-    "code/dpf/internal/pseudorandom_generator.h",
+    "code/dpf/int_mod_n.cc",
+    "code/dpf/int_mod_n.h",
+    "code/dpf/internal/proto_validator.cc",
+    "code/dpf/internal/proto_validator.h",
+    "code/dpf/internal/value_type_helpers.cc",
+    "code/dpf/internal/value_type_helpers.h",
     "code/dpf/status_macros.h",
+    "code/dpf/tuple.h",
+    "code/dpf/xor_wrapper.h",
     "glog/logging.h",
   ]
 
@@ -54,7 +52,6 @@ source_set("distributed_point_functions") {
   # Do not apply Chromium code rules to this third-party code.
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ ":distributed_point_functions_warnings" ]
 
   public_configs = [ ":distributed_point_functions_includes" ]
 }

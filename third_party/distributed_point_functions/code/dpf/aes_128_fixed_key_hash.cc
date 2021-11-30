@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-#include "dpf/internal/pseudorandom_generator.h"
+#include "dpf/aes_128_fixed_key_hash.h"
 
 #include <vector>
 
 namespace distributed_point_functions {
-namespace dpf_internal {
 
-PseudorandomGenerator::PseudorandomGenerator(
-    bssl::UniquePtr<EVP_CIPHER_CTX> prg_ctx)
-    : prg_ctx_(std::move(prg_ctx)) {}
+Aes128FixedKeyHash::Aes128FixedKeyHash(
+    bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx)
+    : cipher_ctx_(std::move(cipher_ctx)) {}
 
-absl::StatusOr<PseudorandomGenerator> PseudorandomGenerator::Create(
+absl::StatusOr<Aes128FixedKeyHash> Aes128FixedKeyHash::Create(
     absl::uint128 key) {
-  bssl::UniquePtr<EVP_CIPHER_CTX> prg_ctx(EVP_CIPHER_CTX_new());
-  if (!prg_ctx) {
+  bssl::UniquePtr<EVP_CIPHER_CTX> cipher_ctx(EVP_CIPHER_CTX_new());
+  if (!cipher_ctx) {
     return absl::InternalError("Failed to allocate AES context");
   }
   // Set up the OpenSSL encryption context. We want to evaluate the PRG in
@@ -37,16 +36,16 @@ absl::StatusOr<PseudorandomGenerator> PseudorandomGenerator::Create(
   // to be confused with encryption of an array, for which ECB would be
   // insecure.
   int openssl_status =
-      EVP_EncryptInit_ex(prg_ctx.get(), EVP_aes_128_ecb(), nullptr,
+      EVP_EncryptInit_ex(cipher_ctx.get(), EVP_aes_128_ecb(), nullptr,
                          reinterpret_cast<const uint8_t*>(&key), nullptr);
   if (openssl_status != 1) {
     return absl::InternalError("Failed to set up AES context");
   }
-  return PseudorandomGenerator(std::move(prg_ctx));
+  return Aes128FixedKeyHash(std::move(cipher_ctx));
 }
 
-absl::Status PseudorandomGenerator::Evaluate(
-    absl::Span<const absl::uint128> in, absl::Span<absl::uint128> out) const {
+absl::Status Aes128FixedKeyHash::Evaluate(absl::Span<const absl::uint128> in,
+                                          absl::Span<absl::uint128> out) const {
   if (in.size() != out.size()) {
     return absl::InvalidArgumentError("Input and output sizes don't match");
   }
@@ -57,7 +56,7 @@ absl::Status PseudorandomGenerator::Evaluate(
   // Compute orthomorphism sigma for each element in `in`, `kBatchSize` elements
   // at a time.
   auto in_size = static_cast<int64_t>(in.size());
-  std::vector<absl::uint128> sigma_in(kBatchSize);
+  std::array<absl::uint128, kBatchSize> sigma_in;
   for (int64_t start_block = 0; start_block < in_size;
        start_block += kBatchSize) {
     int64_t batch_size = std::min<int64_t>(in_size - start_block, kBatchSize);
@@ -69,7 +68,7 @@ absl::Status PseudorandomGenerator::Evaluate(
     }
     int out_len;
     int openssl_status = EVP_EncryptUpdate(
-        prg_ctx_.get(), reinterpret_cast<uint8_t*>(out.data() + start_block),
+        cipher_ctx_.get(), reinterpret_cast<uint8_t*>(out.data() + start_block),
         &out_len, reinterpret_cast<const uint8_t*>(sigma_in.data()),
         static_cast<int>(batch_size * sizeof(absl::uint128)));
     if (openssl_status != 1) {
@@ -85,5 +84,4 @@ absl::Status PseudorandomGenerator::Evaluate(
   return absl::OkStatus();
 }
 
-}  // namespace dpf_internal
 }  // namespace distributed_point_functions

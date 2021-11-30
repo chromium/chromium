@@ -39,6 +39,9 @@ that are included by navigating into the root folder and running:
 bazel test //...
 ```
 
+## Security
+To report a security issue, please read [SECURITY.md](SECURITY.md).
+
 ## Disclaimer
 
 This is not an officially supported Google product. The code is provided as-is,

@@ -2,8 +2,8 @@ Name: The Incremental Distributed Point Functions library
 Short Name: distributed_point_functions
 URL: https://github.com/google/distributed_point_functions
 Version: 0
-Revision: ea175a91e6eda5b22392fdae82080eb9709cd0eb
-Date: 2021-04-21
+Revision: 375cd56988ff8a7c5da5dd5f6816a5403566c763
+Date: 2021-11-11
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes

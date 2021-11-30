@@ -64,11 +64,11 @@ http_archive(
 # abseil-cpp
 http_archive(
     name = "com_google_absl",
-    sha256 = "64c43686598cf554d9e91fa9a6dafd87a84d7ce9f667dccdd3971b5b249960dc",
-    strip_prefix = "abseil-cpp-3b4a16abad2c2ddc494371cc39a2946e36d35d11",
+    sha256 = "42feccd0a0b752b3aa577907b69f353972ae1eebfaee4b4aac69571c7f97cd5c",
+    strip_prefix = "abseil-cpp-b06e719ee985ecd63e0dffbc68499549216f817f",
     urls = [
-        "https://mirror.bazel.build/github.com/abseil/abseil-cpp/archive/3b4a16abad2c2ddc494371cc39a2946e36d35d11.zip",
-        "https://github.com/abseil/abseil-cpp/archive/3b4a16abad2c2ddc494371cc39a2946e36d35d11.zip",
+        "https://mirror.bazel.build/github.com/abseil/abseil-cpp/archive/b06e719ee985ecd63e0dffbc68499549216f817f.zip",
+        "https://github.com/abseil/abseil-cpp/archive/b06e719ee985ecd63e0dffbc68499549216f817f.zip",
     ],
 )
 
@@ -113,5 +113,15 @@ http_archive(
     urls = [
         "https://mirror.bazel.build/github.com/google/glog/archive/a79416bab739907a31a1e139540921ff0492f010.zip",
         "https://github.com/google/glog/archive/a79416bab739907a31a1e139540921ff0492f010.zip",
+    ],
+)
+
+# IREE for cc_embed_data.
+http_archive(
+    name = "com_github_google_iree",
+    sha256 = "aa369b29a5c45ae9d7aa8bf49ea1308221d1711277222f0755df6e0a575f6879",
+    strip_prefix = "iree-7e6012468cbaafaaf30302748a2943771b40e2c3",
+    urls = [
+        "https://github.com/google/iree/archive/7e6012468cbaafaaf30302748a2943771b40e2c3.zip",
     ],
 )

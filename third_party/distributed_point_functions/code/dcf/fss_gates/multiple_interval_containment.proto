@@ -1,0 +1,60 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package distributed_point_functions.fss_gates;
+
+import "dcf/distributed_comparison_function.proto";
+import "dpf/distributed_point_function.proto";
+
+// Represents an interval on the group G = Z_N.
+message Interval {
+  // Represents the lower limit of the interval. This corresponds to `p_i`
+  // used in https://eprint.iacr.org/2020/1392 (Fig. 14).
+  Value.Integer lower_bound = 1;
+
+  // Represents the upper limit of the interval. This corresponds to `q_i`
+  // used in https://eprint.iacr.org/2020/1392 (Fig. 14).
+  Value.Integer upper_bound = 2;
+}
+
+message MicParameters {
+  // Represents the bit length of the input to the Multiple Interval Containment
+  // gate. This corresponds to `n` used in https://eprint.iacr.org/2020/1392
+  // (Fig. 14). Here we assume that if `n` is the input bit-length, then the
+  // input and output group of the gate is implicitly Z_N where N = 2^n, and
+  // hence the variable name "log_group_size". Maximum allowed log_group_size
+  // is 127 and minimum value should be at least the number of bits required to
+  // store each interval boundary.
+  int32 log_group_size = 1;
+
+  // Represents a sequence of public intervals. This corresponds to `{p_i, q_i}`
+  // used in https://eprint.iacr.org/2020/1392 (Fig. 14).
+  repeated Interval intervals = 2;
+}
+
+// Represents a key for Multiple Interval Containment gate. This corresponds to
+//`k_b` used in https://eprint.iacr.org/2020/1392 (Fig. 14). The key implicitly
+// corresponds to the MicParameters used to generate this key.
+message MicKey {
+  // Represents a Distributed Comparison Function Key. This corresponds to
+  //`k_b^(N - 1)` used in https://eprint.iacr.org/2020/1392 (Fig. 14).
+  DcfKey dcfkey = 1;
+
+  // Represents output mask shares corresponding to each of the m different
+  // intervals. This corresponds to `{z_i,b}_i` used in
+  // https://eprint.iacr.org/2020/1392 (Fig. 14).
+  repeated Value.Integer output_mask_share = 2;
+}
