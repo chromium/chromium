@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -102,9 +103,6 @@ constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
                                                "Top Sites",
                                                "Shortcuts",
                                                "Sessions"};
-// `First Run` is the only file that should be copied to lacros from user data
-// directory (parent directory of profile directory).
-const char* const kFirstRun = "First Run";
 // Flag values for `switches::kForceBrowserDataMigrationForTesting`.
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
@@ -768,12 +766,10 @@ bool BrowserDataMigrator::SetupTmpDir(
                        progress_tracker))
     return false;
 
-  // Copy `First Run` in user data directory.
-  const base::FilePath first_run_file = from_dir.DirName().Append(kFirstRun);
-  if (base::PathExists(first_run_file)) {
-    if (!base::CopyFile(first_run_file, tmp_dir.Append(kFirstRun)))
-      return false;
-  }
+  // Create `First Run` sentinel file instead of copying. This avoids copying
+  // from outside of cryptohome.
+  if (!base::WriteFile(tmp_dir.Append(chrome::kFirstRunSentinel), ""))
+    return false;
 
   return true;
 }
