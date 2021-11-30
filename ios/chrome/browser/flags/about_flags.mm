@@ -324,6 +324,28 @@ const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
      base::size(kFREDefaultPromoTestingShortDelay), nullptr},
 };
 
+const FeatureEntry::FeatureVariation kEnableFREUIModuleIOSVariations[] = {
+    {"TOP | OLD",
+     (FeatureEntry::FeatureParam[]){
+         {kFREUIIdentitySwitcherPositionParam, "top"},
+         {kFREUIStringsSetParam, "old"}},
+     2, nullptr},
+    {"BOTTOM | OLD",
+     (FeatureEntry::FeatureParam[]){
+         {kFREUIIdentitySwitcherPositionParam, "bottom"},
+         {kFREUIStringsSetParam, "old"}},
+     2, nullptr},
+    {"TOP | NEW",
+     (FeatureEntry::FeatureParam[]){
+         {kFREUIIdentitySwitcherPositionParam, "top"},
+         {kFREUIStringsSetParam, "new"}},
+     2, nullptr},
+    {"BOTTOM | NEW",
+     (FeatureEntry::FeatureParam[]){
+         {kFREUIIdentitySwitcherPositionParam, "bottom"},
+         {kFREUIStringsSetParam, "new"}},
+     2, nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -487,9 +509,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"shared-highlighting-ios", flag_descriptions::kSharedHighlightingIOSName,
      flag_descriptions::kSharedHighlightingIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSharedHighlightingIOS)},
-    {"enable-fre-ui-module-ios", flag_descriptions::kEnableFREUIModuleIOSName,
+    {"enable-fre-ui-module-ios-with-options",
+     flag_descriptions::kEnableFREUIModuleIOSName,
      flag_descriptions::kEnableFREUIModuleIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFREUIModuleIOS)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREUIModuleIOS,
+                                    kEnableFREUIModuleIOSVariations,
+                                    "EnableFREUIModuleIOS")},
     {"enable-long-message-duration",
      flag_descriptions::kEnableLongMessageDurationName,
      flag_descriptions::kEnableLongMessageDurationDescription, flags_ui::kOsIos,

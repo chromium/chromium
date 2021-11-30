@@ -20,6 +20,30 @@ const char kFREDefaultPromoTestingDefaultDelayParam[] =
 const char kFREDefaultPromoTestingOnlyParam[] = "variant_fre_only_enabled";
 const char kFREDefaultPromoTestingShortDelayParam[] =
     "variant_short_delay_enabled";
+const char kFREUIIdentitySwitcherPositionParam[] =
+    "signin_sync_screen_identity_position";
+const char kFREUIStringsSetParam[] = "signin_sync_screen_strings_set";
+
+// Feature param and options for the identity switcher position.
+constexpr base::FeatureParam<SigninSyncScreenUIIdentitySwitcherPosition>::Option
+    kIdentitySwitcherPositionOptions[] = {
+        {SigninSyncScreenUIIdentitySwitcherPosition::kTop, "top"},
+        {SigninSyncScreenUIIdentitySwitcherPosition::kBottom, "bottom"}};
+
+constexpr base::FeatureParam<SigninSyncScreenUIIdentitySwitcherPosition>
+    kIdentitySwitcherPositionParam{
+        &kEnableFREUIModuleIOS, kFREUIIdentitySwitcherPositionParam,
+        SigninSyncScreenUIIdentitySwitcherPosition::kTop,
+        &kIdentitySwitcherPositionOptions};
+
+// Feature param and options for the sign-in & sync screen strings set.
+constexpr base::FeatureParam<SigninSyncScreenUIStringSet>::Option
+    kStringSetOptions[] = {{SigninSyncScreenUIStringSet::kOld, "old"},
+                           {SigninSyncScreenUIStringSet::kNew, "new"}};
+
+constexpr base::FeatureParam<SigninSyncScreenUIStringSet> kStringSetParam{
+    &kEnableFREUIModuleIOS, kFREUIStringsSetParam,
+    SigninSyncScreenUIStringSet::kOld, &kStringSetOptions};
 
 namespace {
 // String local state preference with the name of the assigned trial group.
@@ -86,6 +110,17 @@ bool IsFREDefaultBrowserScreenEnabled() {
   return IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() ||
          IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup() ||
          IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
+}
+
+SigninSyncScreenUIIdentitySwitcherPosition
+GetSigninSyncScreenUIIdentitySwitcherPosition() {
+  // Default: TOP position.
+  return kIdentitySwitcherPositionParam.Get();
+}
+
+SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet() {
+  // Default: OLD strings set.
+  return kStringSetParam.Get();
 }
 
 // Creates a trial for the first run (when there is no variations seed) if

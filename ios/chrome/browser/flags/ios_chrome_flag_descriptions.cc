@@ -188,9 +188,11 @@ const char kEnableFREDefaultBrowserScreenTestingDescription[] =
     "This test display the FRE default browser screen and other default "
     "browser promo depending on experiment.";
 
-const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
+const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module with options";
 const char kEnableFREUIModuleIOSDescription[] =
-    "Enable the option of using new FRE UI module to show first run screens.";
+    "Use the new FRE UI module for first run. There are 4 UI options: Identity "
+    "switcher at the TOP or BOTTOM and using OLD or NEW strings set for the "
+    "sign-in sync screen.";
 
 const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
