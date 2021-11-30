@@ -2180,16 +2180,25 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     const NGPhysicalBoxFragment& fragment,
     const NGInlineBackwardCursor& backward_cursor,
     const PhysicalOffset& physical_offset) {
+  bool is_in_atomic_painting_pass;
+
   // Note: Floats should only be hit tested in the |kHitTestFloat| phase, so we
   // shouldn't enter a float when |action| doesn't match. However, as floats may
   // scatter around in the entire inline formatting context, we should always
   // enter non-floating inline child boxes to search for floats in the
   // |kHitTestFloat| phase, unless the child box forms another context.
-  if (fragment.IsFloating() && hit_test.action != kHitTestFloat)
-    return false;
+  if (fragment.IsFloating()) {
+    if (hit_test.action != kHitTestFloat)
+      return false;
+    is_in_atomic_painting_pass = true;
+  } else {
+    is_in_atomic_painting_pass = hit_test.action == kHitTestForeground;
+  }
 
   if (!FragmentRequiresLegacyFallback(fragment)) {
     if (fragment.IsPaintedAtomically()) {
+      if (!is_in_atomic_painting_pass)
+        return false;
       return HitTestAllPhasesInFragment(fragment, hit_test.location,
                                         physical_offset, hit_test.result);
     }
@@ -2237,6 +2246,8 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     return false;
 
   if (fragment.IsPaintedAtomically()) {
+    if (!is_in_atomic_painting_pass)
+      return false;
     return HitTestAllPhasesInFragment(fragment, hit_test.location,
                                       physical_offset, hit_test.result);
   }
