@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/public/cpp/system_tray.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -383,8 +384,9 @@ void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
 
 void MultidevicePhoneHubHandler::HandleSetFakePhoneName(
     const base::ListValue* args) {
-  std::u16string phone_name;
-  CHECK(args->GetString(0, &phone_name));
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_GE(args_list.size(), 1u);
+  std::u16string phone_name = base::UTF8ToUTF16(args_list[0].GetString());
   fake_phone_hub_manager_->mutable_phone_model()->SetPhoneName(phone_name);
   PA_LOG(VERBOSE) << "Set phone name to " << phone_name;
 }
