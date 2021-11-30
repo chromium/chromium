@@ -1,8 +1,205 @@
 export namespace CommonDataTypes {
-  // TODO sadym: declare `RemoteValue` properly according to
-  // https://w3c.github.io/webdriver-bidi/#type-common-RemoteValue.
-  export type RemoteValue = any;
   export type EmptyParams = {};
+
+  export type RemoteReference = {
+    objectId: string;
+  };
+
+  export type PrimitiveProtocolValue =
+    | UndefinedValue
+    | NullValue
+    | StringValue
+    | NumberValue
+    | BooleanValue
+    | BigIntValue;
+
+  export type UndefinedValue = {
+    type: 'undefined';
+  };
+
+  export type NullValue = {
+    type: 'null';
+  };
+
+  export type StringValue = {
+    type: 'string';
+    value: string;
+  };
+
+  export type SpecialNumber = 'NaN' | '-0' | '+Infinity' | '-Infinity';
+
+  export type NumberValue = {
+    type: 'number';
+    value: number | SpecialNumber;
+  };
+
+  export type BooleanValue = {
+    type: 'boolean';
+    value: boolean;
+  };
+
+  export type BigIntValue = {
+    type: 'bigint';
+    value: string;
+  };
+
+  export type LocalValue =
+    | PrimitiveProtocolValue
+    | ArrayLocalValue
+    | DateLocalValue
+    | MapLocalValue
+    | ObjectLocalValue
+    | RegExpLocalValue
+    | SetLocalValue;
+
+  export type ListLocalValue = LocalValue[];
+
+  export type ArrayLocalValue = {
+    type: 'array';
+    value: ListLocalValue;
+  };
+
+  export type DateLocalValue = {
+    type: 'date';
+    value: string;
+  };
+
+  export type MappingLocalValue = [LocalValue | string, LocalValue][];
+
+  export type MapLocalValue = {
+    type: 'map';
+    value: MappingLocalValue;
+  };
+
+  export type ObjectLocalValue = {
+    type: 'object';
+    value: MappingLocalValue;
+  };
+
+  export type RegExpLocalValue = {
+    type: 'regexp';
+    pattern: string;
+    flags?: string;
+  };
+
+  export type SetLocalValue = {
+    type: 'set';
+    value: ListLocalValue;
+  };
+
+  export type RemoteValue =
+    | PrimitiveProtocolValue
+    | SymbolRemoteValue
+    | ArrayRemoteValue
+    | ObjectRemoteValue
+    | FunctionRemoteValue
+    | RegExpRemoteValue
+    | DateRemoteValue
+    | MapRemoteValue
+    | SetRemoteValue
+    | WeakMapRemoteValue
+    | WeakSetRemoteValue
+    | IteratorRemoteValue
+    | GeneratorRemoteValue
+    | ProxyRemoteValue
+    | ErrorRemoteValue
+    | PromiseRemoteValue
+    | TypedArrayRemoteValue
+    | ArrayBufferRemoteValue
+    | NodeRemoteValue
+    | WindowProxyRemoteValue;
+
+  export type ListRemoteValue = RemoteValue[];
+
+  export type MappingRemoteValue = [RemoteValue | string, RemoteValue][];
+
+  export type SymbolRemoteValue = RemoteReference & {
+    type: 'symbol';
+  };
+
+  export type ArrayRemoteValue = RemoteReference & {
+    type: 'array';
+    value?: ListRemoteValue;
+  };
+
+  export type ObjectRemoteValue = RemoteReference & {
+    type: 'object';
+    value?: MappingRemoteValue;
+  };
+
+  export type FunctionRemoteValue = RemoteReference & {
+    type: 'function';
+  };
+
+  export type RegExpRemoteValue = RemoteReference & RegExpLocalValue;
+
+  export type DateRemoteValue = RemoteReference & DateLocalValue;
+
+  export type MapRemoteValue = RemoteReference & {
+    type: 'map';
+    value: MappingRemoteValue;
+  };
+
+  export type SetRemoteValue = RemoteReference & {
+    type: 'set';
+    value: ListRemoteValue;
+  };
+
+  export type WeakMapRemoteValue = RemoteReference & {
+    type: 'weakmap';
+  };
+
+  export type WeakSetRemoteValue = RemoteReference & {
+    type: 'weakset';
+  };
+
+  export type IteratorRemoteValue = RemoteReference & {
+    type: 'iterator';
+  };
+
+  export type GeneratorRemoteValue = RemoteReference & {
+    type: 'generator';
+  };
+
+  export type ProxyRemoteValue = RemoteReference & {
+    type: 'proxy';
+  };
+
+  export type ErrorRemoteValue = RemoteReference & {
+    type: 'error';
+  };
+
+  export type PromiseRemoteValue = RemoteReference & {
+    type: 'promise';
+  };
+
+  export type TypedArrayRemoteValue = RemoteReference & {
+    type: 'typedarray';
+  };
+
+  export type ArrayBufferRemoteValue = RemoteReference & {
+    type: 'arraybuffer';
+  };
+
+  export type NodeRemoteValue = RemoteReference & {
+    type: 'node';
+    value?: NodeProperties;
+  };
+
+  export type NodeProperties = RemoteReference & {
+    nodeType: number;
+    nodeValue: string;
+    localName?: string;
+    namespaceURI?: string;
+    childNodeCount: number;
+    children?: [NodeRemoteValue];
+    attributes?: any;
+    shadowRoot?: NodeRemoteValue | null;
+  };
+
+  export type WindowProxyRemoteValue = RemoteReference & {
+    type: 'window';
+  };
 
   export type ExceptionDetails = {
     columnNumber: number;
@@ -73,7 +270,8 @@ export namespace Script {
 
     export type ScriptCallFunctionParameters = {
       functionDeclaration: string;
-      args: CallFunctionArgument[];
+      args?: ArgumentValue[];
+      this?: ArgumentValue;
       awaitPromise?: boolean;
       target: Target;
     };
@@ -86,16 +284,9 @@ export namespace Script {
       result: CommonDataTypes.RemoteValue;
     };
 
-    export type CallFunctionArgument = RemoteValueArgument | LocalValueArgument;
-
-    export type RemoteValueArgument = {
-      objectId: string;
-    };
-
-    export type LocalValueArgument = {
-      type: string;
-      value: any;
-    };
+    export type ArgumentValue =
+      | CommonDataTypes.RemoteReference
+      | CommonDataTypes.LocalValue;
   }
 }
 

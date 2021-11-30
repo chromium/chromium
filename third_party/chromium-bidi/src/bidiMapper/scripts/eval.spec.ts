@@ -26,7 +26,7 @@ chai.use(chaiExclude);
 describe('Evaluator', function () {
     let EVALUATOR: {
         serialize: (x: any) => CommonDataTypes.RemoteValue,
-        deserialize: (x: CommonDataTypes.RemoteValue) => any
+        deserialize: (x: CommonDataTypes.RemoteReference | CommonDataTypes.LocalValue) => any
     };
 
     // Get EVALUATOR.
@@ -48,7 +48,7 @@ describe('Evaluator', function () {
             if (excluding.length > 0) {
                 chai.assert.deepEqualExcludingEvery(
                     serializedOrigianlObj,
-                    expectedSerializedObj,
+                    expectedSerializedObj as any,
                     excluding);
 
             } else {

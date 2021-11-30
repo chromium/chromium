@@ -1128,6 +1128,156 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(webs
                 "type": "string",
                 "value": "SOME_VALUE"}}}
 
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 52,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 52,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "SOME_VALUE"}}}
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 53,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 53
+
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 54,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "async function(){return 'SOME_VALUE'}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 54,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "SOME_VALUE"}}}
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 55,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "async function(){return 'SOME_VALUE'}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 55
+
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 56,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{return this.constructor.name}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 56,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "Window"}}}
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisIsUsed(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 57,
+        "method": "PROTO.script.callFunction",
+        "params": {
+            "functionDeclaration": "function(){return this.constructor.name}",
+            "this": {
+                "type": "number",
+                "value": 1
+            },
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 57,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "Number"}}}
+
 # Testing serialization.
 async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
     contextID = await get_open_context_id(websocket)

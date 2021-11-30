@@ -245,16 +245,19 @@ export class Context {
 
   public async callFunction(
     functionDeclaration: string,
-    args: Script.PROTO.CallFunctionArgument[],
+    _this: Script.PROTO.ArgumentValue,
+    args: Script.PROTO.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.PROTO.ScriptCallFunctionResult> {
     // TODO sadym: add error handling for serialization/deserialization errors.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
-    const callFunctionAndSerializeScript = `async (...serializedArgs)=>{ return _callFunction(\n${functionDeclaration}\n, serializedArgs);
-      async function _callFunction(f, serializedArgs) {
+    const callFunctionAndSerializeScript = `async (serializedThis, serializedArgs)=>{ return _callFunction((\n${functionDeclaration}\n),
+        serializedThis, serializedArgs);
+      async function _callFunction(f, serializedThis, serializedArgs) {
         const evaluator = (${this.EVALUATOR_SCRIPT});
+        const deserializedThis = evaluator.deserialize(serializedThis);
         const deserializedArgs = serializedArgs.map(evaluator.deserialize);
-        let resultValue = f.apply(this, deserializedArgs);
+        let resultValue = f.apply(deserializedThis, deserializedArgs);
         if(${awaitPromise ? 'true' : 'false'}
             && resultValue instanceof Promise) {
           resultValue = await resultValue;
@@ -264,7 +267,7 @@ export class Context {
 
     const cdpCallFunctionResult = await this._cdpClient.Runtime.callFunctionOn({
       functionDeclaration: callFunctionAndSerializeScript,
-      arguments: args.map((a) => ({ value: a })),
+      arguments: [{ value: _this }, { value: args }], // this, arguments.
       awaitPromise: true,
       returnByValue: true,
       objectId: await this._getDummyContextId(),
