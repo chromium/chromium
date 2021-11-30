@@ -283,11 +283,10 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
     return;
   }
 
-  // TODO(crbug/1199857): Investigate if CONTINUE_ON_SHUTDOWN is a good option.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
                      frame_it->second.skp, clip_rect, scale_factor),
       base::BindOnce(
@@ -387,7 +386,7 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
                      root_frame_, clip_rect, scale_factor),
       base::BindOnce(
