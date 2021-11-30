@@ -176,7 +176,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   DCHECK(pending_host_resolver_);
 
   host_resolver_.Bind(std::move(pending_host_resolver_));
-  url::Origin origin = url::Origin::Create(extension_->url());
+  url::Origin origin = extension_->origin();
   host_resolver_->ResolveHost(host_port_pair,
                               net::NetworkIsolationKey(origin, origin), nullptr,
                               receiver_.BindNewPipeAndPassRemote());

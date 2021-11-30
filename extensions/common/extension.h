@@ -229,6 +229,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns the base extension url for a given |extension_id|.
   static GURL GetBaseURLFromExtensionId(const ExtensionId& extension_id);
 
+  // Returns the extension origin for a given |extension_id|.
+  static url::Origin CreateOriginFromExtensionId(
+      const ExtensionId& extension_id);
+
   // Returns true if this extension or app includes areas within |origin|.
   bool OverlapsWithOrigin(const GURL& origin) const;
 
@@ -269,7 +273,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   const base::FilePath& path() const { return path_; }
   const GURL& url() const { return extension_url_; }
-  url::Origin origin() const { return url::Origin::Create(extension_url_); }
+  const url::Origin& origin() const { return extension_origin_; }
   mojom::ManifestLocation location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;
@@ -423,7 +427,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Any warnings that occurred when trying to create/parse the extension.
   std::vector<InstallWarning> install_warnings_;
 
-  // The base extension url for the extension.
+  // The extension origin and base url.
+  url::Origin extension_origin_;
   GURL extension_url_;
 
   // The extension's version.

@@ -132,8 +132,8 @@ void WebcamPrivateAPI::OnOpenSerialWebcam(
 bool WebcamPrivateAPI::GetDeviceId(const std::string& extension_id,
                                    const std::string& webcam_id,
                                    std::string* device_id) {
-  url::Origin security_origin = url::Origin::Create(
-      extensions::Extension::GetBaseURLFromExtensionId(extension_id));
+  url::Origin security_origin =
+      extensions::Extension::CreateOriginFromExtensionId(extension_id);
 
   return content::GetMediaDeviceIDForHMAC(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
@@ -143,8 +143,8 @@ bool WebcamPrivateAPI::GetDeviceId(const std::string& extension_id,
 
 std::string WebcamPrivateAPI::GetWebcamId(const std::string& extension_id,
                                           const std::string& device_id) {
-  url::Origin security_origin = url::Origin::Create(
-      extensions::Extension::GetBaseURLFromExtensionId(extension_id));
+  url::Origin security_origin =
+      extensions::Extension::CreateOriginFromExtensionId(extension_id);
 
   return content::GetHMACForMediaDeviceID(
       browser_context_->GetMediaDeviceIDSalt(), security_origin, device_id);

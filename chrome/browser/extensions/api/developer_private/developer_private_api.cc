@@ -1401,6 +1401,10 @@ DeveloperPrivatePackDirectoryFunction::
 DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
+  // In theory `extension()` can be null when an ExtensionFunction is invoked
+  // from WebUI, but this should never be the case for this particular API.
+  DCHECK(extension());
+
   // TODO(grv) : add unittests.
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
@@ -1445,8 +1449,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
           ->CreateVirtualRootPath(filesystem_id)
           .Append(base::FilePath::FromUTF8Unsafe(filesystem_path));
   storage::FileSystemURL directory_url = context_->CreateCrackedFileSystemURL(
-      blink::StorageKey(url::Origin::Create(
-          extensions::Extension::GetBaseURLFromExtensionId(extension_id()))),
+      blink::StorageKey(extension()->origin()),
       storage::kFileSystemTypeIsolated, virtual_path);
 
   if (directory_url.is_valid() &&

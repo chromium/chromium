@@ -113,8 +113,7 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
   content::ChildProcessSecurityPolicy* security_policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   int process_id = render_frame_host->GetProcess()->GetID();
-  security_policy->GrantRequestOrigin(
-      process_id, url::Origin::Create(frame_extension->url()));
+  security_policy->GrantRequestOrigin(process_id, frame_extension->origin());
 
   // Notify the render frame of the view type.
   GetLocalFrame(render_frame_host)

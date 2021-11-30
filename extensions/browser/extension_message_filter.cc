@@ -69,8 +69,8 @@ class ShutdownNotifierFactory
 // *does* host this specific extension at this point in time.)
 bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const std::string& extension_id) {
-  GURL extension_url = Extension::GetBaseURLFromExtensionId(extension_id);
-  url::Origin extension_origin = url::Origin::Create(extension_url);
+  url::Origin extension_origin =
+      Extension::CreateOriginFromExtensionId(extension_id);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
 }

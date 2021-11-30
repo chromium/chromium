@@ -408,8 +408,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       GetServiceWorkerContext(extension->id());
 
   service_worker_context->UnregisterServiceWorker(
-      extension->url(),
-      blink::StorageKey(url::Origin::Create(extension->url())),
+      extension->url(), blink::StorageKey(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id, *sequence));
 

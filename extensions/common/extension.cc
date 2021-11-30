@@ -411,6 +411,15 @@ GURL Extension::GetBaseURLFromExtensionId(const std::string& extension_id) {
                             url::kStandardSchemeSeparator, extension_id}));
 }
 
+// static
+url::Origin Extension::CreateOriginFromExtensionId(
+    const ExtensionId& extension_id) {
+  // TODO(lukasza): Avoid url::Origin::Create calls in general.  Sadly the call
+  // below cannot be replaced with CreateFromNormalizedTuple, because it DCHECKs
+  // that the `extension_id` is not a properly canonicalized hostname.
+  return url::Origin::Create(GetBaseURLFromExtensionId(extension_id));
+}
+
 bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   if (url() == origin)
     return true;
@@ -607,6 +616,7 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   // We don't need to validate because InitExtensionID already did that.
   manifest_->GetString(keys::kPublicKey, &public_key_);
 
+  extension_origin_ = Extension::CreateOriginFromExtensionId(id());
   extension_url_ = Extension::GetBaseURLFromExtensionId(id());
 
   // Load App settings. LoadExtent at least has to be done before
