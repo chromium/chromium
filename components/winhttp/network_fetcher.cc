@@ -366,9 +366,10 @@ bool NetworkFetcher::WriteDataToFileBlocking() {
   }
 
   if (!file_.IsValid()) {
-    file_.Initialize(file_path_, base::File::Flags::FLAG_CREATE_ALWAYS |
-                                     base::File::Flags::FLAG_WRITE |
-                                     base::File::Flags::FLAG_SEQUENTIAL_SCAN);
+    file_.Initialize(file_path_,
+                     base::File::Flags::FLAG_CREATE_ALWAYS |
+                         base::File::Flags::FLAG_WRITE |
+                         base::File::Flags::FLAG_WIN_SEQUENTIAL_SCAN);
     if (!file_.IsValid()) {
       net_error_ = HRESULTFromLastError();
       return false;
