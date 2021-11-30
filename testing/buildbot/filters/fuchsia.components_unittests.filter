@@ -29,7 +29,6 @@
 -OfflinePageMetadataStoreTest.LoadVersion*
 -PaintPreviewSerialUtils.TestSerialTypeface
 -PaintPreviewSubset*
--PersonalDataManagerTest.Should*
 -ProfilingJsonExporterTest.Memory*
 -RealtimeReportingJobConfigurationTest.Validate*
 -SSLErrorAssistantTest.*
