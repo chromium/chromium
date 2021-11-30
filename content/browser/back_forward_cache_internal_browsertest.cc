@@ -9,12 +9,15 @@
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -38,9 +41,9 @@
 
 using testing::_;
 using testing::Each;
-using testing::ElementsAre;
-using testing::Not;
-using testing::UnorderedElementsAreArray;
+using ::testing::ElementsAre;
+using ::testing::Not;
+using ::testing::UnorderedElementsAreArray;
 
 namespace content {
 
@@ -107,9 +110,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Ensure the visited frames are what we would expect for the page before
   // entering bfcache.
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
-              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+              ::testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
   EXPECT_THAT(CollectAllRenderFrameHosts(web_contents()),
-              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+              ::testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
 
   // 2) Navigate to e.
   EXPECT_TRUE(NavigateToURL(shell(), url_e));
@@ -123,22 +126,23 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // When starting iteration from the primary frame, we shouldn't see any of the
   // frames in bfcache.
-  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_e), testing::ElementsAre(rfh_e));
+  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_e), ::testing::ElementsAre(rfh_e));
 
   // When starting iteration from a bfcached RFH, we should see the frame itself
   // and its descendants in breadth first order.
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
-              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+              ::testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
 
   // Ensure that starting iteration from a subframe of a bfcached frame also
   // works.
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_b),
-              testing::ElementsAre(rfh_b, rfh_c));
+              ::testing::ElementsAre(rfh_b, rfh_c));
 
   // When iterating over all RenderFrameHosts in a WebContents, we should see
   // the RFHs of both the primary page and the bfcached page.
-  EXPECT_THAT(CollectAllRenderFrameHosts(web_contents()),
-              testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c, rfh_d, rfh_e));
+  EXPECT_THAT(
+      CollectAllRenderFrameHosts(web_contents()),
+      ::testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c, rfh_d, rfh_e));
 
   {
     // If we stop iteration in |WebContents::ForEachRenderFrameHost|, we stop
@@ -226,22 +230,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // When starting iteration from the bfcached RFH, we should not see the
   // speculative RFH.
   EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_a),
-              testing::ElementsAre(rfh_a));
+              ::testing::ElementsAre(rfh_a));
 
   // When starting iteration from the primary frame, we shouldn't see the
   // bfcached RFH, but we should see the speculative RFH.
   EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_b),
-              testing::UnorderedElementsAre(rfh_b, rfh_c));
+              ::testing::UnorderedElementsAre(rfh_b, rfh_c));
 
   // When starting iteration from the speculative RFH, we should only see
   // the speculative RFH. In particular, we should not see the bfcached RFH.
   EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_c),
-              testing::ElementsAre(rfh_c));
+              ::testing::ElementsAre(rfh_c));
 
   // When iterating over all RenderFrameHosts in a WebContents, we should see
   // the RFHs of both the primary page and the bfcached page.
   EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(web_contents()),
-              testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c));
+              ::testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2273,7 +2277,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Navigate to B, now A enters BackForwardCache. Check the
   // LifecycleStateImpl of both RenderFrameHost A and B.
   {
-    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+    ::testing::NiceMock<MockWebContentsObserver> state_change_observer(
         web_contents());
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
@@ -2282,7 +2286,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     // We don't know |rfh_b| yet, so we'll match any frame.
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
-                    testing::Not(rfh_a),
+                    ::testing::Not(rfh_a),
                     RenderFrameHost::LifecycleState::kPendingCommit,
                     RenderFrameHost::LifecycleState::kActive));
 
@@ -2306,7 +2310,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back to A and check again the LifecycleStateImpl of both
   // RenderFrameHost A and B.
   {
-    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+    ::testing::NiceMock<MockWebContentsObserver> state_change_observer(
         web_contents());
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
@@ -2356,7 +2360,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Navigate to C(D), now A(B) enters BackForwardCache.
   {
-    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+    ::testing::NiceMock<MockWebContentsObserver> state_change_observer(
         web_contents());
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
@@ -2369,14 +2373,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     // We don't know |rfh_c| and |rfh_d| yet, so we'll match any frame.
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
-                    testing::Not(testing::AnyOf(rfh_a, rfh_b)),
+                    ::testing::Not(::testing::AnyOf(rfh_a, rfh_b)),
                     RenderFrameHost::LifecycleState::kPendingCommit,
                     RenderFrameHost::LifecycleState::kActive))
         .Times(2);
     // Deletion of frame D's initial RFH.
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
-                    testing::Not(testing::AnyOf(rfh_a, rfh_b)),
+                    ::testing::Not(::testing::AnyOf(rfh_a, rfh_b)),
                     RenderFrameHost::LifecycleState::kActive,
                     RenderFrameHost::LifecycleState::kPendingDeletion));
 
@@ -2407,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Go back to A(B), A(B) is restored and C(D) enters BackForwardCache.
   {
-    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+    ::testing::NiceMock<MockWebContentsObserver> state_change_observer(
         web_contents());
     EXPECT_CALL(state_change_observer,
                 RenderFrameHostStateChanged(
@@ -3284,9 +3288,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   shell->web_contents()->GetController().GoBack();
   nav_manager.WaitForFirstYieldAfterDidStartNavigation();
 
-  testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
+  ::testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
   EXPECT_CALL(observer, DidFinishNavigation(_))
-      .WillOnce(testing::Invoke([](NavigationHandle* handle) {
+      .WillOnce(::testing::Invoke([](NavigationHandle* handle) {
         EXPECT_FALSE(handle->HasCommitted());
         EXPECT_TRUE(handle->IsServedFromBackForwardCache());
         // This call checks that |rfh_restored_from_back_forward_cache| is not
@@ -3690,6 +3694,39 @@ IN_PROC_BROWSER_TEST_F(
   // Check that a2-3 are cached and foregrounded.
   ExpectCached(rfhs[2], /*cached=*/true, /*backgrounded=*/false);
   ExpectCached(rfhs[3], /*cached=*/true, /*backgrounded=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DisableBackForwardCacheForScreenReader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  BackForwardCacheDisabledTester tester;
+
+  // Use Screen Reader.
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::AXMode::kScreenReader);
+
+  // Navigate to Page A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver deleted(rfh_a.get());
+  int process_id = current_frame_host()->GetProcess()->GetID();
+  int routing_id = current_frame_host()->GetRoutingID();
+
+  // Navigate away to Page B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  deleted.WaitUntilDeleted();
+
+  // Navigate back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kScreenReader);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+  EXPECT_TRUE(
+      tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
 }  // namespace content
