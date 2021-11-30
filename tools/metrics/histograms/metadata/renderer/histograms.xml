@@ -35,6 +35,16 @@ chromium-metrics-reviews@google.com.
       summary="Renderer process was alive for up to one minute."/>
 </variants>
 
+<histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
+    expires_after="M104">
+  <owner>sky@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time (in milliseconds) between when browser launches renderer and renderer
+    message loop starts.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.CompositedScrolling" enum="CompositedScrolling"
     expires_after="M85">
   <obsolete>

@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
@@ -101,6 +102,24 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 #else
   return base::MessagePump::Create(base::MessagePumpType::DEFAULT);
 #endif
+}
+
+void LogTimeToStartRunLoop(const base::CommandLine& command_line,
+                           base::TimeTicks run_loop_start_time) {
+  if (!command_line.HasSwitch(switches::kRendererProcessLaunchTimeTicks))
+    return;
+
+  const std::string launch_time_delta_micro_as_string =
+      command_line.GetSwitchValueASCII(
+          switches::kRendererProcessLaunchTimeTicks);
+  int64_t launch_time_delta_micro;
+  if (!base::StringToInt64(launch_time_delta_micro_as_string,
+                           &launch_time_delta_micro)) {
+    return;
+  }
+  const base::TimeDelta delta = run_loop_start_time.since_origin() -
+                                base::Microseconds(launch_time_delta_micro);
+  base::UmaHistogramTimes("Renderer.BrowserLaunchToRunLoopStart", delta);
 }
 
 }  // namespace
@@ -262,8 +281,9 @@ int RendererMain(const MainFunctionParams& parameters) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
           "toplevel", "RendererMain.START_MSG_LOOP",
           TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
-      RenderThreadImpl::current()->set_run_loop_start_time(
-          base::TimeTicks::Now());
+      const base::TimeTicks run_loop_start_time = base::TimeTicks::Now();
+      RenderThreadImpl::current()->set_run_loop_start_time(run_loop_start_time);
+      LogTimeToStartRunLoop(command_line, run_loop_start_time);
       run_loop.Run();
       TRACE_EVENT_NESTABLE_ASYNC_END0(
           "toplevel", "RendererMain.START_MSG_LOOP",

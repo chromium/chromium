@@ -693,6 +693,9 @@ const char kRendererCmdPrefix[]             = "renderer-cmd-prefix";
 // Causes the process to run as renderer instead of as browser.
 const char kRendererProcess[]               = "renderer";
 
+// Time the browser launched the renderer process (in TimeTicks).
+const char kRendererProcessLaunchTimeTicks[] = "launch-time-ticks";
+
 // Overrides the default/calculated limit to the number of renderer processes.
 // Very high values for this setting can lead to high memory/resource usage
 // or instability.

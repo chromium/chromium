@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -118,6 +119,13 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
 
   begin_launch_time_ = base::TimeTicks::Now();
+  if (GetProcessType() == switches::kRendererProcess &&
+      base::TimeTicks::IsConsistentAcrossProcesses()) {
+    const base::TimeDelta ticks_as_delta = begin_launch_time_.since_origin();
+    command_line_->AppendSwitchASCII(
+        switches::kRendererProcessLaunchTimeTicks,
+        base::NumberToString(ticks_as_delta.InMicroseconds()));
+  }
 
   std::unique_ptr<FileMappedForLaunch> files_to_register = GetFilesToMap();
 
