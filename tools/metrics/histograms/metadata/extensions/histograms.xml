@@ -2046,7 +2046,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.Functions.FailedTime{ExtensionFunctionExecutionTime}"
-    enum="ExtensionFunctions" expires_after="2021-12-12">
+    enum="ExtensionFunctions" expires_after="never">
+<!-- expires-never: Used for monitoring extension API usage. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2104,7 +2106,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.Functions.SucceededTime{ExtensionFunctionExecutionTime}"
-    enum="ExtensionFunctions" expires_after="2021-12-12">
+    enum="ExtensionFunctions" expires_after="never">
+<!-- expires-never: Used for monitoring extension API usage. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
