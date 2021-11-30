@@ -32,6 +32,8 @@
         android:paddingStart="8dp"
         android:paddingEnd="16dp"
         android:layout_marginTop="14dp"
+        android:focusable="true"
+        android:importantForAccessibility="yes"
         android:layout_marginBottom="@dimen/autofill_assistant_header_text_vertical_spacing"
         android:maxLines="4"
         android:ellipsize="end"
