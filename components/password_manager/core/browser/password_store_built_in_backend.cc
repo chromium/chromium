@@ -293,7 +293,7 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
 }
 
 void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   background_task_runner_->PostTaskAndReplyWithResult(

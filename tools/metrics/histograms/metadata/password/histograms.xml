@@ -2273,6 +2273,8 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name="AddLoginAsync" summary="add a login to"/>
     <variant name="GetAllLoginsAsync" summary="retrieve all logins from"/>
+    <variant name="GetAutofillableLoginsAsync"
+        summary="retrieve autofillable logins from"/>
     <variant name="RemoveLoginAsync" summary="remove a login from"/>
     <variant name="UpdateLoginAsync" summary="update a login in"/>
   </token>
@@ -2293,6 +2295,9 @@ chromium-metrics-reviews@google.com.
         summary="AddLoginAsync() succeeded to add a login to"/>
     <variant name="GetAllLoginsAsync"
         summary="GetAllLoginsAsync() succeeded in retrieving all logins from"/>
+    <variant name="GetAutofillableLoginsAsync"
+        summary="GetAutofillableLoginsAsync() succeeded in retrieving
+                 autofillable logins from"/>
     <variant name="RemoveLoginAsync"
         summary="RemoveLoginAsync() succeeded in removing a login from"/>
     <variant name="UpdateLoginAsync"

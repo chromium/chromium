@@ -37,10 +37,8 @@ public interface PasswordStoreAndroidBackend {
      * @param loginsReply Callback that is called on success with serialized {@link
      *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     * TODO(crbug.com/1229655): Remove default keyword after downstream implementation.
      */
-    default void getAutofillableLogins(
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback){};
+    void getAutofillableLogins(Callback<byte[]> loginsReply, Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve logins with matching signon realm.

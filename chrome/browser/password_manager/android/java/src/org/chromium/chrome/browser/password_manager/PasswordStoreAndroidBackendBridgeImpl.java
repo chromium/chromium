@@ -58,6 +58,15 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     @CalledByNative
+    void getAutofillableLogins(@JobId int jobId) {
+        mBackend.getAutofillableLogins(passwords -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
+                    mNativeBackendBridge, jobId, passwords);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
     void addLogin(@JobId int jobId, byte[] pwdWithLocalData) {
         mBackend.addLogin(pwdWithLocalData, () -> {
             if (mNativeBackendBridge == 0) return;

@@ -263,8 +263,10 @@ void PasswordStore::GetAutofillableLogins(
     return;  // Once the shutdown started, ignore new requests.
 
   backend_->GetAutofillableLoginsAsync(
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer, base::RetainedRef(this)));
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(
+              &PasswordStoreConsumer::OnGetPasswordStoreResultsFrom, consumer,
+              base::RetainedRef(this))));
 }
 
 void PasswordStore::GetAllLogins(

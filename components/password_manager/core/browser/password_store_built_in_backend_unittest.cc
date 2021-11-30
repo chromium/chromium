@@ -66,6 +66,9 @@ class MockPasswordStoreBackendTester {
   void HandleLogins(std::vector<std::unique_ptr<PasswordForm>> results) {
     LoginsReceivedConstRef(results);
   }
+  void HandleLoginsOrError(LoginsResultOrError results) {
+    LoginsReceivedConstRef(std::move(absl::get<LoginsResult>(results)));
+  }
 };
 
 // A mock LoginDatabase that simulates a failing Init() method.
@@ -185,7 +188,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, NonASCIIData) {
           password_manager::UnorderedPasswordFormElementsAre(&expected_forms)));
 
   backend->GetAutofillableLoginsAsync(
-      base::BindOnce(&MockPasswordStoreBackendTester::HandleLogins,
+      base::BindOnce(&MockPasswordStoreBackendTester::HandleLoginsOrError,
                      base::Unretained(&tester)));
 
   RunUntilIdle();
@@ -268,6 +271,9 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   base::RepeatingCallback<void(LoginsResult)> handle_logins =
       base::BindRepeating(&MockPasswordStoreBackendTester::HandleLogins,
                           base::Unretained(&tester));
+  base::RepeatingCallback<void(LoginsResultOrError)> handle_logins_or_error =
+      base::BindRepeating(&MockPasswordStoreBackendTester::HandleLoginsOrError,
+                          base::Unretained(&tester));
 
   EXPECT_CALL(tester, HandleChanges(IsEmpty()));
   bad_backend->AddLoginAsync(*form, handle_changes);
@@ -287,7 +293,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   testing::Mock::VerifyAndClearExpectations(&tester);
 
   EXPECT_CALL(tester, LoginsReceivedConstRef(IsEmpty()));
-  bad_backend->GetAutofillableLoginsAsync(handle_logins);
+  bad_backend->GetAutofillableLoginsAsync(handle_logins_or_error);
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);
 

@@ -216,8 +216,11 @@ void PasswordStoreAndroidBackend::GetAllLoginsAsync(
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
-  // TODO(https://crbug.com/1229654): Implement.
+    LoginsOrErrorReply callback) {
+  JobId job_id = bridge_->GetAutofillableLogins();
+  QueueNewJob(job_id, JobReturnHandler(std::move(callback),
+                                       JobReturnHandler::MetricInfix(
+                                           "GetAutofillableLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(

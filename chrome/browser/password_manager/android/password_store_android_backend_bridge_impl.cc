@@ -124,6 +124,13 @@ JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
   return job_id;
 }
 
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAutofillableLogins() {
+  JobId job_id = GetNextJobId();
+  Java_PasswordStoreAndroidBackendBridgeImpl_getAutofillableLogins(
+      base::android::AttachCurrentThread(), java_object_, job_id.value());
+  return job_id;
+}
+
 JobId PasswordStoreAndroidBackendBridgeImpl::AddLogin(
     const password_manager::PasswordForm& form) {
   JobId job_id = GetNextJobId();

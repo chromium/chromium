@@ -188,7 +188,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
 }
 
 void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   main_backend_->GetAutofillableLoginsAsync(std::move(callback));
   // TODO(crbug.com/1229655): Request shadow_backend_ and compare results.
 }

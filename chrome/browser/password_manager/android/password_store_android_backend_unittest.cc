@@ -78,6 +78,7 @@ class MockPasswordStoreAndroidBackendBridge
  public:
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (), (override));
+  MOCK_METHOD(JobId, GetAutofillableLogins, (), (override));
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&), (override));
@@ -132,6 +133,21 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
+      CreateTestLogins();
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAutofillableLogins).WillOnce(Return(kJobId));
+  backend().GetAutofillableLoginsAsync(mock_reply.Get());
 
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();

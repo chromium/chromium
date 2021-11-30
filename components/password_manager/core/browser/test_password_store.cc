@@ -173,7 +173,8 @@ void TestPasswordStore::GetAllLoginsAsync(LoginsOrErrorReply callback) {
       std::move(callback));
 }
 
-void TestPasswordStore::GetAutofillableLoginsAsync(LoginsReply callback) {
+void TestPasswordStore::GetAutofillableLoginsAsync(
+    LoginsOrErrorReply callback) {
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::GetAutofillableLoginsInternal,

@@ -90,7 +90,7 @@ void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   active_backend_->GetAutofillableLoginsAsync(std::move(callback));
 }
 

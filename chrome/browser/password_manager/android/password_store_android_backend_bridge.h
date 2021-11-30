@@ -62,6 +62,11 @@ class PasswordStoreAndroidBackendBridge {
   // job with the returned JobId succeeds.
   virtual JobId GetAllLogins() WARN_UNUSED_RESULT = 0;
 
+  // Triggers an asynchronous request to retrieve all autofillable
+  // (non-blocklisted) passwords. The registered `Consumer` is notified with
+  // `OnCompleteWithLogins` when the job with the returned JobId succeeds.
+  virtual JobId GetAutofillableLogins() WARN_UNUSED_RESULT = 0;
+
   // Triggers an asynchronous request to add |form| to store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.

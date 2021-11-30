@@ -40,7 +40,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAutofillableLoginsAsync(LoginsReply callback) override;
+  void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       bool include_psl,

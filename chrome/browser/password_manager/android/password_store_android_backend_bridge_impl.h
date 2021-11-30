@@ -61,6 +61,7 @@ class PasswordStoreAndroidBackendBridgeImpl
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   JobId GetAllLogins() override WARN_UNUSED_RESULT;
+  JobId GetAutofillableLogins() override WARN_UNUSED_RESULT;
   JobId AddLogin(const password_manager::PasswordForm& form) override
       WARN_UNUSED_RESULT;
   JobId UpdateLogin(const password_manager::PasswordForm& form) override

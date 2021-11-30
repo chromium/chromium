@@ -41,7 +41,7 @@ void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
 }
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::GetAutofillableLoginsInternal,

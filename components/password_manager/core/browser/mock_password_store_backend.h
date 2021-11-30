@@ -42,7 +42,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (override));
   MOCK_METHOD(void,
               GetAutofillableLoginsAsync,
-              (LoginsReply callback),
+              (LoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               FillMatchingLoginsAsync,
