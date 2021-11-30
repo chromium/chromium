@@ -346,6 +346,142 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted"
+    enum="Boolean" expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Emits true if the user went to site settings from the dialog that is shown
+    after a Trusted Web Activity client app has had its data cleared.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ClearDataDialogOnUninstallAccepted"
+    enum="Boolean" expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Emits true if the user went to site settings from the dialog that is shown
+    after a Trusted Web Activity client app has been uninstalled.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.DelegatedNotificationSmallIconFallback"
+    enum="TrustedWebActivityDelegatedNotificationSmallIconFallback"
+    expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Logs which kind of fallback for notification small icon was used for Trusted
+    Web Activity notification delegation.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
+    expires_after="2022-04-10">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When a site running in Truested Web Activity is accessing geolocation,
+    records whether the last tracked focused Trusted Web Activity client app
+    enrolled location delegation.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationPermissionChanged"
+    enum="TrustedWebActivityPermissionChanged" expires_after="2021-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When a Trusted Web Activity client app's location permission is changed,
+    record the previous state and new stase.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationPermissionRequestIsGranted"
+    enum="Boolean" expires_after="2021-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records the boolean result (granted or not) from requesting a Trusted Web
+    Activity client app's location permission.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationUpdateErrorCode"
+    enum="TrustedWebActivityLocationErrorCode" expires_after="2021-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records an error code when we get a new location update or location error
+    from the Trusted Web Activity client app. Record
+    &quot;LocationUpdateError.NONE&quot; (value = 0) if there is no error and
+    the geoposition is valid.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.QualityEnforcementViolation"
+    enum="TrustedWebActivityQualityEnforcementViolationType"
+    expires_after="2021-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When Trusted Web Activity launches or navigates to a site that violate the
+    quality criteria, records the violation type.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
+    enum="TrustedWebActivityQualityEnforcementViolationType"
+    expires_after="2021-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When Trusted Web Activity launches or navigates to a site that violate the
+    quality criteria, and the CCT will be closed, records the violation type.
+
+    This is similar to TrustedWebActivity.QualityEnforcementViolation but only
+    records when the violation will close the CCT.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ShareTargetRequest"
+    enum="WebShareTargetMethod" expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>Recorded when data is shared via a Trusted Web Activity.</summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.SplashScreenShown" enum="Boolean"
+    expires_after="2022-04-24">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records whether or not a splash screen has been shown when launching a
+    Trusted Web Activity.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.TimeInVerifiedOrigin.V2" units="ms"
+    expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time spent in a verified origin until navigating to an unverified one or
+    pausing the Trusted Web Activity.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.TimeOutOfVerifiedOrigin.V2" units="ms"
+    expires_after="M104">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time spent out of verified origins until navigating back to a verified one
+    or pausing the Trusted Web Activity.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
