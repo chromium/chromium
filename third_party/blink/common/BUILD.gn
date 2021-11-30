@@ -5,6 +5,7 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 blink_python_runner("make_generated_permissions_policy_features") {
   script = "../renderer/build/scripts/make_permissions_policy_features.py"
@@ -378,4 +379,24 @@ static_library("test_support") {
   deps = [ "//third_party/blink/public:test_headers" ]
 
   visibility = [ "//third_party/blink/public:test_support" ]
+}
+
+if (use_libfuzzer) {
+  proto_library("storage_key_fuzzer_proto") {
+    testonly = true
+    proto_in_dir = "//"
+    sources = [ "storage_key/storage_key_fuzzer.proto" ]
+    proto_deps = [ "//third_party/blink/public/common:storage_key_proto" ]
+  }
+
+  fuzzer_test("storage_key_fuzzer") {
+    sources = [ "storage_key/storage_key_fuzzer.cc" ]
+    deps = [
+      ":common",
+      ":storage_key_fuzzer_proto",
+      "//base/test:test_support",
+      "//third_party/blink/public/common:storage_key_proto_converter",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

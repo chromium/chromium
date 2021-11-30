@@ -9,6 +9,7 @@ syntax = "proto2";
 package content.fuzzing.file_system_manager.proto;
 
 import "third_party/blink/public/mojom/filesystem/file_system.mojom.mojolpm.proto";
+import "third_party/blink/public/common/storage_key/proto/storage_key.proto";
 
 // Bind a new FileSystemManager remote
 message NewFileSystemManagerAction {
@@ -19,6 +20,7 @@ message NewFileSystemManagerAction {
 
   required uint32 id = 1;
   required RenderProcessId render_process_id = 2;
+  required storage_key_proto.StorageKey storage_key = 3;
 }
 
 // Run the specific sequence for (an indeterminate) period. This is not

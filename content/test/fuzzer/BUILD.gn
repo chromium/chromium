@@ -170,10 +170,15 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
     "//content/test:test_support",
     "//services/network:test_support",
     "//storage/browser:test_support",
+    "//testing/libfuzzer/proto:url_proto_converter",
+    "//third_party/blink/public/common:storage_key_proto_converter",
     "//third_party/icu:icudata",
   ]
 
-  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+  proto_deps = [
+    "//third_party/blink/public/common:storage_key_proto",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+  ]
 }
 
 mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {

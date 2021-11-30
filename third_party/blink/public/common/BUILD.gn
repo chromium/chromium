@@ -316,3 +316,18 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 }
+
+proto_library("storage_key_proto") {
+  proto_in_dir = "//"
+  sources = [ "storage_key/proto/storage_key.proto" ]
+}
+
+source_set("storage_key_proto_converter") {
+  sources = [
+    "storage_key/storage_key_proto_converter.cc",
+    "storage_key/storage_key_proto_converter.h",
+  ]
+  deps = [ ":common" ]
+
+  public_deps = [ ":storage_key_proto" ]
+}
