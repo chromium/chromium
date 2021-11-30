@@ -70,13 +70,13 @@ template("rust_cxx") {
     cxxbridge_target =
         "//third_party/rust/cxxbridge_cmd/v1:cxxbridge($host_toolchain)"
 
-    cxxbridge_obj_dir = get_label_info(cxxbridge_target, "root_out_dir")
-    cxxbridge_executable = rebase_path("${cxxbridge_obj_dir}/cxxbridge")
+    cxxbridge_out_dir = get_label_info(cxxbridge_target, "root_out_dir")
+    cxxbridge_executable = "${cxxbridge_out_dir}/cxxbridge"
     if (is_win) {
-      cxxbridge_executable = rebase_path("${cxxbridge_executable}.exe")
+      cxxbridge_executable = "${cxxbridge_executable}.exe"
     }
 
-    script = rebase_path("//build/rust/run_cxxbridge.py")
+    script = "//build/rust/run_cxxbridge.py"
     inputs = [
       cxxbridge_executable,
       script,
@@ -89,7 +89,7 @@ template("rust_cxx") {
 
     args = [
       "--exe",
-      cxxbridge_executable,
+      rebase_path(cxxbridge_executable, root_build_dir),
       "--header",
       output_h,
       "--cc",
