@@ -29,12 +29,6 @@ CommitResponseData BuildCommitResponseData(
     const sync_pb::CommitResponse_EntryResponse& entry_response) {
   CommitResponseData response_data;
   response_data.id = entry_response.id_string();
-  if (response_data.id != commit_request.entity->id) {
-    // Server has changed the sync id in the request. Write back the
-    // original sync id. This is useful for data types without a notion of
-    // a client tag such as bookmarks.
-    response_data.id_in_request = commit_request.entity->id;
-  }
   response_data.response_version = entry_response.version();
   response_data.client_tag_hash = commit_request.entity->client_tag_hash;
   response_data.sequence_number = commit_request.sequence_number;

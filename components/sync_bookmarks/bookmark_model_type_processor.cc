@@ -152,19 +152,12 @@ void BookmarkModelTypeProcessor::OnCommitCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // |error_response_list| is ignored, because all errors are treated as
-  // transientand the processor with eventually retry.
-
+  // transient and the processor with eventually retry.
   for (const syncer::CommitResponseData& response : committed_response_list) {
-    // In order to save space, |response.id_in_request| is written when it's
-    // different from |response.id|. If it's empty, then there was no id change
-    // during the commit, and |response.id| carries both the old and new ids.
-    const std::string& old_sync_id =
-        response.id_in_request.empty() ? response.id : response.id_in_request;
     const SyncedBookmarkTracker::Entity* entity =
-        bookmark_tracker_->GetEntityForSyncId(old_sync_id);
+        bookmark_tracker_->GetEntityForClientTagHash(response.client_tag_hash);
     if (!entity) {
-      DLOG(WARNING) << "Received a commit response for an unknown entity: "
-                    << old_sync_id;
+      DLOG(WARNING) << "Received a commit response for an unknown entity.";
       continue;
     }
 
