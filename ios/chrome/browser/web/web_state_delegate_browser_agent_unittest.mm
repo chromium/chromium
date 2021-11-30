@@ -40,7 +40,8 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
   WebStateDelegateBrowserAgentTest()
       : browser_(std::make_unique<TestBrowser>()) {
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
+    WebStateDelegateBrowserAgent::CreateForBrowser(
+        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
   }
   ~WebStateDelegateBrowserAgentTest() override = default;
 

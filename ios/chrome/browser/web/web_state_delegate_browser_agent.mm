@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
@@ -48,14 +47,33 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
 }
 }  // namespace
 
-WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(Browser* browser)
+// static
+void WebStateDelegateBrowserAgent::CreateForBrowser(
+    Browser* browser,
+    TabInsertionBrowserAgent* tab_insertion_agent) {
+  DCHECK(browser);
+
+  if (!FromBrowser(browser)) {
+    browser->SetUserData(UserDataKey(),
+                         base::WrapUnique(new WebStateDelegateBrowserAgent(
+                             browser, tab_insertion_agent)));
+  }
+}
+
+WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
+    Browser* browser,
+    TabInsertionBrowserAgent* tab_insertion_agent)
     : web_state_list_(browser->GetWebStateList()),
-      tab_insertion_agent_(TabInsertionBrowserAgent::FromBrowser(browser)) {
+      tab_insertion_agent_(tab_insertion_agent) {
   DCHECK(tab_insertion_agent_);
-  browser->AddObserver(this);
-  web_state_list_->AddObserver(this);
-  for (int index = 0; index < web_state_list_->count(); ++index)
-    web_state_list_->GetWebStateAt(index)->SetDelegate(this);
+  browser_observation_.Observe(browser);
+  web_state_list_observation_.Observe(web_state_list_);
+
+  // All the BrowserAgent are attached to the Browser during the creation,
+  // the WebStateList must be empty at this point.
+  DCHECK(web_state_list_->empty())
+      << "WebStateDelegateBrowserAgent created for a Browser with a non-empty "
+         "WebStateList.";
 }
 
 WebStateDelegateBrowserAgent::~WebStateDelegateBrowserAgent() {}
@@ -81,7 +99,7 @@ void WebStateDelegateBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  web_state->SetDelegate(this);
+  SetWebStateDelegate(web_state);
 }
 
 void WebStateDelegateBrowserAgent::WebStateReplacedAt(
@@ -89,26 +107,42 @@ void WebStateDelegateBrowserAgent::WebStateReplacedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int index) {
-  old_web_state->SetDelegate(nullptr);
-  new_web_state->SetDelegate(this);
+  ClearWebStateDelegate(old_web_state);
+  SetWebStateDelegate(new_web_state);
 }
 
 void WebStateDelegateBrowserAgent::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
-  web_state->SetDelegate(nullptr);
+  ClearWebStateDelegate(web_state);
 }
 
 // BrowserObserver::
 void WebStateDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
+  DCHECK(browser_observation_.IsObservingSource(browser));
+
+  WebStateList* web_state_list = browser->GetWebStateList();
+  DCHECK(web_state_list_observation_.IsObservingSource(web_state_list));
+  DCHECK_EQ(web_state_list_, web_state_list);
+
   // Remove all web state delegates.
   for (int index = 0; index < web_state_list_->count(); ++index)
     web_state_list_->GetWebStateAt(index)->SetDelegate(nullptr);
 
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
+  web_state_observations_.RemoveAllObservations();
+  web_state_list_observation_.Reset();
+  browser_observation_.Reset();
+}
+
+// WebStateObserver::
+void WebStateDelegateBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  SetWebStateDelegate(web_state);
+  web_state_observations_.RemoveObservation(web_state);
+}
+
+void WebStateDelegateBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
 }
 
 // WebStateDelegate::
@@ -261,4 +295,24 @@ void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(
 id<CRWResponderInputView> WebStateDelegateBrowserAgent::GetResponderInputView(
     web::WebState* source) {
   return input_view_provider_;
+}
+
+void WebStateDelegateBrowserAgent::SetWebStateDelegate(
+    web::WebState* web_state) {
+  DCHECK(web_state);
+  if (web_state->IsRealized()) {
+    web_state->SetDelegate(this);
+  } else {
+    web_state_observations_.AddObservation(web_state);
+  }
+}
+
+void WebStateDelegateBrowserAgent::ClearWebStateDelegate(
+    web::WebState* web_state) {
+  DCHECK(web_state);
+  if (web_state->IsRealized()) {
+    web_state->SetDelegate(nullptr);
+  } else {
+    web_state_observations_.RemoveObservation(web_state);
+  }
 }

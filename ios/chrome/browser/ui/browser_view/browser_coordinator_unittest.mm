@@ -71,7 +71,8 @@ class BrowserCoordinatorTest : public PlatformTest {
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
+    WebStateDelegateBrowserAgent::CreateForBrowser(
+        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
