@@ -13,12 +13,19 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
     super.setUp();
+    window.press = this.press;
 
     const runTest = this.deferRunTest(WhenTestDone.EXPECT);
     chrome.automation.getDesktop(desktop => {
       this.handler_ = new DesktopAutomationHandler(desktop);
       runTest();
     });
+  }
+
+  press(keyCode, modifiers) {
+    return function() {
+      EventGenerator.sendKeyPress(keyCode, modifiers);
+    };
   }
 };
 
@@ -146,6 +153,31 @@ TEST_F(
               this.handler_.onAlert(event);
               assertFalse(mockFeedback.utteranceInQueue('Hello world'));
             })
+            .replay();
+      });
+    });
+
+TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'DatalistSelection', function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+    <input list="list">
+    <datalist id="list">
+    <option>foo</option>
+    <option>bar</option>
+    </datalist>
+  `;
+      this.runWithLoadedTree(site, function(root) {
+        root.find({role: RoleType.TEXT_FIELD_WITH_COMBO_BOX}).focus();
+        mockFeedback.call(press(KeyCode.DOWN))
+            .expectSpeech('foo', 'List item', ' 1 of 2 ')
+            .expectBraille('foo lstitm 1/2 (x)')
+            .call(press(KeyCode.DOWN))
+            .expectSpeech('bar', 'List item', ' 2 of 2 ')
+            .expectBraille('bar lstitm 2/2 (x)')
+            .call(press(KeyCode.UP))
+            .expectSpeech('foo', 'List item', ' 1 of 2 ')
+            .expectBraille('foo lstitm 1/2 (x)')
             .replay();
       });
     });

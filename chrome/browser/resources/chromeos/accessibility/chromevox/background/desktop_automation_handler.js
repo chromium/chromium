@@ -665,6 +665,13 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         override = !!walker || override;
       }
 
+      // The popup view associated with a datalist element does not descend
+      // from the input with which it is associated.
+      if (focus.role === RoleType.TEXT_FIELD_WITH_COMBO_BOX &&
+          target.role === RoleType.LIST_BOX_OPTION) {
+        override = true;
+      }
+
       if (override || AutomationUtil.isDescendantOf(target, focus)) {
         this.onEventDefault(evt);
       }
