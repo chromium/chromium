@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.h"
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 
 namespace ash {
 namespace input_method {
@@ -67,8 +68,13 @@ class AutocorrectManager {
 
   void UndoAutocorrect();
 
+  // Whether auto correction is disabled by some rule.
+  bool DisabledByRule();
+
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
+
+  void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
@@ -81,6 +87,8 @@ class AutocorrectManager {
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
   bool in_diacritical_autocorrect_session_ = false;
+
+  bool disabled_by_rule_ = false;
 };
 
 }  // namespace input_method

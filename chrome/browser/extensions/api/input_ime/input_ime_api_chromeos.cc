@@ -13,9 +13,9 @@
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
-#include "chrome/browser/ash/input_method/input_host_helper.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
+#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -282,9 +282,9 @@ class ImeObserverChromeOS : public ui::ImeObserver {
 
       // Populate app key for private OnFocus.
       // TODO(b/163645900): Add app type later.
-      ash::input_method::InputAssociatedHost host;
-      ash::input_method::PopulateInputHost(&host);
-      input_context.app_key = std::make_unique<std::string>(host.app_key);
+      ash::input_method::TextFieldContextualInfo info;
+      ash::input_method::GetTextFieldAppTypeAndKey(info);
+      input_context.app_key = std::make_unique<std::string>(info.app_key);
 
       auto args(input_method_private::OnFocus::Create(input_context));
 

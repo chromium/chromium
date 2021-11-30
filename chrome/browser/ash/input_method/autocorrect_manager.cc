@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -199,6 +201,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
 }
 
 void AutocorrectManager::OnFocus(int context_id) {
+  if (base::FeatureList::IsEnabled(ash::features::kImeRuleConfig)) {
+    GetTextFieldContextualInfo(
+        base::BindOnce(&AutocorrectManager::OnTextFieldContextualInfoChanged,
+                       base::Unretained(this)));
+  }
+
   if (key_presses_until_underline_hide_ > 0) {
     // TODO(b/149796494): move this to onblur()
     LogAssistiveAutocorrectAction(
@@ -266,6 +274,16 @@ void AutocorrectManager::UndoAutocorrect() {
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
   LogAssistiveAutocorrectDelay(base::TimeTicks::Now() - autocorrect_time_);
+}
+
+void AutocorrectManager::OnTextFieldContextualInfoChanged(
+    const TextFieldContextualInfo& info) {
+  // TODO(b/207587725): Check whether auto correct is allowed by rules.
+  disabled_by_rule_ = false;
+}
+
+bool AutocorrectManager::DisabledByRule() {
+  return disabled_by_rule_;
 }
 
 }  // namespace input_method

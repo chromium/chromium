@@ -742,6 +742,13 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
         std::move(callback).Run(false);
         return;
       }
+
+      // Hot switches to turn on/off certain IME features.
+      if (IsFstEngine(engine_id) && autocorrect_manager_->DisabledByRule()) {
+        std::move(callback).Run(false);
+        return;
+      }
+
       if (filtered) {
         // TODO(b/174612548): Transform the corresponding KEY_RELEASED event to
         // use the composed character as well.
