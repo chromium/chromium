@@ -125,6 +125,7 @@ bool WebApp::CanUserUninstallWebApp() const {
   specified_sources[Source::kDefault] = true;
   specified_sources[Source::kSync] = true;
   specified_sources[Source::kWebAppStore] = true;
+  specified_sources[Source::kSubApp] = true;
   return HasAnySpecifiedSourcesAndNoOtherSources(specified_sources);
 }
 

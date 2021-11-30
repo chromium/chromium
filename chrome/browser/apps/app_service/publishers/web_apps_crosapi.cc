@@ -202,20 +202,8 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                &display_mode](const apps::AppUpdate& update) {
         is_system_web_app =
             update.InstallReason() == apps::mojom::InstallReason::kSystem;
-        // TODO(1258432): Clean up common logic between ash/lacros.
-        switch (update.InstallReason()) {
-          case apps::mojom::InstallReason::kDefault:
-          case apps::mojom::InstallReason::kSync:
-          case apps::mojom::InstallReason::kUser:
-            can_use_uninstall = true;
-            break;
-          case apps::mojom::InstallReason::kSystem:
-          case apps::mojom::InstallReason::kPolicy:
-          case apps::mojom::InstallReason::kOem:
-          case apps::mojom::InstallReason::kSubApp:
-          case apps::mojom::InstallReason::kUnknown:
-            can_use_uninstall = false;
-        }
+        can_use_uninstall =
+            update.AllowUninstall() == apps::mojom::OptionalBool::kTrue;
         display_mode = update.WindowMode();
       });
 
