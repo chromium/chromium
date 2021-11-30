@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -66,8 +67,8 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
     if (video_frame_out)
       *video_frame_out = video_frame;
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8(video_frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame)
+                           .ToLocalChecked());
   }
 
  protected:
