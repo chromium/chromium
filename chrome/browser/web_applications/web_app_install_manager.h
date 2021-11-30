@@ -140,6 +140,8 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,
                            TaskQueueWebContentsReadyRace);
 
+  base::WeakPtr<WebAppInstallManager> GetWeakPtr();
+
   void EnqueueInstallAppFromSync(
       const AppId& sync_app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
