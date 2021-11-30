@@ -2076,12 +2076,8 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
 
 RenderFrameHost::WebExposedIsolationLevel
 RenderFrameHostImpl::GetWebExposedIsolationLevel() {
-  ProcessLock process_lock =
-      ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
-  if (process_lock.is_invalid())
-    return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
-
-  WebExposedIsolationInfo info = process_lock.GetWebExposedIsolationInfo();
+  WebExposedIsolationInfo info =
+      GetSiteInstance()->GetSiteInfo().web_exposed_isolation_info();
   if (info.is_isolated_application()) {
     // TODO(crbug.com/1159832): Check the document policy once it's available to
     // find out if this frame is actually isolated.
