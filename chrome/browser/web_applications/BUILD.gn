@@ -314,6 +314,7 @@ source_set("web_applications") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/arc:arc_base",
+      "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp",
       "//ash/webui/camera_app_ui",
@@ -574,6 +575,7 @@ source_set("web_applications_unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/arc:arc_test_support",
+      "//ash/components/arc/mojom",
       "//ash/constants",
       "//chrome/browser/chromeos",
       "//components/arc:arc",

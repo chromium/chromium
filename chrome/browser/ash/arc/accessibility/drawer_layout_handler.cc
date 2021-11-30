@@ -6,11 +6,11 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 

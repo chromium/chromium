@@ -4,15 +4,15 @@
 
 module arc.mojom;
 
+import "ash/components/arc/mojom/accessibility_helper.mojom";
+import "ash/components/arc/mojom/adbd.mojom";
+import "ash/components/arc/mojom/appfuse.mojom";
+import "ash/components/arc/mojom/audio.mojom";
+import "ash/components/arc/mojom/auth.mojom";
 import "ash/components/arc/mojom/notifications.mojom";
 import "ash/components/arc/mojom/oemcrypto.mojom";
-import "components/arc/mojom/accessibility_helper.mojom";
-import "components/arc/mojom/adbd.mojom";
 import "components/arc/mojom/app.mojom";
 import "components/arc/mojom/app_permissions.mojom";
-import "components/arc/mojom/appfuse.mojom";
-import "components/arc/mojom/audio.mojom";
-import "components/arc/mojom/auth.mojom";
 import "components/arc/mojom/backup_settings.mojom";
 import "components/arc/mojom/bluetooth.mojom";
 import "components/arc/mojom/boot_phase_monitor.mojom";

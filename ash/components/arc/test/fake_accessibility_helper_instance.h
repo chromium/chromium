@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_ACCESSIBILITY_HELPER_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_ACCESSIBILITY_HELPER_INSTANCE_H_
 
-#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

@@ -152,8 +152,8 @@ bool IsPrimaryOrDeviceLocalAccount(
   return IsPrimaryGaiaAccount(account_info.gaia);
 }
 
-// See //components/arc/mojom/auth.mojom RequestPrimaryAccount() for the spec.
-// See also go/arc-primary-account.
+// See //ash/components/arc/mojom/auth.mojom RequestPrimaryAccount() for the
+// spec. See also go/arc-primary-account.
 std::string GetAccountName(Profile* profile) {
   switch (GetAccountType(profile)) {
     case mojom::ChromeAccountType::USER_ACCOUNT:

@@ -7,6 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/mojom/adbd.mojom.h"
+#include "ash/components/arc/mojom/appfuse.mojom.h"
+#include "ash/components/arc/mojom/audio.mojom.h"
+#include "ash/components/arc/mojom/auth.mojom.h"
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
 #include "ash/components/arc/mojom/video.mojom.h"
@@ -17,13 +22,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
-#include "components/arc/mojom/adbd.mojom.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
-#include "components/arc/mojom/appfuse.mojom.h"
-#include "components/arc/mojom/audio.mojom.h"
-#include "components/arc/mojom/auth.mojom.h"
 #include "components/arc/mojom/backup_settings.mojom.h"
 #include "components/arc/mojom/bluetooth.mojom.h"
 #include "components/arc/mojom/boot_phase_monitor.mojom.h"

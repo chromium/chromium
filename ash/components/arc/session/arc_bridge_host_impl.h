@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/arc_bridge.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

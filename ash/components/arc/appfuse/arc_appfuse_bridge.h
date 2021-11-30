@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "components/arc/mojom/appfuse.mojom.h"
+#include "ash/components/arc/mojom/appfuse.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

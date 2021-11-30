@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "base/containers/flat_map.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {

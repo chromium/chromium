@@ -5,9 +5,9 @@
 #ifndef ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
+#include "ash/components/arc/mojom/audio.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "ash/components/audio/cras_audio_handler.h"
-#include "components/arc/mojom/audio.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

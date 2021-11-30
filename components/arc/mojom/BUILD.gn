@@ -12,15 +12,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (is_chromeos_ash) {
   mojom("mojom") {
     sources = [
-      "accessibility_helper.mojom",
-      "adbd.mojom",
       "anr.mojom",
       "app.mojom",
       "app_permissions.mojom",
-      "appfuse.mojom",
-      "arc_bridge.mojom",
-      "audio.mojom",
-      "auth.mojom",
       "backup_settings.mojom",
       "bluetooth.mojom",
       "boot_phase_monitor.mojom",

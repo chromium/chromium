@@ -12,6 +12,38 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # inclusion is done through read_file(), which does not respect the global
 # defines for GN, so it itself cannot use the "is_chromeos" variable.
 if (is_chromeos_ash) {
+  mojom("mojom") {
+    sources = [
+      "accessibility_helper.mojom",
+      "adbd.mojom",
+      "appfuse.mojom",
+      "arc_bridge.mojom",
+      "audio.mojom",
+      "auth.mojom",
+    ]
+
+    public_deps = [
+      "//ash/components/arc/mojom:camera_intent",
+      "//ash/components/arc/mojom:media",
+      "//ash/components/arc/mojom:notifications",
+      "//ash/components/arc/mojom:oemcrypto",
+      "//chromeos/components/sensors/mojom:mojom",
+      "//components/arc/mojom:mojom",
+      "//components/payments/mojom:mojom",
+      "//media/capture/video/chromeos/mojom:cros_camera",
+      "//mojo/public/mojom/base",
+      "//printing/mojom",
+      "//sandbox/policy/mojom",
+      "//services/device/public/mojom:usb",
+      "//services/media_session/public/mojom",
+      "//services/resource_coordinator/public/mojom",
+      "//third_party/blink/public/mojom:android_mojo_bindings",
+      "//ui/accessibility/mojom:ax_assistant_mojom",
+      "//ui/gfx/geometry/mojom",
+      "//url/mojom:url_mojom_gurl",
+    ]
+  }
+
   # Media related mojo interfaces. These are used by
   # //services/viz/public/mojom. We have this separate mojom target to
   # avoid pulling in unnecessary interfaces.

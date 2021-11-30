@@ -12,7 +12,7 @@ namespace arc {
 
 namespace mojom {
 
-// Instead of including components/arc/mojom/arc_bridge.mojom.h, list all
+// Instead of including ash/components/arc/mojom/arc_bridge.mojom.h, list all
 // the instance classes here for faster build.
 class AccessibilityHelperHost;
 class AccessibilityHelperInstance;

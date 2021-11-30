@@ -2437,6 +2437,7 @@ static_library("browser") {
       "apps/digital_goods/util.h",
     ]
     deps += [
+      "//ash/components/arc/mojom",
       "//ash/components/audio",
       "//ash/components/device_activity:device_activity",
       "//ash/components/timezone",
@@ -4883,6 +4884,7 @@ static_library("browser") {
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
       "//ash/components/arc/enterprise",
+      "//ash/components/arc/mojom",
       "//ash/components/geolocation",
       "//ash/components/settings",
       "//ash/public/cpp",

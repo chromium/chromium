@@ -112,7 +112,10 @@ static_library("arc_test_support") {
     "test/fake_intent_helper_instance.h",
   ]
 
-  deps = [ "//components/arc/mojom" ]
+  deps = [
+    "//ash/components/arc/mojom",
+    "//components/arc/mojom",
+  ]
 }
 
 source_set("unit_tests") {
