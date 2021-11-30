@@ -3478,9 +3478,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ResetPermissionsIncrease" enum="Boolean"
-    expires_after="2021-12-01">
+    expires_after="2022-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Whether the DISABLE_PERMISSIONS_INCREASE disable reason was removed from an
     extension while checking for a permissions increase. Recorded during startup
