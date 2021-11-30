@@ -281,7 +281,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   SharedHandleState GetSharedHandleStateForPath(
       const base::FilePath& path,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessPermissionContext::UserAction user_action);
 
@@ -414,7 +414,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   void CreateTransferTokenImpl(
       const storage::FileSystemURL& url,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const SharedHandleState& handle_state,
       FileSystemAccessPermissionContext::HandleType handle_type,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
