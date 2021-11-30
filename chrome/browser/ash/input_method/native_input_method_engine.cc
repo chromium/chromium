@@ -59,9 +59,7 @@ IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() {
 }
 
 bool IsFstEngine(const std::string& engine_id) {
-  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(engine_id, "experimental_",
-                          base::CompareCase::SENSITIVE);
+  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
 
 bool IsKoreanEngine(const std::string& engine_id) {
@@ -106,11 +104,7 @@ bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
                                           const std::string& engine_id) {
-  if (base::StartsWith(engine_id, "experimental_",
-                       base::CompareCase::SENSITIVE)) {
-    return true;
-  }
-
+  // The FST Mojo engine is only needed if autocorrect is enabled.
   const base::DictionaryValue* input_method_settings =
       prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_setting = input_method_settings->FindPath(
@@ -584,7 +578,6 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
   if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
-      // The FST Mojo engine is only needed if autocorrect is enabled.
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       !IsPredictiveWritingEnabled(prefs_, engine_id)) {
     remote_manager_.reset();
