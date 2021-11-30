@@ -21,6 +21,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sys_addrinfo.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_descriptor.h"

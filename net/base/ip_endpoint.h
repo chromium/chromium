@@ -16,16 +16,18 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 
-#if defined(OS_WIN)
 // Replicate these from Windows headers to avoid pulling net/sys_addrinfo.h.
 // Doing that transitively brings in windows.h. Including windows.h pollutes the
 // global namespace with thousands of macro definitions. This file is
 // transitively included in enough files that including windows.h potentially
 // impacts build performance.
+// Similarly, just pull in the minimal header necessary on non-Windows platforms
+// to help with build performance.
 struct sockaddr;
+#if defined(OS_WIN)
 typedef int socklen_t;
 #else
-#include "net/base/sys_addrinfo.h"
+#include <sys/socket.h>
 #endif
 
 namespace net {

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sys_addrinfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

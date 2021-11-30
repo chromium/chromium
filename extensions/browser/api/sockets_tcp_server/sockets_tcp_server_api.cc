@@ -16,6 +16,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/socket_permission.h"
 #include "net/base/net_errors.h"
+#include "net/base/sys_addrinfo.h"
 
 using content::SocketPermissionRequest;
 using extensions::ResumableTCPServerSocket;

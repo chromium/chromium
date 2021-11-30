@@ -31,6 +31,7 @@
 #include "net/base/network_activity_monitor.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sys_addrinfo.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"

@@ -109,8 +109,7 @@
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <net/if.h>
-#include <netdb.h>
-#include <netinet/in.h>
+#include "net/base/sys_addrinfo.h"
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
 #include "net/android/network_library.h"
