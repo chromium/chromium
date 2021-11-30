@@ -6268,7 +6268,6 @@ crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ 
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
 # Sheriff 2021-02-25
-crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
 # Sheriff 2021-03-04

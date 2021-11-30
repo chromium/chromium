@@ -29,10 +29,6 @@ crbug.com/1003224 external/wpt/clipboard-apis/async-write-image-read-image.html 
 crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import-data-url.any.worker.html [ Crash ]
 crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Crash ]
 crbug.com/867532 http/tests/workers/worker-usecounter.html [ Crash ]
-
-# These tests crash with the leak detector enabled. Previously, crashes inside
-# leak detection were incorrectly hidden with the test passing.
-# See https://chromium-review.googlesource.com/c/chromium/src/+/2252943
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-border-image.html [ Crash ]
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-background-image.html [ Crash ]
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-content-image.html [ Crash ]
@@ -136,6 +132,9 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
+
+# Sheriff 2021-02-25
+crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
