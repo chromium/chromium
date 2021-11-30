@@ -384,12 +384,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(1, 2, 3, 4),
         ::testing::Values(AllocatorType::kSystem,
-                          AllocatorType::kPartitionAlloc
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                          ,
-                          AllocatorType::kPartitionAllocWithThreadCache
-#endif
-                          )));
+                          AllocatorType::kPartitionAlloc,
+                          AllocatorType::kPartitionAllocWithThreadCache)));
 
 // This test (and the other one below) allocates a large amount of memory, which
 // can cause issues on Android.
