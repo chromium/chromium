@@ -98,24 +98,6 @@ if (is_chromeos_ash) {
       {
         types = [
           {
-            mojom = "arc.mojom.TextInputType"
-            cpp = "::ui::TextInputType"
-          },
-          {
-            mojom = "arc.mojom.KeyEventData"
-            cpp = "::std::unique_ptr<::ui::KeyEvent>"
-            move_only = true
-          },
-        ]
-        traits_headers = [ "//ash/components/arc/mojom/ime_mojom_traits.h" ]
-        traits_public_deps = [
-          "//ui/base/ime",
-          "//ui/events",
-        ]
-      },
-      {
-        types = [
-          {
             mojom = "arc.mojom.IntentFilter"
             cpp = "::arc::IntentFilter"
             move_only = true
