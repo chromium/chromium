@@ -100,12 +100,13 @@ std::unique_ptr<base::Value> ConvertDictKeyStyle(const base::Value& value) {
     return std::move(out_dict);
   }
 
-  const base::ListValue* list = nullptr;
-  if (value.GetAsList(&list)) {
-    std::unique_ptr<base::ListValue> out_list(new base::ListValue());
-    for (const auto& key : list->GetList())
-      out_list->Append(ConvertDictKeyStyle(key));
-    return std::move(out_list);
+  if (value.is_list()) {
+    base::Value::ListStorage out_list_storage;
+    base::Value out_list(std::move(out_list_storage));
+    for (const auto& key : value.GetList())
+      out_list.Append(
+          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(key)));
+    return base::Value::ToUniquePtrValue(out_list.Clone());
   }
 
   return base::Value::ToUniquePtrValue(value.Clone());

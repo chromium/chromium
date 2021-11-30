@@ -9,6 +9,8 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -456,21 +458,18 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
     return NULL;
   }
 
-  const base::ListValue* list_value;
-  value->GetAsList(&list_value);
   // Create the Java array.
-  jsize length = static_cast<jsize>(list_value->GetList().size());
+  jsize length = static_cast<jsize>(value->GetList().size());
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
     return NULL;
   }
-  auto null_value = std::make_unique<base::Value>();
-  for (jsize i = 0; i < length; ++i) {
-    const base::Value* value_element = null_value.get();
-    list_value->Get(i, &value_element);
+
+  jsize i = 0;
+  for (const auto& value_element : value->GetList()) {
     jvalue element = CoerceJavaScriptValueToJavaValue(
-        env, value_element, target_inner_type, false, object_refs, error);
-    SetArrayElement(env, result, target_inner_type, i, element);
+        env, &value_element, target_inner_type, false, object_refs, error);
+    SetArrayElement(env, result, target_inner_type, i++, element);
     // CoerceJavaScriptValueToJavaValue() creates new local references to
     // strings, objects and arrays. Of these, only strings can occur here.
     // SetArrayElement() causes the array to take its own reference to the

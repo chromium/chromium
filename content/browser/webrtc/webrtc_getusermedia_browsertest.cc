@@ -143,10 +143,9 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
 
-    base::ListValue* values;
-    ASSERT_TRUE(parsed_json.value->GetAsList(&values));
+    ASSERT_TRUE(parsed_json.value->is_list());
 
-    for (const auto& entry : values->GetList()) {
+    for (const auto& entry : parsed_json.value->GetList()) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;

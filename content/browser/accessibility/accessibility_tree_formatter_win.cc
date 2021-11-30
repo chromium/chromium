@@ -839,15 +839,14 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
       case base::Value::Type::LIST: {
         // Currently all list values are string and are written without
         // attribute names.
-        const base::ListValue* list_value;
-        value->GetAsList(&list_value);
         std::unique_ptr<base::ListValue> filtered_list(new base::ListValue());
 
-        for (const auto& entry : list_value->GetList()) {
+        for (const auto& entry : value->GetList()) {
           std::string string_value;
-          if (entry.GetAsString(&string_value))
-            if (WriteAttribute(false, string_value, &line))
+          if (entry.is_string()) {
+            if (WriteAttribute(false, entry.GetString(), &line))
               filtered_list->Append(string_value);
+          }
         }
         break;
       }
