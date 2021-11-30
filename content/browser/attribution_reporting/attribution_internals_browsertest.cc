@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -91,6 +92,50 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   TestAttributionManager manager_;
 };
 
+// crbug.com/1275187: various tests are flaky
+#if defined(OS_LINUX)
+#define MAYBE_DisabledByEmbedder_MeasurementConsideredDisabled \
+  DISABLED_DisabledByEmbedder_MeasurementConsideredDisabled
+#define MAYBE_WebUISendReports_ReportsRemoved \
+  DISABLED_WebUISendReports_ReportsRemoved
+#define MAYBE_WebUIShownWithActiveImpression_ImpressionsDisplayed \
+  DISABLED_WebUIShownWithActiveImpression_ImpressionsDisplayed
+#define MAYBE_WebUIShownWithManager_DebugModeDisabled \
+  DISABLED_WebUIShownWithManager_DebugModeDisabled
+#define MAYBE_WebUIShownWithManager_DebugModeEnabled \
+  DISABLED_WebUIShownWithManager_DebugModeEnabled
+#define MAYBE_WebUIShownWithManager_MeasurementConsideredEnabled \
+  DISABLED_WebUIShownWithManager_MeasurementConsideredEnabled
+#define MAYBE_WebUIShownWithNoActiveImpression_NoImpressionsDisplayed \
+  DISABLED_WebUIShownWithNoActiveImpression_NoImpressionsDisplayed
+#define MAYBE_WebUIShownWithNoReports_NoReportsDisplayed \
+  DISABLED_WebUIShownWithNoReports_NoReportsDisplayed
+#define MAYBE_WebUIShownWithPendingReports_ReportsDisplayed \
+  DISABLED_WebUIShownWithPendingReports_ReportsDisplayed
+#define MAYBE_WebUIWithPendingReportsClearStorage_ReportsRemoved \
+  DISABLED_WebUIWithPendingReportsClearStorage_ReportsRemoved
+#else
+#define MAYBE_DisabledByEmbedder_MeasurementConsideredDisabled \
+  DisabledByEmbedder_MeasurementConsideredDisabled
+#define MAYBE_WebUISendReports_ReportsRemoved WebUISendReports_ReportsRemoved
+#define MAYBE_WebUIShownWithActiveImpression_ImpressionsDisplayed \
+  WebUIShownWithActiveImpression_ImpressionsDisplayed
+#define MAYBE_WebUIShownWithManager_DebugModeDisabled \
+  WebUIShownWithManager_DebugModeDisabled
+#define MAYBE_WebUIShownWithManager_DebugModeEnabled \
+  WebUIShownWithManager_DebugModeEnabled
+#define MAYBE_WebUIShownWithManager_MeasurementConsideredEnabled \
+  WebUIShownWithManager_MeasurementConsideredEnabled
+#define MAYBE_WebUIShownWithNoActiveImpression_NoImpressionsDisplayed \
+  WebUIShownWithNoActiveImpression_NoImpressionsDisplayed
+#define MAYBE_WebUIShownWithNoReports_NoReportsDisplayed \
+  WebUIShownWithNoReports_NoReportsDisplayed
+#define MAYBE_WebUIShownWithPendingReports_ReportsDisplayed \
+  WebUIShownWithPendingReports_ReportsDisplayed
+#define MAYBE_WebUIWithPendingReportsClearStorage_ReportsRemoved \
+  WebUIWithPendingReportsClearStorage_ReportsRemoved
+#endif
+
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        NavigationUrl_ResolvedToWebUI) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
@@ -103,8 +148,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithManager_MeasurementConsideredEnabled) {
+IN_PROC_BROWSER_TEST_F(
+    AttributionInternalsWebUiBrowserTest,
+    MAYBE_WebUIShownWithManager_MeasurementConsideredEnabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -128,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       DisabledByEmbedder_MeasurementConsideredDisabled) {
+                       MAYBE_DisabledByEmbedder_MeasurementConsideredDisabled) {
   AttributionDisallowingContentBrowserClient disallowed_browser_client;
   ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
 
@@ -156,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     AttributionInternalsWebUiBrowserTest,
-    WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
+    MAYBE_WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -178,8 +224,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithActiveImpression_ImpressionsDisplayed) {
+IN_PROC_BROWSER_TEST_F(
+    AttributionInternalsWebUiBrowserTest,
+    MAYBE_WebUIShownWithActiveImpression_ImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -236,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithNoReports_NoReportsDisplayed) {
+                       MAYBE_WebUIShownWithNoReports_NoReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -248,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithManager_DebugModeDisabled) {
+                       MAYBE_WebUIShownWithManager_DebugModeDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -272,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithManager_DebugModeEnabled) {
+                       MAYBE_WebUIShownWithManager_DebugModeEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kConversionsDebugMode);
 
@@ -299,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithPendingReports_ReportsDisplayed) {
+                       MAYBE_WebUIShownWithPendingReports_ReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const base::Time now = base::Time::Now();
@@ -447,8 +494,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIWithPendingReportsClearStorage_ReportsRemoved) {
+IN_PROC_BROWSER_TEST_F(
+    AttributionInternalsWebUiBrowserTest,
+    MAYBE_WebUIWithPendingReportsClearStorage_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const base::Time now = base::Time::Now();
@@ -496,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 // TODO(johnidel): Use a real AttributionManager here and verify that the
 // reports are actually sent.
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUISendReports_ReportsRemoved) {
+                       MAYBE_WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   AttributionReport report =
