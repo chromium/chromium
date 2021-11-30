@@ -826,9 +826,9 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   // Do a best effort of retrieving the correct settings from the local state.
   // Use the default settings of the value if it fails to be retrieved.
   std::string sorted_col_id;
-  bool sort_is_ascending = true;
   dictionary->GetString(kSortColumnIdKey, &sorted_col_id);
-  dictionary->GetBoolean(kSortIsAscendingKey, &sort_is_ascending);
+  bool sort_is_ascending =
+      dictionary->FindBoolPath(kSortIsAscendingKey).value_or(true);
 
   int current_visible_column_index = 0;
   for (size_t i = 0; i < kColumnsSize; ++i) {
@@ -838,10 +838,10 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
     if (col_id_key.empty())
       continue;
 
-    bool col_visibility = kColumns[i].default_visibility;
-    dictionary->GetBoolean(col_id_key, &col_visibility);
+    bool col_visibility = dictionary->FindBoolPath(col_id_key)
+                              .value_or(kColumns[i].default_visibility);
 
-    // If the above GetBoolean() fails, the |col_visibility| remains at the
+    // If the above FindBoolPath() fails, the |col_visibility| remains at the
     // default visibility.
     columns_settings_->SetBoolean(col_id_key, col_visibility);
     table_view_delegate_->SetColumnVisibility(col_id, col_visibility);
