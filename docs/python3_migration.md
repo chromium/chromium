@@ -13,19 +13,19 @@ from other Python2 files. See the
 As of the time of writing (2021-07-19), we're in the following state:
 
 * depot_tools is fully Python3-compatible.
-* [gclient hooks](#gclient_hooks) are being migrated to use Python3
+* [gclient hooks](#gclient-hooks) are being migrated to use Python3
   ([crbug.com/1208028](https://crbug.com/1208028)).
 * GN is fully Python3-compatible, meaning that all the scripts invoked
   through exec_script() are using Python3.
 * The [build](#gn_ninja-actions) (scripts invoked by Ninja) uses Python3.
 * We are updating the various test harnesses and frameworks to use
   Python3, but most still use Python2. It is possible to use
-  Python3 for tests if you're ready to do so.
-* [PRESUBMIT checks](#presubmit_checks) are being migrated to use Python3
+  Python3 for tests if you're ready to do so
+  ([crbug.com/1275016](https://crbug.com/1275016)).
+* [PRESUBMIT checks](#presubmit-checks) are being migrated to use Python3
   ([crbug.com/1207012](https://crbug.com/1207012)).
-* Python3-compatible pylint checks are available but not yet fully
-  integrated into the presubmit checks
-  ([crbug.com/1157676](https://crbug.com/1157676)).
+* Python3-compatible pylint checks are available
+  ([crbug.com/1207012](https://crbug.com/1207012)).
 
 
 ## Migrating Python code from 2 to 3
