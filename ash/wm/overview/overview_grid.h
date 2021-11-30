@@ -221,20 +221,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called by |OverviewSession::OnUserWorkAreaInsetsChanged|.
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window);
 
-  // SplitViewObserver:
-  void OnSplitViewStateChanged(SplitViewController::State previous_state,
-                               SplitViewController::State state) override;
-  void OnSplitViewDividerPositionChanged() override;
-
-  // ScreenRotationAnimatorObserver:
-  void OnScreenCopiedBeforeRotation() override;
-  void OnScreenRotationAnimationFinished(ScreenRotationAnimator* animator,
-                                         bool canceled) override;
-
-  // WallpaperControllerObserver:
-  void OnWallpaperChanging() override;
-  void OnWallpaperChanged() override;
-
   // Called when overview starting animation completes.
   void OnStartingAnimationComplete(bool canceled);
 
@@ -360,6 +346,20 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Updates the button that saves the active desk as a template. Creates the
   // button if it hasn't been created already, else it just sets its bounds.
   void UpdateSaveDeskAsTemplateButton();
+
+  // SplitViewObserver:
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state) override;
+  void OnSplitViewDividerPositionChanged() override;
+
+  // ScreenRotationAnimatorObserver:
+  void OnScreenCopiedBeforeRotation() override;
+  void OnScreenRotationAnimationFinished(ScreenRotationAnimator* animator,
+                                         bool canceled) override;
+
+  // WallpaperControllerObserver:
+  void OnWallpaperChanging() override;
+  void OnWallpaperChanged() override;
 
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
