@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# TODO(b/208311777): Add assert(is_chromeos_ash).
+
 # This needs to be conditionally-compiled since the typemaps are
 # unconditionally-included from //mojo/public/tools/bindings/mojom.gni. The
 # inclusion is done through read_file(), which does not respect the global
