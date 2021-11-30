@@ -28,12 +28,13 @@ void ConflictsHandler::RegisterMessages() {
 
 void ConflictsHandler::HandleRequestModuleList(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::Value::ConstListView args_list = args->GetList();
 
   // Make sure the JS doesn't call 'requestModuleList' more than once.
   // TODO(739291): It would be better to kill the renderer instead of the
   // browser for malformed messages.
-  CHECK_EQ(1U, args->GetList().size());
-  CHECK(args->GetString(0, &module_list_callback_id_));
+  CHECK_EQ(1U, args_list.size());
+  module_list_callback_id_ = args_list[0].GetString();  // CHECKs if not string
 
   conflicts_data_fetcher_ = ConflictsDataFetcher::Create(
       base::BindOnce(&ConflictsHandler::OnConflictsDataFetched,
