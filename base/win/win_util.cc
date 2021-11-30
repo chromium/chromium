@@ -44,6 +44,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/access_token.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/propvarutil.h"
 #include "base/win/registry.h"
@@ -53,6 +54,7 @@
 #include "base/win/scoped_propvariant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -360,31 +362,13 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
 static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
-  // Get the current token.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
+  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  if (!token)
     return false;
-  ScopedHandle token_scoped(token);
-
-  DWORD size = sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE;
-  std::unique_ptr<BYTE[]> user_bytes(new BYTE[size]);
-  TOKEN_USER* user = reinterpret_cast<TOKEN_USER*>(user_bytes.get());
-
-  if (!::GetTokenInformation(token, TokenUser, user, size, &size))
+  absl::optional<std::wstring> sid_string = token->User().ToSddlString();
+  if (!sid_string)
     return false;
-
-  if (!user->User.Sid)
-    return false;
-
-  // Convert the data to a string.
-  wchar_t* sid_string;
-  if (!::ConvertSidToStringSid(user->User.Sid, &sid_string))
-    return false;
-
-  *user_sid = sid_string;
-
-  ::LocalFree(sid_string);
-
+  *user_sid = *sid_string;
   return true;
 }
 

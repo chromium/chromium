@@ -10,12 +10,14 @@
 #include <string>
 #include <tuple>
 
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -181,8 +183,8 @@ class RestrictedToken {
   // the error.
   DWORD AddRestrictingSidAllSids();
 
-  // Sets the token integrity level. This is only valid on Vista. The integrity
-  // level cannot be higher than your current integrity level.
+  // Sets the token integrity level. The integrity level cannot be higher than
+  // your current integrity level.
   DWORD SetIntegrityLevel(IntegrityLevel integrity_level);
 
   // Set a flag which indicates the created token should have a locked down
@@ -213,7 +215,9 @@ class RestrictedToken {
       sids_for_default_dacl_;
   // The token to restrict. Can only be set in a constructor.
   base::win::ScopedHandle effective_token_;
-  // The token integrity level. Only valid on Vista.
+  // The token in a form for querying.
+  absl::optional<base::win::AccessToken> query_token_;
+  // The token integrity level.
   IntegrityLevel integrity_level_;
   // Tells if the object is initialized or not (if Init() has been called)
   bool init_;

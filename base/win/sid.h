@@ -86,12 +86,6 @@ class BASE_EXPORT Sid {
   // Generate a random SID value.
   static absl::optional<Sid> GenerateRandomSid();
 
-  // Create a SID for a token's user.
-  static absl::optional<Sid> FromToken(HANDLE token);
-
-  // Create a SID for the current user.
-  static absl::optional<Sid> CurrentUser();
-
   // Create a SID for an integrity level RID.
   static absl::optional<Sid> FromIntegrityLevel(DWORD integrity_level);
 
@@ -114,6 +108,7 @@ class BASE_EXPORT Sid {
   Sid(const Sid&) = delete;
   Sid& operator=(const Sid&) = delete;
   Sid(Sid&& sid);
+  Sid& operator=(Sid&&);
   ~Sid();
 
   // Returns sid as a PSID. This should only be used temporarily while the Sid

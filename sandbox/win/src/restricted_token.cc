@@ -9,24 +9,14 @@
 #include <stddef.h>
 
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/win/access_token.h"
 #include "sandbox/win/src/acl.h"
-#include "sandbox/win/src/win_utils.h"
 
 namespace {
-
-// Wrapper for utility version to unwrap ScopedHandle.
-std::unique_ptr<BYTE[]> GetTokenInfo(const base::win::ScopedHandle& token,
-                                     TOKEN_INFORMATION_CLASS info_class,
-                                     DWORD* error) {
-  std::unique_ptr<BYTE[]> buffer;
-  *error = sandbox::GetTokenInformation(token.Get(), info_class, &buffer);
-  if (*error != ERROR_SUCCESS)
-    return nullptr;
-  return buffer;
-}
 
 LUID ConvertToLuid(const CHROME_LUID& luid) {
   LUID ret;
@@ -82,6 +72,11 @@ DWORD RestrictedToken::Init(const HANDLE effective_token) {
     }
   }
   effective_token_.Set(temp_token);
+  absl::optional<base::win::AccessToken> query_token =
+      base::win::AccessToken::FromToken(effective_token_.Get());
+  if (!query_token)
+    return ERROR_NO_TOKEN;
+  query_token_.swap(query_token);
 
   init_ = true;
   return ERROR_SUCCESS;
@@ -178,21 +173,12 @@ DWORD RestrictedToken::GetRestrictedTokenForImpersonation(
     return err_code;
 
   HANDLE impersonation_token_handle;
-  if (!::DuplicateToken(restricted_token.Get(), SecurityImpersonation,
-                        &impersonation_token_handle)) {
+  if (!::DuplicateTokenEx(restricted_token.Get(), TOKEN_ALL_ACCESS, nullptr,
+                          SecurityImpersonation, TokenImpersonation,
+                          &impersonation_token_handle)) {
     return ::GetLastError();
   }
-  base::win::ScopedHandle impersonation_token(impersonation_token_handle);
-
-  HANDLE token_handle;
-  if (!::DuplicateHandle(::GetCurrentProcess(), impersonation_token.Get(),
-                         ::GetCurrentProcess(), &token_handle, TOKEN_ALL_ACCESS,
-                         false,  // Don't inherit.
-                         0)) {
-    return ::GetLastError();
-  }
-
-  token->Set(token_handle);
+  token->Set(impersonation_token_handle);
   return ERROR_SUCCESS;
 }
 
@@ -202,30 +188,19 @@ DWORD RestrictedToken::AddAllSidsForDenyOnly(
   if (!init_)
     return ERROR_NO_TOKEN;
 
-  DWORD error;
-  std::unique_ptr<BYTE[]> buffer =
-      GetTokenInfo(effective_token_, TokenGroups, &error);
-
-  if (!buffer)
-    return error;
-
-  TOKEN_GROUPS* token_groups = reinterpret_cast<TOKEN_GROUPS*>(buffer.get());
-
   // Build the list of the deny only group SIDs
-  for (unsigned int i = 0; i < token_groups->GroupCount; ++i) {
-    if ((token_groups->Groups[i].Attributes & SE_GROUP_INTEGRITY) == 0 &&
-        (token_groups->Groups[i].Attributes & SE_GROUP_LOGON_ID) == 0) {
-      bool should_ignore = false;
-      for (const base::win::Sid& sid : exceptions) {
-        if (sid.Equal(token_groups->Groups[i].Sid)) {
-          should_ignore = true;
-          break;
-        }
+  for (const base::win::AccessToken::Group& group : query_token_->Groups()) {
+    if (group.IsIntegrity() || group.IsLogonId())
+      continue;
+    bool should_ignore = false;
+    for (const base::win::Sid& sid : exceptions) {
+      if (sid == group.GetSid()) {
+        should_ignore = true;
+        break;
       }
-      if (!should_ignore) {
-        sids_for_deny_only_.push_back(
-            *base::win::Sid::FromPSID(token_groups->Groups[i].Sid));
-      }
+    }
+    if (!should_ignore) {
+      sids_for_deny_only_.push_back(group.GetSid().Clone());
     }
   }
 
@@ -253,12 +228,7 @@ DWORD RestrictedToken::AddUserSidForDenyOnly() {
   if (!init_)
     return ERROR_NO_TOKEN;
 
-  absl::optional<base::win::Sid> user = base::win::Sid::CurrentUser();
-  if (!user)
-    return ERROR_INVALID_SID;
-
-  sids_for_deny_only_.push_back(std::move(*user));
-
+  sids_for_deny_only_.push_back(query_token_->User());
   return ERROR_SUCCESS;
 }
 
@@ -267,32 +237,13 @@ DWORD RestrictedToken::DeleteAllPrivileges(
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
-
-  DWORD error;
-  std::unique_ptr<BYTE[]> buffer =
-      GetTokenInfo(effective_token_, TokenPrivileges, &error);
-
-  if (!buffer)
-    return error;
-
-  TOKEN_PRIVILEGES* token_privileges =
-      reinterpret_cast<TOKEN_PRIVILEGES*>(buffer.get());
-
+  std::unordered_set<std::wstring> privilege_set(exceptions.begin(),
+                                                 exceptions.end());
   // Build the list of privileges to disable
-  for (unsigned int i = 0; i < token_privileges->PrivilegeCount; ++i) {
-    bool should_ignore = false;
-    for (const std::wstring& name : exceptions) {
-      LUID luid = {};
-      ::LookupPrivilegeValue(nullptr, name.c_str(), &luid);
-      if (token_privileges->Privileges[i].Luid.HighPart == luid.HighPart &&
-          token_privileges->Privileges[i].Luid.LowPart == luid.LowPart) {
-        should_ignore = true;
-        break;
-      }
-    }
-    if (!should_ignore) {
-      privileges_to_disable_.push_back(
-          ConvertToChromeLuid(token_privileges->Privileges[i].Luid));
+  for (const base::win::AccessToken::Privilege& privilege :
+       query_token_->Privileges()) {
+    if (privilege_set.count(privilege.GetName()) == 0) {
+      privileges_to_disable_.push_back(privilege.GetLuid());
     }
   }
 
@@ -334,30 +285,9 @@ DWORD RestrictedToken::AddRestrictingSidLogonSession() {
   if (!init_)
     return ERROR_NO_TOKEN;
 
-  DWORD error;
-  std::unique_ptr<BYTE[]> buffer =
-      GetTokenInfo(effective_token_, TokenGroups, &error);
-
-  if (!buffer)
-    return error;
-
-  TOKEN_GROUPS* token_groups = reinterpret_cast<TOKEN_GROUPS*>(buffer.get());
-
-  PSID logon_sid_ptr = nullptr;
-  for (unsigned int i = 0; i < token_groups->GroupCount; ++i) {
-    if ((token_groups->Groups[i].Attributes & SE_GROUP_LOGON_ID) != 0) {
-      logon_sid_ptr = token_groups->Groups[i].Sid;
-      break;
-    }
-  }
-
-  if (logon_sid_ptr) {
-    absl::optional<base::win::Sid> logon_sid =
-        base::win::Sid::FromPSID(logon_sid_ptr);
-    if (!logon_sid)
-      return ERROR_INVALID_SID;
+  absl::optional<base::win::Sid> logon_sid = query_token_->LogonId();
+  if (logon_sid)
     sids_to_restrict_.push_back(std::move(*logon_sid));
-  }
   return ERROR_SUCCESS;
 }
 
@@ -365,12 +295,7 @@ DWORD RestrictedToken::AddRestrictingSidCurrentUser() {
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
-
-  absl::optional<base::win::Sid> user = base::win::Sid::CurrentUser();
-  if (!user)
-    return ERROR_INVALID_SID;
-  sids_to_restrict_.push_back(std::move(*user));
-
+  sids_to_restrict_.push_back(query_token_->User());
   return ERROR_SUCCESS;
 }
 
@@ -384,23 +309,10 @@ DWORD RestrictedToken::AddRestrictingSidAllSids() {
   if (ERROR_SUCCESS != error)
     return error;
 
-  std::unique_ptr<BYTE[]> buffer =
-      GetTokenInfo(effective_token_, TokenGroups, &error);
-
-  if (!buffer)
-    return error;
-
-  TOKEN_GROUPS* token_groups = reinterpret_cast<TOKEN_GROUPS*>(buffer.get());
-
-  // Build the list of restricting sids from all groups.
-  for (unsigned int i = 0; i < token_groups->GroupCount; ++i) {
-    if ((token_groups->Groups[i].Attributes & SE_GROUP_INTEGRITY) == 0) {
-      absl::optional<base::win::Sid> sid =
-          base::win::Sid::FromPSID(token_groups->Groups[i].Sid);
-      if (!sid)
-        return ERROR_INVALID_SID;
-      AddRestrictingSid(*sid);
-    }
+  for (const base::win::AccessToken::Group& group : query_token_->Groups()) {
+    if (group.IsIntegrity())
+      continue;
+    AddRestrictingSid(group.GetSid());
   }
 
   return ERROR_SUCCESS;

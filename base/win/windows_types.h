@@ -134,6 +134,7 @@ typedef WIN32_FIND_DATAW WIN32_FIND_DATA;
 typedef UINT_PTR SOCKET;
 typedef struct _PROCESS_INFORMATION PROCESS_INFORMATION;
 typedef struct _SECURITY_CAPABILITIES SECURITY_CAPABILITIES;
+typedef struct _ACL ACL;
 
 // Declare Chrome versions of some Windows structures. These are needed for
 // when we need a concrete type but don't want to pull in Windows.h. We can't

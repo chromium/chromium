@@ -254,28 +254,6 @@ absl::optional<Sid> Sid::GenerateRandomSid() {
                             sub_authorities);
 }
 
-absl::optional<Sid> Sid::FromToken(HANDLE token) {
-  char user_buffer[sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE];
-  DWORD size = sizeof(user_buffer);
-
-  if (!::GetTokenInformation(token, TokenUser, user_buffer, size, &size))
-    return absl::nullopt;
-
-  TOKEN_USER* user = reinterpret_cast<TOKEN_USER*>(user_buffer);
-  if (!user->User.Sid)
-    return absl::nullopt;
-  return Sid::FromPSID(user->User.Sid);
-}
-
-absl::optional<Sid> Sid::CurrentUser() {
-  // Get the current token.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
-    return absl::nullopt;
-  ScopedHandle token_scoped(token);
-  return FromToken(token);
-}
-
 absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
   SID_IDENTIFIER_AUTHORITY package_authority = {
       SECURITY_MANDATORY_LABEL_AUTHORITY};
@@ -303,6 +281,7 @@ absl::optional<std::vector<Sid>> Sid::FromKnownSidVector(
 }
 
 Sid::Sid(Sid&& sid) = default;
+Sid& Sid::operator=(Sid&&) = default;
 Sid::~Sid() = default;
 
 PSID Sid::GetPSID() const {

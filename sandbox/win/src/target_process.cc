@@ -15,6 +15,7 @@
 
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/win/access_token.h"
 #include "base/win/security_util.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
@@ -50,41 +51,16 @@ void CopyPolicyToTarget(const void* source, size_t size, void* dest) {
   }
 }
 
-absl::optional<base::win::Sid> GetTokenAppContainerSid(HANDLE token_handle) {
-  std::vector<char> app_container_info(sizeof(TOKEN_APPCONTAINER_INFORMATION) +
-                                       SECURITY_MAX_SID_SIZE);
-  DWORD return_length;
-
-  if (!::GetTokenInformation(
-          token_handle, TokenAppContainerSid, app_container_info.data(),
-          base::checked_cast<DWORD>(app_container_info.size()),
-          &return_length)) {
-    return absl::nullopt;
-  }
-
-  PTOKEN_APPCONTAINER_INFORMATION info =
-      reinterpret_cast<PTOKEN_APPCONTAINER_INFORMATION>(
-          app_container_info.data());
-  if (!info->TokenAppContainer)
-    return absl::nullopt;
-  return base::win::Sid::FromPSID(info->TokenAppContainer);
-}
-
-absl::optional<base::win::Sid> GetProcessAppContainerSid(HANDLE process) {
-  HANDLE token_handle;
-  if (!::OpenProcessToken(process, TOKEN_QUERY, &token_handle))
-    return absl::nullopt;
-  base::win::ScopedHandle process_token(token_handle);
-
-  return GetTokenAppContainerSid(process_token.Get());
-}
-
 bool GetAppContainerImpersonationToken(
     HANDLE process,
     HANDLE initial_token,
     const std::vector<base::win::Sid>& capabilities,
     base::win::ScopedHandle* impersonation_token) {
-  auto app_container_sid = GetProcessAppContainerSid(process);
+  absl::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromProcess(process);
+  if (!token)
+    return false;
+  auto app_container_sid = token->AppContainerSid();
   if (!app_container_sid)
     return false;
   SecurityCapabilities security_caps(*app_container_sid, capabilities);

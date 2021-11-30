@@ -286,23 +286,16 @@ void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
     BlocklistAddOneDll(kTroublesomeDlls[ix], true, policy);
 }
 
+DWORD GetSessionId() {
+  DWORD session_id;
+  CHECK(::ProcessIdToSessionId(::GetCurrentProcessId(), &session_id));
+  return session_id;
+}
+
 // Returns the object path prepended with the current logon session.
 std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   // Cache this because it can't change after process creation.
-  static DWORD s_session_id = 0;
-  if (s_session_id == 0) {
-    HANDLE token;
-    DWORD session_id_length;
-    DWORD session_id = 0;
-
-    CHECK(::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token));
-    CHECK(::GetTokenInformation(token, TokenSessionId, &session_id,
-                                sizeof(session_id), &session_id_length));
-    CloseHandle(token);
-    if (session_id)
-      s_session_id = session_id;
-  }
-
+  static DWORD s_session_id = GetSessionId();
   return base::StringPrintf(L"\\Sessions\\%lu%ls", s_session_id, object);
 }
 

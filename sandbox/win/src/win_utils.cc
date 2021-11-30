@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/win_utils.h"
 
+#include <windows.h>
+
 #include <psapi.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -541,26 +543,6 @@ void* GetProcessBaseAddress(HANDLE process) {
     return nullptr;
 
   return base_address;
-}
-
-DWORD GetTokenInformation(HANDLE token,
-                          TOKEN_INFORMATION_CLASS info_class,
-                          std::unique_ptr<BYTE[]>* buffer) {
-  // Get the required buffer size.
-  DWORD size = 0;
-  ::GetTokenInformation(token, info_class, nullptr, 0, &size);
-  if (!size) {
-    return ::GetLastError();
-  }
-
-  auto temp_buffer = std::make_unique<BYTE[]>(size);
-  if (!::GetTokenInformation(token, info_class, temp_buffer.get(), size,
-                             &size)) {
-    return ::GetLastError();
-  }
-
-  *buffer = std::move(temp_buffer);
-  return ERROR_SUCCESS;
 }
 
 }  // namespace sandbox

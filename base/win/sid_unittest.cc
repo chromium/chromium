@@ -229,26 +229,6 @@ TEST(SidTest, RandomSid) {
   ASSERT_FALSE(EqualSid(sid1, sid2));
 }
 
-TEST(SidTest, FromToken) {
-  ASSERT_TRUE(::ImpersonateAnonymousToken(::GetCurrentThread()));
-  HANDLE token = nullptr;
-  BOOL result =
-      ::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE, &token);
-  ScopedHandle token_scoped(token);
-  ::RevertToSelf();
-  ASSERT_TRUE(result);
-  absl::optional<Sid> sid = Sid::FromToken(token);
-  EXPECT_TRUE(EqualSid(sid, L"S-1-5-7"));
-}
-
-TEST(SidTest, CurrentUser) {
-  absl::optional<Sid> sid1 = Sid::CurrentUser();
-  ASSERT_TRUE(sid1);
-  std::wstring user_sid;
-  ASSERT_TRUE(GetUserSidString(&user_sid));
-  ASSERT_TRUE(EqualSid(sid1, user_sid.c_str()));
-}
-
 TEST(SidTest, FromIntegrityLevel) {
   ASSERT_TRUE(EqualSid(
       Sid::FromIntegrityLevel(SECURITY_MANDATORY_UNTRUSTED_RID), L"S-1-16-0"));

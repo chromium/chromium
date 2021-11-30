@@ -5,8 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_WIN_UTILS_H_
 #define SANDBOX_WIN_SRC_WIN_UTILS_H_
 
-#include <windows.h>
-
 #include <stdlib.h>
 
 #include <memory>
@@ -114,12 +112,6 @@ DWORD GetLastErrorFromNtStatus(NTSTATUS status);
 // address space layout randomization. This uses the process' PEB to extract
 // the base address. This should only be called on new, suspended processes.
 void* GetProcessBaseAddress(HANDLE process);
-
-// Calls GetTokenInformation with the desired |info_class| and returns a
-// |buffer| and the Win32 error code.
-DWORD GetTokenInformation(HANDLE token,
-                          TOKEN_INFORMATION_CLASS info_class,
-                          std::unique_ptr<BYTE[]>* buffer);
 
 }  // namespace sandbox
 

@@ -15,34 +15,12 @@
 #include "base/check.h"
 #include "base/memory/free_deleter.h"
 #include "base/notreached.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_localalloc.h"
 
 namespace sandbox {
 
 namespace {
-
-bool GetDefaultDacl(
-    HANDLE token,
-    std::unique_ptr<TOKEN_DEFAULT_DACL, base::FreeDeleter>* default_dacl) {
-  if (!token)
-    return false;
-
-  DCHECK(default_dacl);
-
-  unsigned long length = 0;
-  ::GetTokenInformation(token, TokenDefaultDacl, nullptr, 0, &length);
-  if (length == 0) {
-    NOTREACHED();
-    return false;
-  }
-
-  TOKEN_DEFAULT_DACL* acl =
-      reinterpret_cast<TOKEN_DEFAULT_DACL*>(malloc(length));
-  default_dacl->reset(acl);
-
-  return !!::GetTokenInformation(token, TokenDefaultDacl, default_dacl->get(),
-                                 length, &length);
-}
 
 ACCESS_MODE ConvertAccessMode(SecurityAccessMode access_mode) {
   switch (access_mode) {
@@ -61,25 +39,21 @@ ACCESS_MODE ConvertAccessMode(SecurityAccessMode access_mode) {
   return NOT_USED_ACCESS;
 }
 
-bool AddSidToDacl(const base::win::Sid& sid,
-                  ACL* old_dacl,
-                  SecurityAccessMode access_mode,
-                  ACCESS_MASK access,
-                  ACL** new_dacl) {
-  EXPLICIT_ACCESS new_access = {0};
+absl::optional<base::win::ScopedLocalAllocTyped<ACL>> AddSidToDacl(
+    const base::win::Sid& sid,
+    ACL* old_dacl,
+    SecurityAccessMode access_mode,
+    ACCESS_MASK access) {
+  EXPLICIT_ACCESS new_access = {};
   new_access.grfAccessMode = ConvertAccessMode(access_mode);
   new_access.grfAccessPermissions = access;
   new_access.grfInheritance = NO_INHERITANCE;
-
-  new_access.Trustee.pMultipleTrustee = nullptr;
-  new_access.Trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
-  new_access.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-  new_access.Trustee.ptstrName = reinterpret_cast<LPWSTR>(sid.GetPSID());
-
-  if (ERROR_SUCCESS != ::SetEntriesInAcl(1, &new_access, old_dacl, new_dacl))
-    return false;
-
-  return true;
+  ::BuildTrusteeWithSid(&new_access.Trustee, sid.GetPSID());
+  ACL* new_dacl = nullptr;
+  if (ERROR_SUCCESS != ::SetEntriesInAcl(1, &new_access, old_dacl, &new_dacl))
+    return absl::nullopt;
+  DCHECK(::IsValidAcl(new_dacl));
+  return base::win::TakeLocalAlloc(new_dacl);
 }
 
 SE_OBJECT_TYPE ConvertObjectType(SecurityObjectType object_type) {
@@ -123,31 +97,39 @@ absl::optional<DWORD> GetIntegrityLevelValue(IntegrityLevel integrity_level) {
   return absl::nullopt;
 }
 
-}  // namespace
-
 bool AddSidToDefaultDacl(HANDLE token,
+                         const base::win::AccessToken& query_token,
                          const base::win::Sid& sid,
                          SecurityAccessMode access_mode,
                          ACCESS_MASK access) {
   if (!token)
     return false;
 
-  std::unique_ptr<TOKEN_DEFAULT_DACL, base::FreeDeleter> default_dacl;
-  if (!GetDefaultDacl(token, &default_dacl))
+  absl::optional<base::win::AccessToken::Dacl> dacl = query_token.DefaultDacl();
+  if (!dacl)
+    return false;
+  auto new_dacl = AddSidToDacl(sid, dacl->GetAcl(), access_mode, access);
+  if (!new_dacl)
     return false;
 
-  ACL* new_dacl_ptr = nullptr;
-  if (!AddSidToDacl(sid, default_dacl->DefaultDacl, access_mode, access,
-                    &new_dacl_ptr)) {
-    return false;
-  }
-
-  auto new_dacl = base::win::TakeLocalAlloc(new_dacl_ptr);
   TOKEN_DEFAULT_DACL new_token_dacl = {0};
-  new_token_dacl.DefaultDacl = new_dacl.get();
-
+  new_token_dacl.DefaultDacl = new_dacl->get();
   return !!::SetTokenInformation(token, TokenDefaultDacl, &new_token_dacl,
                                  sizeof(new_token_dacl));
+}
+
+}  // namespace
+
+bool AddSidToDefaultDacl(HANDLE token,
+                         const base::win::Sid& sid,
+                         SecurityAccessMode access_mode,
+                         ACCESS_MASK access) {
+  absl::optional<base::win::AccessToken> query_token =
+      base::win::AccessToken::FromToken(token);
+  if (!query_token)
+    return false;
+
+  return AddSidToDefaultDacl(token, *query_token, sid, access_mode, access);
 }
 
 bool AddSidToDefaultDacl(HANDLE token,
@@ -161,38 +143,25 @@ bool AddSidToDefaultDacl(HANDLE token,
 }
 
 bool RevokeLogonSidFromDefaultDacl(HANDLE token) {
-  char logon_sid_buffer[sizeof(TOKEN_GROUPS) + SECURITY_MAX_SID_SIZE];
-  DWORD size = sizeof(logon_sid_buffer);
+  absl::optional<base::win::AccessToken> query_token =
+      base::win::AccessToken::FromToken(token);
+  if (!query_token)
+    return false;
+  absl::optional<base::win::Sid> logon_sid = query_token->LogonId();
+  if (!logon_sid)
+    return ::GetLastError() == ERROR_NOT_FOUND;
 
-  if (!::GetTokenInformation(token, TokenLogonSid, logon_sid_buffer, size,
-                             &size)) {
-    // If no logon sid, there's nothing to revoke.
-    if (::GetLastError() == ERROR_NOT_FOUND)
-      return true;
-    return false;
-  }
-  TOKEN_GROUPS* logon_sid_ptr =
-      reinterpret_cast<TOKEN_GROUPS*>(logon_sid_buffer);
-  if (logon_sid_ptr->GroupCount < 1) {
-    ::SetLastError(ERROR_INVALID_TOKEN);
-    return false;
-  }
-  absl::optional<base::win::Sid> logon_sid =
-      base::win::Sid::FromPSID(logon_sid_ptr->Groups[0].Sid);
-  if (!logon_sid) {
-    ::SetLastError(ERROR_INVALID_SID);
-    return false;
-  }
-  return AddSidToDefaultDacl(token, *logon_sid, SecurityAccessMode::kRevoke, 0);
+  return AddSidToDefaultDacl(token, *query_token, *logon_sid,
+                             SecurityAccessMode::kRevoke, 0);
 }
 
 bool AddUserSidToDefaultDacl(HANDLE token, ACCESS_MASK access) {
-  absl::optional<base::win::Sid> user_sid = base::win::Sid::FromToken(token);
-  if (!user_sid)
+  absl::optional<base::win::AccessToken> query_token =
+      base::win::AccessToken::FromToken(token);
+  if (!query_token)
     return false;
-
-  return AddSidToDefaultDacl(token, *user_sid, SecurityAccessMode::kGrant,
-                             access);
+  return AddSidToDefaultDacl(token, *query_token, query_token->User(),
+                             SecurityAccessMode::kGrant, access);
 }
 
 bool AddKnownSidToObject(HANDLE object,
@@ -214,14 +183,13 @@ bool AddKnownSidToObject(HANDLE object,
   }
 
   auto descriptor = base::win::TakeLocalAlloc(descriptor_ptr);
-  PACL new_dacl_ptr = nullptr;
-  if (!AddSidToDacl(sid, old_dacl, access_mode, access, &new_dacl_ptr))
+  auto new_dacl = AddSidToDacl(sid, old_dacl, access_mode, access);
+  if (!new_dacl)
     return false;
 
-  auto new_dacl = base::win::TakeLocalAlloc(new_dacl_ptr);
   return ::SetSecurityInfo(object, native_object_type,
                            DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                           new_dacl.get(), nullptr) == ERROR_SUCCESS;
+                           new_dacl->get(), nullptr) == ERROR_SUCCESS;
 }
 
 bool AddKnownSidToObject(HANDLE object,

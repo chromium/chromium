@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/scoped_process_information.h"
@@ -35,7 +36,6 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
-#include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,78 +68,55 @@ std::wstring GenerateRandomPackageName() {
                             base::RandUint64());
 }
 
-const char* TokenTypeToName(TOKEN_TYPE token_type) {
-  return token_type == ::TokenPrimary ? "Primary Token" : "Impersonation Token";
+const char* TokenTypeToName(bool impersonation) {
+  return impersonation ? "Impersonation Token" : "Primary Token";
 }
 
-void CheckToken(HANDLE token,
-                TOKEN_TYPE token_type,
+void CheckToken(const absl::optional<base::win::AccessToken>& token,
+                bool impersonation,
                 PSECURITY_CAPABILITIES security_capabilities,
-                BOOL restricted) {
-  ASSERT_EQ(restricted, ::IsTokenRestricted(token))
-      << TokenTypeToName(token_type);
-
-  DWORD appcontainer;
-  DWORD return_length;
-  ASSERT_TRUE(::GetTokenInformation(token, ::TokenIsAppContainer, &appcontainer,
-                                    sizeof(appcontainer), &return_length))
-      << TokenTypeToName(token_type);
-  ASSERT_TRUE(appcontainer) << TokenTypeToName(token_type);
-  TOKEN_TYPE token_type_real;
-  ASSERT_TRUE(::GetTokenInformation(token, ::TokenType, &token_type_real,
-                                    sizeof(token_type_real), &return_length))
-      << TokenTypeToName(token_type);
-  ASSERT_EQ(token_type_real, token_type) << TokenTypeToName(token_type);
-  if (token_type == ::TokenImpersonation) {
-    SECURITY_IMPERSONATION_LEVEL imp_level;
-    ASSERT_TRUE(::GetTokenInformation(token, ::TokenImpersonationLevel,
-                                      &imp_level, sizeof(imp_level),
-                                      &return_length))
-        << TokenTypeToName(token_type);
-    ASSERT_EQ(imp_level, ::SecurityImpersonation)
-        << TokenTypeToName(token_type);
+                bool restricted) {
+  ASSERT_TRUE(token);
+  EXPECT_EQ(restricted, token->IsRestricted())
+      << TokenTypeToName(impersonation);
+  EXPECT_TRUE(token->IsAppContainer()) << TokenTypeToName(impersonation);
+  EXPECT_EQ(token->IsImpersonation(), impersonation)
+      << TokenTypeToName(impersonation);
+  if (impersonation) {
+    EXPECT_FALSE(token->IsIdentification()) << TokenTypeToName(impersonation);
   }
 
-  absl::optional<base::win::Sid> package_sid = GetTokenAppContainerSid(token);
-  ASSERT_TRUE(package_sid) << TokenTypeToName(token_type);
-  EXPECT_TRUE(::EqualSid(security_capabilities->AppContainerSid,
-                         package_sid->GetPSID()))
-      << TokenTypeToName(token_type);
+  absl::optional<base::win::Sid> package_sid = token->AppContainerSid();
+  ASSERT_TRUE(package_sid) << TokenTypeToName(impersonation);
+  EXPECT_TRUE(package_sid->Equal(security_capabilities->AppContainerSid))
+      << TokenTypeToName(impersonation);
 
-  absl::optional<std::vector<SidAndAttributes>> capability_groups =
-      GetTokenGroups(token, ::TokenCapabilities);
-  ASSERT_TRUE(capability_groups) << TokenTypeToName(token_type);
-  const std::vector<SidAndAttributes>& capabilities = *capability_groups;
-
+  std::vector<base::win::AccessToken::Group> capabilities =
+      token->Capabilities();
   ASSERT_EQ(capabilities.size(), security_capabilities->CapabilityCount)
-      << TokenTypeToName(token_type);
+      << TokenTypeToName(impersonation);
   for (size_t index = 0; index < capabilities.size(); ++index) {
     EXPECT_EQ(capabilities[index].GetAttributes(),
               security_capabilities->Capabilities[index].Attributes)
-        << TokenTypeToName(token_type);
-    EXPECT_TRUE(::EqualSid(capabilities[index].GetPSID(),
-                           security_capabilities->Capabilities[index].Sid))
-        << TokenTypeToName(token_type);
+        << TokenTypeToName(impersonation);
+    EXPECT_TRUE(capabilities[index].GetSid().Equal(
+        security_capabilities->Capabilities[index].Sid))
+        << TokenTypeToName(impersonation);
   }
 }
 
 void CheckProcessToken(HANDLE process,
                        PSECURITY_CAPABILITIES security_capabilities,
                        bool restricted) {
-  HANDLE token_handle;
-  ASSERT_TRUE(::OpenProcessToken(process, TOKEN_ALL_ACCESS, &token_handle));
-  base::win::ScopedHandle token(token_handle);
-  CheckToken(token_handle, ::TokenPrimary, security_capabilities, restricted);
+  CheckToken(base::win::AccessToken::FromProcess(process), false,
+             security_capabilities, restricted);
 }
 
 void CheckThreadToken(HANDLE thread,
                       PSECURITY_CAPABILITIES security_capabilities,
                       bool restricted) {
-  HANDLE token_handle;
-  ASSERT_TRUE(::OpenThreadToken(thread, TOKEN_ALL_ACCESS, TRUE, &token_handle));
-  base::win::ScopedHandle token(token_handle);
-  CheckToken(token_handle, ::TokenImpersonation, security_capabilities,
-             restricted);
+  CheckToken(base::win::AccessToken::FromThread(thread), true,
+             security_capabilities, restricted);
 }
 
 // Check for LPAC using an access check. We could query for a security attribute

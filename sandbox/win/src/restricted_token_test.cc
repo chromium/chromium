@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
-#include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -128,19 +129,12 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
 // Opens a the process token and checks if it's restricted.
 SBOX_TESTS_COMMAND int RestrictedTokenTest_IsRestricted(int argc,
                                                         wchar_t** argv) {
-  HANDLE token_handle;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token_handle))
+  absl::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!token)
     return SBOX_TEST_FIRST_ERROR;
-  base::win::ScopedHandle token(token_handle);
-
-  std::unique_ptr<BYTE[]> groups;
-  if (GetTokenInformation(token_handle, TokenRestrictedSids, &groups) !=
-      ERROR_SUCCESS) {
-    return SBOX_TEST_SECOND_ERROR;
-  }
-
-  auto* token_groups = reinterpret_cast<PTOKEN_GROUPS>(groups.get());
-  return token_groups->GroupCount > 0 ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
+  return token->RestrictedSids().size() > 0 ? SBOX_TEST_SUCCEEDED
+                                            : SBOX_TEST_FAILED;
 }
 
 TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
