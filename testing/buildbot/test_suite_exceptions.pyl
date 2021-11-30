@@ -1121,7 +1121,8 @@
       },
       'android-11-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
+          # TODO(crbug.com/1192348): Fix the test failure
+          '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
       'android-12-x64-fyi-rel': {

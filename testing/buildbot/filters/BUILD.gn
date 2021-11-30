@@ -106,7 +106,6 @@ source_set("components_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator_11.components_unittests.filter",
     "//testing/buildbot/filters/fuchsia.components_unittests.filter",
     "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
   ]
