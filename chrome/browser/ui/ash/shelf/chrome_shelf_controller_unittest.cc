@@ -597,6 +597,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   ChromeShelfController* CreateShelfController() {
     shelf_item_factory_ =
         std::make_unique<FakeChromeShelfItemFactory>(profile());
+    model_->SetShelfItemFactory(shelf_item_factory_.get());
     shelf_controller_ = std::make_unique<ChromeShelfController>(
         profile(), model_.get(), shelf_item_factory_.get());
     shelf_controller_->SetProfileForTest(profile());

@@ -132,6 +132,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     model_ = std::make_unique<ash::ShelfModel>();
     shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
+    model_->SetShelfItemFactory(shelf_item_factory_.get());
     shelf_controller_ = std::make_unique<ChromeShelfController>(
         profile(), model_.get(), shelf_item_factory_.get());
     shelf_controller_->SetProfileForTest(profile());

@@ -98,6 +98,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
+    shelf_model_->SetShelfItemFactory(chrome_shelf_item_factory_.get());
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
         extension_environment_.profile(), shelf_model_.get(),
         chrome_shelf_item_factory_.get());
