@@ -4064,6 +4064,7 @@ class AssertPythonShebangTest(unittest.TestCase):
             MockFile('ash/test.py', ['#!/usr/bin/python']),
             MockFile('chrome/test.py', ['#!/usr/bin/python2']),
             MockFile('third_party/blink/test.py', ['#!/usr/bin/python3']),
+            MockFile('empty.py', []),
         ]
         errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
         self.assertEqual(3, len(errors))

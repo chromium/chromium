@@ -5528,9 +5528,10 @@ def CheckPythonShebang(input_api, output_api):
                        DEFAULT_FILES_TO_SKIP),
         files_to_check=[r'.*\.py$'])
     for f in input_api.AffectedSourceFiles(sources):
-        [line_num, line] = f.ChangedContents()[0]
-        if line_num == 1 and line.startswith('#!/usr/bin/python'):
-            errors.append(f.LocalPath())
+        for line_num, line in f.ChangedContents():
+            if line_num == 1 and line.startswith('#!/usr/bin/python'):
+                errors.append(f.LocalPath())
+            break
 
     result = []
     for file in errors:
