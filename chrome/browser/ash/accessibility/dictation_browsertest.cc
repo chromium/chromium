@@ -722,6 +722,12 @@ class DictationExtensionTest : public DictationBaseTest {
     return input_context_handler_->update_preedit_text_call_count();
   }
 
+  // Retrieves the number of times commit text is updated.
+  int GetCommitTextCallCount() {
+    DCHECK(input_context_handler_);
+    return input_context_handler_->commit_text_call_count();
+  }
+
   void WaitForCompositionText(const std::u16string& value) {
     DCHECK(input_context_handler_);
     SuccessWaiter waiter(
@@ -882,6 +888,32 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
 
   WaitForCommitText(kFinalSpeechResult16);
   ASSERT_EQ(0, GetUpdatePreeditTextCallCount());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
+                       EntersInterimSpeechWhenToggledOff) {
+  InstallMockInputContextHandler();
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, /*is_final=*/false);
+  WaitForCompositionText(kFirstSpeechResult16);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  WaitForCommitText(kFirstSpeechResult16);
+  ASSERT_EQ(1, GetUpdatePreeditTextCallCount());
+}
+
+// Tests that composition and commit text are not updated if the user
+// toggles dictation and no speech results are processed.
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest, UserEndsDictationBeforeSpeech) {
+  InstallMockInputContextHandler();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  ASSERT_EQ(0, GetUpdatePreeditTextCallCount());
+  EXPECT_EQ(0, GetCommitTextCallCount());
 }
 
 // Ensures that the correct metrics are recorded when Dictation is toggled.
