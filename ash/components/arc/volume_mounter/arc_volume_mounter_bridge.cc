@@ -17,11 +17,11 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
@@ -33,6 +33,10 @@ namespace {
 
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
+// Prefix of the removable media mount paths.
+// TODO(crbug.com/1274481): Move ash-wide FileManager constants to a common
+// place.
+constexpr char kRemovableMediaMountPathPrefix[] = "/media/removable/";
 // Dummy UUID for MyFiles volume.
 constexpr char kMyFilesUuid[] = "0000000000000000000000000000CAFEF00D2019";
 // Dummy UUID for testing.
@@ -178,12 +182,12 @@ void ArcVolumeMounterBridge::OnMountEvent(
     const DiskMountManager::MountPointInfo& mount_info) {
   DCHECK(delegate_);
 
-  // ArcVolumeMounter is limited for local storage, as Android's StorageManager
-  // volume concept relies on assumption that it is local filesystem. Hence,
-  // special volumes like DriveFS should not come through this path.
-  if (RE2::FullMatch(mount_info.source_path, "[a-z]+://.*")) {
-    DVLOG(1) << "Ignoring mount event for source_path: "
-             << mount_info.source_path;
+  // Skip mount events for volumes that are not shared with ARC (e.g., those
+  // mounted on /media/archive) by allowlisting the removable media mount paths.
+  if (!base::StartsWith(mount_info.mount_path, kRemovableMediaMountPathPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    DVLOG(1) << "Ignoring mount event for mount_path: "
+             << mount_info.mount_path;
     return;
   }
   if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
