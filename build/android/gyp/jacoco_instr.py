@@ -105,6 +105,7 @@ def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file,
     data['input_path'].append(os.path.abspath(input_path))
   with open(sources_json_file, 'w') as f:
     json.dump(data, f)
+  return 0
 
 
 def _GetAffectedClasses(jar_file, source_files):
@@ -218,9 +219,8 @@ def _RunInstrumentCommand(parser):
         _CreateSourcesJsonFile([], None, args.sources_json_file,
                                build_utils.DIR_SOURCE_ROOT)
         return 0
-      else:
-        _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
-                              temp_dir, affected_source_files)
+      _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
+                            temp_dir, affected_source_files)
 
   source_dirs = _GetSourceDirsFromSourceFiles(source_files)
   # TODO(GYP): In GN, we are passed the list of sources, detecting source

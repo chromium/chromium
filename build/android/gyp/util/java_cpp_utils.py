@@ -149,9 +149,8 @@ class CppConstantParser(object):
       self._in_comment = True
       self._in_variable = True
       return True
-    else:
-      self._in_comment = False
-      return False
+    self._in_comment = False
+    return False
 
   def _ParseVariable(self, line):
     current_name = self._delegate.ExtractConstantName(line)
@@ -164,9 +163,8 @@ class CppConstantParser(object):
       else:
         self._in_variable = True
       return True
-    else:
-      self._in_variable = False
-      return False
+    self._in_variable = False
+    return False
 
   def _ParseLine(self, line):
     if not self._in_variable:

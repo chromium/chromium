@@ -519,15 +519,14 @@ class RJavaBuildOptions:
     if entry.resource_type == 'styleable' and entry.java_type != 'int[]':
       # A styleable constant may be exported as non-final after all.
       return not self.export_const_styleable
-    elif not self.has_constant_ids:
+    if not self.has_constant_ids:
       # Every resource is non-final
       return False
-    elif not self.resources_allowlist:
+    if not self.resources_allowlist:
       # No allowlist means all IDs are non-final.
       return True
-    else:
-      # Otherwise, only those in the
-      return entry.name not in self.resources_allowlist
+    # Otherwise, only those in the
+    return entry.name not in self.resources_allowlist
 
 
 def CreateRJavaFiles(srcjar_dir,
@@ -616,8 +615,8 @@ def CreateRJavaFiles(srcjar_dir,
   with open(root_r_java_path, 'w') as f:
     f.write(root_java_file_contents)
 
-  for package in packages:
-    _CreateRJavaSourceFile(srcjar_dir, package, root_r_java_package,
+  for p in packages:
+    _CreateRJavaSourceFile(srcjar_dir, p, root_r_java_package,
                            rjava_build_options)
 
 
@@ -1050,7 +1049,7 @@ def ParseAndroidResourceStringsFromXml(xml_data):
       raise Exception('Expected closing string tag: ' + input_data)
     text = input_data[:m2.start()]
     input_data = input_data[m2.end():]
-    if len(text) and text[0] == '"' and text[-1] == '"':
+    if len(text) != 0 and text[0] == '"' and text[-1] == '"':
       text = text[1:-1]
     result[name] = text
 

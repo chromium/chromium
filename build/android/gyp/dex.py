@@ -327,7 +327,7 @@ def _ZipMultidex(file_dir, dex_files):
       ordered_files.append(('classes.dex', f))
       break
   if not ordered_files:
-    raise Exception('Could not find classes.dex multidex file in %s',
+    raise Exception('Could not find classes.dex multidex file in %s' %
                     dex_files)
   for dex_idx in range(2, len(dex_files) + 1):
     archive_name = 'classes%d.dex' % dex_idx
@@ -336,10 +336,10 @@ def _ZipMultidex(file_dir, dex_files):
         ordered_files.append((archive_name, f))
         break
     else:
-      raise Exception('Could not find classes%d.dex multidex file in %s',
+      raise Exception('Could not find classes%d.dex multidex file in %s' %
                       dex_files)
   if len(set(f[1] for f in ordered_files)) != len(ordered_files):
-    raise Exception('Unexpected clashing filenames for multidex in %s',
+    raise Exception('Unexpected clashing filenames for multidex in %s' %
                     dex_files)
 
   zip_name = os.path.join(file_dir, 'multidex_classes.zip')

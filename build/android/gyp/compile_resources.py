@@ -398,7 +398,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     raise Exception(
         'Unable to find android SDK jar among candidates: %s'
             % ', '.join(android_sdk_jars))
-  elif len(successful_extractions) > 1:
+  if len(successful_extractions) > 1:
     raise Exception(
         'Found multiple android SDK jars among candidates: %s'
             % ', '.join(android_sdk_jars))

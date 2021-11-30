@@ -195,7 +195,7 @@ def _CreateNodeHash(lines):
     if cur_indent != -1 and cur_indent <= target_indent:
       tag_lines = lines[:i + 1]
       break
-    elif not tag_closed and 'android:name="' in l:
+    if not tag_closed and 'android:name="' in l:
       # To reduce noise of node tags changing, use android:name as the
       # basis the hash since they usually unique.
       tag_lines = [l]
@@ -214,7 +214,7 @@ def _IsSelfClosing(lines):
     idx = l.find('>')
     if idx != -1:
       return l[idx - 1] == '/'
-  assert False, 'Did not find end of tag:\n' + '\n'.join(lines)
+  raise RuntimeError('Did not find end of tag:\n%s' % '\n'.join(lines))
 
 
 def _AddDiffTags(lines):
