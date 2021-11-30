@@ -53,13 +53,6 @@ def RunTestOnFuchsiaDevice(script_cmd):
     with GetDeploymentTargetForArgs(runner_script_args) as target:
       target.Start()
       target.StartSystemLog(package_paths)
-
-      # It is necessary to run GC to clear up package space on the device.
-      return_code = self.RunCommand(['pkgctl', 'gc'])
-      if return_code != 0:
-        raise Exception(
-            'Error code {} while running `pkgctl gc`'.format(return_code))
-
       fuchsia_device_address, fuchsia_ssh_port = target._GetEndpoint()
       script_cmd.extend(
           ['--chromium-output-directory', runner_script_args.out_dir])
