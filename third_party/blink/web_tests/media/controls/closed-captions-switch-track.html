@@ -13,7 +13,7 @@ async_test(t => {
 
   enableTestMode(video);
 
-  video.onplaying = t.step_func(_ => {
+  video.addEventListener('playing', t.step_func(_ => {
     for (var i = 0; i < trackLanguages.length; i++) {
       var track = video.addTextTrack('captions', trackCueText[i], trackLanguages[i]);
       track.addCue(new VTTCue(0, 10, trackCueText[i]));
@@ -28,7 +28,7 @@ async_test(t => {
       assert_equals(video.textTracks.length, trackLanguages.length);
       checkTrack(0);
     }));
-  });
+  }), { once: true });
 
   video.src = '../content/test.ogv';
   video.play();
