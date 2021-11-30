@@ -1525,7 +1525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Reauthorization.Result{ArcUserTypes}"
-    enum="ArcProvisioningStatus" expires_after="2022-01-12">
+    enum="ArcProvisioningStatus" expires_after="2022-07-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@gmail.com</owner>
   <summary>
