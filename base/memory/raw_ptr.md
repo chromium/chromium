@@ -32,10 +32,10 @@ with questions or concerns.
 
 ## When to use |raw_ptr&lt;T&gt;|
 
-We plan to modify the
 [The Chromium C++ Style Guide](../../styleguide/c++/c++.md#non_owning-pointers-in-class-fields)
-to recommend using `raw_ptr<T>` for class and struct fields in place of
-a raw C++ pointer `T*` whenever possible, except in Blink.
+asks to use `raw_ptr<T>` for class and struct fields in place of
+a raw C++ pointer `T*` whenever possible, except in Renderer-only code.
+This guide offers more details.
 
 The usage guidelines are *not* enforced currently (the MiraclePtr team will turn
 on enforcement via Chromium Clang Plugin after confirming performance results
@@ -43,7 +43,8 @@ via Stable channel experiments).  Afterwards we plan to allow
 exclusions via:
 - [manual-paths-to-ignore.txt](../../tools/clang/rewrite_raw_ptr_fields/manual-paths-to-ignore.txt)
   to exclude at a directory level.  Examples:
-    - Renderer-only code
+    - Renderer-only code (i.e. code in paths that contain `/renderer/` or
+      `third_party/blink/public/web/`)
     - Code that cannot depend on `//base`
     - Code in `//ppapi`
 - (to be introduced) `RAW_PTR_EXCLUSION` C++ attribute to exclude individual
@@ -131,7 +132,7 @@ when default-constructed, destructed, or moved.
 
 During
 [the "Big Rewrite"](https://groups.google.com/a/chromium.org/g/chromium-dev/c/vAEeVifyf78/m/SkBUc6PhBAAJ)
-most Chromium `T*` fields will be rewritten to `raw_ptr<T>`
+most Chromium `T*` fields have been rewritten to `raw_ptr<T>`
 (excluding fields in Renderer-only code).
 The cumulative performance impact of such rewrite
 has been measured by earlier A/B binary experiments.
