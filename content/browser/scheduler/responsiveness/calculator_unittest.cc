@@ -89,14 +89,12 @@ class ResponsivenessCalculatorTest : public testing::Test {
   base::TimeTicks last_calculation_time_;
 };
 
-#define EXPECT_EXECUTION_JANKY_SLICES(num_slices)                  \
-  EXPECT_CALL(*calculator_,                                        \
-              EmitResponsiveness(JankType::kExecution, num_slices, \
-                                 StartupStage::kMessageLoopStarted));
-#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices)                \
-  EXPECT_CALL(*calculator_,                                                \
-              EmitResponsiveness(JankType::kQueueAndExecution, num_slices, \
-                                 StartupStage::kMessageLoopStarted));
+#define EXPECT_EXECUTION_JANKY_SLICES(num_slices, phase) \
+  EXPECT_CALL(*calculator_,                              \
+              EmitResponsiveness(JankType::kExecution, num_slices, phase));
+#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices, phase)           \
+  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kQueueAndExecution, \
+                                               num_slices, phase));
 
 // A single event executing slightly longer than kJankThresholdInMs.
 TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
@@ -105,8 +103,9 @@ TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
   constexpr int kFinishTime = kStartTime + kJankThresholdInMs + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(1u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+  EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      1u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -117,8 +116,9 @@ TEST_F(ResponsivenessCalculatorTest, ShortQueueJank) {
   constexpr int kFinishTime = kStartTime + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      1u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -130,8 +130,9 @@ TEST_F(ResponsivenessCalculatorTest, ShortCombinedQueueAndExecutionJank) {
   constexpr int kFinishTime = kStartTime + (kJankThresholdInMs / 2) + 1;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      1u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -142,8 +143,9 @@ TEST_F(ResponsivenessCalculatorTest, LongExecutionJank) {
   constexpr int kFinishTime = kStartTime + 10 * kJankThresholdInMs + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(10u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u);
+  EXPECT_EXECUTION_JANKY_SLICES(10, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      10u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -154,8 +156,9 @@ TEST_F(ResponsivenessCalculatorTest, LongQueueJank) {
   constexpr int kFinishTime = kStartTime + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      10u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -171,8 +174,9 @@ TEST_F(ResponsivenessCalculatorTest, NoExecutionJank) {
     AddEventUI(base_time + i, base_time + i, base_time + 2 * i);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(0u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      0u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -189,8 +193,9 @@ TEST_F(ResponsivenessCalculatorTest, NoQueueJank) {
     AddEventUI(base_time + i, base_time + 2 * i, base_time + 2 * i);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(0u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      0u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -207,8 +212,9 @@ TEST_F(ResponsivenessCalculatorTest, OverlappingExecutionJank) {
     AddEventUI(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(1u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+  EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      1u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -225,8 +231,9 @@ TEST_F(ResponsivenessCalculatorTest, OverlappingQueueJank) {
     AddEventUI(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      1u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -250,8 +257,9 @@ TEST_F(ResponsivenessCalculatorTest, OverlappingExecutionJankMultipleThreads) {
     AddEventIO(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(5u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(5u);
+  EXPECT_EXECUTION_JANKY_SLICES(5u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      5u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -275,8 +283,9 @@ TEST_F(ResponsivenessCalculatorTest, OverlappingQueueJankMultipleThreads) {
     AddEventIO(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(5u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      5u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -300,8 +309,9 @@ TEST_F(ResponsivenessCalculatorTest, SeparatedExecutionJanks) {
     base_time += 10 * kJankThresholdInMs;
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(6u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u);
+  EXPECT_EXECUTION_JANKY_SLICES(6u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      6u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -325,8 +335,9 @@ TEST_F(ResponsivenessCalculatorTest, SeparatedQueueJanks) {
     base_time += 10 * kJankThresholdInMs;
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u);
+  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      6u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 
@@ -340,8 +351,12 @@ TEST_F(ResponsivenessCalculatorTest, MultipleTrigger) {
       base_time += 3 * kJankThresholdInMs;
     }
 
-    EXPECT_EXECUTION_JANKY_SLICES(9u);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(9u);
+    EXPECT_EXECUTION_JANKY_SLICES(
+        9u, i == 0 ? StartupStage::kMessageLoopJustStarted
+                   : StartupStage::kFirstIntervalDoneWithoutFirstIdle);
+    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+        9u, i == 0 ? StartupStage::kMessageLoopJustStarted
+                   : StartupStage::kFirstIntervalDoneWithoutFirstIdle);
     TriggerCalculation();
     testing::Mock::VerifyAndClear(calculator_.get());
   }
@@ -388,17 +403,40 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
-  // Regular event before OnFirstIdle().
+  // Queue jank event during the first kMeasurementInterval.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_,
               EmitResponsiveness(JankType::kExecution, 0,
-                                 StartupStage::kMessageLoopStarted));
+                                 StartupStage::kMessageLoopJustStarted));
   EXPECT_CALL(*calculator_,
               EmitResponsiveness(JankType::kQueueAndExecution, 10u,
-                                 StartupStage::kMessageLoopStarted));
+                                 StartupStage::kMessageLoopJustStarted));
   TriggerCalculation();
 
-  // OnFirstIdle() during a kMeasurementInterval.
+  // Queue jank event during a few kMeasurementInterval (without having seen
+  // OnFirstIdle()).
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(
+      *calculator_,
+      EmitResponsiveness(JankType::kExecution, 0,
+                         StartupStage::kFirstIntervalDoneWithoutFirstIdle));
+  EXPECT_CALL(
+      *calculator_,
+      EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                         StartupStage::kFirstIntervalDoneWithoutFirstIdle));
+  TriggerCalculation();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(
+      *calculator_,
+      EmitResponsiveness(JankType::kExecution, 0,
+                         StartupStage::kFirstIntervalDoneWithoutFirstIdle));
+  EXPECT_CALL(
+      *calculator_,
+      EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                         StartupStage::kFirstIntervalDoneWithoutFirstIdle));
+  TriggerCalculation();
+
+  // OnFirstIdle() eventually during a kMeasurementInterval.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   calculator_->OnFirstIdle();
   EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 0,
@@ -428,6 +466,32 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   TriggerCalculation();
 }
 
+TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
+  constexpr int kQueueTime = 35;
+  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + 5;
+
+  // OnFirstIdle() right away during the first kMeasurementInterval.
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  calculator_->OnFirstIdle();
+  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 0,
+                                               StartupStage::kPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kPastFirstIdle));
+  TriggerCalculation();
+
+  // Events in intervals after OnFirstIdle();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kRecordingPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kRecordingPastFirstIdle));
+  TriggerCalculation();
+}
+
 // An event execution that crosses a measurement interval boundary should count
 // towards both measurement intervals.
 TEST_F(ResponsivenessCalculatorTest, ExecutionCrossesBoundary) {
@@ -440,8 +504,9 @@ TEST_F(ResponsivenessCalculatorTest, ExecutionCrossesBoundary) {
   // The event goes from [29801, 30150]. It should count as 1 jank in the first
   // measurement interval and 2 in the second.
   {
-    EXPECT_EXECUTION_JANKY_SLICES(1u);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+    EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kMessageLoopJustStarted);
+    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+        1u, StartupStage::kMessageLoopJustStarted);
     const int queue_time =
         kMeasurementIntervalInMs - 2 * kJankThresholdInMs + 1;
     const int start_time = queue_time;
@@ -456,8 +521,10 @@ TEST_F(ResponsivenessCalculatorTest, ExecutionCrossesBoundary) {
   }
 
   // Trigger another calculation.
-  EXPECT_EXECUTION_JANKY_SLICES(2u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(2u);
+  EXPECT_EXECUTION_JANKY_SLICES(
+      2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
 
   const int kTime = 2 * kMeasurementIntervalInMs + 1;
   AddEventUI(kTime, kTime, kTime);
@@ -475,8 +542,9 @@ TEST_F(ResponsivenessCalculatorTest, QueuingCrossesBoundary) {
   // The event goes from [29801, 30150]. It should count as 1 jank in the first
   // measurement interval and 2 in the second.
   {
-    EXPECT_EXECUTION_JANKY_SLICES(0u);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u);
+    EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kMessageLoopJustStarted);
+    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+        1u, StartupStage::kMessageLoopJustStarted);
     const int queue_time =
         kMeasurementIntervalInMs - 2 * kJankThresholdInMs + 1;
     const int start_time = kMeasurementIntervalInMs + 1.5 * kJankThresholdInMs;
@@ -491,8 +559,10 @@ TEST_F(ResponsivenessCalculatorTest, QueuingCrossesBoundary) {
   }
 
   // Trigger another calculation.
-  EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(2u);
+  EXPECT_EXECUTION_JANKY_SLICES(
+      0u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
 
   const int kTime = 2 * kMeasurementIntervalInMs + 1;
   AddEventUI(kTime, kTime, kTime);
@@ -523,8 +593,9 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
   AddEventUI(1050, 1200, 1201);
   AddEventUI(1050, 1390, 1391);
 
-  EXPECT_EXECUTION_JANKY_SLICES(3u);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u);
+  EXPECT_EXECUTION_JANKY_SLICES(3u, StartupStage::kMessageLoopJustStarted);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+      6u, StartupStage::kMessageLoopJustStarted);
   TriggerCalculation();
 }
 

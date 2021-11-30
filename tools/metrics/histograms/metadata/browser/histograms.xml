@@ -695,6 +695,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="JankyIntervalsPerThirtySeconds">
     <variant name=""/>
+    <variant name=".Initial"
+        summary="The first 30 seconds interval after the message loop starts."/>
     <variant name=".NonStartup"
         summary="Does not include jank in the first 30 seconds [startup].">
       <obsolete>
@@ -715,6 +717,7 @@ chromium-metrics-reviews@google.com.
         can be used for the user-visible startup performance.
       </obsolete>
     </variant>
+    <variant name=".Periodic" summary="All intervals after OnFirstIdle()."/>
     <variant name=".Startup"
         summary="Only counts jank in the first 30 seconds [startup].">
       <obsolete>

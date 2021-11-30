@@ -136,7 +136,8 @@ void Calculator::TaskOrEventFinishedOnIOThread(
 
 void Calculator::OnFirstIdle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(startup_stage_, StartupStage::kMessageLoopStarted);
+  DCHECK(startup_stage_ == StartupStage::kMessageLoopJustStarted ||
+         startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle);
   startup_stage_ = StartupStage::kPastFirstIdle;
 }
 
@@ -152,6 +153,15 @@ void Calculator::EmitResponsiveness(JankType jank_type,
       UMA_HISTOGRAM_COUNTS_1000(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds",
           janky_slices);
+      if (startup_stage_ == StartupStage::kMessageLoopJustStarted) {
+        UMA_HISTOGRAM_COUNTS_1000(
+            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial",
+            janky_slices);
+      } else if (startup_stage_ == StartupStage::kRecordingPastFirstIdle) {
+        UMA_HISTOGRAM_COUNTS_1000(
+            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic",
+            janky_slices);
+      }
       break;
     }
     case JankType::kQueueAndExecution: {
@@ -301,7 +311,10 @@ void Calculator::CalculateResponsivenessIfNecessary(
       JankType::kQueueAndExecution,
       std::move(queue_and_execution_janks_from_multiple_threads),
       last_calculation_time_, new_calculation_time);
-  if (startup_stage_ == StartupStage::kPastFirstIdle)
+
+  if (startup_stage_ == StartupStage::kMessageLoopJustStarted)
+    startup_stage_ = StartupStage::kFirstIntervalDoneWithoutFirstIdle;
+  else if (startup_stage_ == StartupStage::kPastFirstIdle)
     startup_stage_ = StartupStage::kRecordingPastFirstIdle;
 
   last_calculation_time_ = new_calculation_time;
