@@ -32,6 +32,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -436,6 +437,26 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
       FROM_HERE, base::BindOnce(&Client::RequireBitstreamBuffers, main_client_,
                                 kNumInputBuffers, input_visible_size_,
                                 bitstream_buffer_size_));
+
+  VideoEncoderInfo encoder_info;
+  encoder_info.implementation_name = "MediaFoundationVideoEncodeAccelerator";
+  encoder_info.has_trusted_rate_controller = true;
+  DCHECK(encoder_info.is_hardware_accelerated);
+  DCHECK(encoder_info.supports_native_handle);
+  DCHECK(!encoder_info.supports_simulcast);
+  if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
+    DCHECK(!config.spatial_layers.empty());
+    for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
+      encoder_info.fps_allocation[i] =
+          GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);
+    }
+  } else {
+    constexpr uint8_t kFullFramerate = 255;
+    encoder_info.fps_allocation[0] = {kFullFramerate};
+  }
+  main_client_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Client::NotifyEncoderInfoChange, main_client_,
+                                encoder_info));
   return SUCCEEDED(hr);
 }
 

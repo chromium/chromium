@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_
 #define MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_
 
+#include <vector>
+
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,6 +25,11 @@ MEDIA_GPU_EXPORT size_t GetEncodeBitstreamBufferSize(const gfx::Size& size,
 // Get the maximum bitstream buffer size for VideoEncodeAccelerator.
 // |size|: the resolution of video stream
 MEDIA_GPU_EXPORT size_t GetEncodeBitstreamBufferSize(const gfx::Size& size);
+
+// Get the frame rate fraction assigned to each temporal layer.
+// |num_temporal_layers|: total number of temporal layers
+MEDIA_GPU_EXPORT std::vector<uint8_t> GetFpsAllocation(
+    size_t num_temporal_layers);
 
 }  // namespace media
 

@@ -37,6 +37,7 @@
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
@@ -387,8 +388,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
-      encoder_info_.fps_allocation[i] = VP9SVCLayers::GetFpsAllocation(
-          config.spatial_layers[i].num_of_temporal_layers);
+      encoder_info_.fps_allocation[i] =
+          GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);
     }
   } else {
     constexpr uint8_t kFullFramerate = 255;

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace media {
 namespace {
@@ -81,6 +82,35 @@ size_t GetEncodeBitstreamBufferSize(const gfx::Size& size,
 // buffer size while requesting new bitrate and framerate.
 size_t GetEncodeBitstreamBufferSize(const gfx::Size& size) {
   return GetMaxEncodeBitstreamBufferSize(size);
+}
+
+std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
+  DCHECK_LT(num_temporal_layers, 4u);
+  constexpr uint8_t kFullAllocation = 255;
+  // The frame rate fraction is given as an 8 bit unsigned integer where 0 = 0%
+  // and 255 = 100%. Each layer's allocated fps refers to the previous one, so
+  // e.g. your camera is opened at 30fps, and you want to have decode targets at
+  // 15fps and 7.5fps as well:
+  // TL0 then gets an allocation of 7.5/30 = 1/4. TL1 adds another 7.5fps to end
+  // up at (7.5 + 7.5)/30 = 15/30 = 1/2 of the total allocation. TL2 adds the
+  // final 15fps to end up at (15 + 15)/30, which is the full allocation.
+  // Therefor, fps_allocation values are as follows,
+  // fps_allocation[0][0] = kFullAllocation / 4;
+  // fps_allocation[0][1] = kFullAllocation / 2;
+  // fps_allocation[0][2] = kFullAllocation;
+  //  For more information, see webrtc::VideoEncoderInfo::fps_allocation.
+  switch (num_temporal_layers) {
+    case 1:
+      // In this case, the number of spatial layers must great than 1.
+      return {kFullAllocation};
+    case 2:
+      return {kFullAllocation / 2, kFullAllocation};
+    case 3:
+      return {kFullAllocation / 4, kFullAllocation / 2, kFullAllocation};
+    default:
+      NOTREACHED() << "Unsupported temporal layers";
+      return {};
+  }
 }
 
 }  // namespace media

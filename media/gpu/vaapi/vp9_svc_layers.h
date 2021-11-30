@@ -42,8 +42,6 @@ class VP9SVCLayers {
   explicit VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers);
   ~VP9SVCLayers();
 
-  static std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers);
-
   // Returns true if EncodeJob needs to produce key frame.
   bool UpdateEncodeJob(bool is_key_frame_requested, size_t kf_period_frames);
 

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_svc_layers.h"
@@ -124,8 +125,7 @@ MATCHER_P2(MatchesEncoderInfo,
     if (fps_allocation.back() != kFullFramerate)
       return false;
     if (fps_allocation.size() != 1 &&
-        fps_allocation !=
-            VP9SVCLayers::GetFpsAllocation(num_of_temporal_layers)) {
+        fps_allocation != GetFpsAllocation(num_of_temporal_layers)) {
       return false;
     }
   }
