@@ -17,7 +17,9 @@
 
 // This file contains back/forward-cache tests that test basic functionality,
 // e.g. navigation, different responses and document structures.
-// Almost everything in here could have been written as a JS-only WPT.
+// Almost everything in here could have been written as a JS-only WPT. It was
+// forked from
+// https://source.chromium.org/chromium/chromium/src/+/main:content/browser/back_forward_cache_browsertest.cc;drc=804bb57be3441b6291c11e34d8f901e2b1c0b430
 //
 // When adding tests here consider adding a WPT intead. See
 // third_party/blink/web_tests/external/wpt/html/browsers/browsing-the-web/back-forward-cache/README.md

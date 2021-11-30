@@ -33,7 +33,8 @@
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
 // navigation internals. If you could write the test in JS or using only public
-// functions it probably doesn't belong in this file.
+// functions it probably doesn't belong in this file. It was forked from
+// https://source.chromium.org/chromium/chromium/src/+/main:content/browser/back_forward_cache_browsertest.cc;drc=db47c3a2e741f8ea55024e64ec932044024cbddc
 //
 // When adding tests consider also adding WPTs, although for internal tests,
 // this is often not an option. See
