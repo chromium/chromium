@@ -19,6 +19,9 @@ if sys.platform == "win32":
   from ctypes import GetLastError
 
 
+_PY2 = sys.version_info[0] == 2
+_MAPPING = collections.Mapping if _PY2 else collections.abc.Mapping
+
 _StreamParamsBase = collections.namedtuple(
     '_StreamParamsBase', ('name', 'type', 'content_type', 'tags'))
 
@@ -27,7 +30,7 @@ _StreamParamsBase = collections.namedtuple(
 #
 # See "ProtocolFrameHeaderMagic" in:
 # <luci-go>/logdog/client/butlerlib/streamproto
-BUTLER_MAGIC = 'BTLR1\x1e'
+BUTLER_MAGIC = b'BTLR1\x1e'
 
 
 class StreamParams(_StreamParamsBase):
@@ -59,7 +62,7 @@ class StreamParams(_StreamParamsBase):
       raise ValueError('Invalid type (%s)' % (self.type,))
 
     if self.tags is not None:
-      if not isinstance(self.tags, collections.Mapping):
+      if not isinstance(self.tags, _MAPPING):
         raise ValueError('Invalid tags type (%s)' % (self.tags,))
       for k, v in self.tags.items():
         streamname.validate_tag(k, v)
@@ -190,6 +193,29 @@ class StreamClient(object):
 
     def close(self):
       return self._fd.close()
+
+
+  class _TextStream(_BasicStream):
+    """Extends _BasicStream, ensuring data written is UTF-8 text."""
+
+    def __init__(self, stream_client, params, fd):
+      super(StreamClient._TextStream, self).__init__(stream_client, params, fd)
+      self._fd = fd
+
+    def write(self, data):
+      if _PY2 and isinstance(data, str):
+        # byte string is unfortunately accepted in py2 because of
+        # undifferentiated usage of `str` and `unicode` but it should be
+        # discontinued in py3. User should switch to binary stream instead
+        # if there's a need to write bytes.
+        return self._fd.write(data)
+      elif _PY2 and isinstance(data, unicode):
+        return self._fd.write(data.encode('utf-8'))
+      elif not _PY2 and isinstance(data, str):
+        return self._fd.write(data.encode('utf-8'))
+      else:
+        raise ValueError(
+            'expect str, got %r that is type %s' % (data, type(data),))
 
 
   class _DatagramStream(_StreamBase):
@@ -348,12 +374,12 @@ class StreamClient(object):
       are not valid.
     """
     self._register_new_stream(params.name)
-    params_json = params.to_json()
+    params_bytes = params.to_json().encode('utf-8')
 
     fobj = self._connect_raw()
     fobj.write(BUTLER_MAGIC)
-    varint.write_uvarint(fobj, len(params_json))
-    fobj.write(params_json)
+    varint.write_uvarint(fobj, len(params_bytes))
+    fobj.write(params_bytes)
     return fobj
 
   @contextlib.contextmanager
@@ -399,7 +425,7 @@ class StreamClient(object):
         type=StreamParams.TEXT,
         content_type=content_type,
         tags=tags)
-    return self._BasicStream(self, params, self.new_connection(params))
+    return self._TextStream(self, params, self.new_connection(params))
 
   @contextlib.contextmanager
   def binary(self, name, **kwargs):

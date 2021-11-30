@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 
 import os
+import struct
 import sys
 
 
@@ -28,7 +29,7 @@ def write_uvarint(w, val):
     if val > 0:
       byte |= 0b10000000
 
-    w.write(chr(byte))
+    w.write(struct.pack('B', byte))
     count += 1
   return count
 
@@ -55,7 +56,7 @@ def read_uvarint(r):
     if len(byte) == 0:
       raise ValueError('UVarint was not terminated')
 
-    byte = ord(byte)
+    byte = struct.unpack('B', byte)[0]
     result |= ((byte & 0b01111111) << (7 * count))
     count += 1
     if byte & 0b10000000 == 0:

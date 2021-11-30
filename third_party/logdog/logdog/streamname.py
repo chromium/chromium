@@ -54,7 +54,7 @@ def validate_tag(key, value):
 
 
 def normalize_segment(seg, prefix=None):
-  """Given a string (str|unicode), mutate it into a valid segment name (str).
+  """Given a string, mutate it into a valid segment name.
 
   This operates by replacing invalid segment name characters with underscores
   (_) when encountered.
@@ -88,15 +88,11 @@ def normalize_segment(seg, prefix=None):
   if _SEGMENT_RE.match(seg) is None:
     raise AssertionError('Normalized segment is still invalid: %r' % seg)
 
-  # v could be of type unicode. As a valid stream name contains only ascii
-  # characters, it is safe to transcode v to ascii encoding (become str type).
-  if isinstance(seg, unicode):
-    return seg.encode('ascii')
   return seg
 
 
 def normalize(v, prefix=None):
-  """Given a string (str|unicode), mutate it into a valid stream name (str).
+  """Given a string, mutate it into a valid stream name.
 
   This operates by replacing invalid stream name characters with underscores (_)
   when encountered.
@@ -162,14 +158,12 @@ class StreamPath(collections.namedtuple('_StreamPath', ('prefix', 'name'))):
     try:
       validate_stream_name(self.prefix)
     except ValueError as e:
-      raise ValueError('Invalid prefix component [%s]: %s' % (
-          self.prefix, e.message,))
+      raise ValueError('Invalid prefix component [%s]: %s' % (self.prefix, e,))
 
     try:
       validate_stream_name(self.name)
     except ValueError as e:
-      raise ValueError('Invalid name component [%s]: %s' % (
-          self.name, e.message,))
+      raise ValueError('Invalid name component [%s]: %s' % (self.name, e,))
 
   def __str__(self):
     return '%s/+/%s' % (self.prefix, self.name)
