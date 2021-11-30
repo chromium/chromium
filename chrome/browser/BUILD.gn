@@ -2019,6 +2019,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/read_later/side_panel:mojo_bindings",
     "//chrome/browser/ui/webui/realbox:mojo_bindings",
     "//chrome/browser/ui/webui/reset_password:mojo_bindings",
+    "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
     "//chrome/browser/updates/announcement_notification",

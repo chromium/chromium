@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_ui.h"
+#include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
@@ -682,6 +683,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<QuotaInternalsUI>;
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
     return &NewWebUI<safe_browsing::SafeBrowsingUI>;
+  if (url.host_piece() == chrome::kChromeUISegmentationInternalsHost)
+    return &NewWebUI<SegmentationInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISignInInternalsHost)
     return &NewWebUI<SignInInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISupervisedUserPassphrasePageHost)

@@ -161,6 +161,7 @@ const char kChromeUIRestartHost[] = "restart";
 const char kChromeUIRestartURL[] = "chrome://restart/";
 const char kChromeUISafetyPixelbookURL[] = "https://g.co/Pixelbook/legal";
 const char kChromeUISafetyPixelSlateURL[] = "https://g.co/PixelSlate/legal";
+const char kChromeUISegmentationInternalsHost[] = "segmentation-internals";
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 const char kChromeUISessionServiceInternalsPath[] = "session-service";
 #endif

@@ -18,7 +18,7 @@ import("//tools/grit/repack.gni")
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 group("resources") {
-  public_deps = []
+  public_deps = [ "segmentation_internals:resources" ]
 
   if (!is_android) {
     public_deps += [

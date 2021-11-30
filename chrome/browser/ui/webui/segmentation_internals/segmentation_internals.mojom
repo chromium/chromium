@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module segmentation_internals.mojom;
+
+// Encapsulates information related to a selected segment. The information
+// includes whether the segment is ready and its optimization target.
+struct SegmentData {
+  // Whether the segment is ready.
+  bool is_ready;
+
+  // Enum value from components/optimization_guide/proto/models.proto. Or -1
+  // if the optimization target is empty.
+  int32 optimization_target;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Gets the segment result for a given key.
+  GetSegment(string key) => (SegmentData result);
+};

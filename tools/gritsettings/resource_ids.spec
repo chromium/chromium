@@ -233,6 +233,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [1920],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/segmentation_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [1930],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/chromeos/os_settings_resources.grd": {
     "META": {"sizes": {"includes": [1000],}},
     "includes": [1940],

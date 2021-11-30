@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -693,6 +694,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<federated_learning::mojom::PageHandler,
                                          FlocInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      segmentation_internals::mojom::PageHandlerFactory,
+      SegmentationInternalsUI>(map);
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
