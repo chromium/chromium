@@ -105,7 +105,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
       policy_same_version_update_ ==
       UpdateService::PolicySameVersionUpdate::kAllowed;
   component.target_version_prefix = target_version_prefix_;
-  component.supports_group_policy_enable_component_updates = update_disabled_;
+  component.updates_enabled = !update_disabled_;
 
   return component;
 }

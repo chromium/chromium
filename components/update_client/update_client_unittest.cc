@@ -307,10 +307,8 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, ids_to_check.front());
@@ -438,7 +436,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -465,7 +462,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       </response>
       */
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(2u, ids_to_check.size());
 
       ProtocolParser::Results results;
@@ -694,7 +690,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -718,7 +713,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       </response>
       */
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(2u, ids_to_check.size());
 
       ProtocolParser::Results results;
@@ -924,7 +918,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -948,7 +941,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       </response>
       */
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
 
       ProtocolParser::Results results;
@@ -1133,7 +1125,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
     }
@@ -1248,7 +1239,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -1287,7 +1277,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       */
 
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(2u, ids_to_check.size());
 
       ProtocolParser::Results results;
@@ -1552,7 +1541,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
 
@@ -1961,7 +1949,6 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -2170,7 +2157,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
 
@@ -2517,10 +2503,8 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, ids_to_check.front());
@@ -2662,7 +2646,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -2687,7 +2670,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       </response>
       */
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
 
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
@@ -2895,7 +2877,6 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
     }
@@ -3018,10 +2999,8 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, ids_to_check.front());
@@ -3144,7 +3123,6 @@ TEST_F(UpdateClientTest, EmptyIdList) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
     }
@@ -3203,7 +3181,6 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
     }
@@ -3278,7 +3255,6 @@ TEST_F(UpdateClientTest, SendRegistrationPing) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       NOTREACHED();
     }
@@ -3378,7 +3354,6 @@ TEST_F(UpdateClientTest, RetryAfter) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
 
@@ -3524,7 +3499,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       crx1.version = base::Version("0.9");
       crx1.installer = base::MakeRefCounted<TestInstaller>();
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      crx1.supports_group_policy_enable_component_updates = true;
+      crx1.updates_enabled = false;
 
       CrxComponent crx2;
       crx2.name = "test_ihfo";
@@ -3558,7 +3533,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -3596,12 +3570,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       </response>
       */
 
-      // UpdateClient reads the state of |enabled_component_updates| from the
-      // configurator instance, persists its value in the corresponding
-      // update context, and propagates it down to each of the update actions,
-      // and further down to the UpdateChecker instance.
       EXPECT_FALSE(session_id.empty());
-      EXPECT_FALSE(enabled_component_updates);
       EXPECT_EQ(2u, ids_to_check.size());
 
       ProtocolParser::Results results;
@@ -3715,7 +3684,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   };
 
   // Disables updates for the components declaring support for the group policy.
-  config()->SetEnabledComponentUpdates(false);
   SetMockCrxDownloader<MockCrxDownloader>();
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
@@ -3829,10 +3797,8 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, ids_to_check.front());
@@ -3980,10 +3946,8 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(4u, ids_to_check.size());
 
       const std::string update_response =
@@ -4135,7 +4099,6 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -4161,7 +4124,6 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       </response>
       */
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
 
       const std::string id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
@@ -4326,7 +4288,6 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       /*
       Mock the following response:
@@ -4509,10 +4470,8 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
         const std::vector<std::string>& ids_to_check,
         const IdToComponentPtrMap& components,
         const base::flat_map<std::string, std::string>& additional_attributes,
-        bool enabled_component_updates,
         UpdateCheckCallback update_check_callback) override {
       EXPECT_FALSE(session_id.empty());
-      EXPECT_TRUE(enabled_component_updates);
       EXPECT_EQ(1u, ids_to_check.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, ids_to_check.front());

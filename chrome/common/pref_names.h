@@ -999,8 +999,6 @@ extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 extern const char kCommerceMerchantViewerMessagesShownTime[];
 #endif
 
-extern const char kComponentUpdatesEnabled[];
-
 #if defined(OS_ANDROID)
 extern const char kSearchGeolocationDisclosureDismissed[];
 extern const char kSearchGeolocationDisclosureShownCount[];

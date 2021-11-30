@@ -4,9 +4,11 @@
 
 #include "chrome/browser/component_updater/component_updater_prefs.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/component_updater/recovery_component_installer.h"
 #include "chrome/common/buildflags.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 
 #if !defined(OS_ANDROID)
@@ -16,7 +18,7 @@
 namespace component_updater {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
-  RegisterPrefsForChromeComponentUpdaterConfigurator(registry);
+  RegisterComponentUpdateServicePrefs(registry);
   RegisterPrefsForRecoveryComponent(registry);
   AutofillStatesComponentInstallerPolicy::RegisterPrefs(registry);
 }

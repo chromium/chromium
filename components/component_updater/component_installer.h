@@ -26,9 +26,11 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
-using RegisterCallback = base::OnceCallback<bool(update_client::CrxComponent)>;
 
+struct ComponentRegistration;
 class ComponentUpdateService;
+
+using RegisterCallback = base::OnceCallback<bool(const ComponentRegistration&)>;
 
 // Components should use a ComponentInstaller by defining a class that
 // implements the members of ComponentInstallerPolicy, and then registering a

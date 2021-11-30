@@ -50,7 +50,8 @@ class AwPackageNamesAllowlistComponentInstallerPolicy
 // Call once during startup to make the component update service aware of
 // the package name logging component.
 void RegisterWebViewAppsPackageNamesAllowlistComponent(
-    base::OnceCallback<bool(update_client::CrxComponent)> register_callback,
+    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
+        register_callback,
     base::OnceClosure registration_finished);
 
 }  // namespace android_webview

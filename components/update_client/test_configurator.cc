@@ -37,7 +37,6 @@ std::vector<GURL> MakeDefaultUrls() {
 
 TestConfigurator::TestConfigurator(PrefService* pref_service)
     : enabled_cup_signing_(false),
-      enabled_component_updates_(true),
       pref_service_(pref_service),
       unzip_factory_(base::MakeRefCounted<update_client::UnzipChromiumFactory>(
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))),
@@ -135,10 +134,6 @@ bool TestConfigurator::EnabledDeltas() const {
   return true;
 }
 
-bool TestConfigurator::EnabledComponentUpdates() const {
-  return enabled_component_updates_;
-}
-
 bool TestConfigurator::EnabledBackgroundDownloader() const {
   return false;
 }
@@ -157,11 +152,6 @@ void TestConfigurator::SetInitialDelay(double seconds) {
 
 void TestConfigurator::SetEnabledCupSigning(bool enabled_cup_signing) {
   enabled_cup_signing_ = enabled_cup_signing;
-}
-
-void TestConfigurator::SetEnabledComponentUpdates(
-    bool enabled_component_updates) {
-  enabled_component_updates_ = enabled_component_updates;
 }
 
 void TestConfigurator::SetDownloadPreference(

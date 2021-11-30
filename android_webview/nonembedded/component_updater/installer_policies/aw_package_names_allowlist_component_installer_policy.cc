@@ -46,7 +46,8 @@ AwPackageNamesAllowlistComponentInstallerPolicy::OnCustomInstall(
 }
 
 void RegisterWebViewAppsPackageNamesAllowlistComponent(
-    base::OnceCallback<bool(update_client::CrxComponent)> register_callback,
+    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
+        register_callback,
     base::OnceClosure registration_finished) {
   base::MakeRefCounted<component_updater::ComponentInstaller>(
       std::make_unique<AwPackageNamesAllowlistComponentInstallerPolicy>())

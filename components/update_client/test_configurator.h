@@ -93,7 +93,6 @@ class TestConfigurator : public Configurator {
   scoped_refptr<UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -106,7 +105,6 @@ class TestConfigurator : public Configurator {
   void SetInitialDelay(double seconds);
   void SetDownloadPreference(const std::string& download_preference);
   void SetEnabledCupSigning(bool use_cup_signing);
-  void SetEnabledComponentUpdates(bool enabled_component_updates);
   void SetUpdateCheckUrl(const GURL& url);
   void SetPingUrl(const GURL& url);
   void SetCrxDownloaderFactory(
@@ -126,7 +124,6 @@ class TestConfigurator : public Configurator {
   int ondemand_time_{0};
   std::string download_preference_;
   bool enabled_cup_signing_;
-  bool enabled_component_updates_;
   raw_ptr<PrefService> pref_service_;  // Not owned by this class.
   GURL update_check_url_;
   GURL ping_url_;

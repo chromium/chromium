@@ -4,7 +4,10 @@
 
 #include "components/component_updater/component_installer.h"
 
+#include <cstdint>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -418,23 +421,18 @@ void ComponentInstaller::FinishRegistration(
   current_version_ = registration_info->version;
   current_fingerprint_ = registration_info->fingerprint;
 
-  update_client::CrxComponent crx;
-  installer_policy_->GetHash(&crx.pk_hash);
-  crx.app_id = update_client::GetCrxIdFromPublicKeyHash(crx.pk_hash);
-  crx.installer = this;
-  crx.action_handler = action_handler_;
-  crx.version = current_version_;
-  crx.fingerprint = current_fingerprint_;
-  crx.name = installer_policy_->GetName();
-  crx.installer_attributes = installer_policy_->GetInstallerAttributes();
-  crx.requires_network_encryption =
-      installer_policy_->RequiresNetworkEncryption();
-  crx.crx_format_requirement =
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
-  crx.supports_group_policy_enable_component_updates =
-      installer_policy_->SupportsGroupPolicyEnabledComponentUpdates();
+  std::vector<uint8_t> public_key_hash;
+  installer_policy_->GetHash(&public_key_hash);
 
-  if (!std::move(register_callback).Run(std::move(crx))) {
+  if (!std::move(register_callback)
+           .Run(ComponentRegistration(
+               update_client::GetCrxIdFromPublicKeyHash(public_key_hash),
+               installer_policy_->GetName(), public_key_hash, current_version_,
+               current_fingerprint_,
+               installer_policy_->GetInstallerAttributes(), action_handler_,
+               this, installer_policy_->RequiresNetworkEncryption(),
+               installer_policy_
+                   ->SupportsGroupPolicyEnabledComponentUpdates()))) {
     LOG(ERROR) << "Component registration failed for "
                << installer_policy_->GetName();
     if (!callback.is_null())

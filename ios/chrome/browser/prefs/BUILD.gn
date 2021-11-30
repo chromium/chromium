@@ -33,7 +33,8 @@ source_set("browser_prefs") {
   deps = [
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
-    "//components/component_updater/installer_policies:installer_policies",
+    "//components/component_updater",
+    "//components/component_updater/installer_policies",
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/enterprise",
