@@ -112,7 +112,7 @@ if (toolchain_has_rust) {
     out_depfile = rebase_path(depfile, root_build_dir)
     args = [
       "--rust-bin-dir",
-      rust_prefix,
+      rebase_path("${rust_sysroot}/bin", root_build_dir),
       "--output",
       out_libdir,
       "--depfile",

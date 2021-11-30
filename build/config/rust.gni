@@ -16,17 +16,16 @@ declare_args() {
   # is false.
   enable_rust = false
 
-  # Use unverified, untrusted, Rust toolchains from the internet
-  # (which support more platforms and options than those we trust for real
-  # builds).
-  use_unverified_rust_toolchain = false
-
   # The version string returned by rustc -V.
   rustc_version = "rustc 1.56.1-dev"
 
-  # If using an unverified Rust toolchain, use this prefix for where to find
-  # the binaries.
-  rust_bin_dir = ""
+  # Chromium currently has a Rust toolchain for Android and Linux, but
+  # if you wish to experiment on more platforms you can use this
+  # argument to specify an alternative toolchain.
+  # This should be an absolute path to a directory
+  # containing a 'bin' directory and others. Commonly
+  # <home dir>/.rustup/toolchains/nightly-<something>-<something>
+  rust_sysroot_absolute = ""
 
   # Any extra std rlibs in your Rust toolchain, relative to the standard
   # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
@@ -69,27 +68,32 @@ toolchain_has_official_rust =
                      current_cpu == "x64" || current_cpu == "x86"))) ||
     (is_linux && current_cpu == "x64")
 
-toolchain_has_rust = enable_rust && (toolchain_has_official_rust ||
-                                     use_unverified_rust_toolchain)
+toolchain_has_rust =
+    enable_rust && (toolchain_has_official_rust || rust_sysroot_absolute != "")
 
 # We use the Rust linker for building test executables, so we only build them
 # if we're able to use the Rust linker. We could use the C++ linker for this
 # too, we've just not set up GN to do so at the moment.
 build_rust_unit_tests = rustc_can_link
 
-if (use_unverified_rust_toolchain) {
-  assert(rust_bin_dir != "")
-  rust_prefix = "$rust_bin_dir/"
-} else if (toolchain_has_official_rust) {
-  if (host_os != "linux") {
-    assert(false,
-           "Attempt to use standard Rust toolchain on an unsupported platform")
-  }
-  rust_prefix =
-      rebase_path("//third_party/android_rust_toolchain/toolchain/bin/")
-}
+# We want to store rust_sysroot as a source-relative variable for ninja
+# portability. In practice if an external toolchain was specified, it might
+# be an absolute path, but we'll do our best.
+if (enable_rust) {
+  if (rust_sysroot_absolute != "") {
+    rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
+    use_unverified_rust_toolchain = true
+  } else {
+    if (host_os != "linux") {
+      assert(
+          false,
+          "Attempt to use standard Rust toolchain on an unsupported platform")
+    }
 
-assert(!toolchain_has_rust || defined(rust_prefix))
+    rust_sysroot = "//third_party/android_rust_toolchain/toolchain"
+    use_unverified_rust_toolchain = false
+  }
+}
 
 # Figure out the Rust target triple (aka 'rust_abi_target')
 #

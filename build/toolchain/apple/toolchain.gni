@@ -219,7 +219,9 @@ template("apple_toolchain") {
       if (!defined(rust_compiler_prefix)) {
         rust_compiler_prefix = ""
       }
-      rustc = "$rust_compiler_prefix${rust_prefix}rustc"
+      rustc_bin = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
+      rustc = "$rust_compiler_prefix${rustc_bin}"
+      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
 
       # Ideally, we'd add  -Clink-args=\"{{ldflags}}\" to each of the Rust
       # tools below which may link (i.e. rust_bin, rust_cdylib, rust_macro).
@@ -230,6 +232,7 @@ template("apple_toolchain") {
         depfile = "{{output}}.d"
         command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
@@ -238,6 +241,7 @@ template("apple_toolchain") {
         depfile = "{{output}}.d"
         command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
@@ -248,6 +252,7 @@ template("apple_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
@@ -256,6 +261,7 @@ template("apple_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
@@ -264,6 +270,7 @@ template("apple_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
       }

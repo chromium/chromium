@@ -311,19 +311,23 @@ template("msvc_toolchain") {
       # LTO and sanitizers. However, such ldflags are not yet fully
       # compatible with the arguments passed from rustc to the linker,
       # so we'll do this at a later stage.
+      rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
+      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
       tool("rust_staticlib") {
         rust_outfile = "{{target_out_dir}}/{{crate_name}}.lib"
         depfile = "{{crate_name}}.d"
-        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        command = "$rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
       tool("rust_rlib") {
         rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
         depfile = "{{crate_name}}.d"
-        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        command = "$rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
@@ -331,24 +335,27 @@ template("msvc_toolchain") {
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}.exe"
           depfile = "{{crate_name}}.d"
-          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          command = "$rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
         tool("rust_cdylib") {
           rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
           depfile = "{{crate_name}}.d"
-          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          command = "$rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
         tool("rust_macro") {
           rust_outfile = "{{target_out_dir}}/{{crate_name}}.dll"
           depfile = "{{crate_name}}.d"
-          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          command = "$rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
       }

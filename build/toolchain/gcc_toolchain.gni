@@ -667,12 +667,12 @@ template("gcc_toolchain") {
     }
 
     if (toolchain_has_rust) {
-      rustc = ""
-      if (defined(rust_compiler_prefix)) {
-        rustc += rust_compiler_prefix
+      if (!defined(rust_compiler_prefix)) {
+        rust_compiler_prefix = ""
       }
-      rustc += rust_prefix
-      rustc += "rustc"
+      rustc_bin = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
+      rustc = "$rust_compiler_prefix${rustc_bin}"
+      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
 
       # RSP files not used due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {
@@ -680,6 +680,7 @@ template("gcc_toolchain") {
         depfile = "{{output}}.d"
         command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
@@ -688,6 +689,7 @@ template("gcc_toolchain") {
         depfile = "{{output}}.d"
         command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
@@ -699,6 +701,7 @@ template("gcc_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"${invoker.cc}\" $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
@@ -707,6 +710,7 @@ template("gcc_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"${invoker.cc}\" $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
@@ -715,6 +719,7 @@ template("gcc_toolchain") {
           depfile = "{{output}}.d"
           command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"${invoker.cc}\" $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
       }

@@ -98,7 +98,7 @@ if args.features:
 # we are always going to be reliant on code review to ensure the
 # build script is deterministic and trustworthy, so this would
 # really just be a backup to humans.
-proc = subprocess.run([args.build_script],
+proc = subprocess.run([os.path.abspath(args.build_script)],
                       env=env,
                       text=True,
                       capture_output=True)
