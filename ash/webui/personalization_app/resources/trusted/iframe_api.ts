@@ -32,7 +32,7 @@ export function sendCollections(
 /**
  * Sends the count of Google Photos photos to untrusted.
  */
-export function sendGooglePhotosCount(target: Window, count: number|null) {
+export function sendGooglePhotosCount(target: Window, count: bigint|null) {
   const event: constants.SendGooglePhotosCountEvent = {
     type: constants.EventType.SEND_GOOGLE_PHOTOS_COUNT,
     count

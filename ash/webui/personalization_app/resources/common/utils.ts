@@ -22,6 +22,12 @@ export function isNullOrArray(maybeNullOrArray: unknown):
   return maybeNullOrArray === null || Array.isArray(maybeNullOrArray);
 }
 
+/** Checks if argument is null or is a bigint. */
+export function isNullOrBigint(maybeNullOrBigint: unknown):
+    maybeNullOrBigint is bigint|null {
+  return maybeNullOrBigint === null || typeof maybeNullOrBigint === 'bigint';
+}
+
 /**
  * Checks if argument is null or is a number.
  */

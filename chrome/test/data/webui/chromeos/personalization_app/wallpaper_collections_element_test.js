@@ -65,7 +65,7 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.googlePhotos.count = 1234;
+    personalizationStore.data.googlePhotos.count = 1234n;
     personalizationStore.data.loading.googlePhotos.count = false;
     personalizationStore.notifyObservers();
 

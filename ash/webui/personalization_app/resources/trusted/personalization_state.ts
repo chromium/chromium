@@ -28,7 +28,7 @@ export interface BackdropState {
  * initialized, then either null (in error state) or a valid Array.
  */
 export interface GooglePhotosState {
-  count: number|null|undefined;
+  count: bigint|null|undefined;
   albums: Array<WallpaperCollection>|null|undefined;
   photos: Array<undefined>|null|undefined;
   photosByAlbumId: Record<string, Array<undefined>|null|undefined>;

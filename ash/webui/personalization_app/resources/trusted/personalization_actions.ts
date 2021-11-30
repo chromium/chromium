@@ -57,6 +57,7 @@ export function beginLoadGooglePhotosAlbumAction(albumId: string):
 export type BeginLoadGooglePhotosAlbumsAction = Action&{
   name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS;
 };
+
 /**
  * Notify that the app is loading the list of Google Photos albums.
  */
@@ -244,14 +245,14 @@ export function setGooglePhotosAlbumsAction(albums: WallpaperCollection[]|
 
 export type SetGooglePhotosCountAction = Action&{
   name: ActionName.SET_GOOGLE_PHOTOS_COUNT;
-  count: number;
+  count: bigint|null;
 };
 
 /**
  * Sets the count of Google Photos photos. May be called with null on error.
  */
-export function setGooglePhotosCountAction(count: number):
-    SetGooglePhotosCountAction {
+export function setGooglePhotosCountAction(count: bigint|
+                                           null): SetGooglePhotosCountAction {
   return {count, name: ActionName.SET_GOOGLE_PHOTOS_COUNT};
 }
 

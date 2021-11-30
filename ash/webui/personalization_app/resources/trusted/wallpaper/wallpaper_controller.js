@@ -116,13 +116,8 @@ async function fetchGooglePhotosAlbums(provider, store) {
  */
 async function fetchGooglePhotosCount(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosCountAction());
-
-  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns a count of 1,000 Google Photos photos.
-  return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosCountAction(1000));
-                       resolve();
-                     }, 1000));
+  const {count} = await provider.fetchGooglePhotosCount();
+  store.dispatch(action.setGooglePhotosCountAction(count >= 0n ? count : null));
 }
 
 /**
@@ -345,12 +340,12 @@ export async function initializeGooglePhotosData(provider, store) {
   // If the count of Google Photos photos is zero or null, it's not necesssary
   // to query the server for the list of albums/photos.
   const count = store.data.googlePhotos.count;
-  if (count === 0 || count === null) {
-    const /** ?Array<undefined> */ result = count === 0 ? [] : null;
+  if (count === 0n || count === null) {
+    const /** ?Array<undefined> */ result = count === 0n ? [] : null;
     store.beginBatchUpdate();
     store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
-    store.dispatch(action.setGooglePhotosAlbumsAction(result));
     store.dispatch(action.beginLoadGooglePhotosPhotosAction());
+    store.dispatch(action.setGooglePhotosAlbumsAction(result));
     store.dispatch(action.setGooglePhotosPhotosAction(result));
     store.endBatchUpdate();
     return;

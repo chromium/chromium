@@ -44,7 +44,7 @@ export type SendCollectionsEvent = {
 
 export type SendGooglePhotosCountEvent = {
   type: EventType.SEND_GOOGLE_PHOTOS_COUNT,
-  count: number|null,
+  count: bigint|null,
 };
 
 export type SendGooglePhotosPhotosEvent = {

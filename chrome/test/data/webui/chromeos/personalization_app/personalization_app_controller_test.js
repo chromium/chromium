@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
 import '../../mojo_webui_test_support.js';
 
 import * as action from 'chrome://personalization/trusted/personalization_actions.js';
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {fetchGooglePhotosAlbum, fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -51,193 +53,145 @@ suite('Personalization app controller', () => {
     personalizationStore.setReducersEnabled(true);
   });
 
-  test('initializes Google Photos data in store', async () => {
-    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+  [true, false].forEach(isGooglePhotosIntegrationEnabled => {
+    test('initializes Google Photos data in store', async () => {
+      loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled});
 
-    assertDeepEquals(
-        [
-          {
-            name: 'begin_load_google_photos_count',
-          },
-          {
-            name: 'set_google_photos_count',
-            count: 1000,
-          },
-          {
-            name: 'begin_load_google_photos_albums',
-          },
-          {
-            name: 'begin_load_google_photos_photos',
-          },
-          {
-            name: 'set_google_photos_albums',
-            albums: [
-              {
-                id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-                name: 'Album 0',
-              },
-              {
-                id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
-                name: 'Album 1',
-              },
-              {
-                id: '0a268a37-877a-4936-81d4-38cc84b0f596',
-                name: 'Album 2',
-              },
-              {
-                id: '27597eb3-a42d-474c-ab39-592680dcf35a',
-                name: 'Album 3',
-              },
-              {
-                id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
-                name: 'Album 4',
-              },
-            ],
-          },
-          {
-            name: 'set_google_photos_photos',
-            photos: Array.from({length: 1000}),
-          },
-        ],
-        personalizationStore.actions);
+      await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
 
-    assertDeepEquals(
-        [
-          // BEGIN_LOAD_GOOGLE_PHOTOS_COUNT.
-          {
-            'loading.googlePhotos': {
-              count: true,
-              albums: false,
-              photos: false,
-              photosByAlbumId: {},
+      let expectedCount, expectedAlbums, expectedPhotos;
+      if (isGooglePhotosIntegrationEnabled) {
+        expectedCount = 0n;
+        expectedAlbums = [];
+        expectedPhotos = [];
+      } else {
+        expectedCount = null;
+        expectedAlbums = null;
+        expectedPhotos = null;
+      }
+
+      assertDeepEquals(
+          [
+            {
+              name: 'begin_load_google_photos_count',
             },
-            googlePhotos: {
-              count: undefined,
-              albums: undefined,
-              photos: undefined,
-              photosByAlbumId: {},
+            {
+              name: 'set_google_photos_count',
+              count: expectedCount,
             },
-          },
-          // SET_GOOGLE_PHOTOS_COUNT.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: false,
-              photos: false,
-              photosByAlbumId: {},
+            {
+              name: 'begin_load_google_photos_albums',
             },
-            googlePhotos: {
-              count: 1000,
-              albums: undefined,
-              photos: undefined,
-              photosByAlbumId: {},
+            {
+              name: 'begin_load_google_photos_photos',
             },
-          },
-          // BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: true,
-              photos: false,
-              photosByAlbumId: {},
+            {
+              name: 'set_google_photos_albums',
+              albums: expectedAlbums,
             },
-            googlePhotos: {
-              count: 1000,
-              albums: undefined,
-              photos: undefined,
-              photosByAlbumId: {},
+            {
+              name: 'set_google_photos_photos',
+              photos: expectedPhotos,
             },
-          },
-          // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: true,
-              photos: true,
-              photosByAlbumId: {},
+          ],
+          personalizationStore.actions);
+
+      assertDeepEquals(
+          [
+            // BEGIN_LOAD_GOOGLE_PHOTOS_COUNT.
+            {
+              'loading.googlePhotos': {
+                count: true,
+                albums: false,
+                photos: false,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: undefined,
+                albums: undefined,
+                photos: undefined,
+                photosByAlbumId: {},
+              },
             },
-            googlePhotos: {
-              count: 1000,
-              albums: undefined,
-              photos: undefined,
-              photosByAlbumId: {},
+            // SET_GOOGLE_PHOTOS_COUNT.
+            {
+              'loading.googlePhotos': {
+                count: false,
+                albums: false,
+                photos: false,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: expectedCount,
+                albums: undefined,
+                photos: undefined,
+                photosByAlbumId: {},
+              },
             },
-          },
-          // SET_GOOGLE_PHOTOS_ALBUMS.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: false,
-              photos: true,
-              photosByAlbumId: {},
+            // BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS.
+            {
+              'loading.googlePhotos': {
+                count: false,
+                albums: true,
+                photos: false,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: expectedCount,
+                albums: undefined,
+                photos: undefined,
+                photosByAlbumId: {},
+              },
             },
-            googlePhotos: {
-              count: 1000,
-              albums: [
-                {
-                  id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-                  name: 'Album 0',
-                },
-                {
-                  id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
-                  name: 'Album 1',
-                },
-                {
-                  id: '0a268a37-877a-4936-81d4-38cc84b0f596',
-                  name: 'Album 2',
-                },
-                {
-                  id: '27597eb3-a42d-474c-ab39-592680dcf35a',
-                  name: 'Album 3',
-                },
-                {
-                  id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
-                  name: 'Album 4',
-                },
-              ],
-              photos: undefined,
-              photosByAlbumId: {},
+            // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
+            {
+              'loading.googlePhotos': {
+                count: false,
+                albums: true,
+                photos: true,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: expectedCount,
+                albums: undefined,
+                photos: undefined,
+                photosByAlbumId: {},
+              },
             },
-          },
-          // SET_GOOGLE_PHOTOS_PHOTOS.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: false,
-              photos: false,
-              photosByAlbumId: {},
+            // SET_GOOGLE_PHOTOS_ALBUMS.
+            {
+              'loading.googlePhotos': {
+                count: false,
+                albums: false,
+                photos: true,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: expectedCount,
+                albums: expectedAlbums,
+                photos: undefined,
+                photosByAlbumId: {},
+              },
             },
-            googlePhotos: {
-              count: 1000,
-              albums: [
-                {
-                  id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-                  name: 'Album 0',
-                },
-                {
-                  id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
-                  name: 'Album 1',
-                },
-                {
-                  id: '0a268a37-877a-4936-81d4-38cc84b0f596',
-                  name: 'Album 2',
-                },
-                {
-                  id: '27597eb3-a42d-474c-ab39-592680dcf35a',
-                  name: 'Album 3',
-                },
-                {
-                  id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
-                  name: 'Album 4',
-                },
-              ],
-              photos: Array.from({length: 1000}),
-              photosByAlbumId: {},
+            // SET_GOOGLE_PHOTOS_PHOTOS.
+            {
+              'loading.googlePhotos': {
+                count: false,
+                albums: false,
+                photos: false,
+                photosByAlbumId: {},
+              },
+              googlePhotos: {
+                count: expectedCount,
+                albums: expectedAlbums,
+                photos: expectedPhotos,
+                photosByAlbumId: {},
+              },
             },
-          },
-        ],
-        personalizationStore.states.map(
-            filterAndFlattenState(['googlePhotos', 'loading.googlePhotos'])));
+          ],
+          personalizationStore.states.map(
+              filterAndFlattenState(['googlePhotos', 'loading.googlePhotos'])));
+    });
   });
 
   test('sets Google Photos album in store', async () => {
@@ -602,7 +556,7 @@ suite('full screen mode', () => {
     wallpaperProvider = new TestWallpaperProvider();
     personalizationStore = new TestPersonalizationStore({});
     personalizationStore.setReducersEnabled(true);
-    loadTimeData.data = {[fullscreenPreviewFeature]: true};
+    loadTimeData.resetForTesting({[fullscreenPreviewFeature]: true});
   });
 
   test(
