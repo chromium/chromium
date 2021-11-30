@@ -7406,3 +7406,5 @@ crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.h
 
 # Sheriff 2021-11-30
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
+crbug.com/1275209 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure ]
+crbug.com/1275209 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure ]
