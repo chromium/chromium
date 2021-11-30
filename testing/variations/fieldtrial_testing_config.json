@@ -2845,7 +2845,7 @@
             ]
         }
     ],
-    "DeprioritizeTimersUntilDOMContentLoaded": [
+    "DeprioritizeTimersUntilDOMContentLoadedExperiment": [
         {
             "platforms": [
                 "android",
