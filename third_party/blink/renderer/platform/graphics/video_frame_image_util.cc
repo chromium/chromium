@@ -136,9 +136,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
-  const bool full_frame_rect =
-      dest_rect.IsEmpty() || dest_rect == gfx::Rect(frame->coded_size());
-  if (allow_zero_copy_images && full_frame_rect &&
+  if (allow_zero_copy_images && dest_rect.IsEmpty() &&
       transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
