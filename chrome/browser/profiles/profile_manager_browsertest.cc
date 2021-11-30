@@ -693,6 +693,10 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   EXPECT_EQ(1U, browser_list->size());
   EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
 
+// The following check is flaky on Windows.
+// TODO(https://crbug.com/1191455): re-enable this check when the profile
+// directory deletion works more reliably on Windows.
+#if !defined(OS_WIN)
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Check that NukeProfileFromDisk() works correctly.
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -711,6 +715,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
     run_loop.Run();
     EXPECT_FALSE(base::PathExists(path_profile2));
   }
+#endif  // !defined(OS_WIN)
 }
 
 // The test makes sense on those platforms where the keychain exists.
