@@ -323,6 +323,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
       "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success";
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kPerApiErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.ErrorCode";
   base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
@@ -342,6 +344,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
   if (!ShouldSucceed()) {
     histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
   }
 }
 
@@ -359,6 +362,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
       "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success";
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kPerApiErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.ErrorCode";
   base::HistogramTester histogram_tester;
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
@@ -384,6 +389,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
   if (!ShouldSucceed()) {
     histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
   }
 }
 
@@ -401,6 +407,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
       "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Success";
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kPerApiErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.ErrorCode";
   base::HistogramTester histogram_tester;
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
@@ -426,6 +434,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
   if (!ShouldSucceed()) {
     histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
   }
 }
 
@@ -443,6 +452,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
       "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Success";
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kPerApiErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.ErrorCode";
   base::HistogramTester histogram_tester;
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
@@ -468,6 +479,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
   if (!ShouldSucceed()) {
     histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
   }
 }
 

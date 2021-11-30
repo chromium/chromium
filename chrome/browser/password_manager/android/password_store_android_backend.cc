@@ -24,6 +24,7 @@
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -74,14 +75,34 @@ PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler::operator=(
 PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
 
 void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
-    WasSuccess success) const {
+    absl::optional<AndroidBackendError> error) const {
   auto BuildMetricName = [this](base::StringPiece suffix) {
     return base::StrCat({"PasswordManager.PasswordStoreAndroidBackend.",
                          *metric_infix_, ".", suffix});
   };
   base::TimeDelta duration = base::Time::Now() - start_;
   base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-  base::UmaHistogramBoolean(BuildMetricName("Success"), *success);
+  base::UmaHistogramBoolean(BuildMetricName("Success"), !error.has_value());
+  if (!error.has_value())
+    return;
+
+  // In case of error, we report additional metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode",
+      error.value().type);
+  base::UmaHistogramEnumeration(BuildMetricName("ErrorCode"),
+                                error.value().type);
+  if (error.value().type == AndroidBackendErrorType::kExternalError) {
+    DCHECK(error.value().api_error_code.has_value());
+    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+        "PasswordManager.PasswordStoreAndroidBackend.APIError",
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(error.value().api_error_code.value());
+    histogram = base::SparseHistogram::FactoryGet(
+        BuildMetricName("APIError"),
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(error.value().api_error_code.value());
+  }
 }
 
 PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
@@ -361,7 +382,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     std::vector<PasswordForm> passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
+  reply.RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply.Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -374,7 +395,7 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
+  reply.RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply.Holds<PasswordStoreChangeListReply>());
 
   main_task_runner_->PostTask(
@@ -387,7 +408,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
                                           AndroidBackendError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
+  reply.RecordMetrics(std::move(error));
   if (reply.Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
@@ -398,16 +419,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         FROM_HERE,
         base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
                        PasswordStoreChangeList()));
-  }
-
-  base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error.type);
-  if (error.type == AndroidBackendErrorType::kExternalError) {
-    DCHECK(error.api_error_code.has_value());
-    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
-        "PasswordManager.PasswordStoreAndroidBackend.APIError",
-        base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(error.api_error_code.value());
   }
 }
 
