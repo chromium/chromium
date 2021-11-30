@@ -10,6 +10,7 @@ import ctypes
 import glob
 import evdev
 import os
+import subprocess
 import sys
 
 
@@ -73,6 +74,25 @@ def dump_capabilities(out, dev, identifier=None):
   product = open(sysfs_path + '/device/id/product', 'r').read().strip()
   version = open(sysfs_path + '/device/id/version', 'r').read().strip()
 
+  # off on a tangent, get information exposed for some ChromeOS keyboards
+  physmap_filename = sysfs_path + '/device/device/function_row_physmap'
+  physmap = ""
+  if os.path.isfile(physmap_filename):
+    physmap = open(physmap_filename, 'r').read().strip()
+
+  top_row_layout = ""
+  udevadm = subprocess.run("udevadm info -q property " + sysfs_path, stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+  if udevadm.returncode != 0:
+    print(udevadm.stderr)
+    print(udevadm.stdout)
+    sys.exit(udevadm.returncode)
+
+  for prop_line in udevadm.stdout.splitlines():
+    key, val = prop_line.split('=',1)
+    if key == "CROS_KEYBOARD_TOP_ROW_LAYOUT":
+      top_row_layout = val
+
   # python-evdev drops EV_REP from the event set.
   ev = open(sysfs_path + '/device/capabilities/ev', 'r').read().strip()
 
@@ -119,6 +139,12 @@ def dump_capabilities(out, dev, identifier=None):
   if has_abs:
     out.write('    %s,\n' % absinfo_identifier)
     out.write('    base::size(%s),\n' % absinfo_identifier)
+  else:
+    out.write('    /* abs_axis */ nullptr,\n')
+    out.write('    /* abs_axis_count */ 0,\n')
+
+  out.write('    /* kbd_function_row_physmap */ "%s",\n' % physmap)
+  out.write('    /* kbd_top_row_layout */ "%s",\n' % top_row_layout)
 
   out.write('};\n')
 

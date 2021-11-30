@@ -1068,6 +1068,32 @@ const DeviceCapabilities kDrallionStylus = {
     base::size(kDrallionStylusAxes),
 };
 
+const DeviceCapabilities kDrallionKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab41",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "200000000000100 0 0 0 10000000000000 0 f02000000 3803078f800d001 "
+    "ffffffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "4",
+};
+
 const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
     /* path */
     "/sys/devices/pci0000:00/0000:00:19.0/PRP0001:00/input/input3/event3",
@@ -1123,14 +1149,17 @@ const DeviceCapabilities kEveKeyboard = {
     /* prop */ "0",
     /* ev */ "120013",
     /* key */
-    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff "
-    "fffffffffffffffe",
+    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff fffffffffffffffe",
     /* rel */ "0",
     /* abs */ "0",
     /* msc */ "10",
     /* sw */ "0",
     /* led */ "7",
     /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "2",
 };
 
 // The built-in keyboard on Sarien, which has a few more keys than normal.
@@ -1154,6 +1183,10 @@ const DeviceCapabilities kSarienKeyboard = {
     /* sw */ "0",
     /* led */ "7",
     /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "3",
 };
 
 // The built-in keyboard on Woomax, which has a numeric pad
@@ -1337,6 +1370,32 @@ const ui::DeviceCapabilities kHPProBook6560bTouchpad = {
     /* ff */ "0",
     kHPProBook6560bTouchpadAbsAxes,
     base::size(kHPProBook6560bTouchpadAbsAxes),
+};
+
+const DeviceCapabilities kJinlonKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "200000000000000 0 0 0 10000000000000 0 6300000000 200040004000 "
+    "3d1e169a52400000 37ffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "EA E7 91 92 93 94 95 96 97 98 A0 AE B0",
+    /* kbd_top_row_layout */ "",
 };
 
 // NB: Please use the capture_device_capabilities.py script to add more

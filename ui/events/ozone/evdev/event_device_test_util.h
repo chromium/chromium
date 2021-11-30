@@ -54,6 +54,15 @@ struct DeviceCapabilities {
   // EVIOCGABS.
   const DeviceAbsoluteAxis* abs_axis;
   size_t abs_axis_count;
+
+  // (/sys/class/input/*/device/device/function_row_physmap)
+  // Device kernel attribute.
+  const char* kbd_function_row_physmap;
+
+  // (udevadm info -q property /sys/class/input/* | grep
+  // CROS_KEYBOARD_TOP_ROW_LAYOUT) Udev property, note that this comes from udev
+  // rules and only exists in user-space.
+  const char* kbd_top_row_layout;
 };
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
@@ -91,6 +100,7 @@ extern const DeviceCapabilities kKohakuStylus;
 extern const DeviceCapabilities kXboxElite;
 extern const DeviceCapabilities kDrallionStylus;
 extern const DeviceCapabilities kDellActivePenButton;
+extern const DeviceCapabilities kDrallionKeyboard;
 extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
 extern const DeviceCapabilities kDrawciaStylusGarage;
 extern const DeviceCapabilities kEveKeyboard;
@@ -102,6 +112,7 @@ extern const DeviceCapabilities kLogitechKeyboardK120;
 extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
 extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
 extern const DeviceCapabilities kHPProBook6560bTouchpad;
+extern const DeviceCapabilities kJinlonKeyboard;
 }  // namspace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_
