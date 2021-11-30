@@ -647,7 +647,7 @@ class _LogcatProcessor(object):
     # Give preference to PID reported by "ps" over those found from
     # _start_pattern. There can be multiple "Start proc" messages from prior
     # runs of the app.
-    self._found_initial_pid = self._primary_pid != None
+    self._found_initial_pid = self._primary_pid is not None
     # Retrieve any additional patterns that are relevant for the User.
     self._user_defined_highlight = None
     user_regex = os.environ.get('CHROMIUM_LOGCAT_HIGHLIGHT')
@@ -673,10 +673,10 @@ class _LogcatProcessor(object):
   def _GetPidStyle(self, pid, dim=False):
     if pid == self._primary_pid:
       return colorama.Fore.WHITE
-    elif pid in self._my_pids:
+    if pid in self._my_pids:
       # TODO(wnwen): Use one separate persistent color per process, pop LRU
       return colorama.Fore.YELLOW
-    elif dim:
+    if dim:
       return colorama.Style.DIM
     return ''
 
@@ -685,7 +685,7 @@ class _LogcatProcessor(object):
     if dim:
       return ''
     style = colorama.Fore.BLACK
-    if priority == 'E' or priority == 'F':
+    if priority in ('E', 'F'):
       style += colorama.Back.RED
     elif priority == 'W':
       style += colorama.Back.YELLOW
@@ -1068,7 +1068,7 @@ class _Command(object):
   def RegisterBundleGenerationInfo(self, bundle_generation_info):
     self.bundle_generation_info = bundle_generation_info
 
-  def _RegisterExtraArgs(self, subp):
+  def _RegisterExtraArgs(self, group):
     pass
 
   def RegisterArgs(self, parser):

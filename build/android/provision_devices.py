@@ -398,10 +398,9 @@ def FinishProvisioning(device, options):
     if tdelta <= 1:
       logging.info('Date/time successfully set on %s', device)
       return True
-    else:
-      logging.error('Date mismatch. Device: %s Correct: %s',
-                    device_time.isoformat(), correct_time.isoformat())
-      return False
+    logging.error('Date mismatch. Device: %s Correct: %s',
+                  device_time.isoformat(), correct_time.isoformat())
+    return False
 
   # Sometimes the date is not set correctly on the devices. Retry on failure.
   if device.IsUserBuild():

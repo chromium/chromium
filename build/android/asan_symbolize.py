@@ -100,7 +100,7 @@ def _PrintSymbolized(asan_input, arch):
 
   for library, items in libraries.items():
     libname = _TranslateLibPath(library, asan_libs)
-    lib_relative_addrs = set([i.rel_address for i in items])
+    lib_relative_addrs = set(i.rel_address for i in items)
     # pylint: disable=no-member
     info_dict = symbol.SymbolInformationForSet(libname,
                                                lib_relative_addrs,

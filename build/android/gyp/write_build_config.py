@@ -2114,6 +2114,7 @@ def main(argv):
   if options.depfile:
     build_utils.WriteDepfile(options.depfile, options.build_config,
                              sorted(set(all_inputs)))
+  return 0
 
 
 if __name__ == '__main__':

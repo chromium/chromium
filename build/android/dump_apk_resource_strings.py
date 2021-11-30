@@ -532,7 +532,7 @@ def ParseApkResources(aapt_path, apk_path):
 
   res_map = ResourceStringMap()
   current_locale = None
-  current_resource_id = None
+  current_resource_id = -1  # represents undefined.
   current_resource_name = None
   need_value = False
   while True:

@@ -159,10 +159,10 @@ class Class(object):
         logging.warning('ambigous methods in dex %s at lines %s in class "%s"',
             found_methods, hint_lines, self.name)
       return found_methods
-    else:
-      logging.warning('No method named "%s" in class "%s" is '
-                      'mapped to lines %s', method_name, self.name, hint_lines)
-      return None
+    logging.warning(
+        'No method named "%s" in class "%s" is '
+        'mapped to lines %s', method_name, self.name, hint_lines)
+    return None
 
 
 class Profile(object):

@@ -194,6 +194,7 @@ def main():
         logging.critical('Dumping diff histograms to %s', histogram_path)
         with open(histogram_path, 'w') as json_file:
           json_file.write(histogram_result.stdout)
+  return 0
 
 
 if __name__ == '__main__':

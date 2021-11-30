@@ -823,8 +823,7 @@ def RunTestsCommand(args, result_sink_client=None):
 
   if command == 'python':
     return _RunPythonTests(args)
-  else:
-    raise Exception('Unknown test type.')
+  raise Exception('Unknown test type.')
 
 
 def _SinkTestResult(test_result, test_file_name, result_sink_client):

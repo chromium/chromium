@@ -71,7 +71,7 @@ def _ReadInitArray(so_path, tool_prefix, expect_no_initializers):
       raise Exception(
           'Expected no initializers for %s, yet some were found' % so_path)
     return 0
-  elif not match:
+  if not match:
     raise Exception('Did not find section: .init_array in {}:\n{}'.format(
         so_path, stdout))
   size_str = re.split(r'\W+', match.group(0))[5]

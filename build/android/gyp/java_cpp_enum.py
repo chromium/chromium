@@ -305,7 +305,7 @@ class HeaderParser(object):
                       '. Use () for multi-line directives. E.g.\n' +
                       '// GENERATED_JAVA_ENUM_PACKAGE: (\n' +
                       '//   foo.package)')
-    elif generator_directive:
+    if generator_directive:
       directive_name = generator_directive.groups()[0]
       directive_value = generator_directive.groups()[1]
       self._generator_directives.Update(directive_name, directive_value)

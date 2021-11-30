@@ -301,12 +301,14 @@ class _ProjectContextGenerator(object):
     for library targets."""
     resource_packages = entry.Javac().get('resource_packages')
     if not resource_packages:
-      logging.debug('Target ' + entry.GnTarget() + ' includes resources from '
-          'unknown package. Unable to process with gradle.')
+      logging.debug(
+          'Target %s includes resources from unknown package. '
+          'Unable to process with gradle.', entry.GnTarget())
       return _DEFAULT_ANDROID_MANIFEST_PATH
-    elif len(resource_packages) > 1:
-      logging.debug('Target ' + entry.GnTarget() + ' includes resources from '
-          'multiple packages. Unable to process with gradle.')
+    if len(resource_packages) > 1:
+      logging.debug(
+          'Target %s includes resources from multiple packages. '
+          'Unable to process with gradle.', entry.GnTarget())
       return _DEFAULT_ANDROID_MANIFEST_PATH
 
     variables = {'package': resource_packages[0]}
@@ -543,7 +545,7 @@ def _GenerateGradleFile(entry, generator, build_vars, jinja_processor):
     gradle_treat_as_prebuilt = deps_info.get('gradle_treat_as_prebuilt', False)
     if is_prebuilt or gradle_treat_as_prebuilt:
       return None
-    elif deps_info['requires_android']:
+    if deps_info['requires_android']:
       target_type = 'android_library'
     else:
       target_type = 'java_library'

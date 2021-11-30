@@ -48,8 +48,8 @@ def CMakeTargetEscape(a):
   def Escape(c):
     if c in string.ascii_letters or c in string.digits or c in '_.+-':
       return c
-    else:
-      return '__'
+    return '__'
+
   return ''.join([Escape(c) for c in a])
 
 
@@ -65,9 +65,11 @@ def SetVariable(out, variable_name, value):
 def SetVariableList(out, variable_name, values):
   """Sets a CMake variable to a list."""
   if not values:
-    return SetVariable(out, variable_name, "")
+    SetVariable(out, variable_name, "")
+    return
   if len(values) == 1:
-    return SetVariable(out, variable_name, values[0])
+    SetVariable(out, variable_name, values[0])
+    return
   out.write('list(APPEND "')
   out.write(CMakeStringEscape(variable_name))
   out.write('"\n  "')
@@ -196,8 +198,7 @@ class Project(object):
   def GetAbsolutePath(self, path):
     if path.startswith("//"):
       return self.root_path + "/" + path[2:]
-    else:
-      return path
+    return path
 
   def GetObjectSourceDependencies(self, gn_target_name, object_dependencies):
     """All OBJECT libraries whose sources have not been absorbed."""
@@ -675,7 +676,7 @@ def WriteProject(project):
 def main():
   if len(sys.argv) != 2:
     print('Usage: ' + sys.argv[0] + ' <json_file_name>')
-    exit(1)
+    sys.exit(1)
 
   json_path = sys.argv[1]
   project = None

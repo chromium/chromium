@@ -100,7 +100,7 @@ def main():
   def bool_str(value):
     if value:
       return ' = true'
-    elif options.final:
+    if options.final:
       return ' = false'
     return ''
 
