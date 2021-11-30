@@ -228,6 +228,10 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
   DCHECK_EQ(this, g_system_tray_client_instance);
   g_system_tray_client_instance = nullptr;
 
+  // This can happen when mocking this class in tests.
+  if (!system_tray_)
+    return;
+
   system_tray_->SetClient(nullptr);
 
   policy::BrowserPolicyConnectorAsh* connector =
@@ -569,6 +573,12 @@ void SystemTrayClientImpl::SetLocaleAndExit(
   ProfileManager::GetActiveUserProfile()->ChangeAppLocale(
       locale_iso_code, Profile::APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY);
   chrome::AttemptUserExit();
+}
+
+SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
+    : system_tray_(nullptr) {
+  DCHECK(!g_system_tray_client_instance);
+  g_system_tray_client_instance = mock_instance;
 }
 
 void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {

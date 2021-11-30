@@ -34,7 +34,8 @@ namespace ash {
 namespace {
 
 const char kNotificationId[] = "chrome://update";
-const char* kDomain = "google.com";
+const char* kDomain = "example.com";
+const char* kDeviceDomain = "example.org";
 
 // Waits for the notification to be added. Needed because the controller
 // posts a task to check for slow boot request before showing the
@@ -84,10 +85,10 @@ class UpdateNotificationControllerTest : public AshTestBase {
     system_app_name_ =
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME);
 
-    Shell::Get()
-        ->system_tray_model()
-        ->enterprise_domain()
-        ->SetEnterpriseDomainInfo(kDomain, false);
+    EnterpriseDomainModel* enterprise_domain =
+        Shell::Get()->system_tray_model()->enterprise_domain();
+    enterprise_domain->SetEnterpriseAccountDomainInfo(kDomain);
+    enterprise_domain->SetEnterpriseDomainInfo(kDeviceDomain, false);
   }
 
  protected:
@@ -488,6 +489,47 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
             GetNotificationButton(0));
+}
+
+TEST_F(UpdateNotificationControllerTest,
+       SetUpdateNotificationRequiredWithDevicePolicySource) {
+  ShowDefaultUpdateNotification();
+  AddNotificationWaiter waiter;
+
+  Shell::Get()->system_tray_model()->SetRelaunchNotificationState({
+      .requirement_type = RelaunchNotificationState::kRequired,
+      .policy_source = RelaunchNotificationState::kDevice,
+  });
+
+  waiter.Wait();
+
+  const std::string expected_notification_body = l10n_util::GetStringFUTF8(
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDeviceDomain),
+      ui::GetChromeOSDeviceName());
+
+  ASSERT_TRUE(HasNotification());
+  EXPECT_EQ(expected_notification_body, GetNotificationMessage());
+}
+
+TEST_F(UpdateNotificationControllerTest,
+       SetUpdateNotificationWithoutAccountDomainManager) {
+  ShowDefaultUpdateNotification();
+  Shell::Get()
+      ->system_tray_model()
+      ->enterprise_domain()
+      ->SetEnterpriseAccountDomainInfo(std::string());
+  AddNotificationWaiter waiter;
+
+  Shell::Get()->system_tray_model()->SetRelaunchNotificationState(
+      {.requirement_type = RelaunchNotificationState::kRequired});
+
+  waiter.Wait();
+
+  const std::string expected_notification_body = l10n_util::GetStringFUTF8(
+      IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE, system_app_name_);
+
+  ASSERT_TRUE(HasNotification());
+  EXPECT_EQ(expected_notification_body, GetNotificationMessage());
 }
 
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {

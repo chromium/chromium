@@ -34,6 +34,7 @@ class RelaunchNotificationControllerPlatformImpl
 
   // Shows the relaunch required notification if it is not already open.
   void NotifyRelaunchRequired(base::Time deadline,
+                              bool is_notification_type_overriden,
                               base::OnceCallback<base::Time()> on_visible);
 
   // Sets the notification title to the default one on Chrome OS.
@@ -59,7 +60,7 @@ class RelaunchNotificationControllerPlatformImpl
 
   // Callback triggered whenever the required notification's title has to
   // refresh.
-  void RefreshRelaunchRequiredTitle();
+  void RefreshRelaunchRequiredTitle(bool is_notification_type_overriden);
 
   // Returns true if the display is on && the session is active
   bool CanScheduleReboot();

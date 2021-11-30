@@ -42,6 +42,11 @@ struct RelaunchNotificationState {
                              // `rounded_time_until_reboot_required`.
   } requirement_type = kNone;
 
+  enum PolicySource {
+    kUser,    // Relaunch notifications are triggered by a user policy.
+    kDevice,  // Relaunch notifications are triggered by a device policy..
+  } policy_source = kUser;
+
   // The remaining time until the device will restart itself, rounded to the
   // nearest day, hour, minute, or second; depending on how far into the future
   // it is.

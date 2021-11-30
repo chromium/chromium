@@ -46,11 +46,20 @@ bool CheckForSlowBoot(const base::FilePath& slow_boot_file_path) {
   return false;
 }
 
-std::u16string GetEnterpriseDomainManager() {
-  return base::UTF8ToUTF16(Shell::Get()
-                               ->system_tray_model()
-                               ->enterprise_domain()
-                               ->enterprise_domain_manager());
+std::u16string GetDomainManager(
+    RelaunchNotificationState::PolicySource policy_source) {
+  EnterpriseDomainModel* enterprise_domain =
+      Shell::Get()->system_tray_model()->enterprise_domain();
+  std::string domain_manager;
+  switch (policy_source) {
+    case RelaunchNotificationState::kDevice:
+      domain_manager = enterprise_domain->enterprise_domain_manager();
+      break;
+    case RelaunchNotificationState::kUser:
+      domain_manager = enterprise_domain->account_domain_manager();
+      break;
+  }
+  return base::UTF8ToUTF16(domain_manager);
 }
 
 }  // namespace
@@ -211,10 +220,11 @@ std::u16string UpdateNotificationController::GetMessage() const {
   }
 
   std::u16string update_text;
-  if (body_message_id.has_value() &&
+  std::u16string domain_manager =
+      GetDomainManager(model_->relaunch_notification_state().policy_source);
+  if (body_message_id.has_value() && !domain_manager.empty() &&
       model_->update_type() == UpdateType::kSystem) {
-    update_text = l10n_util::GetStringFUTF16(*body_message_id,
-                                             GetEnterpriseDomainManager(),
+    update_text = l10n_util::GetStringFUTF16(*body_message_id, domain_manager,
                                              ui::GetChromeOSDeviceName());
   } else {
     update_text = l10n_util::GetStringFUTF16(
