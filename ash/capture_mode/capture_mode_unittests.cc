@@ -4968,9 +4968,9 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   ASSERT_TRUE(settings_menu);
 
   CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
-  // Tab once, check the `Off` option is skipped and remains disabled. The
+  // Tab twice, check the `Off` option is skipped and remains disabled. The
   // current focused view is the `Microphone` option.
-  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/2);
   EXPECT_FALSE(advanced_settings_test_api.GetAudioOffOption()->GetEnabled());
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
             advanced_settings_test_api.GetMicrophoneOption());
@@ -5799,11 +5799,15 @@ TEST_F(CaptureModeAdvancedSettingsTest, KeyboardNavigationForSettingsMenu) {
   CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
   CaptureModeMenuGroup* audio_input_menu_group =
       advanced_settings_test_api.GetAudioInputMenuGroup();
-  // Tab once to focus the first item on the settings menu (`Off` option). Check
-  // `Off` option is the checked option not the `Microphone`.
+  // Tab once to focus the first item on the settings menu (`Audio input`
+  // header).
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab once to focus the `Off` option on the settings menu. Check `Off` option
+  // is the checked option not the `Microphone`.
+  SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
@@ -5814,9 +5818,9 @@ TEST_F(CaptureModeAdvancedSettingsTest, KeyboardNavigationForSettingsMenu) {
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
-  // Tab twice to focus the `Select folder...` menu item and enter space to open
-  // the selection window.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/2);
+  // Tab three times to focus the `Select folder...` menu item and enter space
+  // to open the selection window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/3);
   SendKey(ui::VKEY_SPACE, event_generator);
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   EXPECT_TRUE(IsFolderSelectionDialogShown());
@@ -5875,8 +5879,8 @@ TEST_F(CaptureModeAdvancedSettingsTest,
                      return item->GetView() == custom_folder_view;
                    }) == highlightable_items.end());
 
-  // Tab three times to focus the default `Downloads` option.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/3);
+  // Tab five times to focus the default `Downloads` option.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/5);
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
             advanced_settings_test_api.GetDefaultDownloadsOption());
 
@@ -5912,15 +5916,15 @@ TEST_F(CaptureModeAdvancedSettingsTest,
       GetCaptureModeAdvancedSettingsView();
   ASSERT_TRUE(settings_menu);
 
-  // Tab five times to focus the `Select folder...` menu item and enter space
+  // Tab seven times to focus the `Select folder...` menu item and enter space
   // to open the selection window.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/5);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/7);
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
   // The current focus group is `FocusGroup::kSettingsMenu` and focus index is
-  // 4u.
+  // 6u.
   EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(6u, test_api.GetCurrentFocusIndex());
 
   // Select the default `Downloads` folder as the custom folder which will
   // have custom folder option get removed.
@@ -5929,6 +5933,12 @@ TEST_F(CaptureModeAdvancedSettingsTest,
       test_delegate->GetUserDefaultDownloadsFolder();
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   dialog_factory->AcceptPath(default_downloads_folder);
+
+  // Press space to ensure the selection window can be opened after the custom
+  // folder is removed from the settings menu.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  dialog_factory->CancelDialog();
 
   // Tab once to make sure there's no crash and the focus gets moved to
   // settings button.
@@ -5958,15 +5968,15 @@ TEST_F(CaptureModeAdvancedSettingsTest,
       GetCaptureModeAdvancedSettingsView();
   ASSERT_TRUE(settings_menu);
 
-  // Tab four times to focus the `Select folder...` menu item and enter space
+  // Tab six times to focus the `Select folder...` menu item and enter space
   // to open the selection window.
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/4);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
   SendKey(ui::VKEY_SPACE, event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
   // The current focus group is `FocusGroup::kSettingsMenu` and focus index is
-  // 3u.
+  // 5u.
   EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(5u, test_api.GetCurrentFocusIndex());
 
   // Select the custom folder. Wait for the settings menu to be refreshed. The
   // custom folder option should be added to the settings menu and checked.
@@ -5977,6 +5987,12 @@ TEST_F(CaptureModeAdvancedSettingsTest,
   WaitForSettingsMenuToBeRefreshed();
   CaptureModeAdvancedSettingsTestApi advanced_test_api;
   EXPECT_TRUE(advanced_test_api.GetCustomFolderOptionIfAny());
+
+  // Press space to ensure the selection window can be opened after the custom
+  // folder is added to the settings menu.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  dialog_factory->CancelDialog();
 
   // Tab once to make sure the focus gets moved to settings button.
   SendKey(ui::VKEY_TAB, event_generator);

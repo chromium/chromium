@@ -66,12 +66,16 @@ void SetInkDropForButton(views::Button* button) {
   views::InstallRectHighlightPathGenerator(button);
 }
 
+}  // namespace
+
 // -----------------------------------------------------------------------------
 // CaptureModeMenuHeader:
 
 // The header of the menu group, which has an icon and a text label. Not user
 // interactable.
-class CaptureModeMenuHeader : public views::View {
+class CaptureModeMenuHeader
+    : public views::View,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeMenuHeader);
 
@@ -95,6 +99,20 @@ class CaptureModeMenuHeader : public views::View {
   CaptureModeMenuHeader& operator=(const CaptureModeMenuHeader&) = delete;
   ~CaptureModeMenuHeader() override = default;
 
+  const std::u16string& GetHeaderLabel() const {
+    return label_view_->GetText();
+  }
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    View::GetAccessibleNodeData(node_data);
+    node_data->SetName(GetHeaderLabel());
+    node_data->role = ax::mojom::Role::kHeader;
+  }
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override { return this; }
+
  private:
   views::ImageView* icon_view_;
   views::Label* label_view_;
@@ -102,8 +120,6 @@ class CaptureModeMenuHeader : public views::View {
 
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
 END_METADATA
-
-}  // namespace
 
 // -----------------------------------------------------------------------------
 // CaptureModeMenuItem:
@@ -243,9 +259,10 @@ END_METADATA
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
                                            std::u16string header_label)
-    : delegate_(delegate) {
-  AddChildView(std::make_unique<CaptureModeMenuHeader>(
-      header_icon, std::move(header_label)));
+    : delegate_(delegate),
+      menu_header_(AddChildView(
+          std::make_unique<CaptureModeMenuHeader>(header_icon,
+                                                  std::move(header_label)))) {
   options_container_ = AddChildView(std::make_unique<views::View>());
   options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -310,6 +327,7 @@ bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
 void CaptureModeMenuGroup::AppendHighlightableItems(
     std::vector<CaptureModeSessionFocusCycler::HighlightableView*>&
         highlightable_items) {
+  highlightable_items.push_back(menu_header_);
   for (auto* option : options_) {
     if (option->GetEnabled())
       highlightable_items.push_back(option);

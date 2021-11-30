@@ -19,6 +19,7 @@ struct VectorIcon;
 
 namespace ash {
 
+class CaptureModeMenuHeader;
 class CaptureModeMenuItem;
 class CaptureModeOption;
 
@@ -106,6 +107,9 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // CaptureModeAdvancedSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.
   const Delegate* const delegate_;
+
+  // The menu header of `this`. It's owned by the views hierarchy.
+  CaptureModeMenuHeader* menu_header_;
 
   // Options added via calls "AddOption()". Options are owned by theirs views
   // hierarchy.

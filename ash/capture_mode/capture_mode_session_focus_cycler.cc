@@ -273,6 +273,13 @@ bool CaptureModeSessionFocusCycler::OnSpacePressed() {
   }
 
   std::vector<HighlightableView*> views = GetGroupItems(current_focus_group_);
+  if (views.empty())
+    return false;
+
+  // If current focused view doesn't exist, return directly.
+  if (!FindFocusedViewAndUpdateFocusIndex(views))
+    return false;
+
   DCHECK(!views.empty());
   DCHECK_LT(focus_index_, views.size());
   HighlightableView* view = views[focus_index_];
@@ -355,27 +362,10 @@ void CaptureModeSessionFocusCycler::ClearCurrentVisibleFocus() {
   if (views.empty())
     return;
 
-  const size_t current_focus_index =
-      std::find_if(views.begin(), views.end(),
-                   [](CaptureModeSessionFocusCycler::HighlightableView* item) {
-                     return item->has_focus();
-                   }) -
-      views.begin();
-
-  // If current focused view doesn't exist, skip clearing focus.
-  if (current_focus_index == views.size()) {
-    // If `focus_index_` is out of bound, update it to the last index of the
-    // `views`.
-    if (focus_index_ >= views.size())
-      focus_index_ = views.size() - 1;
+  // If current focused view doesn't exist, return directly.
+  if (!FindFocusedViewAndUpdateFocusIndex(views))
     return;
-  }
 
-  // Update `focus_index_` to ensure it's up to date, since highlightable views
-  // of `current_focus_group_` can be updated during keyboard navigation, for
-  // example, the custom folder option can be added or removed via the select
-  // folder menu item.
-  focus_index_ = current_focus_index;
   DCHECK_LT(focus_index_, views.size());
   views[focus_index_]->PseudoBlur();
 }
@@ -511,6 +501,32 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
     case FocusGroup::kPendingSettings:
       return session_->capture_mode_bar_widget()->GetNativeWindow();
   }
+}
+
+bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
+    std::vector<HighlightableView*> views) {
+  const size_t current_focus_index =
+      std::find_if(views.begin(), views.end(),
+                   [](CaptureModeSessionFocusCycler::HighlightableView* item) {
+                     return item->has_focus();
+                   }) -
+      views.begin();
+
+  // If current focused view doesn't exist, return false;
+  if (current_focus_index == views.size()) {
+    // If `focus_index_` is out of bound, update it to the last index of the
+    // `views`.
+    if (focus_index_ >= views.size())
+      focus_index_ = views.size() - 1;
+    return false;
+  }
+
+  // Update `focus_index_` to ensure it's up to date, since highlightable views
+  // of `current_focus_group_` can be updated during keyboard navigation, for
+  // example, the custom folder option can be added or removed via the select
+  // folder menu item.
+  focus_index_ = current_focus_index;
+  return true;
 }
 
 void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
