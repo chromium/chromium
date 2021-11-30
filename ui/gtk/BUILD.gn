@@ -139,7 +139,6 @@ component("gtk") {
       "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",
-      "//ui/platform_window/x11",
     ]
   }
 

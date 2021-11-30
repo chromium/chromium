@@ -36,4 +36,12 @@ bool LinuxUiDelegate::ExportWindowHandle(
   return false;
 }
 
+void LinuxUiDelegate::SetTransientWindowForParent(
+    gfx::AcceleratedWidget parent,
+    gfx::AcceleratedWidget transient) {
+  // This function should not be called when using a platform that doesn't
+  // implement it.
+  NOTREACHED();
+}
+
 }  // namespace ui

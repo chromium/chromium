@@ -1,3 +1,4 @@
+
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -7,6 +8,7 @@
 #include "base/check.h"
 #include "base/environment.h"
 #include "base/strings/stringprintf.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -19,8 +21,6 @@
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
-#include "ui/platform_window/x11/x11_window.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
 
 namespace gtk {
 
@@ -91,19 +91,14 @@ bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
   SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
               x11::GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
 
-  ui::X11Window* parent_window =
-      ui::X11WindowManager::GetInstance()->GetWindow(parent);
-  parent_window->SetTransientWindow(x11_window);
-
+  ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
+      parent, static_cast<gfx::AcceleratedWidget>(x11_window));
   return true;
 }
 
 void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
-  ui::X11Window* parent_window =
-      ui::X11WindowManager::GetInstance()->GetWindow(parent);
-  // parent_window might be dead if there was a top-down window close
-  if (parent_window)
-    parent_window->SetTransientWindow(x11::Window::None);
+  ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
+      parent, static_cast<gfx::AcceleratedWidget>(x11::Window::None));
 }
 
 GdkDisplay* GtkUiPlatformX11::GetGdkDisplay() {
