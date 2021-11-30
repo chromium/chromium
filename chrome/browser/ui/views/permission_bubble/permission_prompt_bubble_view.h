@@ -60,7 +60,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   bool ShouldShowCloseButton() const override;
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetClosing(views::Widget* widget) override;
 
   void AcceptPermission();
   void AcceptPermissionThisTime();
