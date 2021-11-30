@@ -177,8 +177,13 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     if (blink::IsRestoredFromBackForwardCache(last_state_sent_to_renderer_,
                                               new_state)) {
       // We see that IPCs are not received by the renderer. Check that we are
-      // about to send and IPC to a live RVH.
-      DCHECK(render_view_host_impl_->IsRenderViewLive());
+      // about to send an IPC to a live RVH.
+      if (!render_view_host_impl_->IsRenderViewLive()) {
+        blink::RecordUMAEventPageShowPersisted(
+            blink::EventPageShowPersisted::kYesInBrowserRenderViewNotLive);
+        NOTREACHED();
+      }
+      // And that the mojo interface is connected.
       if (!render_view_host_impl_->GetAssociatedPageBroadcast()
                .is_connected()) {
         blink::RecordUMAEventPageShowPersisted(

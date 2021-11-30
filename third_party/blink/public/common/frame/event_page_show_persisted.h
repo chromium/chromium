@@ -44,11 +44,16 @@ enum class EventPageShowPersisted {
   // `should_dispatch_pageshow_for_debugging` set to true.
   kYesInBrowserAck = 9,
 
+  // Mojo interface was not connected when the IPC was being sent.
   kYesInBrowserDisconnected = 10,
+
+  // RenderView was not live when the IPC was being sent.
+  kYesInBrowserRenderViewNotLive = 11,
+
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowserDisconnected,
+  kMaxValue = kYesInBrowserRenderViewNotLive,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(
