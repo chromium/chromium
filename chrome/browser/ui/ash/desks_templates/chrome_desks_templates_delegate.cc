@@ -35,6 +35,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
@@ -80,19 +81,15 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
 
 // Return true if `app_id` is available to launch from template.
 bool IsAppAvailable(const std::string& app_id,
-                    apps::AppServiceProxy* app_service_proxy = nullptr) {
+                    apps::AppServiceProxy* app_service_proxy) {
+  DCHECK(app_service_proxy);
   bool installed = false;
   Profile* app_profile = ProfileManager::GetActiveUserProfile();
   DCHECK(app_profile);
-  if (!app_service_proxy) {
-    app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(app_profile);
-    if (!app_service_proxy)
-      return false;
-  }
+
   app_service_proxy->AppRegistryCache().ForOneApp(
       app_id, [&](const apps::AppUpdate& app) {
-        installed = app.Readiness() == apps::mojom::Readiness::kReady;
+        installed = apps_util::IsInstalled(app.Readiness());
       });
   if (installed)
     return true;
@@ -117,7 +114,7 @@ std::vector<std::string> GetUnavailableAppNames(
     app_service_proxy->AppRegistryCache().ForOneApp(
         iter.first,
         [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
-    if (!IsAppAvailable(name, app_service_proxy))
+    if (!IsAppAvailable(iter.first, app_service_proxy))
       app_names.push_back(name);
   }
   return app_names;
