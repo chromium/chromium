@@ -654,8 +654,7 @@ void ProtocolHandlerRegistry::RegisterProtocolHandlersFromPref(
     ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(*p);
     if (!RegisterProtocolHandler(handler, source))
       continue;
-    bool is_default = false;
-    if ((*p)->GetBoolean("default", &is_default) && is_default) {
+    if ((*p)->FindBoolKey("default").value_or(false)) {
       SetDefault(handler);
     }
   }
