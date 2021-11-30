@@ -101,8 +101,13 @@ void V4L2VideoDecoderDelegateH264Legacy::H264DPBToV4L2DPB(
 
     struct v4l2_h264_dpb_entry& entry = priv_->v4l2_decode_param.dpb[i++];
     entry.buf_index = index;
-    entry.frame_num = pic->frame_num;
-    entry.pic_num = pic->pic_num;
+    if (pic->long_term) {
+      entry.frame_num = pic->long_term_pic_num;
+      entry.pic_num = pic->long_term_frame_idx;
+    } else {
+      entry.frame_num = pic->frame_num;
+      entry.pic_num = pic->pic_num;
+    }
     entry.top_field_order_cnt = pic->top_field_order_cnt;
     entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
     entry.flags = (pic->ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0) |
