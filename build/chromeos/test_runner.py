@@ -671,9 +671,6 @@ class GTestTest(RemoteTest):
               os.path.abspath(
                   os.path.join(self._path_to_outdir, self._vpython_dir)),
               CHROMIUM_SRC_PATH))
-      # TODO(bpastene): Add the vpython spec to the test's runtime deps instead
-      # of handling it here.
-      runtime_files.append('.vpython')
 
     for f in runtime_files:
       self._test_cmd.extend(['--files', f])

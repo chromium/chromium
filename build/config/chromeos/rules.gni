@@ -324,7 +324,6 @@ template("generate_runner_script") {
       deps += invoker.deps
     }
     data = [
-      "//.vpython",
       "//.vpython3",
 
       # We use android test-runner's results libs to construct gtest output
