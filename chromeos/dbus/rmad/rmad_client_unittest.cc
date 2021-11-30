@@ -720,9 +720,9 @@ TEST_F(RmadClientTest, Error) {
   TestObserver observer_1(client_);
 
   EmitErrorSignal(rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
-  EXPECT_EQ(1, observer_1.num_error());
-  EXPECT_EQ(rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE,
-            observer_1.last_error());
+  EXPECT_EQ(observer_1.num_error(), 1);
+  EXPECT_EQ(observer_1.last_error(),
+            rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
 }
 
 // Tests that synchronous observers are notified about component calibration
@@ -733,12 +733,12 @@ TEST_F(RmadClientTest, CalibrationProgress) {
   EmitCalibrationProgressSignal(
       rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER,
       rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS, 0.5);
-  EXPECT_EQ(1, observer_1.num_calibration_progress());
-  EXPECT_EQ(rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER,
-            observer_1.last_calibration_component_status().component());
-  EXPECT_EQ(rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS,
-            observer_1.last_calibration_component_status().status());
-  EXPECT_EQ(0.5, observer_1.last_calibration_component_status().progress());
+  EXPECT_EQ(observer_1.num_calibration_progress(), 1);
+  EXPECT_EQ(observer_1.last_calibration_component_status().component(),
+            rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER);
+  EXPECT_EQ(observer_1.last_calibration_component_status().status(),
+            rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS);
+  EXPECT_EQ(observer_1.last_calibration_component_status().progress(), 0.5);
 }
 
 TEST_F(RmadClientTest, CalibrationOverallProgress) {
@@ -747,19 +747,19 @@ TEST_F(RmadClientTest, CalibrationOverallProgress) {
   EmitCalibrationOverallProgressSignal(
       rmad::CalibrationOverallStatus::
           RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
-  EXPECT_EQ(1, observer_1.num_calibration_overall_progress());
-  EXPECT_EQ(rmad::CalibrationOverallStatus::
-                RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE,
-            observer_1.last_calibration_overall_status());
+  EXPECT_EQ(observer_1.num_calibration_overall_progress(), 1);
+  EXPECT_EQ(observer_1.last_calibration_overall_status(),
+            rmad::CalibrationOverallStatus::
+                RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
 }
 
 TEST_F(RmadClientTest, CalibrationOverallProgressBadParameterFails) {
   TestObserver observer_1(client_);
 
   EmitEmptySignal(rmad::kCalibrationOverallSignal);
-  EXPECT_EQ(0, observer_1.num_calibration_overall_progress());
-  EXPECT_EQ(rmad::CalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN,
-            observer_1.last_calibration_overall_status());
+  EXPECT_EQ(observer_1.num_calibration_overall_progress(), 0);
+  EXPECT_EQ(observer_1.last_calibration_overall_status(),
+            rmad::CalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN);
 }
 
 // Tests that synchronous observers are notified about provisioning progress.
@@ -768,10 +768,10 @@ TEST_F(RmadClientTest, ProvisioningProgress) {
 
   EmitProvisioningProgressSignal(
       rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25);
-  EXPECT_EQ(1, observer_1.num_provisioning_progress());
-  EXPECT_EQ(rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS,
-            observer_1.last_provisioning_status().status());
-  EXPECT_EQ(0.25, observer_1.last_provisioning_status().progress());
+  EXPECT_EQ(observer_1.num_provisioning_progress(), 1);
+  EXPECT_EQ(observer_1.last_provisioning_status().status(),
+            rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS);
+  EXPECT_EQ(observer_1.last_provisioning_status().progress(), 0.25);
 }
 
 // Tests that synchronous observers are notified about provisioning progress.
@@ -779,12 +779,12 @@ TEST_F(RmadClientTest, HardwareWriteProtectionState) {
   TestObserver observer_1(client_);
 
   EmitHardwareWriteProtectionStateSignal(false);
-  EXPECT_EQ(1, observer_1.num_hardware_write_protection_state());
-  EXPECT_EQ(false, observer_1.last_hardware_write_protection_state());
+  EXPECT_EQ(observer_1.num_hardware_write_protection_state(), 1);
+  EXPECT_FALSE(observer_1.last_hardware_write_protection_state());
 
   EmitHardwareWriteProtectionStateSignal(true);
-  EXPECT_EQ(2, observer_1.num_hardware_write_protection_state());
-  EXPECT_EQ(true, observer_1.last_hardware_write_protection_state());
+  EXPECT_EQ(observer_1.num_hardware_write_protection_state(), 2);
+  EXPECT_TRUE(observer_1.last_hardware_write_protection_state());
 }
 
 // Tests that synchronous observers are notified about provisioning progress.
@@ -792,12 +792,12 @@ TEST_F(RmadClientTest, PowerCableState) {
   TestObserver observer_1(client_);
 
   EmitPowerCableStateSignal(false);
-  EXPECT_EQ(1, observer_1.num_power_cable_state());
-  EXPECT_EQ(false, observer_1.last_power_cable_state());
+  EXPECT_EQ(observer_1.num_power_cable_state(), 1);
+  EXPECT_FALSE(observer_1.last_power_cable_state());
 
   EmitPowerCableStateSignal(true);
-  EXPECT_EQ(2, observer_1.num_power_cable_state());
-  EXPECT_EQ(true, observer_1.last_power_cable_state());
+  EXPECT_EQ(observer_1.num_power_cable_state(), 2);
+  EXPECT_TRUE(observer_1.last_power_cable_state());
 }
 
 // Tests that synchronous observers are notified about hardware verification
@@ -806,17 +806,15 @@ TEST_F(RmadClientTest, HardwareVerificationResult) {
   TestObserver observer_1(client_);
 
   EmitHardwareVerificationResultSignal(false, "fatal error");
-  EXPECT_EQ(1, observer_1.num_hardware_verification_result());
-  EXPECT_EQ(false,
-            observer_1.last_hardware_verification_result().is_compliant());
-  EXPECT_EQ("fatal error",
-            observer_1.last_hardware_verification_result().error_str());
+  EXPECT_EQ(observer_1.num_hardware_verification_result(), 1);
+  EXPECT_FALSE(observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(),
+            "fatal error");
 
   EmitHardwareVerificationResultSignal(true, "ok");
-  EXPECT_EQ(2, observer_1.num_hardware_verification_result());
-  EXPECT_EQ(true,
-            observer_1.last_hardware_verification_result().is_compliant());
-  EXPECT_EQ("ok", observer_1.last_hardware_verification_result().error_str());
+  EXPECT_EQ(observer_1.num_hardware_verification_result(), 2);
+  EXPECT_TRUE(observer_1.last_hardware_verification_result().is_compliant());
+  EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(), "ok");
 }
 
 // Tests that synchronous observers are notified about hardware verification
@@ -826,17 +824,17 @@ TEST_F(RmadClientTest, FinalizationProgress) {
 
   EmitFinalizationProgressSignal(
       rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
-  EXPECT_EQ(1, observer_1.num_finalization_progress());
-  EXPECT_EQ(rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS,
-            observer_1.last_finalization_progress().status());
-  EXPECT_EQ(0.5, observer_1.last_finalization_progress().progress());
+  EXPECT_EQ(observer_1.num_finalization_progress(), 1);
+  EXPECT_EQ(observer_1.last_finalization_progress().status(),
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS);
+  EXPECT_EQ(observer_1.last_finalization_progress().progress(), 0.5);
 
   EmitFinalizationProgressSignal(
       rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE, 1.0);
-  EXPECT_EQ(2, observer_1.num_finalization_progress());
-  EXPECT_EQ(rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE,
-            observer_1.last_finalization_progress().status());
-  EXPECT_EQ(1.0, observer_1.last_finalization_progress().progress());
+  EXPECT_EQ(observer_1.num_finalization_progress(), 2);
+  EXPECT_EQ(observer_1.last_finalization_progress().status(),
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE);
+  EXPECT_EQ(observer_1.last_finalization_progress().progress(), 1.0);
 }
 
 TEST_F(RmadClientTest, RoFirmwareUpdateProgress) {
