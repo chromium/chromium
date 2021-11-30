@@ -209,13 +209,14 @@ void ProtocolHandlersHandler::HandleSetDefault(const base::ListValue* args) {
 
 ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
     const base::ListValue* args) const {
-  std::u16string protocol;
-  std::u16string url;
-  bool ok = args->GetString(0, &protocol) && args->GetString(1, &url);
+  base::Value::ConstListView args_list = args->GetList();
+  bool ok = args_list.size() >= 2u && args_list[0].is_string() &&
+            args_list[1].is_string();
   if (!ok)
     return ProtocolHandler::EmptyProtocolHandler();
-  return ProtocolHandler::CreateProtocolHandler(base::UTF16ToUTF8(protocol),
-                                                GURL(base::UTF16ToUTF8(url)));
+  std::string protocol = args_list[0].GetString();
+  std::string url = args_list[1].GetString();
+  return ProtocolHandler::CreateProtocolHandler(protocol, GURL(url));
 }
 
 ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
