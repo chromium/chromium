@@ -1802,6 +1802,11 @@ std::string AXNodeData::ToString() const {
     }
   }
 
+  for (const std::pair<std::string, std::string>& string_pair :
+       html_attributes) {
+    result += " " + string_pair.first + "=" + string_pair.second;
+  }
+
   if (actions)
     result += " actions=" + ActionsBitfieldToString(actions);
 
