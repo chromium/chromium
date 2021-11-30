@@ -25,17 +25,10 @@ namespace blink {
 
 namespace {
 
-absl::optional<int64_t> ParseExpiry(const String& expiry) {
-  bool expiry_is_valid = false;
-  int64_t parsed_expiry = expiry.ToInt64Strict(&expiry_is_valid);
-  return expiry_is_valid ? absl::make_optional(parsed_expiry) : absl::nullopt;
-}
-
-absl::optional<int64_t> ParsePriority(const String& priority) {
-  bool priority_is_valid = false;
-  int64_t parsed_priority = priority.ToInt64Strict(&priority_is_valid);
-  return priority_is_valid ? absl::make_optional(parsed_priority)
-                           : absl::nullopt;
+absl::optional<int64_t> ParseInt64(const String& string) {
+  bool valid = false;
+  int64_t value = string.ToInt64Strict(&valid);
+  return valid ? absl::make_optional(value) : absl::nullopt;
 }
 
 absl::optional<WebImpression> WebImpressionOrErrorToWebImpression(
@@ -54,7 +47,7 @@ WebImpressionOrError GetImpression(
     ExecutionContext* execution_context,
     const String& impression_data_string,
     const String& conversion_destination_string,
-    const absl::optional<String>& reporting_origin_string,
+    const String& reporting_origin_string,
     absl::optional<int64_t> impression_expiry_milliseconds,
     absl::optional<int64_t> attribution_source_priority,
     HTMLAnchorElement* element,
@@ -137,15 +130,15 @@ WebImpressionOrError GetImpression(
   // Reporting origin is an optional attribute. Reporting origins must be
   // secure.
   absl::optional<WebSecurityOrigin> reporting_origin;
-  if (reporting_origin_string) {
+  if (!reporting_origin_string.IsNull()) {
     reporting_origin =
-        SecurityOrigin::CreateFromString(*reporting_origin_string);
+        SecurityOrigin::CreateFromString(reporting_origin_string);
 
     if (!reporting_origin->IsPotentiallyTrustworthy()) {
       AuditsIssue::ReportAttributionIssue(
           frame->DomWindow(),
           AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
-          absl::nullopt, element, absl::nullopt, *reporting_origin_string);
+          absl::nullopt, element, absl::nullopt, reporting_origin_string);
       return mojom::blink::RegisterImpressionError::
           kInsecureAttributionReportTo;
     }
@@ -171,22 +164,8 @@ WebImpressionOrError GetImpression(
 
 absl::optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element) {
-  absl::optional<int64_t> expiry;
-  if (element->hasAttribute(html_names::kAttributionexpiryAttr)) {
-    expiry = ParseExpiry(
-        element->FastGetAttribute(html_names::kAttributionexpiryAttr)
-            .GetString());
-  }
-
-  absl::optional<int64_t> priority;
-  if (element->hasAttribute(html_names::kAttributionsourcepriorityAttr)) {
-    priority = ParsePriority(
-        element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
-            .GetString());
-  }
-
-  DCHECK(element->hasAttribute(html_names::kAttributiondestinationAttr));
-  DCHECK(element->hasAttribute(html_names::kAttributionsourceeventidAttr));
+  DCHECK(element->FastHasAttribute(html_names::kAttributiondestinationAttr));
+  DCHECK(element->FastHasAttribute(html_names::kAttributionsourceeventidAttr));
 
   return WebImpressionOrErrorToWebImpression(GetImpression(
       element->GetExecutionContext(),
@@ -194,12 +173,14 @@ absl::optional<WebImpression> GetImpressionForAnchor(
           .GetString(),
       element->FastGetAttribute(html_names::kAttributiondestinationAttr)
           .GetString(),
-      element->hasAttribute(html_names::kAttributionreporttoAttr)
-          ? absl::make_optional(
-                element->FastGetAttribute(html_names::kAttributionreporttoAttr)
-                    .GetString())
-          : absl::nullopt,
-      expiry, priority, element, /*allow_invalid_impression_data=*/true));
+      element->FastGetAttribute(html_names::kAttributionreporttoAttr)
+          .GetString(),
+      ParseInt64(element->FastGetAttribute(html_names::kAttributionexpiryAttr)
+                     .GetString()),
+      ParseInt64(
+          element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
+              .GetString()),
+      element, /*allow_invalid_impression_data=*/true));
 }
 
 absl::optional<WebImpression> GetImpressionFromWindowFeatures(
@@ -209,17 +190,12 @@ absl::optional<WebImpression> GetImpressionFromWindowFeatures(
       features.conversion_destination.IsNull())
     return absl::nullopt;
 
-  return WebImpressionOrErrorToWebImpression(GetImpression(
-      execution_context, features.impression_data,
-      features.conversion_destination,
-      !features.reporting_origin.IsNull()
-          ? absl::make_optional(features.reporting_origin)
-          : absl::nullopt,
-      !features.expiry.IsNull() ? ParseExpiry(features.expiry) : absl::nullopt,
-      !features.priority.IsNull() ? ParsePriority(features.priority)
-                                  : absl::nullopt,
-      nullptr,
-      /*allow_invalid_impression_data=*/true));
+  return WebImpressionOrErrorToWebImpression(
+      GetImpression(execution_context, features.impression_data,
+                    features.conversion_destination, features.reporting_origin,
+                    ParseInt64(features.expiry), ParseInt64(features.priority),
+                    /*element=*/nullptr,
+                    /*allow_invalid_impression_data=*/true));
 }
 
 WebImpressionOrError GetImpressionForParams(
@@ -228,16 +204,15 @@ WebImpressionOrError GetImpressionForParams(
   return GetImpression(
       execution_context, params->attributionSourceEventId(),
       params->attributionDestination(),
-      params->hasAttributionReportTo()
-          ? absl::make_optional(params->attributionReportTo())
-          : absl::nullopt,
+      params->hasAttributionReportTo() ? params->attributionReportTo()
+                                       : String(),
       params->hasAttributionExpiry()
           ? absl::make_optional(params->attributionExpiry())
           : absl::nullopt,
       params->hasAttributionSourcePriority()
           ? absl::make_optional(params->attributionSourcePriority())
           : absl::nullopt,
-      nullptr,
+      /*element=*/nullptr,
       /*allow_invalid_impression_data=*/false);
 }
 
