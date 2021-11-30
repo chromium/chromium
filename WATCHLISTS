@@ -1013,6 +1013,11 @@
                   'ash/webui/file_manager|' \
                   'ui/file_manager'
     },
+    'firmware_update': {
+      'filepath': 'ash/components/fwupd/|' \
+                  'chromeos/dbus/fwupd/|' \
+                  'ash/webui/firmware_update_ui/'
+    },
     'freetype_update': {
       'filepath': 'third_party/freetype/README.chromium',
     },
@@ -2493,6 +2498,9 @@
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
     'filesapp': ['filesapp-reviews@chromium.org'],
+    'firmware_update': ['zentaro+firmware-watch@chromium.org',
+                        'jimmyxgong+firmware-watch@chromium.org',
+                        'michaelcheco+firmware-watch@google.com'],
     'freetype_update': ['drott+watch@chromium.org',
                         'thestig@chromium.org'],
     'fsp': ['mtomasz+watch@chromium.org'],
