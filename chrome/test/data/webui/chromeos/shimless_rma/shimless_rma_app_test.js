@@ -216,7 +216,7 @@ export function shimlessRMAAppTest() {
         }],
         fakeChromeVersion[0]);
 
-    const nextButton = component.shadowRoot.querySelector('#next');
+    const nextButton = component.shadowRoot.querySelector('#nextButtonLabel');
     assertEquals(
         loadTimeData.getString('nextButtonLabel'),
         nextButton.textContent.trim());

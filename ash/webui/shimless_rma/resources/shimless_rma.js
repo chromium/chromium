@@ -263,7 +263,18 @@ export class ShimlessRma extends ShimlessRmaBase {
       allButtonsDisabled_: {
         type: Boolean,
         value: true,
-      }
+      },
+
+      /**
+       * True when the Next button is clicked and the page is waiting for the
+       * response from the RMAD service.
+       * @protected
+       */
+      waitingForNextResponse_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -479,10 +490,17 @@ export class ShimlessRma extends ShimlessRmaBase {
         'onNextButtonClick not a function for ' +
             this.currentPage_.componentIs);
     this.allButtonsDisabled_ = true;
+    this.waitingForNextResponse_ = true;
     page.onNextButtonClick()
-        .then((stateResult) => this.processStateResult_(stateResult))
+        .then((stateResult) => {
+          this.waitingForNextResponse_ = false;
+          this.processStateResult_(stateResult);
+        })
         // TODO(gavindodd): Better error handling.
-        .catch((err) => this.allButtonsDisabled_ = false);
+        .catch((err) => {
+          this.waitingForNextResponse_ = false;
+          this.allButtonsDisabled_ = false;
+        });
   }
 
   /** @protected */

@@ -3,6 +3,10 @@
     padding: 50px;
   }
 
+  :host([waiting-for-next-response_]) #shimlessRMAContainer {
+    opacity: .4;
+  }
+
   .shimless-footer {
     text-align: right;
     margin-top: 10px;
@@ -26,9 +30,14 @@
     margin-right: 5px;
   }
 
-  #next::after {
-    content: ">";
-    padding-left: 5px;
+  #busyIcon {
+    height: 20px;
+    width: 20px;
+  }
+
+  #busyIcon,
+  #nextButtonCaret {
+    margin-inline-start: 5px;
   }
 </style>
 
@@ -53,7 +62,15 @@
       id="next" on-click="onNextButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
-      [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
+      <span id="nextButtonLabel">
+        [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
+      </span>
+      <paper-spinner-lite id="busyIcon" hidden$="[[!waitingForNextResponse_]]"
+        active>
+      </paper-spinner-lite>
+      <span id="nextButtonCaret" hidden$="[[waitingForNextResponse_]]">
+        &#62;
+      </span>
     </cr-button>
   </div>
   <!-- TODO(gavindodd): Debug only. Remove this before shipping. -->
