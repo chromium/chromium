@@ -136,6 +136,7 @@ export class SettingsPersonalizationOptionsElement extends
     // </if>
   }
 
+  // <if expr="chromeos">
   /**
    * @return the autocomplete search suggestions CrToggleElement.
    */
@@ -159,6 +160,7 @@ export class SettingsPersonalizationOptionsElement extends
     return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         '#driveSuggestControl');
   }
+  // </if>
 
   // <if expr="_google_chrome and not chromeos">
   private onMetricsReportingChange_() {

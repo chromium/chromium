@@ -288,6 +288,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
+  // <if expr="chromeos">
   /**
    * @return The encryption options SettingsSyncEncryptionOptionsElement.
    */
@@ -301,6 +302,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   getPersonalizationOptions(): SettingsPersonalizationOptionsElement|null {
     return this.shadowRoot!.querySelector('settings-personalization-options');
   }
+  // </if>
 
   // <if expr="chromeos or lacros">
   private shouldShowLacrosSideBySideWarning_(): boolean {
