@@ -42,8 +42,13 @@ using CompositingReasons = uint64_t;
   V(WillChangeOpacity)                                                        \
   V(WillChangeFilter)                                                         \
   V(WillChangeBackdropFilter)                                                 \
+                                                                              \
   /* Reasons that depend on ancestor properties */                            \
   V(BackfaceInvisibility3DAncestor)                                           \
+  /* TODO(crbug.com/1256990): Transform3DSceneLeaf today depends only on the  \
+     element and its properties, but in the future it could be optimized      \
+     to consider descendants and moved to the subtree group below. */         \
+  V(Transform3DSceneLeaf)                                                     \
   /* This flag is needed only when none of the explicit kWillChange* reasons  \
      are set. */                                                              \
   V(WillChangeOther)                                                          \
@@ -140,7 +145,7 @@ class PLATFORM_EXPORT CompositingReason {
         kOverflowScrollingParent | kOutOfFlowClipping | kVideoOverlay |
         kXrOverlay | kRoot | kRootScroller | kComboScrollDependentPosition |
         kAffectedByOuterViewportBoundsDelta | kBackfaceInvisibility3DAncestor |
-        kDocumentTransitionSharedElement,
+        kTransform3DSceneLeaf | kDocumentTransitionSharedElement,
 
     kComboAllDirectReasons = kComboAllDirectStyleDeterminedReasons |
                              kComboAllDirectNonStyleDeterminedReasons,
@@ -179,7 +184,7 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
         kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
-        kDocumentTransitionSharedElement,
+        kDocumentTransitionSharedElement | kTransform3DSceneLeaf,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |

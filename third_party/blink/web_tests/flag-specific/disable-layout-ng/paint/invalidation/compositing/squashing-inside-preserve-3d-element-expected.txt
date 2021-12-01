@@ -15,14 +15,13 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='target'",
-      "position": [28, 28],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "invalidations": [
         [0, 0, 100, 100]
       ],
-      "transform": 1
+      "transform": 4
     }
   ],
   "transforms": [
@@ -45,6 +44,18 @@
     {
       "id": 3,
       "parent": 2,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [28, 28, 0, 1]
+      ],
       "flattenInheritedTransform": false,
       "renderingContext": 1
     }

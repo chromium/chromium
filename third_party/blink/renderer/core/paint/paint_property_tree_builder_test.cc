@@ -3363,7 +3363,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FlatteningIn3DContext) {
   EXPECT_EQ(a_properties->Transform()->RenderingContextId(),
             d_properties->Transform()->RenderingContextId());
   EXPECT_FALSE(d_properties->Transform()->FlattensInheritedTransform());
-  EXPECT_EQ(d_properties->Effect(), nullptr);
+  EXPECT_NE(d_properties->Effect(), nullptr);
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,

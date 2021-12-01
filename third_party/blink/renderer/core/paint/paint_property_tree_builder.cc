@@ -1198,8 +1198,14 @@ static CompositingReasons CompositingReasonsForEffectProperty() {
 
 static bool NeedsEffect(const LayoutObject& object,
                         CompositingReasons direct_compositing_reasons) {
-  if (object.IsText())
+  if (object.IsText()) {
+    DCHECK(
+        !(direct_compositing_reasons & CompositingReasonsForEffectProperty()));
     return false;
+  }
+
+  if (direct_compositing_reasons & CompositingReasonsForEffectProperty())
+    return true;
 
   const ComputedStyle& style = object.StyleRef();
 
@@ -1221,12 +1227,6 @@ static bool NeedsEffect(const LayoutObject& object,
 
     if (layer->HasNonIsolatedDescendantWithBlendMode())
       return true;
-
-    // An effect node is required by cc if the layer flattens its subtree but it
-    // is treated as a 3D object by its parent.
-    if (!layer->Preserves3D() && layer->HasSelfPaintingLayerDescendant() &&
-        layer->Parent() && layer->Parent()->Preserves3D())
-      return true;
   }
 
   SkBlendMode blend_mode = object.IsBlendingAllowed()
@@ -1240,9 +1240,6 @@ static bool NeedsEffect(const LayoutObject& object,
     return true;
 
   if (style.Opacity() != 1.0f)
-    return true;
-
-  if (direct_compositing_reasons & CompositingReasonsForEffectProperty())
     return true;
 
   if (object.StyleRef().HasMask())
@@ -1267,8 +1264,11 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
   DCHECK(NeedsEffect(object_, full_context_.direct_compositing_reasons));
 
   if (!object_.HasLayer()) {
-    // An SVG object's effect never interleaves with clips.
-    DCHECK(object_.IsSVG());
+    // This is either SVG or it's the effect node to create flattening at the
+    // leaves of a 3D scene.
+    //
+    // Either way, the effect never interleaves with clips, because
+    // positioning is the only situation where clip order changes.
     return true;
   }
 

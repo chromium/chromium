@@ -501,22 +501,6 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     CreateCompositorScrollNode(*scroll_node, compositor_node);
   }
 
-  // If the parent transform node flattens transform (as |transform_node|
-  // flattens inherited transform) while it participates in the 3d sorting
-  // context of an ancestor, cc needs a render surface for correct flattening.
-  // TODO(crbug.com/504464): Move the logic into cc compositor thread.
-  auto* current_cc_effect = GetEffectTree().Node(current_.effect_id);
-  if (current_cc_effect && !current_cc_effect->HasRenderSurface() &&
-      current_cc_effect->transform_id == parent_id &&
-      transform_node.FlattensInheritedTransform()) {
-    const auto* parent = transform_node.UnaliasedParent();
-    if (parent && parent->RenderingContextId() &&
-        !parent->FlattensInheritedTransform()) {
-      current_cc_effect->render_surface_reason =
-          cc::RenderSurfaceReason::k3dTransformFlattening;
-    }
-  }
-
   compositor_node.visible_frame_element_id =
       transform_node.GetVisibleFrameElementId();
 
@@ -1178,6 +1162,13 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
   }
   if (effect.DocumentTransitionSharedElementId().valid())
     return cc::RenderSurfaceReason::kDocumentTransitionParticipant;
+  // If the effect's transform node flattens the transform while it
+  // participates in the 3d sorting context of an ancestor, cc needs a
+  // render surface for correct flattening.
+  // TODO(crbug.com/504464): Move the logic into cc compositor thread.
+  if (effect.FlattensAtLeafOf3DScene())
+    return cc::RenderSurfaceReason::k3dTransformFlattening;
+
   return cc::RenderSurfaceReason::kNone;
 }
 

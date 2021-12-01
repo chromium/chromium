@@ -51,6 +51,7 @@ CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
   const ComputedStyle& style = layout_object.StyleRef();
 
   reasons |= CompositingReasonsFor3DTransform(layout_object);
+  reasons |= CompositingReasonsFor3DSceneLeaf(layout_object);
 
   if (style.BackfaceVisibility() == EBackfaceVisibility::kHidden)
     reasons |= CompositingReason::kBackfaceVisibilityHidden;
@@ -130,16 +131,18 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
   if (object.GetDocument().Printing())
     return CompositingReason::kNone;
 
+  auto reasons = CompositingReasonsFor3DSceneLeaf(object);
+
   // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())
-      return DirectReasonsForSVGChildPaintProperties(object);
-    return CompositingReason::kNone;
+      reasons |= DirectReasonsForSVGChildPaintProperties(object);
+    return reasons;
   }
 
   const ComputedStyle& style = object.StyleRef();
-  auto reasons = CompositingReasonsForAnimation(object) |
-                 CompositingReasonsForWillChange(style);
+  reasons |= CompositingReasonsForAnimation(object) |
+             CompositingReasonsForWillChange(style);
 
   reasons |= CompositingReasonsFor3DTransform(object);
 
@@ -230,13 +233,18 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   if (object.IsText())
     return CompositingReason::kNone;
 
-  // Disable compositing of SVG if there is clip-path or mask to avoid hairline
-  // along the edges. TODO(crbug.com/1171601): Fix the root cause.
+  // Even though SVG doesn't support 3D transforms, it might be the leaf
+  // of a 3D scene that contains it.
+  auto reasons = CompositingReasonsFor3DSceneLeaf(object);
+
+  // Disable compositing of SVG, except in the cases where it is required for
+  // correctness, if there is clip-path or mask to avoid hairline along the
+  // edges. TODO(crbug.com/1171601): Fix the root cause.
   const ComputedStyle& style = object.StyleRef();
   if (style.HasClipPath() || style.HasMask())
-    return CompositingReason::kNone;
+    return reasons;
 
-  auto reasons = CompositingReasonsForAnimation(object);
+  reasons |= CompositingReasonsForAnimation(object);
   reasons |= CompositingReasonsForWillChange(style);
   // Exclude will-change for other properties some of which don't apply to SVG
   // children, e.g. 'top'.
@@ -276,6 +284,34 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DTransform(
   if (!layout_object.HasTransformRelatedProperty())
     return CompositingReason::kNone;
   return PotentialCompositingReasonsFor3DTransform(layout_object.StyleRef());
+}
+
+CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DSceneLeaf(
+    const LayoutObject& layout_object) {
+  // An effect node (and, eventually, a render pass created due to
+  // cc::RenderSurfaceReason::k3dTransformFlattening) is required for an
+  // element that doesn't preserve 3D but is treated as a 3D object by its
+  // parent.  See
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1256990#c2 for some
+  // notes on why this is needed.  Briefly, we need to ensure that we don't
+  // output quads with a 3d sorting_context of 0 in the middle of the quads
+  // that need to be 3D sorted; this is needed to contain any such quads in a
+  // separate render pass.
+  //
+  // Note that this is done even on elements that don't create a stacking
+  // context, and this appears to work.
+  //
+  // This could be improved by skipping this if we know that the
+  // descendants won't produce any quads in the render pass's quad list.
+  if (layout_object.IsForElement() && !layout_object.StyleRef().Preserves3D()) {
+    const LayoutObject* parent_object =
+        layout_object.NearestAncestorForElement();
+    if (parent_object && parent_object->StyleRef().Preserves3D()) {
+      return CompositingReason::kTransform3DSceneLeaf;
+    }
+  }
+
+  return CompositingReason::kNone;
 }
 
 CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(

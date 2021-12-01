@@ -280,6 +280,11 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
            CompositingReason::kBackdropFilterMask;
   }
 
+  bool FlattensAtLeafOf3DScene() const {
+    return state_.direct_compositing_reasons &
+           CompositingReason::kTransform3DSceneLeaf;
+  }
+
   // TODO(crbug.com/900241): Use HaveActiveXXXAnimation() instead of this
   // function when we can track animations for each property type.
   bool RequiresCompositingForAnimation() const {

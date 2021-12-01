@@ -60,6 +60,8 @@ class CORE_EXPORT CompositingReasonFinder {
       const ComputedStyle&);
   static CompositingReasons CompositingReasonsFor3DTransform(
       const LayoutObject&);
+  static CompositingReasons CompositingReasonsFor3DSceneLeaf(
+      const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
 
   static CompositingReasons CompositingReasonsForScrollDependentPosition(
