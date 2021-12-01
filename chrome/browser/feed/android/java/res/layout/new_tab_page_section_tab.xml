@@ -25,7 +25,7 @@
       android:layout_width="@dimen/ntp_header_dropdown_size"
       android:layout_height="@dimen/ntp_header_dropdown_size"
       android:scaleType="centerInside"
-      app:tint="@color/default_text_color_blue"
+      app:tint="@macro/tab_layout_selected_tab_color"
       android:visibility="gone"
       android:src="@drawable/mtrl_ic_arrow_drop_down"
       android:layout_gravity="center_vertical"
