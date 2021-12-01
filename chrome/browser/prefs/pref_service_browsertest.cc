@@ -24,9 +24,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 
 typedef InProcessBrowserTest PreservedWindowPlacement;
+using ::testing::Optional;
 
 IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
   browser()->window()->SetBounds(gfx::Rect(20, 30, 600, 600));
@@ -106,32 +108,22 @@ IN_PROC_BROWSER_TEST_F(PreferenceServiceTest, Test) {
   gfx::Rect bounds = browser()->window()->GetRestoredBounds();
 
   // Retrieve the expected rect values from "Preferences"
-  int bottom = 0;
   std::string kBrowserWindowPlacement(prefs::kBrowserWindowPlacement);
-  EXPECT_TRUE(root_dict->GetInteger(kBrowserWindowPlacement + ".bottom",
-      &bottom));
-  EXPECT_EQ(bottom, bounds.y() + bounds.height());
+  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".bottom"),
+              Optional(bounds.y() + bounds.height()));
 
-  int top = 0;
-  EXPECT_TRUE(root_dict->GetInteger(kBrowserWindowPlacement + ".top",
-      &top));
-  EXPECT_EQ(top, bounds.y());
+  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".top"),
+              Optional(bounds.y()));
 
-  int left = 0;
-  EXPECT_TRUE(root_dict->GetInteger(kBrowserWindowPlacement + ".left",
-      &left));
-  EXPECT_EQ(left, bounds.x());
+  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".left"),
+              Optional(bounds.x()));
 
-  int right = 0;
-  EXPECT_TRUE(root_dict->GetInteger(kBrowserWindowPlacement + ".right",
-      &right));
-  EXPECT_EQ(right, bounds.x() + bounds.width());
+  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".right"),
+              Optional(bounds.x() + bounds.width()));
 
   // Find if launched window is maximized.
   bool is_window_maximized = browser()->window()->IsMaximized();
-  bool is_maximized = false;
-  EXPECT_TRUE(root_dict->GetBoolean(kBrowserWindowPlacement + ".maximized",
-      &is_maximized));
-  EXPECT_EQ(is_maximized, is_window_maximized);
+  EXPECT_THAT(root_dict->FindBoolPath(kBrowserWindowPlacement + ".maximized"),
+              Optional(is_window_maximized));
 }
 #endif
