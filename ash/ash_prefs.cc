@@ -127,6 +127,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PowerPrefs::RegisterLocalStatePrefs(registry);
   DisplayPrefs::RegisterLocalStatePrefs(registry);
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
+  quick_pair::Mediator::RegisterLocalStatePrefs(registry);
   TopShortcutsView::RegisterLocalStatePrefs(registry);
 }
 

@@ -66,6 +66,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
   ~Mediator() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   chromeos::bluetooth_config::FastPairDelegate* GetFastPairDelegate();
 

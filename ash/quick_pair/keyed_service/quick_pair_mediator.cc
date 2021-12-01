@@ -111,6 +111,12 @@ void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   PendingWriteStore::RegisterProfilePrefs(registry);
 }
 
+// static
+void Mediator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  // TODO(dclasson): register future local state prefs here.
+  return;
+}
+
 chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {
   return fast_pair_bluetooth_config_delegate_.get();
 }
