@@ -201,17 +201,16 @@ class DynamicModuleResolverTestNotReached final
   }
 };
 
-class DynamicModuleResolverTest : public testing::Test,
-                                  public ParametrizedModuleTest {
+class DynamicModuleResolverTest : public testing::Test, public ModuleTestBase {
  public:
-  void SetUp() override { ParametrizedModuleTest::SetUp(); }
+  void SetUp() override { ModuleTestBase::SetUp(); }
 
-  void TearDown() override { ParametrizedModuleTest::TearDown(); }
+  void TearDown() override { ModuleTestBase::TearDown(); }
 };
 
 }  // namespace
 
-TEST_P(DynamicModuleResolverTest, ResolveSuccess) {
+TEST_F(DynamicModuleResolverTest, ResolveSuccess) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -252,7 +251,7 @@ TEST_P(DynamicModuleResolverTest, ResolveSuccess) {
   EXPECT_EQ("hello", capture->CapturedValue());
 }
 
-TEST_P(DynamicModuleResolverTest, ResolveJSONModuleSuccess) {
+TEST_F(DynamicModuleResolverTest, ResolveJSONModuleSuccess) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -279,7 +278,7 @@ TEST_P(DynamicModuleResolverTest, ResolveJSONModuleSuccess) {
   // validated during DynamicModuleResolverTestModulator::FetchTree.
 }
 
-TEST_P(DynamicModuleResolverTest, ResolveSpecifierFailure) {
+TEST_F(DynamicModuleResolverTest, ResolveSpecifierFailure) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -309,7 +308,7 @@ TEST_P(DynamicModuleResolverTest, ResolveSpecifierFailure) {
   EXPECT_TRUE(capture->Message().StartsWith("Failed to resolve"));
 }
 
-TEST_P(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
+TEST_F(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -340,7 +339,7 @@ TEST_P(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
   EXPECT_EQ("\"notARealType\" is not a valid module type.", capture->Message());
 }
 
-TEST_P(DynamicModuleResolverTest, FetchFailure) {
+TEST_F(DynamicModuleResolverTest, FetchFailure) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -374,7 +373,7 @@ TEST_P(DynamicModuleResolverTest, FetchFailure) {
   EXPECT_TRUE(capture->Message().StartsWith("Failed to fetch"));
 }
 
-TEST_P(DynamicModuleResolverTest, ExceptionThrown) {
+TEST_F(DynamicModuleResolverTest, ExceptionThrown) {
   V8TestingScope scope;
   auto* modulator = MakeGarbageCollected<DynamicModuleResolverTestModulator>(
       scope.GetScriptState());
@@ -415,7 +414,7 @@ TEST_P(DynamicModuleResolverTest, ExceptionThrown) {
   EXPECT_EQ("bar", capture->Message());
 }
 
-TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
+TEST_F(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
   V8TestingScope scope;
   scope.GetDocument().SetURL(KURL("https://example.com"));
 
@@ -459,7 +458,7 @@ TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
   EXPECT_EQ("hello", capture->CapturedValue());
 }
 
-TEST_P(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
+TEST_F(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
   V8TestingScope scope;
   scope.GetDocument().SetURL(KURL("https://example.com"));
 
@@ -483,11 +482,5 @@ TEST_P(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
   EXPECT_TRUE(modulator->fetch_tree_was_called());
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(DynamicModuleResolverTestGroup,
-                         DynamicModuleResolverTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

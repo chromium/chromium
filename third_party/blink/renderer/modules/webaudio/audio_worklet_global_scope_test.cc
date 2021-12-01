@@ -57,11 +57,10 @@ static const size_t kRenderQuantumFrames = 128;
 
 // The test uses OfflineAudioWorkletThread because the test does not have a
 // strict real-time constraint.
-class AudioWorkletGlobalScopeTest : public PageTestBase,
-                                    public ParametrizedModuleTest {
+class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override {
-    ParametrizedModuleTest::SetUp();
+    ModuleTestBase::SetUp();
     PageTestBase::SetUp(IntSize());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
@@ -69,7 +68,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
 
   void TearDown() override {
     PageTestBase::TearDown();
-    ParametrizedModuleTest::TearDown();
+    ModuleTestBase::TearDown();
   }
 
   std::unique_ptr<OfflineAudioWorkletThread> CreateAudioWorkletThread() {
@@ -396,7 +395,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
 };
 
-TEST_P(AudioWorkletGlobalScopeTest, Basic) {
+TEST_F(AudioWorkletGlobalScopeTest, Basic) {
   std::unique_ptr<OfflineAudioWorkletThread> thread
       = CreateAudioWorkletThread();
   RunBasicTest(thread.get());
@@ -404,7 +403,7 @@ TEST_P(AudioWorkletGlobalScopeTest, Basic) {
   thread->WaitForShutdownForTesting();
 }
 
-TEST_P(AudioWorkletGlobalScopeTest, Parsing) {
+TEST_F(AudioWorkletGlobalScopeTest, Parsing) {
   std::unique_ptr<OfflineAudioWorkletThread> thread
       = CreateAudioWorkletThread();
   RunParsingTest(thread.get());
@@ -412,7 +411,7 @@ TEST_P(AudioWorkletGlobalScopeTest, Parsing) {
   thread->WaitForShutdownForTesting();
 }
 
-TEST_P(AudioWorkletGlobalScopeTest, BufferProcessing) {
+TEST_F(AudioWorkletGlobalScopeTest, BufferProcessing) {
   std::unique_ptr<OfflineAudioWorkletThread> thread
       = CreateAudioWorkletThread();
   RunSimpleProcessTest(thread.get());
@@ -420,18 +419,12 @@ TEST_P(AudioWorkletGlobalScopeTest, BufferProcessing) {
   thread->WaitForShutdownForTesting();
 }
 
-TEST_P(AudioWorkletGlobalScopeTest, ParsingParameterDescriptor) {
+TEST_F(AudioWorkletGlobalScopeTest, ParsingParameterDescriptor) {
   std::unique_ptr<OfflineAudioWorkletThread> thread
       = CreateAudioWorkletThread();
   RunParsingParameterDescriptorTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(AudioWorkletGlobalScopeTestGroup,
-                         AudioWorkletGlobalScopeTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

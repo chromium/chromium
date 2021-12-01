@@ -66,7 +66,7 @@ static const int kScriptRepeatLength = 500;
 
 }  // namespace
 
-class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
+class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
  protected:
   static String LargeSourceText(const char* suffix = nullptr) {
     StringBuilder builder;
@@ -129,11 +129,11 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
     return handler->cached_metadata_discarded_;
   }
 
-  void SetUp() override { ParametrizedModuleTest::SetUp(); }
+  void SetUp() override { ModuleTestBase::SetUp(); }
 
   void TearDown() override {
     feature_list_.Reset();
-    ParametrizedModuleTest::TearDown();
+    ModuleTestBase::TearDown();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -142,7 +142,7 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
 // Test expectations depends on heuristics in V8CodeCache and therefore these
 // tests should be updated if necessary when V8CodeCache is modified. The
 // version without code cache discarding.
-TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   feature_list_.InitAndDisableFeature(
       blink::features::kDiscardCodeCacheAfterFirstUse);
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
@@ -260,7 +260,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
 // Test expectations depends on heuristics in V8CodeCache and therefore these
 // tests should be updated if necessary when V8CodeCache is modified. The
 // version with code cache discarding.
-TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   feature_list_.InitAndEnableFeature(
       blink::features::kDiscardCodeCacheAfterFirstUse);
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
@@ -389,7 +389,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
 }
 
-TEST_P(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
+TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   V8TestingScope scope;
   v8::Local<v8::Value> local_value(v8::Number::New(scope.GetIsolate(), 1234));
   Modulator* modulator =
@@ -399,7 +399,7 @@ TEST_P(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   ASSERT_FALSE(module_script->V8Module().IsEmpty());
 }
 
-TEST_P(ModuleScriptTest, V8CodeCacheWithHashChecking) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
   // The order of steps below is chosen so that only the last step's behavior
   // differs based on this flag. The important tests that verify rejection of
   // cache data on content mismatches occur before that point.
@@ -567,11 +567,5 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithHashChecking) {
     }
   }
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleScriptTestGroup,
-                         ModuleScriptTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

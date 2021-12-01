@@ -43,10 +43,10 @@ class TestAnimationWorkletProxyClient : public AnimationWorkletProxyClient {
 }  // namespace
 
 class AnimationAndPaintWorkletThreadTest : public PageTestBase,
-                                           public ParametrizedModuleTest {
+                                           public ModuleTestBase {
  public:
   void SetUp() override {
-    ParametrizedModuleTest::SetUp();
+    ModuleTestBase::SetUp();
     PageTestBase::SetUp(IntSize());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
@@ -54,7 +54,7 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase,
 
   void TearDown() override {
     PageTestBase::TearDown();
-    ParametrizedModuleTest::TearDown();
+    ModuleTestBase::TearDown();
   }
 
   // Attempts to run some simple script for |thread|.
@@ -96,7 +96,7 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase,
   }
 };
 
-TEST_P(AnimationAndPaintWorkletThreadTest, Basic) {
+TEST_F(AnimationAndPaintWorkletThreadTest, Basic) {
   std::unique_ptr<AnimationAndPaintWorkletThread> worklet =
       CreateThreadAndProvideAnimationWorkletProxyClient(&GetDocument(),
                                                         reporting_proxy_.get());
@@ -107,7 +107,7 @@ TEST_P(AnimationAndPaintWorkletThreadTest, Basic) {
 
 // Tests that the same WebThread is used for new worklets if the WebThread is
 // still alive.
-TEST_P(AnimationAndPaintWorkletThreadTest, CreateSecondAndTerminateFirst) {
+TEST_F(AnimationAndPaintWorkletThreadTest, CreateSecondAndTerminateFirst) {
   // Create the first worklet and wait until it is initialized.
   std::unique_ptr<AnimationAndPaintWorkletThread> first_worklet =
       CreateThreadAndProvideAnimationWorkletProxyClient(&GetDocument(),
@@ -145,7 +145,7 @@ TEST_P(AnimationAndPaintWorkletThreadTest, CreateSecondAndTerminateFirst) {
 
 // Tests that the WebThread is reused if all existing worklets are terminated
 // before a new worklet is created, as long as the worklets are not destructed.
-TEST_P(AnimationAndPaintWorkletThreadTest, TerminateFirstAndCreateSecond) {
+TEST_F(AnimationAndPaintWorkletThreadTest, TerminateFirstAndCreateSecond) {
   // Create the first worklet, wait until it is initialized, and terminate it.
   std::unique_ptr<AnimationAndPaintWorkletThread> worklet =
       CreateThreadAndProvideAnimationWorkletProxyClient(&GetDocument(),
@@ -170,7 +170,7 @@ TEST_P(AnimationAndPaintWorkletThreadTest, TerminateFirstAndCreateSecond) {
 
 // Tests that v8::Isolate and WebThread are correctly set-up if a worklet is
 // created while another is terminating.
-TEST_P(AnimationAndPaintWorkletThreadTest,
+TEST_F(AnimationAndPaintWorkletThreadTest,
        CreatingSecondDuringTerminationOfFirst) {
   std::unique_ptr<AnimationAndPaintWorkletThread> first_worklet =
       CreateThreadAndProvideAnimationWorkletProxyClient(&GetDocument(),
@@ -203,7 +203,7 @@ TEST_P(AnimationAndPaintWorkletThreadTest,
 
 // Tests that the backing thread is correctly created, torn down, and recreated
 // as AnimationWorkletThreads are created and destroyed.
-TEST_P(AnimationAndPaintWorkletThreadTest,
+TEST_F(AnimationAndPaintWorkletThreadTest,
        WorkletThreadHolderIsRefCountedProperly) {
   EXPECT_FALSE(
       AnimationAndPaintWorkletThread::GetWorkletThreadHolderForTesting());
@@ -247,9 +247,4 @@ TEST_P(AnimationAndPaintWorkletThreadTest,
   worklet3->WaitForShutdownForTesting();
 }
 
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(AnimationAndPaintWorkletThreadTestGroup,
-                         AnimationAndPaintWorkletThreadTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 }  // namespace blink

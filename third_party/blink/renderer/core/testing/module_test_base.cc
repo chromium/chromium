@@ -36,25 +36,8 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
                                exception_state);
 }
 
-void ParametrizedModuleTestBase::SetUp(bool use_top_level_await) {
-  if (use_top_level_await) {
-    feature_list_.InitAndEnableFeature(features::kTopLevelAwait);
-  } else {
-    feature_list_.InitAndDisableFeature(features::kTopLevelAwait);
-  }
-  SetV8Flags(use_top_level_await);
-}
-
-void ParametrizedModuleTestBase::SetV8Flags(bool use_top_level_await) {
-  if (use_top_level_await) {
-    v8::V8::SetFlagsFromString("--harmony-top-level-await");
-  } else {
-    v8::V8::SetFlagsFromString("--no-harmony-top-level-await");
-  }
-}
-
-void ParametrizedModuleTest::SetUp() {
-  ParametrizedModuleTestBase::SetUp(UseTopLevelAwait());
+void ModuleTestBase::SetUp() {
+  feature_list_.InitAndEnableFeature(features::kTopLevelAwait);
 }
 
 class SaveResultFunction final : public NewScriptFunction::Callable {
@@ -86,14 +69,10 @@ class ExpectNotReached final : public NewScriptFunction::Callable {
   }
 };
 
-v8::Local<v8::Value> ParametrizedModuleTestBase::GetResult(
-    ScriptState* script_state,
-    ScriptEvaluationResult result) {
+v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
+                                               ScriptEvaluationResult result) {
   CHECK_EQ(result.GetResultType(),
            ScriptEvaluationResult::ResultType::kSuccess);
-  if (!base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    return result.GetSuccessValue();
-  }
 
   ScriptPromise script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
@@ -113,15 +92,9 @@ v8::Local<v8::Value> ParametrizedModuleTestBase::GetResult(
   return resolve_function->GetResult();
 }
 
-v8::Local<v8::Value> ParametrizedModuleTestBase::GetException(
+v8::Local<v8::Value> ModuleTestBase::GetException(
     ScriptState* script_state,
     ScriptEvaluationResult result) {
-  if (!base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    CHECK_EQ(result.GetResultType(),
-             ScriptEvaluationResult::ResultType::kException);
-    return result.GetExceptionForModule();
-  }
-
   CHECK_EQ(result.GetResultType(),
            ScriptEvaluationResult::ResultType::kSuccess);
 

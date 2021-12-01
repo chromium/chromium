@@ -183,7 +183,7 @@ void ModuleMapTestModulator::ResolveFetches() {
   test_requests_.clear();
 }
 
-class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
+class ModuleMapTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -197,7 +197,7 @@ class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
 };
 
 void ModuleMapTest::SetUp() {
-  ParametrizedModuleTest::SetUp();
+  ModuleTestBase::SetUp();
   PageTestBase::SetUp(IntSize(500, 500));
   NavigateTo(KURL("https://example.com"));
   modulator_ = MakeGarbageCollected<ModuleMapTestModulator>(
@@ -206,11 +206,11 @@ void ModuleMapTest::SetUp() {
 }
 
 void ModuleMapTest::TearDown() {
-  ParametrizedModuleTest::TearDown();
+  ModuleTestBase::TearDown();
   PageTestBase::TearDown();
 }
 
-TEST_P(ModuleMapTest, sequentialRequests) {
+TEST_F(ModuleMapTest, sequentialRequests) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
@@ -257,7 +257,7 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   EXPECT_TRUE(client2->GetModuleScript());
 }
 
-TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
+TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
@@ -297,10 +297,5 @@ TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
   EXPECT_TRUE(client2->WasNotifyFinished());
   EXPECT_TRUE(client2->GetModuleScript());
 }
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleMapTestGroup,
-                         ModuleMapTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

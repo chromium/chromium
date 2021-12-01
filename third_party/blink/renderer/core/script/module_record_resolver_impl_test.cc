@@ -106,7 +106,7 @@ ModuleScript* CreateTargetModuleScript(Modulator* modulator,
 }  // namespace
 
 class ModuleRecordResolverImplTest : public testing::Test,
-                                     public ParametrizedModuleTest {
+                                     public ModuleTestBase {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -122,16 +122,16 @@ class ModuleRecordResolverImplTest : public testing::Test,
 };
 
 void ModuleRecordResolverImplTest::SetUp() {
-  ParametrizedModuleTest::SetUp();
+  ModuleTestBase::SetUp();
   platform_->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
   modulator_ = MakeGarbageCollected<ModuleRecordResolverImplTestModulator>();
 }
 
 void ModuleRecordResolverImplTest::TearDown() {
-  ParametrizedModuleTest::TearDown();
+  ModuleTestBase::TearDown();
 }
 
-TEST_P(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
+TEST_F(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
   V8TestingScope scope;
   ModuleRecordResolver* resolver =
       MakeGarbageCollected<ModuleRecordResolverImpl>(
@@ -156,11 +156,5 @@ TEST_P(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
   EXPECT_EQ(modulator_->FetchedUrl(), target_module_script->BaseURL())
       << "Unexpectedly fetched URL: " << modulator_->FetchedUrl().GetString();
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleRecordResolverImplTestGroup,
-                         ModuleRecordResolverImplTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink
