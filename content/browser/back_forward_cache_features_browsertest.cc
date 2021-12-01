@@ -2064,8 +2064,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(crbug.com/1142778): flaky.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
-                       ShortVibrationSequenceStopsAfterEnteringCache) {
+                       DISABLED_ShortVibrationSequenceStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with a long vibration.
