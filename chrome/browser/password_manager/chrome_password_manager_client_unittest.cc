@@ -208,6 +208,11 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
  public:
+  ChromePasswordManagerClientTest() {
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDelayedWarnings);
+  }
+  ~ChromePasswordManagerClientTest() override = default;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -266,8 +271,6 @@ void ChromePasswordManagerClientTest::SetUp() {
   // Connect our bool for testing.
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &metrics_enabled_);
-
-  scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDelayedWarnings);
 }
 
 void ChromePasswordManagerClientTest::TearDown() {
