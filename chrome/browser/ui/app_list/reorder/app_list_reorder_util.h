@@ -35,6 +35,9 @@ struct ReorderParam {
 // Wrapping a sync item for comparison.
 template <typename T>
 struct SyncItemWrapper {
+  explicit SyncItemWrapper(const AppListSyncableService::SyncItem& sync_item);
+  explicit SyncItemWrapper(const ChromeAppListItem& app_list_item);
+
   std::string id;
   syncer::StringOrdinal item_ordinal;
   bool is_folder = false;
@@ -43,22 +46,25 @@ struct SyncItemWrapper {
   T key_attribute;
 };
 
-template <typename T>
-bool operator<(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
-  return lhs.key_attribute < rhs.key_attribute;
-}
+// SyncItemWrapper<std::string> ------------------------------------------------
 
-template <typename T>
-bool operator>(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
-  return rhs.key_attribute < lhs.key_attribute;
-}
+// Full template specialization to support name ordering.
+template <>
+SyncItemWrapper<std::string>::SyncItemWrapper(
+    const AppListSyncableService::SyncItem& sync_item);
+template <>
+SyncItemWrapper<std::string>::SyncItemWrapper(
+    const ChromeAppListItem& app_list_item);
+
+// Overloaded comparison operators:
+bool operator<(const SyncItemWrapper<std::string>& lhs,
+               const SyncItemWrapper<std::string>& rhs);
+bool operator>(const SyncItemWrapper<std::string>& lhs,
+               const SyncItemWrapper<std::string>& rhs);
 
 // Gets a list of string wrappers based on the mappings from ids to sync items.
 std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
     const AppListSyncableService::SyncItemMap& sync_item_map);
-
-SyncItemWrapper<std::string> ConvertAppListItemToStringWrapper(
-    const ChromeAppListItem& app_list_item);
 
 // Gets a list of string wrappers based on the given app list items.
 std::vector<SyncItemWrapper<std::string>>

@@ -477,7 +477,7 @@ bool CalculatePositionInNameOrder(
 
   if (global_items) {
     AdjustNeighborsInGlobalScope(
-        order, reorder::ConvertAppListItemToStringWrapper(new_item),
+        order, reorder::SyncItemWrapper<std::string>(new_item),
         reorder::GenerateStringWrappersFromSyncItems(*global_items),
         &prev_neighbor, &next_neighbor);
   }

@@ -21,7 +21,33 @@ ReorderParam::ReorderParam(const ReorderParam&) = default;
 
 ReorderParam::~ReorderParam() = default;
 
-// Method Implementations -----------------------------------------------------
+// SyncItemWrapper<std::string> ------------------------------------------------
+
+template <>
+SyncItemWrapper<std::string>::SyncItemWrapper(
+    const AppListSyncableService::SyncItem& sync_item)
+    : id(sync_item.item_id),
+      item_ordinal(sync_item.item_ordinal),
+      is_folder(sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER),
+      key_attribute(sync_item.item_name) {}
+
+template <>
+SyncItemWrapper<std::string>::SyncItemWrapper(
+    const ChromeAppListItem& app_list_item)
+    : id(app_list_item.id()),
+      item_ordinal(app_list_item.position()),
+      is_folder(app_list_item.is_folder()),
+      key_attribute(app_list_item.name()) {}
+
+bool operator<(const SyncItemWrapper<std::string>& lhs,
+               const SyncItemWrapper<std::string>& rhs) {
+  return lhs.key_attribute < rhs.key_attribute;
+}
+
+bool operator>(const SyncItemWrapper<std::string>& lhs,
+               const SyncItemWrapper<std::string>& rhs) {
+  return lhs.key_attribute > rhs.key_attribute;
+}
 
 std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
     const AppListSyncableService::SyncItemMap& sync_item_map) {
@@ -32,26 +58,10 @@ std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
     if (sync_item->item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK)
       continue;
 
-    SyncItemWrapper<std::string> wrapper;
-    wrapper.id = sync_item->item_id;
-    wrapper.item_ordinal = sync_item->item_ordinal;
-    wrapper.key_attribute = sync_item->item_name;
-    wrapper.is_folder =
-        sync_item->item_type == sync_pb::AppListSpecifics::TYPE_FOLDER;
-    wrappers.emplace_back(std::move(wrapper));
+    wrappers.emplace_back(*sync_item);
   }
 
   return wrappers;
-}
-
-SyncItemWrapper<std::string> ConvertAppListItemToStringWrapper(
-    const ChromeAppListItem& app_list_item) {
-  SyncItemWrapper<std::string> wrapper;
-  wrapper.id = app_list_item.id();
-  wrapper.item_ordinal = app_list_item.position();
-  wrapper.key_attribute = app_list_item.name();
-  wrapper.is_folder = app_list_item.is_folder();
-  return wrapper;
 }
 
 std::vector<SyncItemWrapper<std::string>>
@@ -62,7 +72,7 @@ GenerateStringWrappersFromAppListItems(
     if (app_list_item->is_page_break())
       continue;
 
-    wrappers.emplace_back(ConvertAppListItemToStringWrapper(*app_list_item));
+    wrappers.emplace_back(*app_list_item);
   }
   return wrappers;
 }
