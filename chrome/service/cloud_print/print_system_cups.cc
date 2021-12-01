@@ -433,13 +433,15 @@ PrintSystemCUPS::PrintSystemCUPS(
 
 void PrintSystemCUPS::InitPrintBackends(
     const base::DictionaryValue* print_system_settings) {
-  const base::ListValue* url_list;
-  if (print_system_settings &&
-      print_system_settings->GetList(kCUPSPrintServerURLs, &url_list)) {
-    for (size_t i = 0; i < url_list->GetList().size(); i++) {
-      std::string print_server_url;
-      if (url_list->GetString(i, &print_server_url))
-        AddPrintServer(print_server_url);
+  if (print_system_settings) {
+    const base::Value* url_list =
+        print_system_settings->FindListKey(kCUPSPrintServerURLs);
+    if (url_list) {
+      for (const base::Value& val : url_list->GetList()) {
+        const std::string* print_server_url = val.GetIfString();
+        if (print_server_url)
+          AddPrintServer(*print_server_url);
+      }
     }
   }
 
