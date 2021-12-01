@@ -63,16 +63,18 @@ class CC_EXPORT SwapPromise {
   virtual void DidActivate() = 0;
   virtual void WillSwap(viz::CompositorFrameMetadata* metadata) = 0;
   virtual void DidSwap() = 0;
-  // Return |KEEP_ACTIVE| if this promise should remain active (should not be
-  // broken by the owner).
+
+  // Return `DidNotSwapAction::KEEP_ACTIVE` if this promise should remain active
+  // (should not be broken by the owner).
   virtual DidNotSwapAction DidNotSwap(DidNotSwapReason reason) = 0;
+
   // This is called when the main thread starts a (blocking) commit
   virtual void OnCommit() {}
 
   // A non-zero trace id identifies a trace flow object that is embedded in the
   // swap promise. This can be used for registering additional flow steps to
   // visualize the object's path through the system.
-  virtual int64_t TraceId() const = 0;
+  virtual int64_t GetTraceId() const = 0;
 };
 
 }  // namespace cc

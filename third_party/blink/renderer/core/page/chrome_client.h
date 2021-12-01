@@ -517,8 +517,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
     std::move(callback).Run(false);
   }
 
-  // The |callback| will be fired when the corresponding renderer frame for the
-  // |frame| is presented in the display compositor.
+  // The `callback` will be fired when the corresponding renderer frame for the
+  // `frame` is presented in the display compositor. If there is no update in
+  // the frame to be presented, the `callback` will run with the time of the
+  // failure.
   using ReportTimeCallback =
       WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,

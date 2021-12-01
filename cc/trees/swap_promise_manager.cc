@@ -51,6 +51,7 @@ SwapPromiseManager::TakeSwapPromises() {
 void SwapPromiseManager::BreakSwapPromises(
     SwapPromise::DidNotSwapReason reason) {
   std::vector<std::unique_ptr<SwapPromise>> keep_active_swap_promises;
+  keep_active_swap_promises.reserve(swap_promise_list_.size());
   for (auto& swap_promise : swap_promise_list_) {
     if (swap_promise->DidNotSwap(reason) ==
         SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {

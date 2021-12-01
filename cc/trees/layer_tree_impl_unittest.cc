@@ -2282,9 +2282,7 @@ class PersistentSwapPromise
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
-
-  void OnCommit() override {}
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 };
 
 class NotPersistentSwapPromise
@@ -2301,9 +2299,7 @@ class NotPersistentSwapPromise
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
     return DidNotSwapAction::BREAK_PROMISE;
   }
-
-  void OnCommit() override {}
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 };
 
 }  // namespace

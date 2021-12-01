@@ -1763,12 +1763,12 @@ void LayerTreeImpl::AsValueInto(base::trace_event::TracedValue* state) const {
 
   state->BeginArray("swap_promise_trace_ids");
   for (const auto& swap_promise : swap_promise_list_)
-    state->AppendDouble(swap_promise->TraceId());
+    state->AppendDouble(swap_promise->GetTraceId());
   state->EndArray();
 
   state->BeginArray("pinned_swap_promise_trace_ids");
   for (const auto& swap_promise : pinned_swap_promise_list_)
-    state->AppendDouble(swap_promise->TraceId());
+    state->AppendDouble(swap_promise->GetTraceId());
   state->EndArray();
 
   state->BeginArray("layers");

@@ -93,6 +93,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool HandleInputEvent(const WebCoalescedInputEvent& event,
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
+  void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
 
   // InputHandlerProxyClient overrides.

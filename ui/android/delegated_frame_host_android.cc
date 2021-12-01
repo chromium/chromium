@@ -43,7 +43,7 @@ class TopControlsSwapPromise : public cc::SwapPromise {
       DidNotSwapReason reason) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   const float height_;

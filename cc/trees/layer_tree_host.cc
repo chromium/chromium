@@ -745,7 +745,7 @@ void LayerTreeHost::SetTargetLocalSurfaceId(
   proxy_->SetTargetLocalSurfaceId(target_local_surface_id);
 }
 
-bool LayerTreeHost::RequestedMainFramePendingForTesting() const {
+bool LayerTreeHost::RequestedMainFramePending() const {
   return proxy_->RequestedAnimatePending();
 }
 
@@ -1104,10 +1104,10 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
         "input,benchmark", "LatencyInfo.Flow",
         [&swap_promise](perfetto::EventContext ctx) {
           ChromeLatencyInfo* info = ctx.event()->set_chrome_latency_info();
-          info->set_trace_id(swap_promise->TraceId());
+          info->set_trace_id(swap_promise->GetTraceId());
           info->set_step(ChromeLatencyInfo::STEP_MAIN_THREAD_SCROLL_UPDATE);
           tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                 swap_promise->TraceId());
+                                 swap_promise->GetTraceId());
         });
     swap_promise_manager_.QueueSwapPromise(std::move(swap_promise));
   }

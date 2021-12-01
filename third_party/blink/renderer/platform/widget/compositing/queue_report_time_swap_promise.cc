@@ -9,6 +9,30 @@
 #endif
 
 namespace blink {
+namespace {
+
+void RunDrainAndSwapCallbacksOnCompositorThread(
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    QueueReportTimeSwapPromise::DrainCallback drain_callback,
+    int source_frame_number,
+    base::OnceClosure swap_callback) {
+  if (compositor_task_runner &&
+      !compositor_task_runner->BelongsToCurrentThread()) {
+    compositor_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunDrainAndSwapCallbacksOnCompositorThread, nullptr,
+                       std::move(drain_callback), source_frame_number,
+                       std::move(swap_callback)));
+    return;
+  }
+
+  if (drain_callback)
+    std::move(drain_callback).Run(source_frame_number);
+  if (swap_callback)
+    std::move(swap_callback).Run();
+}
+
+}  // namespace
 
 QueueReportTimeSwapPromise::QueueReportTimeSwapPromise(
     int source_frame_number,
@@ -48,14 +72,16 @@ void QueueReportTimeSwapPromise::DidSwap() {
 
 cc::SwapPromise::DidNotSwapAction QueueReportTimeSwapPromise::DidNotSwap(
     DidNotSwapReason reason) {
+  if (reason == cc::SwapPromise::COMMIT_FAILS)
+    return DidNotSwapAction::KEEP_ACTIVE;
+
   if (reason == cc::SwapPromise::SWAP_FAILS ||
       reason == cc::SwapPromise::COMMIT_NO_UPDATE) {
-    if (drain_callback_)
-      std::move(drain_callback_).Run(source_frame_number_);
-    if (swap_callback_)
-      std::move(swap_callback_).Run();
-  } else if (reason == cc::SwapPromise::COMMIT_FAILS) {
-    return DidNotSwapAction::KEEP_ACTIVE;
+    // Since `DidNotSwap()` can be called on any thread, run drain and swap
+    // callbacks on the compositor thread if there is one.
+    RunDrainAndSwapCallbacksOnCompositorThread(
+        compositor_task_runner_, std::move(drain_callback_),
+        source_frame_number_, std::move(swap_callback_));
   }
   return DidNotSwapAction::BREAK_PROMISE;
 }

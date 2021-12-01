@@ -561,8 +561,11 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
     if (pending_tree_) {
       pending_tree_->AppendSwapPromises(std::move(swap_promises));
     } else {
-      for (const auto& swap_promise : swap_promises)
-        swap_promise->DidNotSwap(SwapPromise::COMMIT_NO_UPDATE);
+      for (const auto& swap_promise : swap_promises) {
+        SwapPromise::DidNotSwapAction action =
+            swap_promise->DidNotSwap(SwapPromise::COMMIT_NO_UPDATE);
+        DCHECK_EQ(action, SwapPromise::DidNotSwapAction::BREAK_PROMISE);
+      }
     }
   }
 

@@ -1789,8 +1789,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 
   // A main frame is needed to call UpdateLayers which updates property trees,
   // re-calculating cached to/from-screen transforms.
-  EXPECT_TRUE(
-      Compositor().LayerTreeHost()->RequestedMainFramePendingForTesting());
+  EXPECT_TRUE(Compositor().LayerTreeHost()->RequestedMainFramePending());
 
   // A full commit is not needed.
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());

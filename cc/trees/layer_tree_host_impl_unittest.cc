@@ -4069,7 +4069,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithSwapPromises) {
   std::unique_ptr<CompositorCommitData> commit_data =
       host_impl_->ProcessCompositorDeltas();
   EXPECT_EQ(1u, commit_data->swap_promises.size());
-  EXPECT_EQ(latency_info.trace_id(), commit_data->swap_promises[0]->TraceId());
+  EXPECT_EQ(latency_info.trace_id(),
+            commit_data->swap_promises[0]->GetTraceId());
 }
 
 // Test that scrolls targeting a layer with a non-null scroll_parent() don't

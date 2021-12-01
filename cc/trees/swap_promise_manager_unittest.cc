@@ -38,7 +38,7 @@ class MockSwapPromise : public SwapPromise {
     return DidNotSwapAction::BREAK_PROMISE;
   }
   MOCK_METHOD0(OnCommit, void());
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 };
 
 TEST(SwapPromiseManagerTest, SwapPromiseMonitors) {

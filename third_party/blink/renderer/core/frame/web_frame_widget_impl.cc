@@ -2862,8 +2862,10 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         presentation_time_callback_(std::move(presentation_time_callback)),
         task_runner_(std::move(task_runner)),
         widget_(widget) {}
+
   ReportTimeSwapPromise(const ReportTimeSwapPromise&) = delete;
   ReportTimeSwapPromise& operator=(const ReportTimeSwapPromise&) = delete;
+
   ~ReportTimeSwapPromise() override = default;
 
   void DidActivate() override {}
@@ -2885,26 +2887,14 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
             std::move(presentation_time_callback_), frame_token_));
   }
 
-  cc::SwapPromise::DidNotSwapAction DidNotSwap(
-      DidNotSwapReason reason) override {
-    // During a failed swap, return the current time regardless of whether we're
-    // using presentation or swap timestamps.
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            [](base::TimeTicks swap_time,
-               base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
-               base::OnceCallback<void(base::TimeTicks)>
-                   presentation_time_callback) {
-              ReportTime(std::move(swap_time_callback), swap_time);
-              ReportTime(std::move(presentation_time_callback), swap_time);
-            },
-            base::TimeTicks::Now(), std::move(swap_time_callback_),
-            std::move(presentation_time_callback_)));
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+    ReportSwapAndPresentationFailureOnTaskRunner(
+        task_runner_, std::move(swap_time_callback_),
+        std::move(presentation_time_callback_), base::TimeTicks::Now());
     return DidNotSwapAction::BREAK_PROMISE;
   }
 
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   static void RunCallbackAfterSwap(
@@ -2950,6 +2940,25 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
                          base::TimeTicks time) {
     if (callback)
       std::move(callback).Run(time);
+  }
+
+  static void ReportSwapAndPresentationFailureOnTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      base::TimeTicks failure_time) {
+    if (!task_runner->BelongsToCurrentThread()) {
+      PostCrossThreadTask(
+          *task_runner, FROM_HERE,
+          CrossThreadBindOnce(&ReportSwapAndPresentationFailureOnTaskRunner,
+                              task_runner, std::move(swap_time_callback),
+                              std::move(presentation_time_callback),
+                              failure_time));
+      return;
+    }
+
+    ReportTime(std::move(swap_time_callback), failure_time);
+    ReportTime(std::move(presentation_time_callback), failure_time);
   }
 
   base::OnceCallback<void(base::TimeTicks)> swap_time_callback_;
