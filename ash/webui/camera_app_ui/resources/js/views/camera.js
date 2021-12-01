@@ -529,7 +529,8 @@ export class Camera extends View {
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
       if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
-          this.scanOptions_.isDocumentModeEanbled()) {
+          this.scanOptions_.isDocumentModeEanbled() &&
+          nav.isTopMostView(this.name)) {
         dom.getAll('button.shutter', HTMLButtonElement)
             .forEach((btn) => btn.offsetParent && btn.focus());
       }
