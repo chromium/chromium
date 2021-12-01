@@ -138,6 +138,7 @@
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/hps_notify_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/tray_action/tray_action.h"
@@ -796,6 +797,8 @@ Shell::~Shell() {
   ScreenAsh::CreateScreenForShutdown();
   display_configuration_controller_.reset();
 
+  hps_notify_controller_.reset();
+
   // These members access Shell in their destructors.
   wallpaper_controller_.reset();
   accessibility_controller_.reset();
@@ -970,6 +973,8 @@ void Shell::Init(
   media_notification_provider_ =
       std::make_unique<MediaNotificationProviderImpl>(
           shell_delegate_->GetMediaSessionService());
+  if (features::IsSnoopingProtectionEnabled())
+    hps_notify_controller_ = std::make_unique<HpsNotifyController>();
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 

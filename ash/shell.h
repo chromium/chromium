@@ -131,6 +131,7 @@ class FullscreenMagnifierController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
+class HpsNotifyController;
 class ImeControllerImpl;
 class InSessionAuthDialogControllerImpl;
 class KeyAccessibilityEnabler;
@@ -422,6 +423,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   HighContrastController* high_contrast_controller() {
     return high_contrast_controller_.get();
+  }
+  HpsNotifyController* hps_notify_controller() {
+    return hps_notify_controller_.get();
   }
   ImeControllerImpl* ime_controller() { return ime_controller_.get(); }
   InSessionAuthDialogControllerImpl* in_session_auth_dialog_controller() {
@@ -741,6 +745,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
+  std::unique_ptr<HpsNotifyController> hps_notify_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<InSessionAuthDialogControllerImpl>
