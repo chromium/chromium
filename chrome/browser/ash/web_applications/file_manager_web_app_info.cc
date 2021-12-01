@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,7 @@
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
 using ash::file_manager::kChromeUIFileManagerURL;
@@ -65,8 +67,14 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
           {"icon256.png", 256, IDR_FILE_MANAGER_ICON_256},
       },
       *info);
-  info->theme_color = 0xFFFFFFFF;
-  info->background_color = 0xFFFFFFFF;
+
+  auto* color_provider = ash::AshColorProvider::Get();
+  info->theme_color =
+      color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 

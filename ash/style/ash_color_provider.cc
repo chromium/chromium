@@ -54,10 +54,6 @@ constexpr int kAlpha95 = 242;  // 95%
 constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
 constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
-// The default background color that can be applied on any layer.
-constexpr SkColor kBackgroundColorDefaultLight = SK_ColorWHITE;
-constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
-
 // Get the corresponding ColorName for |type|. ColorName is an enum in
 // cros_styles.h file that is generated from cros_colors.json5, which
 // includes the color IDs and colors that will be used by ChromeOS WebUI.
@@ -234,6 +230,13 @@ SkColor AshColorProvider::GetInvertedBackgroundColor() const {
                     : GetInvertedBackgroundDefaultColor();
 }
 
+SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
+  return cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, use_dark_color,
+      base::FeatureList::IsEnabled(
+          ash::features::kSemanticColorsDebugOverride));
+}
+
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -403,13 +406,11 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
 }
 
 SkColor AshColorProvider::GetBackgroundDefaultColor() const {
-  return IsDarkModeEnabled() ? kBackgroundColorDefaultDark
-                             : kBackgroundColorDefaultLight;
+  return GetBackgroundColorInMode(IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetInvertedBackgroundDefaultColor() const {
-  return !IsDarkModeEnabled() ? kBackgroundColorDefaultDark
-                              : kBackgroundColorDefaultLight;
+  return GetBackgroundColorInMode(!IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetBackgroundThemedColor() const {

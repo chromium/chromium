@@ -80,6 +80,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Same as above, but returns the color based on the current inverted color
   // mode and color theme.
   SkColor GetInvertedBackgroundColor() const;
+  // Gets the background color in the desired color mode dark/light.
+  SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.
