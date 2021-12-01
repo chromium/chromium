@@ -703,6 +703,9 @@ interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText
     method constructor
+interface CSSContainerRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSCounterStyleRule : CSSRule
     attribute @@toStringTag
     getter additiveSymbols
@@ -11382,6 +11385,12 @@ namespace CSS
     method percent
     method pt
     method px
+    method qb
+    method qh
+    method qi
+    method qmax
+    method qmin
+    method qw
     method rad
     method registerProperty
     method rem

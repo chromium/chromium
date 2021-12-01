@@ -36,9 +36,11 @@ void AssertValueEqualsJSON(const std::unique_ptr<protocol::Value>& actual_value,
 }  // namespace
 
 class InspectorHighlightTest : public testing::Test,
-                               private ScopedCSSContainerQueriesForTest {
+                               private ScopedCSSContainerQueriesForTest,
+                               private ScopedLayoutNGForTest {
  public:
-  InspectorHighlightTest() : ScopedCSSContainerQueriesForTest(true) {}
+  InspectorHighlightTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 
  protected:
   void SetUp() override;

@@ -17,9 +17,11 @@
 namespace blink {
 
 class ContainerQueryEvaluatorTest : public PageTestBase,
-                                    private ScopedCSSContainerQueriesForTest {
+                                    private ScopedCSSContainerQueriesForTest,
+                                    private ScopedLayoutNGForTest {
  public:
-  ContainerQueryEvaluatorTest() : ScopedCSSContainerQueriesForTest(true) {}
+  ContainerQueryEvaluatorTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 
   ContainerQuery* ParseContainer(String query) {
     String rule = "@container " + query + " {}";

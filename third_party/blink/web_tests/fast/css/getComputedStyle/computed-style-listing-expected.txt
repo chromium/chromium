@@ -148,6 +148,8 @@ contain-intrinsic-height: none
 contain-intrinsic-inline-size: none
 contain-intrinsic-size: none
 contain-intrinsic-width: none
+container-name: none
+container-type: none
 content: normal
 cursor: auto
 cx: 0px

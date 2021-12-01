@@ -118,6 +118,7 @@ TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValue) {
 
 TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValueWithContainerQuery) {
   ScopedCSSContainerQueriesForTest enable_cq(true);
+  ScopedLayoutNGForTest enable_ng(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>

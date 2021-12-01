@@ -691,8 +691,14 @@ crbug.com/874695 http/tests/credentialmanager/credentialscontainer-create-with-v
 ### http/tests/csslayout/
 crbug.com/591099 http/tests/csslayout/* [ Skip ]
 
-### virtual/container-queries/
-virtual/container-queries/* [ Skip ]
+### Container Queries tests require enabled LayoutNG
+crbug.com/1145970 external/wpt/css/css-contain/container-queries/* [ Skip ]
+crbug.com/1145970 inspector-protocol/css/css-get-styles-for-node.js [ Skip ]
+crbug.com/1145970 inspector-protocol/css/container-queries/* [ Skip ]
+crbug.com/1145970 inspector-protocol/dom/container-queries/* [ Skip ]
+crbug.com/1145970 inspector-protocol/overlay/overlay-container-query.js [ Skip ]
+crbug.com/1145970 wpt_internal/css/css-conditional/container-queries/* [ Skip ]
+crbug.com/1145970 wpt_internal/css/css-contain/* [ Skip ]
 
 ### virtual/controls-refresh-hc/
 virtual/controls-refresh-hc/* [ Skip ]

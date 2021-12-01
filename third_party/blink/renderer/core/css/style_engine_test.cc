@@ -145,15 +145,12 @@ class StyleEngineTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
-// It's currently not possible to use ScopedCSSContainerQueriesForTest in
-// individual tests. CSSContainerQueries implies LayoutNGGrid, and
-// LayoutNGGrid needs to be enabled early (before StyleResolver::InitialStyle
-// is created, probably). Otherwise assumptions made by e.g.
-// GridTrackList::AssignFrom do not hold.
 class StyleEngineContainerQueryTest : public StyleEngineTest,
-                                      private ScopedCSSContainerQueriesForTest {
+                                      private ScopedCSSContainerQueriesForTest,
+                                      private ScopedLayoutNGForTest {
  public:
-  StyleEngineContainerQueryTest() : ScopedCSSContainerQueriesForTest(true) {}
+  StyleEngineContainerQueryTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 };
 
 void StyleEngineTest::SetUp() {
@@ -3944,6 +3941,7 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   )CSS";
 
   {
+    ScopedCSSContainerQueriesForTest cq_feature(false);
     ScopedCSSContainerRelativeUnitsForTest feature(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
@@ -3953,6 +3951,7 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   }
 
   {
+    ScopedCSSContainerQueriesForTest cq_feature(false);
     ScopedCSSContainerRelativeUnitsForTest feature(true);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);

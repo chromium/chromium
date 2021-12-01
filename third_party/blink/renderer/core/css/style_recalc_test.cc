@@ -17,6 +17,17 @@ namespace blink {
 
 class StyleRecalcTest : public PageTestBase {};
 
+class StyleRecalcTestCQ : public StyleRecalcTest,
+                          private ScopedCSSContainerQueriesForTest,
+                          private ScopedCSSContainerSkipStyleRecalcForTest,
+                          private ScopedLayoutNGForTest {
+ public:
+  StyleRecalcTestCQ()
+      : ScopedCSSContainerQueriesForTest(true),
+        ScopedCSSContainerSkipStyleRecalcForTest(true),
+        ScopedLayoutNGForTest(true) {}
+};
+
 TEST_F(StyleRecalcTest, SuppressRecalc) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -39,10 +50,7 @@ TEST_F(StyleRecalcTest, SuppressRecalc) {
                   .ShouldRecalcStyleFor(*element));
 }
 
-TEST_F(StyleRecalcTest, SkipStyleRecalcForContainer) {
-  ScopedCSSContainerQueriesForTest scoped_cq(true);
-  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
-
+TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(GetDocument().body());
@@ -174,10 +182,7 @@ TEST_F(StyleRecalcTest, SkipStyleRecalcForContainer) {
                 GetCSSPropertyColor()));
 }
 
-TEST_F(StyleRecalcTest, SkipStyleRecalcForContainerCleanSubtree) {
-  ScopedCSSContainerQueriesForTest scoped_cq(true);
-  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
-
+TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(GetDocument().body());
@@ -207,10 +212,7 @@ TEST_F(StyleRecalcTest, SkipStyleRecalcForContainerCleanSubtree) {
   EXPECT_FALSE(container->GetContainerQueryData()->SkippedStyleRecalc());
 }
 
-TEST_F(StyleRecalcTest, SkipAttachLayoutTreeForContainer) {
-  ScopedCSSContainerQueriesForTest scoped_cq(true);
-  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
-
+TEST_F(StyleRecalcTestCQ, SkipAttachLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }
