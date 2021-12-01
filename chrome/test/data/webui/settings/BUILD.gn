@@ -78,7 +78,7 @@ non_preprocessed_files = [
   "prefs_test_cases.ts",
   "prefs_tests.js",
   "pref_util_tests.js",
-  "privacy_review_page_test.js",
+  "privacy_review_page_test.ts",
   "privacy_sandbox_test.ts",
   "protocol_handlers_tests.ts",
   "recent_site_permissions_test.ts",

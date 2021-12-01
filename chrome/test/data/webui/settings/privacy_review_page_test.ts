@@ -5,11 +5,10 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, SafeBrowsingSetting, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
-import {Route, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
-
+import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsCheckboxElement, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {Router, routes, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
@@ -21,16 +20,14 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 const PRIVACY_REVIEW_STEPS = 4;
 
 suite('PrivacyReviewPage', function() {
-  /** @type {!SettingsPrivacyReviewPageElement} */
-  let page;
-  let isSyncOn;
-  let shouldShowCookiesCard;
-  let shouldShowSafeBrowsingCard;
+  let page: SettingsPrivacyReviewPageElement;
+  let isSyncOn: boolean;
+  let shouldShowCookiesCard: boolean;
+  let shouldShowSafeBrowsingCard: boolean;
 
   setup(function() {
     document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyReviewPageElement} */
-        (document.createElement('settings-privacy-review-page'));
+    page = document.createElement('settings-privacy-review-page');
     page.prefs = {
       privacy_review: {
         show_welcome_card: {
@@ -71,16 +68,9 @@ suite('PrivacyReviewPage', function() {
 
   /**
    * Returns a new promise that resolves after a window 'popstate' event.
-   * @return {!Promise}
    */
-  function whenPopState(causeEvent) {
-    const promise = new Promise(function(resolve) {
-      window.addEventListener('popstate', function callback() {
-        window.removeEventListener('popstate', callback);
-        resolve();
-      });
-    });
-
+  function whenPopState(causeEvent: () => void): Promise<void> {
+    const promise = eventToPromise('popstate', window);
     causeEvent();
     return promise;
   }
@@ -88,29 +78,23 @@ suite('PrivacyReviewPage', function() {
   /**
    * Equivalent of the user manually navigating to the corresponding step via
    * typing the URL and step parameter in the Omnibox.
-   * @private
-   * @param {string} step
    */
-  function navigateToStep(step) {
+  function navigateToStep(step: PrivacyReviewStep) {
     Router.getInstance().navigateTo(
         routes.PRIVACY_REVIEW,
         /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
     flush();
   }
 
-  /**
-   * @param {string} step
-   */
-  function assertQueryParameter(step) {
+  function assertQueryParameter(step: PrivacyReviewStep) {
     assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
   }
 
 
   /**
    * Fire a sync status changed event and flush the UI.
-   * @param {boolean} syncOn
    */
-  function setSyncEnabled(syncOn) {
+  function setSyncEnabled(syncOn: boolean) {
     const event = {
       signedIn: syncOn,
       hasError: false,
@@ -122,9 +106,8 @@ suite('PrivacyReviewPage', function() {
 
   /**
    * Set the cookies setting for the privacy review.
-   * @param {CookiePrimarySetting} setting
    */
-  function setCookieSetting(setting) {
+  function setCookieSetting(setting: CookiePrimarySetting) {
     page.set('prefs.generated.cookie_primary_setting', {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: setting,
@@ -137,9 +120,8 @@ suite('PrivacyReviewPage', function() {
 
   /**
    * Set the safe browsing setting for the privacy review.
-   * @param {SafeBrowsingSetting} setting
    */
-  function setSafeBrowsingSetting(setting) {
+  function setSafeBrowsingSetting(setting: SafeBrowsingSetting) {
     page.set('prefs.generated.safe_browsing', {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: setting,
@@ -151,9 +133,8 @@ suite('PrivacyReviewPage', function() {
 
   /**
    * Fire a sign in status change event and flush the UI.
-   * @param {boolean} signedIn
    */
-  function setSignInState(signedIn) {
+  function setSignInState(signedIn: boolean) {
     const event = {
       signedIn: signedIn,
     };
@@ -161,21 +142,20 @@ suite('PrivacyReviewPage', function() {
     flush();
   }
 
-  /**
-   * @param {!{
-   *   headerTextExpected: (string|undefined),
-   *   headerImgSrcExpected: (string|undefined),
-   *   isSettingFooterVisibleExpected: (boolean|undefined),
-   *   isBackButtonVisibleExpected: (boolean|undefined),
-   *   isWelcomeFragmentVisibleExpected: (boolean|undefined),
-   *   isCompletionFragmentVisibleExpected: (boolean|undefined),
-   *   isMsbbFragmentVisibleExpected: (boolean|undefined),
-   *   isClearOnExitFragmentVisibleExpected: (boolean|undefined),
-   *   isHistorySyncFragmentVisibleExpected: (boolean|undefined),
-   *   isSafeBrowsingFragmentVisibleExpected: (boolean|undefined),
-   *   isCookiesFragmentVisibleExpected: (boolean|undefined),
-   * }} destructured1
-   */
+  type AssertCardComponentsVisibleParams = {
+    headerTextExpected?: string,
+    headerImgSrcExpected?: string,
+    isSettingFooterVisibleExpected?: boolean,
+    isBackButtonVisibleExpected?: boolean,
+    isWelcomeFragmentVisibleExpected?: boolean,
+    isCompletionFragmentVisibleExpected?: boolean,
+    isMsbbFragmentVisibleExpected?: boolean,
+    isClearOnExitFragmentVisibleExpected?: boolean,
+    isHistorySyncFragmentVisibleExpected?: boolean,
+    isSafeBrowsingFragmentVisibleExpected?: boolean,
+    isCookiesFragmentVisibleExpected?: boolean,
+  };
+
   function assertCardComponentsVisible({
     headerTextExpected,
     headerImgSrcExpected,
@@ -188,24 +168,27 @@ suite('PrivacyReviewPage', function() {
     isHistorySyncFragmentVisibleExpected,
     isSafeBrowsingFragmentVisibleExpected,
     isCookiesFragmentVisibleExpected,
-  }) {
+  }: AssertCardComponentsVisibleParams) {
     assertEquals(!!headerTextExpected, isChildVisible(page, '#header'));
     if (headerTextExpected) {
       assertEquals(
           headerTextExpected,
-          page.shadowRoot.querySelector('#headerLabel').innerText);
+          page.shadowRoot!.querySelector<HTMLElement>(
+                              '#headerLabel')!.textContent);
       assertTrue(!!headerImgSrcExpected);
       assertEquals(
           'chrome://settings/privacy/images/privacy_review/' +
               headerImgSrcExpected,
-          page.shadowRoot.querySelector('#headerImage').src);
+          page.shadowRoot!.querySelector<HTMLImageElement>(
+                              '#headerImage')!.src);
     }
     assertEquals(
         !!isSettingFooterVisibleExpected,
         isChildVisible(page, '#settingFooter'));
     if (isSettingFooterVisibleExpected) {
       const backButtonVisibility =
-          getComputedStyle(page.shadowRoot.querySelector('#backButton'))
+          getComputedStyle(
+              page.shadowRoot!.querySelector<HTMLElement>('#backButton')!)
               .visibility;
       assertEquals(
           isBackButtonVisibleExpected ? 'visible' : 'hidden',
@@ -251,11 +234,8 @@ suite('PrivacyReviewPage', function() {
     return numSteps;
   }
 
-  /**
-   * @param {number} activeIndex
-   */
-  function assertStepIndicatorModel(activeIndex) {
-    const model = page.computeStepIndicatorModel_();
+  function assertStepIndicatorModel(activeIndex: number) {
+    const model = page.computeStepIndicatorModel();
     assertEquals(activeIndex, model.active);
     assertEquals(getExpectedNumberOfActiveCards(), model.total);
   }
@@ -283,18 +263,6 @@ suite('PrivacyReviewPage', function() {
       isMsbbFragmentVisibleExpected: true,
     });
     assertStepIndicatorModel(0);
-  }
-
-  function assertClearOnExitCardVisible() {
-    assertQueryParameter(PrivacyReviewStep.CLEAR_ON_EXIT);
-    assertCardComponentsVisible({
-      headerTextExpected: page.i18n('privacyReviewClearOnExitCardHeader'),
-      headerImgSrcExpected: 'clear_on_exit_graphic.svg',
-      isSettingFooterVisibleExpected: true,
-      isBackButtonVisibleExpected: true,
-      isClearOnExitFragmentVisibleExpected: true,
-    });
-    assertStepIndicatorModel(1);
   }
 
   function assertHistorySyncCardVisible() {
@@ -352,12 +320,14 @@ suite('PrivacyReviewPage', function() {
     assertWelcomeCardVisible();
 
     const welcomeFragment =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.WELCOME);
+        page.shadowRoot!.querySelector<PrivacyReviewWelcomeFragmentElement>(
+            '#' + PrivacyReviewStep.WELCOME)!;
     const dontShowAgainCheckbox =
-        welcomeFragment.shadowRoot.querySelector('#dontShowAgainCheckbox');
+        welcomeFragment.shadowRoot!.querySelector<SettingsCheckboxElement>(
+            '#dontShowAgainCheckbox')!;
     assertFalse(dontShowAgainCheckbox.checked);
     dontShowAgainCheckbox.$.checkbox.click();
-    welcomeFragment.shadowRoot.querySelector('#startButton').click();
+    welcomeFragment.$.startButton.click();
     flush();
     assertMsbbCardVisible();
 
@@ -379,8 +349,9 @@ suite('PrivacyReviewPage', function() {
     assertWelcomeCardVisible();
 
     const welcomeFragment =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.WELCOME);
-    welcomeFragment.shadowRoot.querySelector('#startButton').click();
+        page.shadowRoot!.querySelector<PrivacyReviewWelcomeFragmentElement>(
+            '#' + PrivacyReviewStep.WELCOME)!;
+    welcomeFragment.$.startButton.click();
     flush();
     assertMsbbCardVisible();
 
@@ -394,7 +365,7 @@ suite('PrivacyReviewPage', function() {
     setSyncEnabled(true);
     assertMsbbCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertHistorySyncCardVisible();
   });
@@ -404,7 +375,7 @@ suite('PrivacyReviewPage', function() {
     setSyncEnabled(false);
     assertMsbbCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertSafeBrowsingCardVisible();
   });
@@ -414,7 +385,7 @@ suite('PrivacyReviewPage', function() {
     setSyncEnabled(true);
     assertHistorySyncCardVisible();
 
-    page.shadowRoot.querySelector('#backButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertMsbbCardVisible();
   });
@@ -443,7 +414,7 @@ suite('PrivacyReviewPage', function() {
         setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
         assertHistorySyncCardVisible();
 
-        page.shadowRoot.querySelector('#nextButton').click();
+        page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
         flush();
         assertSafeBrowsingCardVisible();
       });
@@ -456,7 +427,7 @@ suite('PrivacyReviewPage', function() {
         setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
         assertHistorySyncCardVisible();
 
-        page.shadowRoot.querySelector('#nextButton').click();
+        page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
         flush();
         assertCookiesCardVisible();
       });
@@ -466,7 +437,7 @@ suite('PrivacyReviewPage', function() {
     setSyncEnabled(true);
     assertSafeBrowsingCardVisible();
 
-    page.shadowRoot.querySelector('#backButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertHistorySyncCardVisible();
   });
@@ -476,7 +447,7 @@ suite('PrivacyReviewPage', function() {
     setSyncEnabled(false);
     assertSafeBrowsingCardVisible();
 
-    page.shadowRoot.querySelector('#backButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertMsbbCardVisible();
   });
@@ -487,8 +458,9 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertSafeBrowsingCardVisible();
     const radioButtonGroup =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.SAFE_BROWSING)
-            .shadowRoot.querySelector('#safeBrowsingRadioGroup');
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.SAFE_BROWSING)!
+            .shadowRoot!.querySelector<SettingsRadioGroupElement>(
+                '#safeBrowsingRadioGroup')!;
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.ENHANCED);
 
@@ -509,7 +481,7 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertSafeBrowsingCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertCookiesCardVisible();
   });
@@ -519,7 +491,7 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.ALLOW_ALL);
     assertSafeBrowsingCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertCompletionCardVisible();
   });
@@ -530,7 +502,7 @@ suite('PrivacyReviewPage', function() {
     setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
     assertCookiesCardVisible();
 
-    page.shadowRoot.querySelector('#backButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertSafeBrowsingCardVisible();
   });
@@ -541,7 +513,7 @@ suite('PrivacyReviewPage', function() {
     setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
     assertCookiesCardVisible();
 
-    page.shadowRoot.querySelector('#backButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertHistorySyncCardVisible();
   });
@@ -550,7 +522,7 @@ suite('PrivacyReviewPage', function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
     assertCookiesCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertCompletionCardVisible();
   });
@@ -560,8 +532,9 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertCookiesCardVisible();
     const radioButtonGroup =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COOKIES)
-            .shadowRoot.querySelector('#cookiesRadioGroup');
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COOKIES)!
+            .shadowRoot!.querySelector<SettingsRadioGroupElement>(
+                '#cookiesRadioGroup')!;
     assertEquals(
         Number(radioButtonGroup.selected),
         CookiePrimarySetting.BLOCK_THIRD_PARTY);
@@ -585,8 +558,9 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     const completionFragment =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COMPLETION);
-    completionFragment.shadowRoot.querySelector('#backButton').click();
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
+    completionFragment.shadowRoot!.querySelector<HTMLElement>(
+                                      '#backButton')!.click();
     flush();
     assertCookiesCardVisible();
   });
@@ -596,10 +570,10 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     return whenPopState(function() {
-             const completionFragment = page.shadowRoot.querySelector(
-                 '#' + PrivacyReviewStep.COMPLETION);
-             completionFragment.shadowRoot.querySelector('#leaveButton')
-                 .click();
+             const completionFragment = page.shadowRoot!.querySelector(
+                 '#' + PrivacyReviewStep.COMPLETION)!;
+             completionFragment.shadowRoot!
+                 .querySelector<HTMLElement>('#leaveButton')!.click();
            })
         .then(function() {
           assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
@@ -612,7 +586,7 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     const completionFragment =
-        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COMPLETION);
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
     assertTrue(isChildVisible(completionFragment, '#privacySandboxRow'));
     assertTrue(isChildVisible(completionFragment, '#waaRow'));
 
@@ -624,18 +598,15 @@ suite('PrivacyReviewPage', function() {
 });
 
 suite('HistorySyncFragment', function() {
-  /** @type {!PrivacyReviewHistorySyncFragmentElement} */
-  let page;
-  /** @type {!SyncBrowserProxy} */
-  let syncBrowserProxy;
+  let page: PrivacyReviewHistorySyncFragmentElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     document.body.innerHTML = '';
-    page = /** @type {!PrivacyReviewHistorySyncFragmentElement} */
-        (document.createElement('privacy-review-history-sync-fragment'));
+    page = document.createElement('privacy-review-history-sync-fragment');
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -644,25 +615,22 @@ suite('HistorySyncFragment', function() {
     page.remove();
   });
 
-  /**
-   * @param {!{
-   *   syncAllDataTypes: boolean,
-   *   typedUrlsSynced: boolean,
-   *   passwordsSynced: boolean,
-   * }} destructured1
-   */
   function setSyncStatus({
     syncAllDataTypes,
     typedUrlsSynced,
     passwordsSynced,
+  }: {
+    syncAllDataTypes: boolean,
+    typedUrlsSynced: boolean,
+    passwordsSynced: boolean,
   }) {
     if (syncAllDataTypes) {
       assertTrue(typedUrlsSynced);
       assertTrue(passwordsSynced);
     }
-    const event = {};
+    const event: SyncPrefs = {} as unknown as SyncPrefs;
     for (const datatype of syncPrefsIndividualDataTypes) {
-      event[datatype] = true;
+      (event as unknown as {[key: string]: boolean})[datatype] = true;
     }
     // Overwrite datatypes needed in tests.
     event.syncAllDataTypes = syncAllDataTypes;
@@ -672,15 +640,12 @@ suite('HistorySyncFragment', function() {
     flush();
   }
 
-  /**
-   * @param {!{
-   *   syncAllDatatypesExpected: boolean,
-   *   typedUrlsSyncedExpected: boolean,
-   * }} destructured1
-   */
   async function assertBrowserProxyCall({
     syncAllDatatypesExpected,
     typedUrlsSyncedExpected,
+  }: {
+    syncAllDatatypesExpected: boolean,
+    typedUrlsSyncedExpected: boolean,
   }) {
     const syncPrefs = await syncBrowserProxy.whenCalled('setSyncDatatypes');
     assertEquals(syncAllDatatypesExpected, syncPrefs.syncAllDataTypes);
@@ -694,7 +659,7 @@ suite('HistorySyncFragment', function() {
       typedUrlsSynced: true,
       passwordsSynced: true,
     });
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     await assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
@@ -702,7 +667,7 @@ suite('HistorySyncFragment', function() {
 
     // Re-enabling history sync re-enables sync all if sync all was on before
     // and if all sync datatypes are still enabled.
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     return assertBrowserProxyCall({
       syncAllDatatypesExpected: true,
       typedUrlsSyncedExpected: true,
@@ -715,7 +680,7 @@ suite('HistorySyncFragment', function() {
       typedUrlsSynced: true,
       passwordsSynced: true,
     });
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     await assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
@@ -730,7 +695,7 @@ suite('HistorySyncFragment', function() {
 
     // Re-enabling history sync in the privacy review doesn't re-enable sync
     // all.
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     return assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
@@ -743,7 +708,7 @@ suite('HistorySyncFragment', function() {
       typedUrlsSynced: true,
       passwordsSynced: true,
     });
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     await assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
@@ -759,7 +724,7 @@ suite('HistorySyncFragment', function() {
 
     // Re-enabling history sync in the privacy review doesn't re-enable sync
     // all.
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     return assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
@@ -772,7 +737,7 @@ suite('HistorySyncFragment', function() {
       typedUrlsSynced: true,
       passwordsSynced: true,
     });
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     await assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
@@ -780,9 +745,8 @@ suite('HistorySyncFragment', function() {
 
     // Re-enabling history sync doesn't re-enable sync all if sync all wasn't on
     // originally.
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     return assertBrowserProxyCall({
-      syncAllDataTypes: false,
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
     });
@@ -794,7 +758,7 @@ suite('HistorySyncFragment', function() {
       typedUrlsSynced: false,
       passwordsSynced: true,
     });
-    page.shadowRoot.querySelector('#historyToggle').click();
+    page.$.historyToggle.click();
     return assertBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,

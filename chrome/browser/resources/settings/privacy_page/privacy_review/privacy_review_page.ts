@@ -97,7 +97,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel_(privacyReviewStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
+            'computeStepIndicatorModel(privacyReviewStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
       },
     };
   }
@@ -334,7 +334,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         .onBackNavigation!();
   }
 
-  private computeStepIndicatorModel_(): StepIndicatorModel {
+  // TODO(rainhard): This is made public only because it is accessed by tests.
+  // Should change tests so that this method can be made private again.
+  computeStepIndicatorModel(): StepIndicatorModel {
     let stepCount = 0;
     let activeIndex = 0;
     for (const step of Object.values(PrivacyReviewStep)) {
@@ -393,6 +395,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   private showAnySettingFragment_(): boolean {
     return this.privacyReviewStep_ !== PrivacyReviewStep.WELCOME &&
         this.privacyReviewStep_ !== PrivacyReviewStep.COMPLETION;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-privacy-review-page': SettingsPrivacyReviewPageElement;
   }
 }
 
