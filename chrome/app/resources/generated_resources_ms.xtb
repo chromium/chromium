@@ -1712,6 +1712,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2721037002783622288">&amp;Cari imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Pengguna di bawah seliaan telah dilumpuhkan oleh pentadbir anda.</translation>
+<translation id="2722540561488096675">Peranti anda akan dimatikan dalam masa <ph name="TIME_LEFT" />. Alih keluar USB sebelum menghidupkan semula peranti anda. Kemudian anda boleh mula menggunakan <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Penukaran Unit</translation>
 <translation id="2725200716980197196">Sambungan rangkaian dipulihkan</translation>
@@ -4569,6 +4570,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5739235828260127894">Menunggu pengesahan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Sangat besar</translation>
 <translation id="5740328398383587084">Kongsi Berdekatan</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> sokongan dan kestabilan perkakasan</translation>
 <translation id="574104302965107104">Pencerminan paparan</translation>
 <translation id="574209121243317957">Nada</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>

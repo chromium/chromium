@@ -813,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{преди # час}other{преди # часа}}</translation>
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="5810864297166300463">Помощ в мрежата</translation>
+<translation id="5813552293717797987">Този браузър се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">За да стартирате търсенето, въведете текст тук или докоснете иконата на микрофон</translation>
 <translation id="5814749351757353073">Получавайте актуална информация от любимите си сайтове</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -1077,6 +1078,7 @@
 <translation id="727288900855680735">Да се изпрати ли <ph name="ONE_TIME_CODE" /> до <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
 <translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
+<translation id="7286703216224610554">Споделяне само на реакцията</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>
 <translation id="7291910923717764901">Бяха добавени описания за изображенията на тази страница</translation>
 <translation id="7293429513719260019">Избор на език</translation>
@@ -1157,6 +1159,7 @@
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
 <translation id="7655900163790317559">Bluetooth се включва…</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7663313374500954251">Този браузър се управлява от <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="766587987807204883">Тук се показват статии, които можете да четете дори когато сте офлайн</translation>
 <translation id="7682724950699840886">Изпробвайте следните съвети: Уверете се, че има достатъчно място на устройството ви. Опитайте отново да експортирате.</translation>

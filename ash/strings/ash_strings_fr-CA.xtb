@@ -1017,6 +1017,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7868900307798234037">Déverrouillage avec empreinte digitale</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Il semble que le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Veuillez activer le Bluetooth pour utiliser Phone Hub.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Restaurez la version antérieure de l'appareil maintenant}=1{Restaurez la version antérieure de l'appareil dans un délai de 1 seconde}one{Restaurez la version antérieure de l'appareil dans un délai de # seconde}other{Restaurez la version antérieure de l'appareil dans un délai de # secondes}}</translation>
 <translation id="7886169021410746335">Ajuster les paramètres de confidentialité</translation>
 <translation id="7886277072580235377">Votre session Internet sera effacée lorsque vous vous déconnecterez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoyer un courriel</translation>

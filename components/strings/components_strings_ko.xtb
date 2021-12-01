@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1745880797583122200">관리 대상 브라우저입니다</translation>
 <translation id="1746113442205726301">이미지 Y 시프트</translation>
+<translation id="1747819498338037826">자동 변경</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753706481035618306">페이지 번호</translation>
@@ -1678,6 +1679,7 @@
 <translation id="643051589346665201">Google 비밀번호 변경</translation>
 <translation id="6433490469411711332">연락처 정보 수정</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />에서 연결을 거부했습니다.</translation>
+<translation id="6438025220577812695">직접 변경</translation>
 <translation id="6440503408713884761">무시됨</translation>
 <translation id="6443406338865242315">내가 설치한 확장 프로그램 및 플러그인</translation>
 <translation id="6446163441502663861">Kahu(봉투)</translation>

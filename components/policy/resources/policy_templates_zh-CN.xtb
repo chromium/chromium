@@ -2751,6 +2751,9 @@
 
       注意：对于 Android 设备，请改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="4261820385751181068">设备登录屏幕语言区域</translation>
+<translation id="4261964161337162399">音频数据的取样和收集时间间隔。所允许的最短时间间隔为 1 分钟。
+
+      如果此政策未设置，系统会应用默认时间间隔（10 分钟）。</translation>
 <translation id="4266547484666068234">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设成 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://www.chromium.org/administrators/url-blocklist-filter-format）。系统会屏蔽还是允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
 
       通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
@@ -6699,6 +6702,7 @@
       此政策仅影响使用 SAML 验证身份的用户。
 
       此政策的值应以秒为单位。</translation>
+<translation id="9015578113567730893">音频遥测收集时间间隔（以毫秒为单位）。</translation>
 <translation id="9035086760683255833">启用“键盘焦点突出显示”无障碍功能。
 
           此功能负责突出显示通过键盘操作成为焦点的对象。

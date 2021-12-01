@@ -1712,6 +1712,7 @@
 <translation id="2721037002783622288"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">관리자가 관리 대상 사용자를 사용 중지했습니다.</translation>
+<translation id="2722540561488096675"><ph name="TIME_LEFT" /> 후 기기가 종료됩니다. 기기 전원을 다시 켜기 전에 USB를 제거하세요. 그런 다음 <ph name="DEVICE_OS" /> 사용을 시작할 수 있습니다</translation>
 <translation id="2724841811573117416">WebRTC 로그</translation>
 <translation id="272488616838512378">단위 변환</translation>
 <translation id="2725200716980197196">네트워크 연결 복원</translation>
@@ -4566,6 +4567,7 @@
 <translation id="5739235828260127894">확인을 기다리는 중입니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">아주 크게</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> 하드웨어 지원 및 안정성</translation>
 <translation id="574104302965107104">화면 미러링</translation>
 <translation id="574209121243317957">높낮이</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>

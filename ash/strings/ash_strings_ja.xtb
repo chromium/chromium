@@ -373,6 +373,15 @@
 <translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
+<translation id="3518604429872942239">ステータス トレイ、時間 <ph name="TIME" />、
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />、
+        <ph name="MIC" />、
+        <ph name="CAMERA" />、
+        <ph name="MANAGED" />、
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{1 分以内にデバイスを更新してください}other{# 分以内にデバイスを更新してください}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> 台のデバイスに接続しています</translation>
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
@@ -1009,6 +1018,7 @@
 <translation id="7868900307798234037">指紋によるロック解除</translation>
 <translation id="7872786842639831132">オフ</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
+<translation id="7877557217297072640">{0,plural, =0{今すぐデバイスを以前のバージョンに戻してください}=1{1 秒以内にデバイスを以前のバージョンに戻してください}other{# 秒以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">メールを送って</translation>

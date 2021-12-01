@@ -248,6 +248,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> och <ph name="UNAVAILABLE_APPS_TWO" /> finns inte på enheten.</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
 <translation id="2689613560355655046">Skrivbord 8</translation>
 <translation id="2700493154570097719">Ställ in tangentbord</translation>
@@ -419,6 +420,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3744282433224562605">Ange lösenordet om du vill låsa upp Chromebook</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
@@ -604,6 +606,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> finns inte på enheten.</translation>
 <translation id="495046168593986294">Rulla upp</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>

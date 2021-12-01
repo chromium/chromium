@@ -1018,6 +1018,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7868900307798234037">Membuka kunci dengan cap jari</translation>
 <translation id="7872786842639831132">Mati</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Tukar peranti kepada versi sebelumnya sekarang}=1{Tukar peranti kepada versi sebelumnya dalam masa 1 saat}other{Tukar peranti kepada versi sebelumnya dalam masa # saat}}</translation>
 <translation id="7886169021410746335">Laraskan tetapan privasi</translation>
 <translation id="7886277072580235377">Sesi Internet anda akan dipadam bersih apabila anda log keluar. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Hantar e-mel</translation>

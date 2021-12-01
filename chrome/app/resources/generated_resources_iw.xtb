@@ -1711,6 +1711,7 @@
 <translation id="2721037002783622288">ביצוע &amp;חיפוש תמונה ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">מנהל המערכת שלך השבית את המשתמשים בפיקוח.</translation>
+<translation id="2722540561488096675">‏המכשיר ייכבה בעוד <ph name="TIME_LEFT" />. עליך להסיר את התקן ה-USB לפני הפעלת המכשיר מחדש. לאחר מכן, ניתן יהיה להתחיל להשתמש ב-<ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">‏יומני WebRTC</translation>
 <translation id="272488616838512378">המרת יחידות</translation>
 <translation id="2725200716980197196">קישוריות הרשת התחדשה</translation>
@@ -4569,6 +4570,7 @@
 <translation id="5739235828260127894">בהמתנה לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">גדול מאוד</translation>
 <translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
+<translation id="5740709157181662145">יציבות ותמיכה בחומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">שיקוף מסך</translation>
 <translation id="574209121243317957">גובה צליל</translation>
 <translation id="5746169159649715125">‏שמירה כקובץ PDF</translation>

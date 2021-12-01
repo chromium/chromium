@@ -1703,6 +1703,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2721037002783622288">&amp;Otsi teenusest <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Administraator on jälgitavad kasutajad keelanud.</translation>
+<translation id="2722540561488096675">Seade lülitub välja <ph name="TIME_LEFT" /> pärast. Enne seadme uuesti sisselülitamist eemaldage USB-seade. Seejärel saate hakata seadet <ph name="DEVICE_OS" /> kasutama.</translation>
 <translation id="2724841811573117416">WebRTC logid</translation>
 <translation id="272488616838512378">Ühikute teisendamine</translation>
 <translation id="2725200716980197196">Võrguühendus on taastatud</translation>
@@ -4559,6 +4560,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5739235828260127894">Kinnitamise ootel. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Väga suur</translation>
 <translation id="5740328398383587084">Läheduses jagamine</translation>
+<translation id="5740709157181662145">Seadme <ph name="DEVICE_OS" /> riistvaratugi ja stabiilsus</translation>
 <translation id="574104302965107104">Ekraanikuva peegeldamine</translation>
 <translation id="574209121243317957">Helikõrgus</translation>
 <translation id="5746169159649715125">Salvesta PDF-ina</translation>

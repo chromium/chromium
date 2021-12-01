@@ -1014,6 +1014,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7868900307798234037">Barmaq izi ilə kiliddən çıxarma</translation>
 <translation id="7872786842639831132">Deaktiv</translation>
 <translation id="7875575368831396199">Görünür, Bluetooth <ph name="DEVICE_TYPE" /> cihazınızda deaktiv edilib. Telefon Mərkəzindən istifadə etmək üçün Bluetooth'u aktiv edin.</translation>
+<translation id="7877557217297072640">{0,plural, =0{İndi cihazı əvvəlki versiyaya dəyişdirin}=1{1 saniyə ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# saniyə ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
 <translation id="7886169021410746335">Məxfilik ayarlarını tənzimləyin</translation>
 <translation id="7886277072580235377">Hesabdan çıxdıqda internet sessiyanız silinəcək. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-məktub göndərin</translation>

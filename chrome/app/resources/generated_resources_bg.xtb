@@ -1708,6 +1708,7 @@
 <translation id="2721037002783622288">&amp;Търсене на изображението чрез <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Функцията за контролирани потребители е деактивирана от администратора ви.</translation>
+<translation id="2722540561488096675">Устройството ви ще се изключи след <ph name="TIME_LEFT" />. Преди да го включите отново, премахнете USB кабела. След това можете да започнете да използвате <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Регистрационни файлове за WebRTC</translation>
 <translation id="272488616838512378">Преобразуване на мерни единици</translation>
 <translation id="2725200716980197196">Връзката с мрежата е възстановена</translation>
@@ -4567,6 +4568,7 @@
 <translation id="5739235828260127894">Чака се потвърждение. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Много голям</translation>
 <translation id="5740328398383587084">Споделяне наблизо</translation>
+<translation id="5740709157181662145">Поддръжка при проблеми с хардуера и стабилността на <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дублиране на екрана</translation>
 <translation id="574209121243317957">Височина</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>

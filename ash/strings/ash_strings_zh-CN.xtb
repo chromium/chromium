@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
+<translation id="2665788051462227163">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />和<ph name="UNAVAILABLE_APPS_TWO" />。</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2700493154570097719">设置键盘</translation>
@@ -419,6 +420,7 @@
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
+<translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3744282433224562605">若要解锁 Chromebook，请输入密码</translation>
 <translation id="3771549900096082774">高反差模式</translation>
@@ -604,6 +606,7 @@
 <translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
+<translation id="4947229553198882488">无法在此设备上使用<ph name="UNAVAILABLE_APPS" />。</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4952936045814352993">当闹钟提示音处于停用状态时，无法使用“定位手机”功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求您回滚 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>

@@ -245,6 +245,7 @@
 <translation id="2653019840645008922">Терезені түсіру</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2658778018866295321">Басу және сүйреу</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> және <ph name="UNAVAILABLE_APPS_TWO" /> бұл құрылғыда жоқ.</translation>
 <translation id="2678852583403169292">Select to Speak мәзірі</translation>
 <translation id="2689613560355655046">8-ші жұмыс үстелі</translation>
 <translation id="2700493154570097719">Пернетақтаны орнатыңыз</translation>
@@ -367,6 +368,15 @@
 <translation id="3509391053705095206">Телефон табылмады. Онда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын аккаунт</translation>
+<translation id="3518604429872942239">Күй жолағы, уақыты: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Құрылғыны 1 минутта жаңарту керек}other{Құрылғыны # минутта жаңарту керек}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> құрылғыға қосылды.</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
@@ -405,6 +415,7 @@
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> және тағы <ph name="UNAVAILABLE_APPS_COUNT" /> қолданба бұл құрылғыда жоқ.</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3744282433224562605">Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
@@ -588,6 +599,7 @@
 <translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
 <translation id="4945196315133970626">Хабарландыруларды өшіру</translation>
 <translation id="4946376291507881335">Суретке түсіру</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> бұл қолданбада жоқ.</translation>
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>
 <translation id="4952936045814352993">Дабыл сигналы өшірілсе, телефонды табу функциясы қолжетімді болмайды.</translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
@@ -990,6 +1002,7 @@
 <translation id="7868900307798234037">Саусақ ізімен ашылуда</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Құрылғыны алдыңғы нұсқаға қазір қайтару}=1{Құрылғыны алдыңғы нұсқаға 1 секундта қайтару}other{Құрылғыны алдыңғы нұсқаға # секундта қайтару}}</translation>
 <translation id="7886169021410746335">Құпиялылық параметрлерін реттеу</translation>
 <translation id="7886277072580235377">Сіз шыққан кезде, сеансыңыз өшіріледі. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Электрондық хат жіберу</translation>

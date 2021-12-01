@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">ৱিণ্ড' কেপচাৰ</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2658778018866295321">ক্লিক কৰি টানি আনক</translation>
+<translation id="2665788051462227163">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS_ONE" /> আৰু <ph name="UNAVAILABLE_APPS_TWO" /> নাই।</translation>
 <translation id="2678852583403169292">কথা ক’বলৈ বাছনি কৰক সুবিধাটোৰ মেনু</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
 <translation id="2700493154570097719">আপোনাৰ কীব’র্ড ছেট কৰক</translation>
@@ -419,6 +420,7 @@
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
 <translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
 <translation id="3713734891607377840">সম্পূৰ্ণ হোৱাৰ পাছত খোলক</translation>
+<translation id="3726171378575546917">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> আৰু <ph name="UNAVAILABLE_APPS_COUNT" /> টা নাই।</translation>
 <translation id="3742055079367172538">স্ক্ৰীণশ্বট লোৱা হ’ল</translation>
 <translation id="3744282433224562605">আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক</translation>
 <translation id="3771549900096082774">হাই কনট্ৰাষ্ট ম’ড</translation>
@@ -604,6 +606,7 @@
 <translation id="4925542575807923399">এই একাউণ্টৰ প্ৰশাসকে এই একাউণ্টটো একাধিকবাৰ ছাইন-ইন কৰা কোনো ছেশ্বনত প্ৰথমে ছাইন ইন কৰাটো বিচাৰে।</translation>
 <translation id="4945196315133970626">জাননী অফ কৰক</translation>
 <translation id="4946376291507881335">কেপচাৰ কৰক</translation>
+<translation id="4947229553198882488">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS" />নাই।</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>
 <translation id="4952936045814352993">এলাৰ্মৰ ধ্বনি অক্ষম কৰা থাকিলে ফ’নৰ অৱস্থান নিৰূপণ কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />ৰ বাবে আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />টো ৰ’ল বেক কৰাৰ আৱশ্যক। আপোনাৰ ডিভাইচটো ৰিছেট হ’ব আৰু আটাইবোৰ ডেটা মচা হ’ব।</translation>

@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Этот браузер управляется администратором</translation>
 <translation id="1746113442205726301">Смещение изображения по оси Y</translation>
+<translation id="1747819498338037826">Изменить автоматически</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
 <translation id="1752021286346845558">Почтовый ящик 8</translation>
 <translation id="1753706481035618306">Номер страницы</translation>
@@ -1677,6 +1678,7 @@
 <translation id="643051589346665201">Изменить пароль Google</translation>
 <translation id="6433490469411711332">Изменить контактную информацию</translation>
 <translation id="6433595998831338502">Сайт <ph name="HOST_NAME" /> не позволяет установить соединение.</translation>
+<translation id="6438025220577812695">Изменить вручную</translation>
 <translation id="6440503408713884761">Пропускается</translation>
 <translation id="6443406338865242315">Установленные расширения и плагины.</translation>
 <translation id="6446163441502663861">Kahu (конверт)</translation>
