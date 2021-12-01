@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: script=/resources/testdriver.js
+// META: script=/resources/testharnessreport.js
 'use strict'
 
 var base_uuid = '00000000-0000-1000-8000-00805f9b34fb'
@@ -177,4 +175,3 @@ test(() => {
   assert_throws_js(TypeError, () => BluetoothUUID.getDescriptor(null));
   assert_throws_js(TypeError, () => BluetoothUUID.getDescriptor(false));
 }, 'Non-number and non-strings');
-</script>

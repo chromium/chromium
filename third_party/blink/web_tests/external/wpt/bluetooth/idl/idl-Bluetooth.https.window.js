@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<title>Bluetooth interface</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: script=/resources/testdriver.js
+// META: script=/resources/testharnessreport.js
 'use strict';
 const test_desc = 'Bluetooth IDL test';
 
@@ -19,4 +16,3 @@ test(() => {
   assert_true('getDevices' in navigator.bluetooth);
   assert_equals(navigator.bluetooth.requestDevice.length, 0);
 }, test_desc);
-</script>

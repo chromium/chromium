@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: script=/resources/testdriver.js
+// META: script=/resources/testharnessreport.js
 'use strict';
 const test_desc = '[SameObject] test for navigator.bluetooth';
 
@@ -12,4 +10,3 @@ test(() => {
 test(() => {
   assert_equals(navigator.bluetooth, navigator.bluetooth);
 }, test_desc);
-</script>
