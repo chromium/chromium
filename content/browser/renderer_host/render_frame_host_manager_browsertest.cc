@@ -7569,15 +7569,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 
 // TODO(crbug.com/1274974): Make this work with NavigationThreadingOptimizations
 // enabled.
-#if defined(OS_MAC)
-#define MAYBE_PostMessageAfterPagehideHistogram \
-  DISABLED_PostMessageAfterPagehideHistogram
-#else
-#define MAYBE_PostMessageAfterPagehideHistogram \
-  PostMessageAfterPagehideHistogram
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_PostMessageAfterPagehideHistogram) {
+                       DISABLED_PostMessageAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -7633,15 +7626,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 
 // TODO(crbug.com/1274974): Make this work with NavigationThreadingOptimizations
 // enabled.
-#if defined(OS_MAC)
-#define MAYBE_PostMessageAfterPagehideHistogramSubframe \
-  DISABLED_PostMessageAfterPagehideHistogramSubframe
-#else
-#define MAYBE_PostMessageAfterPagehideHistogramSubframe \
-  PostMessageAfterPagehideHistogramSubframe
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_PostMessageAfterPagehideHistogramSubframe) {
+                       DISABLED_PostMessageAfterPagehideHistogramSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
