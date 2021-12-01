@@ -22,12 +22,14 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 /**
@@ -267,10 +269,16 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1271158")
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabNotPreloaded()
             throws Exception {
+        // Force the browser to regard itself as being in the foreground to work around the
+        // fact that the navigation here can happen before ChromeActivity records the
+        // browser as being in the foreground, in which case startup metrics are erroneously
+        // not recorded. TODO(crbug.com/1273097): Eliminate this call when we fix startup
+        // metrics to be recorded in this case.
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.putExtra(StartupTabPreloader.EXTRA_DISABLE_STARTUP_TAB_PRELOADER, true);
