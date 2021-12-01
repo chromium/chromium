@@ -248,8 +248,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         } else if (entry.mType == FolderListEntry.TYPE_NEW_FOLDER) {
             BookmarkAddEditFolderActivity.startAddFolderActivity(this, mBookmarksToMove);
         } else if (entry.mType == FolderListEntry.TYPE_NORMAL) {
-            mBookmarksToMove = ReadingListUtils.typeSwapBookmarksIfNecessary(
-                    mModel, mBookmarksToMove, entry.mId);
+            ReadingListUtils.typeSwapBookmarksIfNecessary(mModel, mBookmarksToMove, entry.mId);
             mModel.moveBookmarks(mBookmarksToMove, entry.mId);
             BookmarkUtils.setLastUsedParent(this, entry.mId);
             finish();
