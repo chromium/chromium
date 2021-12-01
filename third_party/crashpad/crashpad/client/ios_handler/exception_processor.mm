@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// std::unexpected_handler is deprecated starting in C++11, and removed in
+// C++17.  But macOS versions we run on still ship it. This define makes
+// std::unexpected_handler reappear. If that define ever stops working,
+// we hopefully no longer run on macOS versions that still have it.
+// (...or we'll have to define it in this file instead of getting it from
+// <exception>). This define must before all includes.
+#define _LIBCPP_ENABLE_CXX17_REMOVED_UNEXPECTED_FUNCTIONS
+
 #include "client/ios_handler/exception_processor.h"
 
 #include <Availability.h>
