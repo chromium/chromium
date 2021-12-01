@@ -1319,7 +1319,8 @@ TEST_F(TransportSecurityStateTest, ExpectCTReporter) {
   EXPECT_EQ(GURL(kExpectCTStaticReportURI), reporter.report_uri());
   EXPECT_EQ(cert1.get(), reporter.served_certificate_chain());
   EXPECT_EQ(cert2.get(), reporter.validated_certificate_chain());
-  EXPECT_EQ(ssl_info.signed_certificate_timestamps.size(),
+  ASSERT_EQ(1u, ssl_info.signed_certificate_timestamps.size());
+  ASSERT_EQ(ssl_info.signed_certificate_timestamps.size(),
             reporter.signed_certificate_timestamps().size());
   EXPECT_EQ(ssl_info.signed_certificate_timestamps[0].status,
             reporter.signed_certificate_timestamps()[0].status);

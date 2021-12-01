@@ -668,6 +668,25 @@ class OCSPErrorTestDelegate : public TestDelegate {
   SSLInfo ssl_info_;
 };
 
+#if !defined(OS_IOS)
+// Compute the root cert's SPKI hash on the fly, to avoid hardcoding it within
+// tests.
+bool GetTestRootCertSPKIHash(SHA256HashValue* root_hash) {
+  scoped_refptr<X509Certificate> root_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  if (!root_cert)
+    return false;
+  base::StringPiece root_spki;
+  if (!asn1::ExtractSPKIFromDERCert(
+          x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()),
+          &root_spki)) {
+    return false;
+  }
+  crypto::SHA256HashString(root_spki, root_hash, sizeof(SHA256HashValue));
+  return true;
+}
+#endif
+
 }  // namespace
 
 // Inherit PlatformTest since we require the autorelease pool on Mac OS X.
@@ -10691,22 +10710,6 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   TestURLRequestContext context_;
 };
 
-// SHA256 hash of the testserver root_ca_cert DER.
-// openssl x509 -in root_ca_cert.pem -outform der | \
-//   openssl dgst -sha256 -binary | xxd -i
-static const SHA256HashValue kTestRootCertHash = {
-    {0xb2, 0xab, 0xa3, 0xa5, 0xd4, 0x11, 0x56, 0xcb, 0xb9, 0x23, 0x35,
-     0x07, 0x6d, 0x0b, 0x51, 0xbe, 0xd3, 0xee, 0x2e, 0xab, 0xe7, 0xab,
-     0x6b, 0xad, 0xcc, 0x2a, 0xfa, 0x35, 0xfb, 0x8e, 0x31, 0x5e}};
-
-// SHA256 hash of the DER SPKI of the testserver root_ca_cert.
-// openssl x509 -in root_ca_cert.pem -pubkey -noout | \
-//   openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | xxd -i
-static const SHA256HashValue kTestRootCertSPKIHash = {
-    {0x57, 0x2a, 0x4f, 0xdd, 0x55, 0x8b, 0xec, 0xe6, 0xaa, 0x4c, 0x9e,
-     0xe6, 0x20, 0x17, 0xa1, 0x59, 0x89, 0x6f, 0xf2, 0x48, 0x4f, 0xb8,
-     0x51, 0xe9, 0x5a, 0x27, 0x9a, 0xad, 0x92, 0x36, 0x62, 0x32}};
-
 // The test EV policy OID used for generated certs.
 static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
 
@@ -10715,8 +10718,13 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
   void SetUp() override {
     HTTPSCertNetFetchingTest::SetUp();
 
+    scoped_refptr<X509Certificate> root_cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+    ASSERT_TRUE(root_cert);
+
     ev_test_policy_ = std::make_unique<ScopedTestEVPolicy>(
-        EVRootCAMetadata::GetInstance(), kTestRootCertHash,
+        EVRootCAMetadata::GetInstance(),
+        X509Certificate::CalculateFingerprint256(root_cert->cert_buffer()),
         kOCSPTestCertPolicy);
   }
 
@@ -11546,8 +11554,10 @@ TEST_F(HTTPSEVCRLSetTest, FreshCRLSetCovered) {
       EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
 
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
+  SHA256HashValue root_cert_spki_hash;
+  ASSERT_TRUE(GetTestRootCertSPKIHash(&root_cert_spki_hash));
   cert_verifier_config.crl_set =
-      CRLSet::ForTesting(false, &kTestRootCertSPKIHash, "", "", {});
+      CRLSet::ForTesting(false, &root_cert_spki_hash, "", "", {});
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status;
@@ -11654,8 +11664,10 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevoked) {
   ASSERT_TRUE(test_server.Start());
 
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
+  SHA256HashValue root_cert_spki_hash;
+  ASSERT_TRUE(GetTestRootCertSPKIHash(&root_cert_spki_hash));
   cert_verifier_config.crl_set =
-      CRLSet::ForTesting(false, &kTestRootCertSPKIHash,
+      CRLSet::ForTesting(false, &root_cert_spki_hash,
                          test_server.GetCertificate()->serial_number(), "", {});
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
@@ -11879,17 +11891,8 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
 
   // Configure for kHSTSSubdomainWithKnownInterception
   CertVerifyResult sts_sub_result = fake_result;
-  // Compute the root cert's hash on the fly, to avoid hardcoding it within
-  // tests.
-  scoped_refptr<X509Certificate> root_cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
-  ASSERT_TRUE(root_cert);
-  base::StringPiece root_spki;
-  ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
-      x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()),
-      &root_spki));
   SHA256HashValue root_hash;
-  crypto::SHA256HashString(root_spki, &root_hash, sizeof(root_hash));
+  ASSERT_TRUE(GetTestRootCertSPKIHash(&root_hash));
   sts_sub_result.public_key_hashes.push_back(HashValue(root_hash));
   sts_sub_result.cert_status |=
       CERT_STATUS_REVOKED | CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
