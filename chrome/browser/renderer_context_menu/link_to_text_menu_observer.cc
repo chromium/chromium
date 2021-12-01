@@ -39,6 +39,15 @@ void RemoveHighlightsInFrame(content::RenderFrameHost* render_frame_host) {
       remote.BindNewPipeAndPassReceiver());
   remote->RemoveFragments();
 }
+
+base::OnceCallback<void(const std::string& selector)>*
+GetGenerationCompleteCallbackForTesting() {
+  static base::NoDestructor<
+      base::OnceCallback<void(const std::string& selector)>>
+      callback;
+  return callback.get();
+}
+
 }  // namespace
 
 // static
@@ -139,11 +148,22 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   proxy_->UpdateMenuItem(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+
+  // Useful only for testing to be notified when generation is complete.
+  auto* cb = GetGenerationCompleteCallbackForTesting();
+  if (!cb->is_null())
+    std::move(*cb).Run(selector);
 }
 
 void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
     const std::string& selector) {
   generated_selector_for_testing_ = url_.spec() + selector;
+}
+
+// static
+void LinkToTextMenuObserver::RegisterGenerationCompleteCallbackForTesting(
+    base::OnceCallback<void(const std::string& selector)> cb) {
+  *GetGenerationCompleteCallbackForTesting() = std::move(cb);
 }
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {

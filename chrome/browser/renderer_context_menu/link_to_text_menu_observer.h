@@ -36,6 +36,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // calls to the remote interface during tests.
   void OverrideGeneratedSelectorForTesting(const std::string& selector);
 
+  // Used in tests for waiting and receiving generation result.
+  static void RegisterGenerationCompleteCallbackForTesting(
+      base::OnceCallback<void(const std::string& selector)> cb);
+
  private:
   explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
                                   content::RenderFrameHost* render_frame_host);
