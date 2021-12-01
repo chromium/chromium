@@ -182,6 +182,15 @@ class CodeSignConfig(object):
         """
         return True
 
+    @property
+    def inject_get_task_allow_entitlement(self):
+        """Returns whether the com.apple.security.get-task-allow entitlement
+        should be added to all entitlement files. This will permit attaching a
+        debugger to a signed process, if the binary was signed with the
+        hardened runtime.
+        """
+        return False
+
     # Computed Properties ######################################################
 
     @property

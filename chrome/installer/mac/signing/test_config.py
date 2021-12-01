@@ -51,3 +51,10 @@ class TestConfigNonChromeBranded(TestConfig):
     @staticmethod
     def is_chrome_branded():
         return False
+
+
+class TestConfigInjectGetTaskAllow(TestConfig):
+
+    @property
+    def inject_get_task_allow_entitlement(self):
+        return True
