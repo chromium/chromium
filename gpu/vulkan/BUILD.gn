@@ -151,7 +151,7 @@ if (enable_vulkan) {
       # libraries and configs need to be included in the generated Fuchsia
       # package.
       if (is_debug || dcheck_always_on) {
-        data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
+        data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
       }
     }
   }
