@@ -54,7 +54,7 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
         std::make_unique<std::string>(vpd_info->sku_number.value());
   }
 
-  // Protect accessing the serial number by a runtime permission.
+  // Protect accessing the serial number by a permission.
   if (extension()->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
       vpd_info->serial_number.has_value()) {
@@ -71,7 +71,7 @@ OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
 OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
 void OsTelemetryGetOemDataFunction::RunIfAllowed() {
-  // Protect accessing the serial number by a runtime permission.
+  // Protect accessing the serial number by a permission.
   if (!extension()->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
     Respond(

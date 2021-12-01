@@ -14,11 +14,18 @@
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -64,11 +71,26 @@ BaseTelemetryExtensionBrowserTest::~BaseTelemetryExtensionBrowserTest() =
 void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-  // Make sure that current user is a device owner.
-  auto* const user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  user_manager->SetOwnerId(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  if (is_user_affiliated()) {
+    // Make sure that ApiGuardDelegate::IsExtensionForceInstalled returns true.
+    api_guard_delegate_factory_ =
+        std::make_unique<FakeApiGuardDelegate::Factory>(
+            /*is_extension_force_installed=*/true);
+    ApiGuardDelegate::Factory::SetForTesting(api_guard_delegate_factory_.get());
+  }
+
+  // Must be initialized before dealing with UserManager.
+  user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+      std::make_unique<ash::FakeChromeUserManager>());
+  // Add a new user and make it active.
+  auto* const user_manager = GetFakeUserManager();
+  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
+  user_manager->AddUserWithAffiliation(account_id,
+                                       /*is_affiliated=*/is_user_affiliated());
+  user_manager->LoginUser(account_id);
+  user_manager->SwitchActiveUser(account_id);
+  if (!is_user_affiliated())
+    user_manager->SetOwnerId(account_id);
 
   // Make sure device OEM is allowlisted.
   hardware_info_delegate_factory_ =
@@ -79,10 +101,36 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   if (should_open_pwa_ui_) {
     host_resolver()->AddRule("*", "127.0.0.1");
     // Make sure PWA UI is open.
-    pwa_page_rfh_ =
-        ui_test_utils::NavigateToURL(browser(), GURL(GetParam().pwa_page_url));
+    pwa_page_rfh_ = ui_test_utils::NavigateToURL(
+        browser(), GURL(extension_info_params().pwa_page_url));
     ASSERT_TRUE(pwa_page_rfh_);
   }
+}
+
+void BaseTelemetryExtensionBrowserTest::TearDownOnMainThread() {
+  // Explicitly removing the user is required; otherwise ProfileHelper keeps
+  // a dangling pointer to the User.
+  // TODO(b/208629291): Consider removing all users from ProfileHelper in the
+  // destructor of ash::FakeChromeUserManager.
+  GetFakeUserManager()->RemoveUserFromList(
+      GetFakeUserManager()->GetActiveUser()->GetAccountId());
+  user_manager_enabler_.reset();
+
+  extensions::ExtensionBrowserTest::TearDownOnMainThread();
+}
+
+bool BaseTelemetryExtensionBrowserTest::is_user_affiliated() const {
+  return std::get<0>(GetParam());
+}
+ExtensionInfoTestParams
+BaseTelemetryExtensionBrowserTest::extension_info_params() const {
+  return std::get<1>(GetParam());
+}
+
+ash::FakeChromeUserManager*
+BaseTelemetryExtensionBrowserTest::GetFakeUserManager() const {
+  return static_cast<ash::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
 }
 
 void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
@@ -90,7 +138,8 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
   test_dir.WriteManifest(
-      GetManifestFile(GetParam().public_key, GetParam().matches_origin));
+      GetManifestFile(extension_info_params().public_key,
+                      extension_info_params().matches_origin));
   test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"), "");
 

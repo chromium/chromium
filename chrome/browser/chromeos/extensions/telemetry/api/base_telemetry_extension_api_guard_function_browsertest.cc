@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/test_management_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -155,8 +160,7 @@ using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
 IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
                        ActiveUserNotOwner) {
   // Make sure that current user is not a device owner.
-  auto* const user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  auto* const user_manager = GetFakeUserManager();
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
   user_manager->AddUser(regular_user);
   user_manager->SetOwnerId(regular_user);
@@ -179,8 +183,33 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionApiGuardBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
+    testing::Combine(
+        testing::Values(false),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
+
+using TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest =
+    BaseTelemetryExtensionBrowserTest;
+
+IN_PROC_BROWSER_TEST_P(
+    TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest,
+    AffiliatedUserNotPolicyInstalledExtension) {
+  // Make sure that ApiGuardDelegate::IsExtensionForceInstalled() returns false.
+  api_guard_delegate_factory_ = std::make_unique<FakeApiGuardDelegate::Factory>(
+      /*is_extension_force_installed=*/false);
+  ApiGuardDelegate::Factory::SetForTesting(api_guard_delegate_factory_.get());
+
+  CreateExtensionAndRunServiceWorker(
+      GetServiceWorkerForError("This extension is not installed by the admin"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionApiGuardManagedUserNotPolicyInstalledExtensionBrowserTest,
+    testing::Combine(
+        testing::Values(true),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 class TelemetryExtensionApiGuardWithoutPwaBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
@@ -205,7 +234,9 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardWithoutPwaBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionApiGuardWithoutPwaBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 }  // namespace chromeos
