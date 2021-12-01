@@ -455,6 +455,15 @@ void FinalizeGetMediaDeviceIDForHMAC(
                         base::BindOnce(std::move(callback), absl::nullopt));
 }
 
+bool EnableChangeSourceForDevice(const MediaStreamDevice& device) {
+  DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
+  return media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&
+         (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+          (device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
+           base::FeatureList::IsEnabled(
+               media::kShareThisTabInsteadButtonGetDisplayMedia)));
+}
+
 #if !defined(OS_ANDROID)
 base::TimeDelta GetConditionalFocusWindow() {
   const std::string custom_window =
@@ -2756,13 +2765,9 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
 
   // Show "Change source" button on notification bar only for tab sharing by
   // desktopCapture API or getDisplayMedia.
-  bool enable_change_source = std::any_of(
-      request->devices.cbegin(), request->devices.cend(), [](auto device) {
-        DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
-        return (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-                device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE) &&
-               media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS;
-      });
+  bool enable_change_source =
+      std::any_of(request->devices.cbegin(), request->devices.cend(),
+                  &EnableChangeSourceForDevice);
 
   MediaStreamUI::SourceCallback device_changed_cb;
   if (enable_change_source &&

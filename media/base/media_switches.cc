@@ -559,6 +559,13 @@ const base::Feature kLiveCaption{"LiveCaption",
 const base::Feature kUseSodaForLiveCaption{"UseSodaForLiveCaption",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether a "Share this tab instead" button should be shown for
+// getDisplayMedia captures. Note: This flag does not control if the "Share this
+// tab instead" button is shown for chrome.desktopCapture captures.
+const base::Feature kShareThisTabInsteadButtonGetDisplayMedia{
+    "ShareThisTabInsteadButtonGetDisplayMedia",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable the Speaker Change Detection feature, which inserts a line break when
 // the Speech On-Device API (SODA) detects a speaker change.
 const base::Feature kSpeakerChangeDetection{"SpeakerChangeDetection",
