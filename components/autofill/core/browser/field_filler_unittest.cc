@@ -1412,8 +1412,7 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
   CreditCardTestCase test;
   test.card_number_ = u"5187654321098765";
   test.total_splits_ = 4;
-  int splits[] = {4, 4, 4, 4};
-  test.splits_ = std::vector<int>(splits, splits + base::size(splits));
+  test.splits_ = {4, 4, 4, 4};
   test.expected_results_ = {u"5187", u"6543", u"2109", u"8765"};
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1430,8 +1429,7 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
                          mojom::RendererFormDataAction::kFill);
 
     // Verify for expected results.
-    EXPECT_EQ(test.expected_results_[i],
-              cc_number_part.value.substr(0, cc_number_part.max_length));
+    EXPECT_EQ(test.expected_results_[i], cc_number_part.value);
     EXPECT_EQ(4 * i, cc_number_part.credit_card_number_offset());
   }
 
@@ -1448,14 +1446,58 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
   EXPECT_EQ(test.card_number_, cc_number_full.value);
 }
 
+TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithEqualSizeSplits) {
+  // Case 2: card number broken up into four equal groups, of length 4.
+  CreditCardTestCase test;
+  test.card_number_ = u"5187654321098765";
+  test.total_splits_ = 4;
+  test.splits_ = {4, 4, 4, 4};
+  test.expected_results_ = {u"\x2022\x2022\x2022\x2022",
+                            u"\x2022\x2022\x2022\x2022",
+                            u"\x2022\x2022\x2022\x2022", u"8765"};
+  // 12 dots and last four of card number.
+  std::u16string obfuscated_card_number =
+      u"\x202A\x2022\x2060\x2006\x2060\x2022\x2060\x2006\x2060\x2022\x2060"
+      u"\x2006\x2060\x2022\x2060\x2006\x2060"
+      u"8765\x202C";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  for (size_t i = 0; i < test.total_splits_; ++i) {
+    AutofillField cc_number_part;
+    cc_number_part.set_heuristic_type(CREDIT_CARD_NUMBER);
+    cc_number_part.max_length = test.splits_[i];
+    cc_number_part.set_credit_card_number_offset(4 * i);
+
+    // Fill with a card-number; should fill just the card_number_part.
+    credit_card()->SetNumber(test.card_number_);
+    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+                         /*cvc=*/std::u16string(),
+                         mojom::RendererFormDataAction::kPreview);
+
+    // Verify for expected results.
+    EXPECT_EQ(test.expected_results_[i], cc_number_part.value);
+    EXPECT_EQ(4 * i, cc_number_part.credit_card_number_offset());
+  }
+
+  // Verify that full card-number shall get fill properly as well.
+  AutofillField cc_number_full;
+  cc_number_full.set_heuristic_type(CREDIT_CARD_NUMBER);
+
+  credit_card()->SetNumber(test.card_number_);
+  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview);
+
+  // Verify for expected results.
+  EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
+}
+
 TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
   // Case 3: card with 15 digits number, broken up into three unequal groups, of
   // lengths 4, 6, and 5.
   CreditCardTestCase test;
   test.card_number_ = u"423456789012345";
   test.total_splits_ = 3;
-  int splits[] = {4, 6, 5};
-  test.splits_ = std::vector<int>(splits, splits + base::size(splits));
+  test.splits_ = {4, 6, 5};
   test.expected_results_ = {u"4234", u"567890", u"12345"};
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1473,8 +1515,7 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
                          mojom::RendererFormDataAction::kFill);
 
     // Verify for expected results.
-    EXPECT_EQ(test.expected_results_[i],
-              cc_number_part.value.substr(0, cc_number_part.max_length));
+    EXPECT_EQ(test.expected_results_[i], cc_number_part.value);
     EXPECT_EQ(GetNumberOffset(i, test),
               cc_number_part.credit_card_number_offset());
   }
@@ -1489,6 +1530,55 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
 
   // Verify for expected results.
   EXPECT_EQ(test.card_number_, cc_number_full.value);
+}
+
+TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
+  // Case 3: card with 15 digits number, broken up into three unequal groups, of
+  // lengths 4, 6, and 5.
+  CreditCardTestCase test;
+  test.card_number_ = u"423456789012345";
+  // 12 dots and last four of card number.
+  std::u16string obfuscated_card_number =
+      u"\x202A\x2022\x2060\x2006\x2060\x2022\x2060\x2006\x2060\x2022\x2060"
+      u"\x2006\x2060\x2022\x2060\x2006\x2060"
+      u"2345\x202C";
+  test.total_splits_ = 3;
+  test.splits_ = {4, 6, 6};
+  test.expected_results_ = {u"\x2022\x2022\x2022\x2022",
+                            u"\x2022\x2022\x2022\x2022\x2022\x2022",
+                            u"\x2022\x2022"
+                            u"2345"};
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  // Start executing test cases to verify parts and full credit card number.
+  for (size_t i = 0; i < test.total_splits_; ++i) {
+    AutofillField cc_number_part;
+    cc_number_part.set_heuristic_type(CREDIT_CARD_NUMBER);
+    cc_number_part.max_length = test.splits_[i];
+    cc_number_part.set_credit_card_number_offset(GetNumberOffset(i, test));
+
+    // Fill with a card-number; should fill just the card_number_part.
+    credit_card()->SetNumber(test.card_number_);
+    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+                         /*cvc=*/std::u16string(),
+                         mojom::RendererFormDataAction::kPreview);
+
+    // Verify for expected results.
+    EXPECT_EQ(test.expected_results_[i], cc_number_part.value);
+    EXPECT_EQ(GetNumberOffset(i, test),
+              cc_number_part.credit_card_number_offset());
+  }
+
+  // Verify that full card-number shall get fill properly as well.
+  AutofillField cc_number_full;
+  cc_number_full.set_heuristic_type(CREDIT_CARD_NUMBER);
+  credit_card()->SetNumber(test.card_number_);
+  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview);
+
+  // Verify for expected results.
+  EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
 }
 
 TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {

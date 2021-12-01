@@ -508,13 +508,28 @@ std::u16string GetCreditCardNumberForInput(
     mojom::RendererFormDataAction action) {
   std::u16string value;
 
-  // In preview, only show the last four of the credit card number.
-  value = action == mojom::RendererFormDataAction::kPreview
-              ? credit_card.ObfuscatedLastFourDigits()
-              : credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
+  if (action == mojom::RendererFormDataAction::kPreview) {
+    // A single field is detected when the offset begins at 0 and the field's
+    // max_length can hold the entire obfuscated credit card number.
+    bool is_single_field =
+        (field.credit_card_number_offset() == 0 &&
+         (field.max_length == 0 ||
+          field.max_length >= credit_card.ObfuscatedLastFourDigits().length()));
 
-  // |field|'s max_length truncates credit card number to fit within.
+    // If previewing a credit card number that needs to be split, pad the number
+    // to 16 digits rather than displaying a fancy string with RTL support.
+    value = is_single_field
+                ? credit_card.ObfuscatedLastFourDigits()
+                : credit_card.ObfuscatedLastFourDigitsForSplitFields();
+  } else {
+    value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
+  }
+
+  // |field|'s max_length truncates the credit card number to fit within.
   if (field.credit_card_number_offset() < value.length()) {
+    // Take the substring of the credit card number starting from the offset and
+    // ending at the field's max_length (or the entire string if max_length is
+    // 0).
     value = value.substr(
         field.credit_card_number_offset(),
         field.max_length > 0 ? field.max_length : std::u16string::npos);

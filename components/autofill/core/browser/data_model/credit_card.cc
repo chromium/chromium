@@ -57,6 +57,7 @@ constexpr char16_t kMidlineEllipsis4Dots[] =
 constexpr char16_t kMidlineEllipsis2Dots[] =
     u"\u2022\u2060\u2006\u2060"
     u"\u2022\u2060\u2006\u2060";
+constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
 namespace {
 
@@ -887,6 +888,13 @@ std::u16string CreditCard::ObfuscatedLastFourDigits(
     int obfuscation_length) const {
   return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
                                                     obfuscation_length);
+}
+
+std::u16string CreditCard::ObfuscatedLastFourDigitsForSplitFields() const {
+  // For split credit card number fields, use plain dots without spacing and no
+  // LTR formatting. Only obfuscate 12 dots and append the last four digits of
+  // the credit card number.
+  return std::u16string(12, kMidlineEllipsisPlainDot) + LastFourDigits();
 }
 
 std::string CreditCard::CardIconStringForAutofillSuggestion() const {
