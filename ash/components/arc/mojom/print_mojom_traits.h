@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_
 
 #include <string>
 #include <vector>
 
-#include "components/arc/mojom/print_common.mojom.h"
+#include "ash/components/arc/mojom/print_common.mojom.h"
 #include "printing/backend/print_backend.h"
 #include "printing/page_range.h"
 #include "ui/gfx/geometry/size.h"
@@ -76,4 +76,4 @@ struct StructTraits<arc::mojom::PrinterCapabilitiesDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_MOJOM_PRINT_MOJOM_TRAITS_H_

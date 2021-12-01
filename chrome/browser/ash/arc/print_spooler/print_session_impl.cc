@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/mojom/print_common.mojom.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/arc/intent_helper/custom_tab.h"
-#include "components/arc/mojom/print_common.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/filename_util.h"

@@ -6,7 +6,7 @@
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "components/arc/mojom/anr.mojom";
+import "ash/components/arc/mojom/anr.mojom";
 
 [Extensible]
 enum BootType {

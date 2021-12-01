@@ -12,20 +12,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (is_chromeos_ash) {
   mojom("mojom") {
     sources = [
-      "anr.mojom",
       "app.mojom",
       "app_permissions.mojom",
       "compatibility_mode.mojom",
       "file_system.mojom",
       "intent_common.mojom",
       "intent_helper.mojom",
-      "metrics.mojom",
-      "policy.mojom",
-      "power.mojom",
-      "print_common.mojom",
-      "print_spooler.mojom",
-      "process.mojom",
-      "property.mojom",
       "rotation_lock.mojom",
       "scale_factor.mojom",
       "screen_capture.mojom",
@@ -108,31 +100,6 @@ if (is_chromeos_ash) {
             [ "//components/arc/intent_helper/intent_filter_mojom_traits.h" ]
         traits_sources =
             [ "//components/arc/intent_helper/intent_filter_mojom_traits.cc" ]
-      },
-      {
-        types = [
-          {
-            mojom = "arc.mojom.PrintPageRange"
-            cpp = "::printing::PageRange"
-          },
-          {
-            mojom = "arc.mojom.PrintResolution"
-            cpp = "::gfx::Size"
-          },
-          {
-            mojom = "arc.mojom.PrinterCapabilities"
-            cpp = "::printing::PrinterSemanticCapsAndDefaults"
-          },
-        ]
-        traits_headers = [
-          "//printing/backend/print_backend.h",
-          "//printing/page_range.h",
-          "//ui/gfx/geometry/size.h",
-        ]
-
-        traits_private_headers = [ "print_mojom_traits.h" ]
-        traits_sources = [ "print_mojom_traits.cc" ]
-        traits_public_deps = [ "//printing" ]
       },
       {
         types = [

@@ -16,6 +16,7 @@ if (is_chromeos_ash) {
     sources = [
       "accessibility_helper.mojom",
       "adbd.mojom",
+      "anr.mojom",
       "appfuse.mojom",
       "arc_bridge.mojom",
       "audio.mojom",
@@ -41,12 +42,19 @@ if (is_chromeos_ash) {
       "lock_screen.mojom",
       "media_session.mojom",
       "memory.mojom",
+      "metrics.mojom",
       "midis.mojom",
       "nearby_share.mojom",
       "net.mojom",
       "obb_mounter.mojom",
       "payment_app.mojom",
       "pip.mojom",
+      "policy.mojom",
+      "power.mojom",
+      "print_common.mojom",
+      "print_spooler.mojom",
+      "process.mojom",
+      "property.mojom",
     ]
 
     public_deps = [
@@ -123,6 +131,31 @@ if (is_chromeos_ash) {
           "//ui/base/ime",
           "//ui/events",
         ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.PrintPageRange"
+            cpp = "::printing::PageRange"
+          },
+          {
+            mojom = "arc.mojom.PrintResolution"
+            cpp = "::gfx::Size"
+          },
+          {
+            mojom = "arc.mojom.PrinterCapabilities"
+            cpp = "::printing::PrinterSemanticCapsAndDefaults"
+          },
+        ]
+        traits_headers = [
+          "//printing/backend/print_backend.h",
+          "//printing/page_range.h",
+          "//ui/gfx/geometry/size.h",
+        ]
+
+        traits_private_headers = [ "print_mojom_traits.h" ]
+        traits_sources = [ "print_mojom_traits.cc" ]
+        traits_public_deps = [ "//printing" ]
       },
     ]
   }

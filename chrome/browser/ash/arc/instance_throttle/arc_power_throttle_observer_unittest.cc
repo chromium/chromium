@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 
+#include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -16,7 +17,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/mojom/anr.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

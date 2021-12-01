@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
-#include "components/arc/mojom/process.mojom.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"

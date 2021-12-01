@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 
+#include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/mojom/print_spooler.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"

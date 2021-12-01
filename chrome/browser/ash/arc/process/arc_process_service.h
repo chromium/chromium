@@ -10,6 +10,7 @@
 #include <queue>
 #include <vector>
 
+#include "ash/components/arc/mojom/process.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/process_snapshot_server.h"
-#include "components/arc/mojom/process.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"

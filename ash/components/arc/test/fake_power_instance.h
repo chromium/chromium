@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_POWER_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_POWER_INSTANCE_H_
 
-#include "components/arc/mojom/power.mojom.h"
+#include "ash/components/arc/mojom/power.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

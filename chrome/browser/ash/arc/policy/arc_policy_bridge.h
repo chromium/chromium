@@ -12,12 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/arc/mojom/policy.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"

@@ -9,7 +9,7 @@
 #include <list>
 #include <sstream>
 
-#include "components/arc/mojom/process.mojom.h"
+#include "ash/components/arc/mojom/process.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

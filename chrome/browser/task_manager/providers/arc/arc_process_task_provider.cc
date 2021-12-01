@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
-#include "components/arc/mojom/process.mojom.h"
 
 namespace task_manager {
 

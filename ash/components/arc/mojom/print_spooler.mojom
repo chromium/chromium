@@ -6,7 +6,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/print_common.mojom";
+import "ash/components/arc/mojom/print_common.mojom";
 
 // Represents the Chrome side of a print session. Used by ARC to send
 // print-related messages to Chrome and interact with the ARC Custom Tab used

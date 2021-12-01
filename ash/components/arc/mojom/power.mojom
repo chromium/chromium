@@ -6,7 +6,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/anr.mojom";
+import "ash/components/arc/mojom/anr.mojom";
 
 // Enumerates the modes of CPU restrictions.
 // This enum should be synced with CpuRestrictionState in
