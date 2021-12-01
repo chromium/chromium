@@ -30,13 +30,14 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // NOTE: base::Unretained() is safe below as this object owns
-  // |token_fetch_tracker_|, and the callback will not be invoked after
-  // |token_fetch_tracker_| is destroyed.
+  // NOTE: When a token fetch timeout occurs |token_fetch_tracker_| will invoke
+  // the client callback, which may end up synchronously destroying this object
+  // before this object's own callback is invoked. Hence we bind our own
+  // callback via a WeakPtr.
   const int request_id = token_fetch_tracker_.StartTrackingTokenFetch(
       std::move(callback),
       base::BindOnce(&SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   token_fetchers_[request_id] =
@@ -64,16 +65,22 @@ void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.TokenFetcher.ErrorType",
                             error.state(), GoogleServiceAuthError::NUM_STATES);
+  DCHECK(token_fetchers_.contains(request_id));
+  token_fetchers_.erase(request_id);
+
   if (error.state() == GoogleServiceAuthError::NONE)
     token_fetch_tracker_.OnTokenFetchComplete(request_id,
                                               access_token_info.token);
   else
     token_fetch_tracker_.OnTokenFetchComplete(request_id, std::string());
 
-  token_fetchers_.erase(request_id);
+  // NOTE: Calling SafeBrowsingTokenFetchTracker::OnTokenFetchComplete might
+  // have resulted in the synchronous destruction of this object, so there is
+  // nothing safe to do here but return.
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout(int request_id) {
+  DCHECK(token_fetchers_.contains(request_id));
   token_fetchers_.erase(request_id);
 }
 

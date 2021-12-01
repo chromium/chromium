@@ -65,6 +65,9 @@ void SafeBrowsingTokenFetchTracker::Finish(int request_id,
   callbacks_.erase(request_id);
 
   std::move(callback).Run(access_token);
+
+  // NOTE: Invoking the callback might have resulted in the synchronous
+  // destruction of this object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing
