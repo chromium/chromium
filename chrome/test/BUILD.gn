@@ -1675,7 +1675,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/net/proxy_browsertest.cc",
       "../browser/net/proxy_test_utils.cc",
       "../browser/net/proxy_test_utils.h",
-      "../browser/net/reporting_browsertest.cc",
       "../browser/net/samesite_cookies_policy_browsertest.cc",
       "../browser/net/storage_test_utils.cc",
       "../browser/net/storage_test_utils.h",
@@ -2121,6 +2120,10 @@ if (!is_android && !is_fuchsia) {
       "ppapi/ppapi_filechooser_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    if (enable_reporting) {
+      sources += [ "../browser/net/reporting_browsertest.cc" ]
+    }
 
     # crbug.com/1230268 These tests need to be fixed for Lacros.
     if (!is_chromeos_lacros) {

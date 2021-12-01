@@ -110,7 +110,13 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
   }
 
  protected:
-  bool UseDocumentReporting() const { return GetParam(); }
+  bool UseDocumentReporting() const {
+#if BUILDFLAG(ENABLE_REPORTING)
+    return GetParam();
+#else
+    return false;
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

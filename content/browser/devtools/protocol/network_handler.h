@@ -109,6 +109,10 @@ class NetworkHandler : public DevToolsDomainHandler,
   void OnReportUpdated(const net::ReportingReport& report) override;
   void OnEndpointsUpdatedForOrigin(
       const std::vector<net::ReportingEndpoint>& endpoints) override;
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
+  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
@@ -311,10 +315,6 @@ class NetworkHandler : public DevToolsDomainHandler,
       Response response,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
-  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
-      const net::ReportingReport& report);
-  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
-  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;

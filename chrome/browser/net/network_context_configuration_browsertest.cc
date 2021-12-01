@@ -1953,6 +1953,7 @@ IN_PROC_BROWSER_TEST_P(
   RunMaxConnectionsPerProxyTest();
 }
 
+#if BUILDFLAG(ENABLE_REPORTING)
 // Used to test that we persist Reporting clients and NEL policies to disk, but
 // only when appropriate.
 class NetworkContextConfigurationReportingAndNelBrowserTest
@@ -2155,6 +2156,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
               upload_response.http_request()->method);
   }
 }
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 // Instantiates tests with a prefix indicating which NetworkContext is being
 // tested, and a suffix of "/0" if the network service is enabled, "/1" if it's
@@ -2214,7 +2216,9 @@ INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationProxySettingsBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationManagedProxySettingsBrowserTest);
+#if BUILDFLAG(ENABLE_REPORTING)
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationReportingAndNelBrowserTest);
+#endif
 
 }  // namespace

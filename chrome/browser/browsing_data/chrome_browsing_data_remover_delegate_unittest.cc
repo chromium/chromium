@@ -998,34 +998,6 @@ class MockReportingService : public net::ReportingService {
   base::RepeatingCallback<bool(const GURL&)> last_origin_filter_;
 };
 
-namespace autofill {
-
-// StrikeDatabaseTester is in the autofill namespace since
-// StrikeDatabase declares it as a friend in the autofill namespace.
-class StrikeDatabaseTester {
- public:
-  explicit StrikeDatabaseTester(Profile* profile)
-      : strike_database_(
-            autofill::StrikeDatabaseFactory::GetForProfile(profile)) {}
-
-  bool IsEmpty() {
-    int num_keys;
-    base::RunLoop run_loop;
-    strike_database_->LoadKeys(base::BindLambdaForTesting(
-        [&](bool success, std::unique_ptr<std::vector<std::string>> keys) {
-          num_keys = keys.get()->size();
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return (num_keys == 0);
-  }
-
- private:
-  raw_ptr<autofill::StrikeDatabase> strike_database_;
-};
-
-}  // namespace autofill
-
 class ClearReportingCacheTester {
  public:
   ClearReportingCacheTester(network::NetworkContext* network_context,
@@ -1129,6 +1101,34 @@ class ClearNetworkErrorLoggingTester {
   std::unique_ptr<MockNetworkErrorLoggingService> service_;
 };
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+namespace autofill {
+
+// StrikeDatabaseTester is in the autofill namespace since
+// StrikeDatabase declares it as a friend in the autofill namespace.
+class StrikeDatabaseTester {
+ public:
+  explicit StrikeDatabaseTester(Profile* profile)
+      : strike_database_(
+            autofill::StrikeDatabaseFactory::GetForProfile(profile)) {}
+
+  bool IsEmpty() {
+    int num_keys;
+    base::RunLoop run_loop;
+    strike_database_->LoadKeys(base::BindLambdaForTesting(
+        [&](bool success, std::unique_ptr<std::vector<std::string>> keys) {
+          num_keys = keys.get()->size();
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return (num_keys == 0);
+  }
+
+ private:
+  raw_ptr<autofill::StrikeDatabase> strike_database_;
+};
+
+}  // namespace autofill
 
 // Test Class -----------------------------------------------------------------
 

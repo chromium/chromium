@@ -1283,6 +1283,10 @@ source_set("browser") {
     "permissions/permission_service_impl.h",
 
     # TODO(698985): Remove `permission_util.*`.
+    "net/cross_origin_embedder_policy_reporter.cc",
+    "net/cross_origin_embedder_policy_reporter.h",
+    "net/cross_origin_opener_policy_reporter.cc",
+    "net/cross_origin_opener_policy_reporter.h",
     "permissions/permission_util.cc",
     "permissions/permission_util.h",
     "picture_in_picture/picture_in_picture_service_impl.cc",
@@ -3010,10 +3014,6 @@ source_set("browser") {
 
   if (enable_reporting) {
     sources += [
-      "net/cross_origin_embedder_policy_reporter.cc",
-      "net/cross_origin_embedder_policy_reporter.h",
-      "net/cross_origin_opener_policy_reporter.cc",
-      "net/cross_origin_opener_policy_reporter.h",
       "net/reporting_service_proxy.cc",
       "net/reporting_service_proxy.h",
     ]

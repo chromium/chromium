@@ -485,24 +485,6 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
   return urls;
 }
 
-std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
-  std::vector<GURL> urls;
-  base::queue<FrameTreeNode*> queue;
-  queue.push(frame_host->frame_tree_node());
-  while (!queue.empty()) {
-    FrameTreeNode* node = queue.front();
-    queue.pop();
-    if (node != frame_host->frame_tree_node() &&
-        node->current_frame_host()->is_local_root_subframe())
-      continue;
-
-    urls.push_back(node->current_url());
-    for (size_t i = 0; i < node->child_count(); ++i)
-      queue.push(node->child_at(i));
-  }
-  return urls;
-}
-
 String resourcePriority(net::RequestPriority priority) {
   switch (priority) {
     case net::MINIMUM_PRIORITY:
@@ -1299,6 +1281,24 @@ String BuildReportStatus(const net::ReportingReport::Status status) {
     case net::ReportingReport::Status::SUCCESS:
       return protocol::Network::ReportStatusEnum::Success;
   }
+}
+
+std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
+  std::vector<GURL> urls;
+  base::queue<FrameTreeNode*> queue;
+  queue.push(frame_host->frame_tree_node());
+  while (!queue.empty()) {
+    FrameTreeNode* node = queue.front();
+    queue.pop();
+    if (node != frame_host->frame_tree_node() &&
+        node->current_frame_host()->is_local_root_subframe())
+      continue;
+
+    urls.push_back(node->current_url());
+    for (size_t i = 0; i < node->child_count(); ++i)
+      queue.push(node->child_at(i));
+  }
+  return urls;
 }
 
 }  // namespace
