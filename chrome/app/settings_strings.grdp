@@ -229,7 +229,7 @@
     Edit
   </message>
   <message name="IDS_SETTINGS_END_TIME" desc="The label of the end time bubble of settings-scheduler-slider">
-    End time
+    End time <ph name="TIME">$1<ex>5:00 AM</ex></ph>
   </message>
   <message name="IDS_SETTINGS_NOT_VALID" desc="Text indicating that an input is not valid.">
     Not valid
@@ -247,7 +247,7 @@
     Slider: <ph name="MIN_LABEL">$1<ex>Slowest</ex></ph> to <ph name="MAX_LABEL">$2<ex>Fastest</ex></ph>
   </message>
   <message name="IDS_SETTINGS_START_TIME" desc="The label of the start time bubble of settings-scheduler-slider">
-    Start time
+    Start time <ph name="TIME">$1<ex>9:06 PM</ex></ph>
   </message>
 
   <!-- Autofill Page -->
