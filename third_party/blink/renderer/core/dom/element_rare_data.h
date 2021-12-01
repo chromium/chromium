@@ -253,6 +253,14 @@ class ElementRareData final : public NodeRareData {
   const AtomicString& GetNonce() const { return nonce_; }
   void SetNonce(const AtomicString& nonce) { nonce_ = nonce; }
 
+  void SaveLastIntrinsicSize(ResizeObserverSize* size) {
+    last_intrinsic_size_ = size;
+  }
+
+  const ResizeObserverSize* LastIntrinsicSize() const {
+    return last_intrinsic_size_;
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -279,6 +287,7 @@ class ElementRareData final : public NodeRareData {
   Member<ElementInternals> element_internals_;
 
   Member<PseudoElementData> pseudo_element_data_;
+  Member<ResizeObserverSize> last_intrinsic_size_;
 
   Member<AccessibleNode> accessible_node_;
 

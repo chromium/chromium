@@ -91,6 +91,7 @@ class PointerLockOptions;
 class PseudoElement;
 class ResizeObservation;
 class ResizeObserver;
+class ResizeObserverSize;
 class ScrollIntoViewOptions;
 class ScrollToOptions;
 class ShadowRoot;
@@ -1015,6 +1016,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // For font-related style invalidation.
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool);
+
+  void SaveIntrinsicSize(ResizeObserverSize* size);
+  const ResizeObserverSize* LastIntrinsicSize() const;
 
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }

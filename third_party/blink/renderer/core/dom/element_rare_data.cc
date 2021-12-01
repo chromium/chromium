@@ -45,7 +45,7 @@ namespace blink {
 struct SameSizeAsElementRareData : NodeRareData {
   IntSize scroll_offset;
   void* pointers_or_strings[4];
-  Member<void*> members[18];
+  Member<void*> members[19];
   bool flags[1];
 };
 
@@ -111,6 +111,7 @@ void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(attribute_map_);
   visitor->Trace(attr_node_list_);
   visitor->Trace(element_animations_);
+  visitor->Trace(last_intrinsic_size_);
   visitor->Trace(cssom_wrapper_);
   visitor->Trace(cssom_map_wrapper_);
   visitor->Trace(pseudo_element_data_);

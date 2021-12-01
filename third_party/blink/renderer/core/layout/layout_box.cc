@@ -106,6 +106,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
@@ -1285,6 +1286,12 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   const absl::optional<StyleIntrinsicLength>& intrinsic_length =
       style.ContainIntrinsicWidth();
   DCHECK(intrinsic_length);
+  if (intrinsic_length->HasAuto()) {
+    const Element* elem = DynamicTo<Element>(GetNode());
+    const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
+    if (size)
+      return ToPhysicalSize(size->size(), StyleRef().GetWritingMode()).width;
+  }
   DCHECK(intrinsic_length->GetLength().IsFixed());
   DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
   return LayoutUnit(intrinsic_length->GetLength().Value());
@@ -1297,6 +1304,12 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   const absl::optional<StyleIntrinsicLength>& intrinsic_length =
       style.ContainIntrinsicHeight();
   DCHECK(intrinsic_length);
+  if (intrinsic_length->HasAuto()) {
+    const Element* elem = DynamicTo<Element>(GetNode());
+    const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
+    if (size)
+      return ToPhysicalSize(size->size(), StyleRef().GetWritingMode()).height;
+  }
   DCHECK(intrinsic_length->GetLength().IsFixed());
   DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
   return LayoutUnit(intrinsic_length->GetLength().Value());

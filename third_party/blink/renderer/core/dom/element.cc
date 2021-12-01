@@ -1327,6 +1327,19 @@ int Element::clientTop() {
   return 0;
 }
 
+void Element::SaveIntrinsicSize(ResizeObserverSize* size) {
+  EnsureElementRareData().SaveLastIntrinsicSize(size);
+}
+
+const ResizeObserverSize* Element::LastIntrinsicSize() const {
+  if (!HasRareData())
+    return nullptr;
+  // If rare data exists, we are guaranteed that it's ElementRareData.
+  ElementRareData* data = GetElementRareData();
+  DCHECK(data);
+  return data->LastIntrinsicSize();
+}
+
 bool Element::IsViewportScrollElement() {
   auto& document = GetDocument();
   bool quirks_mode = document.InQuirksMode();
@@ -2638,6 +2651,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   if (GetDocument().GetPage())
     GetDocument().GetPage()->GetPointerLockController().ElementRemoved(this);
 
+  GetDocument().UnobserveForIntrinsicSize(this);
+
   SetSavedLayerScrollOffset(ScrollOffset());
 
   if (insertion_point.IsInTreeScope() && GetTreeScope() == GetDocument()) {
@@ -3286,6 +3301,16 @@ StyleRecalcChange Element::RecalcOwnStyle(
     rare_data->ClearPseudoElements();
   }
   SetComputedStyle(new_style);
+
+  if (new_style && !new_style->ContainsSize() &&
+      ((new_style->ContainIntrinsicWidth() &&
+        new_style->ContainIntrinsicWidth()->HasAuto()) ||
+       (new_style->ContainIntrinsicHeight() &&
+        new_style->ContainIntrinsicHeight()->HasAuto()))) {
+    GetDocument().ObserveForIntrinsicSize(this);
+  } else {
+    GetDocument().UnobserveForIntrinsicSize(this);
+  }
 
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
