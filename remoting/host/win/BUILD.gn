@@ -91,6 +91,14 @@ source_set("security_descriptor") {
   deps = [ "//remoting/base" ]
 }
 
+source_set("acl_util") {
+  sources = [
+    "acl_util.cc",
+    "acl_util.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",

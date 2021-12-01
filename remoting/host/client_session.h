@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
@@ -25,6 +26,7 @@
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
@@ -70,7 +72,8 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionControl,
                       public ClientSessionDetails,
                       public DesktopAndCursorComposerNotifier::EventHandler,
-                      public webrtc::MouseCursorMonitor::Callback {
+                      public webrtc::MouseCursorMonitor::Callback,
+                      public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
   class EventHandler {
@@ -170,7 +173,12 @@ class ClientSession : public protocol::HostStub,
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
-  void BindWebAuthnProxy(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+  // mojom::ChromotingSessionServices implementation.
+  void BindWebAuthnProxy(
+      mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
 
   protocol::ConnectionToClient* connection() const { return connection_.get(); }
 
@@ -371,6 +379,9 @@ class ClientSession : public protocol::HostStub,
       desktop_and_cursor_composer_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
+
+  mojo::ReceiverSet<mojom::ChromotingSessionServices>
+      session_services_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

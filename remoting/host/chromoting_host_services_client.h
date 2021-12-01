@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
+namespace base {
+class Environment;
+}  // namespace base
+
 namespace mojo {
 class IsolatedConnection;
 }  // namespace mojo
@@ -31,9 +35,18 @@ class ChromotingHostServicesClient final {
       delete;
   ~ChromotingHostServicesClient();
 
-  // Gets the ChromotingHostServices. Always null-check before using it, as
-  // nullptr will be returned if the connection has failed to make.
-  mojom::ChromotingHostServices* Get() const;
+  // Configures the current process to allow it to communicate with the
+  // ChromotingHostServices server. Must be called once before using any
+  // instance of ChromotingHostServicesClient.
+  // Returns a boolean that indicates whether the initialization succeeded.
+  static bool Initialize();
+
+  // Gets the ChromotingSessionServices. Always null-check before using it, as
+  // nullptr will be returned if the connection could not be established.
+  // Note that when the session is not remoted, you will still get a callable
+  // interface, but all outgoing IPCs will be silently dropped, and any pending
+  // receivers/remotes/message pipes sent will be closed.
+  mojom::ChromotingSessionServices* GetSessionServices() const;
 
  private:
   // Attempts to connect to the IPC server if the connection has not been
@@ -41,14 +54,19 @@ class ChromotingHostServicesClient final {
   // connection to the chromoting host.
   bool EnsureConnection();
 
+  bool EnsureSessionServicesBinding();
+
   void OnDisconnected();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<base::Environment> environment_;
   mojo::NamedPlatformChannel::ServerName server_name_;
   std::unique_ptr<mojo::IsolatedConnection> connection_
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::ChromotingHostServices> remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::ChromotingSessionServices> session_services_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

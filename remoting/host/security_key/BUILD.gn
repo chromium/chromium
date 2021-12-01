@@ -67,6 +67,9 @@ source_set("main") {
     "//remoting/host:base",
     "//remoting/host:common",
   ]
+  if (is_win) {
+    deps += [ "//remoting/host/win:acl_util" ]
+  }
 }
 
 if (is_win) {

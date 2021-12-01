@@ -633,6 +633,13 @@ void ClientSession::OnMouseCursorPosition(
     desktop_and_cursor_composer_->SetMouseCursorPosition(position);
 }
 
+void ClientSession::BindReceiver(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  session_services_receivers_.Add(this, std::move(receiver));
+}
+
 void ClientSession::BindWebAuthnProxy(
     mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

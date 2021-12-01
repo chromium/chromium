@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "remoting/host/chromoting_host_services_client.h"
+#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
@@ -32,6 +34,10 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
+
+  if (!ChromotingHostServicesClient::Initialize()) {
+    return kInitializationFailed;
+  }
 
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
@@ -81,7 +87,7 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 
   run_loop.Run();
 
-  return 0;
+  return kSuccessExitCode;
 }
 
 }  // namespace remoting

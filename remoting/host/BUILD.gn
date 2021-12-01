@@ -175,6 +175,9 @@ source_set("chromoting_host_services_client") {
     "//mojo/public/cpp/platform",
     "//remoting/host/mojom",
   ]
+  if (is_win) {
+    deps += [ "//remoting/host/win:acl_util" ]
+  }
 }
 
 # Split up from common to avoid circular dependency.

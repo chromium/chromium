@@ -110,7 +110,7 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
     return true;
   }
 
-  auto* api = host_service_api_client_.Get();
+  auto* api = host_service_api_client_.GetSessionServices();
   if (!api) {
     return false;
   }

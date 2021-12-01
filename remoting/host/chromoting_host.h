@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/desktop_environment_options.h"
@@ -127,8 +128,9 @@ class ChromotingHost : public ClientSession::EventHandler,
                             const protocol::TransportRoute& route) override;
 
   // mojom::ChromotingHostServices implementation.
-  void BindWebAuthnProxy(
-      mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
 
   // Callback for SessionManager to accept incoming sessions.
   void OnIncomingSession(
