@@ -178,10 +178,7 @@ export class FirmwareUpdateDialogElement extends
    * @return {string}
    */
   computeProgressText_() {
-    if (this.installationProgress && this.installationProgress.percentage) {
-      return this.i18n('installing', this.computePercentageValue_());
-    }
-    return '';
+    return this.i18n('installing', this.computePercentageValue_());
   }
 
   /**

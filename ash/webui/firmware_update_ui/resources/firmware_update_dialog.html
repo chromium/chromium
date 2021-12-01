@@ -1,47 +1,34 @@
 <style include="firmware-fonts firmware-shared">
+  :host {
+    --cr-dialog-width: 416px;
+  }
+
   #cancelButton {
     margin-inline-end: 12px;
   }
 
   [slot='button-container'] {
-    --cr-dialog-button-container-padding-bottom: 20px;
-    --cr-dialog-button-container-padding-end: 24px;
-    --cr-dialog-button-container-padding-start: 24px;
-    --cr-dialog-button-container-padding-top: 20px;
     display: flex;
     justify-content: flex-end;
-  }
-
-  [slot='body'] {
-    --cr-dialog-body-padding-horizontal: 24px;
   }
 
   [slot='footer'] {
     border: none;
   }
 
-  #dialogTitle {
-    --cr-dialog-title-slot-padding-bottom: 24px;
-    --cr-dialog-title-slot-padding-end: 24px;
-    --cr-dialog-title-slot-padding-start: 24px;
-    --cr-dialog-title-slot-padding-top: 24px;
-  }
-
   #progress {
     display: inline-block;
-    font-family: Roboto;
-    font-size: 13px;
-    height: 20px;
-    line-height: 20px;
+    margin: 8px 0;
   }
 
   paper-progress {
+    --paper-progress-active-color: var(--cros-slider-color-active);
+    --paper-progress-container-color: var(--cros-slider-track-color-active);
+    --paper-progress-height: 4px;
     border-radius: 5px;
     display: inline-block;
+    margin-bottom: 8px;
     width: 95%;
-    --paper-progress-active-color: var(--google-blue-500);
-    --paper-progress-container-color: var(--google-blue-100);
-    --paper-progress-height: 4px;
   }
 </style>
 <template is="dom-if"
@@ -49,10 +36,10 @@
     restamp>
   <cr-dialog id="devicePrepDialog" show-on-attach
     on-close="closeDialog_">
-  <div slot="title">
+  <div slot="title" class="firmware-dialog-title-font">
     [[i18n('prepareDevice')]]
   </div>
-  <div slot="body">
+  <div slot="body" class="firmware-dialog-body-font">
     <div id="updateInstructions" hidden$="[[!update.updateModeInstructions]]">
       [[update.updateModeInstructions]]
     </div>
@@ -72,16 +59,16 @@
 <template is="dom-if" if="[[shouldShowUpdateDialog_(dialogState)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
       on-close="closeDialog_">
-    <div slot="title" id="updateDialogTitle">
+    <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font">
       [[computeUpdateDialogTitle_(dialogState)]]
     </div>
-    <div slot="body">
+    <div slot="body" class="firmware-dialog-body-font">
       <div>
         [[computeUpdateDialogBodyText_(dialogState)]]
       </div>
     </div>
     <div slot="footer" hidden$="[[!isUpdateInProgress_(dialogState)]]">
-      <label id="progress">
+      <label id="progress" class="firmware-dialog-installing-font">
         [[computeProgressText_(installationProgress.percentage)]]
       </label>
       <paper-progress id="updateProgressBar"
