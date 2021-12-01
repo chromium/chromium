@@ -2794,6 +2794,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ChromiumAndroidLinker.ModernLinkerDlopenExtTime" units="ms"
+    expires_after="2022-10-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    The amount of time the ModernLinker spends to run android_dlopen_ext().
+    Samples from the app zygote process can be counted multiple times when the
+    app zygote is enabled. See ChromiumAndroidLinker.*LoadTime2 for details.
+  </summary>
+</histogram>
+
+<histogram name="ChromiumAndroidLinker.ModernLinkerIteratePhdrTime" units="ms"
+    expires_after="2022-10-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    The amount of time the ModernLinker spends to find the RELRO region using
+    dl_iterate_phdr(). Samples from the app zygote process can be counted
+    multiple times when the app zygote is enabled. See
+    ChromiumAndroidLinker.*LoadTime2 for details.
+  </summary>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>

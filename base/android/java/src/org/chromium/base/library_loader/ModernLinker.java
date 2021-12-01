@@ -229,6 +229,16 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
+    public static void reportDlopenExtTime(long millis) {
+        RecordHistogram.recordTimesHistogram(
+                "ChromiumAndroidLinker.ModernLinkerDlopenExtTime", millis);
+    }
+
+    public static void reportIteratePhdrTime(long millis) {
+        RecordHistogram.recordTimesHistogram(
+                "ChromiumAndroidLinker.ModernLinkerIteratePhdrTime", millis);
+    }
+
     // Intentionally omitting @NativeMethods because generation of the stubs it requires (as
     // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
     interface Natives {
