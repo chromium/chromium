@@ -1154,16 +1154,14 @@ bool ProfileImpl::WasCreatedByVersionOrLater(const std::string& version) {
 
 bool ProfileImpl::ShouldRestoreOldSessionCookies() {
 #if defined(OS_ANDROID)
-  SessionStartupPref::Type startup_pref_type =
-      SessionStartupPref::GetDefaultStartupType();
-  return startup_pref_type == SessionStartupPref::LAST;
+  SessionStartupPref startup_pref(SessionStartupPref::GetDefaultStartupType());
+  return startup_pref.ShouldRestoreLastSession();
 #else
-  SessionStartupPref::Type startup_pref_type =
+  SessionStartupPref startup_pref =
       StartupBrowserCreator::GetSessionStartupPref(
-          *base::CommandLine::ForCurrentProcess(), this)
-          .type;
+          *base::CommandLine::ForCurrentProcess(), this);
   return ExitTypeService::GetLastSessionExitType(this) == ExitType::kCrashed ||
-         startup_pref_type == SessionStartupPref::LAST;
+         startup_pref.ShouldRestoreLastSession();
 #endif
 }
 

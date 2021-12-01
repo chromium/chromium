@@ -56,12 +56,12 @@ struct SessionStartupPref {
   static SessionStartupPref GetStartupPref(const PrefService* prefs);
 
   // Whether the startup type and URLs are managed via mandatory policy.
-  static bool TypeIsManaged(PrefService* prefs);
-  static bool URLsAreManaged(PrefService* prefs);
+  static bool TypeIsManaged(const PrefService* prefs);
+  static bool URLsAreManaged(const PrefService* prefs);
 
   // Whether the startup type has a recommended value (regardless of whether or
   // not that value is in use).
-  static bool TypeHasRecommendedValue(PrefService* prefs);
+  static bool TypeHasRecommendedValue(const PrefService* prefs);
 
   // Whether the startup type has not been overridden from its default.
   static bool TypeIsDefault(const PrefService* prefs);
@@ -74,6 +74,13 @@ struct SessionStartupPref {
   SessionStartupPref(const SessionStartupPref& other);
 
   ~SessionStartupPref();
+
+  // Returns true if |type| is indicating last session should be restored.
+  bool ShouldRestoreLastSession() const;
+
+  // Returns true if |type| is indicating a specific set of URLs should be
+  // opened.
+  bool ShouldOpenUrls() const;
 
   // What to do on startup.
   Type type;

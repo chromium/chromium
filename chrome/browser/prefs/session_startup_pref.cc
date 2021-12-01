@@ -23,9 +23,12 @@ namespace {
 // Converts a SessionStartupPref::Type to an integer written to prefs.
 int TypeToPrefValue(SessionStartupPref::Type type) {
   switch (type) {
-    case SessionStartupPref::LAST: return SessionStartupPref::kPrefValueLast;
-    case SessionStartupPref::URLS: return SessionStartupPref::kPrefValueURLs;
-    default:                       return SessionStartupPref::kPrefValueNewTab;
+    case SessionStartupPref::LAST:
+      return SessionStartupPref::kPrefValueLast;
+    case SessionStartupPref::URLS:
+      return SessionStartupPref::kPrefValueURLs;
+    default:
+      return SessionStartupPref::kPrefValueNewTab;
   }
 }
 
@@ -66,9 +69,8 @@ SessionStartupPref::Type SessionStartupPref::GetDefaultStartupType() {
 }
 
 // static
-void SessionStartupPref::SetStartupPref(
-    Profile* profile,
-    const SessionStartupPref& pref) {
+void SessionStartupPref::SetStartupPref(Profile* profile,
+                                        const SessionStartupPref& pref) {
   DCHECK(profile);
   SetStartupPref(profile->GetPrefs(), pref);
 }
@@ -125,7 +127,7 @@ SessionStartupPref SessionStartupPref::GetStartupPref(
 }
 
 // static
-bool SessionStartupPref::TypeIsManaged(PrefService* prefs) {
+bool SessionStartupPref::TypeIsManaged(const PrefService* prefs) {
   DCHECK(prefs);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);
@@ -134,7 +136,7 @@ bool SessionStartupPref::TypeIsManaged(PrefService* prefs) {
 }
 
 // static
-bool SessionStartupPref::URLsAreManaged(PrefService* prefs) {
+bool SessionStartupPref::URLsAreManaged(const PrefService* prefs) {
   DCHECK(prefs);
   const PrefService::Preference* pref_urls =
       prefs->FindPreference(prefs::kURLsToRestoreOnStartup);
@@ -143,7 +145,7 @@ bool SessionStartupPref::URLsAreManaged(PrefService* prefs) {
 }
 
 // static
-bool SessionStartupPref::TypeHasRecommendedValue(PrefService* prefs) {
+bool SessionStartupPref::TypeHasRecommendedValue(const PrefService* prefs) {
   DCHECK(prefs);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);
@@ -163,9 +165,12 @@ bool SessionStartupPref::TypeIsDefault(const PrefService* prefs) {
 // static
 SessionStartupPref::Type SessionStartupPref::PrefValueToType(int pref_value) {
   switch (pref_value) {
-    case kPrefValueLast:     return SessionStartupPref::LAST;
-    case kPrefValueURLs:     return SessionStartupPref::URLS;
-    default:                 return SessionStartupPref::DEFAULT;
+    case kPrefValueLast:
+      return SessionStartupPref::LAST;
+    case kPrefValueURLs:
+      return SessionStartupPref::URLS;
+    default:
+      return SessionStartupPref::DEFAULT;
   }
 }
 
@@ -174,4 +179,12 @@ SessionStartupPref::SessionStartupPref(Type type) : type(type) {}
 SessionStartupPref::SessionStartupPref(const SessionStartupPref& other) =
     default;
 
-SessionStartupPref::~SessionStartupPref() {}
+SessionStartupPref::~SessionStartupPref() = default;
+
+bool SessionStartupPref::ShouldRestoreLastSession() const {
+  return type == LAST;
+}
+
+bool SessionStartupPref::ShouldOpenUrls() const {
+  return type == URLS;
+}

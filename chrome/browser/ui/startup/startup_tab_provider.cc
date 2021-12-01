@@ -329,8 +329,7 @@ StartupTabs StartupTabProviderImpl::GetPinnedTabsForState(
     const SessionStartupPref& pref,
     const StartupTabs& pinned_tabs,
     bool profile_has_other_tabbed_browser) {
-  if (pref.type == SessionStartupPref::Type::LAST ||
-      profile_has_other_tabbed_browser)
+  if (pref.ShouldRestoreLastSession() || profile_has_other_tabbed_browser)
     return StartupTabs();
   return pinned_tabs;
 }
@@ -340,7 +339,7 @@ StartupTabs StartupTabProviderImpl::GetPreferencesTabsForState(
     const SessionStartupPref& pref,
     bool profile_has_other_tabbed_browser) {
   StartupTabs tabs;
-  if (pref.type == SessionStartupPref::Type::URLS && !pref.urls.empty() &&
+  if (pref.ShouldOpenUrls() && !pref.urls.empty() &&
       !profile_has_other_tabbed_browser) {
     for (const auto& url : pref.urls)
       tabs.emplace_back(url);
@@ -352,7 +351,7 @@ StartupTabs StartupTabProviderImpl::GetPreferencesTabsForState(
 StartupTabs StartupTabProviderImpl::GetNewTabPageTabsForState(
     const SessionStartupPref& pref) {
   StartupTabs tabs;
-  if (pref.type != SessionStartupPref::Type::LAST)
+  if (!pref.ShouldRestoreLastSession())
     tabs.emplace_back(GURL(chrome::kChromeUINewTabURL));
   return tabs;
 }

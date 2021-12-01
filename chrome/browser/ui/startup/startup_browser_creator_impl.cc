@@ -624,7 +624,7 @@ StartupBrowserCreatorImpl::DetermineBrowserOpenBehavior(
                : BrowserOpenBehavior::NEW;
   }
 
-  if (pref.type == SessionStartupPref::LAST) {
+  if (pref.ShouldRestoreLastSession()) {
     // Don't perform a session restore on a post-crash launch, as this could
     // cause a crash loop.
     if (!(options & IS_POST_CRASH_LAUNCH))

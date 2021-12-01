@@ -154,13 +154,12 @@ void SessionDataDeleter::DeleteSessionOnlyData(bool skip_session_cookies,
   // called during shutdown.
   DCHECK(!browser_shutdown::IsTryingToQuit());
 
-  SessionStartupPref::Type startup_pref_type =
+  SessionStartupPref startup_pref =
       StartupBrowserCreator::GetSessionStartupPref(
-          *base::CommandLine::ForCurrentProcess(), profile_)
-          .type;
+          *base::CommandLine::ForCurrentProcess(), profile_);
 
   bool delete_only_by_session_only_policy =
-      skip_session_cookies || startup_pref_type == SessionStartupPref::LAST;
+      skip_session_cookies || startup_pref.ShouldRestoreLastSession();
 
   auto deleter = base::MakeRefCounted<SessionDataDeleterInternal>(
       profile_, delete_only_by_session_only_policy, std::move(callback));

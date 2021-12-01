@@ -292,7 +292,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
   const SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(browser->profile());
 
-  if (session_startup_pref.type == SessionStartupPref::URLS &&
+  if (session_startup_pref.ShouldOpenUrls() &&
       !session_startup_pref.urls.empty()) {
     dialog_builder.AddCancelButton(
         base::BindOnce(&SessionCrashedBubbleDelegate::OpenStartupPages,

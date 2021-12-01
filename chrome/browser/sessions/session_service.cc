@@ -176,7 +176,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
     // restored.
     SessionStartupPref pref =
         SessionStartupPref::GetStartupPref(profile()->GetPrefs());
-    if (pref.type != SessionStartupPref::Type::LAST)
+    if (!pref.ShouldRestoreLastSession())
       return false;
 
     if (!browser)
@@ -488,7 +488,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
         *base::CommandLine::ForCurrentProcess(), profile());
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfileIfExisting(profile());
-    if (pref.type == SessionStartupPref::LAST &&
+    if (pref.ShouldRestoreLastSession() &&
         (!tab_restore_service || !tab_restore_service->IsRestoring())) {
       SessionRestore::RestoreSession(
           profile(), browser,

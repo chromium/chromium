@@ -79,7 +79,7 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
 
   SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(prefs);
-  if (session_startup_pref.type == SessionStartupPref::LAST) {
+  if (session_startup_pref.ShouldRestoreLastSession()) {
     prefs->SetInteger(kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAlways));
   } else {

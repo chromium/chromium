@@ -74,7 +74,9 @@ void PrefMetricsService::RecordLaunchPrefs() {
   UMA_HISTOGRAM_ENUMERATION(
       "Settings.StartupPageLoadSettings", restore_on_startup,
       static_cast<int>(SessionStartupPref::kPrefValueMax));
-  if (restore_on_startup == SessionStartupPref::kPrefValueURLs) {
+  if (SessionStartupPref(
+          SessionStartupPref::PrefValueToType(restore_on_startup))
+          .ShouldOpenUrls()) {
     const base::ListValue* url_list =
         prefs_->GetList(prefs::kURLsToRestoreOnStartup);
     // Similarly, check startup pages for known search engine TLD+1s.
