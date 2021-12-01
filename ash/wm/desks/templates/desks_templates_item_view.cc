@@ -32,6 +32,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
 namespace {
@@ -149,6 +150,8 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
   focus_ring->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets(-kFocusRingOffset), kCornerRadius + kFocusRingOffset));
+
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
@@ -202,6 +205,18 @@ void DesksTemplatesItemView::OnThemeChanged() {
 
   views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
+
+views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
+                                                   const gfx::Rect& rect) {
+  // With the design of the template card having the textfield within a
+  // clickable button, as well as having the grid view be a `PreTargetHandler`,
+  // we needed to make `this` a `ViewTargeterDelegate` for the view event
+  // targeter in order to allow the `name_view_` to be specifically targeted and
+  // focused.
+  if (root == this && name_view_->bounds().Contains(rect))
+    return name_view_;
+  return views::ViewTargeterDelegate::TargetForRect(root, rect);
 }
 
 void DesksTemplatesItemView::OnDeleteTemplate() {

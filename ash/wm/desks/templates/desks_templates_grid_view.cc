@@ -71,7 +71,7 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.accept_events = true;
   // The parent should be a container that covers all the windows but is below
   // some other system UI features such as system tray and capture mode and also
@@ -87,6 +87,8 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 
   // Not opaque since we want to view the contents of the layer behind.
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
+
+  widget->GetNativeWindow()->SetId(kShellWindowId_DesksTemplatesGridWindow);
 
   return widget;
 }
@@ -185,8 +187,6 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
                           : event->root_location();
       for (DesksTemplatesItemView* grid_item : grid_items_)
         grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
-
-      event->SetHandled();
       return;
     }
     default:

@@ -737,9 +737,13 @@ void OverviewSession::OnWindowActivating(
   if (ignore_activations_ || gained_active == GetOverviewFocusWindow())
     return;
 
-  // Activating the Desks bar should not end overview.
-  if (gained_active && gained_active->GetId() == kShellWindowId_DesksBarWindow)
+  // Activating the Desks bar or the Desks Templates grid should not end
+  // overview.
+  if (gained_active &&
+      (gained_active->GetId() == kShellWindowId_DesksBarWindow ||
+       gained_active->GetId() == kShellWindowId_DesksTemplatesGridWindow)) {
     return;
+  }
 
   // Activating or deactivating one of the confirmation dialogs associated with
   // desks templates should not end overview.

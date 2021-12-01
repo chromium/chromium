@@ -208,6 +208,9 @@ enum NonContainerWindowId {
   // |SelectFileDialogExtension| from favoring to parent the dialog to a browser
   // window (if one exists).
   kShellWindowId_CaptureModeFolderSelectionDialogOwner,
+
+  // The window that shows the Desks Templates grid in overview.
+  kShellWindowId_DesksTemplatesGridWindow,
 };
 
 // A list of system modal container IDs. The order of the list is important that
