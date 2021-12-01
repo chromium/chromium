@@ -26,6 +26,10 @@ import org.chromium.url.GURL;
  */
 public class ActivityTabStartupMetricsTracker {
     private static final String UMA_HISTOGRAM_TABBED_SUFFIX = ".Tabbed";
+    private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
+            "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
+    private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
+            "Startup.Android.Cold.FirstPaintOccurredPreForeground";
 
     /** Observer for startup metrics. */
     public interface Observer {
@@ -189,18 +193,14 @@ public class ActivityTabStartupMetricsTracker {
      */
     private void registerHasComeToForeground() {
         // Record cases where first navigation commit and/or StartupPaintPreview's first
-        // paint happened pre-foregrounding. Per the semantics of these metrics we
-        // record them only when startup metrics are actually being tracked.
-
-        // NOTE: mShouldTrackStartupMetrics returns false after the
-        // first tracked navigation commit has occurred.
-        if (mShouldTrackStartupMetrics || mRegisteredFirstCommitPreForeground) {
+        // paint happened pre-foregrounding.
+        if (mRegisteredFirstCommitPreForeground) {
             RecordHistogram.recordBooleanHistogram(
-                    "Android.Startup.Cold.FirstNavigationCommitOccurredPreForeground",
-                    mRegisteredFirstCommitPreForeground);
+                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
+        }
+        if (mRegisteredFirstPaintPreForeground) {
             RecordHistogram.recordBooleanHistogram(
-                    "Android.Startup.Cold.FirstPaintOccurredPreForeground",
-                    mRegisteredFirstPaintPreForeground);
+                    FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
 
         clearUmaUtilsObserver();
@@ -214,6 +214,8 @@ public class ActivityTabStartupMetricsTracker {
         startupPaintPreviewHelper.addMetricsObserver(new PaintPreviewMetricsObserver() {
             @Override
             public void onFirstPaint(long durationMs) {
+                RecordHistogram.recordBooleanHistogram(
+                        FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
                 recordFirstVisibleContent(durationMs);
                 recordVisibleContent(durationMs);
             }
@@ -308,6 +310,8 @@ public class ActivityTabStartupMetricsTracker {
             if (mHistogramSuffix.equals(UMA_HISTOGRAM_TABBED_SUFFIX)) {
                 recordFirstVisibleContent(mFirstCommitTimeMs);
             }
+            RecordHistogram.recordBooleanHistogram(
+                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
 
             for (Observer observer : sObservers) {
                 observer.onFirstNavigationCommit();
