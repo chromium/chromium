@@ -33,7 +33,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   scoped_refptr<const NGLayoutResult> LayoutInternal();
 
   void PlaceFlexItems(Vector<NGFlexLine>* flex_line_outputs);
-  LayoutUnit CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
+  void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
   // This has an optional out parameter so that callers can avoid a subsequent
@@ -76,8 +76,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
       Vector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
-      Vector<NGFlexLine>* flex_line_outputs,
-      LayoutUnit* total_intrinsic_block_size);
+      Vector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
                                                 LayoutPoint location,
@@ -137,6 +136,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // inside a fragmentation context. Otherwise, it will represent the intrinsic
   // block size for the entire flex container.
   LayoutUnit intrinsic_block_size_;
+  // The intrinsic block size for the entire flex container. When not
+  // fragmenting, |total_intrinsic_block_size| and |intrinsic_block_size_| will
+  // be equivalent.
+  LayoutUnit total_intrinsic_block_size_;
 };
 
 }  // namespace blink
