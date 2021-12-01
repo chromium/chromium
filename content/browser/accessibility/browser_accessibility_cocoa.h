@@ -196,7 +196,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSArray* tabs;
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) id titleUIElement;
-@property(nonatomic, readonly) NSURL* url;
 @property(nonatomic, readonly) NSString* value;
 @property(nonatomic, readonly) NSString* valueDescription;
 @property(nonatomic, readonly) NSValue* visibleCharacterRange;

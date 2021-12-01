@@ -151,6 +151,7 @@ source_set("platform") {
         "ax_platform_node_mac.h",
         "ax_platform_node_mac.mm",
         "ax_private_attributes_mac.h",
+        "ax_private_roles_mac.h",
         "ax_private_webkit_constants_mac.h",
         "ax_private_webkit_constants_mac.mm",
       ]

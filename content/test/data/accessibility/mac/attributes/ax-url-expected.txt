@@ -1,0 +1,2 @@
+a.AXURL='https://example.com/'
+not_applicable.AXURL=n/a

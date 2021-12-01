@@ -836,7 +836,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityTitleAttribute, @"title"},
       {NSAccessibilityTitleUIElementAttribute, @"titleUIElement"},
       {NSAccessibilityTopLevelUIElementAttribute, @"window"},
-      {NSAccessibilityURLAttribute, @"url"},
       {NSAccessibilityValueAttribute, @"value"},
       {NSAccessibilityValueAutofillAvailableAttribute,
        @"valueAutofillAvailable"},
@@ -2136,22 +2135,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return nil;
 }
 
-- (NSURL*)url {
-  if (![self instanceActive])
-    return nil;
-  std::string url;
-  if ([[self role] isEqualToString:@"AXWebArea"]) {
-    url = _owner->manager()->GetTreeData().url;
-  } else {
-    url = _owner->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
-  }
-
-  if (url.empty())
-    return nil;
-
-  return [NSURL URLWithString:(base::SysUTF8ToNSString(url))];
-}
-
 - (id)AXValue {
   return [self value];
 }
@@ -3241,10 +3224,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       // NSAccessibilityValueAutofillTypeAttribute
     ]];
   }
-
-  // Add the url attribute only if it has a valid url.
-  if ([self url])
-    [ret addObject:NSAccessibilityURLAttribute];
 
   // Position in set and Set size.
   // Only add these attributes for roles that use posinset and setsize.

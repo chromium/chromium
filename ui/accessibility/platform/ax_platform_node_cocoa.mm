@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
+#include "ui/accessibility/platform/ax_private_roles_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -203,7 +204,7 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kRadioButton, NSAccessibilityRadioButtonRole},
       {ax::mojom::Role::kRadioGroup, NSAccessibilityRadioGroupRole},
       {ax::mojom::Role::kRegion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kRootWebArea, @"AXWebArea"},
+      {ax::mojom::Role::kRootWebArea, NSAccessibilityWebAreaRole},
       {ax::mojom::Role::kRow, NSAccessibilityRowRole},
       {ax::mojom::Role::kRowGroup, NSAccessibilityGroupRole},
       {ax::mojom::Role::kRowHeader, @"AXCell"},
@@ -808,6 +809,10 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
   }
 
+  // Url: add the url attribute only if the object has a valid url.
+  if ([self accessibilityURL])
+    [axAttributes addObject:NSAccessibilityURLAttribute];
+
   // Table and grid.
   if (ui::IsTableLike(role)) {
     [axAttributes addObjectsFromArray:@[
@@ -825,6 +830,7 @@ bool IsAXSetter(SEL selector) {
   if (ui::IsCellOrTableHeader(role) && role != ax::mojom::Role::kColumnHeader) {
     [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
   }
+
   return axAttributes.autorelease();
 }
 
@@ -1061,6 +1067,10 @@ bool IsAXSetter(SEL selector) {
       break;
   }
   return [AXPlatformNodeCocoa nativeSubroleFromAXRole:role];
+}
+
+- (NSURL*)AXURL {
+  return [self accessibilityURL];
 }
 
 - (NSString*)AXHelp {
@@ -1554,6 +1564,28 @@ bool IsAXSetter(SEL selector) {
 }
 
 //
+// NSAccessibility protocol: setting content and values.
+//
+
+- (NSURL*)accessibilityURL {
+  TRACE_EVENT1("accessibility", "accessibilityURL",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive])
+    return nil;
+
+  std::string url;
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole])
+    url = _node->GetDelegate()->GetTreeData().url;
+  else
+    url = _node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+
+  if (url.empty())
+    return nil;
+
+  return [NSURL URLWithString:(base::SysUTF8ToNSString(url))];
+}
+
+//
 // NSAccessibility protocol: assigning roles.
 //
 
@@ -1583,7 +1615,7 @@ bool IsAXSetter(SEL selector) {
   NSString* role = [self accessibilityRole];
 
   // The following descriptions are specific to webkit.
-  if ([role isEqualToString:@"AXWebArea"]) {
+  if ([role isEqualToString:NSAccessibilityWebAreaRole]) {
     return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
   }
 
