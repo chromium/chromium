@@ -93,6 +93,7 @@ android_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",

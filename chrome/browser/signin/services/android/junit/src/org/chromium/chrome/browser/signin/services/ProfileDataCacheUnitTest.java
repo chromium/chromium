@@ -61,9 +61,11 @@ public class ProfileDataCacheUnitTest {
     @Before
     public void setUp() {
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                 RuntimeEnvironment.application.getApplicationContext());
+
+        // Add an observer for IdentityManager::onExtendedAccountInfoUpdated.
+        mAccountManagerTestRule.observeIdentityManager(mIdentityManager);
     }
 
     @After

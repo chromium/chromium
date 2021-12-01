@@ -26,6 +26,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.R;
@@ -46,16 +47,11 @@ public class AccountManagerTestRule implements TestRule {
     private boolean mIsSignedIn;
 
     public AccountManagerTestRule() {
-        this(new FakeAccountManagerFacade());
+        this(new FakeAccountManagerFacade(), new FakeAccountInfoService());
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
-        mFakeAccountManagerFacade = fakeAccountManagerFacade;
-        mFakeAccountInfoService = null;
-    }
-
-    public AccountManagerTestRule(@NonNull FakeAccountInfoService fakeAccountInfoService) {
-        this(new FakeAccountManagerFacade(), fakeAccountInfoService);
+        this(fakeAccountManagerFacade, new FakeAccountInfoService());
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
@@ -83,11 +79,8 @@ public class AccountManagerTestRule implements TestRule {
      * Sets up the AccountManagerFacade mock.
      */
     public void setUpRule() {
-        if (mFakeAccountInfoService != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
-            });
-        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService); });
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
@@ -104,9 +97,15 @@ public class AccountManagerTestRule implements TestRule {
             signOut();
         }
         AccountManagerFacadeProvider.resetInstanceForTests();
-        if (mFakeAccountInfoService != null) {
-            AccountInfoServiceProvider.resetForTests();
-        }
+        AccountInfoServiceProvider.resetForTests();
+    }
+
+    /**
+     * Adds an observer that detects changes in the account state propagated by the
+     * IdentityManager object.
+     */
+    public void observeIdentityManager(IdentityManager identityManager) {
+        identityManager.addObserver(mFakeAccountInfoService);
     }
 
     /**
@@ -114,7 +113,9 @@ public class AccountManagerTestRule implements TestRule {
      * @return The CoreAccountInfo for the account added.
      */
     public CoreAccountInfo addAccount(String accountName) {
-        return addAccount(AccountUtils.createAccountFromName(accountName));
+        assert mFakeAccountInfoService != null;
+        final String baseEmail = accountName.split("@", 2)[0];
+        return addAccount(accountName, baseEmail + ".full", baseEmail + ".given", createAvatar());
     }
 
     /**

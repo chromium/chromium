@@ -62,7 +62,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.policy.PolicyService;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -111,8 +110,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
                     .build();
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountInfoService());
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;

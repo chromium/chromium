@@ -160,7 +160,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
                      anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL, mAccountInfoWithAvatar.getFullName(),
+                mAccountInfoWithAvatar.getGivenName(), mAccountInfoWithAvatar.getAccountImage());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileDataCache =
