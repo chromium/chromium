@@ -33,21 +33,9 @@ void GetAllowedClientHintsFromSource(
     // Found an exact match.
     DCHECK(ContentSettingsPattern::Wildcard() == rule.secondary_pattern);
     DCHECK(rule.setting_value.is_dict());
-    const base::Value* expiration_time =
-        rule.setting_value.FindKey("expiration_time");
 
-    // |expiration_time| may be null in rare cases. See
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=942398.
-    if (expiration_time == nullptr)
-      continue;
-    DCHECK(expiration_time->is_double());
-
-    if (base::Time::Now().ToDoubleT() > expiration_time->GetDouble()) {
-      // The client hint is expired.
-      return;
-    }
-
-    const base::Value* list_value = rule.setting_value.FindKey("client_hints");
+    const base::Value* list_value =
+        rule.setting_value.FindKey(kClientHintsSettingKey);
     if (list_value == nullptr)
       continue;
     DCHECK(list_value->is_list());

@@ -32,10 +32,6 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>>
     COMPONENT_EXPORT(NETWORK_CPP)
         ParseClientHintsHeader(const std::string& header);
 
-// Tries to parse Accept-CH-Lifetime. Returns base::TimeDelta() if unsuccessful.
-base::TimeDelta COMPONENT_EXPORT(NETWORK_CPP)
-    ParseAcceptCHLifetime(const std::string& header);
-
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_CLIENT_HINTS_H_

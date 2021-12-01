@@ -38,15 +38,14 @@ MockClientHintsControllerDelegate::GetUserAgentMetadata() {
 
 void MockClientHintsControllerDelegate::PersistClientHints(
     const url::Origin& primary_origin,
-    const std::vector<::network::mojom::WebClientHintsType>& client_hints,
-    base::TimeDelta expiration_duration) {
+    const std::vector<::network::mojom::WebClientHintsType>& client_hints) {
   blink::EnabledClientHints enabled_client_hints;
   for (const auto& type : client_hints) {
     enabled_client_hints.SetIsEnabled(type, true);
   }
 
   PersistClientHintsHelper(primary_origin.GetURL(), enabled_client_hints,
-                           expiration_duration, &client_hints_map_);
+                           &client_hints_map_);
 }
 
 // Get which client hints opt-ins were persisted on current origin.

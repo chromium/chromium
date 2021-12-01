@@ -15,6 +15,8 @@ class EnabledClientHints;
 
 namespace client_hints {
 
+const char kClientHintsSettingKey[] = "client_hints";
+
 // Retrieves the persistent client hints that should be set when fetching a
 // resource from |url|. The method updates |client_hints| with the result.
 // |client_hints_rules| contains the content settings for the client hints.

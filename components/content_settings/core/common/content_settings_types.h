@@ -71,14 +71,10 @@ enum class ContentSettingsType : int32_t {
   // sound. This will not block playback but instead the user will not hear it.
   SOUND,
 
-  // Website setting which stores the list of client hints (and the preference
-  // expiration time for each of the client hints) that the origin requested
-  // the browser to remember. Spec:
-  // http://httpwg.org/http-extensions/client-hints.html#accept-ch-lifetime.
-  // The setting is stored as a dictionary that includes the mapping from
-  // different client hints to their respective expiration times (seconds since
-  // epoch). The browser is expected to send all the unexpired client hints in
-  // the HTTP request headers for every resource requested from that origin.
+  // Website setting which stores the list of client hints that the origin
+  // requested the browser to remember. The browser is expected to send all
+  // client hints in the HTTP request headers for every resource requested
+  // from that origin.
   CLIENT_HINTS,
 
   // Generic Sensor API covering ambient-light-sensor, accelerometer, gyroscope

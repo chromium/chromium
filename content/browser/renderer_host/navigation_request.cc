@@ -935,7 +935,7 @@ void RemoveUaReducedFromAcceptCH(
     // Here, it did not. So it gets removed from the persisted client hints
     // for the next request.
     base::Erase(client_hints, network::mojom::WebClientHintsType::kUAReduced);
-    PersistAcceptCH(url, delegate, client_hints, /*persist_duration=*/nullptr);
+    PersistAcceptCH(url, delegate, client_hints);
   }
 }
 
@@ -4354,13 +4354,6 @@ void NavigationRequest::CommitNavigation() {
     RemoveUaReducedFromAcceptCH(common_params_->url, client_hints_delegate,
                                 response(),
                                 commit_params_->enabled_client_hints);
-
-    // We may need to add hints that were parsed this time in case they were
-    // not permitted to persist in legacy accept-ch-lifetime mode.
-    if (opt_in_hints_from_response) {
-      for (auto hint : opt_in_hints_from_response.value())
-        commit_params_->enabled_client_hints.push_back(hint);
-    }
   }
 
   // Generate a UKM source and track it on NavigationRequest. This will be

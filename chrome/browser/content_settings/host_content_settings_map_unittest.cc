@@ -23,6 +23,7 @@
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -265,17 +266,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   EXPECT_EQ(0U, client_hints_settings.size());
 
   // Add setting for hosts[0].
-  base::Value expiration_time((base::Time::Now() + base::Days(1)).ToDoubleT());
   base::Value client_hint_value(42);
 
-  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
-  expiration_times_dictionary.SetKey("client_hints",
-                                     {std::move(client_hint_value)});
-  expiration_times_dictionary.SetKey("expiration_time",
-                                     std::move(expiration_time));
+  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
+  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
+                                 {std::move(client_hint_value)});
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
@@ -286,14 +284,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 
   // Add setting for hosts[1].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[1], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   // Reading the settings should now return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -304,14 +302,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 
   // Add settings again for hosts[0].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   // Reading the settings should still return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -322,7 +320,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 }

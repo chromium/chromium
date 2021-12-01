@@ -41,6 +41,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
+#include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -2451,7 +2452,6 @@ TEST_F(SiteSettingsHandlerTest, HandleClearUsage) {
   ContentSettingsForOneType client_hints_settings;
 
   // Add setting for the two hosts host[0], host[1].
-  base::Value expiration_time((base::Time::Now() + base::Days(1)).ToDoubleT());
   base::Value client_hint_platform_version(14);
   base::Value client_hint_bitness(16);
 
@@ -2459,17 +2459,15 @@ TEST_F(SiteSettingsHandlerTest, HandleClearUsage) {
   client_hints_list.Append(std::move(client_hint_platform_version));
   client_hints_list.Append(std::move(client_hint_bitness));
 
-  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
-  expiration_times_dictionary.SetKey("client_hints",
-                                     std::move(client_hints_list));
-  expiration_times_dictionary.SetKey("expiration_time",
-                                     std::move(expiration_time));
+  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
+  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
+                                 std::move(client_hints_list));
 
   // Add setting for the hosts.
   for (const auto& host : hosts) {
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         host, GURL(), ContentSettingsType::CLIENT_HINTS,
-        base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+        base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
   }
 
   // Clear usage data.
@@ -2485,8 +2483,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearUsage) {
             client_hints_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             client_hints_settings.at(0).secondary_pattern);
-  EXPECT_EQ(expiration_times_dictionary,
-            client_hints_settings.at(0).setting_value);
+  EXPECT_EQ(client_hints_dictionary, client_hints_settings.at(0).setting_value);
 }
 
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {

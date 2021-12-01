@@ -84,6 +84,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -2378,30 +2379,27 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value expiration_times_list(base::Value::Type::LIST);
-  expiration_times_list.Append(0);
-  expiration_times_list.Append(2);
+  base::Value client_hints_list(base::Value::Type::LIST);
+  client_hints_list.Append(0);
+  client_hints_list.Append(2);
 
-  double expiration_time = (base::Time::Now() + base::Hours(24)).ToDoubleT();
-
-  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
-  expiration_times_dictionary.SetKey("client_hints",
-                                     std::move(expiration_times_list));
-  expiration_times_dictionary.SetDoubleKey("expiration_time", expiration_time);
+  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
+  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
+                                 std::move(client_hints_list));
 
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   const GURL kOrigin3("http://host3.com:1");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2430,7 +2428,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   for (size_t i = 0; i < host_settings.size(); ++i) {
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               host_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary, host_settings.at(i).setting_value);
+    EXPECT_EQ(client_hints_dictionary, host_settings.at(i).setting_value);
   }
 }
 
@@ -2439,27 +2437,24 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value expiration_times_list(base::Value::Type::LIST);
-  expiration_times_list.Append(0);
-  expiration_times_list.Append(2);
+  base::Value client_hints_list(base::Value::Type::LIST);
+  client_hints_list.Append(0);
+  client_hints_list.Append(2);
 
-  double expiration_time = (base::Time::Now() + base::Hours(24)).ToDoubleT();
-
-  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
-  expiration_times_dictionary.SetKey("client_hints",
-                                     std::move(expiration_times_list));
-  expiration_times_dictionary.SetDoubleKey("expiration_time", expiration_time);
+  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
+  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
+                                 std::move(client_hints_list));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host1.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host2.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host3.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
 
   // Clear all.
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),

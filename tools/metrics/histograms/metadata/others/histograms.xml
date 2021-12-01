@@ -3251,6 +3251,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ClientHints.PersistDuration" units="ms"
     expires_after="2022-10-25">
+  <obsolete>
+    Removed December 2021 as accept-ch-lifetime was retired.
+  </obsolete>
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>

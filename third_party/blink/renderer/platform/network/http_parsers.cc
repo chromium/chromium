@@ -247,7 +247,6 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->accept_ch.has_value()
           ? absl::make_optional(ConvertToBlink(in->accept_ch.value()))
           : absl::nullopt,
-      in->accept_ch_lifetime,
       in->critical_ch.has_value()
           ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
           : absl::nullopt,

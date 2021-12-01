@@ -15,7 +15,6 @@ namespace content {
 
 struct ClientHintsPersistencyData {
   blink::EnabledClientHints client_hints;
-  base::Time expiration;
 };
 
 using ClientHintsContainer =
@@ -24,7 +23,6 @@ using ClientHintsContainer =
 bool PersistClientHintsHelper(
     const GURL& url,
     const blink::EnabledClientHints& enabled_client_hints,
-    base::TimeDelta expiration_duration,
     ClientHintsContainer* container);
 
 void GetAllowedClientHintsFromSourceHelper(

@@ -32,6 +32,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/client_hints/common/client_hints.h"
 #include "components/client_hints/common/switches.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -91,7 +92,6 @@ using ::testing::Not;
 using ::testing::Optional;
 
 constexpr unsigned expected_client_hints_number = 17u;
-constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
 // requests to https://foo.com/non-existing-image.jpg.
@@ -1152,15 +1152,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, ClientHintsHttps_HttpEquiv) {
 
   if (GetParam()) {
     histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-    histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
   } else {
     // client_hints_url() sets the expected number of client hints.
     histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                         expected_client_hints_number, 1);
-    // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-    // seconds, but a maximum value is registered instead.
-    histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                        uma_histogram_max_value, 1);
   }
 }
 IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, ClientHintsHttps_MetaName) {
@@ -1179,15 +1174,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, ClientHintsHttps_MetaName) {
 
   if (GetParam()) {
     histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-    histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
   } else {
     // client_hints_url() sets the expected number of client hints.
     histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                         expected_client_hints_number, 1);
-    // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-    // seconds, but a maximum value is registered instead.
-    histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                        uma_histogram_max_value, 1);
   }
 }
 
@@ -1245,10 +1235,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, PRE_ClientHintsClearSession) {
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-  // seconds, but a maximum value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
 
   // Clients hints preferences for one origin should be persisted.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -1792,7 +1778,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
   // accept_ch_with_lifetime() in an iframe. The request to persist client
   // hints from accept_ch_with_lifetime() should not be persisted.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -1828,7 +1813,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // accept_ch_with_lifetime() in a cross origin iframe. The request to persist
   // client hints from accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
                        DisregardPersistenceRequestIframe_MetaNameCrossOrigin) {
@@ -1858,7 +1842,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // accept_ch_with_lifetime() in a cross origin iframe. The request to persist
   // client hints from accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -1890,7 +1873,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // accept_ch_with_lifetime() as a subresource. The request to persist client
   // hints from accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
                        DisregardPersistenceRequestSubresource_MetaName) {
@@ -1917,7 +1899,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // accept_ch_with_lifetime() as a subresource. The request to persist client
   // hints from accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -1951,7 +1932,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // request to persist client hints from accept_ch_with_lifetime() or
   // http_equiv_accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
                        DisregardPersistenceRequestSubresourceIframe_MetaName) {
@@ -1980,7 +1960,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // request to persist client hints from accept_ch_with_lifetime() or
   // meta_name_accept_ch_with_lifetime() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 
 // Loads a HTTP local webpage (which qualifies as a secure context) that
@@ -2008,10 +1987,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // |gurl| sets client hints persist duration to 3600 seconds, but a maximum
-  // value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2050,7 +2025,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, NoClientHintsHttps) {
 
   // no_client_hints_url() does not sets the client hints.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-  histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
@@ -2081,14 +2055,9 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
 
   if (GetParam()) {
     histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-    histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
   } else {
     histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                         expected_client_hints_number, 1);
-    // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-    // seconds, but a maximum value is registered instead.
-    histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                        uma_histogram_max_value, 1);
 
     // Clients hints preferences for one origin should be persisted.
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -2140,14 +2109,9 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
 
   if (GetParam()) {
     histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
-    histogram_tester.ExpectTotalCount("ClientHints.PersistDuration", 0);
   } else {
     histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                         expected_client_hints_number, 1);
-    // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-    // seconds, but a maximum value is registered instead.
-    histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                        uma_histogram_max_value, 1);
 
     // Clients hints preferences for one origin should be persisted.
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -2200,10 +2164,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-  // seconds, but a maximum value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
   base::RunLoop().RunUntilIdle();
 
   // Clients hints preferences for one origin should be persisted.
@@ -2275,10 +2235,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // |gurl_with| tries to set client hints persist duration to 3600 seconds, but
-  // a maximum value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
 
   // Clients hints preferences for one origin should be persisted.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -2423,10 +2379,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // accept_ch_with_lifetime_url() tries to set client hints persist duration to
-  // 3600 seconds, but a maximum value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
   base::RunLoop().RunUntilIdle();
 
   // Clients hints preferences for one origin should be persisted.
@@ -2499,18 +2451,16 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
 
   // Add setting for the host.
-  std::unique_ptr<base::ListValue> expiration_times_list =
+  std::unique_ptr<base::ListValue> client_hints_list =
       std::make_unique<base::ListValue>();
-  expiration_times_list->Append(42 /* client hint value */);
-  auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
-  expiration_times_dictionary->SetList("client_hints",
-                                       std::move(expiration_times_list));
-  expiration_times_dictionary->SetDoubleKey(
-      "expiration_time", (base::Time::Now() + base::Days(1)).ToDoubleT());
+  client_hints_list->Append(42 /* client hint value */);
+  auto client_hints_dictionary = std::make_unique<base::DictionaryValue>();
+  client_hints_dictionary->SetList(client_hints::kClientHintsSettingKey,
+                                   std::move(client_hints_list));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       without_accept_ch_without_lifetime_url(), GURL(),
       ContentSettingsType::CLIENT_HINTS,
-      std::make_unique<base::Value>(expiration_times_dictionary->Clone()));
+      std::make_unique<base::Value>(client_hints_dictionary->Clone()));
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
@@ -2762,10 +2712,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ClientHints.UpdateSize",
                                       expected_client_hints_number, 1);
-  // accept_ch_with_lifetime_url() sets client hints persist duration to 3600
-  // seconds, but a maximum value is registered instead.
-  histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
-                                      uma_histogram_max_value, 1);
   base::RunLoop().RunUntilIdle();
 
   // Clients hints preferences for one origin should be persisted.

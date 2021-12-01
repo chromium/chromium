@@ -121,13 +121,4 @@ ParseClientHintsHeader(const std::string& header) {
   return absl::make_optional(std::move(result));
 }
 
-base::TimeDelta ParseAcceptCHLifetime(const std::string& header) {
-  int64_t persist_duration_seconds = 0;
-  if (!base::StringToInt64(header, &persist_duration_seconds) ||
-      persist_duration_seconds <= 0)
-    return base::TimeDelta();
-
-  return base::Seconds(persist_duration_seconds);
-}
-
 }  // namespace network

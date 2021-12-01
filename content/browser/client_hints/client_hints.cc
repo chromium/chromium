@@ -953,21 +953,15 @@ ParseAndPersistAcceptCHForNavigation(
 
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
-  PersistAcceptCH(url, delegate, persisted_hints,
-                  &parsed_headers->accept_ch_lifetime);
+  PersistAcceptCH(url, delegate, persisted_hints);
   return persisted_hints;
 }
 
 void PersistAcceptCH(const GURL& url,
                      ClientHintsControllerDelegate* delegate,
-                     const std::vector<WebClientHintsType>& hints,
-                     base::TimeDelta* persist_duration) {
+                     const std::vector<WebClientHintsType>& hints) {
   DCHECK(delegate);
-  delegate->PersistClientHints(
-      url::Origin::Create(url), hints,
-      // JSON cannot store "non-finite" values so a large value was chosen.
-      // TODO(crbug.com/1243060): Remove this argument.
-      base::Days(1000000));
+  delegate->PersistClientHints(url::Origin::Create(url), hints);
 }
 
 std::vector<WebClientHintsType> LookupAcceptCHForCommit(

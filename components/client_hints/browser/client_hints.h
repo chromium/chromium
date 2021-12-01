@@ -47,10 +47,9 @@ class ClientHints : public KeyedService,
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
-  void PersistClientHints(
-      const url::Origin& primary_origin,
-      const std::vector<network::mojom::WebClientHintsType>& client_hints,
-      base::TimeDelta expiration_duration) override;
+  void PersistClientHints(const url::Origin& primary_origin,
+                          const std::vector<network::mojom::WebClientHintsType>&
+                              client_hints) override;
 
   void SetAdditionalClientHints(
       const std::vector<network::mojom::WebClientHintsType>&) override;
