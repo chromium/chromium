@@ -57,6 +57,11 @@ extern const base::Feature kClientSideDetectionModelHighMemoryTag{
 const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// TODO(b/197749390): Add tests for this feature being enabled when it's
+// finalied.
+const base::Feature kConnectorsScanningReportOnlyUI{
+    "ConnectorsScanningReportOnlyUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

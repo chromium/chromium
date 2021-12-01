@@ -58,6 +58,12 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Controls the non-blocking scanning UI for Connectors scanning requests. If
+// this is enabled, the downloaded file(s) will be renamed immediately and the
+// scanning will take place without UI when the policy is set to "non-blocking"
+// instead of just showing an "Open Now" button with the blocking UI.
+extern const base::Feature kConnectorsScanningReportOnlyUI;
+
 // Controls whether the delayed warning experiment is enabled.
 extern const base::Feature kDelayedWarnings;
 // True if mouse clicks should undelay the warnings immediately when delayed

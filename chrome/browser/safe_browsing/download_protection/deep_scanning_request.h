@@ -112,6 +112,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
+
  private:
   // Starts the deep scanning request when there is a one-to-one mapping from
   // the download item to a file.
@@ -142,9 +146,6 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // notifying |download_service_|.
   void FinishRequest(DownloadCheckResult result);
 
-  // Callback when |item_| is destroyed.
-  void OnDownloadDestroyed(download::DownloadItem* download) override;
-
   // Called to attempt to show the modal dialog for scan failure. Returns
   // whether the dialog was successfully shown.
   bool MaybeShowDeepScanFailureModalDialog(base::OnceClosure accept_callback,
@@ -174,6 +175,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
                         std::unique_ptr<FileAnalysisRequest> request,
                         BinaryUploadService::Result result,
                         const BinaryUploadService::Request::Data& data);
+
+  // Helper function to simplify checking if the report-only feature is set in
+  // conjunction with the corresponding policy value.
+  bool ReportOnlyScan();
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.
@@ -231,6 +236,11 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // Cached danger type for the download to be used by reporting in case
   // scanning is skipped for any reason.
   download::DownloadDangerType pre_scan_danger_type_;
+
+  // Set to true when StartSingleFileScan or StartSavePackageScan is called and
+  // that scanning has started. This is used so that calls to OnDownloadUpdated
+  // only ever start the scanning process once.
+  bool scanning_started_ = false;
 
   // Cached callbacks to report scanning results until the final `event_result_`
   // is known. The callbacks in this list should be called in FinishRequest.

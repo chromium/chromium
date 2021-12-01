@@ -353,8 +353,18 @@ void DeepScanningRequest::RemoveObserver(Observer* observer) {
 void DeepScanningRequest::Start() {
   // Indicate we're now scanning the file.
   pre_scan_danger_type_ = item_->GetDangerType();
-  callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
 
+  if (ReportOnlyScan()) {
+    // In non-blocking mode, run `callback_` immediately so the download
+    // completes, then start the scanning process only after the downloaded
+    // files have been renamed. `callback_` is also reset so that the download
+    // is no longer updated after scanning finishes.
+    callback_.Run(pre_scan_download_check_result_);
+    callback_.Reset();
+    return;
+  }
+
+  callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
   if (save_package_files_.empty())
     StartSingleFileScan();
   else
@@ -362,8 +372,11 @@ void DeepScanningRequest::Start() {
 }
 
 void DeepScanningRequest::StartSingleFileScan() {
+  DCHECK(!scanning_started_);
+  scanning_started_ = true;
   IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
+
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, item_->GetFullPath(),
       item_->GetTargetFilePath().BaseName(), item_->GetMimeType(),
@@ -392,6 +405,8 @@ void DeepScanningRequest::StartSingleFileScan() {
 }
 
 void DeepScanningRequest::StartSavePackageScan() {
+  DCHECK(!scanning_started_);
+  scanning_started_ = true;
   IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS,
                     pending_scan_requests_);
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS,
@@ -582,8 +597,25 @@ void DeepScanningRequest::OnScanComplete(
   MaybeFinishRequest(download_result);
 }
 
+void DeepScanningRequest::OnDownloadUpdated(download::DownloadItem* download) {
+  DCHECK_EQ(download, item_);
+
+  if (ReportOnlyScan() &&
+      item_->GetState() == download::DownloadItem::COMPLETE &&
+      !scanning_started_) {
+    // Now that the download is complete in non-blocking mode, scanning can
+    // start since the files have moved to their final destination.
+    if (save_package_files_.empty())
+      StartSingleFileScan();
+    else
+      StartSavePackageScan();
+  }
+}
+
 void DeepScanningRequest::OnDownloadDestroyed(
     download::DownloadItem* download) {
+  DCHECK_EQ(download, item_);
+
   if (download->IsSavePackageDownload()) {
     enterprise_connectors::RunSavePackageScanningCallback(download, false);
   }
@@ -603,15 +635,24 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
 void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   if (!report_callbacks_.empty()) {
     DCHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_POLICY);
-    Profile* profile = Profile::FromBrowserContext(
-        content::DownloadItemUtils::GetBrowserContext(item_));
-    // If FinishRequest is reached with an unknown `result`, then it means no
-    // scanning request ever completed successfully, so `event_result` needs to
-    // reflect whatever danger type was known pre-deep scanning.
-    EventResult event_result =
-        result == DownloadCheckResult::UNKNOWN
-            ? GetEventResult(pre_scan_danger_type_, item_)
-            : GetEventResult(result, profile);
+
+    EventResult event_result;
+    if (ReportOnlyScan()) {
+      // The event result in report-only will always match whatever danger type
+      // known before deep scanning since the UI will never be updated based on
+      // `result`.
+      event_result = GetEventResult(pre_scan_danger_type_, item_);
+    } else {
+      Profile* profile = Profile::FromBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item_));
+      // If FinishRequest is reached with an unknown `result`, then it means no
+      // scanning request ever completed successfully, so `event_result` needs
+      // to reflect whatever danger type was known pre-deep scanning.
+      event_result = result == DownloadCheckResult::UNKNOWN
+                         ? GetEventResult(pre_scan_danger_type_, item_)
+                         : GetEventResult(result, profile);
+    }
+
     report_callbacks_.Notify(event_result);
   }
 
@@ -625,7 +666,8 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   for (auto& observer : observers_)
     observer.OnFinish(this);
 
-  callback_.Run(result);
+  if (!callback_.is_null())
+    callback_.Run(result);
   weak_ptr_factory_.InvalidateWeakPtrs();
   item_->RemoveObserver(this);
   download_service_->RequestFinished(this);
@@ -656,6 +698,15 @@ bool DeepScanningRequest::MaybeShowDeepScanFailureModalDialog(
 void DeepScanningRequest::OpenDownload() {
   item_->OpenDownload();
   FinishRequest(DownloadCheckResult::UNKNOWN);
+}
+
+bool DeepScanningRequest::ReportOnlyScan() {
+  if (trigger_ == DeepScanTrigger::TRIGGER_APP_PROMPT)
+    return false;
+
+  return base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
+         analysis_settings_.block_until_verdict ==
+             enterprise_connectors::BlockUntilVerdict::NO_BLOCK;
 }
 
 }  // namespace safe_browsing
