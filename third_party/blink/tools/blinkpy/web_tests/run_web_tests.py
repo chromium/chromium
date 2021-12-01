@@ -60,6 +60,8 @@ def main(argv, stderr):
     else:
         host = Host()
 
+    if six.PY3 and stderr.isatty():
+        stderr.reconfigure(write_through=True)
     printer = printing.Printer(host, options, stderr)
 
     try:
