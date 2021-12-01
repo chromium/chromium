@@ -622,7 +622,7 @@ config("compiler") {
   # default allocator happens to return. Starting with C++17, operator new
   # called on aligned types with N > __STDCPP_DEFAULT_NEW_ALIGNMENT__ will
   # call a special overload that hands in the desired alignment, and that will
-  # honor the alignas even for memory on the stack.
+  # honor the alignas even for memory on the heap.
   # However, that requires that operator new overload to exist. At least on
   # macOS and iOS, they are in libc++abi, and system libc++abi has them as of
   # "macOS 10.12, iOS 10.0" (https://reviews.llvm.org/D112921#3128089).
