@@ -4489,20 +4489,14 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE" desc="Permission string for enterprise private reporting permission.">
           Read information about your browser, OS, and device
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
+          Run Chrome OS diagnostic tests.
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
           Read Chrome OS device information and device data.
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
-          Run diagnostic tests.
-        </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_AND_DIAGNOSTICS" desc="Permission string for both chrome.os.{telemetry/diagnostics} APIs.">
-          Read Chrome OS device information, device data, and run diagnostic tests.
-        </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER" desc="Common permission string for chrome.os.{telemetry/diagnostics} APIs.">
-          This information may be shared with your device manufacturer. Data handled by organizations other than Google will follow their separate privacy policies.
-        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
-          Read device and component serial numbers.
+          Read Chrome OS device and component serial numbers.
         </message>
       </if>
 

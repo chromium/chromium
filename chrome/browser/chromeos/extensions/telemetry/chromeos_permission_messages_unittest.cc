@@ -34,23 +34,11 @@ using extensions::mojom::ManifestLocation;
 constexpr char kChromeOSSystemExtensionId[] =
     "gogonhoemckpdpadfnjnpgbjpbjnodgc";
 const std::u16string kDiagnosticsPermissionMessage =
-    u"Run diagnostic tests. This information may be shared with your device "
-    u"manufacturer. Data handled by organizations other than Google will "
-    u"follow their separate privacy policies.";
+    u"Run Chrome OS diagnostic tests.";
 const std::u16string kTelemetryPermissionMessage =
-    u"Read Chrome OS device information and device data. This information "
-    u"may be shared with your device manufacturer. Data handled by "
-    u"organizations other than Google will follow their separate privacy "
-    u"policies.";
-const std::u16string kTelemetryAndDiagnosticsPermissionMessage =
-    u"Read Chrome OS device information, device data, and run diagnostic "
-    u"tests. This information may be shared with your device manufacturer. "
-    u"Data handled by organizations other than Google will follow their "
-    u"separate privacy policies.";
+    u"Read Chrome OS device information and device data.";
 const std::u16string kTelemetrySerialNumberPermissionMessage =
-    u"Read device and component serial numbers. This information may be shared "
-    u"with your device manufacturer. Data handled by organizations other than "
-    u"Google will follow their separate privacy policies.";
+    u"Read Chrome OS device and component serial numbers.";
 
 }  // namespace
 
@@ -165,20 +153,6 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryMessage) {
   EXPECT_EQ(kTelemetryPermissionMessage, required_permissions()[0]);
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(kTelemetryPermissionMessage, active_permissions()[0]);
-}
-
-TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryAndOsDiagnosticsMessage) {
-  CreateAndInstallExtensionWithPermissions(extensions::ListBuilder()
-                                               .Append("os.diagnostics")
-                                               .Append("os.telemetry")
-                                               .Build(),
-                                           extensions::ListBuilder().Build());
-  ASSERT_EQ(0U, optional_permissions().size());
-  ASSERT_EQ(1U, required_permissions().size());
-  EXPECT_EQ(kTelemetryAndDiagnosticsPermissionMessage,
-            required_permissions()[0]);
-  ASSERT_EQ(1U, active_permissions().size());
-  EXPECT_EQ(kTelemetryAndDiagnosticsPermissionMessage, active_permissions()[0]);
 }
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetrySerialNumber) {
