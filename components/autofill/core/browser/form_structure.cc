@@ -561,9 +561,9 @@ LogBufferSubmitter LogRationalization(LogManager* log_manager) {
 
 // Creates a unique name for the section that starts with |field|.
 //
-// The section is either named by the field's unique_name() or by a string of
-// the form "%s_%u_%u", where the first string is the field's name and the two
-// integers are the field's frame ID and its renderer ID.
+// The section name is a string of the form "%s_%u_%u", where the first string
+// is the field's name and the two integers are the field's frame ID and its
+// renderer ID.
 //
 // For the frame ID, we do not use LocalFrameTokens but instead map them to
 // consecutive integers using |frame_token_ids|, which uniquely identify a frame
@@ -573,16 +573,10 @@ LogBufferSubmitter LogRationalization(LogManager* log_manager) {
 // We intentionally do not include the LocalFrameToken in the section string
 // because frame tokens should not be sent to a renderer.
 //
-// TODO(crbug.com/896689): Remove unique_name.
 // TODO(crbug.com/1257141): Remove special handling of FrameTokens.
 std::u16string GetSectionName(
     const AutofillField& field,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillNameSectionsWithRendererIds)) {
-    return field.unique_name();
-  }
-
   size_t id = frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
                   .first->second;
   return base::StrCat(

@@ -435,7 +435,7 @@ class FormStructure {
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonPrefix);
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonAffixLength);
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, IsValidParseableName);
-  FRIEND_TEST_ALL_PREFIXES(ParameterizedFormStructureTest,
+  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl,
                            RationalizePhoneNumber_RunsOncePerSection);
 
   // This class wraps a vector of vectors of field indices. The indices of a

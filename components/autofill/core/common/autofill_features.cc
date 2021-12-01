@@ -248,12 +248,6 @@ const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode{
 const base::Feature kAutofillServerTypeTakesPrecedence{
     "AutofillServerTypeTakesPrecedence", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, Autofill will use FormRendererIds instead of
-// unique_name() to create unique section names.
-// TODO(crbug/896689): Remove once experiment is finished.
-const base::Feature kAutofillNameSectionsWithRendererIds{
-    "AutofillNameSectionsWithRendererIds", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
 const base::Feature kAutofillKeyboardAccessory{

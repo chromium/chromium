@@ -186,8 +186,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
        features::kAutofillEnableSupportForMoreStructureInAddresses,
-       // TODO(crbug.com/896689): Remove once launched.
-       features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
        features::kAutofillUseNewSectioningMethod,
        // Remove once launched
