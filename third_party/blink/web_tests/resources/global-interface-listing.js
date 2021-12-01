@@ -118,6 +118,7 @@ var wellKnownSymbols = new Map([
 // platform-specific expectations files to a bare minimum to make updates in the
 // common (platform-neutral) case as simple as possible.
 var platformSpecificInterfaces = new Set([
+  'BarcodeDetector',
   'Bluetooth',
   'BluetoothCharacteristicProperties',
   'BluetoothDevice',
