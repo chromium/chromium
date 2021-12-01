@@ -65,7 +65,8 @@ export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slide
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './appearance_page/fonts_browser_proxy.js';
-export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
+export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
+export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
 // <if expr="chromeos or lacros">

@@ -16,6 +16,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import '../controls/settings_textarea.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -24,15 +25,19 @@ import {flush, html, microTask, PolymerElement} from 'chrome://resources/polymer
 
 import {loadTimeData} from '../i18n_setup.js';
 
-interface SettingsAddressEditDialogElement {
+export interface SettingsAddressEditDialogElement {
   $: {
     dialog: CrDialogElement,
+    emailInput: CrInputElement,
+    phoneInput: CrInputElement,
+    saveButton: CrButtonElement,
+    cancelButton: CrButtonElement,
   };
 }
 
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
-class SettingsAddressEditDialogElement extends
+export class SettingsAddressEditDialogElement extends
     SettingsAddressEditDialogElementBase {
   static get is() {
     return 'settings-address-edit-dialog';
@@ -263,6 +268,12 @@ class SettingsAddressEditDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-address-edit-dialog': SettingsAddressEditDialogElement;
+  }
+}
+
 customElements.define(
     SettingsAddressEditDialogElement.is, SettingsAddressEditDialogElement);
 
@@ -367,7 +378,7 @@ class AddressComponentUI {
   }
 }
 
-interface CountryDetailManager {
+export interface CountryDetailManager {
   /**
    * Gets the list of available countries.
    * The default country will be first, followed by a separator, followed by

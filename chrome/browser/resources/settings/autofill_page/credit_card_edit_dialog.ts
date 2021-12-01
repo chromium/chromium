@@ -18,6 +18,7 @@ import '../settings_vars_css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,8 +40,12 @@ export interface SettingsCreditCardEditDialogElement {
   $: {
     cancelButton: CrButtonElement,
     dialog: CrDialogElement,
-    saveButton: CrButtonElement,
+    expiredError: HTMLElement,
     month: HTMLSelectElement,
+    nameInput: CrInputElement,
+    nicknameInput: CrInputElement,
+    numberInput: CrInputElement,
+    saveButton: CrButtonElement,
     year: HTMLSelectElement,
   };
 }
@@ -218,8 +223,8 @@ export class SettingsCreditCardEditDialogElement extends
    * Handles a11y error announcement the same way as in cr-input.
    */
   private onExpiredChanged_() {
-    const ERROR_ID = 'expired-error';
-    const errorElement = this.shadowRoot!.querySelector(`#${ERROR_ID}`)!;
+    const errorElement = this.$.expiredError;
+    const ERROR_ID = errorElement.id;
     // Readding attributes is needed for consistent announcement by VoiceOver
     if (this.expired_) {
       errorElement.setAttribute('role', 'alert');

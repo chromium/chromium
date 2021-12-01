@@ -48,7 +48,7 @@
       }
 
       /* Same style as cr-input error except margin-top. */
-      #expired-error {
+      #expiredError {
         display: block;
         font-size: var(--cr-form-field-label-font-size);
         height: var(--cr-form-field-label-height);
@@ -57,17 +57,17 @@
         visibility: hidden;
       }
 
-      :host([expired_]) #expired-error {
+      :host([expired_]) #expiredError {
         visibility: visible;
       }
 
-      #expired-error,
+      #expiredError,
       :host([expired_]) #expiration {
         color: var(--google-red-600);
       }
 
       @media (prefers-color-scheme: dark) {
-        #expired-error,
+        #expiredError,
         :host([expired_]) #expiration {
           color: var(--google-red-refresh-300);
         }
@@ -101,7 +101,7 @@
             <option>[[item]]</option>
           </template>
         </select>
-        <div id="expired-error">$i18n{creditCardExpired}</div>
+        <div id="expiredError">$i18n{creditCardExpired}</div>
         <!-- Place cardholder name field and nickname field after expiration.-->
         <cr-input id="nameInput" label="$i18n{creditCardName}"
             value="{{creditCard.name}}" spellcheck="false">

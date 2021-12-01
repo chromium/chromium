@@ -16,6 +16,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 export interface SettingsAddressRemoveConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
+    remove: HTMLElement,
+    cancel: HTMLElement,
   };
 }
 
@@ -39,6 +41,13 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
 
   private onCancelClick() {
     this.$.dialog.cancel();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-address-remove-confirmation-dialog':
+        SettingsAddressRemoveConfirmationDialogElement;
   }
 }
 

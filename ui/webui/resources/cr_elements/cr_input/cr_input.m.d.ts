@@ -31,6 +31,10 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   focusInput(): boolean;
   select(start?: number, end?: number): void;
   validate(): boolean;
+
+  $: {
+    error: HTMLElement,
+  };
 }
 
 export {CrInputElement};

@@ -7,7 +7,8 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerImpl, CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
@@ -15,58 +16,45 @@ import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry
 
 /**
  * Test implementation.
- * @implements {CountryDetailManager}
- * @constructor
  */
-function CountryDetailManagerTestImpl() {}
-
-CountryDetailManagerTestImpl.prototype = {
-  /** @override */
-  getCountryList: function() {
-    return new Promise(function(resolve) {
+class CountryDetailManagerTestImpl implements CountryDetailManager {
+  getCountryList() {
+    return new Promise<chrome.autofillPrivate.CountryEntry[]>(function(
+        resolve) {
       resolve([
         {name: 'United States', countryCode: 'US'},  // Default test country.
         {name: 'Israel', countryCode: 'IL'},
         {name: 'United Kingdom', countryCode: 'GB'},
       ]);
     });
-  },
+  }
 
-  /** @override */
-  getAddressFormat: function(countryCode) {
-    return new Promise(function(resolve) {
+  getAddressFormat(countryCode: string) {
+    return new Promise<chrome.autofillPrivate.AddressComponents>(function(
+        resolve) {
       chrome.autofillPrivate.getAddressComponents(countryCode, resolve);
     });
-  },
-};
+  }
+}
+
 
 /**
- * Resolves the promise after the element fires the expected event. Will add
- * and remove the listener so it is only triggered once. |causeEvent| is
- * called after adding a listener to make sure that the event is captured.
- * @param {!Element} element
- * @param {string} eventName
- * @param {function():void} causeEvent
- * @return {!Promise}
+ * Resolves the promise after the element fires the expected event. |causeEvent|
+ * is called after adding a listener to make sure that the event is captured.
  */
-function expectEvent(element, eventName, causeEvent) {
-  return new Promise(function(resolve) {
-    const callback = function() {
-      element.removeEventListener(eventName, callback);
-      resolve.apply(this, arguments);
-    };
-    element.addEventListener(eventName, callback);
-    causeEvent();
-  });
+function expectEvent(
+    element: Element, eventName: string, causeEvent: () => void) {
+  const promise = eventToPromise(eventName, element);
+  causeEvent();
+  return promise;
 }
 
 /**
  * Creates the autofill section for the given list.
- * @param {!Array<!chrome.autofillPrivate.AddressEntry>} addresses
- * @param {!Object} prefValues
- * @return {!Object}
  */
-function createAutofillSection(addresses, prefValues) {
+function createAutofillSection(
+    addresses: chrome.autofillPrivate.AddressEntry[],
+    prefValues: any): SettingsAutofillSectionElement {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
@@ -83,10 +71,9 @@ function createAutofillSection(addresses, prefValues) {
 /**
  * Creates the Edit Address dialog and fulfills the promise when the dialog
  * has actually opened.
- * @param {!chrome.autofillPrivate.AddressEntry} address
- * @return {!Promise<Object>}
  */
-function createAddressDialog(address) {
+function createAddressDialog(address: chrome.autofillPrivate.AddressEntry):
+    Promise<SettingsAddressEditDialogElement> {
   return new Promise(function(resolve) {
     const section = document.createElement('settings-address-edit-dialog');
     section.address = address;
@@ -100,10 +87,9 @@ function createAddressDialog(address) {
 /**
  * Creates the remove address dialog. Simulate clicking "Remove" button in
  * autofill section.
- * @param {!TestAutofillManager} autofillManager
- * @return {!SettingsAddressRemoveConfirmationDialogElement}
  */
-function createRemoveAddressDialog(autofillManager) {
+function createRemoveAddressDialog(autofillManager: TestAutofillManager):
+    SettingsAddressRemoveConfirmationDialogElement {
   const address = createAddressEntry();
 
   // Override the AutofillManagerImpl for testing.
@@ -120,21 +106,18 @@ function createRemoveAddressDialog(autofillManager) {
   assertTrue(!!row);
 
   // Simulate clicking the 'Remove' button in the menu.
-  assertTrue(!!section.shadowRoot.querySelector('#addressMenu'));
-  section.shadowRoot.querySelector('#addressMenu').click();
+  row!.querySelector<HTMLElement>('#addressMenu')!.click();
   flush();
 
-  assertTrue(!!section.shadowRoot.querySelector('#menuRemoveAddress'));
-  assertFalse(!!section.shadowRoot.querySelector(
+  assertFalse(!!section.shadowRoot!.querySelector(
       'settings-address-remove-confirmation-dialog'));
-  section.shadowRoot.querySelector('#menuRemoveAddress').click();
+  section.$.menuRemoveAddress.click();
   flush();
 
-  assertTrue(!!section.shadowRoot.querySelector(
-      'settings-address-remove-confirmation-dialog'));
-  const removeAddressDialog = section.shadowRoot.querySelector(
+  const removeAddressDialog = section.shadowRoot!.querySelector(
       'settings-address-remove-confirmation-dialog');
-  return removeAddressDialog;
+  assertTrue(!!removeAddressDialog);
+  return removeAddressDialog!;
 }
 
 suite('AutofillSectionUiTest', function() {
@@ -145,12 +128,12 @@ suite('AutofillSectionUiTest', function() {
     document.body.appendChild(section);
 
     assertFalse(
-        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
+        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
     section.set('prefs.autofill.profile_enabled.extensionId', 'test-id');
     flush();
 
     assertTrue(
-        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
+        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
   });
 });
 
@@ -160,32 +143,8 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
-
-  /**
-   * Will call |loopBody| for each item in |items|. Will only move to the next
-   * item after the promise from |loopBody| resolves.
-   * @param {!Array<Object>} items
-   * @param {!function(!Object):!Promise} loopBody
-   * @return {!Promise}
-   */
-  function asyncForEach(items, loopBody) {
-    return new Promise(function(resolve) {
-      let index = 0;
-
-      function loop() {
-        const item = items[index++];
-        if (item) {
-          loopBody(item).then(loop);
-        } else {
-          resolve();
-        }
-      }
-
-      loop();
-    });
-  }
 
   test('verifyNoAddresses', function() {
     const section = createAutofillSection([], {profile_enabled: {value: true}});
@@ -196,9 +155,8 @@ suite('AutofillSectionAddressTests', function() {
     assertEquals(1, addressList.children.length);
 
     assertFalse(section.$.noAddressesLabel.hidden);
-    assertFalse(section.shadowRoot.querySelector('#addAddress').disabled);
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillProfileToggle').disabled);
+    assertFalse(section.$.addAddress.disabled);
+    assertFalse(section.$.autofillProfileToggle.disabled);
   });
 
   test('verifyAddressCount', function() {
@@ -219,18 +177,16 @@ suite('AutofillSectionAddressTests', function() {
         addresses.length, addressList.querySelectorAll('.list-item').length);
 
     assertTrue(section.$.noAddressesLabel.hidden);
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillProfileToggle').disabled);
-    assertFalse(section.shadowRoot.querySelector('#addAddress').disabled);
+    assertFalse(section.$.autofillProfileToggle.disabled);
+    assertFalse(section.$.addAddress.disabled);
   });
 
   test('verifyAddressDisabled', function() {
     const section =
         createAutofillSection([], {profile_enabled: {value: false}});
 
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillProfileToggle').disabled);
-    assertTrue(section.shadowRoot.querySelector('#addAddress').hidden);
+    assertFalse(section.$.autofillProfileToggle.disabled);
+    assertTrue(section.$.addAddress.hidden);
   });
 
   test('verifyAddressFields', function() {
@@ -241,14 +197,14 @@ suite('AutofillSectionAddressTests', function() {
     assertTrue(!!row);
 
     const addressSummary =
-        address.metadata.summaryLabel + address.metadata.summarySublabel;
+        address.metadata!.summaryLabel + address.metadata!.summarySublabel;
 
     let actualSummary = '';
 
     // Eliminate white space between nodes!
-    const addressPieces = row.querySelector('#addressSummary').children;
-    for (let i = 0; i < addressPieces.length; ++i) {
-      actualSummary += addressPieces[i].textContent.trim();
+    const addressPieces = row!.querySelector('#addressSummary')!.children;
+    for (const addressPiece of addressPieces) {
+      actualSummary += addressPiece.textContent!.trim();
     }
 
     assertEquals(addressSummary, actualSummary);
@@ -260,19 +216,19 @@ suite('AutofillSectionAddressTests', function() {
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
-    const menuButton = row.querySelector('#addressMenu');
+    const menuButton = row!.querySelector<HTMLElement>('#addressMenu');
     assertTrue(!!menuButton);
-    menuButton.click();
+    menuButton!.click();
     flush();
 
-    assertTrue(!!section.shadowRoot.querySelector('#menuEditAddress'));
-    assertTrue(!!section.shadowRoot.querySelector('#menuRemoveAddress'));
+    assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
+    assertTrue(!!section.$.menuRemoveAddress);
   });
 
   test('verifyAddAddressDialog', function() {
     const address = createEmptyAddressEntry();
     return createAddressDialog(address).then(function(dialog) {
-      const title = dialog.shadowRoot.querySelector('[slot=title]');
+      const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
       assertEquals(
           loadTimeData.getString('addAddressTitle'), title.textContent);
       // A country is preselected.
@@ -282,7 +238,7 @@ suite('AutofillSectionAddressTests', function() {
 
   test('verifyEditAddressDialog', function() {
     return createAddressDialog(createAddressEntry()).then(function(dialog) {
-      const title = dialog.shadowRoot.querySelector('[slot=title]');
+      const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
       assertEquals(
           loadTimeData.getString('editAddressTitle'), title.textContent);
       // Should be possible to save when editing because fields are
@@ -294,7 +250,7 @@ suite('AutofillSectionAddressTests', function() {
   // The first editable element should be focused by default.
   test('verifyFirstFieldFocused', async function() {
     const dialog = await createAddressDialog(createEmptyAddressEntry());
-    const currentFocus = dialog.shadowRoot.activeElement;
+    const currentFocus = dialog.shadowRoot!.activeElement;
     const editableElements =
         dialog.$.dialog.querySelectorAll('cr-input, select');
     assertEquals(editableElements[0], currentFocus);
@@ -305,11 +261,9 @@ suite('AutofillSectionAddressTests', function() {
     const removeAddressDialog = createRemoveAddressDialog(autofillManager);
 
     // Wait for the dialog to open.
-    await whenAttributeIs(
-        removeAddressDialog.shadowRoot.querySelector('#dialog'), 'open', '');
+    await whenAttributeIs(removeAddressDialog.$.dialog, 'open', '');
 
-    assertTrue(!!removeAddressDialog.shadowRoot.querySelector('#remove'));
-    removeAddressDialog.shadowRoot.querySelector('#remove').click();
+    removeAddressDialog.$.remove.click();
 
     // Wait for the dialog to close.
     await eventToPromise('close', removeAddressDialog);
@@ -327,11 +281,9 @@ suite('AutofillSectionAddressTests', function() {
     const removeAddressDialog = createRemoveAddressDialog(autofillManager);
 
     // Wait for the dialog to open.
-    await whenAttributeIs(
-        removeAddressDialog.shadowRoot.querySelector('#dialog'), 'open', '');
+    await whenAttributeIs(removeAddressDialog.$.dialog, 'open', '');
 
-    assertTrue(!!removeAddressDialog.shadowRoot.querySelector('#cancel'));
-    removeAddressDialog.shadowRoot.querySelector('#cancel').click();
+    removeAddressDialog.$.cancel.click();
 
     // Wait for the dialog to close.
     await eventToPromise('close', removeAddressDialog);
@@ -346,7 +298,7 @@ suite('AutofillSectionAddressTests', function() {
   test('verifyCountryIsSaved', function() {
     const address = createEmptyAddressEntry();
     return createAddressDialog(address).then(function(dialog) {
-      const countrySelect = dialog.shadowRoot.querySelector('select');
+      const countrySelect = dialog.shadowRoot!.querySelector('select')!;
       // The country should be pre-selected.
       assertEquals('US', countrySelect.value);
       assertEquals('US', address.countryCode);
@@ -377,10 +329,10 @@ suite('AutofillSectionAddressTests', function() {
                dialog.$.saveButton.click();
              }).then(function() {
         assertEquals(phoneNumber, dialog.$.phoneInput.value);
-        assertEquals(phoneNumber, address.phoneNumbers[0]);
+        assertEquals(phoneNumber, address.phoneNumbers![0]);
 
         assertEquals(emailAddress, dialog.$.emailInput.value);
-        assertEquals(emailAddress, address.emailAddresses[0]);
+        assertEquals(emailAddress, address.emailAddresses![0]);
       });
     });
   });
@@ -390,7 +342,9 @@ suite('AutofillSectionAddressTests', function() {
     const address = createEmptyAddressEntry();
     const dialog = await createAddressDialog(address);
     const honorificElement =
-        dialog.$.dialog.querySelectorAll('settings-textarea, cr-input')[0];
+        dialog.$.dialog
+            .querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                'settings-textarea, cr-input')[0]!;
     assertEquals(undefined, honorificElement.value);
     assertFalse(!!address.honorific);
 
@@ -423,8 +377,8 @@ suite('AutofillSectionAddressTests', function() {
       return expectEvent(dialog, 'save-address', function() {
                dialog.$.saveButton.click();
              }).then(function() {
-        assertEquals(0, address.phoneNumbers.length);
-        assertEquals(0, address.emailAddresses.length);
+        assertEquals(0, address.phoneNumbers!.length);
+        assertEquals(0, address.emailAddresses!.length);
       });
     });
   });
@@ -436,11 +390,13 @@ suite('AutofillSectionAddressTests', function() {
     const dialog = await createAddressDialog(createEmptyAddressEntry());
     const saveButton = dialog.$.saveButton;
     const testElements =
-        dialog.$.dialog.querySelectorAll('settings-textarea, cr-input');
+        dialog.$.dialog
+            .querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                'settings-textarea, cr-input');
 
     // The country can be preselected. Clear it to ensure the form is empty.
     await expectEvent(dialog, 'on-update-can-save', function() {
-      const countrySelect = dialog.shadowRoot.querySelector('select');
+      const countrySelect = dialog.shadowRoot!.querySelector('select')!;
       countrySelect.value = '';
       countrySelect.dispatchEvent(new CustomEvent('change'));
     });
@@ -455,7 +411,7 @@ suite('AutofillSectionAddressTests', function() {
         testElements.length);
 
     assertTrue(saveButton.disabled);
-    await asyncForEach(testElements, async function(element) {
+    for (const element of testElements) {
       await expectEvent(dialog, 'on-update-can-save', function() {
         element.value = 'foo';
       });
@@ -464,16 +420,16 @@ suite('AutofillSectionAddressTests', function() {
         element.value = '';
       });
       assertTrue(saveButton.disabled);
-    });
+    }
   });
 
   // Setting the country should allow the address to be saved.
   test('verifySaveIsNotClickableIfCountryNotSet', async function() {
-    const simulateCountryChange = function(countryCode) {
-      const countrySelect = dialog.shadowRoot.querySelector('select');
+    function simulateCountryChange(countryCode: string) {
+      const countrySelect = dialog.shadowRoot!.querySelector('select')!;
       countrySelect.value = countryCode;
       countrySelect.dispatchEvent(new CustomEvent('change'));
-    };
+    }
 
     const dialog = await createAddressDialog(createEmptyAddressEntry());
     // A country code is preselected.
@@ -530,7 +486,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
   });
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   // US address has 3 fields on the same line.
@@ -558,54 +514,62 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
       let index = 0;
       // Country
-      let row = rows[index];
+      let row = rows[index]!;
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'United States', countrySelect.selectedOptions[0].textContent.trim());
+          'United States',
+          countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
       // Honorific
       if (honorific_enabled) {
-        row = rows[index];
-        const cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        const cols =
+            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.honorific, cols[0].value);
+        assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
-      row = rows[index];
-      let cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.fullNames[0], cols[0].value);
+      assertEquals(address.fullNames![0], cols[0]!.value);
       index++;
       // Organization
       if (company_enabled) {
-        row = rows[index];
-        cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.companyName, cols[0].value);
+        assertEquals(address.companyName, cols[0]!.value);
         index++;
       }
       // Street address
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.addressLines, cols[0].value);
+      assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // City, State, ZIP code
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(3, cols.length);
-      assertEquals(address.addressLevel2, cols[0].value);
-      assertEquals(address.addressLevel1, cols[1].value);
-      assertEquals(address.postalCode, cols[2].value);
+      assertEquals(address.addressLevel2, cols[0]!.value);
+      assertEquals(address.addressLevel1, cols[1]!.value);
+      assertEquals(address.postalCode, cols[2]!.value);
       index++;
       // Phone, Email
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(2, cols.length);
-      assertEquals(address.phoneNumbers[0], cols[0].value);
-      assertEquals(address.emailAddresses[0], cols[1].value);
+      assertEquals(address.phoneNumbers![0], cols[0]!.value);
+      assertEquals(address.emailAddresses![0], cols[1]!.value);
     });
   });
 
@@ -633,59 +597,67 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
       let index = 0;
       // Country
-      let row = rows[index];
+      let row = rows[index]!;
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
           'United Kingdom',
-          countrySelect.selectedOptions[0].textContent.trim());
+          countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
       // Honorific
       if (honorific_enabled) {
-        row = rows[index];
-        const cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        const cols =
+            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.honorific, cols[0].value);
+        assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
-      row = rows[index];
-      let cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.fullNames[0], cols[0].value);
+      assertEquals(address.fullNames![0], cols[0]!.value);
       index++;
       // Organization
       if (company_enabled) {
-        row = rows[index];
-        cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.companyName, cols[0].value);
+        assertEquals(address.companyName, cols[0]!.value);
         index++;
       }
       // Street address
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.addressLines, cols[0].value);
+      assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // Post Town
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.addressLevel2, cols[0].value);
+      assertEquals(address.addressLevel2, cols[0]!.value);
       index++;
       // Postal code
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.postalCode, cols[0].value);
+      assertEquals(address.postalCode, cols[0]!.value);
       index++;
       // Phone, Email
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(2, cols.length);
-      assertEquals(address.phoneNumbers[0], cols[0].value);
-      assertEquals(address.emailAddresses[0], cols[1].value);
+      assertEquals(address.phoneNumbers![0], cols[0]!.value);
+      assertEquals(address.emailAddresses![0], cols[1]!.value);
     });
   });
 
@@ -714,53 +686,60 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
       let index = 0;
       // Country
-      let row = rows[index];
+      let row = rows[index]!;
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'Israel', countrySelect.selectedOptions[0].textContent.trim());
+          'Israel', countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
       // Honorific
       if (honorific_enabled) {
-        row = rows[index];
-        const cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        const cols =
+            row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.honorific, cols[0].value);
+        assertEquals(address.honorific, cols[0]!.value);
         index++;
       }
       // Name
-      row = rows[index];
-      let cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      let cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.fullNames[0], cols[0].value);
+      assertEquals(address.fullNames![0], cols[0]!.value);
       index++;
       // Organization
       if (company_enabled) {
-        row = rows[index];
-        cols = row.querySelectorAll('.address-column');
+        row = rows[index]!;
+        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+            '.address-column');
         assertEquals(1, cols.length);
-        assertEquals(address.companyName, cols[0].value);
+        assertEquals(address.companyName, cols[0]!.value);
         index++;
       }
       // Street address
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(1, cols.length);
-      assertEquals(address.addressLines, cols[0].value);
+      assertEquals(address.addressLines, cols[0]!.value);
       index++;
       // City, Postal code
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(2, cols.length);
-      assertEquals(address.addressLevel2, cols[0].value);
-      assertEquals(address.postalCode, cols[1].value);
+      assertEquals(address.addressLevel2, cols[0]!.value);
+      assertEquals(address.postalCode, cols[1]!.value);
       index++;
       // Phone, Email
-      row = rows[index];
-      cols = row.querySelectorAll('.address-column');
+      row = rows[index]!;
+      cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+          '.address-column');
       assertEquals(2, cols.length);
-      assertEquals(address.phoneNumbers[0], cols[0].value);
-      assertEquals(address.emailAddresses[0], cols[1].value);
+      assertEquals(address.phoneNumbers![0], cols[0]!.value);
+      assertEquals(address.emailAddresses![0], cols[1]!.value);
     });
   });
 
@@ -778,7 +757,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       const city = 'Los Angeles';
       const state = 'CA';
       const zip = '90291';
-      const countrySelect = dialog.shadowRoot.querySelector('select');
+      const countrySelect = dialog.shadowRoot!.querySelector('select')!;
 
       return expectEvent(
                  dialog, 'on-update-address-wrapper',
@@ -789,12 +768,14 @@ suite('AutofillSectionAddressLocaleTests', function() {
                    assertEquals(5 + experimental_fields_count, rows.length);
 
                    // City, State, ZIP code
-                   const row = rows[3 + experimental_fields_count];
-                   const cols = row.querySelectorAll('.address-column');
+                   const row = rows[3 + experimental_fields_count]!;
+                   const cols =
+                       row.querySelectorAll<SettingsTextareaElement|
+                                            CrInputElement>('.address-column');
                    assertEquals(3, cols.length);
-                   cols[0].value = city;
-                   cols[1].value = state;
-                   cols[2].value = zip;
+                   cols[0]!.value = city;
+                   cols[1]!.value = state;
+                   cols[2]!.value = zip;
 
                    countrySelect.value = 'IL';
                    countrySelect.dispatchEvent(new CustomEvent('change'));
@@ -806,11 +787,13 @@ suite('AutofillSectionAddressLocaleTests', function() {
               assertEquals(5 + experimental_fields_count, rows.length);
 
               // City, Postal code
-              const row = rows[3 + experimental_fields_count];
-              const cols = row.querySelectorAll('.address-column');
+              const row = rows[3 + experimental_fields_count]!;
+              const cols =
+                  row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                      '.address-column');
               assertEquals(2, cols.length);
-              assertEquals(city, cols[0].value);
-              assertEquals(zip, cols[1].value);
+              assertEquals(city, cols[0]!.value);
+              assertEquals(zip, cols[1]!.value);
 
               countrySelect.value = 'US';
               countrySelect.dispatchEvent(new CustomEvent('change'));
@@ -822,12 +805,14 @@ suite('AutofillSectionAddressLocaleTests', function() {
             assertEquals(5 + experimental_fields_count, rows.length);
 
             // City, State, ZIP code
-            const row = rows[3 + experimental_fields_count];
-            const cols = row.querySelectorAll('.address-column');
+            const row = rows[3 + experimental_fields_count]!;
+            const cols =
+                row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+                    '.address-column');
             assertEquals(3, cols.length);
-            assertEquals(city, cols[0].value);
-            assertEquals(state, cols[1].value);
-            assertEquals(zip, cols[2].value);
+            assertEquals(city, cols[0]!.value);
+            assertEquals(state, cols[1]!.value);
+            assertEquals(zip, cols[2]!.value);
           });
     });
   });

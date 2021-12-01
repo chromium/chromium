@@ -323,8 +323,7 @@ suite('PaymentsSection', function() {
         .then(function() {
           // Not expired, but still can't be saved, because there's no
           // name.
-          const expiredError =
-              creditCardDialog.shadowRoot!.querySelector('#expired-error')!;
+          const expiredError = creditCardDialog.$.expiredError;
           assertEquals('hidden', getComputedStyle(expiredError).visibility);
           assertTrue(creditCardDialog.$.saveButton.disabled);
 
