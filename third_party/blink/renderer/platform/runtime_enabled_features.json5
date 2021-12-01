@@ -458,7 +458,7 @@
     },
     {
       name: "ContainIntrinsicSizeAuto",
-      status: "test",
+      status: "stable",
     },
     {
       name: "ContentIndex",
