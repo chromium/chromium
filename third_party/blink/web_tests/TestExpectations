@@ -7362,3 +7362,4 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 
 # Sheriff 2021-12-01
 crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Failure Pass ]
+crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failure Pass ]
