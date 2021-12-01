@@ -539,9 +539,10 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
   // We dispatch events on the owner element to match the legacy behavior.
   // Other browsers dispatch click events before and after showing the popup.
   if (owner_element_) {
-    // TODO(dtapuska): Why is this event positionless?
     WebMouseEvent event;
     event.SetFrameScale(1);
+    PhysicalRect bounding_box = owner_element_->BoundingBox();
+    event.SetPositionInWidget(bounding_box.X(), bounding_box.Y());
     Element* owner = &OwnerElement();
     if (LocalFrame* frame = owner->GetDocument().GetFrame()) {
       frame->GetEventHandler().HandleTargetedMouseEvent(
