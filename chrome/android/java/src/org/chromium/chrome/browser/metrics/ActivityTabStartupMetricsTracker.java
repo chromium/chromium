@@ -115,6 +115,7 @@ public class ActivityTabStartupMetricsTracker {
     private String mHistogramSuffix;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
+    private UmaUtils.Observer mUmaUtilsObserver;
     private boolean mShouldTrackStartupMetrics;
     private boolean mFirstVisibleContentRecorded;
     private boolean mVisibleContentRecorded;
@@ -130,18 +131,6 @@ public class ActivityTabStartupMetricsTracker {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver((selector) -> registerObservers(selector));
-    }
-
-    // Returns true if the tracked first navigation commit occurred while the browser had not yet
-    // come to foreground and had not been backgrounded (as defined by UmaUtils).
-    public boolean registeredFirstCommitPreForeground() {
-        return mRegisteredFirstCommitPreForeground;
-    }
-
-    // Returns true if the first paint occurred while the browser had not yet
-    // come to foreground and had not been backgrounded (as defined by UmaUtils).
-    public boolean registeredFirstPaintPreForeground() {
-        return mRegisteredFirstPaintPreForeground;
     }
 
     // Note: In addition to returning false when startup metrics are not being tracked at all, this
@@ -185,6 +174,36 @@ public class ActivityTabStartupMetricsTracker {
                 };
         mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
         PageLoadMetrics.addObserver(mPageLoadMetricsObserver);
+        mUmaUtilsObserver = new UmaUtils.Observer() {
+            @Override
+            public void onHasComeToForeground() {
+                registerHasComeToForeground();
+            }
+        };
+        UmaUtils.addObserver(mUmaUtilsObserver);
+    }
+
+    /**
+     * Registers the fact that UmaUtils#hasComeToForeground() has just become true for the first
+     * time.
+     */
+    private void registerHasComeToForeground() {
+        // Record cases where first navigation commit and/or StartupPaintPreview's first
+        // paint happened pre-foregrounding. Per the semantics of these metrics we
+        // record them only when startup metrics are actually being tracked.
+
+        // NOTE: mShouldTrackStartupMetrics returns false after the
+        // first tracked navigation commit has occurred.
+        if (mShouldTrackStartupMetrics || mRegisteredFirstCommitPreForeground) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Startup.Cold.FirstNavigationCommitOccurredPreForeground",
+                    mRegisteredFirstCommitPreForeground);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Startup.Cold.FirstPaintOccurredPreForeground",
+                    mRegisteredFirstPaintPreForeground);
+        }
+
+        clearUmaUtilsObserver();
     }
 
     /**
@@ -251,6 +270,11 @@ public class ActivityTabStartupMetricsTracker {
 
     public void destroy() {
         mShouldTrackStartupMetrics = false;
+        clearNavigationObservers();
+        clearUmaUtilsObserver();
+    }
+
+    private void clearNavigationObservers() {
         if (mTabModelSelectorTabObserver != null) {
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelectorTabObserver = null;
@@ -259,6 +283,13 @@ public class ActivityTabStartupMetricsTracker {
         if (mPageLoadMetricsObserver != null) {
             PageLoadMetrics.removeObserver(mPageLoadMetricsObserver);
             mPageLoadMetricsObserver = null;
+        }
+    }
+
+    private void clearUmaUtilsObserver() {
+        if (mUmaUtilsObserver != null) {
+            UmaUtils.removeObserver(mUmaUtilsObserver);
+            mUmaUtilsObserver = null;
         }
     }
 
@@ -312,8 +343,9 @@ public class ActivityTabStartupMetricsTracker {
                 observer.onFirstContentfulPaint();
             }
         }
-        // This is the last event we track, so destroy this tracker and remove observers.
-        destroy();
+        // This is the last navigation-related event we track, so clean up related state.
+        mShouldTrackStartupMetrics = false;
+        clearNavigationObservers();
     }
 
     /**
