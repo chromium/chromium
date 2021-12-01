@@ -147,7 +147,7 @@ class APIRequestHandler {
   // requires an asynchronous response, otherwise returns null. Also populates
   // |promise_out| with the associated promise if this is a promise based
   // request.
-  static std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
+  std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
       v8::Local<v8::Context> context,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,

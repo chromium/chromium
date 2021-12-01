@@ -7,7 +7,6 @@ var GetIsolatedFileSystem = fileSystemNatives.GetIsolatedFileSystem;
 var GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 // TODO(sammc): Don't require extension. See http://crbug.com/235689.
 var GetExtensionViews = requireNative('runtime').GetExtensionViews;
-var safeCallbackApply = require('uncaught_exception_handler').safeCallbackApply;
 
 var WINDOW = {};
 try {
@@ -81,13 +80,9 @@ function getFileBindingsForApi(apiName) {
                 // event of an error, this condition will never be satisfied so
                 // the callback will not be called with any entries.
                 if (entries.length == response.entries.length) {
-                  if (response.multiple) {
-                    safeCallbackApply(apiName + '.' + functionName,
-                                      callback, [entries]);
-                  } else {
-                    safeCallbackApply(
-                        apiName + '.' + functionName, callback, [entries[0]]);
-                  }
+                  var extensionResult =
+                      response.multiple ? entries : entries[0];
+                  callback(extensionResult);
                 }
               }
               // TODO(koz): fs.root.getFile() makes a trip to the browser
