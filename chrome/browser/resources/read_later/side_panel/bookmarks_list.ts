@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
@@ -10,6 +12,10 @@ import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
+
+function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
+  return bookmark.title || bookmark.url || '';
+}
 
 export class BookmarksListElement extends PolymerElement {
   static get is() {
@@ -216,6 +222,8 @@ export class BookmarksListElement extends PolymerElement {
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
     afterNextRender(this, () => {
       this.focusBookmark_(node.id);
+      CrA11yAnnouncerElement.getInstance().announce(
+          loadTimeData.getStringF('bookmarkCreated', getBookmarkName(node)));
     });
   }
 
@@ -259,6 +267,8 @@ export class BookmarksListElement extends PolymerElement {
       this.bookmarksApi_.cutBookmark(bookmarkData.id);
     } else if (event.key === 'c') {
       this.bookmarksApi_.copyBookmark(bookmarkData.id);
+      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+          'bookmarkCopied', getBookmarkName(bookmarkData)));
     } else if (event.key === 'v') {
       if (isBookmarkFolderElement(eventTarget)) {
         this.bookmarksApi_.pasteToBookmark(bookmarkData.id);
@@ -298,7 +308,7 @@ export class BookmarksListElement extends PolymerElement {
     const oldParentPath = this.findPathToId_(movedInfo.oldParentId);
     const oldParentPathString = this.getPathString_(oldParentPath);
     const oldParent = oldParentPath[oldParentPath.length - 1];
-    const movedNode = oldParent!.children![movedInfo.oldIndex];
+    const movedNode = oldParent!.children![movedInfo.oldIndex]!;
     Object.assign(
         movedNode, {index: movedInfo.index, parentId: movedInfo.parentId});
     this.splice(`${oldParentPathString}.children`, movedInfo.oldIndex, 1);
@@ -312,6 +322,15 @@ export class BookmarksListElement extends PolymerElement {
     }
     this.splice(
         `${newParentPathString}.children`, movedInfo.index, 0, movedNode);
+
+    if (movedInfo.oldParentId === movedInfo.parentId) {
+      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+          'bookmarkReordered', getBookmarkName(movedNode)));
+    } else {
+      CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+          'bookmarkMoved', getBookmarkName(movedNode),
+          getBookmarkName(newParent!)));
+    }
   }
 
   private onRemoved_(id: string) {
@@ -322,6 +341,9 @@ export class BookmarksListElement extends PolymerElement {
     this.splice(
         `${oldParentPathString}.children`,
         oldParent.children!.indexOf(removedNode), 1);
+
+    CrA11yAnnouncerElement.getInstance().announce(loadTimeData.getStringF(
+        'bookmarkDeleted', getBookmarkName(removedNode)));
   }
 
   private focusBookmark_(id: string) {

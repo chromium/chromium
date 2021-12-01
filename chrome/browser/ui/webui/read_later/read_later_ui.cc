@@ -53,6 +53,11 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
+      {"bookmarkCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
+      {"bookmarkDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
+      {"bookmarkCreated", IDS_BOOKMARK_SCREEN_READER_CREATED},
+      {"bookmarkReordered", IDS_BOOKMARK_SCREEN_READER_REORDERED},
+      {"bookmarkMoved", IDS_BOOKMARK_SCREEN_READER_MOVED},
       {"emptyStateAddFromDialogSubheader",
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},

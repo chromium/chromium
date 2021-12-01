@@ -507,4 +507,16 @@
   </message>
   <!-- End of Bookmark Star button strings. -->
 
+  <!-- Begin of screen reader message strings. -->
+  <message name="IDS_BOOKMARK_SCREEN_READER_CREATED" desc="Screen reader message that is read when a bookmark is created.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' created.
+  </message>
+  <message name="IDS_BOOKMARK_SCREEN_READER_REORDERED" desc="Screen reader message that is read when a bookmark is reordered.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' moved.
+  </message>
+  <message name="IDS_BOOKMARK_SCREEN_READER_MOVED" desc="Screen reader message that is read when a bookmark is moved into a different folder.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' moved into '<ph name="NEW_FOLDER_TITLE">$2<ex>Search engines</ex></ph>'.
+  </message>
+  <!-- End of screen reader message strings. -->
+
 </grit-part>
