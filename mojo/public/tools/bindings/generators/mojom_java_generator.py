@@ -148,11 +148,6 @@ def GetNameForElement(element):
 def GetInterfaceResponseName(method):
   return UpperCamelCase(method.name) + '_Response'
 
-
-# TODO(crbug.com/1093146): remove after migrating downstream references.
-def GetInterfaceResponseNameOld(method):
-  return UpperCamelCase(method.name + '_Response')
-
 def ParseStringAttribute(attribute):
   assert isinstance(attribute, basestring)
   return attribute
@@ -457,7 +452,6 @@ class Generator(generator.Generator):
         'has_method_without_response': HasMethodWithoutResponse,
         'has_method_with_response': HasMethodWithResponse,
         'interface_response_name': GetInterfaceResponseName,
-        'interface_response_name_old': GetInterfaceResponseNameOld,
         'is_array_kind': mojom.IsArrayKind,
         'is_any_handle_kind': mojom.IsAnyHandleKind,
         "is_enum_kind": mojom.IsEnumKind,
