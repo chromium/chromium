@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -25,6 +26,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
@@ -1075,6 +1077,21 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         Move(/*reverse=*/true);
       }
       break;
+    case ui::VKEY_T: {
+      // This is a debug only shortcut.
+      if (!debug::DeveloperAcceleratorsEnabled() ||
+          !desks_templates_util::AreDesksTemplatesEnabled()) {
+        return;
+      }
+
+      // There are no templates to be viewed.
+      if (!DesksTemplatesPresenter::Get()->should_show_templates_ui())
+        return;
+
+      DCHECK(!grid_list_.empty());
+      ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState());
+      break;
+    }
     case ui::VKEY_W: {
       if (!(event->flags() & ui::EF_CONTROL_DOWN))
         return;
