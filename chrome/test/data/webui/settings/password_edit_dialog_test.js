@@ -7,9 +7,10 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {createMultiStorePasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -549,4 +550,62 @@ suite('PasswordEditDialog', function() {
     assertFalse(addDialog.$.websiteInput.invalid);
     assertFalse(addDialog.$.actionButton.disabled);
   });
+
+  test(
+      'requestsPlaintextPasswordAndSwitchesToEditModeOnViewPasswordClick',
+      async function() {
+        const existingEntry = createMultiStorePasswordEntry(
+            {url: 'website.com', username: 'username', accountId: 0});
+        const addDialog =
+            elementFactory.createPasswordEditDialog(null, [existingEntry]);
+        assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+        await updateWebsiteInput(
+            addDialog, passwordManager, existingEntry.urls.shown);
+        addDialog.$.usernameInput.value = existingEntry.username;
+        assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+        existingEntry.password = 'plaintext password';
+        passwordManager.setPlaintextPassword(existingEntry.password);
+        addDialog.$.viewExistingPasswordLink.click();
+        const {id, reason} =
+            await passwordManager.whenCalled('requestPlaintextPassword');
+        assertEquals(existingEntry.getAnyId(), id);
+        assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
+        await flushTasks();
+
+        assertEditDialogParts(addDialog);
+        assertEquals(existingEntry.urls.link, addDialog.$.websiteInput.value);
+        assertEquals(existingEntry.username, addDialog.$.usernameInput.value);
+        assertEquals(existingEntry.password, addDialog.$.passwordInput.value);
+      });
+
+  // On ChromeOS/Lacros the behavior is different (on failure we request token
+  // and retry).
+  if (!isChromeOS && !isLacros) {
+    test(
+        'notSwitchToEditModeOnViewPasswordClickWhenRequestPlaintextPasswordFailed',
+        async function() {
+          const existingEntry = createMultiStorePasswordEntry(
+              {url: 'website.com', username: 'username', accountId: 0});
+          const addDialog =
+              elementFactory.createPasswordEditDialog(null, [existingEntry]);
+          assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+          await updateWebsiteInput(
+              addDialog, passwordManager, existingEntry.urls.shown);
+          addDialog.$.usernameInput.value = existingEntry.username;
+          assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+          // By default requestPlaintextPassword fails if value not set.
+          addDialog.$.viewExistingPasswordLink.click();
+          const {id, reason} =
+              await passwordManager.whenCalled('requestPlaintextPassword');
+          assertEquals(existingEntry.getAnyId(), id);
+          assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
+          await flushTasks();
+
+          assertAddDialogParts(addDialog);
+        });
+  }
 });

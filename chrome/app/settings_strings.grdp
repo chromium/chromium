@@ -525,7 +525,13 @@
     Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>airbnb.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED" desc="An error message when user tried editing the username to a value which is already used for the same site.">
-    You already saved this username for this site
+    You already saved a password with this username for <ph name="WEBSITE">$1<ex>website.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD" desc="A link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
+    View password
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION" desc="An accessibility description for a link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
+    View password with username <ph name="USERNAME">$1<ex>username</ex></ph> for <ph name="WEBSITE">$2<ex>website.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MISSING_TLD" desc="An error message when user entered a URL without a top-level domain as a site for a new password. It suggests to use the same value but with common top level domain." meaning="Suggesting user to add the top-level domain in the website text.">
     Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?

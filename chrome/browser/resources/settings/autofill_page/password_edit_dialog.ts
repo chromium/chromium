@@ -24,6 +24,9 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="chromeos or lacros">
+import {BlockingRequestManager} from './blocking_request_manager.js';
+// </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
@@ -84,6 +87,13 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Array,
         value: () => [],
       },
+
+      // <if expr="chromeos or lacros">
+      /**
+       * Used for authentication when switching from ADD to EDIT mode.
+       */
+      tokenRequestManager: {type: Object, value: null},
+      // </if>
 
       dialogMode_: {
         type: String,
@@ -159,6 +169,9 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
+  // <if expr="chromeos or lacros">
+  tokenRequestManager: BlockingRequestManager|null;
+  // </if>
   private usernamesByOrigin_: Map<string, Set<string>>|null = null;
   private dialogMode_: PasswordDialogMode;
   private isInViewMode_: boolean;
@@ -173,6 +186,10 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   connectedCallback() {
     super.connectedCallback();
+    this.initDialog_();
+  }
+
+  private initDialog_() {
     if (this.existingEntry) {
       this.websiteUrls_ = this.existingEntry.urls;
       this.username_ = this.existingEntry.username;
@@ -189,6 +206,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
                 this.storeOptionDeviceValue;
           });
     }
+    this.isPasswordVisible_ = false;
   }
 
   /** Closes the dialog. */
@@ -284,7 +302,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   /**
    * Handler for tapping the show/hide button.
    */
-  private onShowPasswordButtonTap_() {
+  private onShowPasswordButtonClick_() {
     assert(!this.isInViewMode_);
     this.isPasswordVisible_ = !this.isPasswordVisible_;
   }
@@ -294,7 +312,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
    * For 'save' button it should save new password. After pressing action button
    * the edit dialog should be closed.
    */
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     switch (this.dialogMode_) {
       case PasswordDialogMode.VIEW:
         this.close();
@@ -455,6 +473,53 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
             this.websiteInputInvalid_ = true;
           }
         });
+  }
+
+  private getUsernameErrorMessage_(): string {
+    return this.websiteUrls_ ?
+        this.i18n('usernameAlreadyUsed', this.websiteUrls_.shown) :
+        '';
+  }
+
+  private getViewExistingPasswordAriaDescription_(): string {
+    return this.websiteUrls_ ? this.i18n(
+                                   'viewExistingPasswordAriaDescription',
+                                   this.username_, this.websiteUrls_.shown) :
+                               '';
+  }
+
+  private onViewExistingPasswordClick_() {
+    const existingEntry = this.savedPasswords.find(entry => {
+      return entry.urls.origin === this.websiteUrls_!.origin &&
+          entry.username === this.username_;
+    })!;
+    this.requestPlaintextPasswordForEditing_(existingEntry.getAnyId())
+        .then(password => {
+          existingEntry.password = password;
+          this.switchToEditMode_(existingEntry);
+        });
+  }
+
+  private requestPlaintextPasswordForEditing_(id: number): Promise<string> {
+    return new Promise(resolve => {
+      PasswordManagerImpl.getInstance()
+          .requestPlaintextPassword(
+              id, chrome.passwordsPrivate.PlaintextReason.EDIT)
+          .then(password => resolve(password), () => {
+            // <if expr="chromeos or lacros">
+            // If no password was found, refresh auth token and retry.
+            this.tokenRequestManager!.request(() => {
+              this.requestPlaintextPasswordForEditing_(id).then(resolve);
+            });
+            // </if>
+          });
+    });
+  }
+
+  private switchToEditMode_(existingEntry: MultiStorePasswordUiEntry) {
+    this.existingEntry = existingEntry;
+    this.initDialog_();
+    this.$.dialog.focus();
   }
 
   /**

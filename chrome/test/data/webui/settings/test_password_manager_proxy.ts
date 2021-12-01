@@ -196,6 +196,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   requestPlaintextPassword(
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('requestPlaintextPassword', {id, reason});
+    if (!this.plaintextPassword_) {
+      return Promise.reject(new Error('Could not obtain plaintext password'));
+    }
     return Promise.resolve(this.plaintextPassword_);
   }
 
@@ -259,7 +262,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('startBulkPasswordCheck');
     if (this.data.checkStatus.state ===
         chrome.passwordsPrivate.PasswordCheckState.NO_PASSWORDS) {
-      return Promise.reject('error');
+      return Promise.reject(new Error('error'));
     }
     return Promise.resolve();
   }
@@ -307,7 +310,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('getPlaintextInsecurePassword', {credential, reason});
     if (!this.plaintextPassword_) {
-      return Promise.reject('Could not obtain plaintext password');
+      return Promise.reject(new Error('Could not obtain plaintext password'));
     }
 
     const newCredential =
