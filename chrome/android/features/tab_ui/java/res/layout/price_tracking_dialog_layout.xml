@@ -25,12 +25,14 @@
         android:text="@string/price_tracking_settings"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
     <LinearLayout
+        android:id="@+id/price_annotations_row_menu_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/price_tracking_dialog_items_margin"
         android:layout_marginStart="@dimen/price_tracking_dialog_text_side_margin"
         android:layout_marginEnd="@dimen/price_tracking_dialog_text_side_margin"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
         <ImageView
             android:id="@+id/track_prices_icon"
             android:layout_width="0dp"

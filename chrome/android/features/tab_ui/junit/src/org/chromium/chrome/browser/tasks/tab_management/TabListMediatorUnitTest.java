@@ -87,6 +87,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -101,6 +103,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -158,13 +162,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 /**
  * Tests for {@link TabListMediator}.
  */
 @SuppressWarnings(
         {"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored", "ConstantConditions"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 // clang-format off
 @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @Features.DisableFeatures({
@@ -2975,6 +2980,35 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
         TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(false);
+    }
+
+    @Test
+    public void testRecordPriceAnnotationsEnabledMetrics() {
+        ShadowRecordHistogram.reset();
+        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        String histogramName = "Commerce.PriceDrop.AnnotationsEnabled";
+
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        long presetTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        preferencesManager.writeLong(
+                ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                presetTime);
+        mMediator.recordPriceAnnotationsEnabledMetrics();
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(histogramName), equalTo(1));
+        long updatedTime = preferencesManager.readLong(
+                ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                presetTime);
+        assertNotEquals(presetTime, updatedTime);
+
+        // This metrics should only be recorded once within one day.
+        mMediator.recordPriceAnnotationsEnabledMetrics();
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(histogramName), equalTo(1));
+        assertEquals(updatedTime,
+                preferencesManager.readLong(
+                        ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                        -1));
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

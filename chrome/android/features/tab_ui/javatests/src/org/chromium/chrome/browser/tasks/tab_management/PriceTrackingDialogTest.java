@@ -76,7 +76,8 @@ import java.io.IOException;
 public class PriceTrackingDialogTest {
     // clang-format on
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true";
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+            + "/allow_disable_price_annotations/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private static final int RENDER_TEST_REVISION = 1;
@@ -118,7 +119,7 @@ public class PriceTrackingDialogTest {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, false);
+        verifyDialogShowing(cta, true, false);
 
         // Press back should dismiss the dialog.
         pressBack();
@@ -127,7 +128,7 @@ public class PriceTrackingDialogTest {
         // Open the price tracking dialog.
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, false);
+        verifyDialogShowing(cta, true, false);
 
         // Click outside of the dialog area to close the Price tracking dialog.
         View dialogView = mModalDialogManager.getCurrentDialogForTest().get(
@@ -149,7 +150,7 @@ public class PriceTrackingDialogTest {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, false);
+        verifyDialogShowing(cta, true, false);
 
         onView(withId(R.id.track_prices_switch)).check(matches(isChecked()));
         assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
@@ -169,7 +170,7 @@ public class PriceTrackingDialogTest {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, true);
+        verifyDialogShowing(cta, true, true);
         onView(withId(R.id.price_alerts_row_menu_id)).check(matches(isDisplayed()));
         onView(withId(R.id.price_alerts_arrow)).perform(click());
 
@@ -182,6 +183,19 @@ public class PriceTrackingDialogTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+            + "/allow_disable_price_annotations/false/enable_price_notification/true"})
+    public void
+    testPriceAnnotationsRowMenuVisibility_ParameterDisabled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
+        verifyDialogShowing(cta, false, true);
+    }
+
+    @Test
+    @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
     public void testPriceAlertsRowMenuVisibility() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -190,7 +204,7 @@ public class PriceTrackingDialogTest {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, false);
+        verifyDialogShowing(cta, true, false);
 
         pressBack();
         verifyDialogHiding(cta);
@@ -199,7 +213,7 @@ public class PriceTrackingDialogTest {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, true);
+        verifyDialogShowing(cta, true, true);
     }
 
     @Test
@@ -211,7 +225,7 @@ public class PriceTrackingDialogTest {
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, true);
+        verifyDialogShowing(cta, true, true);
 
         View priceTrackingDialogView = mModalDialogManager.getCurrentDialogForTest().get(
                 ModalDialogProperties.CUSTOM_VIEW);
@@ -229,15 +243,15 @@ public class PriceTrackingDialogTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta, true);
+        verifyDialogShowing(cta, true, true);
 
         View priceTrackingDialogView = mModalDialogManager.getCurrentDialogForTest().get(
                 ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(priceTrackingDialogView, "price_tracking_dialog_landscape");
     }
 
-    private void verifyDialogShowing(
-            ChromeTabbedActivity cta, boolean isPriceAlertsRowMenuVisible) {
+    private void verifyDialogShowing(ChromeTabbedActivity cta,
+            boolean isPriceAnnotationsRowMenuVisible, boolean isPriceAlertsRowMenuVisible) {
         // Verify price tracking dialog view.
         onView(withId(R.id.price_tracking_dialog))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
@@ -263,15 +277,13 @@ public class PriceTrackingDialogTest {
                     assertEquals(priceAlertsDescription,
                             ((TextView) v.findViewById(R.id.price_alerts_description)).getText());
 
-                    if (isPriceAlertsRowMenuVisible) {
-                        assertEquals(View.VISIBLE,
-                                ((ViewGroup) v.findViewById(R.id.price_alerts_row_menu_id))
-                                        .getVisibility());
-                    } else {
-                        assertEquals(View.GONE,
-                                ((ViewGroup) v.findViewById(R.id.price_alerts_row_menu_id))
-                                        .getVisibility());
-                    }
+                    assertEquals(isPriceAnnotationsRowMenuVisible ? View.VISIBLE : View.GONE,
+                            ((ViewGroup) v.findViewById(R.id.price_annotations_row_menu_id))
+                                    .getVisibility());
+
+                    assertEquals(isPriceAlertsRowMenuVisible ? View.VISIBLE : View.GONE,
+                            ((ViewGroup) v.findViewById(R.id.price_alerts_row_menu_id))
+                                    .getVisibility());
                 });
     }
 

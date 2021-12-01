@@ -39,6 +39,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -1132,6 +1134,9 @@ class TabListMediator {
             Collections.sort(tabsList, LAST_SHOWN_COMPARATOR);
         }
         mVisible = tabsList != null;
+        if (tabs != null) {
+            recordPriceAnnotationsEnabledMetrics();
+        }
         if (areTabsUnchanged(tabsList)) {
             if (tabsList == null) return true;
             for (int i = 0; i < tabsList.size(); i++) {
@@ -1898,5 +1903,27 @@ class TabListMediator {
 
     private boolean isShowingTabsInMRUOrder() {
         return TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
+    }
+
+    @VisibleForTesting
+    void recordPriceAnnotationsEnabledMetrics() {
+        if (mMode != TabListMode.GRID || !mActionsOnAllRelatedTabs
+                || !PriceTrackingUtilities.isPriceTrackingEligible()) {
+            return;
+        }
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        if (System.currentTimeMillis()
+                        - preferencesManager.readLong(
+                                ChromePreferenceKeys
+                                        .PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                                -1)
+                >= PriceTrackingUtilities
+                           .getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
+            RecordHistogram.recordBooleanHistogram("Commerce.PriceDrop.AnnotationsEnabled",
+                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+            preferencesManager.writeLong(
+                    ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                    System.currentTimeMillis());
+        }
     }
 }
