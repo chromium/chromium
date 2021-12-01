@@ -287,9 +287,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
-  // Updates the scroll position. `scroll_offset` is in CSS pixels relative to
-  // the scroll origin (which depends on the UI direction).
-  void UpdateScroll(const gfx::Vector2dF& scroll_offset);
+  // Updates the scroll position, which is in CSS pixels relative to the
+  // top-left corner.
+  void UpdateScroll(const gfx::PointF& scroll_position);
 
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
@@ -424,6 +424,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   static base::Value::DictStorage DictFromRect(const gfx::Rect& rect);
 
  private:
+  // Converts a scroll offset (which is relative to a UI direction-dependent
+  // scroll origin) to a scroll position (which is always relative to the
+  // top-left corner).
+  gfx::PointF GetScrollPositionFromOffset(
+      const gfx::Vector2dF& scroll_offset) const;
+
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
   void HandleGetNamedDestinationMessage(const base::Value& message);

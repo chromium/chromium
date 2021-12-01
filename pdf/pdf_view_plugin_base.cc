@@ -970,7 +970,23 @@ void PdfViewPluginBase::CalculateBackgroundParts() {
     background_parts_.push_back(part);
 }
 
-void PdfViewPluginBase::UpdateScroll(const gfx::Vector2dF& scroll_offset) {
+gfx::PointF PdfViewPluginBase::GetScrollPositionFromOffset(
+    const gfx::Vector2dF& scroll_offset) const {
+  gfx::PointF scroll_origin;
+
+  // TODO(crbug.com/1140374): Right-to-left scrolling currently is not
+  // compatible with the PDF viewer's sticky "scroller" element.
+  if (ui_direction_ == base::i18n::RIGHT_TO_LEFT && IsPrintPreview()) {
+    scroll_origin.set_x(
+        std::max(document_size_.width() * static_cast<float>(zoom_) -
+                     plugin_dip_size_.width(),
+                 0.0f));
+  }
+
+  return scroll_origin + scroll_offset;
+}
+
+void PdfViewPluginBase::UpdateScroll(const gfx::PointF& scroll_position) {
   if (stop_scrolling_)
     return;
 
@@ -980,13 +996,6 @@ void PdfViewPluginBase::UpdateScroll(const gfx::Vector2dF& scroll_offset) {
   float max_y = std::max(document_size_.height() * static_cast<float>(zoom_) -
                              plugin_dip_size_.height(),
                          0.0f);
-
-  // TODO(crbug.com/1256965): Right-to-left scrolling currently is not
-  // compatible with the PDF viewer's "scroller" element.
-  gfx::PointF scroll_position;
-  if (ui_direction_ == base::i18n::RIGHT_TO_LEFT && IsPrintPreview())
-    scroll_position.set_x(max_x);
-  scroll_position += scroll_offset;
 
   gfx::PointF scaled_scroll_position(
       base::clamp(scroll_position.x(), 0.0f, max_x),
@@ -1282,8 +1291,8 @@ void PdfViewPluginBase::HandleStopScrollingMessage(
 }
 
 void PdfViewPluginBase::HandleUpdateScrollMessage(const base::Value& message) {
-  UpdateScroll(gfx::Vector2dF(message.FindDoubleKey("x").value(),
-                              message.FindDoubleKey("y").value()));
+  UpdateScroll(GetScrollPositionFromOffset(gfx::Vector2dF(
+      message.FindDoubleKey("x").value(), message.FindDoubleKey("y").value())));
 }
 
 void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
@@ -1403,7 +1412,7 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   DCHECK(message.FindBoolKey("userInitiated").has_value());
 
   SetZoom(new_zoom);
-  UpdateScroll(scroll_offset);
+  UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
 }
 
 void PdfViewPluginBase::DidStartLoading() {
