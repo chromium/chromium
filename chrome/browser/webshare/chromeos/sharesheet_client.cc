@@ -157,6 +157,13 @@ void SharesheetClient::Share(
     return;
   }
 
+  // Previously, shared files were stored in MyFiles/.WebShare. We remove this
+  // obsolete directory.
+  PrepareDirectoryTask::ScheduleSharedFileDeletion(
+      {file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+          kWebShareDirname)},
+      /*delay=*/base::TimeDelta());
+
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(
           current_share_->directory, kMaxSharedFileBytes,
