@@ -48,6 +48,13 @@ public class UmaUtils {
     private static long sForegroundStartTimeMs;
     private static long sBackgroundTimeMs;
 
+    private static boolean sSkipRecordingNextForegroundStartTimeForTesting;
+
+    // Will short-circuit out of the next recordForegroundStartTime() call.
+    public static void skipRecordingNextForegroundStartTimeForTesting() {
+        sSkipRecordingNextForegroundStartTimeForTesting = true;
+    }
+
     /**
      * Record the time in the application lifecycle at which Chrome code first runs
      * (Application.attachBaseContext()).
@@ -64,6 +71,11 @@ public class UmaUtils {
      * Record the time at which Chrome was brought to foreground.
      */
     public static void recordForegroundStartTime() {
+        if (sSkipRecordingNextForegroundStartTimeForTesting) {
+            sSkipRecordingNextForegroundStartTimeForTesting = false;
+            return;
+        }
+
         // Since this can be called from multiple places (e.g. ChromeActivitySessionTracker
         // and FirstRunActivity), only set the time if it hasn't been set previously or if
         // Chrome has been sent to background since the last foreground time.
