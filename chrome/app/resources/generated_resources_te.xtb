@@ -2619,7 +2619,7 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> స్క్రీన్ షేరింగ్ రిక్వెస్ట్‌</translation>
 <translation id="3685598397738512288">Linux USB ప్రాధాన్యతలు</translation>
 <translation id="3686786761304157917"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కీబోర్డ్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="368789413795732264">ఫైల్‌ను వ్రాయడానికి ప్రయత్నించడంలో ఎర్రర్ జరిగింది: <ph name="ERROR_TEXT" />.</translation>
+<translation id="368789413795732264">ఫైల్‌ను రాయడానికి ప్రయత్నించడంలో ఎర్రర్ జరిగింది: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">మీరు అప్లికేషన్‌లో తెరిచే ఫైళ్లు మరియు ఫోల్డర్‌లలో రాయండి</translation>
 <translation id="3688526734140524629">ఛానెల్‌ను మార్చు</translation>
 <translation id="3688578402379768763">తాజాగా ఉంది</translation>
@@ -4474,7 +4474,7 @@
 <translation id="567740581294087470">మీరు ఏ రకమైన ఫీడ్‌బ్యాక్‌ను అందిస్తున్నారు?</translation>
 <translation id="5677503058916217575">పేజీ భాష:</translation>
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
-<translation id="5678550637669481956"><ph name="VOLUME_NAME" />కి చదవడానికి మరియు వ్రాయడానికి యాక్సెస్ మంజూరు చేయబడింది.</translation>
+<translation id="5678550637669481956"><ph name="VOLUME_NAME" />కి చదవడానికి మరియు రాయడానికి యాక్సెస్ మంజూరు చేయబడింది.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />‌కు పంపుతోంది</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />లోని మీ డేటాను చదవండి</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />"ను తీసివేయాలా?</translation>

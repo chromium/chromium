@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">salin</translation>
 <translation id="135978014023467274">Update ke ChromeVox 63 berhasil.</translation>
 <translation id="1360699455582016846">Klik item di bawah tombol perutean <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">pindah ke karakter berikutnya</translation>
 <translation id="1377925789329510816">Ini adalah judul terakhir. Tekan Penelusuran+H untuk meringkas judul pertama, atau Penelusuran+Shift+H untuk membuka judul kedua pada halaman ini.</translation>
 <translation id="138218114945450791">Biru Terang</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Kotak centang</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2462626033734746142">Grup tombol radio</translation>
+<translation id="2467741090055146971">batalkan pilihan</translation>
 <translation id="2471138580042810658">Judul 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{tanda bintang}other{# tanda bintang}}</translation>
 <translation id="2490721194269245365">Rosy Brown</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Tidak ada widget media sebelumnya</translation>
 <translation id="4855927945655956315">Tombol Penting: Control</translation>
 <translation id="4862744964787595316">Tidak tebal</translation>
+<translation id="4865995900839719272">pindah ke baris sebelumnya</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Aktifkan penyimpanan log TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, tab</translation>
 <translation id="5308380583665731573">Sambungkan</translation>
 <translation id="5310788376443009632">dihapus:</translation>
+<translation id="5316825363044614340">pindah ke baris berikutnya</translation>
 <translation id="5320727453979144100">Mode lekat diaktifkan</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{koma}other{# koma}}</translation>
 <translation id="532485153932049746">Pemformatan teks
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Tidak ada kolom formulir sebelumnya</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">bantuan</translation>
 <translation id="7317017974771324508">dipilih sebagian</translation>
 <translation id="7322442671176251901">Sentuh untuk Pelajari</translation>
 <translation id="7344012264516629579">Perintah lewati tambahan di antaranya adalah lewati per link, tombol, dan kotak centang. Daftar lengkap perintah lewati dapat ditemukan dalam menu ChromeVox, yang dapat dibuka dengan menekan Penelusuran + Tanda titik.</translation>
@@ -1128,6 +1133,7 @@
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
 <translation id="9040132695316389094">Judul 1</translation>
 <translation id="9061884144798498064">Pilih tabel braille 8 titik:</translation>
+<translation id="9063946545000394379">pindah ke karakter sebelumnya</translation>
 <translation id="9065283790526219006">+popup</translation>
 <translation id="9065912140022662363">Tidak ada tombol pilihan berikutnya</translation>
 <translation id="9067522039955793016">Batas halaman</translation>
