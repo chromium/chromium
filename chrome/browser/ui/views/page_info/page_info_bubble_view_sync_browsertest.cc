@@ -97,30 +97,14 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
       const PageInfoBubbleViewSyncBrowserTest& chip) = delete;
 
  protected:
-  void SetupSyncForAccount(Profile* profile) {
-    syncer::SyncServiceImpl* sync_service =
-        SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
-
-    sync_service->OverrideNetworkForTest(
-        fake_server::CreateFakeServerHttpPostProviderFactory(
-            GetFakeServer()->AsWeakPtr()));
-
-    std::string username;
-
-    if (username.empty()) {
-      username = "user@gmail.com";
-    }
-
-    std::unique_ptr<SyncServiceImplHarness> harness =
-        SyncServiceImplHarness::Create(
-            browser()->profile(), username, "password",
-            SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+  void SetupSyncForAccount() {
+    ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(harness->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
-        IdentityManagerFactory::GetForProfile(browser()->profile())
+        IdentityManagerFactory::GetForProfile(GetProfile(0))
             ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
@@ -129,10 +113,9 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     account_info.email = current_info.email;
     account_info.hosted_domain = kNoHostedDomainFound;
     signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        account_info);
+        IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
-    ASSERT_TRUE(harness->SetupSync());
+    ASSERT_TRUE(SetupSync());
   }
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
@@ -147,23 +130,25 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
 // SB_THREAT_TYPE_GAIA_PASSWORD_REUSE threat type.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
                        VerifySignInPasswordReusePageInfoBubble) {
-  Profile* profile = browser()->profile();
   // PageInfo calls GetPasswordProtectionReusedPasswordAccountType which checks
   // to see if the account is syncing.
-  SetupSyncForAccount(profile);
+  SetupSyncForAccount();
 
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(safe_browsing::kSyncPasswordPageInfoHistogram, 0);
+
+  AddBlankTabAndShow(GetBrowser(0));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/")));
+      GetBrowser(0), embedded_test_server()->GetURL("/")));
   // Update security state of the current page to match
   // SB_THREAT_TYPE_GAIA_PASSWORD_REUSE.
-  safe_browsing::ChromePasswordProtectionService* service = safe_browsing::
-      ChromePasswordProtectionService::GetPasswordProtectionService(profile);
+  safe_browsing::ChromePasswordProtectionService* service =
+      safe_browsing::ChromePasswordProtectionService::
+          GetPasswordProtectionService(GetProfile(0));
   service->set_username_for_last_shown_warning("user@gmail.com");
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType account_type;
   account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::GMAIL);
@@ -177,11 +162,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
       safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
 
-  OpenPageInfoBubble(browser());
-  views::View* change_password_button = GetView(
-      browser(), PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
+  OpenPageInfoBubble(GetBrowser(0));
+  views::View* change_password_button =
+      GetView(GetBrowser(0),
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   views::View* safelist_password_reuse_button = GetView(
-      browser(),
+      GetBrowser(0),
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   SecurityStateTabHelper* helper =
