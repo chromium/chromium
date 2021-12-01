@@ -10,6 +10,8 @@ import android.widget.CompoundButton;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.google.common.primitives.UnsignedLongs;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -89,8 +91,10 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         });
 
         if (meta != null) {
+            // Use UnsignedLongs to convert ProductClusterId to avoid overflow.
             mSubscription = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                    Long.toString(mPowerBookmarkMeta.getShoppingSpecifics().getProductClusterId()),
+                    UnsignedLongs.toString(
+                            mPowerBookmarkMeta.getShoppingSpecifics().getProductClusterId()),
                     SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID);
         }
         bindBookmarkProperties(mBookmarkId, mPowerBookmarkMeta, mFromExplicitTrackUi);

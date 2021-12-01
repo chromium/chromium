@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.primitives.UnsignedLongs;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Callback;
@@ -618,14 +619,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setPreviousPriceMicros(productUpdate.getOldPrice().getAmountMicros());
             setCurrencyCode(productUpdate.getOldPrice().getCurrencyCode());
             setLastUpdatedMs(System.currentTimeMillis());
-            setMainOfferId(String.valueOf(buyableProduct.getOfferId()));
+            // Use UnsignedLongs to convert OfferId to avoid overflow.
+            setMainOfferId(UnsignedLongs.toString(buyableProduct.getOfferId()));
             setPriceDropGurl(tab.getUrl());
             foundBuyableProduct = FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE;
         } else if (hasPrice(priceTrackingData)) {
             setPriceMicros(buyableProduct.getCurrentPrice().getAmountMicros(), previousPricingData);
             setCurrencyCode(buyableProduct.getCurrentPrice().getCurrencyCode());
             setLastUpdatedMs(System.currentTimeMillis());
-            setMainOfferId(String.valueOf(buyableProduct.getOfferId()));
+            // Use UnsignedLongs to convert OfferId to avoid overflow.
+            setMainOfferId(UnsignedLongs.toString(buyableProduct.getOfferId()));
             setPriceDropGurl(tab.getUrl());
             foundBuyableProduct = FoundBuyableProduct.FOUND;
         }
