@@ -161,7 +161,7 @@ SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
   base::AssertLongCPUWorkAllowed();
   SkBitmap decoded;
   bool success = gfx::PNGCodec::Decode(data, size, &decoded);
-  DCHECK(success);
+  LOG_IF(ERROR, !success) << "Failed to decode icon data as PNG";
   return decoded;
 }
 
