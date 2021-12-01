@@ -81,10 +81,6 @@ class BluetoothDevice final
 
   Bluetooth* GetBluetooth() { return bluetooth_; }
 
-  const mojom::blink::WebBluetoothDevicePtr& GetDevice() const {
-    return device_;
-  }
-
   // Interface required by Garbage Collection:
   void Trace(Visitor*) const override;
 
@@ -92,7 +88,7 @@ class BluetoothDevice final
   ScriptPromise watchAdvertisements(ScriptState*,
                                     const WatchAdvertisementsOptions*,
                                     ExceptionState&);
-  String id() { return device_->id.DeviceIdInBase64().c_str(); }
+  String id() { return device_->id; }
   String name() { return device_->name; }
   BluetoothRemoteGATTServer* gatt() { return gatt_; }
   bool watchingAdvertisements() { return client_receiver_.is_bound(); }
