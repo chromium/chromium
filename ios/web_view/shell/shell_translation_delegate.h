@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_SHELL_SHELL_TRANSLATION_DELEGATE_H_
 #define IOS_WEB_VIEW_SHELL_SHELL_TRANSLATION_DELEGATE_H_
 
-#import <CronetChromeWebView/CronetChromeWebView.h>
+#import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
