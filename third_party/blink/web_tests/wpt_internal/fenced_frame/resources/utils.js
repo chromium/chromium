@@ -72,6 +72,8 @@ const KEYS = {
   "prerender READY"                             : "00000000-0000-0000-0000-000000000023",
   "prerender LOADED"                            : "00000000-0000-0000-0000-000000000024",
   "prerender ACTIVATED"                         : "00000000-0000-0000-0000-000000000025",
+
+  "pointer-lock"                                : "00000000-0000-0000-0000-000000000026",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

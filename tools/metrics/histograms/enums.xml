@@ -8241,6 +8241,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="253" label="RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE"/>
   <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
   <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
+  <int value="256" label="WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
