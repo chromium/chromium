@@ -46,6 +46,10 @@
 #include "ui/display/win/dpi.h"
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 // Trivial WindowDelegate implementation that draws a colored background.
@@ -159,6 +163,12 @@ void RunRunLoopUntilOnHostCloseRequested(aura::WindowTreeHost* host) {
 }
 
 int DemoMain() {
+#if defined(USE_OZONE)
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForUI(params);
+  ui::OzonePlatform::InitializeForGPU(params);
+#endif
   gl::init::InitializeGLOneOff();
 
 #if defined(OS_WIN)
