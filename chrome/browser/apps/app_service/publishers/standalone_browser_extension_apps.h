@@ -124,6 +124,13 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void OnReceiverDisconnected();
   void OnControllerDisconnected();
 
+  // When Lacros returns an icon for an app, ash must then apply icon effects.
+  // This function does that.
+  void OnLoadIcon(uint32_t icon_effects,
+                  int size_hint_in_dip,
+                  apps::LoadIconCallback callback,
+                  IconValuePtr icon_value);
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   // This class stores a copy of the latest app_ptr received for each app_id.

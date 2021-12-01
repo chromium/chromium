@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -63,8 +64,13 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
     return;
   }
 
-  controller_->LoadIcon(app_id, ConvertIconKeyToMojomIconKey(icon_key),
-                        icon_type, size_hint_in_dip, std::move(callback));
+  const uint32_t icon_effects = icon_key.icon_effects;
+  controller_->LoadIcon(
+      app_id, ConvertIconKeyToMojomIconKey(icon_key), icon_type,
+      size_hint_in_dip,
+      base::BindOnce(&StandaloneBrowserExtensionApps::OnLoadIcon,
+                     weak_factory_.GetWeakPtr(), icon_effects, size_hint_in_dip,
+                     std::move(callback)));
 }
 
 void StandaloneBrowserExtensionApps::LaunchAppWithParams(
@@ -236,6 +242,15 @@ void StandaloneBrowserExtensionApps::OnReceiverDisconnected() {
 void StandaloneBrowserExtensionApps::OnControllerDisconnected() {
   receiver_.reset();
   controller_.reset();
+}
+
+void StandaloneBrowserExtensionApps::OnLoadIcon(uint32_t icon_effects,
+                                                int size_hint_in_dip,
+                                                apps::LoadIconCallback callback,
+                                                IconValuePtr icon_value) {
+  // We apply the masking effect here, as masking is not implemented in Lacros.
+  ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
+                   std::move(icon_value), std::move(callback));
 }
 
 }  // namespace apps

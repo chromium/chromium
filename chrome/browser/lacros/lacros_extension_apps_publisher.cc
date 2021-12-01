@@ -8,6 +8,7 @@
 
 #include "base/containers/extend.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -265,6 +266,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     // Apps is deprecated, it's unclear if we'll ever get around to implementing
     // this functionality.
     app->icon_key = apps::mojom::IconKey::New();
+    app->icon_key->icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {
