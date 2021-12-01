@@ -53,14 +53,15 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
 // Helper function which invokes |notifying_callback| and |completion_callback|
 // when changes are received.
 void InvokeCallbackOnChanges(
-    base::OnceCallback<void(const PasswordStoreChangeList& changes)>
+    base::OnceCallback<void(PasswordStoreChangeList changes)>
         notifying_callback,
     base::OnceCallback<void(bool)> completion_callback,
-    const PasswordStoreChangeList& changes) {
+    PasswordStoreChangeList changes) {
   DCHECK(notifying_callback);
-  std::move(notifying_callback).Run(changes);
+  bool is_change_empty = changes.empty();
+  std::move(notifying_callback).Run(std::move(changes));
   if (completion_callback)
-    std::move(completion_callback).Run(!changes.empty());
+    std::move(completion_callback).Run(!is_change_empty);
 }
 
 PasswordStoreChangeList JoinPasswordStoreChanges(
@@ -146,7 +147,7 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
         base::flat_map<InsecureType, InsecurityMetadata>();
   }
 
-  auto barrier_callback = base::BarrierCallback<const PasswordStoreChangeList&>(
+  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
       2, base::BindOnce(&JoinPasswordStoreChanges)
              .Then(base::BindOnce(
                  &PasswordStore::NotifyLoginsChangedOnMainSequence, this)));
@@ -358,7 +359,7 @@ void PasswordStore::OnInitCompleted(bool success) {
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
-    const PasswordStoreChangeList& changes) {
+    PasswordStoreChangeList changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   if (changes.empty())
@@ -400,7 +401,7 @@ void PasswordStore::UnblocklistInternal(
   if (completion)
     notify_callback = std::move(notify_callback).Then(std::move(completion));
 
-  auto barrier_callback = base::BarrierCallback<const PasswordStoreChangeList&>(
+  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
       forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
                                   .Then(std::move(notify_callback)));
 

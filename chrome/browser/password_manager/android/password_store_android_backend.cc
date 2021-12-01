@@ -315,10 +315,9 @@ void PasswordStoreAndroidBackend::
         std::queue<PasswordForm> logins_to_remove,
         AccumulatedPasswordStoreChangeListReply logins_removed_callback,
         std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
-        const PasswordStoreChangeList& changelist) {
+        PasswordStoreChangeList changelist) {
   // Add the last changes to the accumulated changelist.
-  base::ranges::copy(changelist.begin(), changelist.end(),
-                     std::back_inserter(*accumulated_changelist));
+  base::ranges::copy(changelist, std::back_inserter(*accumulated_changelist));
 
   RemoveNextLogin(std::move(logins_to_remove),
                   std::move(logins_removed_callback),

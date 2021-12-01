@@ -26,10 +26,10 @@ struct IsLess {
   }
 };
 
-base::OnceCallback<void(const PasswordStoreChangeList&)>
+base::OnceCallback<void(PasswordStoreChangeList)>
 IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
   return base::BindOnce(
-      [](base::OnceClosure callback, const PasswordStoreChangeList&) {
+      [](base::OnceClosure callback, PasswordStoreChangeList) {
         std::move(callback).Run();
       },
       std::move(callback));

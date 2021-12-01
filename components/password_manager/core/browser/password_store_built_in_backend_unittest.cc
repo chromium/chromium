@@ -58,7 +58,7 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
 class MockPasswordStoreBackendTester {
  public:
-  MOCK_METHOD(void, HandleChanges, (const PasswordStoreChangeList&));
+  MOCK_METHOD(void, HandleChanges, (PasswordStoreChangeList));
   MOCK_METHOD(void,
               LoginsReceivedConstRef,
               (const std::vector<std::unique_ptr<PasswordForm>>&));
@@ -265,7 +265,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   blocked_form->action = GURL("http://foo.example.com/action");
   blocked_form->blocked_by_user = true;
 
-  base::RepeatingCallback<void(const PasswordStoreChangeList&)> handle_changes =
+  base::RepeatingCallback<void(PasswordStoreChangeList)> handle_changes =
       base::BindRepeating(&MockPasswordStoreBackendTester::HandleChanges,
                           base::Unretained(&tester));
   base::RepeatingCallback<void(LoginsResult)> handle_logins =

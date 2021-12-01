@@ -202,7 +202,7 @@ class PasswordStoreAndroidBackend
       std::queue<PasswordForm> logins_to_remove,
       AccumulatedPasswordStoreChangeListReply logins_removed_callback,
       std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
-      const PasswordStoreChangeList& changelist);
+      PasswordStoreChangeList changelist);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;

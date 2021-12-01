@@ -40,7 +40,7 @@ enum class PasswordStoreBackendError {
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;
 using PasswordStoreChangeListReply =
-    base::OnceCallback<void(const PasswordStoreChangeList&)>;
+    base::OnceCallback<void(PasswordStoreChangeList)>;
 
 using LoginsResultOrError =
     absl::variant<LoginsResult, PasswordStoreBackendError>;
@@ -54,7 +54,7 @@ using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 class PasswordStoreBackend {
  public:
   using RemoteChangesReceived =
-      base::RepeatingCallback<void(const PasswordStoreChangeList&)>;
+      base::RepeatingCallback<void(PasswordStoreChangeList)>;
 
   PasswordStoreBackend() = default;
   PasswordStoreBackend(const PasswordStoreBackend&) = delete;
