@@ -42,6 +42,8 @@ void InputMethodBase::OnFocus() {
 void InputMethodBase::OnBlur() {
 }
 
+void InputMethodBase::OnTouch(ui::EventPointerType pointerType) {}
+
 #if defined(OS_WIN)
 bool InputMethodBase::OnUntranslatedIMEMessage(
     const CHROME_MSG event,

@@ -20,6 +20,8 @@ void DummyInputMethod::SetDelegate(internal::InputMethodDelegate* delegate) {
 void DummyInputMethod::OnFocus() {
 }
 
+void DummyInputMethod::OnTouch(ui::EventPointerType pointerType) {}
+
 void DummyInputMethod::OnBlur() {
 }
 

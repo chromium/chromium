@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Overridden from InputMethodBase:
   void OnFocus() override;
   void OnBlur() override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void OnWillChangeFocusedClient(TextInputClient* focused_before,
                                  TextInputClient* focused) override;
   void OnDidChangeFocusedClient(TextInputClient* focused_before,

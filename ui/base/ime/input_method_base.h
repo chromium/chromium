@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   // Overriden from InputMethod.
   void SetDelegate(internal::InputMethodDelegate* delegate) override;
   void OnFocus() override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
 
 #if defined(OS_WIN)

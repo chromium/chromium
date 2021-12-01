@@ -29,6 +29,8 @@ void MockIMEEngineHandler::FocusIn(const InputContext& input_context) {
     ++focus_in_call_count_;
 }
 
+void MockIMEEngineHandler::OnTouch(ui::EventPointerType pointerType) {}
+
 void MockIMEEngineHandler::FocusOut() {
   if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE)
     ++focus_out_call_count_;

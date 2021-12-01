@@ -206,6 +206,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
       const ui::IMEEngineHandlerInterface::InputContext& context) override {
     owner_->Focus(context_id);
   }
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {
     owner_->Blur();
   }

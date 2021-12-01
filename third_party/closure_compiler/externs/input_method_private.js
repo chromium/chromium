@@ -483,6 +483,12 @@ chrome.inputMethodPrivate.onImeMenuItemsChanged;
 chrome.inputMethodPrivate.onFocus;
 
 /**
+ * This event is sent when a touch occurs in a text field
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onTouch;
+
+/**
  * This event is sent when the settings for any input method changed. It is sent
  * to all extensions that are listening to this event, and enabled by the user.
  * @type {!ChromeEvent}

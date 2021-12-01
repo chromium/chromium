@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   void SetDelegate(internal::InputMethodDelegate* delegate) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnTouch(ui::EventPointerType pointerType) override;
 
 #if defined(OS_WIN)
   bool OnUntranslatedIMEMessage(const CHROME_MSG event,

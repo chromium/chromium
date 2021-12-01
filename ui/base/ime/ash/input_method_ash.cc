@@ -310,6 +310,17 @@ void InputMethodAsh::OnFocus() {
   }
 }
 
+void InputMethodAsh::OnTouch(ui::EventPointerType pointerType) {
+  TextInputClient* client = GetTextInputClient();
+  if (!client || !IsTextInputClientFocused(client)) {
+    return;
+  }
+  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  if (engine) {
+    engine->OnTouch(pointerType);
+  }
+}
+
 void InputMethodAsh::OnBlur() {
   if (ui::IMEBridge::Get() &&
       ui::IMEBridge::Get()->GetInputContextHandler() == this)

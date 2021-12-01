@@ -504,6 +504,7 @@ enum HistogramValue {
   SPEECH_RECOGNITION_PRIVATE_ON_RESULT = 482,
   SPEECH_RECOGNITION_PRIVATE_ON_ERROR = 483,
   FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS = 484,
+  INPUT_METHOD_PRIVATE_ON_TOUCH = 485,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

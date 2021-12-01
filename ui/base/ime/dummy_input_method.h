@@ -24,6 +24,7 @@ class DummyInputMethod : public InputMethod {
   // InputMethod overrides:
   void SetDelegate(internal::InputMethodDelegate* delegate) override;
   void OnFocus() override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
 
 #if defined(OS_WIN)

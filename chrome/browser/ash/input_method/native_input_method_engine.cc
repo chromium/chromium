@@ -681,6 +681,11 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   }
 }
 
+void NativeInputMethodEngine::ImeObserver::OnTouch(
+    ui::EventPointerType pointerType) {
+  ime_base_observer_->OnTouch(pointerType);
+}
+
 void NativeInputMethodEngine::ImeObserver::OnBlur(const std::string& engine_id,
                                                   int context_id) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled())

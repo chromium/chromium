@@ -17,6 +17,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/event_constants.h"
 
 namespace gfx {
 class Rect;
@@ -65,6 +66,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
 
   // Called when an input field gains focus.
   virtual void FocusIn(const InputContext& input_context) = 0;
+
+  // Called on touch inside an input field which already has focus.
+  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
 
   // Called when the currently focused input field loses the focus.
   virtual void FocusOut() = 0;

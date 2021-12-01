@@ -53,6 +53,7 @@ class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
   void OnFocus(const std::string& engine_id,
                int context_id,
                const IMEEngineHandlerInterface::InputContext& context) override;
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override;
   void OnKeyEvent(
       const std::string& component_id,

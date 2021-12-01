@@ -2001,6 +2001,10 @@ void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
 
 void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
   last_pointer_type_ = event->pointer_details().pointer_type;
+  ui::InputMethod* input_method = GetInputMethod();
+  if (window_ && window_->HasFocus() && input_method) {
+    input_method->OnTouch(event->pointer_details().pointer_type);
+  }
   event_handler_->OnTouchEvent(event);
 }
 
