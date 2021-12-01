@@ -21,6 +21,16 @@ MATCHER_P(ProtoEquals, expected_message, "") {
   return expected_serialized == actual_serialized;
 }
 
+TEST(HpsFeatureConfigTest, EmptyParamsValid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kLeaveDetection, features::kSnoopingProtection},
+      {} /* disabled_features */);
+
+  EXPECT_TRUE(GetEnableHpsSenseConfig().has_value());
+  EXPECT_TRUE(GetEnableHpsNotifyConfig().has_value());
+}
+
 TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizable) {
   const base::FieldTrialParams params = {{"filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;

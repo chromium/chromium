@@ -12,8 +12,10 @@
 namespace ash {
 namespace {
 // Used for indicating which oneof field to construct for `filter_config` inside
-// FeatureConfig.
-constexpr int kFilterConfigCaseDefault = 0;
+// FeatureConfig. We ensure that this is a valid configuration so that passing
+// empty params induces a working config (as required for, e.g., a
+// chrome:://flags entry).
+constexpr int kFilterConfigCaseDefault = 1;
 
 // Default value for `FeatureConfig.consecutive_results_filter_config.count`.
 // Default 1 means the change will be notified if the inference result is
