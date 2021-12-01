@@ -140,7 +140,8 @@ template("cargo_crate") {
       # calculation done correctly. data_deps won't work because targets don't
       # require them to be present until runtime.
       flags_file = get_label_info(":${orig_target_name}_build_script_output",
-                                  "target_out_dir") + "/cargo_flags.rs"
+                                  "target_out_dir") +
+                   "/${orig_target_name}_cargo_flags.rs"
       rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
       sources += [ flags_file ]
       deps += [ ":${build_script_name}_output" ]
@@ -155,7 +156,7 @@ template("cargo_crate") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${build_script_name}($host_toolchain)"
       deps = [ build_script_target ]
-      flags_file = "$target_out_dir/cargo_flags.rs"
+      flags_file = "$target_out_dir/${orig_target_name}_cargo_flags.rs"
       build_script_out_dir = get_label_info(build_script_target, "root_out_dir")
       build_script = "$build_script_out_dir/${build_script_name}"
       if (is_win) {
@@ -170,6 +171,8 @@ template("cargo_crate") {
         rebase_path("${rust_sysroot}/bin"),
         "--out-dir",
         rebase_path(target_out_dir, root_build_dir),
+        "--src-dir",
+        rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
       ]
       if (defined(rust_abi_target) && rust_abi_target != "") {
         args += [

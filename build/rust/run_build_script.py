@@ -72,14 +72,16 @@ parser.add_argument('--target', help='rust target triple')
 parser.add_argument('--features', help='features', nargs='+')
 parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
 parser.add_argument('--out-dir', required=True, help='target out dir')
+parser.add_argument('--src-dir', required=True, help='target source dir')
 
 args = parser.parse_args()
 
 rustc_path = os.path.join(args.rust_prefix, rustc_name())
 env = os.environ.copy()
 env.clear()  # try to avoid build scripts depending on other things
-env["RUSTC"] = rustc_path
-env["OUT_DIR"] = args.out_dir
+env["RUSTC"] = os.path.abspath(rustc_path)
+env["OUT_DIR"] = os.path.abspath(args.out_dir)
+env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
 env["HOST"] = host_triple(rustc_path)
 if args.target is None:
   env["TARGET"] = env["HOST"]
@@ -100,8 +102,13 @@ if args.features:
 # really just be a backup to humans.
 proc = subprocess.run([os.path.abspath(args.build_script)],
                       env=env,
+                      cwd=args.src_dir,
                       text=True,
                       capture_output=True)
+
+if proc.stderr.rstrip():
+  print(proc.stderr.rstrip(), file=sys.stderr)
+proc.check_returncode()
 
 flags = ""
 for line in proc.stdout.split("\n"):

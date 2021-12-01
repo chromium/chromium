@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use std::env;
+use std::path::Path;
 use std::process::Command;
 use std::str::{self, FromStr};
 
@@ -36,6 +37,11 @@ fn main() {
     if feature_b_enabled {
         println!("cargo:rustc-cfg=has_feature_b");
     }
+
+    // Some tests as to whether we're properly emulating various cargo features.
+    assert!(Path::new(&env::var_os("CARGO_MANIFEST_DIR").unwrap()).join("build.rs").exists());
+    assert!(Path::new("build.rs").exists());
+    assert!(Path::new(&env::var_os("OUT_DIR").unwrap()).exists());
 }
 
 fn rustc_minor_version() -> Option<u32> {

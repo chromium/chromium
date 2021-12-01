@@ -15,3 +15,19 @@ cargo_crate("test_rlib_crate") {
     "my-feature_b",
   ]
 }
+
+# Exists to test the case that a single crate has both a library
+# and a binary, to ensure that shared build products (e.g. the
+# build script) don't conflict.
+cargo_crate("test_rlib_crate_associated_bin") {
+  crate_root = "crate/src/main.rs"
+  sources = [ "crate/src/main.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+  epoch = "0.2"
+  features = [
+    "my-feature_a",
+    "my-feature_b",
+  ]
+  deps = [ ":test_rlib_crate" ]
+}
