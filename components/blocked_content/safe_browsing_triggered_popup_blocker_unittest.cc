@@ -48,17 +48,17 @@ namespace blocked_content {
 const char kNumBlockedHistogram[] =
     "ContentSettings.Popups.StrongBlocker.NumBlocked";
 
-class SafeBrowsingTriggeredPopupBlockerTest
+class SafeBrowsingTriggeredPopupBlockerTestBase
     : public content::RenderViewHostTestHarness {
  public:
-  SafeBrowsingTriggeredPopupBlockerTest() = default;
+  SafeBrowsingTriggeredPopupBlockerTestBase() = default;
 
-  SafeBrowsingTriggeredPopupBlockerTest(
-      const SafeBrowsingTriggeredPopupBlockerTest&) = delete;
-  SafeBrowsingTriggeredPopupBlockerTest& operator=(
-      const SafeBrowsingTriggeredPopupBlockerTest&) = delete;
+  SafeBrowsingTriggeredPopupBlockerTestBase(
+      const SafeBrowsingTriggeredPopupBlockerTestBase&) = delete;
+  SafeBrowsingTriggeredPopupBlockerTestBase& operator=(
+      const SafeBrowsingTriggeredPopupBlockerTestBase&) = delete;
 
-  ~SafeBrowsingTriggeredPopupBlockerTest() override {
+  ~SafeBrowsingTriggeredPopupBlockerTestBase() override {
     settings_map_->ShutdownOnUIThread();
   }
 
@@ -77,7 +77,6 @@ class SafeBrowsingTriggeredPopupBlockerTest
         &pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */, false /* restore_session*/);
 
-    scoped_feature_list_ = DefaultFeatureList();
     subresource_filter::SubresourceFilterObserverManager::CreateForWebContents(
         web_contents());
     PopupBlockerTabHelper::CreateForWebContents(web_contents());
@@ -93,23 +92,12 @@ class SafeBrowsingTriggeredPopupBlockerTest
         std::make_unique<content::TestNavigationThrottleInserter>(
             web_contents(),
             base::BindRepeating(
-                &SafeBrowsingTriggeredPopupBlockerTest::CreateThrottle,
+                &SafeBrowsingTriggeredPopupBlockerTestBase::CreateThrottle,
                 base::Unretained(this)));
-  }
-
-  virtual std::unique_ptr<base::test::ScopedFeatureList> DefaultFeatureList() {
-    auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list->InitAndEnableFeature(kAbusiveExperienceEnforce);
-    return feature_list;
   }
 
   FakeSafeBrowsingDatabaseManager* fake_safe_browsing_database() {
     return fake_safe_browsing_database_.get();
-  }
-
-  base::test::ScopedFeatureList* ResetFeatureAndGet() {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    return scoped_feature_list_.get();
   }
 
   SafeBrowsingTriggeredPopupBlocker* popup_blocker() { return popup_blocker_; }
@@ -154,7 +142,7 @@ class SafeBrowsingTriggeredPopupBlockerTest
         fake_safe_browsing_database_);
   }
 
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
@@ -162,6 +150,14 @@ class SafeBrowsingTriggeredPopupBlockerTest
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
+};
+
+class SafeBrowsingTriggeredPopupBlockerTest
+    : public SafeBrowsingTriggeredPopupBlockerTestBase {
+ public:
+  SafeBrowsingTriggeredPopupBlockerTest() {
+    scoped_feature_list_.InitAndEnableFeature(kAbusiveExperienceEnforce);
+  }
 };
 
 struct RedirectSamplesAndResults {
@@ -272,8 +268,10 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NoMatch_NoBlocking) {
   EXPECT_TRUE(GetMainFrameConsoleMessages().empty());
 }
 
-TEST_F(SafeBrowsingTriggeredPopupBlockerTest, FeatureEnabledByDefault) {
-  ResetFeatureAndGet();
+class SafeBrowsingTriggeredPopupBlockerDefaultTest
+    : public SafeBrowsingTriggeredPopupBlockerTestBase {};
+
+TEST_F(SafeBrowsingTriggeredPopupBlockerDefaultTest, FeatureEnabledByDefault) {
   SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
   EXPECT_NE(nullptr,
             SafeBrowsingTriggeredPopupBlocker::FromWebContents(web_contents()));
@@ -427,12 +425,20 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogBlockMetricsOnClose) {
   histogram_tester.ExpectUniqueSample(kNumBlockedHistogram, 1, 1);
 }
 
-TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
-       WarningMatchWithoutAdBlockOnAbusiveSites_OnlyLogs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      subresource_filter::kFilterAdsOnAbusiveSites);
+class SafeBrowsingTriggeredPopupBlockerFilterAdsDisabledTest
+    : public SafeBrowsingTriggeredPopupBlockerTestBase {
+ public:
+  SafeBrowsingTriggeredPopupBlockerFilterAdsDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        subresource_filter::kFilterAdsOnAbusiveSites);
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SafeBrowsingTriggeredPopupBlockerFilterAdsDisabledTest,
+       WarningMatchWithoutAdBlockOnAbusiveSites_OnlyLogs) {
   const GURL url("https://example.test/");
   MarkUrlAsAbusiveWarning(url);
   NavigateAndCommit(url);
@@ -445,12 +451,20 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
       web_contents()->GetPrimaryPage()));
 }
 
-TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
-       WarningMatchWithAdBlockOnAbusiveSites_OnlyLogs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      subresource_filter::kFilterAdsOnAbusiveSites);
+class SafeBrowsingTriggeredPopupBlockerFilterAdsEnabledTest
+    : public SafeBrowsingTriggeredPopupBlockerTestBase {
+ public:
+  SafeBrowsingTriggeredPopupBlockerFilterAdsEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        subresource_filter::kFilterAdsOnAbusiveSites);
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SafeBrowsingTriggeredPopupBlockerFilterAdsEnabledTest,
+       WarningMatchWithAdBlockOnAbusiveSites_OnlyLogs) {
   const GURL url("https://example.test/");
   MarkUrlAsAbusiveWarning(url);
   NavigateAndCommit(url);
