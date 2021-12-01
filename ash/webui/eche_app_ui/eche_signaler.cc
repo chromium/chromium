@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/eche_signaler.h"
 
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace eche_app {
@@ -21,6 +22,7 @@ EcheSignaler::~EcheSignaler() {
 }
 
 void EcheSignaler::SendSignalingMessage(const std::vector<uint8_t>& signal) {
+  PA_LOG(INFO) << "echeapi EcheSignaler SendSignalingMessage";
   std::string encoded_signal(signal.begin(), signal.end());
   proto::SignalingRequest request;
   request.set_data(encoded_signal);
@@ -31,11 +33,13 @@ void EcheSignaler::SendSignalingMessage(const std::vector<uint8_t>& signal) {
 
 void EcheSignaler::SetSignalingMessageObserver(
     mojo::PendingRemote<mojom::SignalingMessageObserver> observer) {
+  PA_LOG(INFO) << "echeapi EcheSignaler SetSignalingMessageObserver";
   observer_.reset();
   observer_.Bind(std::move(observer));
 }
 
 void EcheSignaler::TearDownSignaling() {
+  PA_LOG(INFO) << "echeapi EcheSignaler TearDownSignaling";
   proto::SignalingAction action;
   action.set_action_type(proto::ActionType::ACTION_TEAR_DOWN);
   proto::ExoMessage message;
@@ -57,12 +61,16 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
   message.ParseFromString(payload);
   std::string signal;
   if (message.has_request()) {
+    PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived has request";
     signal = message.request().data();
   } else if (message.has_response()) {
+    PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived has response";
     signal = message.response().data();
   } else {
+    PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived return";
     return;
   }
+  PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived";
   std::vector<uint8_t> encoded_signal(signal.begin(), signal.end());
   observer_->OnReceivedSignalingMessage(encoded_signal);
 }

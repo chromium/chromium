@@ -59,6 +59,7 @@ SystemInfoProvider::~SystemInfoProvider() {
 
 void SystemInfoProvider::GetSystemInfo(
     base::OnceCallback<void(const std::string&)> callback) {
+  PA_LOG(INFO) << "echeapi SystemInfoProvider GetSystemInfo";
   base::DictionaryValue json_dictionary;
   json_dictionary.SetString(kJsonDeviceNameKey, system_info_->GetDeviceName());
   json_dictionary.SetString(kJsonBoardNameKey, system_info_->GetBoardName());
@@ -77,6 +78,7 @@ void SystemInfoProvider::GetSystemInfo(
 
 void SystemInfoProvider::SetSystemInfoObserver(
     mojo::PendingRemote<mojom::SystemInfoObserver> observer) {
+  PA_LOG(INFO) << "echeapi SystemInfoProvider SetSystemInfoObserver";
   observer_remote_.reset();
   observer_remote_.Bind(std::move(observer));
 }
@@ -89,6 +91,7 @@ void SystemInfoProvider::Bind(
 
 void SystemInfoProvider::OnScreenBacklightStateChanged(
     ash::ScreenBacklightState screen_state) {
+  PA_LOG(INFO) << "echeapi SystemInfoProvider OnScreenBacklightStateChanged";
   if (!observer_remote_.is_bound())
     return;
 
@@ -96,6 +99,7 @@ void SystemInfoProvider::OnScreenBacklightStateChanged(
 }
 
 void SystemInfoProvider::SetTabletModeChanged(bool enabled) {
+  PA_LOG(INFO) << "echeapi SystemInfoProvider SetTabletModeChanged";
   if (!observer_remote_.is_bound())
     return;
 

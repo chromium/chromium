@@ -20,6 +20,7 @@ void EcheNotificationGenerator::ShowNotification(
     const std::u16string& title,
     const std::u16string& message,
     mojom::WebNotificationType type) {
+  PA_LOG(INFO) << "echeapi EcheNotificationGenerator ShowNotification";
   launch_app_helper_->ShowNotification(
       title, message,
       std::make_unique<LaunchAppHelper::NotificationInfo>(
