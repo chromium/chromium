@@ -133,17 +133,12 @@ bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
                   << "expected serialized_beacon_seeds.";
   }
 
-  bool unlock_key;
-  if (!dict.GetBoolean(key_names::kKeyUnlockKey, &unlock_key)) {
-    // If GetBoolean() fails, that means we're reading a Dictionary from
-    // user prefs which did not include the bool when it was stored. That means
-    // it's an older Dictionary that didn't include this `unlock_key` field --
-    // only one device was persisted, and it was implicitly assumed to be the
-    // unlock key -- thus `unlock_key` should default to being true.
-    unlock_key = true;
-  }
-  data->unlock_key = unlock_key;
-
+  // If FindBoolPath() fails, that means we're reading a Dictionary from
+  // user prefs which did not include the bool when it was stored. That means
+  // it's an older Dictionary that didn't include this `unlock_key` field --
+  // only one device was persisted, and it was implicitly assumed to be the
+  // unlock key -- thus `unlock_key` should default to being true.
+  data->unlock_key = dict.FindBoolPath(key_names::kKeyUnlockKey).value_or(true);
   data->bluetooth_address.swap(bluetooth_address);
   data->public_key.swap(public_key);
   data->psk.swap(psk);

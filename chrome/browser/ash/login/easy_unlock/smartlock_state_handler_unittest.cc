@@ -224,18 +224,18 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // Whether the custom icon's tooltip should be autoshown. If the icon is not
   // set, or it doesn't have a tooltip, returns false.
   bool IsCustomIconTooltipAutoshown() const {
-    bool result = false;
-    if (last_custom_icon_)
-      last_custom_icon_->GetBoolean("tooltip.autoshow", &result);
-    return result;
+    if (!last_custom_icon_)
+      return false;
+
+    return last_custom_icon_->FindBoolPath("tooltip.autoshow").value_or(false);
   }
 
   // Whether the custom icon is set and if has hardlock capability enabed.
   bool CustomIconHardlocksOnClick() const {
-    bool result = false;
-    if (last_custom_icon_)
-      last_custom_icon_->GetBoolean("hardlockOnClick", &result);
-    return result;
+    if (!last_custom_icon_)
+      return false;
+
+    return last_custom_icon_->FindBoolKey("hardlockOnClick").value_or(false);
   }
 
  private:
