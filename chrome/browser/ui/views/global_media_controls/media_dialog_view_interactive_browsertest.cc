@@ -964,8 +964,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC)
 // https://crbug.com/1222873
+// Flaky on all Mac bots: https://crbug.com/1274967
 #define MAYBE_LiveCaptionProgressUpdate DISABLED_LiveCaptionProgressUpdate
 #else
 #define MAYBE_LiveCaptionProgressUpdate LiveCaptionProgressUpdate
