@@ -2555,6 +2555,8 @@ source_set("browser") {
       "ppapi_plugin_process_host.cc",
       "ppapi_plugin_process_host.h",
       "ppapi_plugin_process_host_receiver_bindings.cc",
+      "ppapi_plugin_sandboxed_process_launcher_delegate.cc",
+      "ppapi_plugin_sandboxed_process_launcher_delegate.h",
       "renderer_host/pepper/browser_ppapi_host_impl.cc",
       "renderer_host/pepper/browser_ppapi_host_impl.h",
       "renderer_host/pepper/content_browser_pepper_host_factory.cc",

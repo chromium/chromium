@@ -35,9 +35,13 @@ per-file utility_process_sandbox_browsertest.cc=file://sandbox/linux/OWNERS
 
 # Utility sandbox delegate requires security review.
 per-file utility_sandbox_delegate.*=set noparent
-per-file utility_sandbox_delegate.*=file://ipc/SECURITY_OWNERS
+per-file utility_sandbox_delegate.*=file://sandbox/OWNERS
 per-file utility_sandbox_delegate_win.*=set noparent
 per-file utility_sandbox_delegate_win.*=file://sandbox/win/OWNERS
+
+# PPAPI sandbox delegate requires security review.
+per-file ppapi_plugin_sandboxed_process_launcher_delegate.*=set noparent
+per-file ppapi_plugin_sandboxed_process_launcher_delegate.*=file://sandbox/OWNERS
 
 # BackForwardCache
 per-file back_forward_cache*=arthursonzogni@chromium.org

@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/plugin_service_impl.h"
+#include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/common/content_switches_internal.h"
@@ -32,10 +33,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "content/public/common/process_type.h"
-#include "content/public/common/sandboxed_process_launcher_delegate.h"
-#include "content/public/common/zygote/zygote_buildflags.h"
 #include "ppapi/proxy/ppapi_messages.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -50,94 +48,7 @@
 #include "ui/gfx/font_render_params.h"
 #endif
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
-#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
-#endif
-
 namespace content {
-
-// NOTE: changes to this class need to be reviewed by the security team.
-class PpapiPluginSandboxedProcessLauncherDelegate
-    : public content::SandboxedProcessLauncherDelegate {
- public:
-  PpapiPluginSandboxedProcessLauncherDelegate(
-      const ppapi::PpapiPermissions& permissions)
-#if defined(OS_WIN)
-      : permissions_(permissions)
-#endif
-  {
-  }
-
-  PpapiPluginSandboxedProcessLauncherDelegate(
-      const PpapiPluginSandboxedProcessLauncherDelegate&) = delete;
-  PpapiPluginSandboxedProcessLauncherDelegate& operator=(
-      const PpapiPluginSandboxedProcessLauncherDelegate&) = delete;
-
-  ~PpapiPluginSandboxedProcessLauncherDelegate() override {}
-
-#if defined(OS_WIN)
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    // The Pepper process is as locked-down as a renderer except that it can
-    // create the server side of Chrome pipes.
-    sandbox::ResultCode result;
-    result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                             sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\chrome.*");
-    if (result != sandbox::SBOX_ALL_OK)
-      return false;
-
-    content::ContentBrowserClient* browser_client =
-        GetContentClient()->browser();
-
-#if !defined(NACL_WIN64)
-    // We don't support PPAPI win32k lockdown prior to Windows 10.
-    if (base::win::GetVersion() >= base::win::Version::WIN10) {
-      result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-#endif  // !defined(NACL_WIN64)
-    const std::wstring& sid =
-        browser_client->GetAppContainerSidForSandboxType(GetSandboxType());
-    if (!sid.empty())
-      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
-
-    // No plugins can generate executable code.
-    sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
-    flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-    if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
-      return false;
-
-    return true;
-  }
-#endif  // OS_WIN
-
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override {
-    const base::CommandLine& browser_command_line =
-        *base::CommandLine::ForCurrentProcess();
-    base::CommandLine::StringType plugin_launcher = browser_command_line
-        .GetSwitchValueNative(switches::kPpapiPluginLauncher);
-    if (!plugin_launcher.empty())
-      return nullptr;
-    return GetGenericZygote();
-  }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
-
-  sandbox::mojom::Sandbox GetSandboxType() override {
-    return sandbox::mojom::Sandbox::kPpapi;
-  }
-
-#if defined(OS_MAC)
-  bool DisclaimResponsibility() override { return true; }
-  bool EnableCpuSecurityMitigations() override { return true; }
-#endif
-
- private:
-#if defined(OS_WIN)
-  const ppapi::PpapiPermissions permissions_;
-#endif
-};
 
 class PpapiPluginProcessHost::PluginNetworkObserver
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
