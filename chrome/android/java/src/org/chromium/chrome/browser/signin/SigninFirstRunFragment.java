@@ -10,20 +10,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
+import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
@@ -44,7 +49,9 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
+    private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    private boolean mExitFirstRunCalled;
     private boolean mNativeInitialized;
     private boolean mAllowCrashUpload;
 
@@ -55,6 +62,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         super.onAttach(context);
         getPageDelegate().getPolicyLoadListener().onAvailable(
                 hasPolicies -> notifyCoordinatorWhenNativeAndPolicyAreLoaded());
+        mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
+                getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
+        mSkipTosDialogPolicyListener.onAvailable((Boolean skipTos) -> {
+            if (skipTos) exitFirstRun();
+        });
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
     }
 
@@ -62,6 +74,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     public void onDetach() {
         super.onDetach();
         mFragmentView = null;
+        if (mSkipTosDialogPolicyListener != null) {
+            mSkipTosDialogPolicyListener.destroy();
+            mSkipTosDialogPolicyListener = null;
+        }
     }
 
     @Override
@@ -137,14 +153,14 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void recordFreProgressHistogram(@MobileFreProgress int state) {
-        getPageDelegate().recordFreProgressHistogram(state);
+    public void acceptTermsOfService() {
+        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void acceptTermsOfService() {
-        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+    public void recordFreProgressHistogram(@MobileFreProgress int state) {
+        getPageDelegate().recordFreProgressHistogram(state);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -175,6 +191,17 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mAllowCrashUpload = allowCrashUpload;
     }
 
+    @MainThread
+    private void exitFirstRun() {
+        // Make sure this function is called at most once.
+        if (!mExitFirstRunCalled) {
+            mExitFirstRunCalled = true;
+            getPageDelegate().acceptTermsOfService(false);
+            new Handler().postDelayed(
+                    () -> getPageDelegate().exitFirstRun(), FirstRunUtils.getSkipTosExitDelayMs());
+        }
+    }
+
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
         if (mSigninFirstRunCoordinator != null && mNativeInitialized
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
@@ -196,5 +223,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
+    }
+
+    @VisibleForTesting
+    public boolean isExitFirstRunCalled() {
+        return mExitFirstRunCalled;
     }
 }

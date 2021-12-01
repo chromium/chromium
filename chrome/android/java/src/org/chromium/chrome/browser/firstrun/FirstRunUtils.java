@@ -138,7 +138,7 @@ public class FirstRunUtils {
      *
      * @return The number of ms delay before exiting FRE with policy.
      */
-    static int getSkipTosExitDelayMs() {
+    public static int getSkipTosExitDelayMs() {
         if (sDisableDelayOnExitFreForTest) return 0;
 
         int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;
