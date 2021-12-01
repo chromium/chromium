@@ -457,9 +457,8 @@ void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
   CHECK(browser_tab_status_value.is_dict());
   const base::DictionaryValue* browser_tab_status_dict =
       static_cast<const base::DictionaryValue*>(&browser_tab_status_value);
-  bool is_tab_sync_enabled;
-  CHECK(browser_tab_status_dict->GetBoolean("isTabSyncEnabled",
-                                            &is_tab_sync_enabled));
+  bool is_tab_sync_enabled =
+      browser_tab_status_dict->FindBoolKey("isTabSyncEnabled").value();
 
   if (!is_tab_sync_enabled) {
     fake_phone_hub_manager_->mutable_phone_model()->SetBrowserTabsModel(
