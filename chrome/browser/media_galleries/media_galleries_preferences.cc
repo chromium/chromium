@@ -340,11 +340,12 @@ bool HasAutoDetectedGalleryPermission(const extensions::Extension& extension) {
 bool GetMediaGalleryPermissionFromDictionary(
     const base::DictionaryValue* dict,
     MediaGalleryPermission* out_permission) {
-  std::string string_id;
-  if (dict->GetString(kMediaGalleryIdKey, &string_id) &&
-      base::StringToUint64(string_id, &out_permission->pref_id) &&
-      dict->GetBoolean(kMediaGalleryHasPermissionKey,
-                       &out_permission->has_permission)) {
+  const std::string* string_id = dict->FindStringPath(kMediaGalleryIdKey);
+  absl::optional<bool> has_permission =
+      dict->FindBoolPath(kMediaGalleryHasPermissionKey);
+  if (string_id && base::StringToUint64(*string_id, &out_permission->pref_id) &&
+      has_permission) {
+    out_permission->has_permission = *has_permission;
     return true;
   }
   NOTREACHED();
