@@ -261,6 +261,8 @@ static_library("test_support") {
       "../fuchsia/test_component_context_for_process.h",
       "../fuchsia/test_component_controller.cc",
       "../fuchsia/test_component_controller.h",
+      "scoped_dev_zero_fuchsia.cc",
+      "scoped_dev_zero_fuchsia.h",
     ]
   }
 

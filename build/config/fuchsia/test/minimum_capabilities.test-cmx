@@ -11,9 +11,6 @@
     }
   },
   "sandbox": {
-    "dev": [
-      "zero"
-    ],
     "features": [
       "isolated-persistent-storage",
       "isolated-temp",

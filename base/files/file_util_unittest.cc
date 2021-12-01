@@ -38,6 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -45,6 +46,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/os_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #include "testing/platform_test.h"
@@ -78,6 +80,10 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/test/scoped_dev_zero_fuchsia.h"
 #endif
 
 // This macro helps avoid wrapped lines in the test structs.
@@ -3167,6 +3173,11 @@ TEST_F(FileUtilTest, ReadFileToString) {
 
 #if !defined(OS_WIN)
 TEST_F(FileUtilTest, ReadFileToStringWithUnknownFileSize) {
+#if BUILDFLAG(IS_FUCHSIA)
+  test::TaskEnvironment task_environment;
+  auto dev_zero = ScopedDevZero::Get();
+  ASSERT_TRUE(dev_zero);
+#endif
   FilePath file_path("/dev/zero");
   std::string data = "temp";
 

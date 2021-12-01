@@ -33,6 +33,9 @@ extern "C" {
 
 #if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt.h"
+#elif BUILDFLAG(IS_FUCHSIA)
+#include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_dev_zero_fuchsia.h"
 #endif
 
 namespace {
@@ -107,6 +110,12 @@ class MyChannelDescriptorListener : public MyChannelDescriptorListenerBase {
 
 class IPCSendFdsTest : public IPCChannelMojoTestBase {
  protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_FUCHSIA)
+    ASSERT_TRUE(dev_zero_);
+#endif
+  }
+
   void RunServer() {
     // Set up IPC channel and start client.
     MyChannelDescriptorListener listener(-1);
@@ -134,9 +143,20 @@ class IPCSendFdsTest : public IPCChannelMojoTestBase {
     EXPECT_TRUE(WaitForClientShutdown());
     DestroyChannel();
   }
+
+ private:
+#if BUILDFLAG(IS_FUCHSIA)
+  scoped_refptr<base::ScopedDevZero> dev_zero_ = base::ScopedDevZero::Get();
+#endif
 };
 
-TEST_F(IPCSendFdsTest, DescriptorTest) {
+// Disabled on Fuchsia due to failures; see https://crbug.com/1272424.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DescriptorTest DISABLED_DescriptorTest
+#else
+#define MAYBE_DescriptorTest DescriptorTest
+#endif
+TEST_F(IPCSendFdsTest, MAYBE_DescriptorTest) {
   Init("SendFdsClient");
   RunServer();
 }

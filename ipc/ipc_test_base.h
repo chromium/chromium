@@ -47,7 +47,7 @@ class IPCChannelMojoTestBase : public testing::Test {
   mojo::ScopedMessagePipeHandle TakeHandle();
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   mojo::ScopedMessagePipeHandle handle_;
   mojo::core::test::MultiprocessTestHelper helper_;
