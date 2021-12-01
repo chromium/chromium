@@ -44,8 +44,7 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
       BuildTestingProfile(/*is_new_profile=*/false);
 
   signin::AccountConsistencyMethod method =
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_LACROS)
       signin::AccountConsistencyMethod::kMirror;
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
       signin::AccountConsistencyMethod::kDice;

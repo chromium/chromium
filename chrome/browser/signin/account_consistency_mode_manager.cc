@@ -27,6 +27,14 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_MIRROR)
+#error "Dice and Mirror cannot be both enabled."
+#endif
+
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(ENABLE_MIRROR)
+#error "Either Dice or Mirror should be enabled."
+#endif
+
 using signin::AccountConsistencyMethod;
 
 namespace {
@@ -174,14 +182,9 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
     Profile* profile) {
   DCHECK(ShouldBuildServiceForProfile(profile));
 
-#if BUILDFLAG(ENABLE_MIRROR)
-  return AccountConsistencyMethod::kMirror;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::IsAccountManagerAvailable(profile)
-             ? AccountConsistencyMethod::kMirror
-             : AccountConsistencyMethod::kDisabled;
+  if (!ash::IsAccountManagerAvailable(profile))
+    return AccountConsistencyMethod::kDisabled;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -196,6 +199,10 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
     // else: Fall through to ENABLE_DICE_SUPPORT section below.
     // TODO(crbug.com/1198490): Return `AccountConsistencyMethod::kDisabled` if
     // AccountManager is not available, when DICE has been disabled on Lacros.
+#endif
+
+#if BUILDFLAG(ENABLE_MIRROR)
+  return AccountConsistencyMethod::kMirror;
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
