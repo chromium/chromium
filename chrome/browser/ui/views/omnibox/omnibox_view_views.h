@@ -414,7 +414,8 @@ class OmniboxViewViews
       scoped_template_url_service_observation_{this};
 
   // Send tab to self submenu & share submenu - only one of these is populated
-  // at a time.
+  // at a time. These are tied to a WebContents, they are created when the user
+  // opens the menu and destroyed when the tab changes.
   std::unique_ptr<share::ShareSubmenuModel> share_submenu_model_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;

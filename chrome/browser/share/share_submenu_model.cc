@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/share_features.h"
@@ -25,6 +26,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -80,13 +82,13 @@ bool ShareSubmenuModel::IsEnabled() {
 }
 
 ShareSubmenuModel::ShareSubmenuModel(
-    Browser* browser,
+    content::WebContents* web_contents,
     std::unique_ptr<ui::DataTransferEndpoint> source_endpoint,
     Context context,
     GURL url,
     std::u16string text)
     : ui::SimpleMenuModel(this),
-      browser_(browser),
+      web_contents_(web_contents),
       source_endpoint_(std::move(source_endpoint)),
       context_(context),
       url_(url),
@@ -164,11 +166,11 @@ void ShareSubmenuModel::AddGenerateQRCodeItem() {
 
 void ShareSubmenuModel::AddSendTabToSelfItem() {
   // Allowed in tests.
-  if (!browser_)
+  if (!web_contents_)
     return;
 
   send_tab_to_self::SendTabToSelfSyncService* service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(browser_->profile());
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
   if (!send_tab_to_self::ShouldOfferToShareUrl(service, url_))
     return;
 
@@ -221,9 +223,8 @@ void ShareSubmenuModel::AddShareToThirdPartyItems() {
 }
 
 void ShareSubmenuModel::GenerateQRCode() {
-  auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   auto* bubble_controller =
-      qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
+      qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents_);
 
   if (context_ == Context::IMAGE) {
     base::RecordAction(base::UserMetricsAction(
@@ -240,11 +241,9 @@ void ShareSubmenuModel::GenerateQRCode() {
 }
 
 void ShareSubmenuModel::SendTabToSelf() {
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
   send_tab_to_self::SendTabToSelfBubbleController* controller =
       send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(web_contents);
+          CreateOrGetFromWebContents(web_contents_);
   controller->ShowBubble();
 }
 
@@ -252,8 +251,12 @@ void ShareSubmenuModel::CopyLink() {
   if (url_.is_empty() || !url_.is_valid())
     return;
 
+  auto source_endpoint_copy =
+      source_endpoint_
+          ? std::make_unique<ui::DataTransferEndpoint>(*source_endpoint_)
+          : nullptr;
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                std::move(source_endpoint_));
+                                std::move(source_endpoint_copy));
   scw.WriteText(FormatURLForClipboard(url_));
 }
 
@@ -261,17 +264,21 @@ void ShareSubmenuModel::ShareToThirdParty(int id) {
   auto* model = GetSharingHubModel();
   DCHECK(model);
 
-  model->ExecuteThirdPartyAction(browser_->profile(), url_, text_, id);
+  model->ExecuteThirdPartyAction(GetProfile(), url_, text_, id);
 }
 
 sharing_hub::SharingHubModel* ShareSubmenuModel::GetSharingHubModel() {
   // Allowed in unit tests.
-  if (!browser_)
+  if (!web_contents_)
     return nullptr;
 
   sharing_hub::SharingHubService* const service =
-      sharing_hub::SharingHubServiceFactory::GetForProfile(browser_->profile());
+      sharing_hub::SharingHubServiceFactory::GetForProfile(GetProfile());
   return service ? service->GetSharingHubModel() : nullptr;
+}
+
+Profile* ShareSubmenuModel::GetProfile() {
+  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
 
 }  // namespace share

@@ -1394,7 +1394,7 @@ void RenderViewContextMenu::AppendLinkItems() {
       std::u16string text =
           params_.has_image_contents ? u"" : params_.link_text;
       share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-          GetBrowser(), CreateDataEndpoint(true), context, url, text);
+          source_web_contents_, CreateDataEndpoint(true), context, url, text);
       if (share_submenu_model_->GetItemCount() > 0) {
         menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                            IDS_SHARE_MENU_TITLE,
@@ -1568,7 +1568,7 @@ void RenderViewContextMenu::AppendImageItems() {
 
   if (ShouldUseShareMenu() && !share_submenu_model_) {
     share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        GetBrowser(), CreateDataEndpoint(true),
+        source_web_contents_, CreateDataEndpoint(true),
         share::ShareSubmenuModel::Context::IMAGE, params_.src_url, u"");
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
@@ -1699,7 +1699,7 @@ void RenderViewContextMenu::AppendPageItems() {
   if (ShouldUseShareMenu()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        GetBrowser(), CreateDataEndpoint(true),
+        source_web_contents_, CreateDataEndpoint(true),
         share::ShareSubmenuModel::Context::PAGE, params_.page_url,
         source_web_contents_->GetTitle());
     if (share_submenu_model_->GetItemCount() > 0) {

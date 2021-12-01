@@ -257,6 +257,10 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
+  // These have a reference to the WebContents, avoid a dangling pointer.
+  share_submenu_model_.reset();
+  send_tab_to_self_sub_menu_model_.reset();
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -1922,7 +1926,7 @@ void OmniboxViewViews::MaybeAddShareSubmenu(
   }
 
   share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-      location_bar_view_->browser(),
+      web_contents,
       std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault,
                                                  false),
       share::ShareSubmenuModel::Context::PAGE, page_url,
