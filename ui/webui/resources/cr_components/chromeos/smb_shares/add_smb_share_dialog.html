@@ -14,11 +14,38 @@
       }
 
       .md-select {
+        --md-select-bg-color: var(--cros-textfield-background-color);
+        --md-select-focus-shadow-color: var(--cros-focus-ring-color);
+        --md-select-text-color: var(--cros-text-color-primary);
         width: 100%;
       }
 
       cr-searchable-drop-down {
+        --cr-searchable-drop-down-bg-color: var(--cros-bg-color-elevation-2);
+        --cr-searchable-drop-down-icon-color-focus:
+          var(--cros-textfield-label-color);
+        --cr-searchable-drop-down-list-item-color: var(--cros-text-color-primary);
+        --cr-searchable-drop-down-list-bg-color-selected:
+          var(--cros-ripple-color);
+        --cr-searchable-drop-down-list-bg-color-active:
+          var(--cros-ripple-color);
+        --cr-searchable-drop-down-shadow: var(--cros-elevation-2-shadow);
+        --cr-searchable-drop-down-spinner-color: var(--cros-icon-color-prominent);
+        /* cr_searchable_drop_down will hard code its width without this variable */
+        --cr-searchable-drop-down-width: auto;
+        --cr-secondary-text-color: var(--cros-text-color-secondary);
+        --iron-icon-fill-color: var(--cros-textfield-label-color);
         display: block;
+      }
+
+      cr-input,
+      cr-searchable-drop-down::part(input) {
+        --cr-form-field-label-color: var(--cros-textfield-label-color);
+        --cr-input-background-color: var(--cros-textfield-background-color);
+        --cr-input-color: var(--cros-textfield-input-color);
+        --cr-input-error-color: var(--cros-textfield-label-color-error);
+        --cr-input-focus-color: var(--cros-textfield-label-color-focus);
+        --cr-input-selection-color: var(--cros-text-highlight-color);
       }
 
       .md-select,
@@ -27,8 +54,65 @@
         margin-bottom: var(--cr-form-field-bottom-spacing);
       }
 
+      #saveCredentialsCheckbox {
+        --cr-checkbox-checked-box-color: var(--cros-icon-color-prominent);
+        --cr-checkbox-label-color: var(--cros-textfield-label-color);
+        --cr-checkbox-mark-color: var(--cros-bg-color);
+        --cr-checkbox-ripple-checked-color: var(--cros-ripple-color-prominent);
+        --cr-checkbox-ripple-opacity: 1;
+        --cr-checkbox-ripple-unchecked-color: var(--cros-ripple-color);
+        --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
+      }
+
+      :host-context(.focus-outline-visible) #saveCredentialsCheckbox:focus-within {
+        --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+      }
+
       cr-button {
+        --active-bg: transparent;
+        --active-shadow:
+          0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+          0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+        --active-shadow-action:
+          0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+          0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
+        --bg-action: var(--cros-button-background-color-primary);
+        --border-color: var(--cros-button-stroke-color-secondary);
+        --disabled-bg-action:
+          var(--cros-button-background-color-primary-disabled);
+        --disabled-bg: var(--cros-button-background-color-primary-disabled);
+        --disabled-border-color:
+          var(--cros-button-stroke-color-secondary-disabled);
+        --disabled-text-color: var(--cros-button-label-color-secondary-disabled);
+        /* TODO(crbug.com/1275388): use blend() instead */
+        --hover-bg-action: linear-gradient(rgba(0 0 0 / 8%), rgba(0 0 0 / 8%)),
+                              var(--cros-button-background-color-primary);
+        --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+        --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
+        --ink-color-action: var(--cros-button-ripple-color-primary);
+        --ripple-opacity-action: var(--cros-button-primary-ripple-opacity);
+        --ripple-opacity: var(--cros-button-secondary-ripple-opacity);
+        --text-color-action: var(--cros-button-label-color-primary);
+        --text-color: var(--cros-button-label-color-secondary);
         position: relative;
+      }
+
+      cr-button:not(.action-button) {
+        /* passing --ink-color for all cr-button will incorrectly shadow
+         * --ink-color-action
+         */
+        --ink-color: var(--cros-button-ripple-color-secondary);
+      }
+
+      :host-context(.focus-outline-visible) cr-button:focus {
+        /* disable the focus shadow because we use outline below */
+        box-shadow: none;
+        outline: 2px solid var(--cros-focus-ring-color);
+        outline-offset: 2px;
+      }
+
+      .action-button:not(:active):hover {
+        box-shadow: none;
       }
 
       #name,
