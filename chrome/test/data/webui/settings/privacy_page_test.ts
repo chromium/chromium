@@ -104,12 +104,6 @@ suite('PrivacyPage', function() {
       privacy_sandbox: {
         apis_enabled: {value: true},
       },
-      privacy_review: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
     };
     document.body.appendChild(page);
     return flushTasks();
@@ -218,10 +212,6 @@ suite('PrivacyReviewEnabled', function() {
       privacy_review: {
         show_welcome_card:
             {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
       },
       generated: {
         cookie_primary_setting: {
