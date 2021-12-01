@@ -590,7 +590,7 @@
             ]
         }
     ],
-    "AndroidMessagesSavePassword": [
+    "AndroidMessagesSaveUpdatePassword": [
         {
             "platforms": [
                 "android"
@@ -599,7 +599,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MessagesForAndroidPasswords"
+                        "MessagesForAndroidPasswords",
+                        "MessagesForAndroidUpdatePassword"
                     ]
                 }
             ]
@@ -615,21 +616,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MessagesForAndroidSyncError"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidMessagesUpdatePassword": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagesForAndroidUpdatePassword"
                     ]
                 }
             ]
