@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
 
-import android.view.View;
-import android.widget.TextView;
+import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 
@@ -24,21 +23,24 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.mock.MockVrCoreVersionChecker;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.VrInfoBarUtils;
+import org.chromium.chrome.browser.vr.util.VrMessageUtils;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.vr.R;
+import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
- * End-to-end tests for the InfoBar that prompts the user to update or install
+ * End-to-end tests for the message that prompts the user to update or install
  * VrCore (VR Services) when attempting to use a VR feature with an outdated
  * or entirely missing version or other VR-related update prompts.
  */
@@ -47,7 +49,7 @@ import java.util.concurrent.Callable;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @Restriction(RESTRICTION_TYPE_SVR)
-public class VrInstallUpdateInfoBarTest {
+public class VrInstallUpdateMessageTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrTestRuleUtils.generateDefaultTestRuleParameters();
@@ -56,7 +58,7 @@ public class VrInstallUpdateInfoBarTest {
 
     private ChromeActivityTestRule mVrTestRule;
 
-    public VrInstallUpdateInfoBarTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public VrInstallUpdateMessageTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mVrTestRule = callable.call();
         mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mVrTestRule);
     }
@@ -81,100 +83,99 @@ public class VrInstallUpdateInfoBarTest {
     }
 
     /**
-     * Helper function to run the tests checking for the upgrade/install InfoBar being present since
+     * Helper function to run the tests checking for the upgrade/install message being present since
      * all that differs is the value returned by VrCoreVersionChecker and a couple asserts.
      *
      * @param checkerReturnCompatibility The compatibility to have the VrCoreVersionChecker return.
      */
-    private void infoBarTestHelper(final int checkerReturnCompatibility) {
+    private void messageTestHelper(final int checkerReturnCompatibility) throws ExecutionException {
         VrCoreInstallUtils vrCoreInstallUtils = VrCoreInstallUtils.create(0);
         setVrCoreCompatibility(checkerReturnCompatibility);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             vrCoreInstallUtils.requestInstallVrCore(
                     mVrTestRule.getActivity().getCurrentWebContents());
         });
-        View decorView = mVrTestRule.getActivity().getWindow().getDecorView();
         if (checkerReturnCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_READY) {
-            VrInfoBarUtils.expectInfoBarPresent(mVrTestRule, false);
+            VrMessageUtils.expectMessagePresent(mVrTestRule, false);
         } else if (checkerReturnCompatibility
                         == VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE
                 || checkerReturnCompatibility
                         == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE) {
             // Out of date and missing cases are the same, but with different text
-            String expectedMessage;
+            String expectedTitle;
             String expectedButton;
+            Context context = ContextUtils.getApplicationContext();
             if (checkerReturnCompatibility
                     == VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE) {
-                expectedMessage = ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_services_check_infobar_update_text);
-                expectedButton = ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_services_check_infobar_update_button);
+                expectedTitle = context.getString(R.string.vr_services_check_message_update_title);
+                expectedButton = context.getString(org.chromium.chrome.R.string.update);
             } else {
-                expectedMessage = ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_services_check_infobar_install_text);
-                expectedButton = ContextUtils.getApplicationContext().getString(
-                        org.chromium.chrome.vr.R.string.vr_services_check_infobar_install_button);
+                expectedTitle = context.getString(R.string.vr_services_check_message_install_title);
+                expectedButton = context.getString(org.chromium.chrome.R.string.install);
             }
-            VrInfoBarUtils.expectInfoBarPresent(mVrTestRule, true);
-            TextView tempView = (TextView) decorView.findViewById(R.id.infobar_message);
-            Assert.assertEquals("VR install/update infobar text did not match expectation",
-                    expectedMessage, tempView.getText().toString());
-            tempView = (TextView) decorView.findViewById(R.id.button_primary);
-            Assert.assertEquals("VR install/update button text did not match expectation",
-                    expectedButton, tempView.getText().toString());
+            PropertyModel message = VrMessageUtils.getVrInstallUpdateMessage(mVrTestRule);
+            Assert.assertNotNull("VR install/update message should be present.", message);
+
+            Assert.assertEquals("VR install/update message text did not match expectation.",
+                    expectedTitle, message.get(MessageBannerProperties.TITLE));
+            Assert.assertEquals("VR install/update message description did not match expectation.",
+                    context.getString(R.string.vr_services_check_message_description),
+                    message.get(MessageBannerProperties.DESCRIPTION));
+            Assert.assertEquals("VR install/update message button text did not match expectation.",
+                    expectedButton, message.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         } else if (checkerReturnCompatibility
                 == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED) {
-            VrInfoBarUtils.expectInfoBarPresent(mVrTestRule, false);
+            VrMessageUtils.expectMessagePresent(mVrTestRule, false);
         } else {
-            Assert.fail("Invalid VrCoreVersionChecker compatibility: "
-                    + String.valueOf(checkerReturnCompatibility));
+            Assert.fail(
+                    "Invalid VrCoreVersionChecker compatibility: " + checkerReturnCompatibility);
         }
         VrCoreInstallUtils.overrideVrCoreVersionChecker(null);
     }
 
     /**
-     * Tests that the upgrade/install VR Services InfoBar is not present when VR Services is
+     * Tests that the upgrade/install VR Services message is not present when VR Services is
      * installed and up to date.
      */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarNotPresentWhenVrServicesCurrent() {
-        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_READY);
+    public void testMessageNotPresentWhenVrServicesCurrent() throws ExecutionException {
+        messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_READY);
     }
 
     /**
-     * Tests that the upgrade VR Services InfoBar is present when VR Services is outdated.
+     * Tests that the upgrade VR Services message is present when VR Services is outdated.
      */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
             XrActivityRestriction.SupportedActivity.CCT})
     public void
-    testInfoBarPresentWhenVrServicesOutdated() {
-        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE);
+    testMessagePresentWhenVrServicesOutdated() throws ExecutionException {
+        messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE);
     }
 
     /**
-     * Tests that the install VR Services InfoBar is present when VR Services is missing.
+     * Tests that the install VR Services message is present when VR Services is missing.
      */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
             XrActivityRestriction.SupportedActivity.CCT})
     public void
-    testInfoBarPresentWhenVrServicesMissing() {
-        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE);
+    testMessagePresentWhenVrServicesMissing() throws ExecutionException {
+        messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE);
     }
 
     /**
-     * Tests that the install VR Services InfoBar is not present when VR is not supported on the
+     * Tests that the install VR Services message is not present when VR is not supported on the
      * device.
      */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarNotPresentWhenVrServicesNotSupported() {
-        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED);
+    public void testMessageNotPresentWhenVrServicesNotSupported() throws ExecutionException {
+        messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED);
     }
 }

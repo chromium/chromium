@@ -57617,6 +57617,7 @@ Called by update_use_counter_css.py.-->
   <int value="21" label="AutoDarkWebContents"/>
   <int value="22" label="TestMessage"/>
   <int value="23" label="TailoredSecurityEnabled"/>
+  <int value="24" label="VrServicesUpgrade"/>
 </enum>
 
 <enum name="MessageLoopProblems">
