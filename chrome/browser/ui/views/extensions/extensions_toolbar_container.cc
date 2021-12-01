@@ -640,6 +640,12 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   BrowserActionDragData data;
   if (!data.Read(event.data()))
     return ui::DragDropTypes::DRAG_NONE;
+
+  // Check if there is an extension for the dragged icon (e.g. an extension can
+  // be de deleted while dragging its icon).
+  if (!GetActionForId(data.id()))
+    return ui::DragDropTypes::DRAG_NONE;
+
   size_t before_icon = 0;
   // Figure out where to display the icon during dragging transition.
 
@@ -670,6 +676,9 @@ int ExtensionsToolbarContainer::OnDragUpdated(
 }
 
 void ExtensionsToolbarContainer::OnDragExited() {
+  if (!drop_info_)
+    return;
+
   const ToolbarActionsModel::ActionId dragged_extension_id =
       drop_info_->action_id;
   drop_info_.reset();
@@ -744,6 +753,9 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
                            return GetViewForId(action_id) == GetViewForId(id);
                          });
   ToolbarActionView* extension_view = GetViewForId(*it);
+  if (!extension_view)
+    return;
+
   extension_view->SetImageModel(
       views::Button::STATE_NORMAL,
       visible ? ui::ImageModel::FromImageSkia(GetExtensionIcon(extension_view))
