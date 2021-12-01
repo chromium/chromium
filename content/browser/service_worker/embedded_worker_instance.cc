@@ -308,8 +308,10 @@ void EmbeddedWorkerInstance::Start(
           reporting_observer_remote;
       owner_version_->set_reporting_observer_receiver(
           reporting_observer_remote.InitWithNewPipeAndPassReceiver());
+      auto* storage_partition =
+          static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
       coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-          rph->GetStoragePartition(), params->script_url,
+          storage_partition->GetWeakPtr(), params->script_url,
           owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
           owner_version_->cross_origin_embedder_policy()
               ->report_only_reporting_endpoint,
@@ -867,8 +869,10 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
     owner_version_->set_reporting_observer_receiver(
         reporting_observer_remote.InitWithNewPipeAndPassReceiver());
 
+    auto* storage_partition =
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
     coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        rph->GetStoragePartition(), owner_version_->script_url(),
+        storage_partition->GetWeakPtr(), owner_version_->script_url(),
         owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
         owner_version_->cross_origin_embedder_policy()
             ->report_only_reporting_endpoint,

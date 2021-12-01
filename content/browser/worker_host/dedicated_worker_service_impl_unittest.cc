@@ -43,7 +43,8 @@ class MockDedicatedWorker
     // ignored.
     auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         RenderFrameHostImpl::FromID(render_frame_host_id)
-            ->GetStoragePartition(),
+            ->GetStoragePartition()
+            ->GetWeakPtr(),
         GURL(), absl::nullopt, absl::nullopt, base::UnguessableToken::Create(),
         net::NetworkIsolationKey());
 

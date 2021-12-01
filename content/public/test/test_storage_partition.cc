@@ -236,4 +236,12 @@ void TestStoragePartition::SetNetworkContextForTesting(
     mojo::PendingRemote<network::mojom::NetworkContext>
         network_context_remote) {}
 
+base::WeakPtr<StoragePartition> TestStoragePartition::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void TestStoragePartition::InvalidateWeakPtrs() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 }  // namespace content

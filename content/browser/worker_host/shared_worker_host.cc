@@ -167,6 +167,8 @@ SharedWorkerHost::~SharedWorkerHost() {
   // Send any final reports and allow the reporting configuration to be
   // removed.
   if (site_instance_->HasProcess()) {
+    // Note that the RenderProcessHost and the associated StoragePartition
+    // outlives `this`.
     GetProcessHost()
         ->GetStoragePartition()
         ->GetNetworkContext()
@@ -235,9 +237,11 @@ void SharedWorkerHost::Start(
         break;
     }
 
+    auto* storage_partition = static_cast<StoragePartitionImpl*>(
+        GetProcessHost()->GetStoragePartition());
     // Create a COEP reporter with worker's policy.
     coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        GetProcessHost()->GetStoragePartition(), final_response_url,
+        storage_partition->GetWeakPtr(), final_response_url,
         worker_cross_origin_embedder_policy_->reporting_endpoint,
         worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
         GetReportingSource(), GetNetworkIsolationKey());

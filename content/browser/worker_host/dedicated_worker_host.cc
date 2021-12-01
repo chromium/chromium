@@ -112,7 +112,8 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
   // the observed render process host (`worker_process_host_`) is destroyed.
 
   // Send any final reports and allow the reporting configuration to be
-  // removed.
+  // removed. Note that the RenderProcessHost and the associated
+  // StoragePartition outlives `this`.
   worker_process_host_->GetStoragePartition()
       ->GetNetworkContext()
       ->SendReportsAndRemoveSource(reporting_source_);
@@ -336,9 +337,11 @@ void DedicatedWorkerHost::DidStartScriptLoad(
         final_response_url, main_script_load_params->response_head.get());
   }
 
+  auto* storage_partition = static_cast<StoragePartitionImpl*>(
+      worker_process_host_->GetStoragePartition());
   // Create a COEP reporter with worker's policy.
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-      worker_process_host_->GetStoragePartition(), final_response_url,
+      storage_partition->GetWeakPtr(), final_response_url,
       worker_cross_origin_embedder_policy_->reporting_endpoint,
       worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
       reporting_source_, isolation_info_.network_isolation_key());
