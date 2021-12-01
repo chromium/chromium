@@ -1151,23 +1151,9 @@ void PeerConnectionTracker::TrackGetUserMedia(
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // When running tests, it is possible that UserMediaRequest's
-  // ExecutionContext is null.
-  //
-  // TODO(crbug.com/704136): Is there a better way to do this?
-  String security_origin;
-  if (!user_media_request->GetExecutionContext()) {
-    security_origin =
-        SecurityOrigin::CreateFromString("test://test")->ToString();
-  } else {
-    security_origin = user_media_request->GetExecutionContext()
-                          ->GetSecurityOrigin()
-                          ->ToString();
-  }
-
   peer_connection_tracker_host_->GetUserMedia(
-      security_origin, user_media_request->request_id(),
-      user_media_request->Audio(), user_media_request->Video(),
+      user_media_request->request_id(), user_media_request->Audio(),
+      user_media_request->Video(),
       SerializeMediaConstraints(user_media_request->AudioConstraints()),
       SerializeMediaConstraints(user_media_request->VideoConstraints()));
 }

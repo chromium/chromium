@@ -78,7 +78,6 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                         base::Value value) override;
   void OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                       base::ProcessId pid,
-                      const std::string& origin,
                       int request_id,
                       bool audio,
                       bool video,

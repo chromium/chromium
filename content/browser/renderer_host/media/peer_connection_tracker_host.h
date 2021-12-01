@@ -85,8 +85,7 @@ class PeerConnectionTrackerHost
                             const std::string& value) override;
   void OnPeerConnectionSessionIdSet(int lid,
                                     const std::string& session_id) override;
-  void GetUserMedia(const std::string& origin,
-                    int request_id,
+  void GetUserMedia(int request_id,
                     bool audio,
                     bool video,
                     const std::string& audio_constraints,

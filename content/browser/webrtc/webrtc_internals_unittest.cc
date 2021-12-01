@@ -162,7 +162,6 @@ class WebRtcInternalsTest : public testing::Test {
   void VerifyGetUserMediaData(base::Value* actual_data,
                               GlobalRenderFrameHostId frame_id,
                               int pid,
-                              const std::string& origin,
                               int request_id,
                               const std::string& audio,
                               const std::string& video) {
@@ -172,7 +171,8 @@ class WebRtcInternalsTest : public testing::Test {
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
-    VerifyString(dict, "origin", origin);
+    // origin is the empty string in tests.
+    VerifyString(dict, "origin", "");
     VerifyInt(dict, "request_id", request_id);
     VerifyString(dict, "audio", audio);
     VerifyString(dict, "video", video);
@@ -400,14 +400,14 @@ TEST_F(WebRtcInternalsTest, AddGetUserMedia) {
   // Add one observer before "getUserMedia".
   webrtc_internals.AddObserver(&observer);
 
-  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kUrl, kRequestId, true, true,
+  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, true, true,
                                   kAudioConstraint, kVideoConstraint);
 
   loop.Run();
 
   ASSERT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kUrl,
-                         kRequestId, kAudioConstraint, kVideoConstraint);
+  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kRequestId,
+                         kAudioConstraint, kVideoConstraint);
 
   webrtc_internals.RemoveObserver(&observer);
 
@@ -463,7 +463,7 @@ TEST_F(WebRtcInternalsTest, UpdateGetUserMediaError) {
 
 TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   WebRTCInternalsForTest webrtc_internals;
-  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kUrl, kRequestId, true, true,
+  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, true, true,
                                   kAudioConstraint, kVideoConstraint);
 
   MockWebRtcInternalsProxy observer;
@@ -472,8 +472,8 @@ TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   webrtc_internals.UpdateObserver(&observer);
 
   EXPECT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kUrl,
-                         kRequestId, kAudioConstraint, kVideoConstraint);
+  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kRequestId,
+                         kAudioConstraint, kVideoConstraint);
 
   webrtc_internals.RemoveObserver(&observer);
 

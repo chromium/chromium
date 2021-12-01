@@ -86,7 +86,6 @@ interface PeerConnectionTrackerHost {
   OnPeerConnectionSessionIdSet(int32 lid, string session_id);
 
   // Lets WebRTCInternals know that a getUserMedia() call has been made.
-  // |origin| is the security origin of getusermedia call
   // |request_id| is an id assigned to the getusermedia call and its
   //   callback/error
   // |audio| is true if audio stream is requested
@@ -95,9 +94,8 @@ interface PeerConnectionTrackerHost {
   // |video_constraints| is constraints for video like audio source device id
   // The constraint strings are for display only and should not be parsed
   // by the browser for security reasons.
-  // TODO(crbug.com/801955) Remove the |origin| parameter.
-  GetUserMedia(string origin, int32 request_id, bool audio, bool video, string
-               audio_constraints, string video_constraints);
+  GetUserMedia(int32 request_id, bool audio, bool video,
+               string audio_constraints, string video_constraints);
 
   // Lets WebRTCInternals know that a getUserMedia() call has resolved.
   // |request_id| is an id assigned to the getusermedia call and its

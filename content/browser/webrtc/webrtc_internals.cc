@@ -284,7 +284,6 @@ void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
 
 void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                                      base::ProcessId pid,
-                                     const std::string& origin,
                                      int request_id,
                                      bool audio,
                                      bool video,
@@ -297,6 +296,10 @@ void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                     "in webrtc-internals.";
     return;
   }
+
+  RenderFrameHost* host = RenderFrameHost::FromID(frame_id);
+  // Frame may be gone (and does not exist in tests).
+  std::string origin = host ? host->GetLastCommittedOrigin().Serialize() : "";
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("rid", frame_id.child_id);

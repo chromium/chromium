@@ -97,7 +97,6 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
   // This method is called when getUserMedia is called.
   // - |render_frame_host_id| identifies the RenderFrameHost.
   // - |pid| is the OS process ID.
-  // - |origin| is the security origin of the getUserMedia call.
   // - |request_id| is an id assigned to the getUserMedia call and its
   //     callback/error
   // - |audio| is true if the audio stream is requested.
@@ -106,7 +105,6 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
   // - |video_constraints| is the constraints for the video.
   virtual void OnGetUserMedia(GlobalRenderFrameHostId render_frame_host_id,
                               base::ProcessId pid,
-                              const std::string& origin,
                               int request_id,
                               bool audio,
                               bool video,
