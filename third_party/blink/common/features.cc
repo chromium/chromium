@@ -876,11 +876,6 @@ const base::Feature kTargetBlankImpliesNoOpener{
 const base::Feature kMediaStreamTrackUseConfigMaxFrameRate{
     "MediaStreamTrackUseConfigMaxFrameRate", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, WebRTC's worker thread will run on a thread context distinct
-// from the WebRTC signaling and network threads.
-const base::Feature kWebRtcDistinctWorkerThread{
-    "WebRtcDistinctWorkerThread", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, the SubresourceFilter receives calls from the ResourceLoader
 // to perform additional checks against any aliases found from DNS CNAME records
 // for the requested URL.
