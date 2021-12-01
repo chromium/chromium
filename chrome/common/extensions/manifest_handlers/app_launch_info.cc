@@ -139,12 +139,12 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
   // web URL.
   if (extension->manifest()->Get(keys::kLaunchLocalPath, &temp)) {
     if (extension->manifest()->Get(keys::kLaunchWebURL, NULL)) {
-      *error = base::ASCIIToUTF16(errors::kLaunchPathAndURLAreExclusive);
+      *error = errors::kLaunchPathAndURLAreExclusive;
       return false;
     }
 
     if (extension->manifest()->Get(keys::kWebURLs, NULL)) {
-      *error = base::ASCIIToUTF16(errors::kLaunchPathAndExtentAreExclusive);
+      *error = errors::kLaunchPathAndExtentAreExclusive;
       return false;
     }
 
@@ -211,7 +211,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
     launch_web_url_ = url;
   } else if (extension->is_legacy_packaged_app()) {
-    *error = base::ASCIIToUTF16(errors::kLaunchURLRequired);
+    *error = errors::kLaunchURLRequired;
     return false;
   }
 
@@ -272,7 +272,7 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
     return true;
 
   if (!tmp_launcher_container->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidLaunchContainer);
+    *error = errors::kInvalidLaunchContainer;
     return false;
   }
   const std::string launch_container_string =
@@ -283,7 +283,7 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
   } else if (launch_container_string == values::kLaunchContainerTab) {
     launch_container_ = LaunchContainer::kLaunchContainerTab;
   } else {
-    *error = base::ASCIIToUTF16(errors::kInvalidLaunchContainer);
+    *error = errors::kInvalidLaunchContainer;
     return false;
   }
 

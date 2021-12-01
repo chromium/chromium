@@ -62,7 +62,7 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconsInfo> icons_info(new IconsInfo);
   const base::Value* icons_dict = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kIcons, &icons_dict)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidIcons);
+    *error = manifest_errors::kInvalidIcons;
     return false;
   }
 

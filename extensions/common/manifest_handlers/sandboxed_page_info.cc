@@ -60,7 +60,7 @@ bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value* list_value = nullptr;
   if (!extension->manifest()->GetList(keys::kSandboxedPages, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidSandboxedPagesList);
+    *error = errors::kInvalidSandboxedPagesList;
     return false;
   }
 

@@ -58,7 +58,7 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
 
   if (!extension->manifest()->GetBoolean(keys::kOfflineEnabled,
                                          &offline_enabled)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidOfflineEnabled);
+    *error = manifest_errors::kInvalidOfflineEnabled;
     return false;
   }
 

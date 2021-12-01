@@ -64,7 +64,7 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value* isolation_list = nullptr;
   if (!extension->manifest()->GetList(keys::kIsolation, &isolation_list)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidIsolation);
+    *error = manifest_errors::kInvalidIsolation;
     return false;
   }
 

@@ -68,7 +68,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
     extension->AddInstallWarning(
         InstallWarning(errors::kPluginsRequirementDeprecated));
     if (requirements.plugins->npapi && *requirements.plugins->npapi) {
-      *error = base::ASCIIToUTF16(errors::kNPAPIPluginsNotSupported);
+      *error = errors::kNPAPIPluginsNotSupported;
       return false;
     }
   }

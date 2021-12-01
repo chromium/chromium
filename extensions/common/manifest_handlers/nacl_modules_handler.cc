@@ -46,7 +46,7 @@ NaClModulesHandler::~NaClModulesHandler() {
 bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* list_value = nullptr;
   if (!extension->manifest()->GetList(keys::kNaClModules, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidNaClModules);
+    *error = errors::kInvalidNaClModules;
     return false;
   }
 
@@ -55,7 +55,7 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
   base::Value::ConstListView list_view = list_value->GetList();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (!list_view[i].is_dict()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidNaClModules);
+      *error = errors::kInvalidNaClModules;
       return false;
     }
 

@@ -23,7 +23,6 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::ASCIIToUTF16;
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
@@ -166,7 +165,7 @@ bool BackgroundInfo::Parse(const Extension* extension, std::u16string* error) {
       (!background_scripts_.empty() ? 1 : 0) +
       (background_service_worker_script_.has_value() ? 1 : 0);
   if (background_solution_sum > 1) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundCombination);
+    *error = errors::kInvalidBackgroundCombination;
     return false;
   }
 
@@ -182,7 +181,7 @@ bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
 
   CHECK(background_scripts_value);
   if (!background_scripts_value->is_list()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundScripts);
+    *error = errors::kInvalidBackgroundScripts;
     return false;
   }
 
@@ -208,7 +207,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
     return true;
 
   if (!background_page_value->is_string()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackground);
+    *error = errors::kInvalidBackground;
     return false;
   }
   const std::string& background_str = background_page_value->GetString();
@@ -218,12 +217,12 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
 
     if (!PermissionsParser::HasAPIPermission(extension,
                                              APIPermissionID::kBackground)) {
-      *error = ASCIIToUTF16(errors::kBackgroundPermissionNeeded);
+      *error = errors::kBackgroundPermissionNeeded;
       return false;
     }
     // Hosted apps require an absolute URL.
     if (!background_url_.is_valid()) {
-      *error = ASCIIToUTF16(errors::kInvalidBackgroundInHostedApp);
+      *error = errors::kInvalidBackgroundInHostedApp;
       return false;
     }
 
@@ -231,7 +230,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
           (base::CommandLine::ForCurrentProcess()->HasSwitch(
                switches::kAllowHTTPBackgroundPage) &&
            background_url_.SchemeIs("http")))) {
-      *error = ASCIIToUTF16(errors::kInvalidBackgroundInHostedApp);
+      *error = errors::kInvalidBackgroundInHostedApp;
       return false;
     }
   } else {
@@ -252,7 +251,7 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
 
   DCHECK(scripts_value);
   if (!scripts_value->is_string()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundServiceWorkerScript);
+    *error = errors::kInvalidBackgroundServiceWorkerScript;
     return false;
   }
 
@@ -267,7 +266,7 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
 
   DCHECK(scripts_type);
   if (!scripts_type->is_string()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundServiceWorkerType);
+    *error = errors::kInvalidBackgroundServiceWorkerType;
     return false;
   }
 
@@ -282,7 +281,7 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
     return true;
   }
 
-  *error = ASCIIToUTF16(errors::kInvalidBackgroundServiceWorkerType);
+  *error = errors::kInvalidBackgroundServiceWorkerType;
   return false;
 }
 
@@ -308,13 +307,13 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
   }
 
   if (!background_persistent->is_bool()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundPersistent);
+    *error = errors::kInvalidBackgroundPersistent;
     return false;
   }
   is_persistent_ = background_persistent->GetBool();
 
   if (!has_background_page()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundPersistentNoPage);
+    *error = errors::kInvalidBackgroundPersistentNoPage;
     return false;
   }
 
@@ -329,7 +328,7 @@ bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
     return true;
 
   if (!allow_js_access->is_bool()) {
-    *error = ASCIIToUTF16(errors::kInvalidBackgroundAllowJsAccess);
+    *error = errors::kInvalidBackgroundAllowJsAccess;
     return false;
   }
   allow_js_access_ = allow_js_access->GetBool();
@@ -350,22 +349,21 @@ bool BackgroundManifestHandler::Parse(Extension* extension,
 
   // Platform apps must have background pages.
   if (extension->is_platform_app() && !info->has_background_page()) {
-    *error = ASCIIToUTF16(errors::kBackgroundRequiredForPlatformApps);
+    *error = errors::kBackgroundRequiredForPlatformApps;
     return false;
   }
   // Lazy background pages are incompatible with the webRequest API.
   if (info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(extension,
                                           APIPermissionID::kWebRequest)) {
-    *error = ASCIIToUTF16(errors::kWebRequestConflictsWithLazyBackground);
+    *error = errors::kWebRequestConflictsWithLazyBackground;
     return false;
   }
 
   if (!info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(
           extension, APIPermissionID::kTransientBackground)) {
-    *error = ASCIIToUTF16(
-        errors::kTransientBackgroundConflictsWithPersistentBackground);
+    *error = errors::kTransientBackgroundConflictsWithPersistentBackground;
     return false;
   }
 

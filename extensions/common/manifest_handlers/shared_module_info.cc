@@ -143,7 +143,7 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   auto info = std::make_unique<SharedModuleInfo>();
 
   if (has_import && has_export) {
-    *error = base::ASCIIToUTF16(errors::kInvalidImportAndExport);
+    *error = errors::kInvalidImportAndExport;
     return false;
   }
 

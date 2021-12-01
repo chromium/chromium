@@ -84,7 +84,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
       result->default_icon.Add(extension_misc::EXTENSION_ICON_GIGANTOR,
                                default_icon);
     } else {
-      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultIcon);
+      *error = errors::kInvalidActionDefaultIcon;
       return nullptr;
     }
   }
@@ -93,7 +93,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
   // (both optional).
   if (dict->HasKey(keys::kActionDefaultTitle)) {
     if (!dict->GetString(keys::kActionDefaultTitle, &result->default_title)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultTitle);
+      *error = errors::kInvalidActionDefaultTitle;
       return nullptr;
     }
   }
@@ -102,7 +102,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
   if (dict->HasKey(keys::kActionDefaultPopup)) {
     std::string url_str;
     if (!dict->GetString(keys::kActionDefaultPopup, &url_str)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultPopup);
+      *error = errors::kInvalidActionDefaultPopup;
       return nullptr;
     }
 
@@ -111,7 +111,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
       result->default_popup_url =
           Extension::GetResourceURL(extension->url(), url_str);
       if (!result->default_popup_url.is_valid()) {
-        *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultPopup);
+        *error = errors::kInvalidActionDefaultPopup;
         return nullptr;
       }
     } else {
@@ -124,14 +124,14 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
     // The default_state key is only valid for TYPE_ACTION; throw an error for
     // others.
     if (type != TYPE_ACTION) {
-      *error = base::ASCIIToUTF16(errors::kDefaultStateShouldNotBeSet);
+      *error = errors::kDefaultStateShouldNotBeSet;
       return nullptr;
     }
 
     std::string default_state;
     if (!dict->GetString(keys::kActionDefaultState, &default_state) ||
         !(default_state == kEnabled || default_state == kDisabled)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultState);
+      *error = errors::kInvalidActionDefaultState;
       return nullptr;
     }
     result->default_state = default_state == kEnabled

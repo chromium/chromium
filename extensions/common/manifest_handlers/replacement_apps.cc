@@ -78,13 +78,13 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
   const GURL web_app_url(app_value->GetString());
   if (!web_app_url.is_valid() || !web_app_url.SchemeIs(url::kHttpsScheme)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
@@ -101,7 +101,7 @@ bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementAndroidApp);
+    *error = errors::kInvalidReplacementAndroidApp;
     return false;
   }
 

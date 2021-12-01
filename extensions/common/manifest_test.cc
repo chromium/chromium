@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_paths.h"
@@ -214,12 +215,28 @@ void ManifestTest::LoadAndExpectError(const ManifestData& manifest,
                       expected_error);
 }
 
+void ManifestTest::LoadAndExpectError(const ManifestData& manifest,
+                                      const std::u16string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
+  return LoadAndExpectError(manifest, base::UTF16ToUTF8(expected_error),
+                            location, flags);
+}
+
 void ManifestTest::LoadAndExpectError(char const* manifest_name,
                                       const std::string& expected_error,
                                       ManifestLocation location,
                                       int flags) {
   return LoadAndExpectError(
       ManifestData(manifest_name), expected_error, location, flags);
+}
+
+void ManifestTest::LoadAndExpectError(char const* manifest_name,
+                                      const std::u16string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
+  return LoadAndExpectError(ManifestData(manifest_name),
+                            base::UTF16ToUTF8(expected_error), location, flags);
 }
 
 void ManifestTest::AddPattern(extensions::URLPatternSet* extent,
@@ -238,11 +255,24 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
       flags_(flags) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
+                                 const std::u16string& expected_error,
+                                 ManifestLocation location,
+                                 int flags)
+    : Testcase(manifest_filename,
+               base::UTF16ToUTF8(expected_error),
+               location,
+               flags) {}
+
+ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
                                  const std::string& expected_error)
     : manifest_filename_(manifest_filename),
       expected_error_(expected_error),
       location_(ManifestLocation::kInternal),
       flags_(Extension::NO_FLAGS) {}
+
+ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
+                                 const std::u16string& expected_error)
+    : Testcase(manifest_filename, base::UTF16ToUTF8(expected_error)) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename)
     : manifest_filename_(manifest_filename),

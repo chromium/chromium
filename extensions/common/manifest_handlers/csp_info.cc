@@ -238,7 +238,7 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
   // keys::kSandboxedPagesCSP shouldn't be used when using
   // keys::kContentSecurityPolicy as a dictionary.
   if (extension->manifest()->HasPath(keys::kSandboxedPagesCSP)) {
-    *error = base::ASCIIToUTF16(errors::kSandboxPagesCSPKeyNotAllowed);
+    *error = errors::kSandboxPagesCSPKeyNotAllowed;
     return false;
   }
 

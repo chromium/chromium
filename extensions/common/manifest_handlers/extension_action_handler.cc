@@ -34,7 +34,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
   if (extension->manifest()->HasKey(manifest_keys::kPageAction)) {
     if (key != nullptr) {
       // An extension can only have one action.
-      *error = base::ASCIIToUTF16(manifest_errors::kOneUISurfaceOnly);
+      *error = manifest_errors::kOneUISurfaceOnly;
       return false;
     }
     key = manifest_keys::kPageAction;
@@ -45,7 +45,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
   if (extension->manifest()->HasKey(manifest_keys::kBrowserAction)) {
     if (key != nullptr) {
       // An extension can only have one action.
-      *error = base::ASCIIToUTF16(manifest_errors::kOneUISurfaceOnly);
+      *error = manifest_errors::kOneUISurfaceOnly;
       return false;
     }
     key = manifest_keys::kBrowserAction;

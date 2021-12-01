@@ -112,20 +112,19 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   bool kiosk_enabled = false;
   if (manifest->HasKey(keys::kKioskEnabled) &&
       !manifest->GetBoolean(keys::kKioskEnabled, &kiosk_enabled)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidKioskEnabled);
+    *error = manifest_errors::kInvalidKioskEnabled;
     return false;
   }
 
   bool kiosk_only = false;
   if (manifest->HasKey(keys::kKioskOnly) &&
       !manifest->GetBoolean(keys::kKioskOnly, &kiosk_only)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidKioskOnly);
+    *error = manifest_errors::kInvalidKioskOnly;
     return false;
   }
 
   if (kiosk_only && !kiosk_enabled) {
-    *error = base::ASCIIToUTF16(
-        manifest_errors::kInvalidKioskOnlyButNotEnabled);
+    *error = manifest_errors::kInvalidKioskOnlyButNotEnabled;
     return false;
   }
 
@@ -139,7 +138,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   if (manifest->HasKey(keys::kKioskSecondaryApps)) {
     const base::Value* secondary_apps_value = nullptr;
     if (!manifest->GetList(keys::kKioskSecondaryApps, &secondary_apps_value)) {
-      *error = base::ASCIIToUTF16(manifest_errors::kInvalidKioskSecondaryApps);
+      *error = manifest_errors::kInvalidKioskSecondaryApps;
       return false;
     }
 
@@ -150,8 +149,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
       std::unique_ptr<KioskSecondaryAppsType> app =
           KioskSecondaryAppsType::FromValue(value, error);
       if (!app) {
-        *error = base::ASCIIToUTF16(
-            manifest_errors::kInvalidKioskSecondaryAppsBadAppEntry);
+        *error = manifest_errors::kInvalidKioskSecondaryAppsBadAppEntry;
         return false;
       }
 
@@ -183,8 +181,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
       (!manifest->GetString(keys::kKioskRequiredPlatformVersion,
                             &required_platform_version) ||
        !KioskModeInfo::IsValidPlatformVersion(required_platform_version))) {
-    *error = base::ASCIIToUTF16(
-        manifest_errors::kInvalidKioskRequiredPlatformVersion);
+    *error = manifest_errors::kInvalidKioskRequiredPlatformVersion;
     return false;
   }
 
@@ -192,7 +189,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   bool always_update = false;
   if (manifest->HasPath(keys::kKioskAlwaysUpdate) &&
       !manifest->GetBoolean(keys::kKioskAlwaysUpdate, &always_update)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidKioskAlwaysUpdate);
+    *error = manifest_errors::kInvalidKioskAlwaysUpdate;
     return false;
   }
 

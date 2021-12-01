@@ -151,7 +151,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   if (!file_browser_handler->HasKey(keys::kFileBrowserHandlerId) ||
       !file_browser_handler->GetString(keys::kFileBrowserHandlerId,
                                        &handler_id)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandlerId);
+    *error = errors::kInvalidFileBrowserHandlerId;
     return nullptr;
   }
   result->set_id(handler_id);
@@ -160,7 +160,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   std::string title;
   if (!file_browser_handler->HasKey(keys::kActionDefaultTitle) ||
       !file_browser_handler->GetString(keys::kActionDefaultTitle, &title)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultTitle);
+    *error = errors::kInvalidActionDefaultTitle;
     return nullptr;
   }
   result->set_title(title);
@@ -170,7 +170,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
       file_browser_handler->FindKey(keys::kFileAccessList);
   if (access_list_value) {
     if (!access_list_value->is_list() || access_list_value->GetList().empty()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidFileAccessList);
+      *error = errors::kInvalidFileAccessList;
       return nullptr;
     }
     base::Value::ConstListView access_list_view = access_list_value->GetList();
@@ -184,7 +184,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     }
   }
   if (!result->ValidateFileAccessPermissions()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidFileAccessList);
+    *error = errors::kInvalidFileAccessList;
     return nullptr;
   }
 
@@ -194,7 +194,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     const base::Value* file_filters =
         file_browser_handler->FindListKey(keys::kFileFilters);
     if (!file_filters) {
-      *error = base::ASCIIToUTF16(errors::kInvalidFileFiltersList);
+      *error = errors::kInvalidFileFiltersList;
       return nullptr;
     }
     base::Value::ConstListView file_filters_list = file_filters->GetList();
@@ -240,7 +240,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     if (!file_browser_handler->GetString(keys::kActionDefaultIcon,
                                          &default_icon) ||
         default_icon.empty()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultIcon);
+      *error = errors::kInvalidActionDefaultIcon;
       return nullptr;
     }
     result->set_icon_path(default_icon);
@@ -257,7 +257,7 @@ bool LoadFileBrowserHandlers(const std::string& extension_id,
   for (const auto& entry : extension_actions) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
+      *error = errors::kInvalidFileBrowserHandler16;
       return false;
     }
     std::unique_ptr<FileBrowserHandler> action =
@@ -287,7 +287,7 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
   }
 
   if (!file_browser_handlers_value->is_list()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
+    *error = errors::kInvalidFileBrowserHandler16;
     return false;
   }
 

@@ -163,14 +163,14 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   const base::Value* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kFileHandlers,
                                             &all_handlers)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
+    *error = errors::kInvalidFileHandlers;
     return false;
   }
 
   std::vector<InstallWarning> install_warnings;
   for (auto entry : all_handlers->DictItems()) {
     if (!entry.second.is_dict()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
+      *error = errors::kInvalidFileHandlers;
       return false;
     }
     if (!LoadFileHandler(entry.first, entry.second, &info->file_handlers, error,
@@ -188,8 +188,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   }
 
   if (filter_count > kMaxTypeAndExtensionHandlers) {
-    *error = base::ASCIIToUTF16(
-        errors::kInvalidFileHandlersTooManyTypesAndExtensions);
+    *error = errors::kInvalidFileHandlersTooManyTypesAndExtensions;
     return false;
   }
 

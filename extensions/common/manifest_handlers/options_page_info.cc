@@ -18,8 +18,6 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::ASCIIToUTF16;
-
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -47,7 +45,7 @@ bool ParseOptionsUrl(Extension* extension,
     // Hosted apps require an absolute URL.
     GURL options_url(url_string);
     if (!options_url.is_valid() || !options_url.SchemeIsHTTPOrHTTPS()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidOptionsPageInHostedApp);
+      *error = errors::kInvalidOptionsPageInHostedApp;
       return false;
     }
     *result = options_url;
@@ -56,7 +54,7 @@ bool ParseOptionsUrl(Extension* extension,
 
   // Otherwise the options URL should be inside the extension.
   if (GURL(url_string).is_valid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidOptionsPageExpectUrlInPackage);
+    *error = errors::kInvalidOptionsPageExpectUrlInPackage;
     return false;
   }
 
@@ -142,7 +140,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
         if (extension->manifest_version() < 3)
           chrome_style = *options_ui->chrome_style;
         else {
-          *error = base::ASCIIToUTF16(errors::kChromeStyleInvalidForManifestV3);
+          *error = errors::kChromeStyleInvalidForManifestV3;
           return nullptr;
         }
       }

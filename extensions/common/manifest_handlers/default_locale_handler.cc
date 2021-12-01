@@ -42,7 +42,7 @@ bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->GetString(keys::kDefaultLocale,
                                         &info->default_locale) ||
       !l10n_util::IsValidLocaleSyntax(info->default_locale)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidDefaultLocale);
+    *error = manifest_errors::kInvalidDefaultLocale16;
     return false;
   }
   extension->SetManifestData(keys::kDefaultLocale, std::move(info));
@@ -100,7 +100,8 @@ bool DefaultLocaleHandler::Validate(
         !(gzipped_messages_allowed &&
           base::PathExists(gzipped_messages_path))) {
       *error = base::StringPrintf(
-          "%s %s", errors::kLocalesMessagesFileMissing,
+          "%s %s",
+          base::UTF16ToUTF8(errors::kLocalesMessagesFileMissing).c_str(),
           base::UTF16ToUTF8(messages_path.LossyDisplayName()).c_str());
       return false;
     }

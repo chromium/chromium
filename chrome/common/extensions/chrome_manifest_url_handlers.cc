@@ -60,7 +60,7 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string devtools_str;
   if (!extension->manifest()->GetString(keys::kDevToolsPage, &devtools_str)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidDevToolsPage);
+    *error = errors::kInvalidDevToolsPage;
     return false;
   }
   GURL url = extension->GetResourceURL(devtools_str);
@@ -68,7 +68,7 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
       url.SchemeIs(kExtensionScheme) && url.host_piece() == extension->id();
   // TODO(caseq): using http(s) is unsupported and will be disabled in m83.
   if (!is_extension_url && !url.SchemeIsHTTPOrHTTPS()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidDevToolsPage);
+    *error = errors::kInvalidDevToolsPage;
     return false;
   }
   manifest_url->url_ = std::move(url);
@@ -132,7 +132,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 
   // An extension may override at most one page.
   if (url_overrides->chrome_url_overrides_.size() > 1u) {
-    *error = base::ASCIIToUTF16(errors::kMultipleOverrides);
+    *error = errors::kMultipleOverrides;
     return false;
   }
 

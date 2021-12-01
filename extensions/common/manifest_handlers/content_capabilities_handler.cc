@@ -56,7 +56,7 @@ bool ContentCapabilitiesHandler::Parse(Extension* extension,
 
   const base::Value* value = NULL;
   if (!extension->manifest()->Get(keys::kContentCapabilities, &value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidContentCapabilities);
+    *error = errors::kInvalidContentCapabilities;
     return false;
   }
 

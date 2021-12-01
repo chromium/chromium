@@ -30,13 +30,13 @@ bool MinimumChromeVersionChecker::Parse(Extension* extension,
   std::string minimum_version_string;
   if (!extension->manifest()->GetString(keys::kMinimumChromeVersion,
                                         &minimum_version_string)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidMinimumChromeVersion);
+    *error = errors::kInvalidMinimumChromeVersion;
     return false;
   }
 
   base::Version minimum_version(minimum_version_string);
   if (!minimum_version.IsValid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidMinimumChromeVersion);
+    *error = errors::kInvalidMinimumChromeVersion;
     return false;
   }
 

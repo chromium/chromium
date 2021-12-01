@@ -166,18 +166,18 @@ bool AboutPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string about_str;
   if (!extension->manifest()->GetString(keys::kAboutPage, &about_str)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidAboutPage);
+    *error = errors::kInvalidAboutPage;
     return false;
   }
 
   GURL absolute(about_str);
   if (absolute.is_valid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidAboutPageExpectRelativePath);
+    *error = errors::kInvalidAboutPageExpectRelativePath;
     return false;
   }
   manifest_url->url_ = extension->GetResourceURL(about_str);
   if (!manifest_url->url_.is_valid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidAboutPage);
+    *error = errors::kInvalidAboutPage;
     return false;
   }
   extension->SetManifestData(keys::kAboutPage, std::move(manifest_url));
