@@ -260,8 +260,8 @@ int SharedAppListConfig::GetPreferredIconDimension(
       return suggestion_chip_icon_dimension_;
     case SearchResultDisplayType::kContinue:
       return suggestion_chip_icon_dimension_;
-    case SearchResultDisplayType::kNone:  // Falls through.
-    case SearchResultDisplayType::kCard:  // Falls through.
+    case SearchResultDisplayType::kNone:        // Falls through.
+    case SearchResultDisplayType::kAnswerCard:  // Falls through.
     case SearchResultDisplayType::kLast:
       return 0;
   }

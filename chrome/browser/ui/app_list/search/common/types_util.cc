@@ -164,8 +164,8 @@ std::string DisplayTypeToString(
       return "List";
     case ash::SearchResultDisplayType::kTile:
       return "Tile";
-    case ash::SearchResultDisplayType::kCard:
-      return "Card";
+    case ash::SearchResultDisplayType::kAnswerCard:
+      return "AnswerCard";
     case ash::SearchResultDisplayType::kChip:
       return "Chip";
     case ash::SearchResultDisplayType::kContinue:

@@ -237,9 +237,9 @@ enum SearchResultDisplayType {
   kList = 1,  // Displays in search list
   kTile = 2,  // Displays in search tiles
   // kRecommendation = 3  // No longer used, split between kTile and kChip
-  kCard = 4,      // Displays in answer cards
-  kChip = 5,      // Displays in suggestion chips
-  kContinue = 6,  // Displays in the Continue section
+  kAnswerCard = 4,  // Displays in answer cards
+  kChip = 5,        // Displays in suggestion chips
+  kContinue = 6,    // Displays in the Continue section
   // Add new values here
   kLast,  // Don't use over IPC
 };
