@@ -3051,8 +3051,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.StateTransition.AnimationSmoothness{AppListTargetState}"
-    units="%" expires_after="2022-01-16">
+    units="%" expires_after="2022-05-30">
   <owner>newcomer@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
   <summary>
     Relative smoothness of animations of peeking launcher state transitions.
     100% represents ideally smooth 60 frames per second. 50% represents only 30

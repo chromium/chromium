@@ -1465,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2022-05-30">
   <owner>tbarzic@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -1475,7 +1475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime.MaxLatency"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2022-05-30">
   <owner>tbarzic@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2201,7 +2201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2022-05-30">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -2212,7 +2212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2022-05-30">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
