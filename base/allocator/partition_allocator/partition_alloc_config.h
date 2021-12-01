@@ -137,23 +137,14 @@ static_assert(sizeof(void*) != 8, "");
 // https://docs.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/compiler-error-c2492?view=msvc-160.
 // Don't use it there.
 //
-// On macOS and iOS with PartitionAlloc-Everywhere enabled, thread_local
-// allocates memory and it causes an infinite loop of ThreadCache::Get() ->
-// malloc_zone_malloc -> ShimMalloc -> ThreadCache::Get() -> ...
-// Exact stack trace is:
-//   libsystem_malloc.dylib`_malloc_zone_malloc
-//   libdyld.dylib`tlv_allocate_and_initialize_for_key
-//   libdyld.dylib`tlv_get_addr
-//   libbase.dylib`thread-local wrapper routine for
-//       base::internal::g_thread_cache
-//   libbase.dylib`base::internal::ThreadCache::Get()
-// where tlv_allocate_and_initialize_for_key performs memory allocation.
+// On macOS and iOS:
+// - With PartitionAlloc-Everywhere, thread_local allocates, reentering the
+//   allocator.
+// - Component builds triggered a clang bug: crbug.com/1243375
 //
-// Finally, we have crashes with component builds on macOS,
-// see crbug.com/1243375.
-#if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && \
-    !(defined(OS_APPLE) &&                            \
-      (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(COMPONENT_BUILD)))
+// Regardless, the "normal" TLS access is fast on x86_64 (see partition_tls.h),
+// so don't bother with thread_local anywhere.
+#if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && !defined(OS_APPLE)
 #define PA_THREAD_LOCAL_TLS
 #endif
 
