@@ -304,15 +304,15 @@ void FloatRoundedRect::ConstrainRadii() {
 }
 
 bool FloatRoundedRect::IsRenderable() const {
-  constexpr float kTolerance = 0.0001;
+  constexpr float kTolerance = 1.0001;
   return radii_.TopLeft().width() + radii_.TopRight().width() <=
-             rect_.width() + kTolerance &&
+             rect_.width() * kTolerance &&
          radii_.BottomLeft().width() + radii_.BottomRight().width() <=
-             rect_.width() + kTolerance &&
+             rect_.width() * kTolerance &&
          radii_.TopLeft().height() + radii_.BottomLeft().height() <=
-             rect_.height() + kTolerance &&
+             rect_.height() * kTolerance &&
          radii_.TopRight().height() + radii_.BottomRight().height() <=
-             rect_.height() + kTolerance;
+             rect_.height() * kTolerance;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatRoundedRect& rect) {

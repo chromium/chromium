@@ -232,6 +232,53 @@ TEST(FloatRoundedRectTest, IntersectsQuadIsInclusive) {
   EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(13, 26, 1, 1))));
 }
 
+TEST(FloatRoundedrectTest, ConstrainRadii) {
+  FloatRoundedRect empty;
+  empty.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(), empty);
+
+  FloatRoundedRect r1(-100, -100, 200, 200);
+  r1.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(-100, -100, 200, 200), r1);
+
+  FloatRoundedRect r2(gfx::RectF(-100, -100, 200, 200), 10);
+  r2.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-100, -100, 200, 200), 10), r2);
+
+  FloatRoundedRect r3(gfx::RectF(-100, -100, 200, 200), 100);
+  r3.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-100, -100, 200, 200), 100), r3);
+
+  FloatRoundedRect r4(gfx::RectF(-100, -100, 200, 200), 160);
+  r4.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-100, -100, 200, 200), 100), r4);
+
+  FloatRoundedRect r5(gfx::RectF(-100, -100, 200, 200), gfx::SizeF(10, 20),
+                      gfx::SizeF(100, 250), gfx::SizeF(200, 60),
+                      gfx::SizeF(50, 150));
+  r5.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-100, -100, 200, 200),
+                             gfx::SizeF(5, 10), gfx::SizeF(50, 125),
+                             gfx::SizeF(100, 30), gfx::SizeF(25, 75)),
+            r5);
+
+  FloatRoundedRect r6(gfx::RectF(-100, -100, 200, 200), gfx::SizeF(10, 20),
+                      gfx::SizeF(60, 200), gfx::SizeF(250, 100),
+                      gfx::SizeF(150, 50));
+  r6.ConstrainRadii();
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-100, -100, 200, 200),
+                             gfx::SizeF(5, 10), gfx::SizeF(30, 100),
+                             gfx::SizeF(125, 50), gfx::SizeF(75, 25)),
+            r6);
+
+  FloatRoundedRect r7(gfx::RectF(0, 0, 85089, 21377),
+                      gfx::SizeF(1388.89, 1388.89),
+                      gfx::SizeF(58711.2, 14750.3), gfx::SizeF(0, 13467.7),
+                      gfx::SizeF(85088.6, 21377.3));
+  r7.ConstrainRadii();
+  EXPECT_TRUE(r7.IsRenderable());
+}
+
 TEST(FloatRoundedRectTest, ToString) {
   gfx::SizeF corner_rect(1, 2);
   FloatRoundedRect rounded_rect(
