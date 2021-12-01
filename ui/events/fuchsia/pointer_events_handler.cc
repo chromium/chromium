@@ -335,7 +335,7 @@ void PointerEventsHandler::OnTouchSourceWatchResult(
 
       // TODO(fxbug.dev/89296): Consider deriving response from
       // Event::handled().
-      response.set_response_type(fup::TouchResponseType::MAYBE);
+      response.set_response_type(fup::TouchResponseType::YES);
     }
     if (event.has_interaction_result()) {
       const auto& result = event.interaction_result();
