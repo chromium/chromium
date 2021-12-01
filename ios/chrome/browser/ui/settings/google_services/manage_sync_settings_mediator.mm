@@ -337,18 +337,22 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 #pragma mark - Loads sign out section
 
 - (void)loadSignOutSection {
+  if (!self.syncConsentGiven) {
+    self.signOutAndTurnOffSyncItem = nil;
+    return;
+  }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
-  [model addSectionWithIdentifier:SignOutSectionIdentifier];
+  NSInteger syncDataTypeSectionIndex =
+      [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
+  DCHECK_NE(NSNotFound, syncDataTypeSectionIndex);
+  [model insertSectionWithIdentifier:SignOutSectionIdentifier
+                             atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:SignOutItemType];
   item.text = GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC);
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
-
-  if (!self.syncConsentGiven) {
-    return;
-  }
   [model addItem:self.signOutAndTurnOffSyncItem
       toSectionWithIdentifier:SignOutSectionIdentifier];
 
@@ -367,24 +371,21 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }
 
 - (void)updateSignOutSection {
-  BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
-  BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
-  if (!hasSignOutItem && self.syncConsentGiven) {
+  BOOL hasSignOutSection =
+      [model hasSectionForSectionIdentifier:SignOutSectionIdentifier];
+  if (!hasSignOutSection && self.syncConsentGiven) {
+    [self loadSignOutSection];
     DCHECK(self.signOutAndTurnOffSyncItem);
-    [model addItem:self.signOutAndTurnOffSyncItem
-        toSectionWithIdentifier:SignOutSectionIdentifier];
-    hasModelUpdate = YES;
-  } else if (hasSignOutItem && !self.syncConsentGiven) {
-    [model removeItemWithType:SignOutItemType
-        fromSectionWithIdentifier:SignOutSectionIdentifier];
-    hasModelUpdate = YES;
-  }
-
-  if (hasModelUpdate) {
     NSUInteger sectionIndex =
         [model sectionForSectionIdentifier:SignOutSectionIdentifier];
-    [self.consumer reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+    [self.consumer insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+  } else if (hasSignOutSection && !self.syncConsentGiven) {
+    NSUInteger sectionIndex =
+        [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+    [model removeSectionWithIdentifier:SignOutSectionIdentifier];
+    self.signOutAndTurnOffSyncItem = nil;
+    [self.consumer deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
   }
 }
 
