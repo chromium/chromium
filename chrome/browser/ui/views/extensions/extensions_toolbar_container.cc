@@ -622,7 +622,11 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
                          [this, sender](const std::string& action_id) {
                            return GetViewForId(action_id) == sender;
                          });
-  return it != model_->pinned_action_ids().cend();
+  if (it == model_->pinned_action_ids().cend())
+    return false;
+
+  // TODO(crbug.com/1275586): Force-pinned extensions are not draggable.
+  return model_->IsActionForcePinned(*it);
 }
 
 bool ExtensionsToolbarContainer::GetDropFormats(
