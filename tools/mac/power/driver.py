@@ -229,7 +229,6 @@ class DriverContext:
     """Outputs a json file describing `scenario_driver` arguments into the
         output directory
     """
-    print(self._output_dir, f'{scenario_driver.name}_summary.json')
     with open(
         os.path.join(self._output_dir, f'{scenario_driver.name}_summary.json'),
         'w') as summary_file:

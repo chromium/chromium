@@ -102,6 +102,11 @@ class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
     super().TearDown()
     self.browser.TearDown()
 
+  def Summary(self):
+    """Returns a dictionary describing the scenarios parameters.
+    """
+    return {**super().Summary(), 'browser': self.browser.Summary()}
+
   def _CompileTemplate(self, template_file, extra_args: typing.Dict):
     return super()._CompileTemplate(template_file, {
         "browser": self.browser.process_name,
