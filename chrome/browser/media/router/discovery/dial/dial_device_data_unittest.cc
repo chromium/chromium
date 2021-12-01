@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -88,6 +90,8 @@ TEST(DialDeviceDataTest, TestUpdateFrom) {
 }
 
 TEST(DialDeviceDataTest, TestIsValidUrl) {
+  base::test::ScopedFeatureList enabled_features(kDialEnforceUrlIPAddress);
+
   net::IPAddress ipv4_address_1;
   ASSERT_TRUE(ipv4_address_1.AssignFromIPLiteral("192.168.1.1"));
   net::IPAddress ipv4_address_2;
