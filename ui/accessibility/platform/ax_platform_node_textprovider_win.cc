@@ -94,7 +94,7 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
 
   Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
       AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-          owner_.Get(), std::move(start), std::move(end));
+          std::move(start), std::move(end));
   if (&text_range_provider == nullptr)
     return E_OUTOFMEMORY;
 
@@ -157,8 +157,7 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     if (frame_rect.Contains(current_rect)) {
       Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
           AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-              owner_.Get(), current_line_start->Clone(),
-              current_line_end->Clone());
+              current_line_start->Clone(), current_line_end->Clone());
 
       ranges.emplace_back(text_range_provider);
     }
@@ -237,7 +236,7 @@ HRESULT AXPlatformNodeTextProviderWin::RangeFromPoint(
   end = start->Clone();
 
   *range = AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-      nearest_node, std::move(start), std::move(end));
+      std::move(start), std::move(end));
   return S_OK;
 }
 
@@ -326,7 +325,7 @@ ITextRangeProvider* AXPlatformNodeTextProviderWin::GetRangeFromChild(
   }
 
   return AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-      ancestor, std::move(start), std::move(end));
+      std::move(start), std::move(end));
 }
 
 ITextRangeProvider* AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
@@ -339,7 +338,7 @@ ITextRangeProvider* AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
   start = node->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
   end = start->Clone();
   return AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-      node, std::move(start), std::move(end));
+      std::move(start), std::move(end));
 }
 
 ui::AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
@@ -369,7 +368,7 @@ AXPlatformNodeTextProviderWin::GetTextRangeProviderFromActiveComposition(
             /*offset*/ active_composition_offset.end());
 
     *range = AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-        owner_.Get(), std::move(start), std::move(end));
+        std::move(start), std::move(end));
   }
 
   return S_OK;

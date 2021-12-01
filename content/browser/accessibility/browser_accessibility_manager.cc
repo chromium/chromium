@@ -1510,6 +1510,19 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
   return wrapper ? wrapper->node() : nullptr;
 }
 
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNodeID node_id) const {
+  BrowserAccessibility* wrapper = GetFromID(node_id);
+  if (wrapper)
+    return wrapper->GetAXPlatformNode();
+  return nullptr;
+}
+
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNode& node) const {
+  return GetPlatformNodeFromTree(node.id());
+}
+
 void BrowserAccessibilityManager::AddObserver(ui::AXTreeObserver* observer) {
   ax_tree()->AddObserver(observer);
 }

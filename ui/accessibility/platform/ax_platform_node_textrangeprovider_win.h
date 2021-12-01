@@ -32,6 +32,12 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   // Creates an instance of the class.
   static ITextRangeProvider* CreateTextRangeProvider(
+      AXNodePosition::AXPositionInstance start,
+      AXNodePosition::AXPositionInstance end);
+
+  // Creates an instance of the class for unit tests, where AXPlatformNodes
+  // cannot be queried automatically from endpoints.
+  static ITextRangeProvider* CreateTextRangeProviderForTesting(
       AXPlatformNodeWin* owner,
       AXNodePosition::AXPositionInstance start,
       AXNodePosition::AXPositionInstance end);
@@ -81,6 +87,9 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   IFACEMETHODIMP ScrollIntoView(BOOL align_to_top) override;
   IFACEMETHODIMP GetChildren(SAFEARRAY** children) override;
 
+  AXPlatformNodeWin* GetOwner() const;
+  void SetOwnerForTesting(AXPlatformNodeWin* owner);
+
  private:
   using AXPositionInstance = AXNodePosition::AXPositionInstance;
   using AXPositionInstanceType = typename AXPositionInstance::element_type;
@@ -111,7 +120,6 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   std::u16string GetString(int max_count,
                            size_t* appended_newlines_count = nullptr);
-  AXPlatformNodeWin* owner() const;
   const AXPositionInstance& start() const { return endpoints_.GetStart(); }
   const AXPositionInstance& end() const { return endpoints_.GetEnd(); }
   AXPlatformNodeDelegate* GetDelegate(
@@ -193,7 +201,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
       TEXTATTRIBUTEID attribute_id,
       const base::win::VariantVector& vector);
 
-  Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_;
+  Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_for_test_;
 
   // Why we can't use a ScopedObserver here:
   // We tried using a ScopedObserver instead of a simple observer in this case,

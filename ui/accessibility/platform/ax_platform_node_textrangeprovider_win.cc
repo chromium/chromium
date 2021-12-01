@@ -14,32 +14,33 @@
 #include "base/win/variant_vector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL()                 \
-  if (!owner() || !owner()->GetDelegate() || !start() ||      \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;                         \
-  SetStart(start()->AsValidPosition());                       \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL()                  \
+  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
+    return UIA_E_ELEMENTNOTAVAILABLE;                          \
+  SetStart(start()->AsValidPosition());                        \
   SetEnd(end()->AsValidPosition());
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN(in)          \
-  if (!owner() || !owner()->GetDelegate() || !start() ||      \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;                         \
-  if (!in)                                                    \
-    return E_POINTER;                                         \
-  SetStart(start()->AsValidPosition());                       \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN(in)           \
+  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
+    return UIA_E_ELEMENTNOTAVAILABLE;                          \
+  if (!in)                                                     \
+    return E_POINTER;                                          \
+  SetStart(start()->AsValidPosition());                        \
   SetEnd(end()->AsValidPosition());
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(out)        \
-  if (!owner() || !owner()->GetDelegate() || !start() ||      \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;                         \
-  if (!out)                                                   \
-    return E_POINTER;                                         \
-  *out = {};                                                  \
-  SetStart(start()->AsValidPosition());                       \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(out)         \
+  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
+    return UIA_E_ELEMENTNOTAVAILABLE;                          \
+  if (!out)                                                    \
+    return E_POINTER;                                          \
+  *out = {};                                                   \
+  SetStart(start()->AsValidPosition());                        \
   SetEnd(end()->AsValidPosition());
 #define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(in, out) \
-  if (!owner() || !owner()->GetDelegate() || !start() ||        \
+  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() ||  \
       !start()->GetAnchor() || !end() || !end()->GetAnchor())   \
     return UIA_E_ELEMENTNOTAVAILABLE;                           \
   if (!in || !out)                                              \
@@ -96,18 +97,34 @@ AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {
 AXPlatformNodeTextRangeProviderWin::~AXPlatformNodeTextRangeProviderWin() {}
 
 ITextRangeProvider* AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-    AXPlatformNodeWin* owner,
     AXPositionInstance start,
     AXPositionInstance end) {
   CComObject<AXPlatformNodeTextRangeProviderWin>* text_range_provider = nullptr;
   if (SUCCEEDED(CComObject<AXPlatformNodeTextRangeProviderWin>::CreateInstance(
           &text_range_provider))) {
     DCHECK(text_range_provider);
-    text_range_provider->owner_ = owner;
     text_range_provider->SetStart(std::move(start));
     text_range_provider->SetEnd(std::move(end));
     text_range_provider->AddRef();
     return text_range_provider;
+  }
+
+  return nullptr;
+}
+
+ITextRangeProvider*
+AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+    AXPlatformNodeWin* owner,
+    AXPositionInstance start,
+    AXPositionInstance end) {
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
+      CreateTextRangeProvider(start->Clone(), end->Clone());
+  Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin>
+      text_range_provider_win;
+  if (SUCCEEDED(text_range_provider->QueryInterface(
+          IID_PPV_ARGS(&text_range_provider_win)))) {
+    text_range_provider_win->SetOwnerForTesting(owner);  // IN-TEST
+    return text_range_provider_win.Get();
   }
 
   return nullptr;
@@ -120,8 +137,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Clone(ITextRangeProvider** clone) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_CLONE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(clone);
 
-  *clone =
-      CreateTextRangeProvider(owner_.Get(), start()->Clone(), end()->Clone());
+  *clone = CreateTextRangeProvider(start()->Clone(), end()->Clone());
   return S_OK;
 }
 
@@ -382,7 +398,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindAttribute(
     return E_FAIL;
 
   if (matched_range_start != nullptr && matched_range_end != nullptr)
-    *result = CreateTextRangeProvider(owner(), std::move(matched_range_start),
+    *result = CreateTextRangeProvider(std::move(matched_range_start),
                                       std::move(matched_range_end));
   return S_OK;
 }
@@ -483,8 +499,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
                                  ax::mojom::TextAffinity::kDownstream)
                                  ->AsLeafTextPosition();
 
-    *result =
-        CreateTextRangeProvider(owner_.Get(), start->Clone(), end->Clone());
+    *result = CreateTextRangeProvider(start->Clone(), end->Clone());
   }
   return S_OK;
 }
@@ -914,7 +929,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   UIA_VALIDATE_BOUNDS(root_frame_bounds);
 
   const AXPlatformNode* common_ancestor_platform_node =
-      owner_->GetDelegate()->GetFromTreeIDAndNodeID(
+      GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(
           common_ancestor_tree_id, common_ancestor_anchor->id());
   DCHECK(common_ancestor_platform_node);
   AXPlatformNodeDelegate* common_ancestor_delegate =
@@ -1063,8 +1078,31 @@ std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
                        max_count, false, appended_newlines_count);
 }
 
-AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::owner() const {
-  return owner_.Get();
+AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
+  // Unit tests can't call |GetPlatformNodeFromTree|, so they must provide an
+  // owner node.
+  if (owner_for_test_.Get())
+    return owner_for_test_.Get();
+
+  const AXPositionInstance& position =
+      !start()->IsNullPosition() ? start() : end();
+  // If start and end are both null, there's no owner.
+  if (position->IsNullPosition())
+    return nullptr;
+
+  const AXNode* anchor = position->GetAnchor();
+  DCHECK(anchor);
+  AXTreeID tree_id = anchor->tree()->GetAXTreeID();
+  const AXTreeManager* ax_tree_manager =
+      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  DCHECK(ax_tree_manager);
+
+  const AXPlatformTreeManager* platform_tree_manager =
+      static_cast<const AXPlatformTreeManager*>(ax_tree_manager);
+  DCHECK(platform_tree_manager);
+
+  return static_cast<AXPlatformNodeWin*>(
+      platform_tree_manager->GetPlatformNodeFromTree(*anchor));
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
@@ -1076,7 +1114,7 @@ AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
     const AXTreeID tree_id,
     const AXNodeID node_id) const {
   AXPlatformNode* platform_node =
-      owner_->GetDelegate()->GetFromTreeIDAndNodeID(tree_id, node_id);
+      GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(tree_id, node_id);
   if (!platform_node)
     return nullptr;
 
@@ -1307,7 +1345,8 @@ AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
   DCHECK(ax_tree_manager);
   AXNode* root_node = ax_tree_manager->GetRootAsAXNode();
   const AXPlatformNode* root_platform_node =
-      owner_->GetDelegate()->GetFromTreeIDAndNodeID(tree_id, root_node->id());
+      GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(tree_id,
+                                                        root_node->id());
   DCHECK(root_platform_node);
   return root_platform_node->GetDelegate();
 }
@@ -1321,8 +1360,13 @@ void AXPlatformNodeTextRangeProviderWin::SetEnd(AXPositionInstance new_end) {
   endpoints_.SetEnd(std::move(new_end));
 }
 
+void AXPlatformNodeTextRangeProviderWin::SetOwnerForTesting(
+    AXPlatformNodeWin* owner) {
+  owner_for_test_ = owner;
+}
+
 AXNode* AXPlatformNodeTextRangeProviderWin::GetSelectionCommonAnchor() {
-  AXPlatformNodeDelegate* delegate = owner()->GetDelegate();
+  AXPlatformNodeDelegate* delegate = GetOwner()->GetDelegate();
   ui::AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
   AXPlatformNode* anchor_object =
       delegate->GetFromNodeID(unignored_selection.anchor_object_id);

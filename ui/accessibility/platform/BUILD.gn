@@ -37,6 +37,7 @@ source_set("platform") {
     "ax_platform_node_delegate.h",
 
     # Used by browser_accessibility.cc.
+    "ax_platform_tree_manager.h",
     "ax_unique_id.cc",
     "ax_unique_id.h",
 

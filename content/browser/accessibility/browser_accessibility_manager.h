@@ -38,6 +38,7 @@
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -137,9 +138,10 @@ struct BrowserAccessibilityFindInPageInfo {
 };
 
 // Manages a tree of BrowserAccessibility objects.
-class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
-                                                   public ui::AXTreeManager,
-                                                   public WebContentsObserver {
+class CONTENT_EXPORT BrowserAccessibilityManager
+    : public ui::AXTreeObserver,
+      public ui::AXPlatformTreeManager,
+      public WebContentsObserver {
  public:
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
@@ -469,6 +471,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   ui::AXNode* GetNodeFromTree(ui::AXTreeID tree_id,
                               ui::AXNodeID node_id) const override;
   ui::AXNode* GetNodeFromTree(ui::AXNodeID node_id) const override;
+  ui::AXPlatformNode* GetPlatformNodeFromTree(
+      const ui::AXNodeID node_id) const override;
+  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
   void AddObserver(ui::AXTreeObserver* observer) override;
   void RemoveObserver(ui::AXTreeObserver* observer) override;
   ui::AXTreeID GetTreeID() const override;
