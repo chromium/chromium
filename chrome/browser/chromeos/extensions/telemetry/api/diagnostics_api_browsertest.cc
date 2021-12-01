@@ -297,9 +297,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionDiagnosticsApiBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionDiagnosticsApiBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos

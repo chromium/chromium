@@ -34,12 +34,9 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;
   test_dir_receiver.WriteManifest(
-      GetManifestFile(extension_info_params().public_key,
-                      extension_info_params().matches_origin));
+      GetManifestFile(GetParam().public_key, GetParam().matches_origin));
   test_dir_receiver.WriteFile(FILE_PATH_LITERAL("options.html"), "");
-  test_dir_receiver.WriteFile(
-      "sw.js",
-      base::StringPrintf(R"(
+  test_dir_receiver.WriteFile("sw.js", base::StringPrintf(R"(
         chrome.test.runTests([
           function runtimeOnMessageExternal() {
             chrome.runtime.onMessageExternal.addListener(
@@ -51,8 +48,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
             chrome.test.sendMessage('ready');
           }
         ]);
-      )",
-                         extension_info_params().pwa_page_url.c_str()));
+      )", GetParam().pwa_page_url.c_str()));
 
   // Load and run the extenion (chromeos_system_extension).
   const extensions::Extension* receiver =
@@ -70,7 +66,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
   // Note: |pwa_page_rfh_| is the RenderFrameHost for |kPwaPageUrlString| page.
   const auto script = base::StringPrintf(
       "window.chrome.runtime.sendMessage('%s', 'ping', (result) => {});",
-      extension_info_params().extension_id.c_str());
+      GetParam().extension_id.c_str());
   pwa_page_rfh_->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                            base::NullCallback());
 
@@ -89,8 +85,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
   test_dir.WriteManifest(
-      GetManifestFile(extension_info_params().public_key,
-                      extension_info_params().matches_origin));
+      GetManifestFile(GetParam().public_key, GetParam().matches_origin));
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"),
                      "<script>chrome.test.sendMessage('done')</script>");
   test_dir.WriteFile("sw.js", "chrome.test.sendMessage('ready');");
@@ -119,9 +114,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos
