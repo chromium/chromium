@@ -121,6 +121,7 @@ junit_binary("password_manager_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",

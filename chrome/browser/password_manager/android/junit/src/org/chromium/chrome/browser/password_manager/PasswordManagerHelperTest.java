@@ -8,6 +8,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,7 +17,9 @@ import android.app.PendingIntent.CanceledException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -30,8 +33,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
@@ -61,6 +68,9 @@ public class PasswordManagerHelperTest {
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.Error";
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private CredentialManagerLauncher mCredentialManagerLauncherMock;
@@ -169,6 +179,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -214,6 +225,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsMetricsWhenAccountIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -238,6 +250,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForLocalIntent() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         setUpSuccessfulIntentFetchingForLocal();
@@ -282,6 +295,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsMetricsWhenLocalIntentFails() throws CanceledException {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         setUpSuccessfulIntentFetchingForLocal();
@@ -302,6 +316,16 @@ public class PasswordManagerHelperTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testDoesntCallIntentIfFeatureIsDisabled() throws CanceledException {
+        setUpSuccessfulIntentFetchingForAccount();
+        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
+                mCredentialManagerLauncherMock, mSyncServiceMock);
+        verify(mPendingIntentMock, never()).send();
     }
 
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {

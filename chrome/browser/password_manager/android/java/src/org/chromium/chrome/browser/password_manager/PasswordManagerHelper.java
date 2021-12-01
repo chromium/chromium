@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -136,6 +137,10 @@ public class PasswordManagerHelper {
     private static void launchCredentialManager(
             PendingIntent intent, long startTimeMs, boolean forAccount) {
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)) {
+            return;
+        }
 
         boolean launchIntentSuccessfully = true;
         try {

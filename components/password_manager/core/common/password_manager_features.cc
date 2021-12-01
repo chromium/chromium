@@ -140,6 +140,11 @@ const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
+// Enables the intent fetching for the credential manager in Google Mobile
+// Services. It does not enable launching the credential manager.
+const base::Feature kUnifiedCredentialManagerDryRun = {
+    "UnifiedCredentialManagerDryRun", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 const base::Feature kUnifiedPasswordManagerAndroid{

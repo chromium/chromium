@@ -43,6 +43,7 @@ extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kSupportForAddPasswordsInSettings;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 #if defined(OS_ANDROID)
+extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerMigration;
 extern const base::Feature kUnifiedPasswordManagerShadowAndroid;
