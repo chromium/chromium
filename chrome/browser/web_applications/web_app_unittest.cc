@@ -106,6 +106,9 @@ TEST(WebAppTest, WasInstalledByUser) {
   app.AddSource(Source::kPolicy);
   EXPECT_FALSE(app.WasInstalledByUser());
 
+  app.AddSource(Source::kSubApp);
+  EXPECT_FALSE(app.WasInstalledByUser());
+
   app.RemoveSource(Source::kDefault);
   EXPECT_FALSE(app.WasInstalledByUser());
 
@@ -113,6 +116,9 @@ TEST(WebAppTest, WasInstalledByUser) {
   EXPECT_FALSE(app.WasInstalledByUser());
 
   app.RemoveSource(Source::kPolicy);
+  EXPECT_FALSE(app.WasInstalledByUser());
+
+  app.RemoveSource(Source::kSubApp);
   EXPECT_FALSE(app.WasInstalledByUser());
 }
 
@@ -128,6 +134,8 @@ TEST(WebAppTest, CanUserUninstallWebApp) {
   EXPECT_TRUE(app.CanUserUninstallWebApp());
   app.AddSource(Source::kWebAppStore);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
+  app.AddSource(Source::kSubApp);
+  EXPECT_TRUE(app.CanUserUninstallWebApp());
 
   app.AddSource(Source::kPolicy);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
@@ -137,6 +145,8 @@ TEST(WebAppTest, CanUserUninstallWebApp) {
   app.RemoveSource(Source::kSync);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
   app.RemoveSource(Source::kWebAppStore);
+  EXPECT_FALSE(app.CanUserUninstallWebApp());
+  app.RemoveSource(Source::kSubApp);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
 
   app.RemoveSource(Source::kSystem);

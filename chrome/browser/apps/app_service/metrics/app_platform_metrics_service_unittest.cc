@@ -258,6 +258,10 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*app_id=*/"r", apps::mojom::AppType::kRemote, "",
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kPolicy,
         apps::mojom::InstallSource::kUnknown));
+    deltas.push_back(MakeApp(
+        /*app_id=*/"subapp", apps::mojom::AppType::kWeb, "",
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSubApp,
+        apps::mojom::InstallSource::kUnknown));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -393,6 +397,13 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kSystemWeb, apps::mojom::InstallReason::kSystem),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
+            AppTypeName::kWeb, apps::mojom::InstallReason::kSubApp),
         /*expected_count=*/1);
   }
 
