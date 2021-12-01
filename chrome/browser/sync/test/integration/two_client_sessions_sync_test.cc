@@ -205,14 +205,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 }
 
-// Test is flaky: https://crbug.com/1273908.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_NoHistoryIfEncryptionEnabled DISABLED_NoHistoryIfEncryptionEnabled
-#else
-#define MAYBE_NoHistoryIfEncryptionEnabled NoHistoryIfEncryptionEnabled
-#endif
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       MAYBE_NoHistoryIfEncryptionEnabled) {
+                       NoHistoryIfEncryptionEnabled) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -224,6 +218,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
           .Wait());
   ASSERT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
       "passphrase"));
+  // Make sure that re-encryption happens before opening the tab (otherwise race
+  // condition may occur when second client attempts to re-encrypt data, while
+  // first client attempts to commit local changes).
+  ASSERT_TRUE(AwaitQuiescence());
 
   EXPECT_TRUE(OpenTab(0, GURL(kURL1)));
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
