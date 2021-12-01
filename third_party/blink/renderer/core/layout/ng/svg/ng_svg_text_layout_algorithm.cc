@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -553,6 +554,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
     return;
 
   wtf_size_t range_index = 0;
+  wtf_size_t in_path_index = WTF::kNotFound;
   std::unique_ptr<PathPositionMapper> path_mapper;
 
   // 2. Set the "in path" flag to false.
@@ -573,13 +575,14 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
     if (range_index < ranges.size() &&
         index >= ranges[range_index].start_index &&
         index <= ranges[range_index].end_index) {
-      if (!in_path) {
+      if (!in_path || in_path_index != range_index) {
         path_mapper =
             To<LayoutSVGTextPath>(ranges[range_index].layout_object.Get())
                 ->LayoutPath();
       }
       // 5.1.1. Set "in path" flag to true.
       in_path = true;
+      in_path_index = range_index;
       info.in_text_path = true;
       // 5.1.2. If the "middle" flag of result[index] is false, then:
       if (!info.middle) {
