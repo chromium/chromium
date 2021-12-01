@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/mojom/tts.mojom.h"
+#include "ash/components/arc/mojom/tts.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

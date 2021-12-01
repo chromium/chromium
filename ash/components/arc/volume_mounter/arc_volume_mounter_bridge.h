@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/prefs/pref_change_registrar.h"

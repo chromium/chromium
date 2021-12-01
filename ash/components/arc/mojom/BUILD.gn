@@ -63,6 +63,12 @@ if (is_chromeos_ash) {
       "storage_manager.mojom",
       "timer.mojom",
       "tracing.mojom",
+      "tts.mojom",
+      "usb_host.mojom",
+      "volume_mounter.mojom",
+      "wake_lock.mojom",
+      "wallpaper.mojom",
+      "webapk.mojom",
     ]
 
     public_deps = [
@@ -176,6 +182,24 @@ if (is_chromeos_ash) {
             [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
         traits_sources =
             [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.DeviceType"
+            cpp = "::chromeos::DeviceType"
+          },
+          {
+            mojom = "arc.mojom.MountEvent"
+            cpp = "::chromeos::disks::DiskMountManager::MountEvent"
+          },
+        ]
+        traits_headers = [
+          "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.h",
+        ]
+        traits_sources = [
+          "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.cc",
+        ]
       },
     ]
   }

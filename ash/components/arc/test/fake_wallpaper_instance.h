@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "components/arc/mojom/wallpaper.mojom.h"
+#include "ash/components/arc/mojom/wallpaper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

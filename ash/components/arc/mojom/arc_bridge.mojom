@@ -51,18 +51,18 @@ import "ash/components/arc/mojom/sharesheet.mojom";
 import "ash/components/arc/mojom/storage_manager.mojom";
 import "ash/components/arc/mojom/timer.mojom";
 import "ash/components/arc/mojom/tracing.mojom";
+import "ash/components/arc/mojom/tts.mojom";
+import "ash/components/arc/mojom/usb_host.mojom";
 import "ash/components/arc/mojom/video.mojom";
+import "ash/components/arc/mojom/volume_mounter.mojom";
+import "ash/components/arc/mojom/wake_lock.mojom";
+import "ash/components/arc/mojom/wallpaper.mojom";
+import "ash/components/arc/mojom/webapk.mojom";
 import "components/arc/mojom/app.mojom";
 import "components/arc/mojom/app_permissions.mojom";
 import "components/arc/mojom/compatibility_mode.mojom";
 import "components/arc/mojom/file_system.mojom";
 import "components/arc/mojom/intent_helper.mojom";
-import "components/arc/mojom/tts.mojom";
-import "components/arc/mojom/usb_host.mojom";
-import "components/arc/mojom/volume_mounter.mojom";
-import "components/arc/mojom/wake_lock.mojom";
-import "components/arc/mojom/wallpaper.mojom";
-import "components/arc/mojom/webapk.mojom";
 
 // Next MinVersion: 61
 // Deprecated method IDs: 101, 105, 121

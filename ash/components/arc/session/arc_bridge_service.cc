@@ -50,16 +50,16 @@
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
 #include "ash/components/arc/mojom/tracing.mojom.h"
+#include "ash/components/arc/mojom/tts.mojom.h"
+#include "ash/components/arc/mojom/usb_host.mojom.h"
 #include "ash/components/arc/mojom/video.mojom.h"
+#include "ash/components/arc/mojom/volume_mounter.mojom.h"
+#include "ash/components/arc/mojom/wake_lock.mojom.h"
+#include "ash/components/arc/mojom/wallpaper.mojom.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/mojom/tts.mojom.h"
-#include "components/arc/mojom/usb_host.mojom.h"
-#include "components/arc/mojom/volume_mounter.mojom.h"
-#include "components/arc/mojom/wake_lock.mojom.h"
-#include "components/arc/mojom/wallpaper.mojom.h"
 
 namespace arc {
 

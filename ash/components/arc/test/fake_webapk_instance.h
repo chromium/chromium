@@ -7,7 +7,7 @@
 
 #include <unordered_set>
 
-#include "components/arc/mojom/webapk.mojom.h"
+#include "ash/components/arc/mojom/webapk.mojom.h"
 
 namespace arc {
 
