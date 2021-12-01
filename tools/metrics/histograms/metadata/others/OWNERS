@@ -6,8 +6,6 @@ per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER
 
 # For display, mouse, and input related histograms.
 zentaro@chromium.org
-# For the TrustedWebActivity.* histograms:
-eirage@chromium.org
 # For Conversions.* histograms:
 johnidel@chromium.org
 # For Compositor*, Gpu.*, Graphics* and Viz.* histograms:
