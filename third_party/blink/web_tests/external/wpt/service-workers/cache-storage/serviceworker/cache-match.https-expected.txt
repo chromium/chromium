@@ -24,5 +24,6 @@ PASS Cache produces large Responses that can be cloned and read correctly.
 PASS cors-exposed header should be stored correctly.
 PASS MIME type should be set from content-header correctly.
 FAIL MIME type should reflect Content-Type headers of response. assert_equals: mime type can be overridden expected "text/plain" but got "text/html"
+PASS Cache.match ignores vary headers on opaque response.
 Harness: the test ran to completion.
 
