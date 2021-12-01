@@ -21,6 +21,7 @@ static_library("shopping_list") {
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
+    "//services/data_decoder/public/cpp",
   ]
 
   if (is_android) {

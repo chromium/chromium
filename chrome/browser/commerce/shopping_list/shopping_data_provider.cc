@@ -130,8 +130,19 @@ void ShoppingDataProvider::OnOptimizationGuideDecision(
 }
 
 void ShoppingDataProvider::OnJavascriptExecutionCompleted(base::Value result) {
+  data_decoder::JsonSanitizer::Sanitize(
+      result.GetString(),
+      base::BindOnce(&ShoppingDataProvider::OnJsonSanitizationCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShoppingDataProvider::OnJsonSanitizationCompleted(
+    data_decoder::JsonSanitizer::Result result) {
+  if (!result.value.has_value())
+    return;
+
   absl::optional<base::Value> json_root =
-      base::JSONReader::Read(result.GetString());
+      base::JSONReader::Read(result.value.value());
 
   if (!json_root.has_value())
     return;

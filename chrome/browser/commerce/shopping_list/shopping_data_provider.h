@@ -12,6 +12,7 @@
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/data_decoder/public/cpp/json_sanitizer.h"
 
 namespace base {
 class Value;
@@ -82,6 +83,9 @@ class ShoppingDataProvider
 
   // Handle the result of javascript on-page heuristics.
   void OnJavascriptExecutionCompleted(base::Value result);
+
+  // Handle the result of the JSON (from the on-page javascript) sanitization.
+  void OnJsonSanitizationCompleted(data_decoder::JsonSanitizer::Result result);
 
   // Whether the javascript heuristics should be run when the page has finished
   // loading.
