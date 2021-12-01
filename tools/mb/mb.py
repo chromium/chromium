@@ -1532,8 +1532,6 @@ class MetaBuildWrapper(object):
     self.WriteJSON(
       {
         'args': [
-          '--isolated',
-          self.ToSrcRelPath('%s/%s.isolated' % (build_dir, target)),
           '--isolate',
           self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
         ],
