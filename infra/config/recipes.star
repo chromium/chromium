@@ -194,6 +194,9 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_upload_clang",
+    experiments = {
+        "luci.recipes.use_python3": 20,
+    },
 )
 
 build_recipe(
