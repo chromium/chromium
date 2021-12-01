@@ -211,6 +211,10 @@ class ShortcutsProviderTest : public testing::Test {
   int CalculateScore(const std::string& terms,
                      const ShortcutsDatabase::Shortcut& shortcut);
 
+  // ScopedFeatureList needs to be defined before TaskEnvironment, so that it is
+  // destroyed after TaskEnvironment, to prevent data races on the
+  // ScopedFeatureList.
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ShortcutsProvider> provider_;
@@ -508,11 +512,19 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
   EXPECT_LT(score_more_popular_two_weeks_old, kMaxScore);
 }
 
-TEST_F(ShortcutsProviderTest, CalculateScore_LongTextFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kPreserveLongerShortcutsText);
+class ShortcutsProviderPreserveLongerShortcutsTest
+    : public ShortcutsProviderTest {
+ public:
+  ShortcutsProviderPreserveLongerShortcutsTest() {
+    // `scoped_feature_list_` needs to be initialized as early as possible, to
+    // avoid data races caused by tasks on other threads accessing it.
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kPreserveLongerShortcutsText);
+  }
+};
 
+TEST_F(ShortcutsProviderPreserveLongerShortcutsTest,
+       CalculateScore_LongTextFeature) {
   auto long_shortcut = MakeShortcutWithText(u"test Yerevan");
   // Maximal score.
   const int kMaxScore = CalculateScore("test Yerevan", long_shortcut);
