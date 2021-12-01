@@ -58,15 +58,12 @@ class TraceableStateForTest
 
 // TODO(kraynov): TraceableCounter tests.
 
-// crbug.com/1275221: tests are flaky on CrOS and Linux
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if defined(COMPONENT_BUILD)
+// TODO(https://crbug.com/1275221): Figure out, re-enable.
 #define MAYBE_TraceableState DISABLED_TraceableState
-#define MAYBE_TraceableStateOperators DISABLED_TraceableStateOperators
 #else
 #define MAYBE_TraceableState TraceableState
-#define MAYBE_TraceableStateOperators TraceableStateOperators
 #endif
-
 TEST(TracingHelperTest, MAYBE_TraceableState) {
   TraceableVariableController controller;
   TraceableStateForTest state(&controller);
@@ -80,6 +77,12 @@ TEST(TracingHelperTest, MAYBE_TraceableState) {
   ExpectTraced("negative");
 }
 
+#if defined(COMPONENT_BUILD)
+// TODO(https://crbug.com/1275221): Figure out, re-enable.
+#define MAYBE_TraceableStateOperators DISABLED_TraceableStateOperators
+#else
+#define MAYBE_TraceableStateOperators TraceableStateOperators
+#endif
 TEST(TracingHelperTest, MAYBE_TraceableStateOperators) {
   TraceableVariableController controller;
   TraceableState<int, TracingCategoryName::kDebug> x(-1, "X", &controller,
