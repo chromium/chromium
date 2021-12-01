@@ -275,11 +275,9 @@ void TransportClientSocketPool::RequestSockets(
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
     const NetLogWithSource& net_log) {
-  if (net_log.IsCapturing()) {
-    // TODO(eroman): Split out the host and port parameters.
-    net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKETS,
-                     [&] { return NetLogGroupIdParams(group_id); });
-  }
+  // TODO(eroman): Split out the host and port parameters.
+  net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKETS,
+                   [&] { return NetLogGroupIdParams(group_id); });
 
   Request request(nullptr /* no handle */, CompletionOnceCallback(),
                   ProxyAuthCallback(), IDLE, SocketTag(),

@@ -153,11 +153,9 @@ ClientSocketPool::ClientSocketPool(
 void ClientSocketPool::NetLogTcpClientSocketPoolRequestedSocket(
     const NetLogWithSource& net_log,
     const GroupId& group_id) {
-  if (net_log.IsCapturing()) {
-    // TODO(eroman): Split out the host and port parameters.
-    net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKET,
-                     [&] { return NetLogGroupIdParams(group_id); });
-  }
+  // TODO(eroman): Split out the host and port parameters.
+  net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKET,
+                   [&] { return NetLogGroupIdParams(group_id); });
 }
 
 base::Value ClientSocketPool::NetLogGroupIdParams(const GroupId& group_id) {
