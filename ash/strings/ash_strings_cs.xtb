@@ -1017,6 +1017,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7868900307798234037">Odemknutí otiskem prstu</translation>
 <translation id="7872786842639831132">Vyp</translation>
 <translation id="7875575368831396199">Na zařízení <ph name="DEVICE_TYPE" /> je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Převeďte zařízení na předchozí verzi}=1{Do 1 sekundy zařízení převeďte na předchozí verzi}few{Do # sekund zařízení převeďte na předchozí verzi}many{Do # sekundy zařízení převeďte na předchozí verzi}other{Do # sekund zařízení převeďte na předchozí verzi}}</translation>
 <translation id="7886169021410746335">Upravit nastavení soukromí</translation>
 <translation id="7886277072580235377">Když se odhlásíte, vaše návštěvy internetu se vymaže. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Poslat e‑mail</translation>

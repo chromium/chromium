@@ -1017,6 +1017,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7868900307798234037">Desbloqueado com a impressão digital</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Altere o dispositivo para uma versão anterior agora}=1{Altere o dispositivo para uma versão anterior dentro de 1 segundo}one{Altere o dispositivo para uma versão anterior dentro de # segundo(s)}other{Altere o dispositivo para uma versão anterior dentro de # segundos}}</translation>
 <translation id="7886169021410746335">Ajustar as definições de privacidade</translation>
 <translation id="7886277072580235377">Quando terminar sessão, a sua sessão de Internet será apagada. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar um email</translation>

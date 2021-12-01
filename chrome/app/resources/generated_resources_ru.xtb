@@ -132,6 +132,7 @@
 <translation id="1129850422003387628">Управление приложениями</translation>
 <translation id="113050636487300043">Укажите имя и установите цветовую тему, чтобы отличать свой профиль от других.</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
+<translation id="1130676589211693127">Правый наушник заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="1133418583142946603">Добавить текущую вкладку</translation>
 <translation id="1136179794690960030">Эмодзи <ph name="EMOJI_NAME" />: <ph name="EMOJI_INDEX" />из <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Чтобы разблокировать ключ, извлеките его и вставьте снова.</translation>
@@ -1641,6 +1642,7 @@
 <translation id="2665647207431876759">Срок действия истек.</translation>
 <translation id="2665717534925640469">Страница отображается в полноэкранном режиме и пытается скрыть курсор.</translation>
 <translation id="2665919335226618153">Произошла ошибка форматирования.</translation>
+<translation id="2666247341166669829">Левый наушник заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="2667463864537187133">Настроить проверку орфографии</translation>
 <translation id="2669241540496514785">Не удалось запустить <ph name="APP_NAME" /></translation>
@@ -1958,6 +1960,7 @@
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2981113813906970160">Показывать большой курсор мыши</translation>
 <translation id="2981474224638493138">Качество видео во вкладке или в приложении на компьютере</translation>
+<translation id="2983373101216420412">Чехол заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Отправить администратору запрос на установку расширения "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
 <translation id="2988018669686457659">Дополнительный отрисовщик</translation>
@@ -2014,6 +2017,7 @@
 <translation id="3030967311408872958">От заката до рассвета</translation>
 <translation id="3031417829280473749">Секретный агент</translation>
 <translation id="3031557471081358569">Выберите элементы для импорта:</translation>
+<translation id="3033348223765101500">Управление данными</translation>
 <translation id="3036327949511794916">Истек срок возврата устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Включить Flash</translation>
 <translation id="3037754279345160234">Не удалось проанализировать конфигурацию для подключения к домену. Обратитесь к администратору.</translation>
@@ -2114,6 +2118,7 @@
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
 <translation id="3144647712221361880">Открыть ссылку как</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
+<translation id="3150622786624965651">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, игровой контроллер.</translation>
 <translation id="3150693969729403281">Запустить проверку безопасности</translation>
 <translation id="3150927491400159470">Жесткая перезагрузка</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
@@ -2321,6 +2326,7 @@
 <translation id="339178315942519818">Просматривайте уведомления из мессенджеров на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Анализ документов в Chrome</translation>
 <translation id="3394850431319394743">Сайты, которым разрешено использовать идентификаторы для воспроизведения защищенного контента</translation>
+<translation id="3395403082745257596">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, неизвестный тип устройства.</translation>
 <translation id="3396744558790608201">Просматривая сайт или покупая товар в интернете, вы можете узнать больше о визуальном контенте страницы. Для этого нажмите на ней правой кнопкой мыши и выберите "Искать изображения с помощью функции "Google Объектив".</translation>
 <translation id="3396800784455899911">Нажимая кнопку "Принять условия и продолжить", вы соглашаетесь с Условиями использования сервисов Google, описанными выше.</translation>
 <translation id="339722927132407568">Зависает</translation>
@@ -2376,6 +2382,7 @@
 <translation id="3440663250074896476">Другие действия с закладкой <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Войдите в аккаунт <ph name="ACCOUNT" /> ещё раз, чтобы подтвердить его</translation>
+<translation id="3442674350323953953">Разрешить компании Google использовать данные о вашем оборудовании, чтобы улучшать <ph name="DEVICE_OS" />. Если вы откажетесь, эта информация все равно будет отправляться в Google для определения подходящих обновлений, но она не будет храниться или использоваться в других целях.</translation>
 <translation id="3444641828375597683">Рекламодатели и издатели могут использовать технологию FLoC, которая описана дальше на этой странице.</translation>
 <translation id="3444726579402183581">Сайт <ph name="ORIGIN" /> сможет просматривать файл "<ph name="FILENAME" />".</translation>
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
@@ -2508,6 +2515,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
+<translation id="3577745545227000795">Сбор данных об аппаратном обеспечении устройства с <ph name="DEVICE_OS" /></translation>
 <translation id="3578594933904494462">К контенту на этой вкладке открыт общий доступ</translation>
 <translation id="3581605050355435601">Настраивать IP-адрес автоматически</translation>
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
@@ -2949,6 +2957,7 @@
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Размер текста</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
+<translation id="3995963973192100066">Воспроизвести анимацию</translation>
 <translation id="4002329649066944389">Управление отдельными исключениями для сайтов</translation>
 <translation id="4002440992267487163">Установить PIN-код</translation>
 <translation id="4005817994523282006">Способ определения часового пояса</translation>
@@ -3596,6 +3605,7 @@
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Администратор<ph name="END_LINK" /> отключил проверку на наличие вредоносного ПО.</translation>
 <translation id="4730492586225682674">Последняя заметка, созданная на заблокированном экране с помощью стилуса</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
 <translation id="4733793249294335256">Папка</translation>
 <translation id="473546211690256853">Этот аккаунт находится в домене <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Не удалось определить идентификаторы устройства.</translation>
@@ -4160,6 +4170,7 @@
 <translation id="5341793073192892252">Были заблокированы следующие файлы cookie (сторонние файлы cookie блокируются без исключения):</translation>
 <translation id="5342091991439452114">PIN-код должен содержать не менее <ph name="MINIMUM" /> знаков</translation>
 <translation id="5344036115151554031">Восстановление Linux</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (правый)</translation>
 <translation id="5345916423802287046">Запускать при входе</translation>
 <translation id="5350293332385664455">Выключить Google Ассистента</translation>
 <translation id="535123479159372765">Текст скопирован с другого устройства</translation>
@@ -4399,6 +4410,7 @@
 <translation id="5585898376467608182">На устройстве осталось мало места. Чтобы использовать приложение "<ph name="APP_NAME" />", нужно как минимум <ph name="MINIMUM_SPACE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="5585912436068747822">Ошибка форматирования</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5589101568518637088">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, клавиатура.</translation>
 <translation id="558918721941304263">Загрузка...</translation>
 <translation id="5592595402373377407">Недостаточно данных.</translation>
 <translation id="5595485650161345191">Изменить адрес</translation>
@@ -4600,6 +4612,7 @@
 <translation id="5817069030404929329">Перенести пароли с этого устройства в ваш аккаунт Google?</translation>
 <translation id="5817918615728894473">Подключить</translation>
 <translation id="5821565227679781414">Создать ярлык</translation>
+<translation id="5822095611691580107">Левый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="5822865422567397338">Для поиска по определенному сайту или в отдельной части Chrome можно использовать указанные быстрые команды. Например, чтобы искать только в Gmail, введите "@gmail", а затем нажмите Tab или Пробел.</translation>
 <translation id="5825412242012995131">Вкл. (рекомендуется)</translation>
 <translation id="5826395379250998812">Подключите устройство <ph name="DEVICE_TYPE" /> к телефону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5051,6 +5064,7 @@
 <translation id="6294759976468837022">Скорость автосканирования</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6295855836753816081">Сохранение...</translation>
+<translation id="6297132509712149399">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, телефон.</translation>
 <translation id="629730747756840877">Аккаунт</translation>
 <translation id="6298962879096096191">Использование Google Play для установки приложений Android</translation>
 <translation id="6300177430812514606">Запретить сайтам завершать отправку и получение данных</translation>
@@ -5264,6 +5278,9 @@
 <translation id="6528179044667508675">Не беспокоить</translation>
 <translation id="652948702951888897">История Chrome</translation>
 <translation id="6530186581263215931">Эти настройки определяются администратором</translation>
+<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />Для удобства пользователей <ph name="DEVICE_OS" /> собирает данные об аппаратном обеспечении устройств и передает эту информацию компании Google, чтобы определять подходящие обновления. Вы также можете разрешить Google использовать эти данные в других целях, например для улучшения <ph name="DEVICE_OS" /> и предоставления поддержки.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Чтобы посмотреть, какие сведения отправляются в Google для фильтрации обновлений и для каких ещё целей можно передавать нам данные, войдите в аккаунт на этом устройстве и изучите раздел CLOUDREADY_HARDWARE_INFO на странице chrome://system.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Чтобы узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите на страницу g.co/xxxxx.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">Сохранить</translation>
 <translation id="6532101170117367231">Сохранить на Google Диске</translation>
 <translation id="6532106788206463496">Сохранить</translation>
@@ -5339,6 +5356,7 @@
 <translation id="6601612474695404578">Некоторые сайты используют сторонние файлы cookie для загрузки своих страниц. Если сайт не работает, разрешите файлы cookie.</translation>
 <translation id="6602937173026466876">Доступ к принтерам</translation>
 <translation id="6602956230557165253">Для перехода используйте клавиши со стрелками вправо и влево.</translation>
+<translation id="6602998402703530379">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, видеокамера.</translation>
 <translation id="6605847144724004692">Оценок пока нет.</translation>
 <translation id="6606671997164410857">Похоже, вы уже настроили Google Ассистента на другом устройстве. Если разрешить доступ к содержимому экрана на этом устройстве, вы сможете пользоваться дополнительными возможностями Ассистента.</translation>
 <translation id="6607831829715835317">Дополнительные инстру&amp;менты</translation>
@@ -5360,6 +5378,7 @@
 <translation id="6624535038674360844">Файл <ph name="FILE_NAME" /> содержит конфиденциальный или опасный контент. Попросите владельца его исправить.</translation>
 <translation id="6624687053722465643">Пирожное</translation>
 <translation id="6628328486509726751">Время загрузки: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="663065535202460123">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, мышь.</translation>
 <translation id="6630752851777525409">Расширение "<ph name="EXTENSION_NAME" />" запрашивает постоянный доступ к сертификату для прохождения аутентификации от вашего имени.</translation>
 <translation id="6635362468090274700">Никто не сможет обмениваться с вами данными, пока вы не откроете доступ к своему устройству.<ph name="BR" /><ph name="BR" />Чтобы предоставить временный доступ, откройте панель состояния и включите параметр "Широкий доступ".</translation>
 <translation id="6635674640674343739">Не удается установить связь. Проверьте подключение к сети и повторите попытку.</translation>
@@ -5687,6 +5706,7 @@
 <translation id="6973611239564315524">Доступна версия Debian 10 (Buster).</translation>
 <translation id="6974609594866392343">Демонстрационный офлайн-режим</translation>
 <translation id="697508444536771064">Завершить работу Linux</translation>
+<translation id="6977739184256564679">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, планшет.</translation>
 <translation id="6978121630131642226">Поисковые системы</translation>
 <translation id="6979044105893951891">Запуск и завершение управляемых гостевых сеансов</translation>
 <translation id="6979158407327259162">Google Диск</translation>
@@ -5706,6 +5726,7 @@
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993889405941892667">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, компьютер.</translation>
 <translation id="6994069045767983299">Инвертированные цвета</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
@@ -6277,6 +6298,7 @@
 <translation id="7602173054665172958">Управление печатью</translation>
 <translation id="7603785829538808504">Для указанных ниже сайтов действуют специальные настройки.</translation>
 <translation id="7605594153474022051">Ошибка синхронизации</translation>
+<translation id="7606560865764296217">Приостановить анимацию</translation>
 <translation id="7606992457248886637">Центры сертификации</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7608810328871051088">Настройки Android</translation>
@@ -7085,6 +7107,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Предоставлено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
 <translation id="8418445294933751433">&amp;Показать как вкладку</translation>
 <translation id="8419098111404128271">Результаты поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
@@ -7430,6 +7453,7 @@
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}many{Ваше устройство <ph name="DEVICE_TYPE" /> будет автоматически заблокировано через # секунд.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}other{Ваше устройство <ph name="DEVICE_TYPE" /> будет автоматически заблокировано через # секунды.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}}</translation>
+<translation id="8777259617149177596">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8777628254805677039">пароль суперпользователя</translation>
 <translation id="8778328560035799409">Назначенные переключатели будут удалены.</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
@@ -7788,6 +7812,7 @@
 <translation id="9128335130883257666">Открыть страницу настроек для способа ввода "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="9128870381267983090">Подключитесь к сети</translation>
 <translation id="9130015405878219958">Указан неверный режим.</translation>
+<translation id="9130215884425927484">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, аудиоустройство.</translation>
 <translation id="9131487537093447019">Обмен сообщениями с устройствами Bluetooth.</translation>
 <translation id="9134066738478820307">Разрешить сайтам использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="913411432238655354">Восстанавливать приложения при запуске</translation>
@@ -7831,6 +7856,7 @@
 <translation id="916964310188958970">Почему я вижу эту подсказку?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Ваше устройство могут обнаруживать все пользователи из списка контактов</translation>
+<translation id="9170199455952690202">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
 <translation id="9170884462774788842">Одна из программ на вашем компьютере установила тему, которая может влиять на работу Chrome.</translation>
 <translation id="917350715406657904">Время, установленное родителями для приложения "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>

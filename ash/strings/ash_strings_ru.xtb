@@ -248,6 +248,7 @@
 <translation id="2653019840645008922">Съемка окна</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2658778018866295321">Перетаскивание</translation>
+<translation id="2665788051462227163">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />" и "<ph name="UNAVAILABLE_APPS_TWO" />" не установлены на этом устройстве.</translation>
 <translation id="2678852583403169292">Меню озвучивания при нажатии</translation>
 <translation id="2689613560355655046">Рабочий стол 8</translation>
 <translation id="2700493154570097719">Выберите раскладку</translation>
@@ -419,6 +420,7 @@
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
+<translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3744282433224562605">Чтобы разблокировать Chromebook, введите пароль.</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
@@ -604,6 +606,7 @@
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
 <translation id="4946376291507881335">Снимок</translation>
+<translation id="4947229553198882488">Приложение "<ph name="UNAVAILABLE_APPS" />" не установлено на этом устройстве.</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
 <translation id="4960324571663582548">Согласно требованиям <ph name="MANAGER" /> вам нужно выполнить откат на устройстве <ph name="DEVICE_TYPE" />. Настройки устройства будут сброшены, а все данные – удалены.</translation>

@@ -1712,6 +1712,7 @@
 <translation id="2721037002783622288">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για εικόνα</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Οι εποπτευόμενοι χρήστες έχουν απενεργοποιηθεί από τον διαχειριστή σας.</translation>
+<translation id="2722540561488096675">Η συσκευή σας θα απενεργοποιηθεί σε <ph name="TIME_LEFT" />. Αφαιρέστε το USB προτού ενεργοποιήσετε ξανά τη συσκευή σας. Στη συνέχεια, θα μπορείτε να ξεκινήσετε τη χρήση του <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Αρχεία καταγραφής WebRTC</translation>
 <translation id="272488616838512378">Μετατροπή μονάδων</translation>
 <translation id="2725200716980197196">Αποκαταστάθηκε η συνδεσιμότητα δικτύου</translation>
@@ -4570,6 +4571,7 @@
 <translation id="5739235828260127894">Αναμονή για επαλήθευση. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Πολύ μεγάλο</translation>
 <translation id="5740328398383587084">Κοινοποίηση κοντά</translation>
+<translation id="5740709157181662145">Υποστήριξη εξοπλισμού και σταθερότητα <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Κατοπτρισμός οθόνης</translation>
 <translation id="574209121243317957">Τόνος</translation>
 <translation id="5746169159649715125">Αποθήκευση ως PDF</translation>

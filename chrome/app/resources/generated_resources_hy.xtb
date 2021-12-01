@@ -1698,6 +1698,7 @@
 <translation id="2721037002783622288">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Ձեր ադմինիստրատորն անջատել է վերահսկվող պրոֆիլները:</translation>
+<translation id="2722540561488096675">Ձեր սարքը <ph name="TIME_LEFT" />ից կանջատվի։ Նախքան սարքը նորից միացնելը հեռացրեք USB-ն։ Դրանից հետո կարող եք սկսել օգտագործել <ph name="DEVICE_OS" />-ը։</translation>
 <translation id="2724841811573117416">WebRTC մատյաններ</translation>
 <translation id="272488616838512378">Չափման միավորների փոխարկում</translation>
 <translation id="2725200716980197196">Ցանցի կապակցումը վերականգնվել է</translation>
@@ -4557,6 +4558,7 @@
 <translation id="5739235828260127894">Պահանջվում է հաստատում: <ph name="LINK_BEGIN" />Մանրամասն<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Շատ մեծ</translation>
 <translation id="5740328398383587084">Փոխանակում մոտակա սարքերի հետ</translation>
+<translation id="5740709157181662145"><ph name="DEVICE_OS" /> սարքակազմի աջակցում և կայունություն</translation>
 <translation id="574104302965107104">Էկրանի հայելապատճենում</translation>
 <translation id="574209121243317957">Ձայնի մակարդակը</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>

@@ -248,6 +248,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2653019840645008922">Capture de fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
+<translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> et <ph name="UNAVAILABLE_APPS_TWO" /> ne sont pas sur cet appareil.</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -419,6 +420,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
+<translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3744282433224562605">Pour déverrouiller votre Chromebook, saisissez le mot de passe</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
@@ -604,6 +606,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
+<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
