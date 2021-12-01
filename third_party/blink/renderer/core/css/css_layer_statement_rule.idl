@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://drafts.csswg.org/css-cascade-5/#the-csslayerstatementrule-interface
 [
     Exposed=Window,
     RuntimeEnabled=CSSCascadeLayers
 ] interface CSSLayerStatementRule : CSSRule {
-    // TODO(crbug.com/1095765): Spec and implement.
+    readonly attribute FrozenArray<CSSOMString> nameList;
 };

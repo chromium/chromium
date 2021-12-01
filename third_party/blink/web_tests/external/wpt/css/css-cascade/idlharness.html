@@ -1,0 +1,33 @@
+<!doctype html>
+<title>CSS Cascade Layers IDL tests</title>
+<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#layer-apis">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+
+<style>
+@layer foo { }
+@layer bar, baz;
+</style>
+
+<script>
+  'use strict';
+  idl_test(
+    ['css-cascade-5'],
+    ['cssom'],
+    idl_array => {
+      try {
+        self.block = document.styleSheets[0].cssRules.item(0);
+        self.statement = document.styleSheets[0].cssRules.item(1);
+      } catch (e) {
+        // Will be surfaced when block or statement is undefined below.
+      }
+
+      idl_array.add_objects({
+        CSSLayerBlockRule: ['block'],
+        CSSLayerStatementRule: ['statement'],
+      });
+    }
+  );
+</script>

@@ -19,6 +19,8 @@ class CSSLayerBlockRule final : public CSSGroupingRule {
   CSSLayerBlockRule(StyleRuleLayerBlock*, CSSStyleSheet*);
   ~CSSLayerBlockRule() override;
 
+  String name() const;
+
   void Reattach(StyleRuleBase*) override;
   String cssText() const override;
 

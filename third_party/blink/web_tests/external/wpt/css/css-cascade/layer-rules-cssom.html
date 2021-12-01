@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<title>The CSSOM API for @layer Rules</title>
+<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#the-csslayerblockrule-interface">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#the-csslayerstatementrule-interface">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const testCases = [
+  {
+    style: `@layer foo { }`,
+    expectedNames: ['foo'],
+    title: 'Basic layer block name',
+  },
+  {
+    style: `@layer { }`,
+    expectedNames: [''],
+    title: 'Anonymous layer block name',
+  },
+  {
+    style: `
+      @layer foo;
+    `,
+    expectedNames: [['foo']],
+    title: 'Basic layer statement name',
+  },
+  {
+    style: `
+      @layer foo, bar;
+    `,
+    expectedNames: [['foo', 'bar']],
+    title: 'Layer statement with multiple names',
+  },
+  {
+    style: `
+      @layer outer {
+        @layer foo.bar { }
+      }
+      @layer outer.foo.bar { }
+    `,
+    expectedNames: ['outer', 'foo.bar', 'outer.foo.bar'],
+    title: 'Nested layer block names',
+  },
+  {
+    style: `
+      @layer outer {
+        @layer foo.bar, baz;
+      }
+      @layer outer.foo.bar, outer.baz;
+    `,
+    expectedNames: ['outer', ['foo.bar', 'baz'], ['outer.foo.bar', 'outer.baz']],
+    title: 'Nested layer statement name lists',
+  },
+];
+
+for (let testCase of testCases) {
+  const style = document.createElement('style');
+  style.appendChild(document.createTextNode(testCase.style));
+  document.head.appendChild(style);
+
+  test(function () {
+    assert_implements(window.CSSLayerBlockRule);
+    assert_implements(window.CSSLayerStatementRule);
+
+    let index = 0;
+    function compareNames(ruleOrSheet) {
+      if (ruleOrSheet instanceof CSSLayerBlockRule)
+        assert_equals(ruleOrSheet.name, testCase.expectedNames[index++]);
+      else if (ruleOrSheet instanceof CSSLayerStatementRule)
+        assert_array_equals(ruleOrSheet.nameList, testCase.expectedNames[index++]);
+      if (ruleOrSheet.cssRules) {
+        for (let i = 0; i < ruleOrSheet.cssRules.length; ++i)
+          compareNames(ruleOrSheet.cssRules.item(i));
+      }
+    }
+    compareNames(style.sheet);
+    assert_equals(index, testCase.expectedNames.length);
+  }, testCase.title);
+
+  style.remove();
+}
+</script>

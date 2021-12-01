@@ -783,9 +783,11 @@ interface CSSKeywordValue : CSSStyleValue
     setter value
 interface CSSLayerBlockRule : CSSGroupingRule
     attribute @@toStringTag
+    getter name
     method constructor
 interface CSSLayerStatementRule : CSSRule
     attribute @@toStringTag
+    getter nameList
     method constructor
 interface CSSMathInvert : CSSMathValue
     attribute @@toStringTag

@@ -20,6 +20,8 @@ class CSSLayerStatementRule final : public CSSRule {
   CSSLayerStatementRule(StyleRuleLayerStatement*, CSSStyleSheet*);
   ~CSSLayerStatementRule() override;
 
+  Vector<String> nameList() const;
+
   void Reattach(StyleRuleBase*) override;
   String cssText() const override;
 
