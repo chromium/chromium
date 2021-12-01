@@ -81,10 +81,13 @@ HistogramsMessageHandler::~HistogramsMessageHandler() {}
 
 JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
     const base::ListValue& args) {
+  base::Value::ConstListView args_list = args.GetList();
   AllowJavascript();
   JsParams params;
-  args.GetString(0, &params.callback_id);
-  args.GetString(1, &params.query);
+  if (args_list.size() > 0u && args_list[0].is_string())
+    params.callback_id = args_list[0].GetString();
+  if (args_list.size() > 1u && args_list[1].is_string())
+    params.query = args_list[1].GetString();
   return params;
 }
 
