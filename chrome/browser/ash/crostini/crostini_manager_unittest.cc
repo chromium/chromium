@@ -803,7 +803,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   int restart_crostini_callback_count_ = 0;
   CrostiniResult last_crostini_callback_result_ = CrostiniResult::SUCCESS;
   int remove_crostini_callback_count_ = 0;
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   base::HistogramTester histogram_tester_{};
 
   base::RepeatingCallback<void(mojom::InstallerState)> on_stage_started_ =
@@ -1780,7 +1780,7 @@ class CrostiniManagerEnterpriseReportingTest
   }
 
   void TearDown() override {
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
     CrostiniManagerRestartTest::TearDown();
   }
 };

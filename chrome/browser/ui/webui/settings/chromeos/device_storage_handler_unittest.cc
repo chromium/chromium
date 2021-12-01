@@ -71,7 +71,7 @@ class StorageHandlerTest : public testing::Test {
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -136,7 +136,7 @@ class StorageHandlerTest : public testing::Test {
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     chromeos::SpacedClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();

@@ -70,8 +70,8 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 using drive::DriveIntegrationService;
 using drive::DriveIntegrationServiceFactory;

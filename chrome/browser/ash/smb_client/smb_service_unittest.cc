@@ -126,7 +126,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      disks::DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -178,8 +178,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     // Takes ownership of |disk_mount_manager_|.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_);
+    disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
   }
 
   ~SmbServiceWithSmbfsTest() override {
@@ -245,10 +244,9 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     }
   }
 
-  std::unique_ptr<chromeos::disks::MountPoint> MakeMountPoint(
+  std::unique_ptr<disks::MountPoint> MakeMountPoint(
       const base::FilePath& path) {
-    return std::make_unique<chromeos::disks::MountPoint>(path,
-                                                         disk_mount_manager_);
+    return std::make_unique<disks::MountPoint>(path, disk_mount_manager_);
   }
 
   // Helper function for creating a basic smbfs mount with an empty

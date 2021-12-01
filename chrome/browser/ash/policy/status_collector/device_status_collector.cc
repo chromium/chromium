@@ -699,7 +699,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       mount_points.push_back(info.path.value());
 
     for (const auto& mount_info :
-         chromeos::disks::DiskMountManager::GetInstance()->mount_points()) {
+         ash::disks::DiskMountManager::GetInstance()->mount_points()) {
       // Extract a list of mount points to populate.
       mount_points.push_back(mount_info.first);
     }

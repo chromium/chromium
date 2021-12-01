@@ -479,7 +479,7 @@ class DriveIntegrationService::DriveFsHolder
                       this,
                       content::GetNetworkConnectionTracker(),
                       base::DefaultClock::GetInstance(),
-                      chromeos::disks::DiskMountManager::GetInstance(),
+                      ash::disks::DiskMountManager::GetInstance(),
                       std::make_unique<base::OneShotTimer>()) {}
 
   DriveFsHolder(const DriveFsHolder&) = delete;

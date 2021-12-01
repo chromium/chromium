@@ -30,8 +30,7 @@
 using base::StringPrintf;
 using testing::Field;
 
-namespace chromeos {
-
+namespace ash {
 namespace disks {
 
 namespace {
@@ -76,7 +75,7 @@ struct TestMountPointInfo {
   const char* source_path;
   const char* mount_path;
   chromeos::MountType mount_type;
-  chromeos::disks::MountCondition mount_condition;
+  MountCondition mount_condition;
 };
 
 // List of disks held in DiskMountManager at the beginning of the test.
@@ -143,19 +142,19 @@ const TestMountPointInfo kTestMountPoints[] = {
     "/archive/source_path",
     "/archive/mount_path",
     chromeos::MOUNT_TYPE_ARCHIVE,
-    chromeos::disks::MOUNT_CONDITION_NONE
+    MOUNT_CONDITION_NONE
   },
   {
     kDevice1SourcePath,
     kDevice1MountPath,
     chromeos::MOUNT_TYPE_DEVICE,
-    chromeos::disks::MOUNT_CONDITION_NONE
+    MOUNT_CONDITION_NONE
   },
   {
     kReadOnlyDeviceSourcePath,
     kReadOnlyDeviceMountPath,
     chromeos::MOUNT_TYPE_DEVICE,
-    chromeos::disks::MOUNT_CONDITION_NONE
+    MOUNT_CONDITION_NONE
   },
 };
 
@@ -1742,4 +1741,4 @@ TEST_F(DiskMountManagerTest, Mount_DefersDuringGetDeviceProperties) {
 }  // namespace
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

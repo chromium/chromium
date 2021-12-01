@@ -22,13 +22,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
-
 namespace chromeos {
 namespace settings {
 
 namespace {
+
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 
 constexpr char kAndroidEnabled[] = "androidEnabled";
 // Dummy UUID for testing. The UUID is taken from
@@ -204,9 +204,8 @@ void StorageHandler::UpdateExternalStorages() {
     if (!IsEligibleForAndroidStorage(mount_info.source_path))
       continue;
 
-    const chromeos::disks::Disk* disk =
-        DiskMountManager::GetInstance()->FindDiskBySourcePath(
-            mount_info.source_path);
+    const Disk* disk = DiskMountManager::GetInstance()->FindDiskBySourcePath(
+        mount_info.source_path);
 
     // Assigning a dummy UUID for diskless volume for testing.
     const std::string uuid = disk ? disk->fs_uuid() : kDummyUuid;

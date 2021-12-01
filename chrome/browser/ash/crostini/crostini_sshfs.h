@@ -47,7 +47,7 @@ class CrostiniSshfs : ContainerShutdownObserver {
 
   void OnMountEvent(
       chromeos::MountError error_code,
-      const chromeos::disks::DiskMountManager::MountPointInfo& mount_info);
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info);
 
   // Returns true if sshfs is mounted for the specified container, else false.
   bool IsSshfsMounted(const ContainerId& container);

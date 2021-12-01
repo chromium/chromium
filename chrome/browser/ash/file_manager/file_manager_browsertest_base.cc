@@ -1616,9 +1616,9 @@ class SmbfsTestVolume : public LocalTestVolume {
           std::move(mount_callback)
               .Run(smbfs::mojom::MountError::kOk,
                    std::make_unique<smbfs::SmbFsHost>(
-                       std::make_unique<chromeos::disks::MountPoint>(
+                       std::make_unique<ash::disks::MountPoint>(
                            mount_path(),
-                           chromeos::disks::DiskMountManager::GetInstance()),
+                           ash::disks::DiskMountManager::GetInstance()),
                        delegate, std::move(smbfs_remote),
                        delegate_.BindNewPipeAndPassReceiver()));
         });

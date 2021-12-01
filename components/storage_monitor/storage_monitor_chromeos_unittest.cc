@@ -31,8 +31,8 @@ namespace storage_monitor {
 
 namespace {
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 using testing::_;
 
 const char kDevice1[] = "/dev/d1";
@@ -91,7 +91,7 @@ class TestStorageMonitorCros : public StorageMonitorCros {
   }
 
   void OnBootDeviceDiskEvent(DiskMountManager::DiskEvent event,
-                             const chromeos::disks::Disk& disk) override {
+                             const Disk& disk) override {
     StorageMonitorCros::OnBootDeviceDiskEvent(event, disk);
   }
 
@@ -150,7 +150,7 @@ class StorageMonitorCrosTest : public testing::Test {
   TestStorageMonitorCros* monitor_;
 
   // Owned by DiskMountManager.
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
 
   StorageMonitor::EjectStatus status_;
 
@@ -174,7 +174,7 @@ StorageMonitorCrosTest::~StorageMonitorCrosTest() {
 
 void StorageMonitorCrosTest::SetUp() {
   ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager();
+  disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager();
   DiskMountManager::InitializeForTesting(disk_mount_manager_mock_);
   disk_mount_manager_mock_->SetupDefaultReplies();
 
@@ -261,7 +261,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
       kDevice1,
       mount_path1.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId1,
@@ -288,7 +288,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
       kDevice2,
       mount_path2.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info2,
               kUniqueId2,
@@ -320,7 +320,7 @@ TEST_F(StorageMonitorCrosTest, NoDCIM) {
       kDevice1,
       mount_path.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   const std::string device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM,
       kFSUniqueIdPrefix + kUniqueId);
@@ -350,7 +350,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
       kDevice1,
       mount_path.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_UNKNOWN,
               mount_info,
               kUniqueId,
@@ -378,7 +378,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   // Unsupported file system.
   mount_info.mount_type = chromeos::MOUNT_TYPE_DEVICE;
   mount_info.mount_condition =
-      chromeos::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
+      ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId,
@@ -398,7 +398,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
       kSDCardDeviceName1,
       mount_path1.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info1,
               kUniqueId2,
@@ -425,7 +425,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
       kSDCardDeviceName2,
       mount_path2.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info2,
               kUniqueId2,
@@ -454,7 +454,7 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
       kEmptyDeviceLabel,
       mount_path1.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId1,
@@ -483,7 +483,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
       kEmptyDeviceLabel,
       mount_path1.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId1,
@@ -513,7 +513,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
       kEmptyDeviceLabel,
       mount_path1.value(),
       chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId1,

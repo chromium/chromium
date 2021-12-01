@@ -29,7 +29,7 @@
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 namespace {
@@ -1170,4 +1170,4 @@ DiskMountManager* DiskMountManager::GetInstance() {
 }
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

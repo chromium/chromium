@@ -81,7 +81,7 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
 SmbFsHost::Delegate::~Delegate() = default;
 
 SmbFsHost::SmbFsHost(
-    std::unique_ptr<chromeos::disks::MountPoint> mount_point,
+    std::unique_ptr<ash::disks::MountPoint> mount_point,
     Delegate* delegate,
     mojo::Remote<mojom::SmbFs> smbfs_remote,
     mojo::PendingReceiver<mojom::SmbFsDelegate> delegate_receiver)

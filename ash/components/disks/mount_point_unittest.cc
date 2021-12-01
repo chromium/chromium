@@ -17,7 +17,7 @@ using ::testing::_;
 using ::testing::WithArg;
 using ::testing::WithoutArgs;
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 namespace {
 
@@ -122,4 +122,4 @@ TEST_F(MountPointTest, UnmountThenDestory) {
 
 }  // namespace
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

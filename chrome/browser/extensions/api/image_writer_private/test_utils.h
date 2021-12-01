@@ -64,7 +64,7 @@ class MockOperationManager : public OperationManager {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A fake for the DiskMountManager that will successfully call the unmount
 // callback.
-class FakeDiskMountManager : public chromeos::disks::MockDiskMountManager {
+class FakeDiskMountManager : public ash::disks::MockDiskMountManager {
  public:
   FakeDiskMountManager();
   ~FakeDiskMountManager() override;

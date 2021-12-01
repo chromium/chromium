@@ -40,7 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::DiskMountManager;
 using testing::_;
 
 namespace {
@@ -59,8 +59,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
   return std::make_unique<file_manager::VolumeManager>(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
-      nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      nullptr /* power_manager_client */, DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -80,12 +79,12 @@ class CrostiniSshfsHelperTest : public testing::Test {
         std::make_unique<CrostiniTestHelper>(profile_.get());
     // DiskMountManager::InitializeForTesting takes ownership and works with
     // a raw pointer, hence the new with no matching delete.
-    disk_manager_ = new chromeos::disks::MockDiskMountManager;
+    disk_manager_ = new ash::disks::MockDiskMountManager;
     crostini_sshfs_ = std::make_unique<CrostiniSshfs>(profile_.get());
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildVolumeManager));
 
-    chromeos::disks::DiskMountManager::InitializeForTesting(disk_manager_);
+    DiskMountManager::InitializeForTesting(disk_manager_);
 
     std::string known_hosts;
     base::Base64Encode("[hostname]:2222 pubkey", &known_hosts);
@@ -104,7 +103,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
         kMountName);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(), BrowserContextKeyedServiceFactory::TestingFactory{});
-    chromeos::disks::DiskMountManager::Shutdown();
+    DiskMountManager::Shutdown();
     crostini_sshfs_.reset();
     crostini_test_helper_.reset();
     profile_.reset();
@@ -130,13 +129,12 @@ class CrostiniSshfsHelperTest : public testing::Test {
       const std::vector<std::string>& mount_options,
       chromeos::MountType type,
       chromeos::MountAccessMode access_mode,
-      chromeos::disks::DiskMountManager::MountPathCallback callback) {
+      ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
     auto code = chromeos::MountError::MOUNT_ERROR_NONE;
     auto info = DiskMountManager::MountPointInfo(
         "sshfs://username@hostname:", "/media/fuse/" + kMountName,
-        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-        chromeos::disks::MOUNT_CONDITION_NONE);
+        chromeos::MOUNT_TYPE_NETWORK_STORAGE, ash::disks::MOUNT_CONDITION_NONE);
     disk_manager_->NotifyMountEvent(event, code, info);
     std::move(callback).Run(code, info);
   }
@@ -161,7 +159,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::disks::MockDiskMountManager* disk_manager_;
+  ash::disks::MockDiskMountManager* disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   const std::string kMountName = "crostini_test_termina_penguin";

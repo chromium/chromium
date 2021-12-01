@@ -28,7 +28,7 @@ class ArcBridgeService;
 // send them to Android.
 class ArcVolumeMounterBridge
     : public KeyedService,
-      public chromeos::disks::DiskMountManager::Observer,
+      public ash::disks::DiskMountManager::Observer,
       public ConnectionObserver<mojom::VolumeMounterInstance>,
       public mojom::VolumeMounterHost {
  public:
@@ -65,11 +65,11 @@ class ArcVolumeMounterBridge
 
   ~ArcVolumeMounterBridge() override;
 
-  // chromeos::disks::DiskMountManager::Observer overrides:
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  // ash::disks::DiskMountManager::Observer overrides:
+  void OnMountEvent(
+      ash::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // mojom::VolumeMounterHost overrides:
   void RequestAllMountPoints() override;
@@ -84,7 +84,7 @@ class ArcVolumeMounterBridge
  private:
   void SendMountEventForMyFiles();
   void SendMountEventForRemovableMedia(
-      chromeos::disks::DiskMountManager::MountEvent event,
+      ash::disks::DiskMountManager::MountEvent event,
       const std::string& source_path,
       const std::string& mount_path,
       const std::string& fs_uuid,

@@ -1127,20 +1127,18 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
 }
 
 TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
-  chromeos::disks::DiskMountManager::InitializeForTesting(
+  disks::DiskMountManager::InitializeForTesting(
       new file_manager::FakeDiskMountManager);
 
-  ASSERT_TRUE(chromeos::disks::DiskMountManager::GetInstance()->AddDiskForTest(
-      chromeos::disks::Disk::Builder()
+  ASSERT_TRUE(disks::DiskMountManager::GetInstance()->AddDiskForTest(
+      disks::Disk::Builder()
           .SetDevicePath("/device/source_path")
           .SetFileSystemUUID("0123-abcd")
           .Build()));
-  ASSERT_TRUE(
-      chromeos::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
-          chromeos::disks::DiskMountManager::MountPointInfo(
-              "/device/source_path", "/media/removable/UNTITLED",
-              chromeos::MOUNT_TYPE_DEVICE,
-              chromeos::disks::MOUNT_CONDITION_NONE)));
+  ASSERT_TRUE(disks::DiskMountManager::GetInstance()->AddMountPointForTest(
+      disks::DiskMountManager::MountPointInfo(
+          "/device/source_path", "/media/removable/UNTITLED",
+          chromeos::MOUNT_TYPE_DEVICE, disks::MOUNT_CONDITION_NONE)));
 
   const std::string kPackage = "org.chromium.package";
   std::vector<IntentHandlerInfoPtr> handlers;
@@ -1203,7 +1201,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH), 1);
 
-  chromeos::disks::DiskMountManager::Shutdown();
+  disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(NoteTakingHelperTest, NoAppsAvailable) {

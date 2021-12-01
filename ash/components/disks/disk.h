@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 class COMPONENT_EXPORT(ASH_DISKS) Disk {
@@ -220,6 +220,6 @@ class COMPONENT_EXPORT(ASH_DISKS) Disk::Builder {
 COMPONENT_EXPORT(ASH_DISKS) base::FilePath GetStatefulPartitionPath();
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_DISKS_DISK_H_

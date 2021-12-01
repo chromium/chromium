@@ -29,12 +29,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
-
 namespace storage_monitor {
 
 namespace {
+
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 
 // Constructs a device id using uuid or manufacturer (vendor and product) id
 // details.
@@ -205,7 +205,7 @@ void StorageMonitorCros::OnMountEvent(
   // Ignore errors.
   if (error_code != chromeos::MOUNT_ERROR_NONE)
     return;
-  if (mount_info.mount_condition != chromeos::disks::MOUNT_CONDITION_NONE)
+  if (mount_info.mount_condition != ash::disks::MOUNT_CONDITION_NONE)
     return;
 
   switch (event) {

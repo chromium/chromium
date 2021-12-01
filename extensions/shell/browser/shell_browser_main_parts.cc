@@ -129,7 +129,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
     chromeos::PowerManagerClient::InitializeFake();
   }
 
-  chromeos::disks::DiskMountManager::Initialize();
+  ash::disks::DiskMountManager::Initialize();
 
   chromeos::NetworkHandler::Initialize();
   network_controller_ = std::make_unique<ShellNetworkController>(
@@ -298,7 +298,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   network_controller_.reset();
   chromeos::NetworkHandler::Shutdown();
-  chromeos::disks::DiskMountManager::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
   device::BluetoothAdapterFactory::Shutdown();
   bluez::BluezDBusManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();

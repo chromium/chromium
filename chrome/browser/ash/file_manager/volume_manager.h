@@ -101,8 +101,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForDownloads(
       const base::FilePath& downloads_path);
   static std::unique_ptr<Volume> CreateForRemovable(
-      const chromeos::disks::DiskMountManager::MountPointInfo& mount_point,
-      const chromeos::disks::Disk* disk);
+      const ash::disks::DiskMountManager::MountPointInfo& mount_point,
+      const ash::disks::Disk* disk);
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       MountContext mount_context);
@@ -156,7 +156,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   const base::FilePath& source_path() const { return source_path_; }
   const base::FilePath& mount_path() const { return mount_path_; }
   const base::FilePath& remote_mount_path() const { return remote_mount_path_; }
-  chromeos::disks::MountCondition mount_condition() const {
+  ash::disks::MountCondition mount_condition() const {
     return mount_condition_;
   }
   MountContext mount_context() const { return mount_context_; }
@@ -227,7 +227,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   base::FilePath remote_mount_path_;
 
   // The mounting condition. See the enum for the details.
-  chromeos::disks::MountCondition mount_condition_;
+  ash::disks::MountCondition mount_condition_;
 
   // The context of the mount. Whether mounting was performed due to a user
   // interaction or not.
@@ -288,7 +288,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
 class VolumeManager : public KeyedService,
                       public arc::ArcSessionManagerObserver,
                       public drive::DriveIntegrationServiceObserver,
-                      public chromeos::disks::DiskMountManager::Observer,
+                      public ash::disks::DiskMountManager::Observer,
                       public ash::file_system_provider::Observer,
                       public storage_monitor::RemovableStorageObserver,
                       public DocumentsProviderRootManager::Observer {
@@ -306,7 +306,7 @@ class VolumeManager : public KeyedService,
       Profile* profile,
       drive::DriveIntegrationService* drive_integration_service,
       chromeos::PowerManagerClient* power_manager_client,
-      chromeos::disks::DiskMountManager* disk_mount_manager,
+      ash::disks::DiskMountManager* disk_mount_manager,
       ash::file_system_provider::Service* file_system_provider_service,
       GetMtpStorageInfoCallback get_mtp_storage_info_callback);
 
@@ -403,25 +403,24 @@ class VolumeManager : public KeyedService,
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
 
-  // chromeos::disks::DiskMountManager::Observer overrides.
-  void OnAutoMountableDiskEvent(
-      chromeos::disks::DiskMountManager::DiskEvent event,
-      const chromeos::disks::Disk& disk) override;
-  void OnDeviceEvent(chromeos::disks::DiskMountManager::DeviceEvent event,
+  // ash::disks::DiskMountManager::Observer overrides.
+  void OnAutoMountableDiskEvent(ash::disks::DiskMountManager::DiskEvent event,
+                                const ash::disks::Disk& disk) override;
+  void OnDeviceEvent(ash::disks::DiskMountManager::DeviceEvent event,
                      const std::string& device_path) override;
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
-  void OnFormatEvent(chromeos::disks::DiskMountManager::FormatEvent event,
+  void OnMountEvent(
+      ash::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+  void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
                      chromeos::FormatError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
-  void OnPartitionEvent(chromeos::disks::DiskMountManager::PartitionEvent event,
+  void OnPartitionEvent(ash::disks::DiskMountManager::PartitionEvent event,
                         chromeos::PartitionError error_code,
                         const std::string& device_path,
                         const std::string& device_label) override;
-  void OnRenameEvent(chromeos::disks::DiskMountManager::RenameEvent event,
+  void OnRenameEvent(ash::disks::DiskMountManager::RenameEvent event,
                      chromeos::RenameError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
@@ -497,7 +496,7 @@ class VolumeManager : public KeyedService,
 
   Profile* profile_;
   drive::DriveIntegrationService* drive_integration_service_;  // Not owned.
-  chromeos::disks::DiskMountManager* disk_mount_manager_;      // Not owned.
+  ash::disks::DiskMountManager* disk_mount_manager_;           // Not owned.
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;
   ash::file_system_provider::Service*

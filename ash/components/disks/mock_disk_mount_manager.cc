@@ -17,7 +17,7 @@ using testing::AnyNumber;
 using testing::Invoke;
 using testing::ReturnRef;
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 namespace {
@@ -215,4 +215,4 @@ void MockDiskMountManager::NotifyDeviceChanged(DeviceEvent event,
 }
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

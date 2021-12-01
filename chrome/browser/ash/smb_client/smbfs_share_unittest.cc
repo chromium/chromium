@@ -55,7 +55,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      disks::DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -100,8 +100,7 @@ class TestSmbFsImpl : public smbfs::mojom::SmbFs {
 class SmbFsShareTest : public testing::Test {
  protected:
   void SetUp() override {
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_);
+    disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildVolumeManager));
 
@@ -126,8 +125,8 @@ class SmbFsShareTest : public testing::Test {
       mojo::Receiver<smbfs::mojom::SmbFs>* smbfs_receiver,
       mojo::Remote<smbfs::mojom::SmbFsDelegate>* delegate) {
     return std::make_unique<smbfs::SmbFsHost>(
-        std::make_unique<chromeos::disks::MountPoint>(
-            base::FilePath(kMountPath), disk_mount_manager_),
+        std::make_unique<disks::MountPoint>(base::FilePath(kMountPath),
+                                            disk_mount_manager_),
         share,
         mojo::Remote<smbfs::mojom::SmbFs>(
             smbfs_receiver->BindNewPipeAndPassRemote()),

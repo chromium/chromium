@@ -39,11 +39,11 @@
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
-
 namespace file_manager {
 namespace {
+
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
@@ -621,7 +621,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -656,7 +656,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -695,7 +695,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_UnmountingWithoutMounting) {
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -1075,14 +1075,14 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/removable/usb", "/removable/usb",
                                        chromeos::MOUNT_TYPE_DEVICE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
 
   // Mount a zip archive in the stick.
   volume_manager()->OnMountEvent(
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/removable/usb/1.zip", "/archive/1",
                                        chromeos::MOUNT_TYPE_ARCHIVE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("archive:1");
   ASSERT_TRUE(volume.get());
   EXPECT_EQ("/archive/1", volume->mount_path().AsUTF8Unsafe());
@@ -1093,7 +1093,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/archive/1/2.zip", "/archive/2",
                                        chromeos::MOUNT_TYPE_ARCHIVE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> second_volume =
       volume_manager()->FindVolumeById("archive:2");
   ASSERT_TRUE(second_volume.get());
@@ -1106,7 +1106,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo(
           "/other/profile/drive/folder/3.zip", "/archive/3",
-          chromeos::MOUNT_TYPE_ARCHIVE, chromeos::disks::MOUNT_CONDITION_NONE));
+          chromeos::MOUNT_TYPE_ARCHIVE, ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> third_volume =
       volume_manager()->FindVolumeById("archive:3");
   ASSERT_FALSE(third_volume.get());

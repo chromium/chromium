@@ -47,13 +47,12 @@ bool EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType>::FromMojom(
 }
 
 arc::mojom::MountEvent
-EnumTraits<arc::mojom::MountEvent,
-           chromeos::disks::DiskMountManager::MountEvent>::
-    ToMojom(chromeos::disks::DiskMountManager::MountEvent mount_event) {
+EnumTraits<arc::mojom::MountEvent, ash::disks::DiskMountManager::MountEvent>::
+    ToMojom(ash::disks::DiskMountManager::MountEvent mount_event) {
   switch (mount_event) {
-    case chromeos::disks::DiskMountManager::MountEvent::MOUNTING:
+    case ash::disks::DiskMountManager::MountEvent::MOUNTING:
       return arc::mojom::MountEvent::MOUNTING;
-    case chromeos::disks::DiskMountManager::MountEvent::UNMOUNTING:
+    case ash::disks::DiskMountManager::MountEvent::UNMOUNTING:
       return arc::mojom::MountEvent::UNMOUNTING;
   }
   NOTREACHED();
@@ -61,15 +60,15 @@ EnumTraits<arc::mojom::MountEvent,
 }
 
 bool EnumTraits<arc::mojom::MountEvent,
-                chromeos::disks::DiskMountManager::MountEvent>::
+                ash::disks::DiskMountManager::MountEvent>::
     FromMojom(arc::mojom::MountEvent input,
-              chromeos::disks::DiskMountManager::MountEvent* out) {
+              ash::disks::DiskMountManager::MountEvent* out) {
   switch (input) {
     case arc::mojom::MountEvent::MOUNTING:
-      *out = chromeos::disks::DiskMountManager::MountEvent::MOUNTING;
+      *out = ash::disks::DiskMountManager::MountEvent::MOUNTING;
       return true;
     case arc::mojom::MountEvent::UNMOUNTING:
-      *out = chromeos::disks::DiskMountManager::MountEvent::UNMOUNTING;
+      *out = ash::disks::DiskMountManager::MountEvent::UNMOUNTING;
       return true;
   }
   NOTREACHED();

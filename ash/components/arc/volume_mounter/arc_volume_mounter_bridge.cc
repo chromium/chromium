@@ -25,11 +25,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
-using chromeos::disks::DiskMountManager;
-
 namespace arc {
 
 namespace {
+
+using ::ash::disks::DiskMountManager;
 
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
@@ -196,7 +196,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
   }
 
   // Get disks informations that are needed by Android MountService.
-  const chromeos::disks::Disk* disk =
+  const ash::disks::Disk* disk =
       DiskMountManager::GetInstance()->FindDiskBySourcePath(
           mount_info.source_path);
   std::string fs_uuid, device_label;

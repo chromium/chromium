@@ -139,7 +139,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   }
 
   // Add ourselves as an observer so we can continue once the path is mounted.
-  auto* dmgr = chromeos::disks::DiskMountManager::GetInstance();
+  auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
   // Call to sshfs to mount.
   in_progress_mount_->source_path = base::StringPrintf(
@@ -158,7 +158,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
 
 void CrostiniSshfs::OnMountEvent(
     chromeos::MountError error_code,
-    const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
+    const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {

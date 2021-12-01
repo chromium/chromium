@@ -66,8 +66,8 @@ class DriveFsDiskMounterTest : public testing::Test {
   MOCK_METHOD1(OnCompleted, void(base::FilePath));
 
   base::test::TaskEnvironment task_environment_;
-  chromeos::disks::MockDiskMountManager disk_manager_;
-  chromeos::disks::DiskMountManager::MountPathCallback mount_callback_;
+  ash::disks::MockDiskMountManager disk_manager_;
+  ash::disks::DiskMountManager::MountPathCallback mount_callback_;
 };
 
 TEST_F(DriveFsDiskMounterTest, MountUnmount) {

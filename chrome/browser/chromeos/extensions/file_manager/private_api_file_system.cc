@@ -74,7 +74,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 using file_manager::util::EntryDefinition;
@@ -364,20 +364,20 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
   return prefix_matches;
 }
 
-chromeos::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
+ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
     api::file_manager_private::FormatFileSystemType filesystem) {
   switch (filesystem) {
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NONE:
-      return chromeos::disks::FormatFileSystemType::kUnknown;
+      return ash::disks::FormatFileSystemType::kUnknown;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_VFAT:
-      return chromeos::disks::FormatFileSystemType::kVfat;
+      return ash::disks::FormatFileSystemType::kVfat;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_EXFAT:
-      return chromeos::disks::FormatFileSystemType::kExfat;
+      return ash::disks::FormatFileSystemType::kExfat;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NTFS:
-      return chromeos::disks::FormatFileSystemType::kNtfs;
+      return ash::disks::FormatFileSystemType::kNtfs;
   }
   NOTREACHED() << "Unknown format filesystem " << filesystem;
-  return chromeos::disks::FormatFileSystemType::kUnknown;
+  return ash::disks::FormatFileSystemType::kUnknown;
 }
 
 absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
@@ -798,7 +798,7 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
   const DiskMountManager::DiskMap& disks =
       DiskMountManager::GetInstance()->disks();
 
-  chromeos::disks::Disk* device_disk;
+  ash::disks::Disk* device_disk;
   DiskMountManager::DiskMap::const_iterator it;
 
   for (it = disks.begin(); it != disks.end(); ++it) {

@@ -150,8 +150,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(profile_.get(),
                                                  "/media/archive/foo"));
 
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      new FakeDiskMountManager);
+  ash::disks::DiskMountManager::InitializeForTesting(new FakeDiskMountManager);
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
   ash::FakeChromeUserManager user_manager;
   user_manager.AddUser(
@@ -203,7 +202,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   // path for a guest profile.
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(&guest_profile, "foo"));
 
-  chromeos::disks::DiskMountManager::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
@@ -636,22 +635,21 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
                                      storage::FileSystemMountOption(),
                                      crostini_mount_point_);
 
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new FakeDiskMountManager);
 
     // Add the disk and mount point for a fake removable device.
+    ASSERT_TRUE(ash::disks::DiskMountManager::GetInstance()->AddDiskForTest(
+        ash::disks::Disk::Builder()
+            .SetDevicePath("/device/source_path")
+            .SetFileSystemUUID("0123-abcd")
+            .Build()));
     ASSERT_TRUE(
-        chromeos::disks::DiskMountManager::GetInstance()->AddDiskForTest(
-            chromeos::disks::Disk::Builder()
-                .SetDevicePath("/device/source_path")
-                .SetFileSystemUUID("0123-abcd")
-                .Build()));
-    ASSERT_TRUE(
-        chromeos::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
-            chromeos::disks::DiskMountManager::MountPointInfo(
+        ash::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
+            ash::disks::DiskMountManager::MountPointInfo(
                 "/device/source_path", "/media/removable/a",
                 chromeos::MOUNT_TYPE_DEVICE,
-                chromeos::disks::MOUNT_CONDITION_NONE)));
+                ash::disks::MOUNT_CONDITION_NONE)));
 
     // Add a Share Cache mount point for the primary profile.
     ASSERT_TRUE(mount_points->RegisterFileSystem(
@@ -675,7 +673,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     // Run all pending tasks before destroying testing profile.
     base::RunLoop().RunUntilIdle();
 
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
   }
 
  protected:

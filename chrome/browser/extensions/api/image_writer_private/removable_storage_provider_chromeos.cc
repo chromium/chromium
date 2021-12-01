@@ -13,8 +13,8 @@ namespace extensions {
 const char kUnknownSDDiskModel[] = "SD Card";
 const char kUnknownUSBDiskModel[] = "USB Drive";
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 
 // The Chrome OS implementation takes advantage of the Chrome OS
 // DiskMountManager.  This does not expose whether the device is a removable or

@@ -87,7 +87,7 @@ void SmbFsShare::Mount(SmbFsShare::MountCallback callback) {
   } else {
     mounter_ = std::make_unique<smbfs::SmbFsMounter>(
         share_url_.ToString(), mount_dir, options_, this,
-        chromeos::disks::DiskMountManager::GetInstance());
+        disks::DiskMountManager::GetInstance());
   }
   mounter_->Mount(base::BindOnce(&SmbFsShare::OnMountDone,
                                  base::Unretained(this), std::move(callback)));

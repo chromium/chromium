@@ -542,15 +542,15 @@ void VolumeToVolumeMetadata(
   volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
-    case chromeos::disks::MOUNT_CONDITION_NONE:
+    case ash::disks::MOUNT_CONDITION_NONE:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
+    case ash::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNKNOWN;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
+    case ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
       break;

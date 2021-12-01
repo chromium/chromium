@@ -172,7 +172,7 @@ std::string GetSourcePathForRemovableMedia(const std::string& volume_name) {
   const std::string mount_path(
       base::StringPrintf("%s/%s", kRemovableMediaPath, volume_name.c_str()));
   const auto& mount_points =
-      chromeos::disks::DiskMountManager::GetInstance()->mount_points();
+      ash::disks::DiskMountManager::GetInstance()->mount_points();
   const auto found = mount_points.find(mount_path);
   return found == mount_points.end() ? std::string()
                                      : found->second.source_path;
@@ -187,8 +187,8 @@ std::string GetFsUuidForRemovableMedia(const std::string& volume_name) {
     LOG(WARNING) << "No source path is found for volume name: " << volume_name;
     return std::string();
   }
-  const chromeos::disks::Disk* disk =
-      chromeos::disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
+  const ash::disks::Disk* disk =
+      ash::disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
           source_path);
   std::string fs_uuid = disk == nullptr ? std::string() : disk->fs_uuid();
   if (fs_uuid.empty())

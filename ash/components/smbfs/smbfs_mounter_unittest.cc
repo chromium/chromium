@@ -49,12 +49,12 @@ constexpr char kPassword[] = "myverysecurepassword";
 constexpr char kKerberosIdentity[] = "my-kerberos-identity";
 constexpr char kAccountHash[] = "00112233445566778899aabb";
 
-chromeos::disks::DiskMountManager::MountPointInfo MakeMountPointInfo(
+ash::disks::DiskMountManager::MountPointInfo MakeMountPointInfo(
     const std::string& source_path,
     const std::string& mount_path) {
-  return chromeos::disks::DiskMountManager::MountPointInfo(
+  return ash::disks::DiskMountManager::MountPointInfo(
       source_path, mount_path, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 }
 
 class MockDelegate : public SmbFsHost::Delegate {
@@ -108,7 +108,7 @@ class TestSmbFsMounter : public SmbFsMounter {
         .WillOnce(WithArgs<0, 6>(
             [mount_error, mount_path](
                 const std::string& source_path,
-                chromeos::disks::DiskMountManager::MountPathCallback callback) {
+                ash::disks::DiskMountManager::MountPathCallback callback) {
               base::SequencedTaskRunnerHandle::Get()->PostTask(
                   FROM_HERE,
                   base::BindOnce(
@@ -125,7 +125,7 @@ class TestSmbFsMounter : public SmbFsMounter {
   }
 
  private:
-  chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;
+  ash::disks::MockDiskMountManager mock_disk_mount_manager_;
 };
 
 class SmbFsMounterTest : public testing::Test {
@@ -134,7 +134,7 @@ class SmbFsMounterTest : public testing::Test {
       const std::string& source_path,
       const std::string& mount_path,
       chromeos::MountError mount_error,
-      chromeos::disks::DiskMountManager::MountPathCallback callback) {
+      ash::disks::DiskMountManager::MountPathCallback callback) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), mount_error,
                                   MakeMountPointInfo(source_path, mount_path)));
@@ -145,7 +145,7 @@ class SmbFsMounterTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   MockDelegate mock_delegate_;
-  chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;
+  ash::disks::MockDiskMountManager mock_disk_mount_manager_;
 };
 
 TEST_F(SmbFsMounterTest, FilesystemMountTimeout) {
@@ -193,9 +193,8 @@ TEST_F(SmbFsMounterTest, FilesystemMountFailure) {
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))
       .WillOnce(WithArgs<0, 6>(
-          [this](
-              const std::string& source_path,
-              chromeos::disks::DiskMountManager::MountPathCallback callback) {
+          [this](const std::string& source_path,
+                 ash::disks::DiskMountManager::MountPathCallback callback) {
             PostMountEvent(source_path, kMountPath,
                            chromeos::MOUNT_ERROR_INTERNAL, std::move(callback));
           }));
@@ -222,9 +221,8 @@ TEST_F(SmbFsMounterTest, TimeoutAfterFilesystemMount) {
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))
       .WillOnce(WithArgs<0, 6>(
-          [this](
-              const std::string& source_path,
-              chromeos::disks::DiskMountManager::MountPathCallback callback) {
+          [this](const std::string& source_path,
+                 ash::disks::DiskMountManager::MountPathCallback callback) {
             PostMountEvent(source_path, kMountPath, chromeos::MOUNT_ERROR_NONE,
                            std::move(callback));
           }));
@@ -256,9 +254,8 @@ TEST_F(SmbFsMounterTest, FilesystemMountAfterDestruction) {
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))
       .WillOnce(WithArgs<0, 6>(
-          [this](
-              const std::string& source_path,
-              chromeos::disks::DiskMountManager::MountPathCallback callback) {
+          [this](const std::string& source_path,
+                 ash::disks::DiskMountManager::MountPathCallback callback) {
             // This posts a mount event to the task queue, which will not be run
             // until |run_loop| is started.
             PostMountEvent(source_path, kMountPath,
@@ -563,7 +560,7 @@ class SmbFsMounterE2eTest : public testing::Test {
   void PostMountEvent(
       const std::string& source_path,
       const std::string& mount_path,
-      chromeos::disks::DiskMountManager::MountPathCallback callback) {
+      ash::disks::DiskMountManager::MountPathCallback callback) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), chromeos::MOUNT_ERROR_NONE,
@@ -576,7 +573,7 @@ class SmbFsMounterE2eTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   MockDelegate mock_delegate_;
-  chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;
+  ash::disks::MockDiskMountManager mock_disk_mount_manager_;
 };
 
 // Child process that emulates the behaviour of smbfs.
@@ -657,10 +654,11 @@ TEST_F(SmbFsMounterE2eTest, MountSuccess) {
 
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))
-      .WillOnce(WithArgs<0, 6>([this, &channel](
-                                   const std::string& source_path,
-                                   chromeos::disks::DiskMountManager::
-                                       MountPathCallback callback) {
+      .WillOnce(WithArgs<0,
+                         6>([this, &channel](
+                                const std::string& source_path,
+                                ash::disks::DiskMountManager::MountPathCallback
+                                    callback) {
         // Emulates cros-disks mount success.
         PostMountEvent(source_path, kMountPath, std::move(callback));
 

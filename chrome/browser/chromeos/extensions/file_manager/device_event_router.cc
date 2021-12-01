@@ -67,12 +67,12 @@ void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
                 "");
 }
 
-void DeviceEventRouter::OnDiskAdded(const chromeos::disks::Disk& disk,
+void DeviceEventRouter::OnDiskAdded(const ash::disks::Disk& disk,
                                     bool mounting) {
   // Do nothing.
 }
 
-void DeviceEventRouter::OnDiskRemoved(const chromeos::disks::Disk& disk) {
+void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_resuming_ || is_starting_up_)

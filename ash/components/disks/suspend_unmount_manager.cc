@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 namespace {
 
@@ -85,4 +85,4 @@ void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
 }
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

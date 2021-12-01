@@ -34,7 +34,7 @@
 
 namespace extensions {
 
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 namespace file_manager_private = extensions::api::file_manager_private;
 

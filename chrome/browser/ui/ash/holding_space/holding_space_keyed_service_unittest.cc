@@ -109,7 +109,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      ash::disks::DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -327,14 +327,14 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     task_environment()->AdvanceClock(base::subtle::TimeNowIgnoringOverride() -
                                      base::Time::Now());
     // Needed by `file_manager::VolumeManager`.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     BrowserWithTestWindowTest::SetUp();
   }
 
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
   }
 
   TestingProfile* CreateProfile() override {

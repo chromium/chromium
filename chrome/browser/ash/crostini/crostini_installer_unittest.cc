@@ -127,8 +127,8 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::SeneschalClient::InitializeFake();
 
-    disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager;
+    ash::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_mock_);
 
     profile_ = std::make_unique<TestingProfile>();
@@ -153,7 +153,7 @@ class CrostiniInstallerTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
 
-    chromeos::disks::MockDiskMountManager::Shutdown();
+    ash::disks::MockDiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
@@ -188,7 +188,7 @@ class CrostiniInstallerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   // Owned by DiskMountManager
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
 
   WaitingFakeConciergeClient* waiting_fake_concierge_client_ = nullptr;
 

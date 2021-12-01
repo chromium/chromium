@@ -23,11 +23,11 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   ~ArcVolumeMounterBridgeTest() override = default;
 
   void SetUp() override {
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        new chromeos::disks::MockDiskMountManager);
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new ash::disks::MockDiskMountManager);
     bridge_ = ArcVolumeMounterBridge::GetForBrowserContextForTesting(&context_);
   }
-  void TearDown() override { chromeos::disks::DiskMountManager::Shutdown(); }
+  void TearDown() override { ash::disks::DiskMountManager::Shutdown(); }
 
   ArcVolumeMounterBridge* bridge() { return bridge_; }
 

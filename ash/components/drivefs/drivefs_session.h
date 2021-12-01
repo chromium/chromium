@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(DRIVEFS) DiskMounter {
                      base::OnceCallback<void(base::FilePath)> callback) = 0;
 
   static std::unique_ptr<DiskMounter> Create(
-      chromeos::disks::DiskMountManager* disk_mount_manager);
+      ash::disks::DiskMountManager* disk_mount_manager);
 };
 
 class DriveFsConnection;

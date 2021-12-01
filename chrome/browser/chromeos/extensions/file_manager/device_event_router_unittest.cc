@@ -18,7 +18,7 @@ namespace file_manager {
 namespace {
 
 namespace file_manager_private = extensions::api::file_manager_private;
-using chromeos::disks::Disk;
+using ::ash::disks::Disk;
 
 const char kTestDevicePath[] = "/device/test";
 

@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 // TODO(tbarzic): Replace this mock with a fake implementation
@@ -149,6 +149,6 @@ class MockDiskMountManager : public DiskMountManager {
 };
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_DISKS_MOCK_DISK_MOUNT_MANAGER_H_

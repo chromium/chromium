@@ -35,12 +35,11 @@ SmbFsMounter::MountOptions::MountOptions(const MountOptions&) = default;
 
 SmbFsMounter::MountOptions::~MountOptions() = default;
 
-SmbFsMounter::SmbFsMounter(
-    const std::string& share_path,
-    const std::string& mount_dir_name,
-    const MountOptions& options,
-    SmbFsHost::Delegate* delegate,
-    chromeos::disks::DiskMountManager* disk_mount_manager)
+SmbFsMounter::SmbFsMounter(const std::string& share_path,
+                           const std::string& mount_dir_name,
+                           const MountOptions& options,
+                           SmbFsHost::Delegate* delegate,
+                           ash::disks::DiskMountManager* disk_mount_manager)
     : SmbFsMounter(share_path,
                    mount_dir_name,
                    options,
@@ -48,13 +47,12 @@ SmbFsMounter::SmbFsMounter(
                    disk_mount_manager,
                    {}) {}
 
-SmbFsMounter::SmbFsMounter(
-    const std::string& share_path,
-    const std::string& mount_dir_name,
-    const MountOptions& options,
-    SmbFsHost::Delegate* delegate,
-    chromeos::disks::DiskMountManager* disk_mount_manager,
-    mojo::Remote<mojom::SmbFsBootstrap> bootstrap)
+SmbFsMounter::SmbFsMounter(const std::string& share_path,
+                           const std::string& mount_dir_name,
+                           const MountOptions& options,
+                           SmbFsHost::Delegate* delegate,
+                           ash::disks::DiskMountManager* disk_mount_manager,
+                           mojo::Remote<mojom::SmbFsBootstrap> bootstrap)
     : share_path_(share_path),
       mount_dir_name_(mount_dir_name),
       options_(options),
@@ -98,7 +96,7 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
   bootstrap_.set_disconnect_handler(
       base::BindOnce(&SmbFsMounter::OnMojoDisconnect, base::Unretained(this)));
 
-  chromeos::disks::MountPoint::Mount(
+  ash::disks::MountPoint::Mount(
       disk_mount_manager_, mount_url_, "" /* source_format */, mount_dir_name_,
       {} /* mount_options */, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
       chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
@@ -110,7 +108,7 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
 
 void SmbFsMounter::OnMountDone(
     chromeos::MountError error_code,
-    std::unique_ptr<chromeos::disks::MountPoint> mount_point) {
+    std::unique_ptr<ash::disks::MountPoint> mount_point) {
   if (!callback_) {
     // This can happen if the mount timeout expires and the callback is already
     // run with a timeout error.

@@ -26,7 +26,7 @@ template <class Event, class EventType, class AppId>
 class InstallEventLoggerBase {
  public:
   explicit InstallEventLoggerBase(Profile* profile) : profile_(profile) {
-    stateful_path_ = chromeos::disks::GetStatefulPartitionPath();
+    stateful_path_ = ash::disks::GetStatefulPartitionPath();
   }
 
   std::unique_ptr<Event> CreateEvent(EventType type) {

@@ -19,11 +19,11 @@ struct EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType> {
 
 template <>
 struct EnumTraits<arc::mojom::MountEvent,
-                  chromeos::disks::DiskMountManager::MountEvent> {
+                  ash::disks::DiskMountManager::MountEvent> {
   static arc::mojom::MountEvent ToMojom(
-      chromeos::disks::DiskMountManager::MountEvent mount_event);
+      ash::disks::DiskMountManager::MountEvent mount_event);
   static bool FromMojom(arc::mojom::MountEvent input,
-                        chromeos::disks::DiskMountManager::MountEvent* out);
+                        ash::disks::DiskMountManager::MountEvent* out);
 };
 
 }  // namespace mojo

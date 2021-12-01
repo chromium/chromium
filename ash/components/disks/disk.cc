@@ -9,12 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 namespace {
 constexpr char kStatefulPartition[] = "/mnt/stateful_partition";
-}
+}  // namespace
 
 Disk::Disk(const DiskInfo& disk_info,
            bool write_disabled_by_policy,
@@ -204,4 +204,4 @@ base::FilePath GetStatefulPartitionPath() {
 }
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

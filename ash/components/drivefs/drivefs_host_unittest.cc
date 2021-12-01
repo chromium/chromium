@@ -213,7 +213,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     profile_path_ = base::FilePath(FILE_PATH_LITERAL("/path/to/profile"));
     account_id_ = AccountId::FromUserEmailGaiaId("test@example.com", "ID");
 
-    disk_manager_ = std::make_unique<chromeos::disks::MockDiskMountManager>();
+    disk_manager_ = std::make_unique<ash::disks::MockDiskMountManager>();
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
     host_delegate_ = std::make_unique<TestingDriveFsHostDelegate>(
@@ -325,8 +325,8 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   base::FilePath profile_path_;
   base::test::TaskEnvironment task_environment_;
   AccountId account_id_;
-  std::unique_ptr<chromeos::disks::MockDiskMountManager> disk_manager_;
-  chromeos::disks::DiskMountManager::MountPathCallback mount_callback_;
+  std::unique_ptr<ash::disks::MockDiskMountManager> disk_manager_;
+  ash::disks::DiskMountManager::MountPathCallback mount_callback_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   base::SimpleTestClock clock_;

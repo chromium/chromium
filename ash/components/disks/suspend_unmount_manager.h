@@ -14,7 +14,7 @@
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 class DiskMountManager;
@@ -52,6 +52,6 @@ class COMPONENT_EXPORT(ASH_DISKS) SuspendUnmountManager
 };
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_

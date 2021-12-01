@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 
 class DiskMountManager;
@@ -66,6 +66,6 @@ class COMPONENT_EXPORT(ASH_DISKS) MountPoint {
 };
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_DISKS_MOUNT_POINT_H_

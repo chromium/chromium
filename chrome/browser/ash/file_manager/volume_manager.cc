@@ -225,7 +225,7 @@ Volume::Volume()
     : source_(SOURCE_FILE),
       type_(VOLUME_TYPE_GOOGLE_DRIVE),
       device_type_(chromeos::DEVICE_TYPE_UNKNOWN),
-      mount_condition_(chromeos::disks::MOUNT_CONDITION_NONE),
+      mount_condition_(ash::disks::MOUNT_CONDITION_NONE),
       mount_context_(MOUNT_CONTEXT_UNKNOWN),
       is_parent_(false),
       is_read_only_(false),
@@ -246,7 +246,7 @@ std::unique_ptr<Volume> Volume::CreateForDrive(
   volume->source_path_ = drive_path;
   volume->source_ = SOURCE_NETWORK;
   volume->mount_path_ = drive_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = true;
   return volume;
@@ -261,7 +261,7 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = downloads_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = true;
   return volume;
@@ -269,8 +269,8 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForRemovable(
-    const chromeos::disks::DiskMountManager::MountPointInfo& mount_point,
-    const chromeos::disks::Disk* disk) {
+    const ash::disks::DiskMountManager::MountPointInfo& mount_point,
+    const ash::disks::Disk* disk) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = MountTypeToVolumeType(mount_point.mount_type);
   volume->source_path_ = base::FilePath(mount_point.source_path);
@@ -322,7 +322,7 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
   volume->volume_label_ = file_system_info.display_name();
   volume->type_ = VOLUME_TYPE_PROVIDED;
   volume->mount_path_ = file_system_info.mount_path();
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->mount_context_ = mount_context;
   volume->is_parent_ = true;
   volume->is_read_only_ = !file_system_info.writable();
@@ -340,7 +340,7 @@ std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->mount_path_ = mount_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->is_parent_ = true;
   volume->is_read_only_ = read_only;
   volume->volume_id_ = kMtpVolumeIdPrefix + label;
@@ -360,7 +360,7 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_label_ = root_document_id;
   volume->is_read_only_ = true;
   volume->watchable_ = false;
@@ -379,7 +379,7 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = sshfs_mount_path;
   volume->remote_mount_path_ = remote_mount_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = false;
   return volume;
@@ -394,7 +394,7 @@ std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = mount_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = true;
   return volume;
@@ -416,7 +416,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ =
       arc::GetDocumentsProviderMountPath(authority, document_id);
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_label_ = title;
   volume->is_read_only_ = read_only;
   volume->watchable_ = false;
@@ -439,7 +439,7 @@ std::unique_ptr<Volume> Volume::CreateForSmb(const base::FilePath& mount_point,
   // Keep source_path empty.
   volume->source_ = SOURCE_NETWORK;
   volume->mount_path_ = mount_point;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = display_name;
   volume->watchable_ = false;
@@ -460,7 +460,7 @@ std::unique_ptr<Volume> Volume::CreateForShareCache(
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = mount_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = false;
   volume->is_read_only_ = true;
@@ -485,7 +485,7 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
   volume->source_ = SOURCE_DEVICE;
   volume->mount_path_ = path;
   volume->storage_device_path_ = device_path;
-  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->is_read_only_ = read_only;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->drive_label_ = drive_label;
@@ -510,7 +510,7 @@ VolumeManager::VolumeManager(
     Profile* profile,
     drive::DriveIntegrationService* drive_integration_service,
     chromeos::PowerManagerClient* power_manager_client,
-    chromeos::disks::DiskMountManager* disk_mount_manager,
+    ash::disks::DiskMountManager* disk_mount_manager,
     ash::file_system_provider::Service* file_system_provider_service,
     GetMtpStorageInfoCallback get_mtp_storage_info_callback)
     : profile_(profile),
@@ -853,8 +853,8 @@ void VolumeManager::OnFileSystemBeingUnmounted() {
 }
 
 void VolumeManager::OnAutoMountableDiskEvent(
-    chromeos::disks::DiskMountManager::DiskEvent event,
-    const chromeos::disks::Disk& disk) {
+    ash::disks::DiskMountManager::DiskEvent event,
+    const ash::disks::Disk& disk) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Disregard hidden devices.
@@ -862,8 +862,8 @@ void VolumeManager::OnAutoMountableDiskEvent(
     return;
 
   switch (event) {
-    case chromeos::disks::DiskMountManager::DISK_ADDED:
-    case chromeos::disks::DiskMountManager::DISK_CHANGED: {
+    case ash::disks::DiskMountManager::DISK_ADDED:
+    case ash::disks::DiskMountManager::DISK_CHANGED: {
       if (disk.device_path().empty()) {
         DVLOG(1) << "Empty system path for " << disk.device_path();
         return;
@@ -896,12 +896,12 @@ void VolumeManager::OnAutoMountableDiskEvent(
       return;
     }
 
-    case chromeos::disks::DiskMountManager::DISK_REMOVED:
+    case ash::disks::DiskMountManager::DISK_REMOVED:
       // If the disk is already mounted, unmount it.
       if (!disk.mount_path().empty()) {
         disk_mount_manager_->UnmountPath(
             disk.mount_path(),
-            chromeos::disks::DiskMountManager::UnmountPathCallback());
+            ash::disks::DiskMountManager::UnmountPathCallback());
       }
 
       // Notify to observers.
@@ -913,22 +913,22 @@ void VolumeManager::OnAutoMountableDiskEvent(
 }
 
 void VolumeManager::OnDeviceEvent(
-    chromeos::disks::DiskMountManager::DeviceEvent event,
+    ash::disks::DiskMountManager::DeviceEvent event,
     const std::string& device_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(1) << "OnDeviceEvent: " << event << ", " << device_path;
   switch (event) {
-    case chromeos::disks::DiskMountManager::DEVICE_ADDED:
+    case ash::disks::DiskMountManager::DEVICE_ADDED:
       for (auto& observer : observers_)
         observer.OnDeviceAdded(device_path);
       return;
-    case chromeos::disks::DiskMountManager::DEVICE_REMOVED: {
+    case ash::disks::DiskMountManager::DEVICE_REMOVED: {
       for (auto& observer : observers_)
         observer.OnDeviceRemoved(device_path);
       return;
     }
-    case chromeos::disks::DiskMountManager::DEVICE_SCANNED:
+    case ash::disks::DiskMountManager::DEVICE_SCANNED:
       DVLOG(1) << "Ignore SCANNED event: " << device_path;
       return;
   }
@@ -936,24 +936,24 @@ void VolumeManager::OnDeviceEvent(
 }
 
 void VolumeManager::OnMountEvent(
-    chromeos::disks::DiskMountManager::MountEvent event,
+    ash::disks::DiskMountManager::MountEvent event,
     chromeos::MountError error_code,
-    const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
+    const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Network storage is responsible for doing its own mounting.
   if (mount_info.mount_type == chromeos::MOUNT_TYPE_NETWORK_STORAGE)
     return;
 
   // Notify a mounting/unmounting event to observers.
-  const chromeos::disks::Disk* const disk =
+  const ash::disks::Disk* const disk =
       disk_mount_manager_->FindDiskBySourcePath(mount_info.source_path);
   std::unique_ptr<Volume> volume = Volume::CreateForRemovable(mount_info, disk);
   switch (event) {
-    case chromeos::disks::DiskMountManager::MOUNTING: {
+    case ash::disks::DiskMountManager::MOUNTING: {
       DoMountEvent(error_code, std::move(volume));
       return;
     }
-    case chromeos::disks::DiskMountManager::UNMOUNTING:
+    case ash::disks::DiskMountManager::UNMOUNTING:
       DoUnmountEvent(error_code, *volume);
       return;
   }
@@ -961,7 +961,7 @@ void VolumeManager::OnMountEvent(
 }
 
 void VolumeManager::OnFormatEvent(
-    chromeos::disks::DiskMountManager::FormatEvent event,
+    ash::disks::DiskMountManager::FormatEvent event,
     chromeos::FormatError error_code,
     const std::string& device_path,
     const std::string& device_label) {
@@ -970,13 +970,13 @@ void VolumeManager::OnFormatEvent(
            << ", " << device_path;
 
   switch (event) {
-    case chromeos::disks::DiskMountManager::FORMAT_STARTED:
+    case ash::disks::DiskMountManager::FORMAT_STARTED:
       for (auto& observer : observers_) {
         observer.OnFormatStarted(device_path, device_label,
                                  error_code == chromeos::FORMAT_ERROR_NONE);
       }
       return;
-    case chromeos::disks::DiskMountManager::FORMAT_COMPLETED:
+    case ash::disks::DiskMountManager::FORMAT_COMPLETED:
       // Even if format did not complete successfully, try to mount the device
       // so the user can retry.
       // MountPath auto-detects filesystem format if second argument is
@@ -998,7 +998,7 @@ void VolumeManager::OnFormatEvent(
 }
 
 void VolumeManager::OnPartitionEvent(
-    chromeos::disks::DiskMountManager::PartitionEvent event,
+    ash::disks::DiskMountManager::PartitionEvent event,
     chromeos::PartitionError error_code,
     const std::string& device_path,
     const std::string& device_label) {
@@ -1007,14 +1007,14 @@ void VolumeManager::OnPartitionEvent(
            << device_path;
 
   switch (event) {
-    case chromeos::disks::DiskMountManager::PARTITION_STARTED:
+    case ash::disks::DiskMountManager::PARTITION_STARTED:
       for (auto& observer : observers_) {
         observer.OnPartitionStarted(
             device_path, device_label,
             error_code == chromeos::PARTITION_ERROR_NONE);
       }
       return;
-    case chromeos::disks::DiskMountManager::PARTITION_COMPLETED:
+    case ash::disks::DiskMountManager::PARTITION_COMPLETED:
       // If partitioning failed, try to mount the device so the user can retry.
       // MountPath auto-detects filesystem format if second argument is
       // empty. The third argument (mount label) is not used in a disk mount
@@ -1037,7 +1037,7 @@ void VolumeManager::OnPartitionEvent(
 }
 
 void VolumeManager::OnRenameEvent(
-    chromeos::disks::DiskMountManager::RenameEvent event,
+    ash::disks::DiskMountManager::RenameEvent event,
     chromeos::RenameError error_code,
     const std::string& device_path,
     const std::string& device_label) {
@@ -1046,13 +1046,13 @@ void VolumeManager::OnRenameEvent(
            << device_path;
 
   switch (event) {
-    case chromeos::disks::DiskMountManager::RENAME_STARTED:
+    case ash::disks::DiskMountManager::RENAME_STARTED:
       for (auto& observer : observers_) {
         observer.OnRenameStarted(device_path, device_label,
                                  error_code == chromeos::RENAME_ERROR_NONE);
       }
       return;
-    case chromeos::disks::DiskMountManager::RENAME_COMPLETED:
+    case ash::disks::DiskMountManager::RENAME_COMPLETED:
       // Find previous mount point label if it exists
       std::string mount_label;
       auto disk_map_iter = disk_mount_manager_->disks().find(device_path);
@@ -1364,7 +1364,7 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
 
   std::vector<std::unique_ptr<Volume>> archives;
 
-  const chromeos::disks::DiskMountManager::MountPointMap& mount_points =
+  const ash::disks::DiskMountManager::MountPointMap& mount_points =
       disk_mount_manager_->mount_points();
   for (const auto& mount_point : mount_points) {
     switch (mount_point.second.mount_type) {

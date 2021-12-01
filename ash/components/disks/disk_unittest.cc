@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 namespace {
 
@@ -269,4 +269,4 @@ TEST(DiskTest, SetMountPath) {
 
 }  // namespace
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

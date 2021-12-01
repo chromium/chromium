@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 namespace {
 
@@ -89,4 +89,4 @@ void MountPoint::OnUmountDone(MountPoint::UnmountCallback callback,
 }
 
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash

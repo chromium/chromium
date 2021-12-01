@@ -44,7 +44,7 @@ const int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 
 class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public arc::ArcSessionManagerObserver,
-                       public chromeos::disks::DiskMountManager::Observer,
+                       public ash::disks::DiskMountManager::Observer,
                        public calculator::SizeCalculator::Observer {
  public:
   StorageHandler(Profile* profile, content::WebUIDataSource* html_source);
@@ -62,11 +62,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // arc::ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
-  // chromeos::disks::DiskMountManager::Observer:
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  // ash::disks::DiskMountManager::Observer:
+  void OnMountEvent(
+      ash::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // chromeos::settings::calculator::SizeCalculator::Observer:
   void OnSizeCalculated(

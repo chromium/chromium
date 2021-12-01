@@ -427,10 +427,52 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
 
 // TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
 namespace ash {
+using ::chromeos::CROS_DISKS_DEVICE_ADDED;
+using ::chromeos::CROS_DISKS_DEVICE_REMOVED;
+using ::chromeos::CROS_DISKS_DEVICE_SCANNED;
+using ::chromeos::CROS_DISKS_DISK_ADDED;
+using ::chromeos::CROS_DISKS_DISK_REMOVED;
+using ::chromeos::CrosDisksClient;
+using ::chromeos::DEVICE_TYPE_MOBILE;
+using ::chromeos::DEVICE_TYPE_OPTICAL_DISC;
+using ::chromeos::DEVICE_TYPE_SD;
+using ::chromeos::DEVICE_TYPE_UNKNOWN;
+using ::chromeos::DEVICE_TYPE_USB;
+using ::chromeos::DeviceType;
+using ::chromeos::DiskInfo;
+using ::chromeos::FORMAT_ERROR_DEVICE_NOT_ALLOWED;
+using ::chromeos::FORMAT_ERROR_NONE;
+using ::chromeos::FORMAT_ERROR_UNKNOWN;
+using ::chromeos::FORMAT_ERROR_UNSUPPORTED_FILESYSTEM;
+using ::chromeos::FormatError;
+using ::chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
+using ::chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
+using ::chromeos::MOUNT_ERROR_INTERNAL;
+using ::chromeos::MOUNT_ERROR_INVALID_DEVICE_PATH;
+using ::chromeos::MOUNT_ERROR_INVALID_PATH;
 using ::chromeos::MOUNT_ERROR_NONE;
+using ::chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED;
+using ::chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED;
+using ::chromeos::MOUNT_ERROR_UNKNOWN;
+using ::chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+using ::chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+using ::chromeos::MOUNT_TYPE_ARCHIVE;
 using ::chromeos::MOUNT_TYPE_DEVICE;
+using ::chromeos::MountAccessMode;
+using ::chromeos::MountEntry;
 using ::chromeos::MountError;
+using ::chromeos::MountEventType;
 using ::chromeos::MountType;
+using ::chromeos::PARTITION_ERROR_INVALID_DEVICE_PATH;
+using ::chromeos::PARTITION_ERROR_NONE;
+using ::chromeos::PARTITION_ERROR_UNKNOWN;
+using ::chromeos::PartitionError;
+using ::chromeos::REMOUNT_OPTION_MOUNT_NEW_DEVICE;
+using ::chromeos::REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE;
+using ::chromeos::RENAME_ERROR_DEVICE_NOT_ALLOWED;
+using ::chromeos::RENAME_ERROR_NONE;
+using ::chromeos::RENAME_ERROR_UNKNOWN;
+using ::chromeos::RenameError;
 }  // namespace ash
 
 #endif  // CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

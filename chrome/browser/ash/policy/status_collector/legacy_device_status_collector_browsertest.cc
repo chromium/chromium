@@ -109,9 +109,9 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 
+using ::ash::disks::DiskMountManager;
 using base::Time;
 using base::test::ScopedChromeOSVersionInfo;
-using chromeos::disks::DiskMountManager;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
@@ -868,9 +868,8 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     env->SetVar("TZ", "UTC");
 
     // Initialize our mock mounted disk volumes.
-    std::unique_ptr<chromeos::disks::MockDiskMountManager>
-        mock_disk_mount_manager =
-            std::make_unique<chromeos::disks::MockDiskMountManager>();
+    std::unique_ptr<ash::disks::MockDiskMountManager> mock_disk_mount_manager =
+        std::make_unique<ash::disks::MockDiskMountManager>();
     AddMountPoint("/mount/volume1");
     AddMountPoint("/mount/volume2");
     EXPECT_CALL(*mock_disk_mount_manager, mount_points())
@@ -959,7 +958,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     mount_point_map_.insert(DiskMountManager::MountPointMap::value_type(
         mount_point, DiskMountManager::MountPointInfo(
                          mount_point, mount_point, chromeos::MOUNT_TYPE_DEVICE,
-                         chromeos::disks::MOUNT_CONDITION_NONE)));
+                         ash::disks::MOUNT_CONDITION_NONE)));
   }
 
   virtual void RestartStatusCollector(

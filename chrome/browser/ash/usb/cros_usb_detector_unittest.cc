@@ -141,16 +141,15 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
             chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
 
     mock_disk_mount_manager_ =
-        new testing::NiceMock<chromeos::disks::MockDiskMountManager>;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        mock_disk_mount_manager_);
+        new testing::NiceMock<disks::MockDiskMountManager>;
+    disks::DiskMountManager::InitializeForTesting(mock_disk_mount_manager_);
   }
 
   CrosUsbDetectorTest(const CrosUsbDetectorTest&) = delete;
   CrosUsbDetectorTest& operator=(const CrosUsbDetectorTest&) = delete;
 
   ~CrosUsbDetectorTest() override {
-    chromeos::disks::DiskMountManager::Shutdown();
+    disks::DiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
@@ -247,7 +246,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
                int device_number,
                bool mounted) {
     mock_disk_mount_manager_->CreateDiskEntryForMountDevice(
-        chromeos::disks::Disk::Builder()
+        disks::Disk::Builder()
             .SetBusNumber(bus_number)
             .SetDeviceNumber(device_number)
             .SetDevicePath("/dev/" + name)
@@ -255,18 +254,18 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
             .SetIsMounted(mounted)
             .Build());
     if (mounted)
-      NotifyMountEvent(name, chromeos::disks::DiskMountManager::MOUNTING);
+      NotifyMountEvent(name, disks::DiskMountManager::MOUNTING);
   }
 
   void NotifyMountEvent(
       const std::string& name,
-      chromeos::disks::DiskMountManager::MountEvent event,
+      disks::DiskMountManager::MountEvent event,
       chromeos::MountError mount_error = chromeos::MOUNT_ERROR_NONE) {
     // In theory we should also clear the mounted flag from the disk, but we
     // don't rely on that.
-    chromeos::disks::DiskMountManager::MountPointInfo info(
+    disks::DiskMountManager::MountPointInfo info(
         "/dev/" + name, "/mount/" + name, chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::disks::MOUNT_CONDITION_NONE);
+        disks::MOUNT_CONDITION_NONE);
     mock_disk_mount_manager_->NotifyMountEvent(event, mount_error, info);
   }
 
@@ -280,8 +279,8 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  chromeos::disks::MockDiskMountManager* mock_disk_mount_manager_;
-  chromeos::disks::DiskMountManager::DiskMap disks_;
+  disks::MockDiskMountManager* mock_disk_mount_manager_;
+  disks::DiskMountManager::DiskMap disks_;
 
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
@@ -1029,7 +1028,7 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
 
   AddDisk("disk1", 3, 4, true);
   AddDisk("disk2", 3, 4, /*mounted=*/false);
-  NotifyMountEvent("disk2", chromeos::disks::DiskMountManager::MOUNTING,
+  NotifyMountEvent("disk2", disks::DiskMountManager::MOUNTING,
                    chromeos::MOUNT_ERROR_INTERNAL);
   AddDisk("disk3", 3, 5, true);
   AddDisk("disk4", 3, 4, true);
@@ -1045,14 +1044,14 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
   EXPECT_EQ(fake_concierge_client_->attach_usb_device_call_count(), 0);
 
   // Unmount events would normally be fired by the DiskMountManager.
-  NotifyMountEvent("disk1", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk1", disks::DiskMountManager::UNMOUNTING);
   std::move(callback1).Run(chromeos::MOUNT_ERROR_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetSingleDeviceInfo().shared_vm_name.has_value());
   EXPECT_EQ(fake_concierge_client_->attach_usb_device_call_count(), 0);
 
   // All unmounts must complete before sharing succeeds.
-  NotifyMountEvent("disk4", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk4", disks::DiskMountManager::UNMOUNTING);
   std::move(callback4).Run(chromeos::MOUNT_ERROR_NONE);
   base::RunLoop().RunUntilIdle();
 
@@ -1084,10 +1083,10 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemFailure) {
 
   // Unmount events would normally be fired by the DiskMountManager.
   AttachDeviceToVm("VM1", GetSingleDeviceInfo().guid, /*success=*/false);
-  NotifyMountEvent("disk1", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk1", disks::DiskMountManager::UNMOUNTING);
   std::move(callback1).Run(chromeos::MOUNT_ERROR_NONE);
   std::move(callback2).Run(chromeos::MOUNT_ERROR_UNKNOWN);
-  NotifyMountEvent("disk3", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk3", disks::DiskMountManager::UNMOUNTING);
   std::move(callback3).Run(chromeos::MOUNT_ERROR_NONE);
   base::RunLoop().RunUntilIdle();
 
@@ -1128,12 +1127,12 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
 
   EXPECT_TRUE(GetSingleDeviceInfo().prompt_before_sharing);
 
-  NotifyMountEvent("disk_early", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk_early", disks::DiskMountManager::UNMOUNTING);
   EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 
   // A disk which fails to mount shouldn't cause the prompt to be shown.
   AddDisk("disk_error", 1, 5, /*mounted=*/false);
-  NotifyMountEvent("disk_error", chromeos::disks::DiskMountManager::MOUNTING,
+  NotifyMountEvent("disk_error", disks::DiskMountManager::MOUNTING,
                    chromeos::MOUNT_ERROR_INTERNAL);
   EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 

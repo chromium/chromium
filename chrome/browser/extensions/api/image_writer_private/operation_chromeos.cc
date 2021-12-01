@@ -18,7 +18,7 @@
 namespace extensions {
 namespace image_writer {
 
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::DiskMountManager;
 using chromeos::ImageBurnerClient;
 using content::BrowserThread;
 
