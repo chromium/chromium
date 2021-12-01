@@ -3617,14 +3617,6 @@ void WebContentsImpl::RequestToLockMouse(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestToLockMouse",
                         "render_widget_host", render_widget_host, "privileged",
                         privileged);
-  if (render_widget_host->frame_tree()->type() ==
-      FrameTree::Type::kFencedFrame) {
-    // This is unexpected because Pointer Lock API is blocked in the renderer
-    // process.
-    ReceivedBadMessage(render_widget_host->GetProcess(),
-                       bad_message::WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME);
-    return;
-  }
   for (WebContentsImpl* current = this; current;
        current = current->GetOuterWebContents()) {
     if (current->mouse_lock_widget_) {

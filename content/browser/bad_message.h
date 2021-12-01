@@ -280,7 +280,6 @@ enum BadMessageReason {
   RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE = 253,
   RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS = 254,
   RFPH_FOCUSED_FENCED_FRAME = 255,
-  WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME = 256,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
