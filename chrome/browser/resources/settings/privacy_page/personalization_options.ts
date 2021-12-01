@@ -208,6 +208,21 @@ export class SettingsPersonalizationOptionsElement extends
     return this.pageVisibility.searchPrediction;
   }
 
+  // <if expr="chromeos">
+  private showMetricsReportingAsLink_(): boolean {
+    // If SyncSettingsCategorization is enabled, browser settings should show
+    // a link to the OS settings.
+    return loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        !loadTimeData.getBoolean('isOSSettings');
+  }
+
+  private onMetricsReportingLinkClick_() {
+    const chromeOSSyncSettingsPath =
+        loadTimeData.getString('chromeOSSyncSettingsPath');
+    window.location.href = `chrome://os-settings/${chromeOSSyncSettingsPath}`;
+  }
+  // </if>
+
   private showUrlCollectionToggle_(): boolean {
     // <if expr="chromeos">
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {

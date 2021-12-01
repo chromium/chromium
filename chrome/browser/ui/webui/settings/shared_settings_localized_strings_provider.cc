@@ -40,6 +40,10 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#endif
+
 namespace settings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
@@ -337,6 +341,13 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
                           ShouldShowLacrosSideBySideWarningInLacros());
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1275542): Un-deprecate kSyncDeprecatedSubpagePath.
+  html_source->AddString("chromeOSSyncSettingsPath",
+                         chromeos::settings::mojom::kSyncDeprecatedSubpagePath);
+#endif
+
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
 }
 

@@ -7,6 +7,11 @@
       :host(.list-frame) settings-toggle-button:first-of-type {
         border-top: none;
       }
+
+      :host(.list-frame) cr-link-row {
+        padding-inline-end: 8px;
+        padding-inline-start: 0;
+      }
     </style>
 <if expr="not chromeos and not lacros">
     <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
@@ -31,11 +36,23 @@
     </template>
 <if expr="_google_chrome">
 <if expr="chromeos">
-    <settings-toggle-button class="hr"
-        pref="{{prefs.cros.metrics.reportingEnabled}}"
-        label="$i18n{enablePersonalizationLogging}"
-        sub-label="$i18n{enablePersonalizationLoggingDesc}">
-    </settings-toggle-button>
+    <!-- On ChromeOS OS settings show the toggle for metrics reporting. -->
+    <template is="dom-if" if="[[!showMetricsReportingAsLink_()]]" restamp>
+      <settings-toggle-button class="hr"
+          pref="{{prefs.cros.metrics.reportingEnabled}}"
+          label="$i18n{enablePersonalizationLogging}"
+          sub-label="$i18n{enablePersonalizationLoggingDesc}">
+      </settings-toggle-button>
+    </template>
+
+    <!-- Ash Browser settings show a link to the OS settings instead. -->
+    <template is="dom-if" if="[[showMetricsReportingAsLink_()]]" restamp>
+      <cr-link-row class="hr"
+          label="$i18n{enablePersonalizationLogging}"
+          sub-label="$i18n{enablePersonalizationLoggingDesc}"
+          on-click="onMetricsReportingLinkClick_" external>
+      </cr-link-row>
+    </template>
 </if><!-- chromeos -->
 <if expr="not chromeos">
     <settings-toggle-button id="metricsReportingControl"
