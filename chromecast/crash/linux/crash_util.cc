@@ -15,6 +15,7 @@
 #include "chromecast/base/path_utils.h"
 #include "chromecast/base/process_utils.h"
 #include "chromecast/base/version.h"
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/crash/app_state_tracker.h"
 #include "chromecast/crash/linux/dummy_minidump_generator.h"
 #include "chromecast/crash/linux/minidump_writer.h"
@@ -25,6 +26,11 @@ namespace {
 const char kDumpStateSuffix[] = ".txt.gz";
 const char kMinidumpsDir[] = "minidumps";
 const size_t kMaxFilesInMinidumpsDir = 22;  // 10 crashes
+
+#if BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
+// Crash product name for Core web runtime.
+constexpr const char kCoreRuntimeCrashProductName[] = "CastCoreRuntime";
+#endif  // BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
 
 // This can be set to a callback for testing. This allows us to inject a fake
 // dumpstate routine to avoid calling an executable during an automated test.
@@ -97,6 +103,12 @@ bool CrashUtil::RequestUploadCrashDump(
       AppStateTracker::GetLastLaunchedApp(), CAST_BUILD_RELEASE,
       CAST_BUILD_INCREMENTAL, "", /* reason */
       AppStateTracker::GetStadiaSessionId());
+
+// Set crash product name for Core runtime. If not set, defaults to "Eureka".
+#if BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
+  params.crash_product_name = kCoreRuntimeCrashProductName;
+#endif  // BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
+
   DummyMinidumpGenerator minidump_generator(existing_minidump_path);
 
   base::FilePath filename = base::FilePath(existing_minidump_path).BaseName();
