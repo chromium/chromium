@@ -75,6 +75,7 @@ class SampleRecorder {
   // samples that have been dropped.
   int64_t Iterate(const std::function<void(const T& stack)>& f);
 
+  int32_t GetMaxSamples() const;
   void SetMaxSamples(int32_t max);
 
  private:
@@ -221,6 +222,11 @@ int64_t SampleRecorder<T>::Iterate(
 template <typename T>
 void SampleRecorder<T>::SetMaxSamples(int32_t max) {
   max_samples_.store(max, std::memory_order_release);
+}
+
+template <typename T>
+int32_t SampleRecorder<T>::GetMaxSamples() const {
+  return max_samples_.load(std::memory_order_acquire);
 }
 
 }  // namespace profiling_internal

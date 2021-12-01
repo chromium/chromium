@@ -49,6 +49,11 @@ static constexpr auto MAX_FLAT_TAG = absl::cord_internal::MAX_FLAT_TAG;
 
 typedef std::mt19937_64 RandomEngine;
 
+using absl::cord_internal::CordRep;
+using absl::cord_internal::CordRepFlat;
+using absl::cord_internal::kFlatOverhead;
+using absl::cord_internal::kMaxFlatLength;
+
 static std::string RandomLowercaseString(RandomEngine* rng);
 static std::string RandomLowercaseString(RandomEngine* rng, size_t length);
 
@@ -266,10 +271,6 @@ INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Values(0, 1, 2, 3),
 
 
 TEST(CordRepFlat, AllFlatCapacities) {
-  using absl::cord_internal::CordRep;
-  using absl::cord_internal::CordRepFlat;
-  using absl::cord_internal::kFlatOverhead;
-
   // Explicitly and redundantly assert built-in min/max limits
   static_assert(absl::cord_internal::kFlatOverhead < 32, "");
   static_assert(absl::cord_internal::kMinFlatSize == 32, "");
@@ -310,9 +311,6 @@ TEST(CordRepFlat, AllFlatCapacities) {
 }
 
 TEST(CordRepFlat, MaxFlatSize) {
-  using absl::cord_internal::CordRep;
-  using absl::cord_internal::CordRepFlat;
-  using absl::cord_internal::kMaxFlatLength;
   CordRepFlat* flat = CordRepFlat::New(kMaxFlatLength);
   EXPECT_EQ(flat->Capacity(), kMaxFlatLength);
   CordRep::Unref(flat);
@@ -323,13 +321,21 @@ TEST(CordRepFlat, MaxFlatSize) {
 }
 
 TEST(CordRepFlat, MaxLargeFlatSize) {
-  using absl::cord_internal::CordRep;
-  using absl::cord_internal::CordRepFlat;
-  using absl::cord_internal::kFlatOverhead;
   const size_t size = 256 * 1024 - kFlatOverhead;
   CordRepFlat* flat = CordRepFlat::New(CordRepFlat::Large(), size);
   EXPECT_GE(flat->Capacity(), size);
   CordRep::Unref(flat);
+}
+
+TEST(CordRepFlat, AllFlatSizes) {
+  const size_t kMaxSize = 256 * 1024;
+  for (size_t size = 32; size <= kMaxSize; size *=2) {
+    const size_t length = size - kFlatOverhead - 1;
+    CordRepFlat* flat = CordRepFlat::New(CordRepFlat::Large(), length);
+    EXPECT_GE(flat->Capacity(), length);
+    memset(flat->Data(), 0xCD, flat->Capacity());
+    CordRep::Unref(flat);
+  }
 }
 
 TEST_P(CordTest, AllFlatSizes) {

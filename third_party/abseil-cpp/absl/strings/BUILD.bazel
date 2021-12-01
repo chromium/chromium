@@ -436,6 +436,7 @@ cc_library(
         "//absl/container:inlined_vector",
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/types:optional",
         "//absl/types:span",
     ],

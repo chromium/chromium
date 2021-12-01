@@ -397,7 +397,7 @@ EXPORTS
     ??$Nanoseconds@H$0A@@absl@@YA?AVDuration@0@H@Z
     ??$Nanoseconds@J$0A@@absl@@YA?AVDuration@0@J@Z
     ??$Nanoseconds@_J$0A@@absl@@YA?AVDuration@0@_J@Z
-    ??$NewImpl@$0BAAA@@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
+    ??$NewImpl@$0BAAA@$$V@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
     ??$NewLeaf@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$NewLeaf@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$Offset@$00$0A@@?$LayoutImpl@V?$tuple@_KPEAUCordRep@cord_internal@absl@@I@__1@std@@U?$integer_sequence@_K$0A@$00$01@absl@@U45@@internal_layout@container_internal@absl@@QEBA_KXZ
@@ -2024,6 +2024,8 @@ EXPORTS
     ?GetFirstChunk@Cord@absl@@CA?AVstring_view@2@AEBV12@@Z
     ?GetFirstChunk@Cord@absl@@CA?AVstring_view@2@V32@@Z
     ?GetFlatAux@Cord@absl@@CA_NPEAUCordRep@cord_internal@2@PEAVstring_view@2@@Z
+    ?GetHashtablezMaxSamples@container_internal@absl@@YAHXZ
+    ?GetHashtablezSampleParameter@container_internal@absl@@YAHXZ
     ?GetId@GraphCycles@synchronization_internal@absl@@QEAA?AUGraphId@23@PEAX@Z
     ?GetInlinedCapacity@?$Storage@H$0CP@V?$allocator@H@__1@std@@@inlined_vector_internal@absl@@QEBA_KXZ
     ?GetInlinedCapacity@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEBA_KXZ
@@ -2049,6 +2051,7 @@ EXPORTS
     ?GetIsAllocated@?$Storage@USubRange@absl@@$0CP@V?$allocator@USubRange@absl@@@__1@std@@@inlined_vector_internal@absl@@QEBA_NXZ
     ?GetLeafData@CordRepRing@cord_internal@absl@@SAPEBDPEBUCordRep@23@@Z
     ?GetLock@WinHelper@Waiter@synchronization_internal@absl@@SAPEAU_RTL_SRWLOCK@@PEAV234@@Z
+    ?GetMaxSamples@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QEBAHXZ
     ?GetOrCreateCurrentThreadIdentity@synchronization_internal@absl@@YAPEAUThreadIdentity@base_internal@2@XZ
     ?GetParentMethod@CordzInfo@cord_internal@absl@@CA?AW4MethodIdentifier@CordzUpdateTracker@23@PEBV123@@Z
     ?GetParentStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ
@@ -2163,6 +2166,7 @@ EXPORTS
     ?IsFlat@CordRep@cord_internal@absl@@QEBA_NXZ
     ?IsFlat@CordRepBtree@cord_internal@absl@@QEBA_NPEAVstring_view@3@@Z
     ?IsFlat@CordRepBtree@cord_internal@absl@@QEBA_N_K0PEAVstring_view@3@@Z
+    ?IsHashtablezEnabled@container_internal@absl@@YA_NXZ
     ?IsImmortal@RefcountAndFlags@cord_internal@absl@@QEBA_NXZ
     ?IsInfiniteDuration@time_internal@absl@@YA_NVDuration@2@@Z
     ?IsInlined@Status@absl@@CA_N_K@Z
@@ -2436,9 +2440,13 @@ EXPORTS
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPEAUThreadIdentity@12@P6AXPEAX@Z@Z
     ?SetExpectedChecksum@Cord@absl@@QEAAXI@Z
     ?SetFlags@FormatConversionSpecImplFriend@str_format_internal@absl@@SAXW4Flags@23@PEAVFormatConversionSpecImpl@23@@Z
+    ?SetHashtablezConfigListener@container_internal@absl@@YAXP6AXXZ@Z
     ?SetHashtablezEnabled@container_internal@absl@@YAX_N@Z
+    ?SetHashtablezEnabledInternal@container_internal@absl@@YAX_N@Z
     ?SetHashtablezMaxSamples@container_internal@absl@@YAXH@Z
+    ?SetHashtablezMaxSamplesInternal@container_internal@absl@@YAXH@Z
     ?SetHashtablezSampleParameter@container_internal@absl@@YAXH@Z
+    ?SetHashtablezSampleParameterInternal@container_internal@absl@@YAXH@Z
     ?SetIsAllocated@?$Storage@H$0CP@V?$allocator@H@__1@std@@@inlined_vector_internal@absl@@QEAAXXZ
     ?SetIsAllocated@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXXZ
     ?SetIsAllocated@?$Storage@PEAUCordRep@cord_internal@absl@@$0CP@V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXXZ

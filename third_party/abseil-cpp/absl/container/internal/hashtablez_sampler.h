@@ -258,14 +258,23 @@ using HashtablezSampler =
 // Returns a global Sampler.
 HashtablezSampler& GlobalHashtablezSampler();
 
+using HashtablezConfigListener = void (*)();
+void SetHashtablezConfigListener(HashtablezConfigListener l);
+
 // Enables or disables sampling for Swiss tables.
+bool IsHashtablezEnabled();
 void SetHashtablezEnabled(bool enabled);
+void SetHashtablezEnabledInternal(bool enabled);
 
 // Sets the rate at which Swiss tables will be sampled.
+int32_t GetHashtablezSampleParameter();
 void SetHashtablezSampleParameter(int32_t rate);
+void SetHashtablezSampleParameterInternal(int32_t rate);
 
 // Sets a soft max for the number of samples that will be kept.
+int32_t GetHashtablezMaxSamples();
 void SetHashtablezMaxSamples(int32_t max);
+void SetHashtablezMaxSamplesInternal(int32_t max);
 
 // Configuration override.
 // This allows process-wide sampling without depending on order of

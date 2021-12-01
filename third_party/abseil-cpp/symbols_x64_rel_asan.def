@@ -71,7 +71,7 @@ EXPORTS
     ??$GenericCompare@_NVstring_view@absl@@@absl@@YA_NAEBVCord@0@AEBVstring_view@0@_K@Z
     ??$Merge@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
     ??$Merge@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
-    ??$NewImpl@$0BAAA@@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
+    ??$NewImpl@$0BAAA@$$V@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
     ??$NewLeaf@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$NewLeaf@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$ParseFloat@$09@strings_internal@absl@@YA?AUParsedFloat@01@PEBD0W4chars_format@1@@Z
@@ -469,6 +469,8 @@ EXPORTS
     ?GetCordzStatistics@CordzInfo@cord_internal@absl@@QEBA?AUCordzStatistics@23@XZ
     ?GetCurrentTimeNanos@absl@@YA_JXZ
     ?GetFlatAux@Cord@absl@@CA_NPEAUCordRep@cord_internal@2@PEAVstring_view@2@@Z
+    ?GetHashtablezMaxSamples@container_internal@absl@@YAHXZ
+    ?GetHashtablezSampleParameter@container_internal@absl@@YAHXZ
     ?GetId@GraphCycles@synchronization_internal@absl@@QEAA?AUGraphId@23@PEAX@Z
     ?GetParentMethod@CordzInfo@cord_internal@absl@@CA?AW4MethodIdentifier@CordzUpdateTracker@23@PEBV123@@Z
     ?GetParentStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ
@@ -522,6 +524,7 @@ EXPORTS
     ?IsFailedPrecondition@absl@@YA_NAEBVStatus@1@@Z
     ?IsFlat@CordRepBtree@cord_internal@absl@@QEBA_NPEAVstring_view@3@@Z
     ?IsFlat@CordRepBtree@cord_internal@absl@@QEBA_N_K0PEAVstring_view@3@@Z
+    ?IsHashtablezEnabled@container_internal@absl@@YA_NXZ
     ?IsInternal@absl@@YA_NAEBVStatus@1@@Z
     ?IsInvalidArgument@absl@@YA_NAEBVStatus@1@@Z
     ?IsNotFound@absl@@YA_NAEBVStatus@1@@Z
@@ -684,9 +687,13 @@ EXPORTS
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QEAAX_K@Z
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPEAUThreadIdentity@12@P6AXPEAX@Z@Z
     ?SetExpectedChecksum@Cord@absl@@QEAAXI@Z
+    ?SetHashtablezConfigListener@container_internal@absl@@YAXP6AXXZ@Z
     ?SetHashtablezEnabled@container_internal@absl@@YAX_N@Z
+    ?SetHashtablezEnabledInternal@container_internal@absl@@YAX_N@Z
     ?SetHashtablezMaxSamples@container_internal@absl@@YAXH@Z
+    ?SetHashtablezMaxSamplesInternal@container_internal@absl@@YAXH@Z
     ?SetHashtablezSampleParameter@container_internal@absl@@YAXH@Z
+    ?SetHashtablezSampleParameterInternal@container_internal@absl@@YAXH@Z
     ?SetMutexDeadlockDetectionMode@absl@@YAXW4OnDeadlockCycle@1@@Z
     ?SetPayload@Status@absl@@QEAAXVstring_view@2@VCord@2@@Z
     ?SetStackUnwinder@absl@@YAXP6AHPEAPEAXPEAHHHPEBX1@Z@Z

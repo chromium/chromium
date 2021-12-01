@@ -70,6 +70,7 @@
 #include <string>
 #include <type_traits>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/per_thread_tls.h"
@@ -215,7 +216,7 @@ class Cord {
   //
   // Releases the Cord data. Any nodes that share data with other Cords, if
   // applicable, will have their reference counts reduced by 1.
-  void Clear();
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear();
 
   // Cord::Append()
   //

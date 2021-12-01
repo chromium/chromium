@@ -20,6 +20,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "absl/base/config.h"
+#include "absl/base/macros.h"
 #include "absl/strings/internal/cord_internal.h"
 
 namespace absl {
@@ -105,8 +107,8 @@ struct CordRepFlat : public CordRep {
   struct Large {};
 
   // Creates a new flat node.
-  template <size_t max_flat_size>
-  static CordRepFlat* NewImpl(size_t len) {
+  template <size_t max_flat_size, typename... Args>
+  static CordRepFlat* NewImpl(size_t len, Args... args ABSL_ATTRIBUTE_UNUSED) {
     if (len <= kMinFlatLength) {
       len = kMinFlatLength;
     } else if (len > max_flat_size - kFlatOverhead) {
