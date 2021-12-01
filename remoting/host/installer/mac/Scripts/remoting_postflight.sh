@@ -90,7 +90,14 @@ fi
 
 if [[ "$update_pam" == "1" ]]; then
   logger Creating PAM config.
-  cat > "$PAM_CONFIG" <<EOF
+  # On MacOS machines with SIP enabled, the executing process requires disk
+  # access permissions which cannot be granted when run silently, such as
+  # during a host upgrade via Keystone. The result is a difficult to diagnose
+  # error with the output "Operation not permitted". Since this is a default
+  # config that we've never changed, we attempt to create it but do not bail
+  # if an error occurs. Note that the error will still be logged but the
+  # script will continue to execute in this case.
+  $(cat > "$PAM_CONFIG" <<EOF
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -103,6 +110,7 @@ session    required   pam_deny.so
 # This file is auto-updated by the Chrome Remote Desktop installer.
 $CONTROL_LINE
 EOF
+) || true
 else
   logger PAM config has local edits. Not updating.
 fi
