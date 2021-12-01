@@ -15,8 +15,6 @@ namespace media {
 
 namespace v4l2_test {
 
-constexpr size_t kRequestBufferCount = 8;
-
 // MmapedBuffer maintains |mmaped_planes_| for each buffer as well as
 // |reference_id_|. Reference ID is computed from buffer ID, which is an
 // index used for VIDIOC_REQBUFS ioctl call. Reference ID is needed to use
@@ -56,8 +54,7 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
   uint64_t reference_id_;
 };
 
-using MmapedBuffers =
-    std::array<scoped_refptr<MmapedBuffer>, kRequestBufferCount>;
+using MmapedBuffers = std::vector<scoped_refptr<MmapedBuffer>>;
 
 // V4L2Queue class maintains properties of a queue.
 class V4L2Queue {
@@ -66,7 +63,8 @@ class V4L2Queue {
             uint32_t fourcc,
             const gfx::Size& size,
             uint32_t num_planes,
-            enum v4l2_memory memory);
+            enum v4l2_memory memory,
+            uint32_t num_buffers);
 
   V4L2Queue(const V4L2Queue&) = delete;
   V4L2Queue& operator=(const V4L2Queue&) = delete;
@@ -83,6 +81,9 @@ class V4L2Queue {
 
   void set_buffers(MmapedBuffers& buffers) { buffers_ = buffers; }
 
+  uint32_t num_buffers() const { return num_buffers_; }
+  void set_num_buffers(uint32_t num_buffers) { num_buffers_ = num_buffers; }
+
   gfx::Size coded_size() const { return coded_size_; }
   void set_coded_size(gfx::Size coded_size) { coded_size_ = coded_size; }
 
@@ -98,6 +99,7 @@ class V4L2Queue {
   const enum v4l2_buf_type type_;
   const uint32_t fourcc_;
   MmapedBuffers buffers_;
+  uint32_t num_buffers_;
   // The size of the image on the screen.
   const gfx::Size display_size_;
   // The size of the encoded frame. Usually has an alignment of 16, 32
@@ -141,8 +143,7 @@ class V4L2IoctlShim {
   bool TryFmt(const std::unique_ptr<V4L2Queue>& queue) const WARN_UNUSED_RESULT;
 
   // Allocates buffers via VIDIOC_REQBUFS for |queue|.
-  bool ReqBufs(const std::unique_ptr<V4L2Queue>& queue) const
-      WARN_UNUSED_RESULT;
+  bool ReqBufs(std::unique_ptr<V4L2Queue>& queue) const WARN_UNUSED_RESULT;
 
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.

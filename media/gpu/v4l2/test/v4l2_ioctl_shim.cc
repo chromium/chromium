@@ -110,9 +110,11 @@ V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
                      uint32_t fourcc,
                      const gfx::Size& size,
                      uint32_t num_planes,
-                     enum v4l2_memory memory)
+                     enum v4l2_memory memory,
+                     uint32_t num_buffers)
     : type_(type),
       fourcc_(fourcc),
+      num_buffers_(num_buffers),
       display_size_(size),
       num_planes_(num_planes),
       memory_(memory) {}
@@ -302,17 +304,19 @@ bool V4L2IoctlShim::TryFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   return ret;
 }
 
-bool V4L2IoctlShim::ReqBufs(const std::unique_ptr<V4L2Queue>& queue) const {
+bool V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue) const {
   struct v4l2_requestbuffers reqbuf;
 
   memset(&reqbuf, 0, sizeof(reqbuf));
-  reqbuf.count = kRequestBufferCount;
+  reqbuf.count = queue->num_buffers();
   reqbuf.type = queue->type();
   reqbuf.memory = queue->memory();
 
   const bool ret = Ioctl(VIDIOC_REQBUFS, &reqbuf);
 
-  LOG(INFO) << kRequestBufferCount << " buffers requested, " << reqbuf.count
+  queue->set_num_buffers(reqbuf.count);
+
+  LOG(INFO) << queue->num_buffers() << " buffers requested, " << reqbuf.count
             << " buffers returned for " << queue->type() << ".";
 
   return ret;
@@ -339,6 +343,14 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
     v4l2_buffer.m.planes[i].length = buffer->mmaped_planes()[i].length;
     v4l2_buffer.m.planes[i].bytesused = buffer->mmaped_planes()[i].length;
     v4l2_buffer.m.planes[i].data_offset = 0;
+  }
+
+  // Request API related setting is needed only for OUTPUT queue.
+  if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
+    v4l2_buffer.flags |= V4L2_BUF_FLAG_REQUEST_FD;
+    v4l2_buffer.request_fd = queue->media_request_fd();
+    v4l2_buffer.timestamp.tv_usec =
+        static_cast<__suseconds_t>(buffer->reference_id());
   }
 
   return Ioctl(VIDIOC_QBUF, &v4l2_buffer);
@@ -417,7 +429,7 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
 
   constexpr size_t kTimeStampToNanoSecs = 1000;
 
-  for (uint32_t i = 0; i < kRequestBufferCount; ++i) {
+  for (uint32_t i = 0; i < queue->num_buffers(); ++i) {
     struct v4l2_buffer v4l_buffer;
     std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
@@ -430,8 +442,8 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
 
     DCHECK(Ioctl(VIDIOC_QUERYBUF, &v4l_buffer));
 
-    buffers[i] = base::MakeRefCounted<MmapedBuffer>(
-        decode_fd_.GetPlatformFile(), v4l_buffer);
+    buffers.emplace_back(base::MakeRefCounted<MmapedBuffer>(
+        decode_fd_.GetPlatformFile(), v4l_buffer));
 
     // Converts buffer ID to reference ID. Reference ID of a frame can be specified
     // by converting its timestamp into nanoseconds. Buffer ID is used as timestamp
@@ -445,9 +457,9 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
     // v4l2 video decode accelerator tests.
 
     buffers[i]->set_reference_id(i * kTimeStampToNanoSecs);
-
-    queue->set_buffers(buffers);
   }
+
+  queue->set_buffers(buffers);
 
   return true;
 }

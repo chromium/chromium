@@ -159,7 +159,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
       gfx::Size(file_header.width, file_header.height), /*num_planes=*/1,
-      V4L2_MEMORY_MMAP);
+      V4L2_MEMORY_MMAP, /*num_buffers=*/1);
 
   // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
@@ -167,7 +167,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
       gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP);
+      V4L2_MEMORY_MMAP, /*num_buffers=*/8);
 
   return base::WrapUnique(
       new Vp9Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
@@ -214,7 +214,7 @@ bool Vp9Decoder::Initialize() {
   if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_))
     LOG(ERROR) << "QueryAndMmapQueueBuffers for CAPTURE queue failed.";
 
-  for (uint32_t i = 0; i < kRequestBufferCount; ++i) {
+  for (uint32_t i = 0; i < CAPTURE_queue_->num_buffers(); ++i) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, i))
       LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
   }
@@ -288,6 +288,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
     case Vp9Parser::kOk:
       break;
   }
+
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
+    LOG(ERROR) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
   struct v4l2_ctrl_vp9_frame_decode_params v4l2_frame_params;
   memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
