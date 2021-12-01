@@ -608,7 +608,15 @@ config("compiler") {
     # are still a few buildbots using it, so until those are turned off
     # we need the !is_nacl clause and the (is_nacl && is_clang) clause, above.
     cflags_c += [ "-std=c11" ]
-    cflags_cc += [ "-std=c++17" ]
+    if (is_ios) {
+      # TODO(thakis): Use C++17 on iOS once it works.
+      cflags_cc += [
+        "-std=c++14",
+        "-fno-trigraphs",
+      ]
+    } else {
+      cflags_cc += [ "-std=c++17" ]
+    }
   }
 
   if (is_clang && current_os != "zos") {

@@ -968,7 +968,7 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   // as a default match (and that's a non-tail suggestion).
   // 1) above.
   if (default_tail != matches->end() && default_non_tail == matches->end()) {
-    base::EraseIf(*matches, std::not_fn(is_tail));
+    base::EraseIf(*matches, std::not1(is_tail));
     return;
   }
   // 2) above.
