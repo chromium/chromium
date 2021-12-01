@@ -241,7 +241,9 @@ class SelfDestroyAppItem : public ChromeAppListItem {
   ~SelfDestroyAppItem() override = default;
 
   // ChromeAppListItem:
-  void Activate(int event_flags) override { updater_->RemoveItem(id()); }
+  void Activate(int event_flags) override {
+    updater_->RemoveItem(id(), /*is_uninstall=*/true);
+  }
 
  private:
   AppListModelUpdater* updater_;

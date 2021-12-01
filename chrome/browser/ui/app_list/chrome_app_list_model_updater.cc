@@ -230,20 +230,17 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
     EndTemporarySortAndTakeAction(EndAction::kCommit);
 }
 
-void ChromeAppListModelUpdater::RemoveItem(const std::string& id) {
+void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
+                                           bool is_uninstall) {
   // Copy the ID to the stack since it may to be destroyed in
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
-  item_manager_->RemoveChromeItem(id_copy);
-  model_.DeleteItem(id_copy, /*can_clean_folder=*/false);
-}
 
-void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
-  // Copy the ID to the stack since it may to be destroyed in
-  // RemoveChromeItem(). See crbug.com/1190347.
-  std::string id_copy = id;
   item_manager_->RemoveChromeItem(id_copy);
-  model_.DeleteItem(id_copy, /*can_clean_folder=*/true);
+
+  // Clean the parent folder if any, when item is deleted due to app
+  // uninstallation rather than sync.
+  model_.DeleteItem(id_copy, is_uninstall);
 }
 
 void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {

@@ -68,7 +68,10 @@ void AppListModelBuilder::RemoveApp(const std::string& id,
     service_->RemoveUninstalledItem(id);
     return;
   }
-  model_updater_->RemoveUninstalledItem(id);
+
+  // The parameter `is_uninstall` is true because the item is removed due to
+  // local app uninstallation rather than sync.
+  model_updater_->RemoveItem(id, /*is_uninstall=*/true);
 }
 
 const app_list::AppListSyncableService::SyncItem*

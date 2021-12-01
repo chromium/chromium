@@ -920,14 +920,14 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
 
 void AppListSyncableService::RemoveItem(const std::string& id) {
   RemoveSyncItem(id);
-  model_updater_->RemoveItem(id);
+  model_updater_->RemoveItem(id, /*is_uninstall=*/false);
   PruneEmptySyncFolders();
   PruneRedundantPageBreakItems();
 }
 
 void AppListSyncableService::RemoveUninstalledItem(const std::string& id) {
   RemoveSyncItem(id);
-  model_updater_->RemoveUninstalledItem(id);
+  model_updater_->RemoveItem(id, /*is_uninstall=*/true);
   PruneEmptySyncFolders();
   PruneRedundantPageBreakItems();
 }
@@ -1328,7 +1328,7 @@ bool AppListSyncableService::ProcessSyncItemSpecifics(
       LOG(ERROR) << "Synced item type: " << specifics.item_type()
                  << " != existing sync item type: " << sync_item->item_type
                  << " Deleting item from model!";
-      model_updater_->RemoveItem(item_id);
+      model_updater_->RemoveItem(item_id, /*is_uninstall=*/false);
     }
     VLOG(2) << this << " - ProcessSyncItem: Delete existing entry: "
             << sync_item->ToString();
@@ -1487,7 +1487,7 @@ void AppListSyncableService::DeleteSyncItemSpecifics(
   // when all children have been deleted.
   if (item_type == sync_pb::AppListSpecifics::TYPE_APP ||
       item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
-    model_updater_->RemoveItem(item_id);
+    model_updater_->RemoveItem(item_id, /*is_uninstall=*/false);
   }
 }
 

@@ -152,7 +152,7 @@ void RemoveApps(apps::mojom::AppType app_type,
   proxy->AppRegistryCache().ForEachApp(
       [&model_updater, &app_type](const apps::AppUpdate& update) {
         if (update.AppType() != app_type) {
-          model_updater->RemoveItem(update.AppId());
+          model_updater->RemoveItem(update.AppId(), /*is_uninstall=*/true);
         }
       });
 }

@@ -33,7 +33,8 @@ void FakeAppListModelUpdater::AddAppItemToFolder(
   items_.push_back(std::move(item));
 }
 
-void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
+void FakeAppListModelUpdater::RemoveItem(const std::string& id,
+                                         bool is_uninstall) {
   size_t index;
   if (FindItemIndexForTest(id, &index)) {
     const std::string folder_id = items_[index]->folder_id();
@@ -49,12 +50,8 @@ void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
         ++folder_item_count;
     }
     if (!folder_item_count)
-      RemoveItem(folder_id);
+      RemoveItem(folder_id, is_uninstall);
   }
-}
-
-void FakeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
-  RemoveItem(id);
 }
 
 void FakeAppListModelUpdater::SetItemIcon(const std::string& id,

@@ -41,12 +41,13 @@ void AppListSyncableServiceTestBase::RemoveAllExistingItems() {
   AppListModelUpdater* model_updater = GetModelUpdater();
   for (std::string& id : existing_item_ids) {
     app_list_syncable_service()->RemoveItem(id);
-    model_updater->RemoveItem(id);
+    model_updater->RemoveItem(id, /*is_uninstall=*/true);
   }
 
   // Delete all default page breaks.
   for (size_t i = 0; i < app_list::kDefaultPageBreakAppIdsLength; ++i)
-    model_updater->RemoveItem(app_list::kDefaultPageBreakAppIds[i]);
+    model_updater->RemoveItem(app_list::kDefaultPageBreakAppIds[i],
+                              /*is_uninstall=*/true);
 
   content::RunAllTasksUntilIdle();
 }

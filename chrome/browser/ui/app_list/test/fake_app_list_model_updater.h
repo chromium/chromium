@@ -34,8 +34,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,
       bool update_folder) override;
-  void RemoveItem(const std::string& id) override;
-  void RemoveUninstalledItem(const std::string& id) override;
+  void RemoveItem(const std::string& id, bool is_uninstall) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;

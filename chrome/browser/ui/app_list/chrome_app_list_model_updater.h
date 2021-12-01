@@ -46,8 +46,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void AddAppItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
                           const std::string& folder_id,
                           bool add_from_local) override;
-  void RemoveItem(const std::string& id) override;
-  void RemoveUninstalledItem(const std::string& id) override;
+  void RemoveItem(const std::string& id, bool is_uninstall) override;
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
   void UpdateSearchBox(const std::u16string& text,

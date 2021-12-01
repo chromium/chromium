@@ -2047,7 +2047,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   // A hacky way to emulate that an item is disabled locally (in other words,
   // the app's sync data exists but its app list item data is missing).
   AppListModelUpdater* model_updater = GetModelUpdater();
-  model_updater->RemoveItem(kItemId1);
+  model_updater->RemoveItem(kItemId1, /*is_uninstall=*/true);
 
   // Install a new app and verify the app order.
   const std::string kItemId4 = CreateNextAppId(GenerateId("app_id4"));
@@ -2058,7 +2058,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
             std::vector<std::string>({"A", "B", "C", "D"}));
 
   // Remove another item from the model. Now only "A" and "B" are in the model.
-  model_updater->RemoveItem(kItemId3);
+  model_updater->RemoveItem(kItemId3, /*is_uninstall=*/true);
 
   // Install a new app and verify the app order.
   const std::string kItemId5 = CreateNextAppId(GenerateId("app_id5"));
@@ -2069,7 +2069,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
             std::vector<std::string>({"A", "B", "C", "D", "F"}));
 
   // Remove another item from the model. Now only "A" and "B" are in the model.
-  model_updater->RemoveItem(kItemId5);
+  model_updater->RemoveItem(kItemId5, /*is_uninstall=*/true);
 
   // Install a new app and verify the app order.
   const std::string kItemId6 = CreateNextAppId(GenerateId("app_id6"));
