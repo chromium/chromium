@@ -63,11 +63,9 @@ class StyleResolverTest : public PageTestBase {
 };
 
 class StyleResolverTestCQ : public StyleResolverTest,
-                            public ScopedCSSContainerQueriesForTest,
-                            public ScopedLayoutNGForTest {
+                            public ScopedCSSContainerQueriesForTest {
  protected:
-  StyleResolverTestCQ()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  StyleResolverTestCQ() : ScopedCSSContainerQueriesForTest(true) {}
 };
 
 TEST_F(StyleResolverTest, StyleForTextInDisplayNone) {
@@ -151,8 +149,7 @@ TEST_F(StyleResolverTest, BaseReusableIfFontRelativeUnitsAbsent) {
   StyleForId("div");
 
   StyleResolverState state(GetDocument(), *div);
-  EXPECT_NE(StyleResolver::CanReuseBaseComputedStyle(state),
-            RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+  EXPECT_TRUE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
 TEST_F(StyleResolverTest, AnimationNotMaskedByImportant) {
@@ -355,8 +352,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
   EXPECT_TRUE(computed_style->GetBaseComputedStyle());
 
   StyleResolverState state(GetDocument(), *div);
-  EXPECT_NE(StyleResolver::CanReuseBaseComputedStyle(state),
-            RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+  EXPECT_TRUE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -833,7 +829,9 @@ TEST_F(StyleResolverTest, CascadedValuesForPseudoElement) {
   EXPECT_EQ("1em", map.at(top)->CssText());
 }
 
-TEST_F(StyleResolverTestCQ, CascadedValuesForElementInContainer) {
+TEST_F(StyleResolverTest, CascadedValuesForElementInContainer) {
+  ScopedCSSContainerQueriesForTest scope(true);
+
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }
@@ -863,7 +861,9 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForElementInContainer) {
   EXPECT_EQ("1em", map.at(top)->CssText());
 }
 
-TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
+TEST_F(StyleResolverTest, CascadedValuesForPseudoElementInContainer) {
+  ScopedCSSContainerQueriesForTest scope(true);
+
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }

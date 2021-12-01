@@ -1749,10 +1749,20 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failur
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
 # @container
-crbug.com/1273913 wpt_internal/css/css-conditional/container-queries/at-container-017.html [ Failure ]
-crbug.com/1249468 wpt_internal/css/css-conditional/container-queries/block-size-and-min-height.html [ Failure ]
-crbug.com/829028 wpt_internal/css/css-contain/multicol-block-size.html [ Failure ]
-crbug.com/829028 wpt_internal/css/css-contain/multicol-inline-size.html [ Failure ]
+# The container-queries/ tests are only valid when the runtime flag
+# CSSContainerQueries is enabled.
+#
+# The css-contain/ tests are only valid when the runtime flag CSSContainSize1D
+# is enabled.
+#
+# Both these flags are enabled in virtual/container-queries/
+crbug.com/1145970 wpt_internal/css/css-conditional/container-queries/* [ Skip ]
+crbug.com/1146092 wpt_internal/css/css-contain/* [ Skip ]
+crbug.com/1145970 virtual/container-queries/* [ Pass ]
+crbug.com/1273913 virtual/container-queries/wpt_internal/css/css-conditional/container-queries/at-container-017.html [ Failure ]
+crbug.com/1249468 virtual/container-queries/wpt_internal/css/css-conditional/container-queries/block-size-and-min-height.html [ Failure ]
+crbug.com/829028 virtual/container-queries/wpt_internal/css/css-contain/multicol-block-size.html [ Failure ]
+crbug.com/829028 virtual/container-queries/wpt_internal/css/css-contain/multicol-inline-size.html [ Failure ]
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]
@@ -3057,6 +3067,15 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/
 crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/html/semantics/scripting-1/the-template-element/template-element/template-descendant-frameset.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/html/semantics/scripting-1/the-template-element/template-element/template-descendant-head.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/workers/modules/shared-worker-import-csp.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/at-container-015.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/at-container-parsing.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/change-display-in-container.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/container-type-computed.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/focus-inside-content-visibility-crash.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/inline-size-and-min-width.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-conditional/container-queries/viewport-units-dynamic.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-contain/flex-inline-size.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/container-queries/wpt_internal/css/css-contain/grid-inline-size.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-transforms/parsing/backface-visibility-computed.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-transforms/parsing/perspective-origin-invalid.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/attr-invalid-type-002.html [ Crash ]

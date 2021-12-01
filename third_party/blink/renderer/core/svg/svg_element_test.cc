@@ -15,7 +15,6 @@ class SVGElementTest : public PageTestBase {};
 TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
   ScopedCSSContainerQueriesForTest scoped_cq(true);
   ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
-  ScopedLayoutNGForTest scoped_ng(true);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

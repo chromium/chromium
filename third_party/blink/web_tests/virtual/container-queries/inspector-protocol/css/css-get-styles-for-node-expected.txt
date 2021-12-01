@@ -45,6 +45,11 @@ Dumping matched rules:
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@container size(min-width: 50px)
+    *#inspected* {    regular
+        padding-right: 10px; @[26:8-26:28]
+        padding-right: 10px; @[undefined-undefined]
+    }
 Dumping inherited rules: 
     padding-top: 20px; @[0:0-0:18]
     padding-top: 20px; @[undefined-undefined]
@@ -52,5 +57,6 @@ Dumping inherited rules:
     width: 100px; @[20:4-20:17]
     container-type: size; @[21:4-21:25]
     width: 100px; @[undefined-undefined]
+    container-type: size; @[undefined-undefined]
 }
 
