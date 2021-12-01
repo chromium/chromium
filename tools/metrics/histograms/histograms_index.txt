@@ -80,6 +80,7 @@ tools/metrics/histograms/metadata/page/histograms.xml
 tools/metrics/histograms/metadata/password/histograms.xml
 tools/metrics/histograms/metadata/payment/histograms.xml
 tools/metrics/histograms/metadata/pcscan/histograms.xml
+tools/metrics/histograms/metadata/pdf/histograms.xml
 tools/metrics/histograms/metadata/permissions/histograms.xml
 tools/metrics/histograms/metadata/phonehub/histograms.xml
 tools/metrics/histograms/metadata/platform/histograms.xml
