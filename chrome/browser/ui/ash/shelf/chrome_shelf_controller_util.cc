@@ -161,16 +161,8 @@ void PinAppWithIDToShelf(const std::string& app_id) {
   auto* shelf_model = shelf_controller->shelf_model();
   if (shelf_model->ItemIndexByAppID(app_id) >= 0) {
     shelf_model->PinExistingItemWithID(app_id);
-    return;
-  }
-
-  ash::ShelfItem item;
-  std::unique_ptr<ash::ShelfItemDelegate> delegate;
-  bool result = shelf_controller->shelf_item_factory()->CreateShelfItemForAppId(
-      app_id, &item, &delegate);
-  if (result) {
-    item.type = ash::TYPE_PINNED_APP;
-    shelf_model->Add(item, std::move(delegate));
+  } else {
+    shelf_model->AddAndPinAppWithFactoryConstructedDelegate(app_id);
   }
 }
 
