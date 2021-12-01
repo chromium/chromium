@@ -107,9 +107,13 @@ class AdapterStateControllerImplTest : public testing::Test {
     pending_power_state_.reset();
 
     if (success) {
-      SetAdapterPoweredState(expected_pending_state);
       std::move(set_powered_success_callback_).Run();
       set_powered_error_callback_.Reset();
+
+      // In real-life, the adapter's powered state doesn't change until after
+      // the success callback is fired. Simulate this by setting the adapter
+      // state after invoking the success callback.
+      SetAdapterPoweredState(expected_pending_state);
       return;
     }
 

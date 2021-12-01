@@ -50,6 +50,7 @@ void AdapterStateControllerImpl::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
   NotifyAdapterStateChanged();
+  AttemptQueuedStateChange();
 }
 
 void AdapterStateControllerImpl::AttemptQueuedStateChange() {
@@ -113,7 +114,12 @@ void AdapterStateControllerImpl::OnSetPoweredSuccess(bool enabled) {
   BLUETOOTH_LOG(EVENT) << "Bluetooth " << (enabled ? "enabled" : "disabled")
                        << " successfully";
   in_progress_state_change_ = PowerStateChange::kNoChange;
-  AttemptQueuedStateChange();
+
+  // Adapter->IsPowered() won't immediately be updated to the new value when
+  // SetPowered() finishes and this method is called. Don't call
+  // AttemptQueuedStateChange() now because the adapter isn't in the correct
+  // state yet. Wait until AdapterPoweredChanged() is invoked and call
+  // AttemptQueuedStateChange() there.
 }
 
 void AdapterStateControllerImpl::OnSetPoweredError(bool enabled) {
