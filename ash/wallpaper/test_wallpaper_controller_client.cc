@@ -52,7 +52,7 @@ void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
   if (fetch_daily_refresh_info_fails_) {
     std::move(callback).Run(absl::nullopt, std::string());
   } else {
-    std::move(callback).Run(1, "fun_image_url");
+    std::move(callback).Run(1, "http://example.com");
   }
 }
 

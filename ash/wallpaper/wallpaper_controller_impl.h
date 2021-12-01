@@ -26,6 +26,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/gtest_prod_util.h"
@@ -41,6 +42,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+#include "url/gurl.h"
 
 class PrefRegistrySimple;
 
@@ -445,6 +447,13 @@ class ASH_EXPORT WallpaperControllerImpl
                                   const OnlineWallpaperParams& params,
                                   const base::FilePath& file_path);
 
+  // Used as the callback of checking that all the wallpaper variants' paths
+  // exist. If they do, set the online wallpaper from the given |params.url|.
+  void SetOnlineWallpaperFromVariantPaths(
+      SetOnlineWallpaperCallback callback,
+      const OnlineWallpaperParams& params,
+      const base::flat_map<std::string, base::FilePath>& url_to_file_path_map);
+
   // Used as the callback of decoding wallpapers of type
   // `WallpaperType::kOnline`. Saves the image to local file if `save_file` is
   // true, and shows the wallpaper immediately if `params.account_id` is the
@@ -524,13 +533,13 @@ class ASH_EXPORT WallpaperControllerImpl
                           bool show_wallpaper,
                           const gfx::ImageSkia& image);
 
-  // Reloads the current wallpaper. It may change the wallpaper size based on
-  // the current display's resolution. If |clear_cache| is true, all wallpaper
-  // cache should be cleared. This is required when the display's native
-  // resolution changes to a larger resolution (e.g. when hooked up a large
-  // external display) and we need to load a larger resolution wallpaper for the
-  // display. All the previous small resolution wallpaper cache should be
-  // cleared.
+  // Reloads the current wallpaper. It may change the wallpaper size based
+  // on the current display's resolution. If |clear_cache| is true, all
+  // wallpaper cache should be cleared. This is required when the display's
+  // native resolution changes to a larger resolution (e.g. when hooked up a
+  // large external display) and we need to load a larger resolution
+  // wallpaper for the display. All the previous small resolution wallpaper
+  // cache should be cleared.
   void ReloadWallpaper(bool clear_cache);
 
   // Sets |prominent_colors_| and notifies the observers if there is a change.
@@ -604,6 +613,19 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
                                    SetOnlineWallpaperCallback callback,
                                    bool success);
+
+  // Save the downloaded |params.variants| at |current_index|.
+  void OnOnlineWallpaperVariantDownloaded(const OnlineWallpaperParams& params,
+                                          base::RepeatingClosure on_done,
+                                          size_t current_index,
+                                          const gfx::ImageSkia& image);
+
+  // Check that all variants are downloaded successfully and set the wallpaper
+  // from |params.url|.
+  void OnAllOnlineWallpaperVariantsDownloaded(
+      const OnlineWallpaperParams& params,
+      SetOnlineWallpaperCallback callback);
+
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
 
   // If daily refresh wallpapers is enabled by the user.
@@ -741,6 +763,10 @@ class ASH_EXPORT WallpaperControllerImpl
   base::RepeatingClosure reload_always_on_top_wallpaper_callback_;
 
   base::FilePathWatcher drive_fs_wallpaper_watcher_;
+
+  // Used to capture wallpaper variants' url to their corresponding image.
+  // Cleared every time downloading wallpapers is initiated.
+  base::flat_map<std::string, gfx::ImageSkia> url_to_image_map_;
 
   // If true, use a solid color wallpaper as if it is the decoded image.
   bool bypass_decode_for_testing_ = false;
