@@ -285,6 +285,13 @@ unsigned HarfBuzzFace::UnitsPerEmFromHeadTable() {
   return hb_face_get_upem(face);
 }
 
+Glyph HarfBuzzFace::HbGlyphForCharacter(UChar32 character) {
+  hb_codepoint_t glyph = 0;
+  HarfBuzzGetNominalGlyph(unscaled_font_, harfbuzz_font_data_, character,
+                          &glyph, nullptr);
+  return glyph;
+}
+
 bool HarfBuzzFace::ShouldSubpixelPosition() {
   return harfbuzz_font_data_->font_.isSubpixel();
 }

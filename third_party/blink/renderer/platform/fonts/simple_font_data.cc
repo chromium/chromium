@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -205,9 +206,17 @@ const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {
 }
 
 Glyph SimpleFontData::GlyphForCharacter(UChar32 codepoint) const {
-  SkTypeface* typeface = PlatformData().Typeface();
-  CHECK(typeface);
-  return typeface->unicharToGlyph(codepoint);
+  HarfBuzzFace* harfbuzz_face = PlatformData().GetHarfBuzzFace();
+  if (!harfbuzz_face)
+    return 0;
+  // Retrieve glyph coverage information via HarfBuzz' character-to-glyph
+  // mapping instead of the SkTypeface backend implementation so that it matches
+  // the coverage we use through HarfBuzz during shaping. These two can differ
+  // in situations where the system API synthesizes certain glyphs, see
+  // https://crbug.com/1267606 for details. This function is used in situations
+  // where CSS or layout (ellipsis, hyphenation) requires knowledge about a
+  // particular character, hence it's important that they match.
+  return harfbuzz_face->HbGlyphForCharacter(codepoint);
 }
 
 bool SimpleFontData::IsSegmented() const {
