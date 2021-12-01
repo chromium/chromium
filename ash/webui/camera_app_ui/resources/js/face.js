@@ -39,9 +39,10 @@ function rotate(x, y, orientation) {
 export class FaceOverlay {
   /**
    * @param {!Resolution} activeArraySize
-   * @param {number} sensorOrientation
+   * @param {number} orientation Counter-clockwise angles to apply rotation to
+   *     the face rectangles.
    */
-  constructor(activeArraySize, sensorOrientation) {
+  constructor(activeArraySize, orientation) {
     /**
      * @const {!Resolution}
      * @private
@@ -52,7 +53,7 @@ export class FaceOverlay {
      * @const {number}
      * @private
      */
-    this.sensorOrientation_ = sensorOrientation;
+    this.orientation_ = orientation;
 
     /**
      * @const {!HTMLCanvasElement}
@@ -79,7 +80,7 @@ export class FaceOverlay {
 
     // TODO(b/178344897): Handle zoomed preview.
     // TODO(b/178344897): Handle cropped preview.
-    // TODO(b/178344897): Handle screen orientation.
+    // TODO(b/178344897): Handle screen orientation dynamically.
 
     this.ctx_.strokeStyle = RECT_COLOR;
     for (let i = 0; i < rects.length; i += 4) {
@@ -88,8 +89,8 @@ export class FaceOverlay {
       y1 /= this.activeArraySize_.height;
       x2 /= this.activeArraySize_.width;
       y2 /= this.activeArraySize_.height;
-      [x1, y1] = rotate(x1, y1, this.sensorOrientation_);
-      [x2, y2] = rotate(x2, y2, this.sensorOrientation_);
+      [x1, y1] = rotate(x1, y1, this.orientation_);
+      [x2, y2] = rotate(x2, y2, this.orientation_);
       x1 *= this.canvas_.width;
       y1 *= this.canvas_.height;
       x2 *= this.canvas_.width;

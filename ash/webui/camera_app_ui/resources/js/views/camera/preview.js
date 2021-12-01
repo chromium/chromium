@@ -634,9 +634,10 @@ export class Preview {
 
     const deviceId = videoTrack.getSettings().deviceId;
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
-    const sensorOrientation =
-        await deviceOperator.getSensorOrientation(deviceId);
-    this.faceOverlay_ = new FaceOverlay(activeArraySize, sensorOrientation);
+    const cameraFrameRotation =
+        await deviceOperator.getCameraFrameRotation(deviceId);
+    this.faceOverlay_ =
+        new FaceOverlay(activeArraySize, (360 - cameraFrameRotation) % 360);
 
     const updateFace = (mode, rects) => {
       if (mode ===
