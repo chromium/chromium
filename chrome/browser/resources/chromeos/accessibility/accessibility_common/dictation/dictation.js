@@ -373,15 +373,16 @@ export class Dictation {
    * @private
    */
   setInterimText_(text) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
+      return;
+    }
+
     // TODO(crbug.com/1252037): Need to find a way to show interim text that is
     // only whitespace. Google Cloud Speech can return a newline character
     // although SODA does not seem to do that. The newline character looks wrong
     // here.
     this.interimText_ = text;
-    if (this.chromeVoxEnabled_) {
-      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
-      return;
-    }
     this.inputController_.showAnnotation(this.interimText_);
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
@@ -395,10 +396,11 @@ export class Dictation {
    * @private
    */
   clearInterimText_() {
-    if (this.chromeVoxEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
+
     this.interimText_ = '';
     this.inputController_.showAnnotation('....');
     if (this.clearUITextTimeoutId_) {
@@ -420,6 +422,7 @@ export class Dictation {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
+
     if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
         macro.getMacroName() === MacroName.NEW_LINE) {
       // Return to the '....' UI.
@@ -448,6 +451,7 @@ export class Dictation {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
+
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
     this.inputController_.showAnnotation(`ⓘ Failed to execute: ` + transcript);
@@ -462,11 +466,12 @@ export class Dictation {
    * @private
    */
   hideCommandsUI_() {
-    if (this.chromeVoxEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       return;
     }
-    this.inputController_.hideAnnotation();
+
     this.interimText_ = '';
+    this.inputController_.hideAnnotation();
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
