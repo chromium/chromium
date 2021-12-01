@@ -132,6 +132,24 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     `;
   }
 
+  get listBoxDoc() {
+    return `
+      <p>Start</p>
+      <div role="listbox" aria-expanded="false" aria-label="Select an item">
+        <div aria-selected="true" tabindex="0" role="option">
+          <span>Listbox item one</span>
+        </div>
+        <div aria-selected="false" tabindex="-1" role="option">
+          <span>Listbox item two</span>
+        </div>
+        <div aria-selected="false" role="option">
+          <span>Listbox item three</span>
+        </div>
+      </div>
+      <button>Click</button>
+    `;
+  }
+
   /**
    * Fires an onCustomSpokenFeedbackToggled event with enabled state of
    * |enabled|.
@@ -918,10 +936,19 @@ TEST_F('ChromeVoxBackgroundTest', 'OptionChildIndexCount', function() {
       <div role="option">banana</div>
     </div>
   `;
+
   this.runWithLoadedTree(site, function(root) {
-    mockFeedback.call(doCmd('nextObject'))
+    // Select first child of the list box, similar to what happens if navigated
+    // by Tab.
+    const firstChild = root.find({role: RoleType.PARAGRAPH});
+    mockFeedback
+        .call(
+            () => ChromeVoxState.instance.setCurrentRange(
+                cursors.Range.fromNode(firstChild)))
+        .call(doCmd('nextObject'))
+        .expectSpeech('List box')
         .expectSpeech('Fruits')
-        .expectSpeech('with 2 items')
+        .call(doCmd('nextObject'))
         .expectSpeech('apple')
         .expectSpeech(' 1 of 2 ')
         .call(doCmd('nextObject'))
@@ -3775,6 +3802,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
 TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
+    <p>start</p>
     <div role="listbox" aria-expanded="false" aria-label="Configuration 1">
       <div role="presentation">
         <div role="presentation">
@@ -3827,7 +3855,7 @@ TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
     </div>
   `;
   this.runWithLoadedTree(site, function(root) {
-    mockFeedback
+    mockFeedback.call(press(KeyCode.TAB))
         .expectSpeech(
             'Listbox item 1', ' 1 of 3 ', 'Configuration 1', 'List box')
         .call(press(KeyCode.TAB))
@@ -3836,6 +3864,38 @@ TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
         .call(press(KeyCode.TAB))
         .expectSpeech(
             'Listbox item 3', ' 3 of 3 ', 'Configuration 3', 'List box')
+        .replay();
+  });
+});
+
+// Make sure linear navigation does not go inside ListBox's options.
+TEST_F('ChromeVoxBackgroundTest', 'ListBoxLinearNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site =
+
+      this.runWithLoadedTree(this.listBoxDoc, function(root) {
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('Select an item', 'List box')
+            .call(doCmd('nextObject'))
+            .expectSpeech('Click', 'Button')
+            .call(doCmd('previousObject'))
+            .expectSpeech('Select an item', 'List box')
+            .replay();
+      });
+});
+
+// Make sure navigation with Tab to ListBox lands on options.
+TEST_F('ChromeVoxBackgroundTest', 'ListBoxItemsNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+
+  this.runWithLoadedTree(this.listBoxDoc, function(root) {
+    mockFeedback.call(press(KeyCode.TAB))
+        .expectSpeech(
+            'Listbox item one', ' 1 of 3 ', 'Select an item', 'List box')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Listbox item two', ' 2 of 3 ')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Listbox item three', ' 3 of 3 ')
         .replay();
   });
 });

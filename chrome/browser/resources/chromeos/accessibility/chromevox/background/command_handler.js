@@ -606,19 +606,15 @@ CommandHandler.onCommand = function(command) {
       pred = AutomationPredicate.landmark;
       predErrorMsg = 'no_previous_landmark';
       break;
-    case 'right':
-    case 'nextObject':
-      didNavigate = true;
-      current = current.move(cursors.Unit.NODE, Dir.FORWARD);
-      current = CommandHandler.skipLabelOrDescriptionFor_(current, Dir.FORWARD);
-      break;
     case 'left':
     case 'previousObject':
       dir = Dir.BACKWARD;
+      // Falls through.
+    case 'right':
+    case 'nextObject':
       didNavigate = true;
       current = current.move(cursors.Unit.NODE, dir);
-      current =
-          CommandHandler.skipLabelOrDescriptionFor_(current, Dir.BACKWARD);
+      current = CommandHandler.skipLabelOrDescriptionFor_(current, dir);
       break;
     case 'previousGroup':
       skipSync = true;
