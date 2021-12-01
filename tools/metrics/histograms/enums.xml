@@ -49293,6 +49293,7 @@ from previous Chrome versions.
   <int value="-1767470652" label="out-of-process-pdf"/>
   <int value="-1766791501" label="WebUITabStrip:enabled"/>
   <int value="-1766648764" label="OmniboxShortBookmarkSuggestions:disabled"/>
+  <int value="-1766317053" label="GridTabSwitcherForTablets:enabled"/>
   <int value="-1766162197" label="AppServiceInstanceRegistry:enabled"/>
   <int value="-1766129470" label="DataSaverLiteModeRebranding:disabled"/>
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
@@ -50915,6 +50916,7 @@ from previous Chrome versions.
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
+  <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574000901" label="AVIF:enabled"/>

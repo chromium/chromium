@@ -16,8 +16,10 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -32,19 +34,22 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host                     A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
+     * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
+            StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
-        super(host, contentContainer, false, null, tabContentManagerSupplier,
-                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
-                jankTracker);
+        super(host, contentContainer,
+                TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
+                tabContentManagerSupplier, layerTitleCacheSupplier, overviewModeBehaviorSupplier,
+                topUiThemeColorProvider, jankTracker);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mTitleCache, layerTitleCacheSupplier);

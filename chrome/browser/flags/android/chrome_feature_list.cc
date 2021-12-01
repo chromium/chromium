@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFixedUmaSessionResumeOrder,
     &kFocusOmniboxInIncognitoTabIntents,
     &kGoogleLensSdkIntent,
+    &kGridTabSwitcherForTablets,
     &kHandleMediaIntents,
     &kHomepagePromoCard,
     &kImmersiveUiMode,
@@ -618,6 +619,9 @@ const base::Feature kExploreSites{"ExploreSites",
 
 const base::Feature kFixedUmaSessionResumeOrder{
     "FixedUmaSessionResumeOrder", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kGridTabSwitcherForTablets{
+    "GridTabSwitcherForTablets", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kHandleMediaIntents{"HandleMediaIntents",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

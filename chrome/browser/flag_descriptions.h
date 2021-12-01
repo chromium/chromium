@@ -1816,6 +1816,9 @@ extern const char kFeedLoadingPlaceholderDescription[];
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 
+extern const char kGridTabSwitcherForTabletsName[];
+extern const char kGridTabSwitcherForTabletsDescription[];
+
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 

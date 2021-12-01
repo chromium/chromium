@@ -3328,6 +3328,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "grid-tab-switcher-for-tablets",
+    "owners": [ "nemco", "clank-app-team@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "handwriting-gesture-editing",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 95

@@ -3167,6 +3167,10 @@ const char kFeedLoadingPlaceholderDescription[] =
 const char kFeedStampName[] = "StAMP cards in the feed";
 const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
 
+const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
+const char kGridTabSwitcherForTabletsDescription[] =
+    "Enable grid tab switcher for tablets, replacing the tab strip.";
+
 const char kHomepagePromoCardName[] =
     "Enable homepage promo card on the New Tab Page";
 const char kHomepagePromoCardDescription[] =
