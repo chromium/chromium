@@ -2194,11 +2194,6 @@ const char kScrollableTabStripButtonsDescription[] =
     "When the scrollable-tabstrip flag is enabled, this enables buttons to "
     "permanently appear on the tabstrip.";
 
-const char kForceDisableStackedTabsName[] = "Force Disable Stacked Tabs";
-const char kForceDisableStackedTabsDescription[] =
-    "Prevents the tabstrip from "
-    "entering stacked tabs mode, for any reason.";
-
 const char kScrollUnificationName[] = "Scroll Unification";
 const char kScrollUnificationDescription[] =
     "Refactoring project that eliminates scroll handling code from Blink. "

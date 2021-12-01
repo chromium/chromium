@@ -4875,11 +4875,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollableTabStripButtonsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScrollableTabStripButtons)},
 
-    {"force-disable-stacked-tabs",
-     flag_descriptions::kForceDisableStackedTabsName,
-     flag_descriptions::kForceDisableStackedTabsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kForceDisableStackedTabs)},
-
     {flag_descriptions::kSidePanelFlagId, flag_descriptions::kSidePanelName,
      flag_descriptions::kSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanel)},
