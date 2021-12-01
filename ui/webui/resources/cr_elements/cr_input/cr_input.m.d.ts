@@ -9,7 +9,7 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   ariaLabel: string|null|undefined;
   autofocus: boolean;
   autoValidate: boolean|null|undefined;
-  disabled: boolean|null|undefined;
+  disabled: boolean;
   errorMessage: string|null|undefined;
   invalid: boolean;
   max: number|null|undefined;

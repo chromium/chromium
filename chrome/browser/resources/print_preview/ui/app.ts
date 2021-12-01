@@ -646,4 +646,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-app': PrintPreviewAppElement;
+  }
+}
+
 customElements.define(PrintPreviewAppElement.is, PrintPreviewAppElement);

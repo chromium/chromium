@@ -116,4 +116,10 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-header': PrintPreviewHeaderElement;
+  }
+}
+
 customElements.define(PrintPreviewHeaderElement.is, PrintPreviewHeaderElement);

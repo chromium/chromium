@@ -2,31 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewModelElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
-window.header_test = {};
-const header_test = window.header_test;
-header_test.suiteName = 'HeaderTest';
-/** @enum {string} */
-header_test.TestNames = {
-  HeaderPrinterTypes: 'header printer types',
-  HeaderChangesForState: 'header changes for state',
-  EnterprisePolicy: 'enterprise policy',
+const header_test = {
+  suiteName: 'HeaderTest',
+  TestNames: {
+    HeaderPrinterTypes: 'header printer types',
+    HeaderChangesForState: 'header changes for state',
+    EnterprisePolicy: 'enterprise policy',
+  },
 };
 
+Object.assign(window, {header_test: header_test});
+
 suite(header_test.suiteName, function() {
-  /** @type {!PrintPreviewHeaderElement} */
-  let header;
+  let header: PrintPreviewHeaderElement;
 
-  /** @type {TestPluralStringProxy} */
-  let pluralString = null;
+  let pluralString: TestPluralStringProxy;
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
 
@@ -34,12 +32,10 @@ suite(header_test.suiteName, function() {
     PrintPreviewPluralStringProxyImpl.setInstance(pluralString);
     pluralString.text = '1 sheet of paper';
 
-    const model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    header = /** @type {!PrintPreviewHeaderElement} */ (
-        document.createElement('print-preview-header'));
+    header = document.createElement('print-preview-header');
     header.settings = model.settings;
     model.set('settings.duplex.available', true);
     model.set('settings.duplex.value', false);
@@ -66,11 +62,11 @@ suite(header_test.suiteName, function() {
   // Tests that the 4 different messages (non-virtual printer singular and
   // plural, virtual printer singular and plural) all show up as expected.
   test(assert(header_test.TestNames.HeaderPrinterTypes), async function() {
-    const summary = header.shadowRoot.querySelector('.summary');
+    const summary = header.shadowRoot!.querySelector('.summary')!;
     {
       const {messageName, itemCount} =
           await pluralString.whenCalled('getPluralString');
-      assertEquals('1 sheet of paper', summary.textContent.trim());
+      assertEquals('1 sheet of paper', summary.textContent!.trim());
       assertEquals('printPreviewSheetSummaryLabel', messageName);
       assertEquals(1, itemCount);
     }
@@ -107,33 +103,33 @@ suite(header_test.suiteName, function() {
   // Tests that the correct message is shown for non-READY states, and that
   // the print button is disabled appropriately.
   test(assert(header_test.TestNames.HeaderChangesForState), async function() {
-    const summary = header.shadowRoot.querySelector('.summary');
+    const summary = header.shadowRoot!.querySelector('.summary')!;
     await pluralString.whenCalled('getPluralString');
-    assertEquals('1 sheet of paper', summary.textContent.trim());
+    assertEquals('1 sheet of paper', summary.textContent!.trim());
 
     header.state = State.NOT_READY;
-    assertEquals('', summary.textContent.trim());
+    assertEquals('', summary.textContent!.trim());
 
     header.state = State.PRINTING;
     assertEquals(
-        loadTimeData.getString('printing'), summary.textContent.trim());
+        loadTimeData.getString('printing'), summary.textContent!.trim());
     setPdfDestination();
-    assertEquals(loadTimeData.getString('saving'), summary.textContent.trim());
+    assertEquals(loadTimeData.getString('saving'), summary.textContent!.trim());
 
     header.state = State.ERROR;
-    assertEquals('', summary.textContent.trim());
+    assertEquals('', summary.textContent!.trim());
 
     const testError = 'Error printing to cloud print';
     header.cloudPrintErrorMessage = testError;
     header.error = Error.CLOUD_PRINT_ERROR;
     header.state = State.FATAL_ERROR;
-    assertEquals(testError, summary.textContent.trim());
+    assertEquals(testError, summary.textContent!.trim());
   });
 
   // Tests that enterprise badge shows up if any setting is managed.
   test(assert(header_test.TestNames.EnterprisePolicy), function() {
-    assertTrue(header.shadowRoot.querySelector('iron-icon').hidden);
+    assertTrue(header.shadowRoot!.querySelector('iron-icon')!.hidden);
     header.managed = true;
-    assertFalse(header.shadowRoot.querySelector('iron-icon').hidden);
+    assertFalse(header.shadowRoot!.querySelector('iron-icon')!.hidden);
   });
 });
