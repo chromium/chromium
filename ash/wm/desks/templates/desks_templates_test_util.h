@@ -127,9 +127,21 @@ class DesksTemplatesIconViewTestApi {
   const DesksTemplatesIconView* desks_templates_icon_view_;
 };
 
+// Return the `grid_item_index`th DesksTemplatesItemView from the first
+// OverviewGrid in `GetOverviewGridList()`.
+DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index);
+
 // These buttons are the ones on the primary root window.
 views::Button* GetZeroStateDesksTemplatesButton();
+views::Button* GetExpandedStateDesksTemplatesButton();
 views::Button* GetSaveDeskAsTemplateButton();
+views::Button* GetTemplateItemButton(int index);
+
+// A lot of the UI relies on calling into the local desk data manager to
+// update, which sends callbacks via posting tasks. Call
+// `WaitForDesksTemplatesUI()` if testing a piece of the UI which calls into the
+// desk model.
+void WaitForDesksTemplatesUI();
 
 }  // namespace ash
 
