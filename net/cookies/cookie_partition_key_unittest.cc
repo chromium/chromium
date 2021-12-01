@@ -5,6 +5,8 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_
 
+#include <string>
+
 #include "net/cookies/cookie_partition_key.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"

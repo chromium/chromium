@@ -5,6 +5,10 @@
 #ifndef SERVICES_NETWORK_COOKIE_SETTINGS_H_
 #define SERVICES_NETWORK_COOKIE_SETTINGS_H_
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"

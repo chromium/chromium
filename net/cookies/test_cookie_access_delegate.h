@@ -6,7 +6,10 @@
 #define NET_COOKIES_TEST_COOKIE_ACCESS_DELEGATE_H_
 
 #include <map>
+#include <set>
+#include <string>
 
+#include "base/containers/flat_map.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/same_party_context.h"

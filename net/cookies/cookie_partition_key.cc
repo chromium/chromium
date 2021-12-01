@@ -4,6 +4,8 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include <tuple>
+
 #include "base/feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"

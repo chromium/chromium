@@ -8,7 +8,6 @@
 #define NET_COOKIES_COOKIE_OPTIONS_H_
 
 #include <ostream>
-#include <set>
 
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"

@@ -6,7 +6,6 @@
 #define NET_COOKIES_COOKIE_UTIL_H_
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"

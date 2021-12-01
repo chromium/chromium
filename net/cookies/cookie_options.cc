@@ -6,6 +6,8 @@
 
 #include "net/cookies/cookie_options.h"
 
+#include <tuple>
+
 #include "base/metrics/histogram_functions.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"

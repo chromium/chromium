@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
 
 #include <fuzzer/FuzzedDataProvider.h>
 

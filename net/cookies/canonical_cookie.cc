@@ -45,7 +45,6 @@
 #include "net/cookies/canonical_cookie.h"
 
 #include <limits>
-#include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"

@@ -6,6 +6,8 @@
 #define NET_COOKIES_CANONICAL_COOKIE_TEST_HELPERS_H_
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/strings/string_split.h"
 #include "net/cookies/canonical_cookie.h"

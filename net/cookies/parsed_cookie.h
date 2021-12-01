@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "net/base/net_export.h"

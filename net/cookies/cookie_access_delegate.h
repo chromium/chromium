@@ -5,6 +5,8 @@
 #ifndef NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 #define NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 
+#include <set>
+
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"

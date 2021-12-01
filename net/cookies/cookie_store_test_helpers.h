@@ -7,6 +7,7 @@
 
 #include "net/cookies/cookie_monster.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 

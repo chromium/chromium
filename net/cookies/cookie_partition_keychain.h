@@ -5,7 +5,6 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEYCHAIN_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEYCHAIN_H_
 
-#include <set>
 #include <vector>
 
 #include "net/base/net_export.h"

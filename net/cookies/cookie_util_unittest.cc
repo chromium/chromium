@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
