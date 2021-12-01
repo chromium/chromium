@@ -4864,8 +4864,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,
-     flag_descriptions::kScrollableTabStripDescription,
-     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
+     flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStrip,
                                     kTabScrollingVariations,
                                     "TabScrolling")},
