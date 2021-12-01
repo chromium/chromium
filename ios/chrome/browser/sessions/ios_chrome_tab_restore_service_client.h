@@ -10,10 +10,6 @@
 
 #include "components/sessions/core/tab_restore_service_client.h"
 
-namespace base {
-class Value;
-}
-
 class ChromeBrowserState;
 
 // IOSChromeTabRestoreServiceClient provides an implementation of
@@ -38,7 +34,7 @@ class IOSChromeTabRestoreServiceClient
       ui::WindowShowState show_state,
       const std::string& workspace,
       const std::string& user_title,
-      const std::map<std::string, base::Value>& extra_data) override;
+      const std::map<std::string, std::string>& extra_data) override;
   sessions::LiveTabContext* FindLiveTabContextForTab(
       const sessions::LiveTab* tab) override;
   sessions::LiveTabContext* FindLiveTabContextWithID(

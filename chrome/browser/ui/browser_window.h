@@ -560,7 +560,7 @@ class BrowserWindow : public ui::BaseWindow {
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   virtual bool IsSideSearchPanelVisible() const = 0;
   virtual void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, base::Value>& extra_data) = 0;
+      const std::map<std::string, std::string>& extra_data) = 0;
 #endif
 
  protected:

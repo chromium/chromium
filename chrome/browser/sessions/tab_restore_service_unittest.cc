@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -83,9 +82,9 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD1(GetLiveTabAt, sessions::LiveTab*(int index));
   MOCK_CONST_METHOD0(GetActiveLiveTab, sessions::LiveTab*());
   MOCK_CONST_METHOD1(GetExtraDataForTab,
-                     std::map<std::string, base::Value>(int index));
+                     std::map<std::string, std::string>(int index));
   MOCK_CONST_METHOD0(GetExtraDataForWindow,
-                     std::map<std::string, base::Value>());
+                     std::map<std::string, std::string>());
   MOCK_CONST_METHOD1(GetTabGroupForTab,
                      absl::optional<tab_groups::TabGroupId>(int index));
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
@@ -111,7 +110,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
                bool,
                const sessions::PlatformSpecificTabData*,
                (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, base::Value>&),
+               (const std::map<std::string, std::string>&),
                (const SessionID*)),
               (override));
 
@@ -123,7 +122,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
                (const std::string&),
                (const sessions::PlatformSpecificTabData*),
                (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, base::Value>&)),
+               (const std::map<std::string, std::string>&)),
               (override));
 
   MOCK_METHOD0(CloseTab, void());
@@ -141,7 +140,7 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
                    ui::WindowShowState show_state,
                    const std::string& workspace,
                    const std::string& user_title,
-                   const std::map<std::string, base::Value>& extra_data));
+                   const std::map<std::string, std::string>& extra_data));
   MOCK_METHOD1(FindLiveTabContextForTab,
                sessions::LiveTabContext*(const sessions::LiveTab* tab));
   MOCK_METHOD1(FindLiveTabContextWithID,
@@ -407,16 +406,20 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
 
 TEST_F(TabRestoreServiceImplWithMockClientTest,
        TabExtraDataPresentInHistoricalTab) {
+  constexpr char kSampleKey[] = "test";
+  constexpr char kSampleValue[] = "true";
+
   std::unique_ptr<MockLiveTabContext> mock_live_tab_context_ptr(
       new ::testing::NiceMock<MockLiveTabContext>());
   SessionID sample_session_id = SessionID::NewUnique();
   EXPECT_CALL(*mock_live_tab_context_ptr, GetSessionID)
       .WillOnce(Return(sample_session_id));
-  EXPECT_CALL(*mock_live_tab_context_ptr, GetExtraDataForTab).WillOnce([]() {
-    std::map<std::string, base::Value> sample_extra_data;
-    sample_extra_data["test"] = base::Value(true);
-    return sample_extra_data;
-  });
+  EXPECT_CALL(*mock_live_tab_context_ptr, GetExtraDataForTab)
+      .WillOnce([kSampleKey, kSampleValue]() {
+        std::map<std::string, std::string> sample_extra_data;
+        sample_extra_data[kSampleKey] = kSampleValue;
+        return sample_extra_data;
+      });
   ON_CALL(*mock_tab_restore_service_client_, FindLiveTabContextForTab(_))
       .WillByDefault(Return(mock_live_tab_context_ptr.get()));
   ON_CALL(*mock_tab_restore_service_client_, GetNewTabURL())
@@ -435,7 +438,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   ASSERT_EQ(1U, tab->navigations.size());
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
   ASSERT_EQ(1U, tab->extra_data.size());
-  ASSERT_TRUE(tab->extra_data["test"].GetBool());
+  ASSERT_EQ(kSampleValue, tab->extra_data[kSampleKey]);
 }
 
 // Make sure TabRestoreService doesn't create an entry for a tab with no

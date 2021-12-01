@@ -18,10 +18,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
-namespace base {
-class Value;
-}
-
 namespace gfx {
 class Rect;
 }
@@ -46,9 +42,9 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual std::string GetUserTitle() const = 0;
   virtual LiveTab* GetLiveTabAt(int index) const = 0;
   virtual LiveTab* GetActiveLiveTab() const = 0;
-  virtual std::map<std::string, base::Value> GetExtraDataForTab(
+  virtual std::map<std::string, std::string> GetExtraDataForTab(
       int index) const = 0;
-  virtual std::map<std::string, base::Value> GetExtraDataForWindow() const = 0;
+  virtual std::map<std::string, std::string> GetExtraDataForWindow() const = 0;
   virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const = 0;
   // Should not be called for |group| unless GetTabGroupForTab() returned
@@ -81,7 +77,7 @@ class SESSIONS_EXPORT LiveTabContext {
       bool pin,
       const PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, base::Value>& extra_data,
+      const std::map<std::string, std::string>& extra_data,
       const SessionID* tab_id) = 0;
 
   // Note: |tab_platform_data| may be null (e.g., if restoring from last session
@@ -94,7 +90,7 @@ class SESSIONS_EXPORT LiveTabContext {
       const std::string& extension_app_id,
       const PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, base::Value>& extra_data) = 0;
+      const std::map<std::string, std::string>& extra_data) = 0;
   virtual void CloseTab() = 0;
 
  protected:

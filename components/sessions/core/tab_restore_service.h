@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -82,7 +81,7 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     base::Time timestamp;
 
     // Used for storing arbitrary key/value pairs.
-    std::map<std::string, base::Value> extra_data;
+    std::map<std::string, std::string> extra_data;
 
     // Estimates memory usage. By default returns 0.
     virtual size_t EstimateMemoryUsage() const;

@@ -701,7 +701,7 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, base::Value>& extra_data) override;
+      const std::map<std::string, std::string>& extra_data) override;
 #endif
 
  private:

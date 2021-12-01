@@ -14,10 +14,6 @@
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 
-namespace base {
-class Value;
-}
-
 class WebStateList;
 
 // Implementation of sessions::LiveTabContext which uses a WebStateList
@@ -41,9 +37,9 @@ class LiveTabContextBrowserAgent
   std::string GetUserTitle() const override;
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
-  std::map<std::string, base::Value> GetExtraDataForTab(
+  std::map<std::string, std::string> GetExtraDataForTab(
       int index) const override;
-  std::map<std::string, base::Value> GetExtraDataForWindow() const override;
+  std::map<std::string, std::string> GetExtraDataForWindow() const override;
   absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
@@ -66,7 +62,7 @@ class LiveTabContextBrowserAgent
       bool pin,
       const sessions::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, base::Value>& extra_data,
+      const std::map<std::string, std::string>& extra_data,
       const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -75,7 +71,7 @@ class LiveTabContextBrowserAgent
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, base::Value>& extra_data) override;
+      const std::map<std::string, std::string>& extra_data) override;
   void CloseTab() override;
 
  private:

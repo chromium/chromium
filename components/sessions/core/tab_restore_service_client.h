@@ -24,10 +24,6 @@ namespace tab_groups {
 class TabGroupId;
 }
 
-namespace base {
-class Value;
-}
-
 namespace sessions {
 
 class LiveTab;
@@ -55,7 +51,7 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
       ui::WindowShowState show_state,
       const std::string& workspace,
       const std::string& user_title,
-      const std::map<std::string, base::Value>& extra_data) = 0;
+      const std::map<std::string, std::string>& extra_data) = 0;
 
   // Returns the LiveTabContext instance that is associated with
   // |tab|, or null if there is no such instance.

@@ -5302,6 +5302,11 @@ static_library("ui") {
       "views/side_search/side_search_browser_controller.cc",
       "views/side_search/side_search_browser_controller.h",
     ]
+
+    deps += [
+      "side_search:side_search_tab_data_proto",
+      "side_search:side_search_window_data_proto",
+    ]
   }
 }
 

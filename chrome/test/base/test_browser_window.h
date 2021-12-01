@@ -42,12 +42,6 @@ class SharingHubBubbleController;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-namespace base {
-class Value;
-}
-#endif
-
 // An implementation of BrowserWindow used for testing. TestBrowserWindow only
 // contains a valid LocationBar, all other getters return NULL.
 // However, some of them can be preset to a specific value.
@@ -236,7 +230,7 @@ class TestBrowserWindow : public BrowserWindow {
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, base::Value>& extra_data) override;
+      const std::map<std::string, std::string>& extra_data) override;
 #endif
 
   FeaturePromoController* GetFeaturePromoController() override;

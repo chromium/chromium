@@ -3062,7 +3062,7 @@ bool BrowserView::IsSideSearchPanelVisible() const {
 }
 
 void BrowserView::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, base::Value>& extra_data) {
+    const std::map<std::string, std::string>& extra_data) {
   if (side_search_controller_) {
     side_search::MaybeRestoreSideSearchWindowState(
         side_search_controller_.get(), extra_data);

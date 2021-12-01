@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/values.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -64,14 +63,14 @@ sessions::LiveTab* AndroidLiveTabContext::GetActiveLiveTab() const {
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
-std::map<std::string, base::Value> AndroidLiveTabContext::GetExtraDataForTab(
+std::map<std::string, std::string> AndroidLiveTabContext::GetExtraDataForTab(
     int index) const {
-  return std::map<std::string, base::Value>();
+  return std::map<std::string, std::string>();
 }
 
-std::map<std::string, base::Value>
+std::map<std::string, std::string>
 AndroidLiveTabContext::GetExtraDataForWindow() const {
-  return std::map<std::string, base::Value>();
+  return std::map<std::string, std::string>();
 }
 
 absl::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
@@ -131,7 +130,7 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   Profile* profile = tab_model_->GetProfile();
 
@@ -162,7 +161,7 @@ sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data) {
+    const std::map<std::string, std::string>& extra_data) {
   NOTIMPLEMENTED();
   return nullptr;
 }

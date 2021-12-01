@@ -839,7 +839,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     } else {
       context = client_->CreateLiveTabContext(
           std::string(), gfx::Rect(), ui::SHOW_STATE_NORMAL, std::string(),
-          std::string(), std::map<std::string, base::Value>());
+          std::string(), std::map<std::string, std::string>());
       if (tab.browser_id)
         UpdateTabBrowserIDs(tab.browser_id, context->GetSessionID());
     }

@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace base {
-class Value;
-}
-
 namespace content {
 class WebContents;
 }
@@ -27,20 +23,20 @@ namespace side_search {
 // Adds side search state data to a tab's state restore data if applicable.
 void MaybeAddSideSearchTabRestoreData(
     content::WebContents* web_contents,
-    std::map<std::string, base::Value>& extra_data);
+    std::map<std::string, std::string>& extra_data);
 
 // Add side search state data for a window's state restore data if applicable.
 void MaybeAddSideSearchWindowRestoreData(
     bool toggled_open,
-    std::map<std::string, base::Value>& extra_data);
+    std::map<std::string, std::string>& extra_data);
 
 void MaybeRestoreSideSearchWindowState(
     SideSearchTabContentsHelper::Delegate* delegate,
-    const std::map<std::string, base::Value>& extra_data);
+    const std::map<std::string, std::string>& extra_data);
 
 void SetSideSearchStateFromRestoreData(
     content::WebContents* web_contents,
-    const std::map<std::string, base::Value>& extra_data);
+    const std::map<std::string, std::string>& extra_data);
 
 }  // namespace side_search
 

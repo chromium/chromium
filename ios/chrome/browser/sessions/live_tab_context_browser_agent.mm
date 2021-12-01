@@ -9,7 +9,6 @@
 
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -66,14 +65,14 @@ sessions::LiveTab* LiveTabContextBrowserAgent::GetActiveLiveTab() const {
   return nullptr;
 }
 
-std::map<std::string, base::Value>
+std::map<std::string, std::string>
 LiveTabContextBrowserAgent::GetExtraDataForTab(int index) const {
-  return std::map<std::string, base::Value>();
+  return std::map<std::string, std::string>();
 }
 
-std::map<std::string, base::Value>
+std::map<std::string, std::string>
 LiveTabContextBrowserAgent::GetExtraDataForWindow() const {
-  return std::map<std::string, base::Value>();
+  return std::map<std::string, std::string>();
 }
 
 absl::optional<tab_groups::TabGroupId>
@@ -128,7 +127,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   // TODO(crbug.com/661636): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
@@ -147,7 +146,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data) {
+    const std::map<std::string, std::string>& extra_data) {
   web_state_list_->ReplaceWebStateAt(
       web_state_list_->active_index(),
       session_util::CreateWebStateWithNavigationEntries(

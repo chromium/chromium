@@ -317,7 +317,7 @@ bool TestBrowserWindow::IsSideSearchPanelVisible() const {
 }
 
 void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, base::Value>& extra_data) {}
+    const std::map<std::string, std::string>& extra_data) {}
 #endif
 
 FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {

@@ -102,9 +102,9 @@ sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
       browser_->tab_strip_model()->GetActiveWebContents());
 }
 
-std::map<std::string, base::Value> BrowserLiveTabContext::GetExtraDataForTab(
+std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
-  std::map<std::string, base::Value> extra_data;
+  std::map<std::string, std::string> extra_data;
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   if (IsSideSearchEnabled(browser_->profile())) {
@@ -116,9 +116,9 @@ std::map<std::string, base::Value> BrowserLiveTabContext::GetExtraDataForTab(
   return extra_data;
 }
 
-std::map<std::string, base::Value>
+std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
-  std::map<std::string, base::Value> extra_data;
+  std::map<std::string, std::string> extra_data;
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   if (IsSideSearchEnabled(browser_->profile())) {
@@ -178,7 +178,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
@@ -261,7 +261,7 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, base::Value>& extra_data) {
+    const std::map<std::string, std::string>& extra_data) {
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
           ? static_cast<const sessions::ContentPlatformSpecificTabData*>(
@@ -292,7 +292,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     ui::WindowShowState show_state,
     const std::string& workspace,
     const std::string& user_title,
-    const std::map<std::string, base::Value>& extra_data) {
+    const std::map<std::string, std::string>& extra_data) {
   std::unique_ptr<Browser::CreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, app_name)) {
     // Only trusted app popup windows should ever be restored.
