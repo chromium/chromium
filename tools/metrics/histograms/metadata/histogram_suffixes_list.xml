@@ -10832,6 +10832,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="BatchUpdateGoogleSRP"
       label="Batch update of hints for result links off the Google SRP"/>
   <suffix name="BatchUpdateModels" label="Batch update of models"/>
+  <suffix name="Bookmarks" label="Batch update of hints for bookmarks"/>
   <suffix name="PageNavigation" label="Page navigation"/>
   <affected-histogram
       name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled"/>

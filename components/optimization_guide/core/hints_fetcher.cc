@@ -55,6 +55,8 @@ std::string GetStringNameForRequestContext(
       return "BatchUpdateGoogleSRP";
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS:
       return "BatchUpdateActiveTabs";
+    case proto::RequestContext::CONTEXT_BOOKMARKS:
+      return "Bookmarks";
   }
   NOTREACHED();
   return std::string();
