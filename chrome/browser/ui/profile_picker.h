@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 class GURL;
+class Profile;
 
 namespace base {
 class FilePath;

@@ -59,6 +59,8 @@ base::AtomicSequenceNumber g_unique_id;
 
 namespace content {
 
+ChildProcessHost::~ChildProcessHost() = default;
+
 // static
 std::unique_ptr<ChildProcessHost> ChildProcessHost::Create(
     ChildProcessHostDelegate* delegate,

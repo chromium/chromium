@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace IPC {
+class Channel;
 class MessageFilter;
 }
 
