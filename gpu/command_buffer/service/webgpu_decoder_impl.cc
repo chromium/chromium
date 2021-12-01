@@ -294,7 +294,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return false;
   }
   bool WasContextLostByRobustnessExtension() const override {
-    NOTREACHED();
     return false;
   }
   void MarkContextLost(error::ContextLostReason reason) override {
