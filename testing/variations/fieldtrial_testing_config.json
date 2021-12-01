@@ -1151,8 +1151,6 @@
     "AutofillEnableSupportForMoreStructureInAddresses": [
         {
             "platforms": [
-                "android_webview",
-                "android_weblayer",
                 "android",
                 "chromeos",
                 "chromeos_lacros",
@@ -1171,11 +1169,25 @@
             ]
         }
     ],
-    "AutofillEnableSupportForMoreStructureInNames": [
+    "AutofillEnableSupportForMoreStructureInAddressesOnWebView": [
         {
             "platforms": [
                 "android_webview",
-                "android_weblayer",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021-12-01",
+                    "enable_features": [
+                        "AutofillEnableSupportForMoreStructureInAddresses"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableSupportForMoreStructureInNames": [
+        {
+            "platforms": [
                 "android",
                 "chromeos",
                 "chromeos_lacros",
@@ -1183,6 +1195,22 @@
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021-12-01",
+                    "enable_features": [
+                        "AutofillEnableSupportForMoreStructureInNames"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableSupportForMoreStructureInNamesOnWebView": [
+        {
+            "platforms": [
+                "android_webview",
+                "android_weblayer"
             ],
             "experiments": [
                 {
