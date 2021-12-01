@@ -971,7 +971,7 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
       ContentBrowserClient::WideColorGamutHeuristic::kUseDisplay;
   // Let screen instance be overridable by parts.
   ui::SetScreenAndroid(use_display_wide_color_gamut);
-#endif
+#endif  // defined(OS_ANDROID)
 
   if (parts_)
     result_code_ = parts_->PreMainMessageLoopRun();
@@ -984,7 +984,19 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
     content::DWriteFontLookupTableBuilder::GetInstance()
         ->SchedulePrepareFontUniqueNameTableIfNeeded();
   }
-#endif
+#endif  // defined(OS_WIN)
+
+  // Unretained(this) is safe as the main message loop expected to run it is
+  // stopped before ~BrowserMainLoop (in the event the message loop doesn't
+  // reach idle before that point).
+  base::CurrentThread::Get()->RegisterOnNextIdleCallback(base::BindOnce(
+      [](BrowserMainLoop* self) {
+        if (self->parts_)
+          self->parts_->OnFirstIdle();
+
+        self->responsiveness_watcher_->OnFirstIdle();
+      },
+      base::Unretained(this)));
 
   // If the UI thread blocks, the whole UI is unresponsive. Do not allow
   // unresponsive tasks from the UI thread and instantiate a
@@ -1023,24 +1035,6 @@ void BrowserMainLoop::RunMainMessageLoop() {
   if (parts_)
     parts_->WillRunMainMessageLoop(main_run_loop);
   DCHECK(main_run_loop);
-
-  main_run_loop->RunUntilIdle();
-  // |parts_| may have captured a quit closure in WillRunMainMessageLoop(). If
-  // the above run is quit before it reaches idle on its own,
-  // RunMainMessageLoop() must return right away.
-  if (main_run_loop->AnyQuitCalled())
-    return;
-
-  // TODO(crbug.com/1175074): Figure out why (only) blink web tests goes through
-  // this code path multiple times...
-  static bool ran_once = false;
-  if (!ran_once) {
-    ran_once = true;
-    if (parts_)
-      parts_->OnFirstIdle();
-    responsiveness_watcher_->OnFirstIdle();
-  }
-
   main_run_loop->Run();
 #endif  // defined(OS_ANDROID)
 }

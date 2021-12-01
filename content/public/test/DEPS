@@ -22,6 +22,7 @@ include_rules = [
   "+components/leveldb_proto/public",
   "+components/network_session_configurator/common/network_switches.h",
   "+components/services/storage/public",
+  "+components/startup_metric_utils/browser",
   "+components/viz/client",
   "+components/viz/common",
   "+components/viz/host",

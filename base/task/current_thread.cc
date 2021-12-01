@@ -5,6 +5,7 @@
 #include "base/task/current_thread.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/message_pump_type.h"
@@ -80,6 +81,11 @@ void CurrentThread::RemoveTaskObserver(TaskObserver* task_observer) {
 void CurrentThread::SetAddQueueTimeToTasks(bool enable) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->SetAddQueueTimeToTasks(enable);
+}
+
+void CurrentThread::RegisterOnNextIdleCallback(
+    OnceClosure on_next_idle_callback) {
+  current_->RegisterOnNextIdleCallback(std::move(on_next_idle_callback));
 }
 
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
@@ -793,8 +794,11 @@ bool SequenceManagerImpl::OnSystemIdle() {
   bool have_work_to_do =
       main_thread_only().time_domain->MaybeFastForwardToWakeUp(
           wakeup, controller_->ShouldQuitRunLoopWhenIdle());
-  if (!have_work_to_do)
+  if (!have_work_to_do) {
     MaybeReclaimMemory();
+    if (main_thread_only().on_next_idle_callback)
+      std::move(main_thread_only().on_next_idle_callback).Run();
+  }
   return have_work_to_do;
 }
 
@@ -1171,6 +1175,12 @@ void SequenceManagerImpl::AddDestructionObserver(
 void SequenceManagerImpl::RemoveDestructionObserver(
     CurrentThread::DestructionObserver* destruction_observer) {
   main_thread_only().destruction_observers.RemoveObserver(destruction_observer);
+}
+
+void SequenceManagerImpl::RegisterOnNextIdleCallback(
+    OnceClosure on_next_idle_callback) {
+  DCHECK(!main_thread_only().on_next_idle_callback);
+  main_thread_only().on_next_idle_callback = std::move(on_next_idle_callback);
 }
 
 void SequenceManagerImpl::SetTaskRunner(

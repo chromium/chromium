@@ -16,6 +16,10 @@
 
 namespace startup_metric_utils {
 
+// Resets this process's session to allow recording one-time-only metrics again
+// when a process is reused for multiple tests.
+void ResetSessionForTesting();
+
 // Returns true when browser UI was not launched normally: some other UI was
 // shown first or browser was launched in background mode.
 bool WasMainWindowStartupInterrupted();

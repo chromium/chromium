@@ -40,6 +40,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/browser/browser_main_loop.h"
@@ -567,6 +568,11 @@ void BrowserTestBase::SetUp() {
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
   // follows.
 
+  // Unlike other platforms, android_browsertests can reuse the same process for
+  // multiple tests. Need to reset startup metrics to allow recording them
+  // again.
+  startup_metric_utils::ResetSessionForTesting();
+
   base::i18n::AllowMultipleInitializeCallsForTesting();
   base::i18n::InitializeICU();
 
@@ -824,15 +830,14 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
       base::ScopedDisallowBlocking disallow_blocking;
 
-      // Since ProxyRunTestOnMainThreadLoop() replaces the main message loop, we
-      // need to invoke the OnFirstIdle() phase ourselves.
+      // Flush remaining startup tasks to make sure the
+      // BrowserMainParts::OnFirstIdle phase has occurred before entering the
+      // test body.
       base::RunLoop flush_startup_tasks;
       flush_startup_tasks.RunUntilIdle();
       // Make sure there isn't an odd caller which reached |flush_startup_tasks|
       // statically via base::RunLoop::QuitCurrent*Deprecated().
       DCHECK(!flush_startup_tasks.AnyQuitCalled());
-      if (browser_main_parts_)
-        browser_main_parts_->OnFirstIdle();
     }
 
     std::unique_ptr<InitialNavigationObserver> initial_navigation_observer;

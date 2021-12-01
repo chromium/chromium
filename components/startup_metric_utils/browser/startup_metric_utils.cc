@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
+#include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -386,7 +388,34 @@ bool ShouldLogStartupHistogram() {
   return !WasMainWindowStartupInterrupted();
 }
 
+#if DCHECK_IS_ON()
+base::flat_set<int>& GetSessionLog() {
+  static base::NoDestructor<base::flat_set<int>> session_log;
+  return *session_log;
+}
+#endif  // DCHECK_IS_ON()
+
+// DCHECKs that this is the first time |method_id| is passed to this assertion
+// in this session (a session is typically process-lifetime but this can be
+// reset in tests via ResetSessionForTesting()). Callers should use __LINE__ as
+// a unique id in this file.
+void AssertFirstCallInSession(int method_id) {
+#if DCHECK_IS_ON()
+  DCHECK(GetSessionLog().insert(method_id).second);
+#endif  // DCHECK_IS_ON()
+}
+
 }  // namespace
+
+void ResetSessionForTesting() {
+#if DCHECK_IS_ON()
+  GetSessionLog().clear();
+#endif  // DCHECK_IS_ON()
+  // Reset global ticks that will be recorded multiple times when multiple
+  // tests run in the same process.
+  g_message_loop_start_ticks = base::TimeTicks();
+  g_browser_window_display_ticks = base::TimeTicks();
+}
 
 bool WasMainWindowStartupInterrupted() {
   return g_main_window_startup_interrupted;
@@ -480,12 +509,7 @@ void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
 
 void RecordBrowserMainLoopFirstIdle(base::TimeTicks ticks) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
@@ -515,12 +539,7 @@ void RecordFirstWebContentsNonEmptyPaint(
     base::TimeTicks now,
     base::TimeTicks render_process_host_init_time) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
@@ -542,12 +561,7 @@ void RecordFirstWebContentsNonEmptyPaint(
 
 void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
@@ -560,12 +574,7 @@ void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {
 
 void RecordFirstWebContentsMainNavigationFinished(base::TimeTicks ticks) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;

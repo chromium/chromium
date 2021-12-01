@@ -760,6 +760,7 @@ if (is_android) {
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
+      "../browser/metrics/startup_metrics_browsertest.cc",
       "../browser/metrics/ukm_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_android_browsertest.cc",

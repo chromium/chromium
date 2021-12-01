@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
@@ -156,6 +157,7 @@ class BASE_EXPORT SequenceManagerImpl
       CurrentThread::DestructionObserver* destruction_observer);
   void RemoveDestructionObserver(
       CurrentThread::DestructionObserver* destruction_observer);
+  void RegisterOnNextIdleCallback(OnceClosure on_next_idle_callback);
   // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
   void SetTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner);
   // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
@@ -331,6 +333,10 @@ class BASE_EXPORT SequenceManagerImpl
 
     ObserverList<CurrentThread::DestructionObserver>::Unchecked
         destruction_observers;
+
+    // If non-null, invoked the next time OnSystemIdle() completes without
+    // scheduling additional work.
+    OnceClosure on_next_idle_callback;
 
     // By default native work is not prioritized at all.
     std::multiset<TaskQueue::QueuePriority> pending_native_work{
