@@ -68,7 +68,7 @@ phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
 
 void BluetoothDisabledView::LearnMoreButtonPressed() {
   LogInterstitialScreenEvent(InterstitialScreenEvent::kLearnMore);
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(phonehub::kPhoneHubLearnMoreLink),
       /*from_user_interaction=*/true);
 }

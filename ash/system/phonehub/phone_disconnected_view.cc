@@ -51,11 +51,10 @@ PhoneDisconnectedView::PhoneDisconnectedView(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
           InterstitialScreenEvent::kLearnMore,
-          base::BindRepeating(
-              &NewWindowDelegate::OpenUrl,
-              base::Unretained(NewWindowDelegate::GetInstance()),
-              GURL(phonehub::kPhoneHubLearnMoreLink),
-              /*from_user_interaction=*/true)),
+          base::BindRepeating(&NewWindowDelegate::OpenUrl,
+                              base::Unretained(NewWindowDelegate::GetPrimary()),
+                              GURL(phonehub::kPhoneHubLearnMoreLink),
+                              /*from_user_interaction=*/true)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
       PillButton::Type::kIconlessFloating, /*icon=*/nullptr);
