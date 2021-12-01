@@ -374,7 +374,30 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
     std::move(callback).Run(LaunchResult());
     return;
   }
-  publisher->LaunchAppWithParams(std::move(params), std::move(callback));
+
+  app_registry_cache_.ForOneApp(
+      params.app_id,
+      [this, &params, &callback, &publisher](const apps::AppUpdate& update) {
+        if (MaybeShowLaunchPreventionDialog(update)) {
+          std::move(callback).Run(LaunchResult());
+          return;
+        }
+        auto launch_source = params.launch_source;
+        // TODO(crbug/1117655): File manager records metrics for apps it
+        // launched. So we only record launches from other places. We should
+        // eventually move those metrics here, after AppService supports all
+        // app types launched by file manager.
+        if (launch_source != apps::mojom::LaunchSource::kFromFileManager) {
+          RecordAppLaunch(update.AppId(), launch_source);
+        }
+
+        RecordAppPlatformMetrics(profile_, update, launch_source,
+                                 params.container);
+
+        publisher->LaunchAppWithParams(std::move(params), std::move(callback));
+
+        PerformPostLaunchTasks(launch_source);
+      });
 }
 
 void AppServiceProxyBase::SetPermission(const std::string& app_id,
