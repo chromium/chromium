@@ -570,6 +570,8 @@ component("ash") {
     "login/security_token_request_controller.h",
     "login/ui/access_code_input.cc",
     "login/ui/access_code_input.h",
+    "login/ui/animated_auth_factors_label_wrapper.cc",
+    "login/ui/animated_auth_factors_label_wrapper.h",
     "login/ui/animated_rounded_image_view.cc",
     "login/ui/animated_rounded_image_view.h",
     "login/ui/animation_frame.h",
