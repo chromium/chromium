@@ -199,7 +199,9 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  if (extension->is_app()) {
+  bool is_quickoffice =
+      extension->id() == extension_misc::kQuickOfficeComponentExtensionId;
+  if (extension->is_app() || is_quickoffice) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
         std::move(window_info), std::move(callback));
