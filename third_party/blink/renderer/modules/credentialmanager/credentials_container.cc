@@ -1139,8 +1139,10 @@ ScriptPromise CredentialsContainer::get(
             provider->GetAsFederatedIdentityProvider();
         KURL provider_url(federated_identity_provider->url());
         String client_id = federated_identity_provider->clientId();
-        String nonce = federated_identity_provider->nonce();
-        if (!provider_url.IsValid() || client_id == "" || nonce == "") {
+        String nonce = federated_identity_provider->hasNonce()
+                           ? federated_identity_provider->nonce()
+                           : "";
+        if (!provider_url.IsValid() || client_id == "") {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kInvalidStateError,
               "Provided provider information is incomplete."));
