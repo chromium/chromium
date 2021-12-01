@@ -16,4 +16,10 @@ function enterFullscreen() {
   store.dispatch(setFullscreenEnabledAction(true));
 }
 
+declare global {
+  interface Window {
+    personalizationTestApi: {enterFullscreen: () => void;}
+  }
+}
+
 window.personalizationTestApi = {enterFullscreen};
