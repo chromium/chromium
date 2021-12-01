@@ -22,11 +22,9 @@ crbug.com/1204176 fast/scrolling/no-hover-during-smooth-keyboard-scroll.html [ F
 crbug.com/1204176 fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
 crbug.com/1204176 fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure ]
 
-# fast/scrolling/events
-crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
-crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
-crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
-crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
+# fast/scrolling/events. Main thread only.
+crbug.com/1199989 fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure ]
+crbug.com/1199989 fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure ]
 
 # fast/scroll-snap/
 crbug.com/1204176 fast/scroll-snap/snaps-after-touchpad-scrolling.html [ Failure ]

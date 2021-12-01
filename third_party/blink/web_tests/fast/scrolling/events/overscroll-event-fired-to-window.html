@@ -32,6 +32,11 @@ var rect = target_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
 
+const defaultPixelsToScroll = 800;
+const { y: pixelsToScrollY } = calculatePixelsToScroll(
+  target_div, defaultPixelsToScroll, defaultPixelsToScroll
+);
+
 // SPEED_INSTANT doesn't work here because tests are timing out.
 // This could actually be a bug in how the overscroll event is computed.
 // Possible explanation on what happens is that "leftover" delta from a single
@@ -39,10 +44,10 @@ var y = rect.top + rect.height / 2;
 // and the full delta is overscroll do we dispatch the event.
 // When the speed is INSTANT we'll put the entire scrolling delta into a single
 // event so we don't generate an overscroll event in that case.
-const pixelsPerSec = 2000;
-const pixelsToScroll = 600;
-const { y: pixelsToScrollY } = calculatePixelsToScroll(
-  target_div, pixelsToScroll, pixelsToScroll
+// Additionally, we are adjusting the scroll speed to prevent timeout when
+// percent-based scrolling is enabled.
+const pixelsScrolledPerSec = scaleScrollSpeedToPercentBasedScrollingIfNeeded(
+  2000 /* pixels per second */, defaultPixelsToScroll, pixelsToScrollY
 );
 
 var window_received_overscroll = false;
@@ -62,7 +67,7 @@ async function test_overscroll_event_fire(source_device,
 
   // Scroll up on target div and wait for the window to get overscroll event.
   await smoothScroll(
-    pixelsToScrollY, x, y, source_device, "up", pixelsPerSec,
+    pixelsToScrollY, x, y, source_device, "up", pixelsScrolledPerSec,
     precise_scrolling_delta
   );
   await waitFor(() => { return window_received_overscroll; },
