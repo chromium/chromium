@@ -2934,27 +2934,23 @@ class AutofillDynamicFormInteractiveTest
   base::test::ScopedFeatureList scoped_feature_;
 };
 
-// The boolean parameters indicate whether features::kAutofillAcrossIframes and
-// features::kAutofillRefillWithRendererIds, respectively, are enabled.
+// The boolean parameter indicates whether features::kAutofillAcrossIframes is
+// enabled.
 class AutofillDynamicFormReplacementInteractiveTest
     : public AutofillInteractiveTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   AutofillDynamicFormReplacementInteractiveTest()
-      : autofill_across_iframes_(std::get<0>(GetParam())),
-        refill_with_renderer_ids_(std::get<1>(GetParam())) {
+      : autofill_across_iframes_(GetParam()) {
     std::vector<base::Feature> enabled;
     std::vector<base::Feature> disabled;
     (autofill_across_iframes_ ? enabled : disabled)
         .push_back(features::kAutofillAcrossIframes);
-    (refill_with_renderer_ids_ ? enabled : disabled)
-        .push_back(features::kAutofillRefillWithRendererIds);
     scoped_feature_.InitWithFeatures(enabled, disabled);
   }
 
  protected:
   const bool autofill_across_iframes_;
-  const bool refill_with_renderer_ids_;
   base::test::ScopedFeatureList scoped_feature_;
 };
 
@@ -2967,12 +2963,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
       embedded_test_server()->GetURL("a.com", "/autofill/dynamic_form.html");
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
 
   TriggerFormFill("firstname");
 
@@ -3003,12 +2993,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                                             "/autofill/two_dynamic_forms.html");
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
 
   TriggerFormFill("firstname_form1");
 
@@ -3054,12 +3038,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
       "a.com", "/autofill/double_dynamic_form.html");
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
 
   TriggerFormFill("firstname");
 
@@ -3116,12 +3094,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
       "a.com", "/autofill/dynamic_form_new_field_types.html");
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
 
   TriggerFormFill("firstname");
 
@@ -3394,12 +3366,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
   // Trigger the initial fill.
   FocusFieldByName("cc-name");
   SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
@@ -3490,12 +3456,6 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
       "a.com", "/autofill/dynamic_form_no_name.html");
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
 
   TriggerFormFill("firstname");
 
@@ -3666,6 +3626,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AutofillDynamicFormReplacementInteractiveTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 }  // namespace autofill

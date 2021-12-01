@@ -422,10 +422,8 @@ class BrowserAutofillManager : public AutofillManager,
         profile_or_credit_card_with_cvc;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
-    // TODO(crbug/896689): Remove |filled_field_unique_name|.
     const FieldGlobalId filled_field_id;
     const FieldSignature filled_field_signature;
-    const std::u16string filled_field_unique_name;
     // The security origin from which the field was filled.
     url::Origin filled_origin;
     // The time at which the initial fill occurred.
@@ -620,11 +618,9 @@ class BrowserAutofillManager : public AutofillManager,
       mojom::RendererFormDataAction action,
       std::string* failure_to_fill);
 
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
   void SetFillingContext(const FormStructure& form,
                          std::unique_ptr<FillingContext> context);
 
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
   FillingContext* GetFillingContext(const FormStructure& form);
 
   // Whether there should be an attempts to refill the form. Returns true if all

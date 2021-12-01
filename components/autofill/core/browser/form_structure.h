@@ -380,12 +380,6 @@ class FormStructure {
     submission_source_ = submission_source;
   }
 
-  // Returns an identifier that is used by the refill logic. Takes the first non
-  // empty of these or returns an empty string:
-  // - Form name
-  // - Name for Autofill of first field
-  std::u16string GetIdentifierForRefill() const;
-
   int developer_engagement_metrics() const {
     return developer_engagement_metrics_;
   }

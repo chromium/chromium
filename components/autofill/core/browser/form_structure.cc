@@ -2627,16 +2627,6 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
   return form_types;
 }
 
-std::u16string FormStructure::GetIdentifierForRefill() const {
-  if (!form_name().empty())
-    return form_name();
-
-  if (field_count() && !field(0)->unique_name().empty())
-    return field(0)->unique_name();
-
-  return std::u16string();
-}
-
 void FormStructure::set_randomized_encoder(
     std::unique_ptr<RandomizedEncoder> encoder) {
   randomized_encoder_ = std::move(encoder);

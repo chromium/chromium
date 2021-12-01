@@ -98,8 +98,6 @@ extern const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerTypeTakesPrecedence;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillRefillWithRendererIds;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillNameSectionsWithRendererIds;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillKeyboardAccessory;
