@@ -276,11 +276,6 @@ extern const base::Feature kExtensionDeferredIndividualSettings;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExtensionWorkflowJustification;
 
-#if defined(OS_MAC)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kEnterpriseReportingApiKeychainRecreation;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnterpriseReportingExtensionManifestVersion;
 

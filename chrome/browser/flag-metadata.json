@@ -3001,11 +3001,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enterprise-reporting-api-keychain-recreation",
-    "owners": ["zmin", "sacomoto"],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enterprise-reporting-extension-manifest-version",
     "owners": [ "igorruvinov", "zmin" ],
     "expiry_milestone": 105

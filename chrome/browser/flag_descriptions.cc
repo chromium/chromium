@@ -3943,12 +3943,6 @@ const char kEnableUniversalLinksName[] = "Universal Links";
 const char kEnableUniversalLinksDescription[] =
     "Include Universal Links in the intent picker.";
 
-const char kEnterpriseReportingApiKeychainRecreationName[] =
-    "Enterprise reporting API keychain item recreation.";
-const char kEnterpriseReportingApiKeychainRecreationDescription[] =
-    "Allow enterprise reporting private API to recreate keychain item on Mac. "
-    "The recreated item can be accessed by other binaries.";
-
 const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";

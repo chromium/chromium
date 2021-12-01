@@ -5835,14 +5835,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          browsing_data::features::kEnableRemovingAllThirdPartyCookies)},
 
-#if defined(OS_MAC)
-    {"enterprise-reporting-api-keychain-recreation",
-     flag_descriptions::kEnterpriseReportingApiKeychainRecreationName,
-     flag_descriptions::kEnterpriseReportingApiKeychainRecreationDescription,
-     kOsMac,
-     FEATURE_VALUE_TYPE(features::kEnterpriseReportingApiKeychainRecreation)},
-#endif  // defined(OS_MAC)
-
     {"enterprise-reporting-extension-manifest-version",
      flag_descriptions::kEnterpriseReportingExtensionManifestVersionName,
      flag_descriptions::kEnterpriseReportingExtensionManifestVersionDescription,

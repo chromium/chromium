@@ -2267,9 +2267,6 @@ extern const char kCupsIppPrintingBackendDescription[];
 extern const char kEnableUniversalLinksName[];
 extern const char kEnableUniversalLinksDescription[];
 
-extern const char kEnterpriseReportingApiKeychainRecreationName[];
-extern const char kEnterpriseReportingApiKeychainRecreationDescription[];
-
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
