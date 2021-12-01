@@ -2152,6 +2152,47 @@
                     ]
                 },
                 {
+                    "name": "CandidateB_CacheDisabled",
+                    "params": {
+                        "hide_switch_when_no_incognito_tabs": "true",
+                        "image_memory_cache_size_percentage": "0",
+                        "open_ntp_instead_of_start": "true",
+                        "show_last_active_tab_only": "true",
+                        "signin_promo_NTP_reset_after_hours": "336",
+                        "signin_promo_NTP_since_first_time_shown_limit_hours": "672",
+                        "start_surface_variation": "single",
+                        "support_accessibility": "true",
+                        "tab_count_button_on_start_surface": "true",
+                        "tab_switcher_on_return_time_ms": "3600000"
+                    },
+                    "enable_features": [
+                        "FeedImageMemoryCacheSizePercentage",
+                        "StartSurfaceAndroid",
+                        "TabSwitcherOnReturn"
+                    ]
+                },
+                {
+                    "name": "CandidateB_ClearCacheReduced",
+                    "params": {
+                        "hide_switch_when_no_incognito_tabs": "true",
+                        "image_memory_cache_size_percentage": "50",
+                        "open_ntp_instead_of_start": "true",
+                        "show_last_active_tab_only": "true",
+                        "signin_promo_NTP_reset_after_hours": "336",
+                        "signin_promo_NTP_since_first_time_shown_limit_hours": "672",
+                        "start_surface_variation": "single",
+                        "support_accessibility": "true",
+                        "tab_count_button_on_start_surface": "true",
+                        "tab_switcher_on_return_time_ms": "3600000"
+                    },
+                    "enable_features": [
+                        "FeedClearImageMemoryCache",
+                        "FeedImageMemoryCacheSizePercentage",
+                        "StartSurfaceAndroid",
+                        "TabSwitcherOnReturn"
+                    ]
+                },
+                {
                     "name": "CandidateA",
                     "params": {
                         "hide_switch_when_no_incognito_tabs": "true",
@@ -3617,49 +3658,6 @@
                     },
                     "enable_features": [
                         "ExploreSites"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FeedImageMemoryCache": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ClearCache_Reduced",
-                    "params": {
-                        "image_memory_cache_size_percentage": "50"
-                    },
-                    "enable_features": [
-                        "FeedClearImageMemoryCache",
-                        "FeedImageMemoryCacheSizePercentage"
-                    ]
-                },
-                {
-                    "name": "CacheDisabled",
-                    "params": {
-                        "image_memory_cache_size_percentage": "0"
-                    },
-                    "enable_features": [
-                        "FeedImageMemoryCacheSizePercentage"
-                    ]
-                },
-                {
-                    "name": "CacheReduced",
-                    "params": {
-                        "image_memory_cache_size_percentage": "50"
-                    },
-                    "enable_features": [
-                        "FeedImageMemoryCacheSizePercentage"
-                    ]
-                },
-                {
-                    "name": "ClearCache",
-                    "enable_features": [
-                        "FeedClearImageMemoryCache"
                     ]
                 }
             ]
