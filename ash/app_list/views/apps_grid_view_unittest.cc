@@ -842,7 +842,8 @@ TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
 
   AppListItemView* last_view = GetItemViewInTopLevelGrid(kLastItemIndex);
   apps_grid_view_->SetSelectedView(last_view);
-  model_->DeleteItem(model_->GetItemName(kLastItemIndex));
+  model_->DeleteItem(model_->GetItemName(kLastItemIndex),
+                     /*can_clean_folder=*/false);
 
   EXPECT_FALSE(apps_grid_view_->IsSelectedView(last_view));
 
@@ -1234,7 +1235,8 @@ TEST_P(AppsGridViewClamshellTest, RemoveItemsInFolderShouldUpdateBounds) {
 
   // Remove one item from the folder with 4 items. The bound should stay the
   // same as there are still two rows in the folder view.
-  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id(),
+                     /*can_clean_folder=*/false);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
@@ -1242,7 +1244,8 @@ TEST_P(AppsGridViewClamshellTest, RemoveItemsInFolderShouldUpdateBounds) {
 
   // Remove another item from the folder. The bound should update and become the
   // folder view with one row.
-  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id(),
+                     /*can_clean_folder=*/false);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
@@ -2033,7 +2036,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithDeleteItemKeepsOrder) {
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  model_->DeleteItem(model_->GetItemName(2));
+  model_->DeleteItem(model_->GetItemName(2), /*can_clean_folder=*/false);
   EndDrag(apps_grid_view_, false /*cancel*/);
 
   EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());

@@ -243,10 +243,12 @@ void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
     observer.OnAppListItemUpdated(item);
 }
 
-void AppListModel::DeleteItem(const std::string& id) {
+void AppListModel::DeleteItem(const std::string& id, bool can_clean_folder) {
   AppListItem* item = FindItem(id);
   if (!item)
     return;
+
+  const std::string copied_folder_id = item->folder_id();
   if (!item->IsInFolder()) {
     DCHECK_EQ(0u, item->ChildItemCount())
         << "Invalid call to DeleteItem for item with children: " << id;
@@ -263,37 +265,16 @@ void AppListModel::DeleteItem(const std::string& id) {
   // Destroy `item`.
   ReparentOrDeleteItemInFolder(item,
                                /*destination_folder_id=*/absl::nullopt);
-}
 
-void AppListModel::DeleteUninstalledItem(const std::string& id) {
-  AppListItem* item = FindItem(id);
-  if (!item)
+  if (!can_clean_folder)
     return;
-  const std::string folder_id = item->folder_id();
-  DeleteItem(id);
 
-  // crbug.com/368111: Deleting a child item may cause the parent folder to be
-  // auto-removed. Further, if an auto-removed folder has an item in it, that
-  // item needs to be reparented first.
-  AppListFolderItem* folder = FindFolderItem(folder_id);
+  AppListFolderItem* folder = FindFolderItem(copied_folder_id);
   if (folder && folder->ShouldAutoRemove() &&
       folder->item_list()->item_count() == 1) {
+    // If the parent folder should be removed, reparent the last child first.
     AppListItem* last_item = folder->item_list()->item_at(0);
     MoveItemToRootAt(last_item, folder->position());
-  }
-}
-
-void AppListModel::DeleteAllItems() {
-  while (top_level_item_list_->item_count() > 0) {
-    AppListItem* item = top_level_item_list_->item_at(0);
-    const std::string id = item->id();
-    for (auto& observer : observers_)
-      observer.OnAppListItemWillBeDeleted(item);
-    if (item->GetItemType() == AppListFolderItem::kItemType) {
-      item_list_scoped_observations_.RemoveObservation(
-          static_cast<AppListFolderItem*>(item)->item_list());
-    }
-    top_level_item_list_->DeleteItemAt(0);
   }
 }
 
@@ -429,7 +410,8 @@ void AppListModel::DeleteFolderIfEmpty(const std::string& folder_id) {
     return;
 
   DVLOG(2) << "Deleting empty folder: " << folder->ToDebugString();
-  DeleteItem(folder_id);
+  std::string copy_id = folder->id();
+  DeleteItem(copy_id, /*can_clean_folder=*/false);
 }
 
 void AppListModel::SetRootItemPosition(

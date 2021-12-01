@@ -235,7 +235,7 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id) {
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
   item_manager_->RemoveChromeItem(id_copy);
-  model_.DeleteItem(id_copy);
+  model_.DeleteItem(id_copy, /*can_clean_folder=*/false);
 }
 
 void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
@@ -243,7 +243,7 @@ void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
   item_manager_->RemoveChromeItem(id_copy);
-  model_.DeleteUninstalledItem(id_copy);
+  model_.DeleteItem(id_copy, /*can_clean_folder=*/true);
 }
 
 void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {

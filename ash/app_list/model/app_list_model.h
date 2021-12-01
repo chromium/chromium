@@ -114,15 +114,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   void SetItemName(AppListItem* item, const std::string& name);
 
   // Deletes the item matching |id| from |top_level_item_list_| or from the
-  // appropriate folder.
-  void DeleteItem(const std::string& id);
-
-  // Wrapper around DeleteItem() which will also clean up if its parent folder
-  // has a single child left.
-  void DeleteUninstalledItem(const std::string& id);
-
-  // Deletes all items. This is used in profile switches.
-  void DeleteAllItems();
+  // appropriate folder. If `can_clean_folder` is true, the deleted item's
+  // parent folder could be removed as well.
+  void DeleteItem(const std::string& id, bool can_clean_folder);
 
   // Creates and adds an empty folder item with the provided ID.
   void AddFolderItemForTest(const std::string& folder_id);

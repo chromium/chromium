@@ -211,17 +211,18 @@ TEST_F(AppListModelTest, ModelRemoveItem) {
   const size_t num_apps = 4;
   model_->PopulateApps(num_apps);
   // Remove an item in the middle.
-  model_->DeleteItem(model_->GetItemName(1));
+  model_->DeleteItem(model_->GetItemName(1), /*can_clean_folder=*/false);
   EXPECT_EQ(num_apps - 1, model_->top_level_item_list()->item_count());
   EXPECT_EQ(1u, observer_.items_removed());
   EXPECT_EQ("Item 0,Item 2,Item 3", GetModelContents());
   // Remove the first item in the list.
-  model_->DeleteItem(model_->GetItemName(0));
+  model_->DeleteItem(model_->GetItemName(0), /*can_clean_folder=*/false);
   EXPECT_EQ(num_apps - 2, model_->top_level_item_list()->item_count());
   EXPECT_EQ(2u, observer_.items_removed());
   EXPECT_EQ("Item 2,Item 3", GetModelContents());
   // Remove the last item in the list.
-  model_->DeleteItem(model_->GetItemName(num_apps - 1));
+  model_->DeleteItem(model_->GetItemName(num_apps - 1),
+                     /*can_clean_folder=*/false);
   EXPECT_EQ(num_apps - 3, model_->top_level_item_list()->item_count());
   EXPECT_EQ(3u, observer_.items_removed());
   EXPECT_EQ("Item 2", GetModelContents());
@@ -511,12 +512,12 @@ TEST_F(AppListModelFolderTest, UninstallFolderItems) {
   EXPECT_EQ("folder1", GetModelContents());
 
   // Delete Item 2 from folder.
-  model_->DeleteUninstalledItem("Item 2");
+  model_->DeleteItem("Item 2", /*can_clean_folder=*/true);
   EXPECT_EQ("Item 0,Item 1", GetItemListContents(folder1->item_list()));
   EXPECT_EQ("folder1", GetModelContents());
 
   // Delete Item 1 from folder, should reparent Item 0 and delete folder1.
-  model_->DeleteUninstalledItem("Item 1");
+  model_->DeleteItem("Item 1", /*can_clean_folder=*/true);
   EXPECT_EQ(nullptr, model_->FindItem("folder1"));
   EXPECT_EQ("Item 0", GetModelContents());
 }
@@ -536,7 +537,7 @@ TEST_F(AppListModelFolderTest, UninstallPersistentFolderItem) {
   EXPECT_EQ("folder1", GetModelContents());
 
   // Delete Item from folder.
-  model_->DeleteUninstalledItem("Item 1");
+  model_->DeleteItem("Item 1", /*can_clean_folder=*/true);
   ASSERT_EQ("folder1", GetModelContents());
   EXPECT_EQ("Item 0", GetItemListContents(folder1->item_list()));
 }
@@ -553,7 +554,7 @@ TEST_F(AppListModelFolderTest, UninstallSingleItemFolderItem) {
   EXPECT_EQ("folder1", GetModelContents());
 
   // Delete only item from folder, folder should also be removed.
-  model_->DeleteUninstalledItem("Item 0");
+  model_->DeleteItem("Item 0", /*can_clean_folder=*/true);
   EXPECT_EQ(nullptr, model_->FindItem("folder1"));
   EXPECT_EQ("", GetModelContents());
 }

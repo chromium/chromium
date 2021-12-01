@@ -1361,7 +1361,8 @@ TEST_F(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   EXPECT_TRUE(apps_grid_view_->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id(),
+                                   /*can_clean_folder=*/true);
   EXPECT_FALSE(apps_grid_view_->IsDragging());
 
   // Verify that mouse drag has been canceled.
@@ -1405,7 +1406,8 @@ TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id(),
+                                   /*can_clean_folder=*/true);
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1466,7 +1468,8 @@ TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id(),
+                                   /*can_clean_folder=*/true);
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1525,7 +1528,8 @@ TEST_F(PopulatedAppListTest,
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id(),
+                                   /*can_clean_folder=*/true);
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1896,7 +1900,8 @@ TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Remove the original drag view item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_item->id());
+  app_list_test_model_->DeleteItem(dragged_item->id(),
+                                   /*can_clean_folder=*/true);
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
 
   EXPECT_FALSE(AppListIsInFolderView());
