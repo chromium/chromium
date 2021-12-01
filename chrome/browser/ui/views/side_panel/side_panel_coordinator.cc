@@ -20,6 +20,7 @@
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/vector_icons.h"
@@ -38,9 +39,9 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
                                                               icon, dip_size);
   button->SetTooltipText(tooltip_text);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetBackground(
-      views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
   button->SetProperty(views::kMarginsKey, margin_insets);
+  views::InstallCircleHighlightPathGenerator(button.get());
+
   return button;
 }
 }  // namespace
@@ -48,7 +49,7 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {
   // TODO(pbos): Consider moving creation of SidePanelEntry into other functions
-  // that can easily be unittested.
+  // that can easily be unit tested.
   window_registry_.Register(std::make_unique<SidePanelEntry>(
       l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE),
       base::BindRepeating(
