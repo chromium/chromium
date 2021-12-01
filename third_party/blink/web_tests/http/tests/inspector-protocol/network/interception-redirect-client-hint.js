@@ -5,7 +5,7 @@
 (async function(testRunner) {
   // This one should not be kept per redirect since http-equiv accept-ch doesn't
   // persist.
-  document.head.innerHTML = ' <meta http-equiv="Accept-CH" content="DPR"> <meta http-equiv="Accept-CH-Lifetime" content="1">';
+  document.head.innerHTML = ' <meta http-equiv="Accept-CH" content="DPR"> ';
   var {page, session, dp} = await testRunner.startBlank(`Test that UA client hints are added on redirect.\n`);
 
   dp.Network.enable();

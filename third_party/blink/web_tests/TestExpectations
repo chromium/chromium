@@ -5286,9 +5286,6 @@ crbug.com/980588 external/wpt/screen-orientation/lock-unlock-check.html [ Failur
 # Sheriff 2019-07-18
 crbug.com/985232 [ Win7 ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/dynamic-imports-credentials.sub.html [ Failure Pass ]
 
-# Sheriff 2019-07-24
-crbug.com/986282 external/wpt/client-hints/accept-ch-lifetime.tentative.https.html [ Failure Pass ]
-
 # Sheriff 2019-07-26
 crbug.com/874866 [ Debug Linux ] media/controls/doubletap-to-jump-backwards.html [ Failure ]
 crbug.com/988246 external/wpt/cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.serviceworker.html [ Skip ]

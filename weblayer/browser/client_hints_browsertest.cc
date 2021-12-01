@@ -31,8 +31,7 @@ class ClientHintsBrowserTest : public WebLayerBrowserTest {
   void SetAcceptClientHints() {
     NavigateAndWaitForCompletion(
         embedded_test_server()->GetURL(
-            "/set-header?Accept-CH: device-memory,rtt&Accept-CH-Lifetime: "
-            "86400"),
+            "/set-header?Accept-CH: device-memory,rtt"),
         shell());
   }
 

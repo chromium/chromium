@@ -18,11 +18,6 @@
     "Client hints loaded on same-origin iframe request with feature policy.");
   await test_frame(
     "HTTPS_REMOTE_ORIGIN",
-    "",
-    "",
-    "Iframe trying to set Accept-CH-Lifetime.", "/client-hints/resources/iframe-accept-ch-lifetime.html");
-  await test_frame(
-    "HTTPS_REMOTE_ORIGIN",
     "sec-ch-device-memory=true&device-memory=true&sec-ch-dpr=false&dpr=false&sec-ch-viewport-width=false&viewport-width=false&sec-ch-ua=false&sec-ch-ua-mobile=false",
     "",
     "Client hints loaded on cross-origin iframe request with feature policy after attempting to set independently.");
