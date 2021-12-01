@@ -2016,6 +2016,9 @@
   <message desc="Text in parentheses to be appended next to a tab that's currently active." name="IDS_CHROMEVOX_ACTIVE_TAB">
     (active)
   </message>
+  <message desc="Title displayed in the panel for the touch gestures menu." name="IDS_CHROMEVOX_PANEL_MENU_TOUCHGESTURES">
+    Touch Gestures
+  </message>
   <message desc="Title displayed in the panel for the jump menu." name="IDS_CHROMEVOX_PANEL_MENU_JUMP">
     Jump
   </message>
