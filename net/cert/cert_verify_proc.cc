@@ -808,6 +808,11 @@ bool CertVerifyProc::HasNameConstraintsViolation(
   // PublicKeyDomainLimitation contains SHA-256(SPKI) and a pointer to an array
   // of fixed-length strings that contain the domains that the SPKI is allowed
   // to issue for.
+  //
+  // A public key hash can be generated with the following command:
+  // openssl x509 -noout -in <cert>.pem -pubkey | \
+  //   openssl asn1parse -noout -inform pem -out - | \
+  //   openssl dgst -sha256 -binary | xxd -i
   static const struct PublicKeyDomainLimitation {
     SHA256HashValue public_key_hash;
     base::span<const base::StringPiece> domains;
@@ -855,9 +860,9 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // Not a real certificate - just for testing.
       // net/data/ssl/certificates/name_constraint_*.pem
       {
-          {{0x0d, 0x93, 0x13, 0xa7, 0xd7, 0x0d, 0x35, 0x89, 0x33, 0x50, 0x6e,
-            0x9b, 0x68, 0x30, 0x7a, 0x4f, 0x7d, 0x3a, 0x7a, 0x42, 0xd4, 0x60,
-            0x9a, 0x5e, 0x10, 0x4b, 0x58, 0xa5, 0xa7, 0x90, 0xa5, 0x81}},
+          {{0x46, 0xef, 0xf4, 0xf1, 0x1b, 0xb6, 0xef, 0x96, 0x65, 0x7f, 0x8d,
+            0xac, 0x6c, 0x8e, 0xa5, 0xaa, 0x2d, 0x8e, 0x52, 0xe9, 0xf7, 0xaf,
+            0x86, 0x20, 0xae, 0xb2, 0xbf, 0xbc, 0x9d, 0xfe, 0x63, 0x39}},
           kDomainsTest,
       },
   };
