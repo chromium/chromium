@@ -486,6 +486,9 @@ crbug.com/1274796 [ win nvidia-0x2184 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1274796 [ win intel-0x3e92 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1274796 [ win amd-0x7340 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 
+# Pixel_Video_Media_Stream_Incompatible_Stride flakes on NVIDIA Linux SkiaRenderer GL
+crbug.com/1213542 [ linux nvidia-0x1cb3 skia-renderer-gl ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
