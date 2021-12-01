@@ -14159,7 +14159,7 @@
           }
         }
       },
-      'supported_on': ['chrome_os:86-'],
+      'supported_on': ['chrome_os:94-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
