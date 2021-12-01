@@ -236,6 +236,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:swarming/deterministic_build",
+    use_python3 = True,
 )
 
 build_recipe(
