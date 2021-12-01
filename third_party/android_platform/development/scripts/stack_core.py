@@ -78,9 +78,9 @@ _TRACE_LINE = re.compile(
 #   #00 0x7324d92d /data/app-lib/org.chromium.native_test-1/libbase.cr.so+0x0006992d
 # This pattern includes the unused named capture groups <symbol_present> and
 # <symbol_name> so that it can interoperate with the |_TRACE_LINE| regex.
-_DEBUG_TRACE_LINE = re.compile('(.*)(?P<frame>\#[0-9]+ 0x[0-9a-f]{8,16}) '
-                               '(?P<lib>[^+]+)\+0x(?P<address>[0-9a-f]{8,16})'
-                               '(?P<symbol_present>)(?P<symbol_name>)')
+_DEBUG_TRACE_LINE = re.compile(r'(.*)#(?P<frame>[0-9]+) 0x[0-9a-f]{8,16} '
+                               r'(?P<lib>[^+]+)\+0x(?P<address>[0-9a-f]{8,16})'
+                               r'(?P<symbol_present>)(?P<symbol_name>)')
 
 # Examples of matched value lines include:
 #   bea4170c  8018e4e9  /data/data/com.my.project/lib/libmyproject.so
