@@ -103,9 +103,13 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
  private:
   void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
 
-  // Same as SpinLock, not scientifically calibrated. Consider lowering later,
-  // as the slow path has better characteristics than SpinLocks's.
-  static constexpr int kSpinCount = 1000;
+  // See below, the latency of YIELD_PROCESSOR can be as high as ~150
+  // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would
+  // cost 150 * 64 / 3e9 ~= 3.2us.
+  //
+  // This applies to Linux kernels, on x86_64. On ARM we might want to spin
+  // more.
+  static constexpr int kSpinCount = 64;
 
 #if defined(PA_HAS_FAST_MUTEX)
 
@@ -157,10 +161,14 @@ ALWAYS_INLINE void SpinningMutex::Acquire() {
     // Note: Per the intel optimization manual
     // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),
     // the "pause" instruction is more costly on Skylake Client than on previous
-    // (and subsequent?) architectures. The latency is found to be 141 cycles
-    // there. This is not a big issue here as we don't spin long enough for this
-    // to become a problem, as we spend a maximum of ~141k cycles ~= 47us at
-    // 3GHz in "pause".
+    // architectures. The latency is found to be 141 cycles
+    // there (from ~10 on previous ones, nice 14x).
+    //
+    // According to Agner Fog's instruction tables, the latency is still >100
+    // cycles on Ice Lake, and from other sources, seems to be high as well on
+    // Adler Lake. Separately, it is (from
+    // https://agner.org/optimize/instruction_tables.pdf) also high on AMD Zen 3
+    // (~65). So just assume that it's this way for most x86_64 architectures.
     //
     // Also, loop several times here, following the guidelines in section 2.3.4
     // of the manual, "Pause latency in Skylake Client Microarchitecture".
@@ -168,7 +176,7 @@ ALWAYS_INLINE void SpinningMutex::Acquire() {
       YIELD_PROCESSOR;
       tries++;
     }
-    constexpr int kMaxBackoff = 64;
+    constexpr int kMaxBackoff = 16;
     backoff = std::min(kMaxBackoff, backoff << 1);
   } while (tries < kSpinCount);
 
