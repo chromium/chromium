@@ -118,8 +118,8 @@ class AccuracyServiceTest : public content::RenderViewHostTestHarness {
   AccuracyServiceTest() = default;
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
     SetUpFeatureList(feature_list_);
+    content::RenderViewHostTestHarness::SetUp();
 
     AccuracyService::RegisterProfilePrefs(prefs_.registry());
     unified_consent::UnifiedConsentService::RegisterPrefs(prefs_.registry());
