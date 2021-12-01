@@ -81,6 +81,18 @@ const char* UpdateAndGetThreadName(const char* name) {
   return thread_name;
 }
 
+#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
+    defined(OFFICIAL_BUILD)
+// Checks whether unwinding from this function works.
+bool HasDefaultUnwindTables() {
+  void* stack[kMaxStackEntries];
+  size_t frame_count = base::debug::CollectStackTrace(const_cast<void**>(stack),
+                                                      kMaxStackEntries);
+  // First frame is the current function and can be found without unwind tables.
+  return frame_count > 1;
+}
+#endif
+
 }  // namespace
 
 SamplingHeapProfiler::Sample::Sample(size_t size,
@@ -102,8 +114,13 @@ uint32_t SamplingHeapProfiler::Start() {
     defined(OFFICIAL_BUILD)
   if (!trace_event::CFIBacktraceAndroid::GetInitializedInstance()
            ->can_unwind_stack_frames()) {
-    LOG(WARNING) << "Sampling heap profiler: Stack unwinding is not available.";
-    return 0;
+    if (HasDefaultUnwindTables()) {
+      use_default_unwinder_ = true;
+    } else {
+      LOG(WARNING)
+          << "Sampling heap profiler: Stack unwinding is not available.";
+      return 0;
+    }
   }
 #endif
 
@@ -140,7 +157,6 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-// static
 void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
                                                size_t max_entries,
                                                size_t* count) {
@@ -148,9 +164,15 @@ void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
   size_t skip_frames = 3;
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
-  size_t frame_count =
-      base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()->Unwind(
-          const_cast<const void**>(frames), max_entries);
+  size_t frame_count = 0;
+  if (use_default_unwinder_) {
+    frame_count =
+        base::debug::CollectStackTrace(const_cast<void**>(frames), max_entries);
+  } else {
+    frame_count =
+        base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+            ->Unwind(const_cast<const void**>(frames), max_entries);
+  }
 #elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   size_t frame_count = base::debug::TraceStackFramePointers(
       const_cast<const void**>(frames), max_entries, skip_frames);

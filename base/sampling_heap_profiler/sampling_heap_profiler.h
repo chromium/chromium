@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "build/build_config.h"
 
 namespace heap_profiling {
 class HeapProfilerControllerTest;
@@ -89,9 +90,7 @@ class BASE_EXPORT SamplingHeapProfiler
   // Captures up to |max_entries| stack frames using the buffer pointed by
   // |frames|. Puts the number of captured frames into the |count| output
   // parameters. Returns the pointer to the topmost frame.
-  static void** CaptureStackTrace(void** frames,
-                                  size_t max_entries,
-                                  size_t* count);
+  void** CaptureStackTrace(void** frames, size_t max_entries, size_t* count);
 
   static void Init();
   static SamplingHeapProfiler* Get();
@@ -144,6 +143,11 @@ class BASE_EXPORT SamplingHeapProfiler
 
   // Whether it should record thread names.
   std::atomic<bool> record_thread_names_{false};
+
+#if defined(OS_ANDROID)
+  // Whether to use CFI unwinder or default unwinder.
+  std::atomic<bool> use_default_unwinder_{false};
+#endif
 
   friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<SamplingHeapProfiler>;

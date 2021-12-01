@@ -67,10 +67,9 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce([]() {
-        bool can_unwind =
-            base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-                ->can_unwind_stack_frames();
-        DCHECK(can_unwind);
+        base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+            ->can_unwind_stack_frames();
+        // Ignore failures since the default unwind tables are used as backup.
       }),
       base::BindOnce(&ProfilingClient::StartProfilingInternal,
                      base::Unretained(this), std::move(params),
