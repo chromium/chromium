@@ -28,17 +28,6 @@ namespace blink {
 
 namespace {
 
-scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
-  auto wrapper = SharedGpuContext::ContextProviderWrapper();
-  if (!wrapper)
-    return nullptr;
-
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
-}
-
 bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
   // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
   // Disabled on Android because the hardware decode implementation may neuter
@@ -315,6 +304,17 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
           : frame->metadata().transformation.value_or(media::kNoTransformation);
   video_renderer.Paint(frame, canvas, dest_rect, flags, transformation,
                        raster_context_provider);
+}
+
+scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
+  auto wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!wrapper)
+    return nullptr;
+
+  if (auto* provider = wrapper->ContextProvider())
+    return base::WrapRefCounted(provider->RasterContextProvider());
+
+  return nullptr;
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(

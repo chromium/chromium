@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
@@ -216,7 +217,8 @@ class CanvasResourceProviderCache
     if (size_to_provider_.size() >= kMaxSize)
       size_to_provider_.clear();
 
-    auto provider = CreateResourceProviderForVideoFrame(size, nullptr);
+    auto provider = CreateResourceProviderForVideoFrame(
+        size, GetRasterContextProvider().get());
     auto* result = provider.get();
     size_to_provider_.Set(key, std::move(provider));
     return result;
