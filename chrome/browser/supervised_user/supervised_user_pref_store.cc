@@ -136,8 +136,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Manually set preferences that aren't direct copies of the settings value.
     {
-      bool record_history = true;
-      settings->GetBoolean(supervised_users::kRecordHistory, &record_history);
+      bool record_history =
+          settings->FindBoolPath(supervised_users::kRecordHistory)
+              .value_or(true);
       prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory, !record_history);
       prefs_->SetInteger(
           prefs::kIncognitoModeAvailability,
@@ -150,9 +151,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // Note that |prefs::kForceGoogleSafeSearch| is set automatically as part
       // of |kSupervisedUserSettingsPrefMapping|, but this can't be done for
       // |prefs::kForceYouTubeRestrict| because it is an int, not a bool.
-      bool force_safe_search = true;
-      settings->GetBoolean(supervised_users::kForceSafeSearch,
-                           &force_safe_search);
+      bool force_safe_search =
+          settings->FindBoolPath(supervised_users::kForceSafeSearch)
+              .value_or(true);
       prefs_->SetInteger(
           prefs::kForceYouTubeRestrict,
           force_safe_search ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
@@ -165,9 +166,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // extension permissions. Until then, rely on other side effects of the
       // "Permissions for sites, apps and extensions" setting, like geolocation
       // being disallowed.
-      bool permissions_disallowed = true;
-      settings->GetBoolean(supervised_users::kGeolocationDisabled,
-                           &permissions_disallowed);
+      bool permissions_disallowed =
+          settings->FindBoolPath(supervised_users::kGeolocationDisabled)
+              .value_or(true);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
       base::UmaHistogramBoolean(
