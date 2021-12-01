@@ -344,15 +344,12 @@ bool HardwareDisplayPlaneManagerAtomic::SetColorCorrectionOnAllCrtcPlanes(
   ScopedDrmPropertyBlob property_blob(
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm)));
 
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-
   for (auto& plane : planes_) {
     HardwareDisplayPlaneAtomic* atomic_plane =
         static_cast<HardwareDisplayPlaneAtomic*>(plane.get());
 
     // This assumes planes can only belong to one crtc.
-    if (!atomic_plane->CanUseForCrtc(*crtc_index))
+    if (!atomic_plane->CanUseForCrtcId(crtc_id))
       continue;
 
     if (!atomic_plane->SetPlaneCtm(property_set.get(), property_blob->id())) {

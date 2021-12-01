@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/trace_event/traced_value.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -33,7 +34,7 @@ class HardwareDisplayPlane {
 
   std::vector<uint64_t> ModifiersForFormat(uint32_t format) const;
 
-  bool CanUseForCrtc(uint32_t crtc_index) const;
+  bool CanUseForCrtcId(uint32_t crtc_id) const;
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
@@ -77,10 +78,10 @@ class HardwareDisplayPlane {
   };
 
   const uint32_t id_;
-  uint32_t crtc_mask_ = 0;
 
   Properties properties_ = {};
 
+  base::flat_set<uint32_t> possible_crtc_ids_;
   uint32_t owning_crtc_ = 0;
   uint32_t last_used_format_ = 0;
   bool in_use_ = false;
