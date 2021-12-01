@@ -31,6 +31,9 @@ class GrpcLibassistantClient {
   GrpcLibassistantClient& operator=(const GrpcLibassistantClient&) = delete;
   ~GrpcLibassistantClient();
 
+  // Calls an async client method. ResponseCallback will be invoked from
+  // caller's sequence. The raw pointer will be handled by |RPCState| internally
+  // and gets deleted upon completion of the RPC call.
   template <typename Request, typename Response>
   void CallServiceMethod(
       const Request& request,

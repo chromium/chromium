@@ -171,6 +171,7 @@ class AssistantClient {
   virtual std::string GetDeviceId() = 0;
 
   // Audio-related functionality:
+  // Enables or disables audio input pipeline.
   virtual void EnableListening(bool listening_enabled) = 0;
 
   // Alarm/timer-related functionality:

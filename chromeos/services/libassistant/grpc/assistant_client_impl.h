@@ -64,6 +64,10 @@ class AssistantClientImpl : public AssistantClientV1 {
       base::OnceCallback<
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
+  void SetLocaleOverride(const std::string& locale) override;
+
+  // Audio-related functionality:
+  void EnableListening(bool listening_enabled) override;
 
   // Timer related:
   void AddTimeToTimer(const std::string& id,

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
@@ -101,6 +102,23 @@ GetLibassistGrpcMethodName<::assistant::api::GetAssistantSettingsRequest>() {
   // Returns assistant settings from the server.
   return chromeos::assistant::GetLibassistGrpcMethodName(
       "ConfigSettingsService", "GetAssistantSettings");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::SetLocaleOverrideRequest>() {
+  // Set the locale override of the device. This will override the locale
+  // obtained from user's assistant settings.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "ConfigSettingsService", "SetLocaleOverride");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::EnableListeningRequest>() {
+  // Enables or disables Assistant listening on the device.
+  return chromeos::assistant::GetLibassistGrpcMethodName("AudioUtilsService",
+                                                         "EnableListening");
 }
 
 template <>

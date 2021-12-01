@@ -17,6 +17,7 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
@@ -34,6 +35,11 @@ namespace chromeos {
 namespace libassistant {
 
 namespace {
+
+using ::assistant::api::EnableListeningRequest;
+using ::assistant::api::EnableListeningResponse;
+using ::assistant::api::SetLocaleOverrideRequest;
+using ::assistant::api::SetLocaleOverrideResponse;
 
 // Rpc call config constants.
 constexpr int kMaxRpcRetries = 5;
@@ -239,6 +245,24 @@ void AssistantClientImpl::GetAssistantSettings(
 
   libassistant_client_.CallServiceMethod(request, std::move(cb),
                                          kDefaultStateConfig);
+}
+
+void AssistantClientImpl::SetLocaleOverride(const std::string& locale) {
+  SetLocaleOverrideRequest request;
+  request.set_locale(locale);
+
+  libassistant_client_.CallServiceMethod(
+      request, GetLoggingCallback<SetLocaleOverrideResponse>(__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::EnableListening(bool listening_enabled) {
+  EnableListeningRequest request;
+  request.set_enable(listening_enabled);
+
+  libassistant_client_.CallServiceMethod(
+      request, GetLoggingCallback<EnableListeningResponse>(__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::AddTimeToTimer(const std::string& id,
