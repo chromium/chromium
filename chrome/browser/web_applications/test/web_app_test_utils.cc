@@ -8,6 +8,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -458,6 +463,19 @@ void TestDeclineDialogCallback(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(acceptance_callback),
                                 false /*accept*/, std::move(web_app_info)));
+}
+
+AppId InstallPwaForCurrentUrl(Browser* browser) {
+  // Depending on the installability criteria, different dialogs can be used.
+  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  WebAppTestInstallObserver observer(browser->profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
+  AppId app_id = observer.Wait();
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  return app_id;
 }
 
 }  // namespace test

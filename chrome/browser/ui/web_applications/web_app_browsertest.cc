@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/os_buildflags.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -173,19 +173,6 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
 
   GURL GetURLForPath(const std::string& path) {
     return https_server()->GetURL("app.com", path);
-  }
-
-  AppId InstallPwaForCurrentUrl() {
-    // Depending on the installability criteria, different dialogs can be used.
-    chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-    WebAppTestInstallObserver observer(profile());
-    observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-    AppId app_id = observer.Wait();
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
-    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
-    return app_id;
   }
 
   bool HasMinimalUiButtons(DisplayMode display_mode,
@@ -465,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_POSIX(DisplayOverride)) {
       "manifest_test_page.html?manifest=manifest_display_override.json");
   NavigateToURLAndWait(browser(), test_url);
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
 
   std::vector<DisplayMode> app_display_mode_override =
@@ -910,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL("/banners/scope_is_start_url/index.html"));
-  InstallPwaForCurrentUrl();
+  test::InstallPwaForCurrentUrl(browser());
 
   // Open a page that is one directory up from the installed PWA.
   Browser* const new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(
@@ -928,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar().GetAppShortName(app_id),
             GetInstallableAppName());
@@ -953,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                        DISABLE_POSIX(CanInstallOverBrowserTabPwa)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
@@ -972,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                        DISABLE_POSIX(CannotInstallOverWindowPwa)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
-  InstallPwaForCurrentUrl();
+  test::InstallPwaForCurrentUrl(browser());
 
   // Avoid any interference if active browser was changed by PWA install.
   Browser* const new_browser =
@@ -1079,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
 
@@ -1165,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
 
@@ -1223,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
 
@@ -1660,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
       "manifest_test_page.html?manifest=manifest_window_controls_overlay.json");
   NavigateToURLAndWait(browser(), test_url);
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
 
   std::vector<DisplayMode> app_display_mode_override =
@@ -1681,7 +1668,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed,
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
   NavigateToURLAndWait(browser(), test_url);
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
 
   std::vector<DisplayMode> app_display_mode_override =
@@ -1704,7 +1691,7 @@ class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar,
                        DISABLE_POSIX(RemoveStatusBar)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(nullptr, app_browser->GetStatusBubbleForTesting());
 }
@@ -1755,7 +1742,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId,
                        DISABLE_POSIX(NoManifestId)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
   auto* app = provider->registrar().GetAppById(app_id);
 
@@ -1774,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
       https_server()->GetURL(
           "/banners/manifest_test_page.html?manifest=manifest_with_id.json"));
 
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   auto* provider = WebAppProvider::GetForTest(profile());
   auto* app = provider->registrar().GetAppById(app_id);
 
@@ -1834,7 +1821,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
   WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   content::RunAllTasksUntilIdle();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
@@ -1917,7 +1904,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
-  const AppId app_id = InstallPwaForCurrentUrl();
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
 
   EXPECT_TRUE(provider->registrar().IsInstalled(app_id));

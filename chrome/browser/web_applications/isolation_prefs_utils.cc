@@ -30,7 +30,23 @@ namespace web_app {
 //   },
 // }
 
+namespace {
+
 const char kStorageIsolationKey[] = "storage_isolation_key";
+
+// Creates a copy of the given origin but without a port set. This is a
+// temporary hack meant to work around the fact that we key app isolation state
+// on the app's origin, but StoragePartitions are looked up based on sites.
+// Removing the port does not convert an origin into a site, but the actual
+// origin to site logic is private to //content and this is good enough to
+// allow testing in the short term.
+// TODO(crbug.com/1212263): Remove this function.
+url::Origin RemovePort(const url::Origin& origin) {
+  return url::Origin::CreateFromNormalizedTuple(origin.scheme(), origin.host(),
+                                                /*port=*/0);
+}
+
+}  // namespace
 
 void IsolationPrefsUtilsRegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(::prefs::kWebAppsIsolationState);
@@ -39,7 +55,7 @@ void IsolationPrefsUtilsRegisterProfilePrefs(PrefRegistrySimple* registry) {
 void RecordOrRemoveAppIsolationState(PrefService* pref_service,
                                      const WebApp& web_app) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  url::Origin origin = url::Origin::Create(web_app.scope());
+  url::Origin origin = RemovePort(url::Origin::Create(web_app.scope()));
 
   prefs::ScopedDictionaryPrefUpdate update(pref_service,
                                            prefs::kWebAppsIsolationState);
@@ -61,7 +77,7 @@ void RemoveAppIsolationState(PrefService* pref_service,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   prefs::ScopedDictionaryPrefUpdate update(pref_service,
                                            prefs::kWebAppsIsolationState);
-  update->RemoveWithoutPathExpansion(origin.Serialize(), nullptr);
+  update->RemoveWithoutPathExpansion(RemovePort(origin).Serialize(), nullptr);
 }
 
 const std::string* GetStorageIsolationKey(PrefService* pref_service,
@@ -73,7 +89,7 @@ const std::string* GetStorageIsolationKey(PrefService* pref_service,
     return nullptr;
 
   const base::Value* origin_prefs =
-      isolation_prefs->FindDictKey(origin.Serialize());
+      isolation_prefs->FindDictKey(RemovePort(origin).Serialize());
   if (!origin_prefs)
     return nullptr;
   return origin_prefs->FindStringKey(kStorageIsolationKey);

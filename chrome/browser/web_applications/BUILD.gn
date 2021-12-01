@@ -446,6 +446,7 @@ source_set("web_applications_test_support") {
     ":web_app_test_group",
     ":web_applications",
     "//base/test:test_support",
+    "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
@@ -602,6 +603,7 @@ source_set("web_applications_browser_tests") {
 
   sources = [
     "externally_managed_app_manager_impl_browsertest.cc",
+    "isolated_app_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "preinstalled_web_app_manager_browsertest.cc",
     "preinstalled_web_app_migration_browsertest.cc",

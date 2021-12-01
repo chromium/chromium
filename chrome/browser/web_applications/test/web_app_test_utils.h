@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
 struct WebApplicationInfo;
+class Browser;
 class GURL;
 
 namespace content {
@@ -39,6 +40,8 @@ void TestDeclineDialogCallback(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback);
+
+AppId InstallPwaForCurrentUrl(Browser* browser);
 
 }  // namespace test
 }  // namespace web_app
