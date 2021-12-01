@@ -68,8 +68,7 @@ const base::Feature kEnableNewDownloadAPI{"EnableNewDownloadAPI",
 const base::Feature kSynthesizedRestoreSession{
     "SynthesizedRestoreSession", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableUnrealizedWebStates{
-    "EnableUnrealizedWebStates", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableUnrealizedWebStates{"EnableUnrealizedWebStates"};
 
 bool UseWebClientDefaultUserAgent() {
   return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);

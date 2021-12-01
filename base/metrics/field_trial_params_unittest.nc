@@ -8,8 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-constexpr base::Feature kFeature{
-  "NoCompileFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+constexpr base::Feature kFeature{"NoCompileFeature"};
 
 enum Param { FOO, BAR };
 

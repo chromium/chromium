@@ -10,13 +10,11 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/feature_list_buildflags.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -675,20 +673,6 @@ TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
   EXPECT_EQ(associated_trial1, trial1);
   EXPECT_EQ(associated_trial2, trial2);
 }
-
-#if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX) && \
-    defined(GTEST_HAS_DEATH_TEST)
-using FeatureListDeathTest = FeatureListTest;
-TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
-  EXPECT_DEATH(
-      Feature(
-          StrCat({BUILDFLAG(BANNED_BASE_FEATURE_PREFIX), "MyFeature"}).c_str(),
-          FEATURE_DISABLED_BY_DEFAULT),
-      StrCat({"Invalid feature name ", BUILDFLAG(BANNED_BASE_FEATURE_PREFIX),
-              "MyFeature"}));
-}
-#endif  // BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX) &&
-        // defined(GTEST_HAS_DEATH_TEST)
 
 TEST(FeatureListAccessorTest, DefaultStates) {
   auto feature_list = std::make_unique<FeatureList>();
