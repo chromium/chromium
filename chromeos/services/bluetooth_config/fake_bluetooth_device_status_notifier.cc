@@ -18,5 +18,15 @@ void FakeBluetoothDeviceStatusNotifier::SetNewlyPairedDevices(
   NotifyDevicesNewlyPaired(devices);
 }
 
+void FakeBluetoothDeviceStatusNotifier::SetConnectedDevices(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+  NotifyDevicesNewlyConnected(devices);
+}
+
+void FakeBluetoothDeviceStatusNotifier::SetDisconnectedDevices(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+  NotifyDevicesNewlyDisconnected(devices);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

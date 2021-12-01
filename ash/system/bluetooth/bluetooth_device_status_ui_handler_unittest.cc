@@ -50,10 +50,34 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
   }
 
   void SetPairedDevices(
-      std::vector<PairedBluetoothDevicePropertiesPtr>& paired_devices) {
+      std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
     fake_device_status_notifier()->SetNewlyPairedDevices(
         std::move(paired_devices));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SetConnectedDevices(
+      std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
+    fake_device_status_notifier()->SetConnectedDevices(
+        std::move(paired_devices));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetDisconnectedDevices(
+      std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
+    fake_device_status_notifier()->SetDisconnectedDevices(
+        std::move(paired_devices));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::vector<PairedBluetoothDevicePropertiesPtr> GetPairedDevices() {
+    auto paired_device = PairedBluetoothDeviceProperties::New();
+    paired_device->nickname = "Beats X";
+    paired_device->device_properties = BluetoothDeviceProperties::New();
+
+    std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices;
+    paired_devices.push_back(std::move(paired_device));
+    return paired_devices;
   }
 
  private:
@@ -71,16 +95,17 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
 
 TEST_F(BluetoothDeviceStatusUiHandlerTest, PairedDevice) {
   EXPECT_CALL(device_status_ui_handler(), ShowToast);
-  // Create a device paired device.
-  auto paired_device = PairedBluetoothDeviceProperties::New();
-  paired_device->nickname = "Beats X";
-  paired_device->device_properties = BluetoothDeviceProperties::New();
-  paired_device->device_properties->connection_state =
-      DeviceConnectionState::kConnected;
+  SetPairedDevices(GetPairedDevices());
+}
 
-  std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices;
-  paired_devices.push_back(mojo::Clone(paired_device));
-  SetPairedDevices(paired_devices);
+TEST_F(BluetoothDeviceStatusUiHandlerTest, ConnectedDevice) {
+  EXPECT_CALL(device_status_ui_handler(), ShowToast);
+  SetConnectedDevices(GetPairedDevices());
+}
+
+TEST_F(BluetoothDeviceStatusUiHandlerTest, DisconnectedDevice) {
+  EXPECT_CALL(device_status_ui_handler(), ShowToast);
+  SetDisconnectedDevices(GetPairedDevices());
 }
 
 }  // namespace ash

@@ -52,12 +52,30 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
 
 void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
     PairedBluetoothDevicePropertiesPtr device) {
-  // TODO(crbug.com/1010321): Implement this function.
+  ash::ToastData toast_data(
+      /*id=*/GetToastId(device.get()),
+      /*text=*/
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST,
+          GetPairedDeviceName(device.get())),
+      /*timeout_ms=*/kToastDurationMs,
+      /*dismiss_text=*/absl::nullopt,
+      /*visible_on_lock_screen=*/false);
+  ShowToast(toast_data);
 }
 
 void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
     PairedBluetoothDevicePropertiesPtr device) {
-  // TODO(crbug.com/1010321): Implement this function.
+  ash::ToastData toast_data(
+      /*id=*/GetToastId(device.get()),
+      /*text=*/
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
+          GetPairedDeviceName(device.get())),
+      /*timeout_ms=*/kToastDurationMs,
+      /*dismiss_text=*/absl::nullopt,
+      /*visible_on_lock_screen=*/false);
+  ShowToast(toast_data);
 }
 
 void BluetoothDeviceStatusUiHandler::ShowToast(

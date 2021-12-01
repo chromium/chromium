@@ -19,6 +19,12 @@ class FakeBluetoothDeviceStatusNotifier : public BluetoothDeviceStatusNotifier {
 
   void SetNewlyPairedDevices(
       const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices);
+
+  void SetConnectedDevices(
+      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices);
+
+  void SetDisconnectedDevices(
+      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices);
 };
 
 }  // namespace bluetooth_config

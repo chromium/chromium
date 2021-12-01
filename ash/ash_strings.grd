@@ -589,6 +589,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST" desc="The text used in the toast shown when a new Bluetooth device is newly paired or connected.">
       <ph name="DEVICE_NAME">$1<ex>Pixel Buds</ex></ph> connected
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST" desc="The text used in the toast shown when a new Bluetooth device disconnected from Chromebook.">
+      <ph name="DEVICE_NAME">$1<ex>Pixel Buds</ex></ph> disconnected
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
         Restart to update
