@@ -381,7 +381,7 @@ template <typename T,
 #else
           typename Impl = internal::RawPtrNoOpImpl>
 #endif
-class raw_ptr {
+class TRIVIAL_ABI raw_ptr {
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
