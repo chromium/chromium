@@ -852,7 +852,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
                          std::make_unique<std::string>(kSalt));
   ExpectMountExCall(false /* expect_create_attempt */);
 
-  auth_->AuthenticateToLogin(user_context_);
+  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -868,7 +868,7 @@ TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
   ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
                          std::unique_ptr<std::string>());
 
-  auth_->AuthenticateToLogin(user_context_);
+  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 

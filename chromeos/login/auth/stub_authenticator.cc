@@ -25,19 +25,21 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
 }
 
-void StubAuthenticator::CompleteLogin(const UserContext& user_context) {
-  if (expected_user_context_ != user_context)
+void StubAuthenticator::CompleteLogin(
+    std::unique_ptr<UserContext> user_context) {
+  if (expected_user_context_ != *user_context)
     NOTREACHED();
   OnAuthSuccess();
 }
 
-void StubAuthenticator::AuthenticateToLogin(const UserContext& user_context) {
+void StubAuthenticator::AuthenticateToLogin(
+    std::unique_ptr<UserContext> user_context) {
   // Don't compare the entire |expected_user_context_| to |user_context| because
   // during non-online re-auth |user_context| does not have a gaia id.
-  if (expected_user_context_.GetAccountId() == user_context.GetAccountId() &&
-      (*expected_user_context_.GetKey() == *user_context.GetKey() ||
+  if (expected_user_context_.GetAccountId() == user_context->GetAccountId() &&
+      (*expected_user_context_.GetKey() == *user_context->GetKey() ||
        *ExpectedUserContextWithTransformedKey().GetKey() ==
-           *user_context.GetKey())) {
+           *user_context->GetKey())) {
     switch (auth_action_) {
       case AuthAction::kAuthSuccess:
         task_runner_->PostTask(
@@ -54,7 +56,7 @@ void StubAuthenticator::AuthenticateToLogin(const UserContext& user_context) {
             base::BindOnce(&StubAuthenticator::OnPasswordChangeDetected, this));
         break;
       case AuthAction::kOldEncryption:
-        if (user_context.IsForcingDircrypto()) {
+        if (user_context->IsForcingDircrypto()) {
           task_runner_->PostTask(
               FROM_HERE,
               base::BindOnce(&StubAuthenticator::OnOldEncryptionDetected,

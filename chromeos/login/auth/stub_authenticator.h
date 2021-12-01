@@ -40,8 +40,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
   StubAuthenticator& operator=(const StubAuthenticator&) = delete;
 
   // Authenticator:
-  void CompleteLogin(const UserContext& user_context) override;
-  void AuthenticateToLogin(const UserContext& user_context) override;
+  void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
+  void AuthenticateToLogin(std::unique_ptr<UserContext> user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
   void LoginAsKioskAccount(const AccountId& app_account_id) override;

@@ -137,17 +137,19 @@ AuthSessionAuthenticator::~AuthSessionAuthenticator() = default;
 // Completes online authentication:
 // *  User is likely to be new
 // *  Provided password is assumed to be just verified by online flow
-void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
-  DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context.GetUserType() ==
+void AuthSessionAuthenticator::CompleteLogin(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
 
   PrepareForNewAttempt("CompleteLogin", "Regular user after online sign-in");
 
   // For now we don't support empty passwords:
-  if (user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
-    if (user_context.GetKey()->GetSecret().empty()) {
+  if (user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
+    if (user_context->GetKey()->GetSecret().empty()) {
       NOTIMPLEMENTED();
       if (consumer_)
         consumer_->OnAuthFailure(
@@ -155,9 +157,6 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
       return;
     }
   }
-
-  std::unique_ptr<UserContext> context =
-      std::make_unique<UserContext>(user_context);
 
   // (1) Initialize AuthSession & transform keys
   //   (1.1) For regular users
@@ -255,24 +254,26 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
       /*configurator=*/std::move(regular_session_configurator),
       /*key_hasher=*/std::move(password_hasher),
       /*new_user_flow=*/std::move(new_user_flow),
-      /*existing_user_flow=*/std::move(existing_user_flow), std::move(context));
+      /*existing_user_flow=*/std::move(existing_user_flow),
+      std::move(user_context));
 }
 
 // Authentication from user pod.
 // *  User could mistype their password/PIN.
 // *  User homedir is expected to exist
 void AuthSessionAuthenticator::AuthenticateToLogin(
-    const UserContext& user_context) {
-  DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context.GetUserType() ==
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
 
   PrepareForNewAttempt("AuthenticateToLogin", "Returning regular user");
 
   // For now we don't support empty passwords:
-  if (user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
-    if (user_context.GetKey()->GetSecret().empty()) {
+  if (user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
+    if (user_context->GetKey()->GetSecret().empty()) {
       NOTIMPLEMENTED();
       if (consumer_)
         consumer_->OnAuthFailure(
@@ -280,9 +281,6 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
       return;
     }
   }
-
-  std::unique_ptr<UserContext> context =
-      std::make_unique<UserContext>(user_context);
 
   // (1) Initialize AuthSession & transform keys
   //   (1.1) For regular users
@@ -343,7 +341,8 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
       /*configurator=*/std::move(regular_session),
       /*key_hasher=*/std::move(password_hasher),
       /*new_user_flow=*/std::move(no_cryptohome),
-      /*existing_user_flow=*/std::move(existing_user_flow), std::move(context));
+      /*existing_user_flow=*/std::move(existing_user_flow),
+      std::move(user_context));
 }
 
 void AuthSessionAuthenticator::LoginOffTheRecord() {

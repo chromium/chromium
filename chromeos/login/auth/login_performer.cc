@@ -246,7 +246,7 @@ void LoginPerformer::StartLoginCompletion() {
   VLOG(1) << "Online login completion started.";
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   EnsureAuthenticator();
-  authenticator_->CompleteLogin(user_context_);
+  authenticator_->CompleteLogin(std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
 }
 
@@ -256,7 +256,8 @@ void LoginPerformer::StartAuthentication() {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   DCHECK(delegate_);
   EnsureAuthenticator();
-  authenticator_->AuthenticateToLogin(user_context_);
+  authenticator_->AuthenticateToLogin(
+      std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
 }
 

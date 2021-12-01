@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   CryptohomeAuthenticator& operator=(const CryptohomeAuthenticator&) = delete;
 
   // Authenticator overrides.
-  void CompleteLogin(const UserContext& user_context) override;
+  void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
 
   // Given |user_context|, this method attempts to authenticate to your
   // Chrome OS device. As soon as we have successfully mounted the encrypted
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // with the username.
   // Upon failure to login consumer_->OnAuthFailure() is called
   // with an error message.
-  void AuthenticateToLogin(const UserContext& user_context) override;
+  void AuthenticateToLogin(std::unique_ptr<UserContext> user_context) override;
 
   // Initiates incognito ("browse without signing in") login.
   // Mounts tmpfs and notifies consumer on the success/failure.

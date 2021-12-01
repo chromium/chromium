@@ -53,9 +53,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
       std::unique_ptr<SafeModeDelegate> safe_mode_delegate);
 
   // Authenticator overrides.
-  void CompleteLogin(const UserContext& user_context) override;
+  void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
 
-  void AuthenticateToLogin(const UserContext& user_context) override;
+  void AuthenticateToLogin(std::unique_ptr<UserContext> user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
   void LoginAsKioskAccount(const AccountId& app_account_id) override;

@@ -595,13 +595,13 @@ CryptohomeAuthenticator::CryptohomeAuthenticator(
       delayed_login_failure_(AuthFailure::NONE) {}
 
 void CryptohomeAuthenticator::AuthenticateToLogin(
-    const UserContext& user_context) {
-  DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context.GetUserType() ==
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  current_state_ = std::make_unique<AuthAttemptState>(
-      std::make_unique<UserContext>(user_context));
+  current_state_ = std::make_unique<AuthAttemptState>(std::move(user_context));
   // Reset the verified flag.
   owner_is_verified_ = false;
 
@@ -610,13 +610,14 @@ void CryptohomeAuthenticator::AuthenticateToLogin(
              false /* ephemeral */, false /* create_if_nonexistent */);
 }
 
-void CryptohomeAuthenticator::CompleteLogin(const UserContext& user_context) {
-  DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context.GetUserType() ==
+void CryptohomeAuthenticator::CompleteLogin(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  current_state_ = std::make_unique<AuthAttemptState>(
-      std::make_unique<UserContext>(user_context));
+  current_state_ = std::make_unique<AuthAttemptState>(std::move(user_context));
 
   // Reset the verified flag.
   owner_is_verified_ = false;
