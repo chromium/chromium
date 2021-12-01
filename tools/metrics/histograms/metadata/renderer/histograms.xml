@@ -468,6 +468,16 @@ chromium-metrics-reviews@google.com.
   <token key="Resolution" variants="ProcessLifetimeResolution"/>
 </histogram>
 
+<histogram name="Renderer.RenderThreadImpl.Init" units="ms"
+    expires_after="2022-05-28">
+  <owner>jam@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    The time it takes RenderThreadImpl::Init() to run, recorded for each
+    renderer process.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.TotalCPUUse2{Lifetime}" units="ms"
     expires_after="2022-05-06">
   <owner>olivierli@chromium.org</owner>
