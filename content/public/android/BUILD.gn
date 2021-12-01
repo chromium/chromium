@@ -538,6 +538,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/ChildProcessLauncherIntegrationTest.java",
     "javatests/src/org/chromium/content/browser/ChildProcessLauncherTest.java",
     "javatests/src/org/chromium/content/browser/ClipboardTest.java",
+    "javatests/src/org/chromium/content/browser/ContactsProviderTest.java",
     "javatests/src/org/chromium/content/browser/ContentCommandLineTest.java",
     "javatests/src/org/chromium/content/browser/ContentTextSelectionTest.java",
     "javatests/src/org/chromium/content/browser/ContentViewLocationTest.java",

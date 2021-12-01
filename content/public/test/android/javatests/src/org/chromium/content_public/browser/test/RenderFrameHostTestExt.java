@@ -28,7 +28,11 @@ public class RenderFrameHostTestExt {
      *        serialized to a String using JSONStringValueSerializer.
      */
     public void executeJavaScript(String script, Callback<String> callback) {
-        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, callback);
+        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, callback, false);
+    }
+
+    public void executeJavaScriptWithUserGesture(String script) {
+        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, null, true);
     }
 
     public void updateVisualState(Callback<Boolean> callback) {
@@ -40,8 +44,8 @@ public class RenderFrameHostTestExt {
     }
 
     private native long nativeInit(long renderFrameHostAndroidPtr);
-    private native void nativeExecuteJavaScript(
-            long nativeRenderFrameHostTestExt, String script, Callback<String> callback);
+    private native void nativeExecuteJavaScript(long nativeRenderFrameHostTestExt, String script,
+            Callback<String> callback, boolean withUserGesture);
     private native void nativeUpdateVisualState(
             long nativeRenderFrameHostTestExt, Callback<Boolean> callback);
     private native void nativeNotifyVirtualKeyboardOverlayRect(

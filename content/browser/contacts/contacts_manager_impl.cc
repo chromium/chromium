@@ -26,7 +26,7 @@ namespace {
 
 std::unique_ptr<ContactsProvider> CreateProvider(
     RenderFrameHostImpl* render_frame_host) {
-  if (render_frame_host->GetParent())
+  if (render_frame_host->GetParentOrOuterDocument())
     return nullptr;  // This API is only supported on the main frame.
 #if defined(OS_ANDROID)
   return std::make_unique<ContactsProviderAndroid>(render_frame_host);
