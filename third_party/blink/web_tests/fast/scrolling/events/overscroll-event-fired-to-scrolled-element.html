@@ -32,11 +32,6 @@ var rect = scrolling_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
 
-const defaultPixelsToScroll = 800;
-const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
-  scrolling_div, defaultPixelsToScroll, defaultPixelsToScroll
-);
-
 // SPEED_INSTANT doesn't work here because tests are timing out.
 // This could actually be a bug in how the overscroll event is computed.
 // Possible explanation on what happens is that "leftover" delta from a single
@@ -44,11 +39,10 @@ const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
 // and the full delta is overscroll do we dispatch the event.
 // When the speed is INSTANT we'll put the entire scrolling delta into a single
 // event so we don't generate an overscroll event in that case.
-// Additionally, we are adjusting the scroll speed to prevent timeout when the
-// percent-based scrolling is enabled. Since the x/y scroll amount is the same
-// we are using only pixelsToScrollX to scale the scroll speed.
-const pixelsScrolledPerSec = scaleScrollSpeedToPercentBasedScrollingIfNeeded(
-  2000 /* pixels per second */, defaultPixelsToScroll, pixelsToScrollX
+const pixelsPerSec = 2000;
+const pixelsToScroll = 800;
+const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
+  scrolling_div, pixelsToScroll, pixelsToScroll
 );
 
 var overscrolled_x_delta = 0;
@@ -70,28 +64,28 @@ async function test_overscroll_event_fire(source_device,
 
   // Do a horizontal scroll and wait for overscroll event.
   await smoothScroll(
-    pixelsToScrollX, x, y, source_device, "right", pixelsScrolledPerSec,
+    pixelsToScrollX, x, y, source_device, "right", pixelsPerSec,
     precise_scrolling_delta
   );
   await waitFor(() => { return overscrolled_x_delta > 0; },
       'Scroller did not receive overscroll event after horizontal scroll.');
   await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollLeft });
   assert_equals(scrolling_div.scrollWidth - scrolling_div.scrollLeft,
-                scrolling_div.clientWidth);
+              scrolling_div.clientWidth);
 
   overscrolled_x_delta = 0;
   overscrolled_y_delta = 0;
 
   // Do a vertical scroll and wait for overscroll event.
   await smoothScroll(
-    pixelsToScrollY, x, y, source_device, "down", pixelsScrolledPerSec,
+    pixelsToScrollY, x, y, source_device, "down", pixelsPerSec,
     precise_scrolling_delta
   );
   await waitFor(() => { return overscrolled_y_delta > 0; },
       'Scroller did not receive overscroll event after vertical scroll.');
   await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollTop });
   assert_equals(scrolling_div.scrollHeight - scrolling_div.scrollTop,
-                scrolling_div.clientHeight);
+              scrolling_div.clientHeight);
 }
 
 promise_test (async (t) => {

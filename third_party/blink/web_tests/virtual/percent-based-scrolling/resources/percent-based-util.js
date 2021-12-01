@@ -80,27 +80,6 @@ function calculatePixelsToScroll(container, expectedScrollX, expectedScrollY) {
   return {x: Math.floor(pixelsToScrollX), y: Math.floor(pixelsToScrollY)};
 }
 
-// Scales the defaultScrollSpeed based on the ratio of scaledPixelsToScroll
-// to defaultPixelsToScroll. It's used in scenarios when users might want to
-// hasten the scroll speed to fit within a specific time to avoid bot timeout.
-//
-// Params:
-// defaultScrollSpeed: scroll speed in pixels per second that we intend to
-//                     scale if the feature is on.
-// defaultPixelsToScroll: unscaled number of pixels that is used in a web test.
-// scaledPixelsToScroll: scaled amount of pixels which is usually the result
-//                       of the calculatePixelsToScroll() function defined
-//                       above. Represents the value adjusted to a given
-//                       container or window when the feature is on.
-function scaleScrollSpeedToPercentBasedScrollingIfNeeded(
-  defaultScrollSpeed, defaultPixelsToScroll, scaledPixelsToScroll
-) {
-  if (!isPercentBasedScrollingEnabled()) {
-    return defaultScrollSpeed;
-  }
-  return defaultScrollSpeed * scaledPixelsToScroll / defaultPixelsToScroll;
-}
-
 // Scrollbar Arrows Tests
 
 // Tests if scrolling the |scroller| element through its scrollbar arrows

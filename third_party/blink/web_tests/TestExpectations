@@ -2095,6 +2095,10 @@ crbug.com/919789 images/image-click-scale-restore-zoomed-image.html [ Timeout ]
 crbug.com/919789 images/image-zoom-to-25.html [ Timeout ]
 crbug.com/919789 images/image-zoom-to-500.html [ Timeout ]
 
+# Sheriff 2020-02-06
+# Flaking on Linux Leak
+crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
+
 # Sheriff 2019-08-19
 crbug.com/626703 [ Win7 ] external/wpt/html/dom/documents/resource-metadata-management/document-lastModified-01.html [ Failure ]
 
@@ -5577,6 +5581,10 @@ crbug.com/1006759 http/tests/devtools/profiler/heap-snapshot-loader.js [ Failure
 # [1] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2049183
 # [2] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2119670
 
+crbug.com/1049456 fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass ]
+crbug.com/1081277 fast/scrolling/events/scrollend-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass ]
+crbug.com/1080997 fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Failure Pass ]
+
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
 crbug.com/829028 [ Mac ] editing/caret/in-multicol-child.html [ Failure ]
@@ -5678,8 +5686,14 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/mouse-scrolling-over-standard-scrollbar.html [ Failure Pass ]
 
 # fast/scrolling/events
-crbug.com/1199989 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure ]
-crbug.com/1199989 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
 
 ### END PERCENT BASED SCROLLING TEST FAILURES
 
@@ -6464,6 +6478,7 @@ crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
 crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Skip Timeout ]
 
 # Sheriff 2021-05-17
+crbug.com/1193920 virtual/scroll-unification/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Timeout ]
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
 crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure Pass ]
 
@@ -6695,6 +6710,10 @@ crbug.com/1197464 [ Mac ] virtual/scroll-unification/plugins/refcount-leaks.html
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
 crbug.com/1216587 [ Mac11-arm64 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
+
+# Sheriff 2021-07-01
+# Now also flakily timing-out.
+crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-02
 crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
