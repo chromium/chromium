@@ -15,12 +15,6 @@ buildscript {
 {% endif %}
     }
     dependencies {
-{% if channel == 'canary' %}
-        classpath "com.android.tools.build:gradle:4.1.0-beta01"
-{% elif channel == 'beta' %}
-        classpath "com.android.tools.build:gradle:4.0.0-rc01"
-{% else %}
-        classpath "com.android.tools.build:gradle:4.0.1"
-{% endif %}
+        classpath "com.android.tools.build:gradle:7.0.3"
     }
 }
