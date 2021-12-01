@@ -137,7 +137,7 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
             /*embedder_histogram_suffix=*/"", Referrer(*(it->referrer)),
             rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
             rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
-            rfhi->GetPageUkmSourceId()),
+            rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK),
         *web_contents);
     if (prerender_host_id != RenderFrameHost::kNoFrameTreeNodeId)
       started_prerender_host_ids_.insert(prerender_host_id);

@@ -13,6 +13,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/base/page_transition_types.h"
 
 namespace content {
 
@@ -27,7 +28,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
       const GURL& initiator_url,
       int initiator_process_id,
       absl::optional<blink::LocalFrameToken> initiator_frame_token,
-      ukm::SourceId initiator_ukm_id);
+      ukm::SourceId initiator_ukm_id,
+      ui::PageTransition transition_type);
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
   PrerenderAttributes& operator=(const PrerenderAttributes&) = delete;
@@ -62,6 +64,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is ukm::kInvalidSourceId when prerendering is initiated by the
   // browser.
   ukm::SourceId initiator_ukm_id;
+
+  ui::PageTransition transition_type;
 
   // Serialises this struct into a trace.
   void WriteIntoTrace(perfetto::TracedValue trace_context) const;

@@ -4460,6 +4460,8 @@ IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     CancelEmbedderTriggeredPrerenderingSameOriginRedirection) {
   base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
   const GURL kPrerenderingUrl =
       GetUrl("/server-redirect?" + kRedirectedUrl.spec());
@@ -4485,6 +4487,8 @@ IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     CancelEmbedderTriggeredPrerenderingCrossOriginRedirection) {
   base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   const GURL kRedirectedUrl = GetCrossOriginUrl("/empty.html?prerender");
   const GURL kPrerenderingUrl =
       GetUrl("/server-redirect?" + kRedirectedUrl.spec());

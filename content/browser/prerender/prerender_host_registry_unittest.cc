@@ -47,11 +47,11 @@ PrerenderAttributes GeneratePrerenderAttributes(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     RenderFrameHostImpl* rfh) {
-  return PrerenderAttributes(url, trigger_type, embedder_histogram_suffix,
-                             Referrer(), rfh->GetLastCommittedOrigin(),
-                             rfh->GetLastCommittedURL(),
-                             rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-                             rfh->GetPageUkmSourceId());
+  return PrerenderAttributes(
+      url, trigger_type, embedder_histogram_suffix, Referrer(),
+      rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+      rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
+      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK);
 }
 
 // This definition is needed because this constant is odr-used in gtest macros.

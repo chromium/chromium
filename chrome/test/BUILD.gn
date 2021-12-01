@@ -8303,6 +8303,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/password_manager/password_manager_interactive_uitest.cc",
       "../browser/permissions/permissions_security_model_interactive_uitest.cc",
       "../browser/portal/portal_interactive_uittest.cc",
+      "../browser/prerender/prerender_omnibox_ui_browsertest.cc",
       "../browser/renderer_context_menu/link_to_text_menu_observer_interactive_uitest.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",

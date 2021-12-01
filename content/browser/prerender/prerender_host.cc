@@ -336,6 +336,8 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.initiator_origin = attributes_.initiator_origin;
   load_url_params.initiator_process_id = attributes_.initiator_process_id;
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
+  load_url_params.transition_type =
+      ui::PageTransitionFromInt(attributes_.transition_type);
 
   // Just use the referrer from attributes, as NoStatePrefetch does.
   // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
@@ -645,20 +647,8 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  // The initial navigation value is set to 0 as this is the default for
-  // LoadURLParams.
-  // TODO(crbug.com/1234291): update this check when omnibox
-  // prerendering is implemented. Currently, browser initiated prerendering
-  // will skip this check as short-termed workaround, since the implementation
-  // of updating transition is still absent. This workaround will be removed
-  // once the update mechanism is done.
-  if (!IsBrowserInitiated()) {
-    DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
-        ui::PageTransitionFromInt(common_params_->transition),
-        ui::PAGE_TRANSITION_FIRST));
-    if (potential_activation.transition != common_params_->transition) {
-      return false;
-    }
+  if (potential_activation.transition != common_params_->transition) {
+    return false;
   }
 
   DCHECK_EQ(common_params_->navigation_type,

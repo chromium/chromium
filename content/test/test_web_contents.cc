@@ -420,7 +420,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
                           rfhi->GetLastCommittedOrigin(),
                           rfhi->GetLastCommittedURL(),
                           rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
-                          rfhi->GetPageUkmSourceId()),
+                          rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK),
       *this);
 }
 

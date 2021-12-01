@@ -9160,11 +9160,15 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     const GURL& prerendering_url,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
+  // TODO(https://crbug.com/1166085): Use the ui::PageTransition value passed
+  // from Embedders for flexibility.
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
       content::ChildProcessHost::kInvalidUniqueID,
-      /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId);
+      /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   int frame_tree_node_id =
       GetPrerenderHostRegistry()->CreateAndStartHost(attributes, *this);
 
