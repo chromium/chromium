@@ -158,7 +158,7 @@ public class CastWebContentsActivity extends Activity {
         mIsFinishingState.subscribe(Observers.onEnter((String reason) -> {
             if (DEBUG) Log.d(TAG, "Finishing activity: " + reason);
             mSurfaceHelperState.reset();
-            finish();
+            finishAndRemoveTask();
         }));
 
         mStartedState.subscribe(x -> {
