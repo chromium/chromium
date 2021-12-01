@@ -443,7 +443,8 @@ void TracingUnitTest::SetUp() {
   // Also tell PerfettoTracedProcess to use the current task environment.
   test_handle_ = PerfettoTracedProcess::SetupForTesting(
       base::ThreadTaskRunnerHandle::Get());
-  PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
+  PerfettoTracedProcess::Get()->OnThreadPoolAvailable(
+      /* enable_consumer */ true);
 
   // Wait for any posted construction tasks to execute.
   RunUntilIdle();

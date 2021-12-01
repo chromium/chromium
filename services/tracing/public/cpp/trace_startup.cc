@@ -89,14 +89,14 @@ bool EnableStartupTracingForProcess(
       privacy_filtering_enabled);
 }
 
-void InitTracingPostThreadPoolStartAndFeatureList() {
+void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
   if (g_tracing_initialized_after_threadpool_and_featurelist)
     return;
   g_tracing_initialized_after_threadpool_and_featurelist = true;
   DCHECK(base::ThreadPoolInstance::Get());
   DCHECK(base::FeatureList::GetInstance());
 
-  PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
+  PerfettoTracedProcess::Get()->OnThreadPoolAvailable(enable_consumer);
 
   if (ShouldSetupSystemTracing()) {
     // Ensure that data sources are created and registered.

@@ -87,7 +87,8 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
     initialized_thread_pool_ = true;
   }
 
-  tracing::InitTracingPostThreadPoolStartAndFeatureList();
+  tracing::InitTracingPostThreadPoolStartAndFeatureList(
+      /* enable_consumer */ false);
 
 #if defined(OS_ANDROID)
   SetupCpuTimeMetrics();

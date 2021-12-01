@@ -268,7 +268,8 @@ PerfettoTracedProcess::SetupForTesting(
   Get()->ClearDataSourcesForTesting();  // IN-TEST
   // On the first call within the process's lifetime, this will call
   // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
-  InitTracingPostThreadPoolStartAndFeatureList();
+  InitTracingPostThreadPoolStartAndFeatureList(
+      /* enable_consumer */ true);
   // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get()->sequence_checker_);
   PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
@@ -338,7 +339,7 @@ bool PerfettoTracedProcess::SetupStartupTracing(
   return true;
 }
 
-void PerfettoTracedProcess::SetupClientLibrary() {
+void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
@@ -346,7 +347,12 @@ void PerfettoTracedProcess::SetupClientLibrary() {
 // TODO(eseckler): Not yet supported on Android to avoid binary size regression
 // of the consumer IPC messages. We'll need a way to exclude them.
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
-  if (ShouldSetupSystemTracing()) {
+  // We currently only use the client library system backend for the consumer
+  // side, which is only allowed in the browser process. Furthermore, on
+  // non-Android platforms, sandboxed processes need to delegate the socket
+  // connections to the browser, but this delegation hasn't been hooked up in
+  // the client library yet.
+  if (ShouldSetupSystemTracing() && enable_consumer) {
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
   }
@@ -358,8 +364,8 @@ void PerfettoTracedProcess::SetupClientLibrary() {
   perfetto::Tracing::Initialize(init_args);
 }
 
-void PerfettoTracedProcess::OnThreadPoolAvailable() {
-  SetupClientLibrary();
+void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
+  SetupClientLibrary(enable_consumer);
 
   // Create our task runner now, so that ProducerClient/SystemProducer are
   // notified about future data source registrations and schedule any necessary

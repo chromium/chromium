@@ -207,7 +207,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
                            bool privacy_filtering_enabled);
 
   // Called on the process's main thread once the thread pool is ready.
-  void OnThreadPoolAvailable();
+  void OnThreadPoolAvailable(bool enable_consumer);
 
   // Set a callback that returns whether a system tracing session is allowed.
   // The callback will be executed on the sequence that set it. Only a single
@@ -288,7 +288,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
   // process.
-  void SetupClientLibrary();
+  // |enable_consumer| should be true if the system consumer can be enabled.
+  // Currently this is only the case if this is running in the browser process.
+  void SetupClientLibrary(bool enable_consumer);
 
   // perfetto::TracingPolicy implementation:
   void ShouldAllowConsumerSession(
