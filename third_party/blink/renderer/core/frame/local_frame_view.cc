@@ -435,9 +435,11 @@ void LocalFrameView::ForAllRemoteFrameViews(const Function& function) {
     if (features::IsFencedFramesMPArchBased()) {
       for (HTMLFencedFrameElement* fenced_frame :
            DocumentFencedFrames::From(*document).GetFencedFrames()) {
-        RemoteFrame* frame = To<RemoteFrame>(fenced_frame->ContentFrame());
-        if (RemoteFrameView* view = frame->View())
-          function(*view);
+        if (RemoteFrame* frame =
+                To<RemoteFrame>(fenced_frame->ContentFrame())) {
+          if (RemoteFrameView* view = frame->View())
+            function(*view);
+        }
       }
     }
   }
