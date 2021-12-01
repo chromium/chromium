@@ -650,7 +650,6 @@ FormStructure::FormStructure(const FormData& form)
       host_frame_(form.host_frame),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
-  std::map<std::u16string, size_t> unique_names;
   for (const FormFieldData& field : form.fields) {
     if (!ShouldSkipField(field))
       ++active_field_count_;
@@ -660,12 +659,7 @@ FormStructure::FormStructure(const FormData& form)
     else
       all_fields_are_passwords_ = false;
 
-    // Generate a unique name for this field by appending a counter to the name.
-    // Make sure to prepend the counter with a non-numeric digit so that we are
-    // guaranteed to avoid collisions.
-    std::u16string unique_name =
-        field.name + u"_" + base::NumberToString16(++unique_names[field.name]);
-    fields_.push_back(std::make_unique<AutofillField>(field, unique_name));
+    fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
   form_signature_ = autofill::CalculateFormSignature(form);

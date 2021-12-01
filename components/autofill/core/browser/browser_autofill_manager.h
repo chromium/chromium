@@ -747,13 +747,9 @@ class BrowserAutofillManager : public AutofillManager,
   // Delegate used in test to get notifications on certain events.
   raw_ptr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;
 
-  // A map of form names to FillingContext instances used to make refill
+  // A map from FormGlobalId to FillingContext instances used to make refill
   // attempts for dynamic forms.
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
-  std::map<FormGlobalId, std::unique_ptr<FillingContext>>
-      filling_context_by_global_id_;
-  std::map<std::u16string, std::unique_ptr<FillingContext>>
-      filling_context_by_unique_name_;
+  std::map<FormGlobalId, std::unique_ptr<FillingContext>> filling_context_;
 
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.

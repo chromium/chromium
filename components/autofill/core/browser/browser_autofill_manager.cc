@@ -1605,7 +1605,7 @@ void BrowserAutofillManager::Reset() {
   credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
-  filling_context_by_global_id_.clear();
+  filling_context_.clear();
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {
@@ -2403,13 +2403,13 @@ void BrowserAutofillManager::FillFieldWithValue(
 void BrowserAutofillManager::SetFillingContext(
     const FormStructure& form,
     std::unique_ptr<FillingContext> context) {
-  filling_context_by_global_id_[form.global_id()] = std::move(context);
+  filling_context_[form.global_id()] = std::move(context);
 }
 
 BrowserAutofillManager::FillingContext*
 BrowserAutofillManager::GetFillingContext(const FormStructure& form) {
-  auto it = filling_context_by_global_id_.find(form.global_id());
-  return it != filling_context_by_global_id_.end() ? it->second.get() : nullptr;
+  auto it = filling_context_.find(form.global_id());
+  return it != filling_context_.end() ? it->second.get() : nullptr;
 }
 
 bool BrowserAutofillManager::ShouldTriggerRefill(

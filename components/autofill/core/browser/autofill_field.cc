@@ -28,16 +28,6 @@ AutofillField::AutofillField(const FormFieldData& field)
       CalculateFieldSignatureByNameAndType(name, form_control_type);
 }
 
-AutofillField::AutofillField(const FormFieldData& field,
-                             const std::u16string& unique_name)
-    : FormFieldData(field),
-      unique_name_(unique_name),
-      parseable_name_(field.name),
-      parseable_label_(field.label) {
-  field_signature_ =
-      CalculateFieldSignatureByNameAndType(name, form_control_type);
-}
-
 AutofillField::~AutofillField() = default;
 
 std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
