@@ -93,6 +93,7 @@ def deploy(args):
         extract_resources_pak_cmd = [
             pak_util_script,
             'extract',
+            '--raw',
             os.path.join(target_dir, 'resources.pak'),
             '-o',
             tmp_dir,
@@ -102,6 +103,7 @@ def deploy(args):
         extract_camera_pak_cmd = [
             pak_util_script,
             'extract',
+            '--raw',
             os.path.join(target_dir, 'gen/ash/ash_camera_app_resources.pak'),
             '-o',
             tmp_dir,
