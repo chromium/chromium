@@ -2152,6 +2152,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.user_scrollable_vertical =
           scrollable_area->UserInputScrollable(kVerticalScrollbar);
 
+      if (state.user_scrollable_horizontal || state.user_scrollable_vertical)
+        object_.GetFrameView()->AddUserScrollableArea(scrollable_area);
+      else
+        object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
+
       // TODO(bokan): We probably don't need to pass ancestor reasons down the
       // scroll tree. On the compositor, in
       // LayerTreeHostImpl::FindScrollNodeForDeviceViewportPoint, we walk up

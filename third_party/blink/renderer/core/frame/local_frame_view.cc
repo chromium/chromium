@@ -316,6 +316,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(fragment_anchor_);
   visitor->Trace(scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
+  visitor->Trace(user_scrollable_areas_);
   visitor->Trace(viewport_constrained_objects_);
   visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
@@ -3191,12 +3192,11 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     }
   }
 
-  WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
+  Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
   if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
     ForAllNonThrottledLocalFrameViews(
         [&scroll_translation_nodes](LocalFrameView& frame_view) {
-          scroll_translation_nodes.AppendVector(
-              frame_view.GetScrollTranslationNodes());
+          frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);
         });
   }
 
@@ -3793,6 +3793,8 @@ void LocalFrameView::RemoveScrollableArea(
   if (!scrollable_areas_)
     return;
   scrollable_areas_->erase(scrollable_area);
+  if (user_scrollable_areas_)
+    user_scrollable_areas_->erase(scrollable_area);
 }
 
 void LocalFrameView::AddAnimatingScrollableArea(
@@ -3808,6 +3810,21 @@ void LocalFrameView::RemoveAnimatingScrollableArea(
   if (!animating_scrollable_areas_)
     return;
   animating_scrollable_areas_->erase(scrollable_area);
+}
+
+void LocalFrameView::AddUserScrollableArea(
+    PaintLayerScrollableArea* scrollable_area) {
+  DCHECK(scrollable_area);
+  if (!user_scrollable_areas_)
+    user_scrollable_areas_ = MakeGarbageCollected<ScrollableAreaSet>();
+  user_scrollable_areas_->insert(scrollable_area);
+}
+
+void LocalFrameView::RemoveUserScrollableArea(
+    PaintLayerScrollableArea* scrollable_area) {
+  if (!user_scrollable_areas_)
+    return;
+  user_scrollable_areas_->erase(scrollable_area);
 }
 
 void LocalFrameView::AttachToLayout() {
@@ -4958,17 +4975,19 @@ LocalFrameView::EnsureOverlayInterstitialAdDetector() {
   return *overlay_interstitial_ad_detector_.get();
 }
 
-WTF::Vector<const TransformPaintPropertyNode*>
-LocalFrameView::GetScrollTranslationNodes() {
-  WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
-  for (auto area : *ScrollableAreas()) {
+void LocalFrameView::GetUserScrollTranslationNodes(
+    Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
+  const auto* scrollable_areas = UserScrollableAreas();
+  if (!scrollable_areas)
+    return;
+
+  for (const auto& area : *scrollable_areas) {
     const auto* paint_properties =
         area->GetLayoutBox()->FirstFragment().PaintProperties();
     if (paint_properties && paint_properties->Scroll()) {
       scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
     }
   }
-  return scroll_translation_nodes;
 }
 
 StickyAdDetector& LocalFrameView::EnsureStickyAdDetector() {

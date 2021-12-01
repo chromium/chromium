@@ -469,6 +469,12 @@ class CORE_EXPORT LocalFrameView final
     return animating_scrollable_areas_.Get();
   }
 
+  void AddUserScrollableArea(PaintLayerScrollableArea*);
+  void RemoveUserScrollableArea(PaintLayerScrollableArea*);
+  const ScrollableAreaSet* UserScrollableAreas() const {
+    return user_scrollable_areas_.Get();
+  }
+
   void ServiceScriptedAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta());
@@ -992,7 +998,8 @@ class CORE_EXPORT LocalFrameView final
   // necessary.
   OverlayInterstitialAdDetector& EnsureOverlayInterstitialAdDetector();
 
-  WTF::Vector<const TransformPaintPropertyNode*> GetScrollTranslationNodes();
+  void GetUserScrollTranslationNodes(
+      Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes);
 
   // Return the sticky-ad detector for this frame, creating it if necessary.
   StickyAdDetector& EnsureStickyAdDetector();
@@ -1052,6 +1059,7 @@ class CORE_EXPORT LocalFrameView final
 
   Member<ScrollableAreaSet> scrollable_areas_;
   Member<ScrollableAreaSet> animating_scrollable_areas_;
+  Member<ScrollableAreaSet> user_scrollable_areas_;
   Member<ObjectSet> viewport_constrained_objects_;
   // Number of entries in viewport_constrained_objects_ that are sticky.
   unsigned sticky_position_object_count_;
