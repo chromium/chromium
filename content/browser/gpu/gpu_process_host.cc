@@ -82,6 +82,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/latency/latency_info.h"
 
+#if !defined(OS_ANDROID)
+#include "components/metrics/stability_metrics_helper.h"
+#endif
+
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -781,6 +785,18 @@ GpuProcessHost::~GpuProcessHost() {
       UMA_HISTOGRAM_ENUMERATION("GPU.GPUProcessTerminationStatus2",
                                 ConvertToGpuTerminationStatus(info.status),
                                 GpuTerminationStatus::MAX_ENUM);
+#if !defined(OS_ANDROID)
+      if (info.status != base::TERMINATION_STATUS_NORMAL_TERMINATION &&
+          info.status != base::TERMINATION_STATUS_STILL_RUNNING) {
+        // Add a sample to Stability.Counts2's GPU crash bucket.
+        //
+        // On Android Chrome and Android WebLayer, GPU crashes are logged via
+        // ContentStabilityMetricsProvider::OnCrashDumpProcessed() and
+        // StabilityMetricsHelper::IncreaseGpuCrashCount().
+        metrics::StabilityMetricsHelper::RecordStabilityEvent(
+            metrics::StabilityEventType::kGpuCrash);
+      }
+#endif  // !defined(OS_ANDROID)
 
       if (info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION ||
           info.status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
