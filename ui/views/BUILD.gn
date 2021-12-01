@@ -1386,6 +1386,7 @@ source_set("views_interactive_ui_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
