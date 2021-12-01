@@ -78,6 +78,12 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
            name == media_feature_names::kHeightMediaFeature ||
            name == media_feature_names::kMinHeightMediaFeature ||
            name == media_feature_names::kMaxHeightMediaFeature ||
+           name == media_feature_names::kInlineSizeMediaFeature ||
+           name == media_feature_names::kMinInlineSizeMediaFeature ||
+           name == media_feature_names::kMaxInlineSizeMediaFeature ||
+           name == media_feature_names::kBlockSizeMediaFeature ||
+           name == media_feature_names::kMinBlockSizeMediaFeature ||
+           name == media_feature_names::kMaxBlockSizeMediaFeature ||
            name == media_feature_names::kAspectRatioMediaFeature ||
            name == media_feature_names::kMinAspectRatioMediaFeature ||
            name == media_feature_names::kMaxAspectRatioMediaFeature ||

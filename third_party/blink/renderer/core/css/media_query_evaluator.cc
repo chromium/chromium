@@ -201,6 +201,12 @@ KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
       return KleeneValue::kUnknown;
     if (!media_values_->Height().has_value() && expr.IsHeightDependent())
       return KleeneValue::kUnknown;
+    if (!media_values_->InlineSize().has_value() &&
+        expr.IsInlineSizeDependent()) {
+      return KleeneValue::kUnknown;
+    }
+    if (!media_values_->BlockSize().has_value() && expr.IsBlockSizeDependent())
+      return KleeneValue::kUnknown;
   }
   return Eval(expr, results) ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
@@ -573,6 +579,26 @@ static bool WidthMediaFeatureEval(const MediaQueryExpValue& value,
   return width;
 }
 
+static bool InlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                       MediaQueryOperator op,
+                                       const MediaValues& media_values) {
+  double size = *media_values.InlineSize();
+  if (value.IsValid())
+    return ComputeLengthAndCompare(value, op, media_values, size);
+
+  return size;
+}
+
+static bool BlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                      MediaQueryOperator op,
+                                      const MediaValues& media_values) {
+  double size = *media_values.BlockSize();
+  if (value.IsValid())
+    return ComputeLengthAndCompare(value, op, media_values, size);
+
+  return size;
+}
+
 // Rest of the functions are trampolines which set the prefix according to the
 // media feature expression used.
 
@@ -690,6 +716,34 @@ static bool MaxWidthMediaFeatureEval(const MediaQueryExpValue& value,
                                      MediaQueryOperator,
                                      const MediaValues& media_values) {
   return WidthMediaFeatureEval(value, MediaQueryOperator::kLe, media_values);
+}
+
+static bool MinBlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  return BlockSizeMediaFeatureEval(value, MediaQueryOperator::kGe,
+                                   media_values);
+}
+
+static bool MaxBlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  return BlockSizeMediaFeatureEval(value, MediaQueryOperator::kLe,
+                                   media_values);
+}
+
+static bool MinInlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  return InlineSizeMediaFeatureEval(value, MediaQueryOperator::kGe,
+                                    media_values);
+}
+
+static bool MaxInlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  return InlineSizeMediaFeatureEval(value, MediaQueryOperator::kLe,
+                                    media_values);
 }
 
 static bool MinDeviceHeightMediaFeatureEval(const MediaQueryExpValue& value,

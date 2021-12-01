@@ -28,12 +28,15 @@ class CSSContainerValues : public MediaValuesDynamic {
   float RemSize() const override;
   float ExSize() const override;
   float ChSize() const override;
+  WritingMode GetWritingMode() const override { return writing_mode_; }
 
  private:
   // Container width in CSS pixels.
   absl::optional<double> width_;
   // Container height in CSS pixels.
   absl::optional<double> height_;
+  // The writing-mode of the container.
+  WritingMode writing_mode_;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
 };

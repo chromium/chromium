@@ -28,8 +28,17 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
       : parser_mode_(parser_mode) {}
 
   bool IsAllowed(const String& feature) const override {
-    return parser_mode_ == kUASheetMode ||
-           feature != media_feature_names::kImmersiveMediaFeature;
+    if (feature == media_feature_names::kImmersiveMediaFeature)
+      return parser_mode_ == kUASheetMode;
+    if (feature == media_feature_names::kInlineSizeMediaFeature ||
+        feature == media_feature_names::kMinInlineSizeMediaFeature ||
+        feature == media_feature_names::kMaxInlineSizeMediaFeature ||
+        feature == media_feature_names::kBlockSizeMediaFeature ||
+        feature == media_feature_names::kMinBlockSizeMediaFeature ||
+        feature == media_feature_names::kMaxBlockSizeMediaFeature) {
+      return false;
+    }
+    return true;
   }
 
  private:

@@ -265,8 +265,9 @@ class CORE_EXPORT MediaQueryExp {
   bool IsDeviceDependent() const;
 
   bool IsWidthDependent() const;
-
   bool IsHeightDependent() const;
+  bool IsInlineSizeDependent() const;
+  bool IsBlockSizeDependent() const;
 
   String Serialize() const;
 

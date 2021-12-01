@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/base/pointer/pointer_device.h"
 
 namespace blink {
@@ -48,6 +49,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
     return true;
   }
 
+  absl::optional<double> InlineSize() const;
+  absl::optional<double> BlockSize() const;
   virtual absl::optional<double> Width() const { return ViewportWidth(); }
   virtual absl::optional<double> Height() const { return ViewportHeight(); }
   virtual int DeviceWidth() const = 0;
@@ -87,6 +90,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual float RemSize() const = 0;
   virtual float ExSize() const = 0;
   virtual float ChSize() const = 0;
+  virtual WritingMode GetWritingMode() const = 0;
 
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);

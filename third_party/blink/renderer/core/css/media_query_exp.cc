@@ -135,6 +135,12 @@ static inline bool FeatureWithValidPositiveLength(
          media_feature == media_feature_names::kWidthMediaFeature ||
          media_feature == media_feature_names::kMaxWidthMediaFeature ||
          media_feature == media_feature_names::kMinWidthMediaFeature ||
+         media_feature == media_feature_names::kBlockSizeMediaFeature ||
+         media_feature == media_feature_names::kMaxBlockSizeMediaFeature ||
+         media_feature == media_feature_names::kMinBlockSizeMediaFeature ||
+         media_feature == media_feature_names::kInlineSizeMediaFeature ||
+         media_feature == media_feature_names::kMaxInlineSizeMediaFeature ||
+         media_feature == media_feature_names::kMinInlineSizeMediaFeature ||
          media_feature == media_feature_names::kDeviceHeightMediaFeature ||
          media_feature == media_feature_names::kMaxDeviceHeightMediaFeature ||
          media_feature == media_feature_names::kMinDeviceHeightMediaFeature ||
@@ -226,6 +232,8 @@ static inline bool FeatureWithoutValue(
          media_feature == media_feature_names::kGridMediaFeature ||
          media_feature == media_feature_names::kHeightMediaFeature ||
          media_feature == media_feature_names::kWidthMediaFeature ||
+         media_feature == media_feature_names::kBlockSizeMediaFeature ||
+         media_feature == media_feature_names::kInlineSizeMediaFeature ||
          media_feature == media_feature_names::kDeviceHeightMediaFeature ||
          media_feature == media_feature_names::kDeviceWidthMediaFeature ||
          media_feature == media_feature_names::kOrientationMediaFeature ||
@@ -320,6 +328,18 @@ bool MediaQueryExp::IsHeightDependent() const {
          media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kOrientationMediaFeature;
+}
+
+bool MediaQueryExp::IsInlineSizeDependent() const {
+  return media_feature_ == media_feature_names::kInlineSizeMediaFeature ||
+         media_feature_ == media_feature_names::kMinInlineSizeMediaFeature ||
+         media_feature_ == media_feature_names::kMaxInlineSizeMediaFeature;
+}
+
+bool MediaQueryExp::IsBlockSizeDependent() const {
+  return media_feature_ == media_feature_names::kBlockSizeMediaFeature ||
+         media_feature_ == media_feature_names::kMinBlockSizeMediaFeature ||
+         media_feature_ == media_feature_names::kMaxBlockSizeMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)

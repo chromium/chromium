@@ -123,3 +123,44 @@
     assert_equals(getComputedStyle(target).getPropertyValue('--height-or-orientation2'), '');
   }, 'size((height > 0px) or (orientation: landscape)), with contain:size');
 </script>
+
+
+<style>
+  @container size(inline-size > 0px) {
+    #target { --inline-size:true; }
+  }
+</style>
+<script>
+  test(function(t) {
+    assert_equals(getComputedStyle(target).getPropertyValue('--inline-size'), 'true');
+  }, 'size(inline-size > 0px)');
+</script>
+
+
+<style>
+  @container size(block-size > 0px) {
+    #target { --block-size:true; }
+  }
+</style>
+<script>
+  test(function(t) {
+    // container-type:inline-size does not support queries along the block
+    // axis.
+    assert_equals(getComputedStyle(target).getPropertyValue('--block-size'), '');
+  }, 'size(block-size > 0px)');
+</script>
+
+
+<style>
+  @container size(block-size > 0px) {
+    #target { --block-size2:true; }
+  }
+</style>
+<script>
+  test(function(t) {
+    // Changing the writing-mode does not affect the evaluation of block-size.
+    t.add_cleanup(() => { target.style = ''; });
+    target.style.writingMode = 'vertical-rl';
+    assert_equals(getComputedStyle(target).getPropertyValue('--block-size2'), '');
+  }, 'size(block-size > 0px), with writing-mode:vertical-rl');
+</script>

@@ -59,6 +59,9 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   float RemSize() const override;
   float ExSize() const override;
   float ChSize() const override;
+  WritingMode GetWritingMode() const override {
+    return WritingMode::kHorizontalTb;
+  }
 
   Member<LocalFrame> frame_;
   bool viewport_dimensions_overridden_;

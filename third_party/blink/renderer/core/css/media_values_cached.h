@@ -148,6 +148,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   float RemSize() const override;
   float ExSize() const override;
   float ChSize() const override;
+  WritingMode GetWritingMode() const override {
+    return WritingMode::kHorizontalTb;
+  }
 
   MediaValuesCachedData data_;
 };

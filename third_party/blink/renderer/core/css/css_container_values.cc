@@ -17,6 +17,7 @@ CSSContainerValues::CSSContainerValues(Document& document,
     : MediaValuesDynamic(document.GetFrame()),
       width_(width),
       height_(height),
+      writing_mode_(style.GetWritingMode()),
       font_sizes_(&style, document.documentElement()->GetComputedStyle()) {}
 
 float CSSContainerValues::EmSize() const {

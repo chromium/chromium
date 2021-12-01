@@ -68,6 +68,18 @@ mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
   }
 }
 
+absl::optional<double> MediaValues::InlineSize() const {
+  if (IsHorizontalWritingMode(GetWritingMode()))
+    return Width();
+  return Height();
+}
+
+absl::optional<double> MediaValues::BlockSize() const {
+  if (IsHorizontalWritingMode(GetWritingMode()))
+    return Height();
+  return Width();
+}
+
 MediaValues* MediaValues::CreateDynamicIfFrameExists(LocalFrame* frame) {
   if (frame)
     return MediaValuesDynamic::Create(frame);

@@ -214,6 +214,12 @@ TEST(MediaQuerySetTest, Basic) {
       {"all an[isdfs bla())(]icalc(i)(())), (max-width: 600px)", "not all"},
       {"all an[isdfs bla())(]icalc(i)(()))], (max-width: 800px)",
        "not all, (max-width: 800px)"},
+      {"(inline-size > 0px)", "not all"},
+      {"(min-inline-size: 0px)", "not all"},
+      {"(max-inline-size: 0px)", "not all"},
+      {"(block-size > 0px)", "not all"},
+      {"(min-block-size: 0px)", "not all"},
+      {"(max-block-size: 0px)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
