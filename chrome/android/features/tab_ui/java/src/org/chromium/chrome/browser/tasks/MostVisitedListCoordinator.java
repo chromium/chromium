@@ -218,7 +218,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
                 case WindowOpenDisposition.NEW_BACKGROUND_TAB:
                     ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
                             new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
-                            null /*incognito*/, mParentTabSupplier.get());
+                            windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                            /*incognito=*/null, mParentTabSupplier.get());
                     SuggestionsMetrics.recordTileTapped();
                     break;
                 case WindowOpenDisposition.OFF_THE_RECORD:

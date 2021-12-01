@@ -1789,10 +1789,9 @@ public class StartSurfaceTest {
 
         // Open the tile using the context menu.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB);
-        hideWatcher.waitForBehavior();
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        // This tab should be opened in the background.
+        Assert.assertTrue(cta.getLayoutManager().overviewVisible());
         // Verifies a new tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
     }

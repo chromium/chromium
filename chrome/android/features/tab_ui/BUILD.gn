@@ -248,6 +248,7 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.tab_ui"
