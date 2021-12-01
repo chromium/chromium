@@ -41,7 +41,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
@@ -63,12 +62,6 @@ std::unique_ptr<::i18n::addressinput::Source> GetAddressInputSource() {
 
 std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
   return autofill::ValidationRulesStorageFactory::CreateStorage();
-}
-
-bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
-  return rfh && rfh->IsActive() &&
-         rfh->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace
@@ -158,10 +151,9 @@ bool ChromePaymentRequestDelegate::IsOffTheRecord() const {
 
 const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return FrameSupportsPayments(rfh)
-             ? content::WebContents::FromRenderFrameHost(rfh)
-                   ->GetLastCommittedURL()
-             : GURL::EmptyGURL();
+  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
+                                      ->GetLastCommittedURL()
+                                : GURL::EmptyGURL();
 }
 
 void ChromePaymentRequestDelegate::DoFullCardRequest(
@@ -169,7 +161,7 @@ void ChromePaymentRequestDelegate::DoFullCardRequest(
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh) || !shown_dialog_)
+  if (!rfh || !rfh->IsActive() || !shown_dialog_)
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -221,7 +213,7 @@ PrefService* ChromePaymentRequestDelegate::GetPrefService() {
 
 bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (FrameSupportsPayments(rfh))
+  if (!rfh || !rfh->IsActive())
     return false;
 
   Browser* browser = chrome::FindBrowserWithWebContents(
@@ -233,7 +225,7 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
     const std::u16string& merchant_name,
     base::OnceClosure response_callback) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh))
+  if (!rfh || !rfh->IsActive())
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -252,7 +244,7 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // displays the top-level origin in its UI before the user can click on the
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return FrameSupportsPayments(rfh)
+  return rfh && rfh->IsActive()
              ? std::make_unique<content::InternalAuthenticatorImpl>(rfh)
              : nullptr;
 }
@@ -289,7 +281,7 @@ bool ChromePaymentRequestDelegate::IsInteractive() const {
 std::string
 ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return FrameSupportsPayments(rfh)
+  return rfh && rfh->IsActive()
              ? SslValidityChecker::GetInvalidSslCertificateErrorMessage(
                    content::WebContents::FromRenderFrameHost(rfh))
              : "";
@@ -302,7 +294,7 @@ bool ChromePaymentRequestDelegate::SkipUiForBasicCard() const {
 std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh))
+  if (!rfh || !rfh->IsActive())
     return "";
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);

@@ -19,11 +19,6 @@
 
 class Profile;
 
-namespace content {
-class Page;
-class RenderFrameHost;
-}  // namespace content
-
 namespace views {
 class ProgressBar;
 }
@@ -90,13 +85,12 @@ class PaymentHandlerWebFlowViewController
       const content::NativeWebKeyboardEvent& event) override;
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void LoadProgressChanged(double progress) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-
-  bool FrameSupportsPayments(content::RenderFrameHost* rfh) const;
 
   void AbortPayment();
 
