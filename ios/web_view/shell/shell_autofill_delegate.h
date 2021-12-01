@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_SHELL_SHELL_AUTOFILL_DELEGATE_H_
 #define IOS_WEB_VIEW_SHELL_SHELL_AUTOFILL_DELEGATE_H_
 
-#import <ChromeWebView/ChromeWebView.h>
+#import <CronetChromeWebView/CronetChromeWebView.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

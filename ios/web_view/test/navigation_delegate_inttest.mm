@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <ChromeWebView/ChromeWebView.h>
+#import <CronetChromeWebView/CronetChromeWebView.h>
 #import <Foundation/Foundation.h>
 
 #import "ios/web_view/test/web_view_inttest_base.h"

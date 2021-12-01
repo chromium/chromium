@@ -4,7 +4,7 @@
 
 #import "ios/web_view/test/web_view_inttest_base.h"
 
-#import <ChromeWebView/ChromeWebView.h>
+#import <CronetChromeWebView/CronetChromeWebView.h>
 #import <Foundation/Foundation.h>
 
 #include "base/base64.h"
