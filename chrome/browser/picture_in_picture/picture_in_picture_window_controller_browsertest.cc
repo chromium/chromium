@@ -1612,10 +1612,8 @@ class PictureInPictureWindowControllerFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1269935): Make this test work properly with
-// FencedFrameTestHelper and re-enable the test.
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
-                       DISABLED_FencedFrameShouldNotCloseWindow) {
+                       FencedFrameShouldNotCloseWindow) {
   GURL test_page_url = embedded_test_server()->GetURL(
       "example.com", "/media/picture-in-picture/window-size.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
@@ -1632,17 +1630,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Navigation to fenced frame page should not close Picture-in-Picture window.
-  GURL fenced_frame_url = embedded_test_server()->GetURL(
-      "example.com", "/media/picture-in-picture/window-size.html");
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           active_web_contents->GetMainFrame(), fenced_frame_url);
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  // Picture-in-Picture window should not be closed when navigating the fenced
-  // frame as the user has not navigated away from the primary page.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
