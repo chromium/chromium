@@ -84,6 +84,12 @@ class ChromeAppListModelUpdater::TemporarySortManager {
     iter->second = position;
   }
 
+  void DeletePermanentPosition(const std::string& id) {
+    auto iter = permanent_position_storage_.find(id);
+    DCHECK(iter != permanent_position_storage_.end());
+    permanent_position_storage_.erase(iter);
+  }
+
   void Deactivate() {
     DCHECK(is_active_);
     is_active_ = false;
@@ -236,11 +242,20 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
 
+  // The item matched by `id` may be unavailable on the local device.
+  if (!FindItem(id_copy))
+    return;
+
   item_manager_->RemoveChromeItem(id_copy);
 
   // Clean the parent folder if any, when item is deleted due to app
   // uninstallation rather than sync.
   model_.DeleteItem(id_copy, is_uninstall);
+
+  // When item deletion is triggered by local app uninstallation instead of
+  // sync, commits the temporary order if any.
+  if (is_under_temporary_sort() && is_uninstall)
+    EndTemporarySortAndTakeAction(EndAction::kCommit);
 }
 
 void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {
@@ -638,6 +653,11 @@ void ChromeAppListModelUpdater::OnAppListItemUpdated(ash::AppListItem* item) {
 
 void ChromeAppListModelUpdater::OnAppListItemWillBeDeleted(
     ash::AppListItem* item) {
+  if (is_under_temporary_sort()) {
+    DCHECK(temporary_sort_manager_->HasId(item->id()));
+    temporary_sort_manager_->DeletePermanentPosition(item->id());
+  }
+
   if (!item->is_folder() && !item->is_page_break())
     return;
 

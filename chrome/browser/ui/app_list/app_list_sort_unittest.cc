@@ -710,3 +710,166 @@ TEST_F(TemporaryAppListSortTest, InstallAppRemotely) {
   EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
             std::vector<std::string>({"A", "B", "C", "E"}));
 }
+
+// Verifies the temporary sorting behavior when an item is deleted due to the
+// removal on a remote device.
+TEST_F(TemporaryAppListSortTest, RemoveItemRemotely) {
+  // Start syncing.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+  RemoveAllExistingItems();
+
+  // Install four apps.
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("A", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("B", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  const std::string kItemId4 = CreateNextAppId(GenerateId("app_id4"));
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("D", kItemId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+
+  // Sort with the name alphabetical order then commit the order.
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
+  Commit();
+
+  // Sort with the name reverse alphabetical order without committing. The
+  // permanent sort order and the permanent item positions should not change.
+  model_updater->RequestAppListSort(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+            std::vector<std::string>({"A", "B", "C", "D"}));
+  EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
+            std::vector<std::string>({"D", "C", "B", "A"}));
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+
+  // Delete `app4` remotely.
+  syncer::SyncChangeList change_list;
+  ChromeAppListItem* item_to_delete = model_updater->FindItem(kItemId4);
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+      CreateAppRemoteData(
+          kItemId4, item_to_delete->name(), item_to_delete->folder_id(),
+          item_to_delete->position().ToInternalValue(), std::string())));
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
+  content::RunAllTasksUntilIdle();
+
+  // Verify that the app list is under temporary sorting.
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+            std::vector<std::string>({"A", "B", "C"}));
+  EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
+            std::vector<std::string>({"C", "B", "A"}));
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+
+  // Revert the temporary sorting order.
+  model_updater->RequestAppListSortRevert();
+  EXPECT_FALSE(IsUnderTemporarySort());
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+            std::vector<std::string>({"A", "B", "C"}));
+  EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
+            std::vector<std::string>({"A", "B", "C"}));
+}
+
+// The test class used to verify local uninstallation.
+class TemporaryAppListSortLocalUninstallationTest
+    : public TemporaryAppListSortTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  TemporaryAppListSortLocalUninstallationTest()
+      : TemporaryAppListSortTest(), uninstall_through_service_(GetParam()) {}
+
+  TemporaryAppListSortLocalUninstallationTest(
+      const TemporaryAppListSortLocalUninstallationTest&) = delete;
+  TemporaryAppListSortLocalUninstallationTest& operator=(
+      const TemporaryAppListSortLocalUninstallationTest&) = delete;
+
+  ~TemporaryAppListSortLocalUninstallationTest() override = default;
+
+ protected:
+  // If true, an app should be uninstalled through the syncable service;
+  // otherwise, an app should be deleted by the model updater.
+  const bool uninstall_through_service_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TemporaryAppListSortLocalUninstallationTest,
+                         testing::Bool());
+
+// Verifies the temporary sorting behavior with local app uninstallation.
+TEST_P(TemporaryAppListSortLocalUninstallationTest, Basics) {
+  RemoveAllExistingItems();
+
+  // Install four apps.
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("A", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("B", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  const std::string kItemId4 = CreateNextAppId(GenerateId("app_id4"));
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("D", kItemId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+
+  // Sort with the name alphabetical order then commit the order.
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
+  Commit();
+
+  // Sort with the name reverse alphabetical order without committing. The
+  // permanent sort order and the permanent item positions should not change.
+  model_updater->RequestAppListSort(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+            std::vector<std::string>({"A", "B", "C", "D"}));
+  EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
+            std::vector<std::string>({"D", "C", "B", "A"}));
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+
+  // Trigger item removal from the local device by app list syncable service or
+  // the model updater depending on the test param.
+  if (uninstall_through_service_) {
+    app_list_syncable_service()->RemoveUninstalledItem(kItemId4);
+  } else {
+    // Default apps uninstallation could bypass app list syncable service.
+    // Therefore remove the item through `model_updater` to verify this
+    // scenario.
+    model_updater->RemoveItem(kItemId4, /*is_uninstall=*/true);
+  }
+
+  // Verify that the temporary order is committed.
+  if (uninstall_through_service_) {
+    EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+              std::vector<std::string>({"C", "B", "A"}));
+  }
+  EXPECT_EQ(GetOrderedNamesFromModelUpdater(),
+            std::vector<std::string>({"C", "B", "A"}));
+  EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
+            GetSortOrderFromPrefs());
+}

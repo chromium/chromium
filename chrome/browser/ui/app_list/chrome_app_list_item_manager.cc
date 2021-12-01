@@ -74,12 +74,7 @@ void ChromeAppListItemManager::UpdateChromeItem(
 
 void ChromeAppListItemManager::RemoveChromeItem(const std::string& id) {
   auto* item = FindItem(id);
-
-  // TODO(https://crbug.com/1263132): in tests, children could be added to the
-  // model without parent folders. After fixing those tests, we should check
-  // `item` is not null here.
-  if (!item)
-    return;
+  DCHECK(item);
 
   if (item->is_folder()) {
     auto iter = folder_item_mappings_.find(id);
