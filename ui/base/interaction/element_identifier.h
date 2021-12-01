@@ -34,7 +34,7 @@
 // "MyClass::kMyIdentifierName":
 //
 //   class MyClass {
-//     DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(MyClass, kMyIdentifierName);
+//     DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMyIdentifierName);
 //   };
 //
 // Then in the corresponding .cc file, add the following:
@@ -270,7 +270,7 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 
 // Use this code in your class declaration in its .h file to declare an
 // identifier that is scoped to your class.
-#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
+#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)               \
   static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
   static constexpr ui::ElementIdentifier IdentifierName {                    \
     &IdentifierName##Provider                                                \

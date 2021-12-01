@@ -36,8 +36,7 @@ class TabGroupHeader;
 class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TabGroupEditorBubbleView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupEditorBubbleView,
-                                         kEditorBubbleIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditorBubbleIdentifier);
 
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;

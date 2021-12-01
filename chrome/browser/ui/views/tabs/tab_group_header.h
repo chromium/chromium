@@ -32,8 +32,7 @@ class TabGroupHeader : public TabSlotView,
  public:
   METADATA_HEADER(TabGroupHeader);
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
-                                         kTabGroupHeaderIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroupHeaderIdentifier);
 
   TabGroupHeader(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
   TabGroupHeader(const TabGroupHeader&) = delete;

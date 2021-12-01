@@ -58,27 +58,18 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   };
 
   // Element IDs for ui::ElementTracker
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kOptionsMenuButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kChangeTargetLanguage);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageCombobox);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageDoneButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kChangeSourceLanguage);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageCombobox);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageDoneButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOptionsMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeTargetLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeSourceLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
   TranslateBubbleView(const TranslateBubbleView&) = delete;
   TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;

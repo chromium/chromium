@@ -35,8 +35,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,
-                                         kAddToNewGroupItemIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
 
  private:
   void Build(TabStripModel* tab_strip, int index);

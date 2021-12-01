@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   // element completes, but in the future we may implement a ref-counting
   // system for systems that use a temporary identifier so that it does not
   // persist longer than it is needed.
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTemporaryIdentifier);
 
   // Gets the element tracker to be used by clients to subscribe to and receive
   // events.
