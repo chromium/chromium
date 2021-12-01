@@ -407,6 +407,11 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   DCHECK(textView == self.learnMoreTextView);
 
   NSMutableString* detailsMessage = [[NSMutableString alloc] init];
+  if (self.enterpriseSignInRestrictions & kEnterpriseForceSignIn) {
+    [self appendRestrictionString:l10n_util::GetNSString(
+                                      IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)
+                         toString:detailsMessage];
+  }
   if (self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts) {
     [self appendRestrictionString:
               l10n_util::GetNSString(
