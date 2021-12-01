@@ -27,6 +27,16 @@
     return promise_rejects_dom(t, 'AbortError', result);
   }, "User approval decline should reject the promise.");
 
+  fedcm_test(async (t, mock) => {
+    mock.returnError("ErrorTooManyRequests");
+    const first = await navigator.credentials.get(test_options);
+    const second = await navigator.credentials.get(test_options);
+    assert_equals(first, undefined);
+    return promise_rejects_dom(t, 'AbortError', second);
+  },
+  "When there's a pending request, a second `get` call should be rejected. ",
+  "Only one navigator.credentials.get request may be outstanding at one time.");
+
   promise_test(async t => {
     const result = navigator.credentials.get({
     federated: {
