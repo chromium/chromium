@@ -663,8 +663,7 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header.files-ng cr-button > .icon,
 .dialog-header.files-ng button > .icon,
 .dialog-header.files-ng #search-box .clear,
-.dialog-header.files-ng #read-only-icon,
-.dialog-header.files-ng .breadcrumbs .separator {
+.dialog-header.files-ng #read-only-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-color: currentColor;
@@ -1331,92 +1330,6 @@ html.focus-outline-visible #cloud-import-details cr-button:focus {
 
 body.check-select .breadcrumbs {
   display: none;
-}
-
-.breadcrumbs button > paper-ripple {
-  color: black;
-}
-
-.breadcrumbs > [collapsed]::before {
-  content: '...';
-}
-
-.breadcrumbs > [collapsed] .name {
-  display: none;
-}
-
-.breadcrumbs > [collapsed] {
-  box-sizing: content-box !important;
-  width: 1em;
-}
-
-/* A single directory name in the list of path breadcrumbs. */
-.breadcrumbs .breadcrumb-path {
-  box-sizing: border-box;
-  cursor: pointer;
-  flex: none;
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0;
-  min-width: 0;
-  padding: 0 9px;
-  text-transform: none;
-  white-space: nowrap;
-}
-
-.breadcrumbs .breadcrumb-path:first-child {
-  /* margin-inline-start isn't proper
-     because folder names should be ltr even in RTL languages. */
-  margin-inline-start: 8px;
-}
-
-html[dir='rtl'] .breadcrumbs .breadcrumb-path:first-child {
-  margin-inline-end: 8px;
-  margin-inline-start: 0;
-}
-
-.breadcrumbs .breadcrumb-path:active {
-  color: inherit;
-}
-
-.breadcrumbs .breadcrumb-path > .name {
-  overflow: hidden;
-  position: relative;
-  text-align: initial;
-  text-overflow: ellipsis;
-  z-index: 1;
-}
-
-/* The final breadcrumb, representing the current directory. */
-.breadcrumbs .breadcrumb-path.breadcrumb-last {
-  cursor: default;
-}
-
-.dialog-header.files-ng .breadcrumbs .breadcrumb-path {
-  --text-color: currentColor;
-}
-
-.dialog-header.files-ng .breadcrumbs .breadcrumb-path.breadcrumb-last {
-  color: var(--google-grey-900);
-  --text-color: currentColor;
-}
-
-/* The > arrow between breadcrumbs. */
-.breadcrumbs .separator {
-  background: -webkit-image-set(
-      url(../images/files/ui/arrow_right_white.png) 1x,
-      url(../images/files/ui/2x/arrow_right_white.png) 2x) center no-repeat;
-  flex: none;
-  height: 16px;
-  width: 8px;
-}
-
-.dialog-header.files-ng .breadcrumbs .separator {
-  -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
-}
-
-html[dir='rtl'] .breadcrumbs .separator {
-  transform: scaleX(-1);
 }
 
 /* The toolbar indicator that means the current directory is read only. */

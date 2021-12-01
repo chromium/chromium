@@ -76,8 +76,6 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/2x/search.png",
     "foreground/images/files/ui/2x/service_drive.png",
     "foreground/images/files/ui/arrow_right.svg",
-    "foreground/images/files/ui/arrow_right_white.png",
-    "foreground/images/files/ui/2x/arrow_right_white.png",
     "foreground/images/files/ui/back.svg",
     "foreground/images/files/ui/state_banner_icon.svg",
     "foreground/images/files/ui/warning_banner_icon.svg",
