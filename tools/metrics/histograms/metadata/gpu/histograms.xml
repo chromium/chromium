@@ -1345,6 +1345,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.MultipleSwapsDelta" units="%" expires_after="2022-11-15">
+  <owner>behdadb@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Time delta between swaps, when there are multiple successful swaps in the
+    same vsync. The delta is reported as a percentage of vsync interval. This
+    can be recorded every time we present a frame.
+  </summary>
+</histogram>
+
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
     enum="OopRasterGlyphCacheMissType" expires_after="M110">
   <owner>khushalsagar@chromium.org</owner>

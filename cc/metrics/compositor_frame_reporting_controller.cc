@@ -7,17 +7,21 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "services/tracing/public/cpp/perfetto/macros.h"
 
 namespace cc {
 namespace {
 using SmoothThread = CompositorFrameReporter::SmoothThread;
 using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
+
+constexpr char kTraceCategory[] = "cc,benchmark";
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
@@ -76,6 +80,8 @@ void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
 void CompositorFrameReportingController::WillBeginImplFrame(
     const viz::BeginFrameArgs& args) {
   ProcessSkippedFramesIfNecessary(args);
+  ReportMultipleSwaps(args.frame_time, last_interval_);
+  last_interval_ = args.interval;
 
   base::TimeTicks begin_time = Now();
   if (reporters_[PipelineStage::kBeginImplFrame]) {
@@ -354,6 +360,46 @@ void CompositorFrameReportingController::
   }
 }
 
+void CompositorFrameReportingController::TrackSwapTiming(
+    const viz::FrameTimingDetails& details) {
+  if (details.swap_timings.swap_start != base::TimeTicks()) {
+    if (latest_swap_times_.empty() ||
+        latest_swap_times_.back() < details.swap_timings.swap_start)
+      latest_swap_times_.push(details.swap_timings.swap_start);
+  }
+
+  // Making sure the queue would not keep growing in size.
+  DCHECK_LE(latest_swap_times_.size(), 10u);
+}
+
+void CompositorFrameReportingController::ReportMultipleSwaps(
+    base::TimeTicks begin_frame_time,
+    base::TimeDelta interval) {
+  while (!latest_swap_times_.empty() &&
+         latest_swap_times_.front() <= begin_frame_time - interval) {
+    latest_swap_times_.pop();
+  }
+
+  if (latest_swap_times_.empty())
+    return;
+
+  if (latest_swap_times_.size() > 1) {
+    base::TimeDelta swap_delta =
+        latest_swap_times_.back() - latest_swap_times_.front();
+
+    if (swap_delta < interval) {
+      UMA_HISTOGRAM_PERCENTAGE("GPU.MultipleSwapsDelta",
+                               swap_delta * 100.0 / interval);
+
+      const auto trace_track =
+          perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+      TRACE_EVENT_BEGIN(kTraceCategory, "MultipleSwaps", trace_track,
+                        latest_swap_times_.front());
+      TRACE_EVENT_END(kTraceCategory, trace_track, latest_swap_times_.back());
+    }
+  }
+}
+
 void CompositorFrameReportingController::OnFinishImplFrame(
     const viz::BeginFrameId& id) {
   for (auto& reporter : reporters_) {
@@ -368,6 +414,10 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
   bool feedback_failed = details.presentation_feedback.failed();
+
+  if (!feedback_failed)
+    TrackSwapTiming(details);
+
   for (auto submitted_frame = submitted_compositor_frames_.begin();
        submitted_frame != submitted_compositor_frames_.end() &&
        !viz::FrameTokenGT(submitted_frame->frame_token, frame_token);) {
