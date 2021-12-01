@@ -27,6 +27,7 @@ class ExtensionsToolbarContainer;
 class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
+class SystemAppAccessibleName;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
@@ -155,6 +156,7 @@ class WebAppToolbarButtonContainer : public views::View,
   raw_ptr<WebAppContentSettingsContainer> content_settings_container_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
+  raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_

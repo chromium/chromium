@@ -4658,6 +4658,8 @@ static_library("ui") {
       "views/user_education/tutorial_bubble_factory_views.h",
       "views/web_apps/file_handler_launch_dialog_view.cc",
       "views/web_apps/file_handler_launch_dialog_view.h",
+      "views/web_apps/frame_toolbar/system_app_accessible_name.cc",
+      "views/web_apps/frame_toolbar/system_app_accessible_name.h",
       "views/web_apps/frame_toolbar/web_app_content_settings_container.cc",
       "views/web_apps/frame_toolbar/web_app_content_settings_container.h",
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.cc",

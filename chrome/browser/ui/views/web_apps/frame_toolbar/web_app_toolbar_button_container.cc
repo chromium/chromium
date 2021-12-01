@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/terminal_system_app_menu_button_chromeos.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -85,6 +86,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   if (app_controller->HasTitlebarAppOriginText()) {
     web_app_origin_text_ = AddChildView(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
+  }
+
+  if (app_controller->system_app()) {
+    AddChildView(std::make_unique<SystemAppAccessibleName>(
+        app_controller->GetAppShortName()));
   }
 
   if (app_controller->AppUsesWindowControlsOverlay()) {

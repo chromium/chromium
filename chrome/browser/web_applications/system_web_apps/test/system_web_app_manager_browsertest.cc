@@ -70,6 +70,8 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -78,6 +80,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/browsertest_util.h"
+#include "ui/base/test/ui_controls.h"
 #endif
 
 namespace {
@@ -1750,6 +1754,54 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerContextMenuBrowserTest, WebLink) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class SystemWebAppAccessibilityTest : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppAccessibilityTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+  }
+  ~SystemWebAppAccessibilityTest() override = default;
+
+ protected:
+  ash::test::SpeechMonitor speech_monitor_;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
+                       CanCycleToWindowControlButtons) {
+  ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  WaitForTestSystemAppInstall();
+
+  // Launch the app so it shows up in shelf.
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  auto* app_window = app_browser->window()->GetNativeWindow();
+
+  // F6 to switch pane.
+  speech_monitor_.Call([&]() {
+    ui_controls::SendKeyPress(app_window, ui::VKEY_F6, /*Ctrl*/ false,
+                              /*Shift*/ false, /*Alt*/ false,
+                              /*Launcher*/ false);
+  });
+  speech_monitor_.ExpectSpeech("Test System App");
+  speech_monitor_.ExpectSpeech("Application");
+
+  // Launcher-B to find minimize button.
+  speech_monitor_.Call([&]() {
+    ui_controls::SendKeyPress(app_window, ui::VKEY_B, /*Ctrl*/ false,
+                              /*Shift*/ false, /*Alt*/ false,
+                              /*Launcher*/ true);
+  });
+  speech_monitor_.ExpectSpeech("Minimize");
+  speech_monitor_.ExpectSpeech("Button");
+
+  // Start the actions.
+  speech_monitor_.Replay();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBrowserTest);
@@ -1811,6 +1863,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerDefaultBoundsTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppAccessibilityTest);
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
