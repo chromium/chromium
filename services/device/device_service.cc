@@ -119,8 +119,7 @@ DeviceService::DeviceService(
   java_nfc_delegate_.Reset(params->java_nfc_delegate);
 #endif
 
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if defined(IS_SERIAL_ENABLED_PLATFORM)
   serial_port_manager_ = std::make_unique<SerialPortManagerImpl>(
       io_task_runner_, base::ThreadTaskRunnerHandle::Get());
 #if defined(OS_MAC)
@@ -133,7 +132,7 @@ DeviceService::DeviceService(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 #endif
-#endif
+#endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
 #if !defined(OS_ANDROID)
   // Ensure that the battery backend is initialized now; otherwise it may end up
@@ -151,8 +150,7 @@ DeviceService::~DeviceService() {
   // it's not really important that this runs anyway.
   device::BatteryStatusService::GetInstance()->Shutdown();
 #endif
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if defined(IS_SERIAL_ENABLED_PLATFORM)
   auto* serial_port_manager = serial_port_manager_.release();
   if (!serial_port_manager_task_runner_->DeleteSoon(FROM_HERE,
                                                     serial_port_manager)) {
@@ -163,7 +161,7 @@ DeviceService::~DeviceService() {
     // See crbug.com/1263149#c20 for details.
     delete serial_port_manager;
   }
-#endif
+#endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 }
 
 void DeviceService::AddReceiver(
@@ -340,8 +338,7 @@ void DeviceService::BindDevicePostureProvider(
 
 void DeviceService::BindSerialPortManager(
     mojo::PendingReceiver<mojom::SerialPortManager> receiver) {
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if defined(IS_SERIAL_ENABLED_PLATFORM)
   // TODO(crbug.com/1109621): SerialPortManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
@@ -350,9 +347,9 @@ void DeviceService::BindSerialPortManager(
       FROM_HERE, base::BindOnce(&SerialPortManagerImpl::Bind,
                                 base::Unretained(serial_port_manager_.get()),
                                 std::move(receiver)));
-#else
+#else   // defined(IS_SERIAL_ENABLED_PLATFORM)
   NOTREACHED() << "Serial devices not supported on this platform.";
-#endif
+#endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 }
 
 void DeviceService::BindTimeZoneMonitor(

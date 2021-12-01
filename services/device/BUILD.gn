@@ -87,6 +87,10 @@ source_set("lib") {
       "//chromeos/lacros",
     ]
   }
+
+  if (is_serial_enabled_platform) {
+    defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
+  }
 }
 
 # NOTE: We use a separate component target to support global binder overrides,
