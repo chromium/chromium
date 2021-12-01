@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -300,12 +301,22 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
 
   ExpectInstanceID(BinaryFCMService::kInvalidId);
 
+  // The auth request never requests an instance ID, so it should get a normal
+  // response.
+  base::RunLoop run_loop;
+  service_->IsAuthorized(
+      GURL(), base::BindLambdaForTesting([&run_loop](bool authorized) {
+        EXPECT_TRUE(authorized);
+        run_loop.Quit();
+      }),
+      "fake_device_token",
+      enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
+  run_loop.Run();
+
   service_->MaybeUploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
 
-  // The auth request not getting an instance ID means that the result for the
-  // real request is UNAUTHORIZED.
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
 TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
@@ -330,7 +341,6 @@ TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
   std::unique_ptr<MockRequest> request =
       MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
 
-  ExpectInstanceID("valid id");
   ExpectNetworkResponse(false,
                         enterprise_connectors::ContentAnalysisResponse());
 
@@ -427,37 +437,6 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   // Expect nothing to change if the InstanceID returns after the timeout.
   std::move(instance_id_callback).Run("valid id");
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
-}
-
-TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout_Authentication) {
-  BinaryUploadService::Result scanning_result =
-      BinaryUploadService::Result::UNKNOWN;
-  enterprise_connectors::ContentAnalysisResponse scanning_response;
-  std::unique_ptr<MockRequest> request =
-      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  BinaryFCMService::GetInstanceIDCallback instance_id_callback;
-  ON_CALL(*fcm_service_, GetInstanceID(_))
-      .WillByDefault(
-          Invoke([&instance_id_callback](
-                     BinaryFCMService::GetInstanceIDCallback callback) {
-            instance_id_callback = std::move(callback);
-          }));
-
-  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
-  service_->MaybeUploadForDeepScanning(std::move(request));
-  content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::Seconds(300));
-
-  // The auth request timing out means that the result for the real request is
-  // UNAUTHORIZED.
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
-
-  // Expect nothing to change if the InstanceID returns after the timeout.
-  std::move(instance_id_callback).Run("valid id");
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
 TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {

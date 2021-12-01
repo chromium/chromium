@@ -191,6 +191,10 @@ class BinaryUploadService : public KeyedService {
     // Calls SerializeToString on the appropriate proto request.
     void SerializeToString(std::string* destination) const;
 
+    // Method used to identify authentication requests. This is used for
+    // optimizations such as omitting FCM code paths for auth requests.
+    virtual bool IsAuthRequest() const;
+
    private:
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
