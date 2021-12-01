@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './critical_error_page.js';
 import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
@@ -59,9 +58,8 @@ let PageInfo;
  * @type {!Object<!State, !PageInfo>}
  */
 const StateComponentMapping = {
-  // It is assumed that if state is kUnknown the error is kRmaNotRequired.
   [State.kUnknown]: {
-    componentIs: 'critical-error-page',
+    componentIs: 'badcomponent',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonCancel: ButtonState.HIDDEN,
@@ -366,34 +364,23 @@ export class ShimlessRma extends ShimlessRmaBase {
    * @param {!StateResult} stateResult
    */
   processStateResult_(stateResult) {
-    // Do not show the state screen if the critical error screen was shown.
-    if (this.handleStandardAndCriticalError_(stateResult.error)) {
-      return;
-    }
+    this.handleError_(stateResult.error);
     this.showState_(
         stateResult.state, stateResult.canCancel, stateResult.canGoBack);
   }
 
   /** @param {!RmadErrorCode} error */
   onError(error) {
-    this.handleStandardAndCriticalError_(error);
+    this.handleError_(error);
   }
 
   /**
    * @private
    * @param {!RmadErrorCode} error
-   * @return {boolean}
-   * Returns true if the critical error screen was displayed.
    */
-  handleStandardAndCriticalError_(error) {
-    // Critical error - expected to be in RMA.
-    if (error === RmadErrorCode.kRmaNotRequired) {
-      this.showState_(State.kUnknown, false, false);
-      return true;
-    }
+  handleError_(error) {
     // TODO(gavindodd): Handle error appropriately
     this.errorMessage_ = rmadErrorString(error);
-    return false;
   }
 
   /**
@@ -520,7 +507,7 @@ export class ShimlessRma extends ShimlessRmaBase {
   onCancelButtonClicked_() {
     this.allButtonsDisabled_ = true;
     this.shimlessRmaService_.abortRma().then(
-        (result) => this.handleStandardAndCriticalError_(result.error));
+        (result) => this.handleError_(result.error));
   }
 
   /**
