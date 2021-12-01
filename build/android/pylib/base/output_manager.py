@@ -95,7 +95,10 @@ class ArchivedFile(object):
     self._out_subdir = out_subdir
     self._datatype = datatype
 
-    self._f = tempfile.NamedTemporaryFile(delete=False)
+    mode = 'w+'
+    if datatype == Datatype.PNG:
+      mode = 'w+b'
+    self._f = tempfile.NamedTemporaryFile(mode=mode, delete=False)
     self._ready_to_archive = False
 
   @property

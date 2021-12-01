@@ -1084,7 +1084,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             test_name=args.command,
             cs_base_url='http://cs.chromium.org',
             local_output=True)
-        results_detail_file.write(result_html_string.encode('utf-8'))
+        results_detail_file.write(result_html_string)
         results_detail_file.flush()
       logging.critical('TEST RESULTS: %s', results_detail_file.Link())
 
