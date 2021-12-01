@@ -8,10 +8,13 @@
 #include <memory>
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+class Profile;
 
 // This class contains the state for a request to prefetch a page. This
 // encompasses the prefetch for the page itself as well as the prefetches for
@@ -104,6 +107,13 @@ class PrefetchContainer {
   std::unique_ptr<PrefetchedMainframeResponseContainer>
   ClonePrefetchedResponse() const;
 
+  // The network context used for just this prefetch.
+  void CreateNetworkContextForPrefetch(Profile* profile);
+  PrefetchProxyNetworkContext* GetNetworkContext() const {
+    return network_context_.get();
+  }
+  std::unique_ptr<PrefetchProxyNetworkContext> ReleaseNetworkContext();
+
  private:
   // The URL that will potentially be prefetched.
   // TODO(crbug.com/1266876): The container needs to track the entire redirect
@@ -139,6 +149,9 @@ class PrefetchContainer {
   // The time at which |prefetched_response_| was received. This is used to
   // determine if |prefetched_response_| is stale.
   absl::optional<base::TimeTicks> prefetch_received_time_;
+
+  // The network context used to prefetch |url_|.
+  std::unique_ptr<PrefetchProxyNetworkContext> network_context_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_CONTAINER_H_
