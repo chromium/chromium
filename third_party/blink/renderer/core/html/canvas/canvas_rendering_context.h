@@ -47,6 +47,7 @@ namespace blink {
 class CanvasImageSource;
 class HTMLCanvasElement;
 class ImageBitmap;
+class NoAllocDirectCallHost;
 class
     V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext;
 class
@@ -95,6 +96,8 @@ class CORE_EXPORT CanvasRenderingContext
   bool IsWebGPU() const {
     return canvas_rendering_type_ == CanvasRenderingAPI::kWebgpu;
   }
+
+  virtual NoAllocDirectCallHost* AsNoAllocDirectCallHost();
 
   // ActiveScriptWrappable
   // As this class inherits from ActiveScriptWrappable, as long as

@@ -145,6 +145,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   ~WebGLRenderingContextBase() override;
 
+  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
+
   HTMLCanvasElement* canvas() const {
     if (Host()->IsOffscreenCanvas())
       return nullptr;

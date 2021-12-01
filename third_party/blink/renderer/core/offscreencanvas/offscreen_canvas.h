@@ -244,6 +244,7 @@ class CORE_EXPORT OffscreenCanvas final
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
 
   IntSize size_;
+  bool disposing_ = false;
   bool is_neutered_ = false;
   bool origin_clean_ = true;
   bool disable_reading_from_canvas_ = false;

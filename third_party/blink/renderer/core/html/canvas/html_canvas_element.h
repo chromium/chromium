@@ -387,6 +387,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // Used only for WebGL currently.
   bool context_creation_was_blocked_;
 
+  bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
   bool ignore_reset_;

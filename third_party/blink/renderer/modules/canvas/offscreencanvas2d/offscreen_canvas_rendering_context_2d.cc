@@ -265,6 +265,11 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
   return image;
 }
 
+NoAllocDirectCallHost*
+OffscreenCanvasRenderingContext2D::AsNoAllocDirectCallHost() {
+  return this;
+}
+
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
   return nullptr;
 }

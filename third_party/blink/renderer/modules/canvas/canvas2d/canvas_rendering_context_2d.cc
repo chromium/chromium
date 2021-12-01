@@ -144,6 +144,10 @@ V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
 
+NoAllocDirectCallHost* CanvasRenderingContext2D::AsNoAllocDirectCallHost() {
+  return this;
+}
+
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 
 void CanvasRenderingContext2D::ValidateStateStackWithCanvas(

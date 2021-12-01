@@ -239,6 +239,10 @@ void WebGLRenderingContextBase::ForciblyLoseOldestContext(
                               WebGLRenderingContextBase::kWhenAvailable);
 }
 
+NoAllocDirectCallHost* WebGLRenderingContextBase::AsNoAllocDirectCallHost() {
+  return this;
+}
+
 WebGLRenderingContextBase* WebGLRenderingContextBase::OldestContext() {
   if (ActiveContexts().IsEmpty())
     return nullptr;

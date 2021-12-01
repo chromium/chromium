@@ -55,6 +55,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   ~OffscreenCanvasRenderingContext2D() override;
   bool IsComposited() const override { return false; }
   bool IsAccelerated() const override;
+  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   void SetIsInHiddenPage(bool) final { NOTREACHED(); }
