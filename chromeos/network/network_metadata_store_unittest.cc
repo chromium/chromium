@@ -504,4 +504,46 @@ TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {
                            /*sample=*/false, /*expected_count=*/1);
 }
 
+TEST_F(NetworkMetadataStoreTest, EnableAndDisableTrafficCountersAutoReset) {
+  std::string service_path = ConfigureService(kConfigWifi0Connectable);
+  const base::Value* value =
+      metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
+  EXPECT_EQ(nullptr, value);
+
+  metadata_store()->SetEnableTrafficCountersAutoReset(kGuid, /*enable=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  value = metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
+  ASSERT_TRUE(value && value->is_bool());
+  EXPECT_TRUE(value->GetBool());
+
+  metadata_store()->SetEnableTrafficCountersAutoReset(kGuid, /*enable=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  value = metadata_store()->GetEnableTrafficCountersAutoReset(kGuid);
+  ASSERT_TRUE(value && value->is_bool());
+  EXPECT_FALSE(value->GetBool());
+}
+
+TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
+  std::string service_path = ConfigureService(kConfigWifi0Connectable);
+  const base::Value* value =
+      metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
+  EXPECT_EQ(nullptr, value);
+
+  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid, /*day=*/5);
+  base::RunLoop().RunUntilIdle();
+
+  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
+  ASSERT_TRUE(value && value->is_int());
+  EXPECT_EQ(5, value->GetInt());
+
+  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid, /*day=*/31);
+  base::RunLoop().RunUntilIdle();
+
+  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
+  ASSERT_TRUE(value && value->is_int());
+  EXPECT_EQ(31, value->GetInt());
+}
+
 }  // namespace chromeos

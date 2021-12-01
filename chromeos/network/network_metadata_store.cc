@@ -36,6 +36,10 @@ const char kBadPassword[] = "bad_password";
 const char kCustomApnList[] = "custom_apn_list";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
+const char kEnableTrafficCountersAutoReset[] =
+    "enable_traffic_counters_auto_reset";
+const char kDayOfTrafficCountersAutoReset[] =
+    "day_of_traffic_counters_auto_reset";
 
 std::string GetPath(const std::string& guid, const std::string& subkey) {
   return base::StringPrintf("%s.%s", guid.c_str(), subkey.c_str());
@@ -448,6 +452,28 @@ void NetworkMetadataStore::SetCustomAPNList(const std::string& network_guid,
 const base::Value* NetworkMetadataStore::GetCustomAPNList(
     const std::string& network_guid) {
   return GetPref(network_guid, kCustomApnList);
+}
+
+void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
+    const std::string& network_guid,
+    bool enable) {
+  SetPref(network_guid, kEnableTrafficCountersAutoReset, base::Value(enable));
+}
+
+void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
+    const std::string& network_guid,
+    int day) {
+  SetPref(network_guid, kDayOfTrafficCountersAutoReset, base::Value(day));
+}
+
+const base::Value* NetworkMetadataStore::GetEnableTrafficCountersAutoReset(
+    const std::string& network_guid) {
+  return GetPref(network_guid, kEnableTrafficCountersAutoReset);
+}
+
+const base::Value* NetworkMetadataStore::GetDayOfTrafficCountersAutoReset(
+    const std::string& network_guid) {
+  return GetPref(network_guid, kDayOfTrafficCountersAutoReset);
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,
