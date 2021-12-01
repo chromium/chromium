@@ -154,6 +154,7 @@ crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCras
 crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+crbug.com/1275180 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 
 # Flaky on Fuchsia.
 crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
