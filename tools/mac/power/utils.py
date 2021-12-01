@@ -6,6 +6,7 @@ import subprocess
 import logging
 import psutil
 import os
+import signal
 
 
 def TerminateProcess(process: subprocess.Popen):
@@ -36,6 +37,10 @@ def TerminateProcess(process: subprocess.Popen):
     return
 
 
+def SendSignalToRootProcess(process: subprocess.Popen, signal: signal.Signals):
+  os.system(f"sudo kill -{signal.value} {process.pid}")
+
+
 def TerminateRootProcess(process: subprocess.Popen):
   """Kills elevated `process` and ensures it's cleaned up before returning.
 
@@ -46,8 +51,8 @@ def TerminateRootProcess(process: subprocess.Popen):
   logging.info(f"Terminating PID:{process.pid}")
 
   try:
-    os.system(f"sudo kill {process.pid}")
-    process.wait(0.5)
+    SendSignalToRootProcess(process, signal.SIGTERM)
+    process.wait(2.0)
   except (psutil.TimeoutExpired, psutil.AccessDenied, PermissionError) as e:
     raise RuntimeError(f"Could not clean up PID:{process.pid}.") from e
   except psutil.NoSuchProcess:

@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import ctypes
 import json
 import logging
 import os
+import signal
 import subprocess
 import sys
 import time
 import typing
-import ctypes
 
 import browsers
 import scenarios
@@ -116,33 +117,30 @@ class DriverContext:
 
     self.WriteScenarioSummary(scenario_driver)
 
-    output_file = \
-        f'{self._output_dir}/{scenario_driver.name}_powermetrics.plist'
+    output_file = os.path.join(self._output_dir,
+                               f"{scenario_driver.name}_powermetrics.plist")
 
     powermetrics_process = None
     try:
       scenario_driver.Launch()
-      with open(output_file, "w") as powermetrics_output:
+      powermetrics_args = [
+          "sudo", "powermetrics", "-f", "plist", "--samplers", "tasks",
+          "cpu_power", "gpu_power", "thermal", "disk", "network",
+          "--show-process-coalition", "--show-process-gpu",
+          "--show-process-energy", "-i", "10000", "--output-file", output_file
+      ]
 
-        # TODO(crbug.com/1224994): Narrow down samplers to only those of
-        # interest.
-        powermetrics_args = [
-            "sudo", "powermetrics", "-f", "plist", "--samplers", "all",
-            "--show-responsible-pid", "--show-process-gpu",
-            "--show-process-energy", "-i", "60000"
-        ]
-
-        powermetrics_process = subprocess.Popen(powermetrics_args,
-                                                stdout=powermetrics_output,
-                                                stdin=subprocess.PIPE)
-
-        # No need to add |scenario_process| to |self._started_processeds| as
-        # it's explicitly waited on.
-        scenario_driver.Wait()
+      powermetrics_process = subprocess.Popen(powermetrics_args,
+                                              stdout=subprocess.PIPE,
+                                              stdin=subprocess.PIPE)
+      scenario_driver.Wait()
 
     finally:
       scenario_driver.TearDown()
+
       if powermetrics_process:
+        # Force powermetrics to flush data.
+        utils.SendSignalToRootProcess(powermetrics_process, signal.SIGIO)
         utils.TerminateRootProcess(powermetrics_process)
 
   def Profile(self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver,
