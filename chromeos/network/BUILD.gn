@@ -84,6 +84,8 @@ component("network") {
     "managed_state.h",
     "metrics/network_metrics_helper.cc",
     "metrics/network_metrics_helper.h",
+    "metrics/shill_connect_result.cc",
+    "metrics/shill_connect_result.h",
     "network_activation_handler.h",
     "network_activation_handler_impl.cc",
     "network_activation_handler_impl.h",

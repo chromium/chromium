@@ -5,8 +5,8 @@
 #include "chromeos/network/metrics/network_metrics_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/network/metrics/shill_connect_result.h"
 #include "chromeos/network/network_state.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
@@ -105,41 +105,6 @@ void NetworkMetricsHelper::LogAllConnectionResult(
         kNetworkMetricsPrefix + network_type + kAllConnectionResultSuffix,
         connect_result);
   }
-}
-
-NetworkMetricsHelper::ShillConnectResult
-NetworkMetricsHelper::ShillErrorToConnectResult(const std::string& error_name) {
-  if (error_name == shill::kErrorBadPassphrase)
-    return NetworkMetricsHelper::ShillConnectResult::kBadPassphrase;
-  else if (error_name == shill::kErrorBadWEPKey)
-    return NetworkMetricsHelper::ShillConnectResult::kBadWepKey;
-  else if (error_name == shill::kErrorConnectFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kFailedToConnect;
-  else if (error_name == shill::kErrorDhcpFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kDhcpFailure;
-  else if (error_name == shill::kErrorDNSLookupFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kDnsLookupFailure;
-  else if (error_name == shill::kErrorEapAuthenticationFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kEapAuthentication;
-  else if (error_name == shill::kErrorEapLocalTlsFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kEapLocalTls;
-  else if (error_name == shill::kErrorEapRemoteTlsFailed)
-    return NetworkMetricsHelper::ShillConnectResult::kEapRemoteTls;
-  else if (error_name == shill::kErrorOutOfRange)
-    return NetworkMetricsHelper::ShillConnectResult::kOutOfRange;
-  else if (error_name == shill::kErrorPinMissing)
-    return NetworkMetricsHelper::ShillConnectResult::kPinMissing;
-  else if (error_name == shill::kErrorNoFailure)
-    return NetworkMetricsHelper::ShillConnectResult::kNoFailure;
-  else if (error_name == shill::kErrorNotAssociated)
-    return NetworkMetricsHelper::ShillConnectResult::kNotAssociated;
-  else if (error_name == shill::kErrorNotAuthenticated)
-    return NetworkMetricsHelper::ShillConnectResult::kNotAuthenticated;
-  else if (error_name == shill::kErrorSimLocked)
-    return NetworkMetricsHelper::ShillConnectResult::kErrorSimLocked;
-  else if (error_name == shill::kErrorNotRegistered)
-    return NetworkMetricsHelper::ShillConnectResult::kErrorNotRegistered;
-  return NetworkMetricsHelper::ShillConnectResult::kUnknown;
 }
 
 }  // namespace chromeos

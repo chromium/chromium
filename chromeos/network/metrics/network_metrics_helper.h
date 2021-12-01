@@ -27,34 +27,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
       const absl::optional<std::string>& shill_error = absl::nullopt);
 
  private:
-  // Result of state changes to a network triggered by any connection
-  // attempt. With the exception of kSuccess and kUnknown, these enums are
-  // mapped directly to Shill errors. These values are persisted to logs.
-  // Entries should not be renumbered and numeric values should never be reused.
-  enum class ShillConnectResult {
-    kSuccess = 0,
-    kUnknown = 1,
-    kFailedToConnect = 2,
-    kDhcpFailure = 3,
-    kDnsLookupFailure = 4,
-    kEapAuthentication = 5,
-    kEapLocalTls = 6,
-    kEapRemoteTls = 7,
-    kOutOfRange = 8,
-    kPinMissing = 9,
-    kNoFailure = 10,
-    kNotAssociated = 11,
-    kNotAuthenticated = 12,
-    kTooManySTAs = 13,
-    kBadPassphrase = 14,
-    kBadWepKey = 15,
-    kErrorSimLocked = 16,
-    kErrorNotRegistered = 17,
-    kMaxValue = kErrorNotRegistered,
-  };
-
-  ShillConnectResult ShillErrorToConnectResult(const std::string& error_name);
-
   NetworkStateHandler* network_state_handler_;
 };
 
