@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_CHROMEOS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_CHROMEOS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_ASH_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_ASH_H_
 
 #include <map>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly or referring directly to
-// AppServiceProxyChromeOs as a type. Instead:
+// AppServiceProxyAsh as a type. Instead:
 //  - for forward declarations, use app_service_proxy_forward.h
 //  - for the full header, use app_service_proxy.h, which aliases correctly
 //    based on the platform
@@ -55,15 +55,15 @@ struct PauseData {
 // OS.
 //
 // See components/services/app_service/README.md.
-class AppServiceProxyChromeOs : public AppServiceProxyBase,
-                                public apps::AppRegistryCache::Observer {
+class AppServiceProxyAsh : public AppServiceProxyBase,
+                           public apps::AppRegistryCache::Observer {
  public:
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
 
-  explicit AppServiceProxyChromeOs(Profile* profile);
-  AppServiceProxyChromeOs(const AppServiceProxyChromeOs&) = delete;
-  AppServiceProxyChromeOs& operator=(const AppServiceProxyChromeOs&) = delete;
-  ~AppServiceProxyChromeOs() override;
+  explicit AppServiceProxyAsh(Profile* profile);
+  AppServiceProxyAsh(const AppServiceProxyAsh&) = delete;
+  AppServiceProxyAsh& operator=(const AppServiceProxyAsh&) = delete;
+  ~AppServiceProxyAsh() override;
 
   apps::InstanceRegistry& InstanceRegistry();
   apps::AppPlatformMetrics* AppPlatformMetrics();
@@ -221,9 +221,9 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase,
   // TODO(crbug.com/1174246): Support Lacros not keeping alive.
   std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
-  base::WeakPtrFactory<AppServiceProxyChromeOs> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_CHROMEOS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_ASH_H_

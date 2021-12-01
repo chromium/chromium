@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 
 #include <utility>
 
@@ -41,7 +41,7 @@
 
 namespace apps {
 
-AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
+AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     browser_app_instance_tracker_ =
@@ -56,7 +56,7 @@ AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
   }
 }
 
-AppServiceProxyChromeOs::~AppServiceProxyChromeOs() {
+AppServiceProxyAsh::~AppServiceProxyAsh() {
   if (IsValidProfile() && full_restore::features::IsFullRestoreEnabled()) {
     ::full_restore::FullRestoreSaveHandler::GetInstance()->SetAppRegistryCache(
         profile_->GetPath(), nullptr);
@@ -67,7 +67,7 @@ AppServiceProxyChromeOs::~AppServiceProxyChromeOs() {
   AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
 }
 
-void AppServiceProxyChromeOs::Initialize() {
+void AppServiceProxyAsh::Initialize() {
   if (!IsValidProfile()) {
     return;
   }
@@ -122,40 +122,39 @@ void AppServiceProxyChromeOs::Initialize() {
     app_platform_metrics_service_ =
         std::make_unique<AppPlatformMetricsService>(profile_);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AppServiceProxyChromeOs::InitAppPlatformMetrics,
-                       weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-apps::InstanceRegistry& AppServiceProxyChromeOs::InstanceRegistry() {
+apps::InstanceRegistry& AppServiceProxyAsh::InstanceRegistry() {
   return instance_registry_;
 }
 
 apps::BrowserAppInstanceTracker*
-AppServiceProxyChromeOs::BrowserAppInstanceTracker() {
+AppServiceProxyAsh::BrowserAppInstanceTracker() {
   return browser_app_instance_tracker_.get();
 }
 
 apps::BrowserAppInstanceRegistry*
-AppServiceProxyChromeOs::BrowserAppInstanceRegistry() {
+AppServiceProxyAsh::BrowserAppInstanceRegistry() {
   return browser_app_instance_registry_.get();
 }
 
-apps::AppPlatformMetrics* AppServiceProxyChromeOs::AppPlatformMetrics() {
+apps::AppPlatformMetrics* AppServiceProxyAsh::AppPlatformMetrics() {
   return app_platform_metrics_service_
              ? app_platform_metrics_service_->AppPlatformMetrics()
              : nullptr;
 }
 
-void AppServiceProxyChromeOs::Uninstall(
+void AppServiceProxyAsh::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window) {
   UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
 }
 
-void AppServiceProxyChromeOs::PauseApps(
+void AppServiceProxyAsh::PauseApps(
     const std::map<std::string, PauseData>& pause_data) {
   if (!app_service_.is_connected()) {
     return;
@@ -184,15 +183,14 @@ void AppServiceProxyChromeOs::PauseApps(
         data.first, [this, &data](const apps::AppUpdate& update) {
           LoadIconForDialog(
               update,
-              base::BindOnce(&AppServiceProxyChromeOs::OnLoadIconForPauseDialog,
+              base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
                              weak_ptr_factory_.GetWeakPtr(), update.AppType(),
                              update.AppId(), update.Name(), data.second));
         });
   }
 }
 
-void AppServiceProxyChromeOs::UnpauseApps(
-    const std::set<std::string>& app_ids) {
+void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
   if (!app_service_.is_connected()) {
     return;
   }
@@ -208,16 +206,15 @@ void AppServiceProxyChromeOs::UnpauseApps(
   }
 }
 
-void AppServiceProxyChromeOs::SetResizeLocked(
-    const std::string& app_id,
-    apps::mojom::OptionalBool locked) {
+void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
+                                         apps::mojom::OptionalBool locked) {
   if (app_service_.is_connected()) {
     apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
     app_service_->SetResizeLocked(app_type, app_id, locked);
   }
 }
 
-void AppServiceProxyChromeOs::SetArcIsRegistered() {
+void AppServiceProxyAsh::SetArcIsRegistered() {
   if (arc_is_registered_) {
     return;
   }
@@ -228,7 +225,7 @@ void AppServiceProxyChromeOs::SetArcIsRegistered() {
   }
 }
 
-void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {
+void AppServiceProxyAsh::FlushMojoCallsForTesting() {
   app_service_mojom_impl_->FlushMojoCallsForTesting();
 
   if (publisher_host_) {
@@ -238,32 +235,31 @@ void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {
   receivers_.FlushForTesting();
 }
 
-void AppServiceProxyChromeOs::ReInitializeCrostiniForTesting() {
+void AppServiceProxyAsh::ReInitializeCrostiniForTesting() {
   if (app_service_.is_connected() && publisher_host_) {
     publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST
   }
 }
 
-void AppServiceProxyChromeOs::SetDialogCreatedCallbackForTesting(
+void AppServiceProxyAsh::SetDialogCreatedCallbackForTesting(
     base::OnceClosure callback) {
   dialog_created_callback_ = std::move(callback);
 }
 
-void AppServiceProxyChromeOs::UninstallForTesting(
-    const std::string& app_id,
-    gfx::NativeWindow parent_window,
-    base::OnceClosure callback) {
+void AppServiceProxyAsh::UninstallForTesting(const std::string& app_id,
+                                             gfx::NativeWindow parent_window,
+                                             base::OnceClosure callback) {
   UninstallImpl(app_id, apps::mojom::UninstallSource::kUnknown, parent_window,
                 std::move(callback));
 }
 
-void AppServiceProxyChromeOs::SetAppPlatformMetricsServiceForTesting(
+void AppServiceProxyAsh::SetAppPlatformMetricsServiceForTesting(
     std::unique_ptr<apps::AppPlatformMetricsService>
         app_platform_metrics_service) {
   app_platform_metrics_service_ = std::move(app_platform_metrics_service);
 }
 
-void AppServiceProxyChromeOs::Shutdown() {
+void AppServiceProxyAsh::Shutdown() {
   app_platform_metrics_service_.reset();
 
   uninstall_dialogs_.clear();
@@ -273,7 +269,7 @@ void AppServiceProxyChromeOs::Shutdown() {
   }
 }
 
-void AppServiceProxyChromeOs::UninstallImpl(
+void AppServiceProxyAsh::UninstallImpl(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
@@ -289,7 +285,7 @@ void AppServiceProxyChromeOs::UninstallImpl(
     auto uninstall_dialog = std::make_unique<UninstallDialog>(
         profile_, update.AppType(), update.AppId(), update.Name(),
         std::move(icon_key), this, parent_window,
-        base::BindOnce(&AppServiceProxyChromeOs::OnUninstallDialogClosed,
+        base::BindOnce(&AppServiceProxyAsh::OnUninstallDialogClosed,
                        weak_ptr_factory_.GetWeakPtr(), update.AppType(),
                        update.AppId(), uninstall_source));
     uninstall_dialog->SetDialogCreatedCallbackForTesting(std::move(callback));
@@ -297,7 +293,7 @@ void AppServiceProxyChromeOs::UninstallImpl(
   });
 }
 
-void AppServiceProxyChromeOs::OnUninstallDialogClosed(
+void AppServiceProxyAsh::OnUninstallDialogClosed(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
@@ -320,7 +316,7 @@ void AppServiceProxyChromeOs::OnUninstallDialogClosed(
   uninstall_dialogs_.erase(it);
 }
 
-bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
+bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   if (update.AppId() == extension_misc::kChromeAppId) {
     return false;
@@ -330,9 +326,8 @@ bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
   // is blocked by policy.
   if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
     LoadIconForDialog(
-        update,
-        base::BindOnce(&AppServiceProxyChromeOs::OnLoadIconForBlockDialog,
-                       weak_ptr_factory_.GetWeakPtr(), update.Name()));
+        update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForBlockDialog,
+                               weak_ptr_factory_.GetWeakPtr(), update.Name()));
     return true;
   }
 
@@ -353,10 +348,9 @@ bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
     pause_data.hours = time_limit.value().InHours();
     pause_data.minutes = time_limit.value().InMinutes() % 60;
     LoadIconForDialog(
-        update,
-        base::BindOnce(&AppServiceProxyChromeOs::OnLoadIconForPauseDialog,
-                       weak_ptr_factory_.GetWeakPtr(), update.AppType(),
-                       update.AppId(), update.Name(), pause_data));
+        update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForPauseDialog,
+                               weak_ptr_factory_.GetWeakPtr(), update.AppType(),
+                               update.AppId(), update.Name(), pause_data));
     return true;
   }
 
@@ -364,9 +358,8 @@ bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
   return false;
 }
 
-void AppServiceProxyChromeOs::LoadIconForDialog(
-    const apps::AppUpdate& update,
-    apps::LoadIconCallback callback) {
+void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
+                                           apps::LoadIconCallback callback) {
   apps::mojom::IconKeyPtr mojom_icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
@@ -406,15 +399,14 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
                        std::move(callback));
 }
 
-void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(
-    const std::string& app_name,
-    IconValuePtr icon_value) {
+void AppServiceProxyAsh::OnLoadIconForBlockDialog(const std::string& app_name,
+                                                  IconValuePtr icon_value) {
   if (icon_value->icon_type != IconType::kStandard) {
     return;
   }
 
-  AppServiceProxyChromeOs::CreateBlockDialog(app_name, icon_value->uncompressed,
-                                             profile_);
+  AppServiceProxyAsh::CreateBlockDialog(app_name, icon_value->uncompressed,
+                                        profile_);
 
   // For browser tests, call the dialog created callback to stop the run loop.
   if (!dialog_created_callback_.is_null()) {
@@ -422,20 +414,19 @@ void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(
   }
 }
 
-void AppServiceProxyChromeOs::OnLoadIconForPauseDialog(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    const std::string& app_name,
-    const PauseData& pause_data,
-    IconValuePtr icon_value) {
+void AppServiceProxyAsh::OnLoadIconForPauseDialog(apps::mojom::AppType app_type,
+                                                  const std::string& app_id,
+                                                  const std::string& app_name,
+                                                  const PauseData& pause_data,
+                                                  IconValuePtr icon_value) {
   if (icon_value->icon_type != IconType::kStandard) {
     OnPauseDialogClosed(app_type, app_id);
     return;
   }
 
-  AppServiceProxyChromeOs::CreatePauseDialog(
+  AppServiceProxyAsh::CreatePauseDialog(
       app_type, app_name, icon_value->uncompressed, pause_data,
-      base::BindOnce(&AppServiceProxyChromeOs::OnPauseDialogClosed,
+      base::BindOnce(&AppServiceProxyAsh::OnPauseDialogClosed,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id));
 
   // For browser tests, call the dialog created callback to stop the run loop.
@@ -444,8 +435,8 @@ void AppServiceProxyChromeOs::OnLoadIconForPauseDialog(
   }
 }
 
-void AppServiceProxyChromeOs::OnPauseDialogClosed(apps::mojom::AppType app_type,
-                                                  const std::string& app_id) {
+void AppServiceProxyAsh::OnPauseDialogClosed(apps::mojom::AppType app_type,
+                                             const std::string& app_id) {
   bool should_pause_app = pending_pause_requests_.IsPaused(app_id);
   if (!should_pause_app) {
     app_registry_cache_.ForOneApp(
@@ -460,7 +451,7 @@ void AppServiceProxyChromeOs::OnPauseDialogClosed(apps::mojom::AppType app_type,
   }
 }
 
-void AppServiceProxyChromeOs::OnAppUpdate(const apps::AppUpdate& update) {
+void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
   if ((update.PausedChanged() &&
        update.Paused() == apps::mojom::OptionalBool::kTrue) ||
       (update.ReadinessChanged() &&
@@ -469,12 +460,12 @@ void AppServiceProxyChromeOs::OnAppUpdate(const apps::AppUpdate& update) {
   }
 }
 
-void AppServiceProxyChromeOs::OnAppRegistryCacheWillBeDestroyed(
+void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
 }
 
-void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
+void AppServiceProxyAsh::RecordAppPlatformMetrics(
     Profile* profile,
     const apps::AppUpdate& update,
     apps::mojom::LaunchSource launch_source,
@@ -483,14 +474,14 @@ void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
                          launch_source, container);
 }
 
-void AppServiceProxyChromeOs::InitAppPlatformMetrics() {
+void AppServiceProxyAsh::InitAppPlatformMetrics() {
   if (app_platform_metrics_service_) {
     app_platform_metrics_service_->Start(app_registry_cache_,
                                          instance_registry_);
   }
 }
 
-void AppServiceProxyChromeOs::PerformPostUninstallTasks(
+void AppServiceProxyAsh::PerformPostUninstallTasks(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
@@ -501,7 +492,7 @@ void AppServiceProxyChromeOs::PerformPostUninstallTasks(
   }
 }
 
-void AppServiceProxyChromeOs::PerformPostLaunchTasks(
+void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::mojom::LaunchSource launch_source) {
   if (apps_util::IsHumanLaunch(launch_source)) {
     ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);

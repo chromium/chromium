@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -24,9 +24,8 @@ WindowManagementImpl::WindowManagementImpl(
     : browser_context_(browser_context) {}
 
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
   std::vector<blink::mojom::CrosWindowPtr> windows;
   proxy->InstanceRegistry().ForEachInstance(
       [&windows](const apps::InstanceUpdate& update) {
@@ -56,9 +55,8 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
                                            int32_t width,
                                            int32_t height) {
   aura::Window* target = nullptr;
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
   proxy->InstanceRegistry().ForEachInstance(
       [&target, &id](const apps::InstanceUpdate& update) {
         if (id == update.InstanceId()) {

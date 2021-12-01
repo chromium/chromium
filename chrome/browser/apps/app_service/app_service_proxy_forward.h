@@ -12,8 +12,8 @@ namespace apps {
 // Include this header to forward-declare AppServiceProxy in a way that is
 // compatible across all platforms.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class AppServiceProxyChromeOs;
-using AppServiceProxy = AppServiceProxyChromeOs;
+class AppServiceProxyAsh;
+using AppServiceProxy = AppServiceProxyAsh;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 class AppServiceProxyLacros;
 using AppServiceProxy = AppServiceProxyLacros;

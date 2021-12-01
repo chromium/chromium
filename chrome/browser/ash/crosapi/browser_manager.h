@@ -35,7 +35,7 @@ class CrOSComponentManager;
 }  // namespace component_updater
 
 namespace apps {
-class AppServiceProxyChromeOs;
+class AppServiceProxyAsh;
 class StandaloneBrowserExtensionApps;
 }  // namespace apps
 
@@ -255,7 +255,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // TODO(crbug.com/1174246): This is a short term solution to integrate
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
-  friend class apps::AppServiceProxyChromeOs;
+  friend class apps::AppServiceProxyAsh;
 
   // Returns true if the binary is ready to launch or already launched.
   bool IsReady() const;
