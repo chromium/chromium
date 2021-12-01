@@ -439,26 +439,12 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   if (extension->is_hosted_app())
     return extension->id() != kWebStoreAppId;
 
-  // Some special case extension URLs must be allowed to load in any guest. Note
-  // that CanCommitURL may be called for validating origins as well, so do not
-  // enforce a path comparison in the special cases unless there is a real path
-  // (more than just "/").
-  // TODO(creis): Remove this call when bugs 688565 and 778021 are resolved.
-  base::StringPiece url_path = url.path_piece();
-  bool is_guest =
-      WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
-  if (is_guest &&
-      url_request_util::AllowSpecialCaseExtensionURLInGuest(
-          extension, url_path.length() > 1
-                         ? absl::make_optional<base::StringPiece>(url_path)
-                         : absl::nullopt)) {
-    return true;
-  }
-
   // Platform app URLs may commit in their own guest processes, when they have
   // the webview permission.  (Some extensions are allowlisted for webviews as
   // well, but their pages load in their own extension process and are allowed
   // through above.)
+  bool is_guest =
+      WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
   if (is_guest) {
     std::string owner_extension_id;
     int owner_process_id = -1;

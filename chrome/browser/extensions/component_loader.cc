@@ -430,8 +430,6 @@ void ComponentLoader::AddDefaultComponentExtensions(
   // Do not add component extensions that have background pages here -- add them
   // to AddDefaultComponentExtensionsWithBackgroundPages.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Add(IDR_MOBILE_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/mobile")));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (browser_defaults::enable_help_app) {

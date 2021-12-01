@@ -2634,32 +2634,14 @@
   <message name="IDS_MOBILE_SETUP_TITLE" desc="ChromeOS mobile device activation page title">
     Mobile data service management
   </message>
-  <message name="IDS_MOBILE_CONNECTING_HEADER" desc="Mobile connection page header while connecting to the provider">
-    Connecting to <ph name="PROVIDER_NAME">$1<ex>Acme Mobile</ex></ph>
-  </message>
-  <message name="IDS_MOBILE_ERROR_HEADER" desc="Mobile connection page header when connection error occur">
-    Connection error
-  </message>
-  <message name="IDS_MOBILE_ACTIVATING_HEADER" desc="Message header when data service is being activated">
-    Activating your mobile data service
-  </message>
-  <message name="IDS_MOBILE_COMPLETED_HEADER" desc="Message header when data service is completed">
-    Activation complete
-  </message>
-  <message name="IDS_MOBILE_PLEASE_WAIT" desc="Message user the header displayed while mobile plan is being activated">
-    (this might take a few minutes)
-  </message>
-  <message name="IDS_MOBILE_COMPLETED_TEXT" desc="Message when cellular data service activation or payment is completed">
-    Your mobile data service is activated and ready to use
-  </message>
   <message name="IDS_MOBILE_CANCEL_ACTIVATION" desc="Message when user attempts to cancel cellular data service activation proces">
     Are you sure you want to cancel mobile data service setup process?
   </message>
-  <message name="IDS_MOBILE_NO_CONNECTION_HEADER" desc="Mobile page header when the network portal is not reachable due to no connection">
-    Connect to Wi-Fi to begin
+  <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE" desc="Error title shown when user failed to view mobile account">
+    Can't access your mobile account
   </message>
-  <message name="IDS_MOBILE_INVALID_DEVICE_INFO_HEADER" desc="Mobile page header when the user tries to access mobile portal for a device with an invalid MDN">
-    Please come back later
+  <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_MESSAGE" desc="Error message shown when user failed to view mobile account">
+     Please contact your mobile provider
   </message>
 
   <!-- About power UI display strings -->

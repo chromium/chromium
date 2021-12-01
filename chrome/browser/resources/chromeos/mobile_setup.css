@@ -95,13 +95,6 @@ webview {
   width: 100%;
 }
 
-#carrierPage {
-  height: 380px;
-  overflow: hidden;
-  padding-top: 10px;
-  width: 500px;
-}
-
 #banner {
   background-color: rgb(252, 246, 224);
   border: 1px solid #ccc;
@@ -122,6 +115,15 @@ webview {
 
 #auxHeader {
   font-size: 16px;
+}
+
+#statusMessage {
+  height: 180px;
+  overflow: hidden;
+  padding-top: 10px;
+  width: 500px;
+  font-size: 15px;
+  font-family: arial, sans-serif;
 }
 
 #finalMessage {
