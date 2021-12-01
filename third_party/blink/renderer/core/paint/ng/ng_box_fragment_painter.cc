@@ -2281,9 +2281,22 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
       return true;
   }
 
-  if (cursor.ContainerFragment().IsSvgText() &&
-      item.Style().UsedPointerEvents() != EPointerEvents::kBoundingBox)
-    return false;
+  if (cursor.ContainerFragment().IsSvgText()) {
+    if (item.Style().UsedPointerEvents() != EPointerEvents::kBoundingBox)
+      return false;
+    // Now hit test ourselves.
+    if (hit_test.action != kHitTestForeground ||
+        !IsVisibleToHitTest(item, hit_test.result->GetHitTestRequest()))
+      return false;
+    // In SVG <text>, we should not refer to the geometry of kBox
+    // NGFragmentItems because they don't have final values.
+    auto bounds_rect = PhysicalRect::EnclosingRect(
+        item.GetLayoutObject()->ObjectBoundingBox());
+    return hit_test.location.Intersects(bounds_rect) &&
+           hit_test.AddNodeToResultWithContentOffset(
+               item.NodeForHitTest(), cursor.ContainerFragment(), bounds_rect,
+               bounds_rect.offset);
+  }
 
   // Now hit test ourselves.
   if (hit_test.action == kHitTestForeground &&

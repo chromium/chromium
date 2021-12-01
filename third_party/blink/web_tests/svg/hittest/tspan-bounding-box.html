@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg width="700" height="300" xmlns="http://www.w3.org/2000/svg">
+<style>
+text {
+  font-family: sans-serif;
+  /* this caused an issue */
+  pointer-events: bounding-box;
+}
+tspan:hover {
+  fill: lime;
+}
+</style>
+<text font-size="30" y="80" x="0">
+  <tspan fill="blue">tspan</tspan> inside a text.
+</text>
+</svg>
+
+<script>
+test(() => {
+  assert_not_equals(document.elementFromPoint(10, 10), document.querySelector('tspan'));
+}, 'tspan\'s bounding box was wrong on hit-testing with pointer-events:bouding-box');
+</script>
