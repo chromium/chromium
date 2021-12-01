@@ -109,6 +109,7 @@ bool UtilityProcessHost::Start() {
   return StartProcess();
 }
 
+#if BUILDFLAG(IS_CHROMECAST)
 void UtilityProcessHost::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe,
@@ -127,6 +128,7 @@ void UtilityProcessHost::RunServiceDeprecated(
     pending_run_service_callbacks_.push_back(std::move(callback));
   }
 }
+#endif
 
 void UtilityProcessHost::SetMetricsName(const std::string& metrics_name) {
   metrics_name_ = metrics_name;
@@ -332,18 +334,22 @@ bool UtilityProcessHost::StartProcess() {
 
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
+#if BUILDFLAG(IS_CHROMECAST)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(process_->GetProcess().Pid());
   pending_run_service_callbacks_.clear();
+#endif
   if (client_)
     client_->OnProcessLaunched(process_->GetProcess());
 }
 
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
   launch_state_ = LaunchState::kLaunchFailed;
+#if BUILDFLAG(IS_CHROMECAST)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(absl::nullopt);
   pending_run_service_callbacks_.clear();
+#endif
 }
 
 void UtilityProcessHost::OnProcessCrashed(int exit_code) {

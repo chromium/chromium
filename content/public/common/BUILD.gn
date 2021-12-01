@@ -196,6 +196,10 @@ source_set("common_sources") {
     ":interfaces",
     ":renderer_type",
     ":trust_tokens_mojo_bindings",
+
+    # TODO(crbug.com/977637): Remove when
+    # content::LaunchUtilityProcessServiceDeprecated() gets removed.
+    "//build:chromecast_buildflags",
     "//content/common",
     "//content/public/common/zygote:buildflags",
     "//ipc",

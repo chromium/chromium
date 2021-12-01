@@ -8,15 +8,20 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMECAST)
+#include <string>
+
+#include "mojo/public/cpp/system/message_pipe.h"
+#endif
 
 namespace base {
 class FilePath;
@@ -171,11 +176,13 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
+#if BUILDFLAG(IS_CHROMECAST)
   // Instructs the child process to run an instance of the named service. This
   // is DEPRECATED and should never be used.
   virtual void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) = 0;
+#endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Write out the accumulated code profiling profile to the configured file.
