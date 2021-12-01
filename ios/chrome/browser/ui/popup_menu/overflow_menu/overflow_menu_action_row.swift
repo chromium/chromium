@@ -11,24 +11,22 @@ struct OverflowMenuActionRow: View {
   @ObservedObject var action: OverflowMenuAction
 
   var body: some View {
-    let enabled = action.enabled && !action.enterpriseDisabled
     Button(
-      action: {
-        if enabled {
-          action.handler()
-        }
-      },
+      action: action.handler,
       label: {
         HStack {
           Text(action.name)
-            .opacity(enabled ? 1 : 0.5)
           Spacer()
           action.image
-            .opacity(enabled ? 1 : 0.5)
+            // Without explicitly removing the image from accessibility,
+            // VoiceOver will occasionally read out icons it thinks it can
+            // recognize.
+            .accessibilityHidden(true)
         }
         .contentShape(Rectangle())
       }
     )
+    .disabled(!action.enabled || action.enterpriseDisabled)
     .accentColor(.cr_textPrimaryColor)
   }
 }

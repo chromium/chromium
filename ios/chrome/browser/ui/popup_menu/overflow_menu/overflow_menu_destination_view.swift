@@ -77,6 +77,10 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .padding(interiorPadding)
       .background(iconBackground(configuration: configuration))
       .padding([.leading, .trailing], spacing)
+      // Without explicitly removing the image from accessibility,
+      // VoiceOver will occasionally read out icons it thinks it can
+      // recognize.
+      .accessibilityHidden(true)
   }
 
   /// Text view for the destination.
