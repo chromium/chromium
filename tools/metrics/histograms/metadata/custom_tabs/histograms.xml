@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationPermissionChanged"
-    enum="TrustedWebActivityPermissionChanged" expires_after="2021-12-31">
+    enum="TrustedWebActivityPermissionChanged" expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationPermissionRequestIsGranted"
-    enum="Boolean" expires_after="2021-12-31">
+    enum="Boolean" expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationUpdateErrorCode"
-    enum="TrustedWebActivityLocationErrorCode" expires_after="2021-12-31">
+    enum="TrustedWebActivityLocationErrorCode" expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.QualityEnforcementViolation"
     enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="2021-12-31">
+    expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
     enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="2021-12-31">
+    expires_after="M104">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
