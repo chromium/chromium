@@ -70,8 +70,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
   ui::SimpleMenuModel* GetIconContextMenu() {
-    return static_cast<ui::SimpleMenuModel*>(
-        GetCastIcon()->menu_model_for_test());
+    return static_cast<ui::SimpleMenuModel*>(GetCastIcon()->menu_model());
   }
 
   void PressToolbarIcon() {

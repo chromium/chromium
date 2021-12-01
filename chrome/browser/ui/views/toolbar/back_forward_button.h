@@ -22,6 +22,14 @@ class BackForwardButton : public ToolbarButton {
   BackForwardButton(const BackForwardButton&) = delete;
   BackForwardButton& operator=(const BackForwardButton&) = delete;
   ~BackForwardButton() override;
+
+ private:
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override;
+
+  const std::u16string GetAccessiblePageLoadingMessage();
+
+  Browser* const browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BACK_FORWARD_BUTTON_H_

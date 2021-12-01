@@ -125,7 +125,7 @@ class ToolbarButton : public views::LabelButton,
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
-  ui::MenuModel* menu_model_for_test() { return model_.get(); }
+  ui::MenuModel* menu_model() { return model_.get(); }
 
   // Chooses from |desired_dark_color| and |desired_light_color| based on
   // whether the toolbar background is dark or light.
