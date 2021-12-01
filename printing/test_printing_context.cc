@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
@@ -99,6 +100,9 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
 
 mojom::ResultCode TestPrintingContext::NewDocument(
     const std::u16string& document_name) {
+  if (!skip_system_calls() && new_document_blocked_by_permissions_)
+    return mojom::ResultCode::kAccessDenied;
+
   // No-op.
   return mojom::ResultCode::kSuccess;
 }

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace printing {
 
@@ -101,11 +103,16 @@ namespace {
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.
 #if !defined(OS_CHROMEOS)
-constexpr int kPrinterCapabilitiesMaxCopies = 99;
-constexpr int kPrintSettingsCopies = 42;
+constexpr int kTestPrintingDpi = 72;
+constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
+constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrintingDpi,
+                                                kTestPrintingDpi);
+constexpr int kTestPrintSettingsCopies = 42;
 
-const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
-                                                {"opt2", "456"}};
+const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
+    kTestPrinterCapabilitiesDpi};
+const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
+                                                         {"opt2", "456"}};
 #endif  // !defined(OS_CHROMEOS)
 
 constexpr int kDefaultDocumentCookie = 1234;
@@ -380,6 +387,18 @@ class TestPrintViewManager : public PrintViewManager {
   TestPrintViewManager(const TestPrintViewManager&) = delete;
   TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
   ~TestPrintViewManager() override = default;
+
+  bool StartPrinting(content::WebContents* contents) {
+    auto* print_view_manager = TestPrintViewManager::FromWebContents(contents);
+    if (!print_view_manager)
+      return false;
+
+    content::RenderFrameHost* rfh_to_use = GetFrameToPrint(contents);
+    if (!rfh_to_use)
+      return false;
+
+    return print_view_manager->PrintNow(rfh_to_use);
+  }
 
   PrintSettings* snooped_settings() { return snooped_settings_.get(); }
 
@@ -1619,10 +1638,12 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
         /*display_name=*/"test printer",
         /*printer_description=*/"A printer for testing.",
         /*printer_status=*/0,
-        /*is_default=*/true, kPrintInfoOptions);
+        /*is_default=*/true, kTestDummyPrintInfoOptions);
 
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-    default_caps->copies_max = kPrinterCapabilitiesMaxCopies;
+    default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
+    default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
+    default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
     test_backend_->AddValidPrinter(
         printer_name, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(kPrinterInfo));
@@ -1631,6 +1652,46 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
     test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
         printer_name);
+  }
+
+  void SetUpPrintViewManager(content::WebContents* web_contents) {
+    web_contents->SetUserData(
+        PrintViewManager::UserDataKey(),
+        std::make_unique<TestPrintViewManager>(web_contents));
+  }
+
+  void PrintAfterPreviewIsReadyAndLoaded() {
+    // First invoke the Print Preview dialog with `StartPrint()`.
+    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+               /*print_renderer=*/mojo::NullAssociatedRemote(),
+               /*print_preview_disabled=*/false,
+               /*has_selection=*/false);
+    print_preview_observer.WaitUntilPreviewIsReady();
+
+    content::WebContents* preview_dialog =
+        print_preview_observer.GetPrintPreviewDialog();
+    ASSERT_TRUE(preview_dialog);
+
+    // Print Preview is completely ready, can now initiate printing.
+    // This script locates and clicks the Print button.
+    const char kScript[] = R"(
+      const button = document.getElementsByTagName('print-preview-app')[0]
+                       .$['sidebar']
+                       .shadowRoot.querySelector('print-preview-button-strip')
+                       .shadowRoot.querySelector('.action-button');
+      button.click();)";
+    ASSERT_TRUE(content::ExecuteScript(preview_dialog, kScript));
+    WaitUntilCallbackReceived();
+  }
+
+  void PrimeForAccessDeniedErrorsInNewDocument() {
+    test_printing_context_factory_.SetAccessDeniedErrorOnNewDocument(
+        /*cause_errors=*/true);
+  }
+
+  mojom::ResultCode start_printing_result() const {
+    return start_printing_result_;
   }
 
  private:
@@ -1644,10 +1705,14 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
           std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
 
       auto settings = std::make_unique<PrintSettings>();
-      settings->set_copies(kPrintSettingsCopies);
+      settings->set_copies(kTestPrintSettingsCopies);
+      settings->set_dpi(kTestPrintingDpi);
       settings->set_device_name(
           base::ASCIIToUTF16(base::StringPiece(printer_name_)));
       context->SetDeviceSettings(printer_name_, std::move(settings));
+
+      if (access_denied_errors_for_new_document_)
+        context->SetNewDocumentBlockedByPermissions();
 
       return std::move(context);
     }
@@ -1656,8 +1721,13 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       printer_name_ = printer_name;
     }
 
+    void SetAccessDeniedErrorOnNewDocument(bool cause_errors) {
+      access_denied_errors_for_new_document_ = cause_errors;
+    }
+
    private:
     std::string printer_name_;
+    bool access_denied_errors_for_new_document_ = false;
   };
 
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(int render_process_id,
@@ -1679,7 +1749,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   }
 
   void ResetForNoAccessDeniedErrors() {
-    // TODO(crbug.com/809738)  Fill in testing reset for access denied errors.
+    test_printing_context_factory_.SetAccessDeniedErrorOnNewDocument(
+        /*cause_errors=*/false);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -1691,6 +1762,15 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
   mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
+};
+
+class PrintBackendPrintBrowserTestService
+    : public PrintBackendPrintBrowserTestBase {
+ public:
+  PrintBackendPrintBrowserTestService() = default;
+  ~PrintBackendPrintBrowserTestService() override = default;
+
+  bool UseService() override { return true; }
 };
 
 class PrintBackendPrintBrowserTest : public PrintBackendPrintBrowserTestBase,
@@ -1722,7 +1802,7 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
 
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
-            kPrintSettingsCopies);
+            kTestPrintSettingsCopies);
 #if defined(OS_LINUX) && defined(USE_CUPS)
   // Collect just the keys to compare the info options vs. advanced settings.
   std::vector<std::string> advanced_setting_keys;
@@ -1732,12 +1812,54 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   for (const auto& advanced_setting : advanced_settings) {
     advanced_setting_keys.push_back(advanced_setting.first);
   }
-  for (const auto& option : kPrintInfoOptions) {
+  for (const auto& option : kTestDummyPrintInfoOptions) {
     print_info_options_keys.push_back(option.first);
   }
   EXPECT_THAT(advanced_setting_keys,
               testing::UnorderedElementsAreArray(print_info_options_keys));
 #endif  // defined(OS_LINUX) && defined(USE_CUPS)
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+                       StartPrintingAccessDenied) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForAccessDeniedErrorsInNewDocument();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // The test will retry to print after getting an access-denied error when
+  // trying to start printing, resulting in 2 calls.
+  SetNumExpectedMessages(/*num=*/2);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 }
 #endif  // !defined(OS_CHROMEOS)
 

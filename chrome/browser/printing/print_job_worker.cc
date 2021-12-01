@@ -333,30 +333,46 @@ void PrintJobWorker::UseDefaultSettings(SettingsCallback callback) {
   GetSettingsDone(std::move(callback), result);
 }
 
-void PrintJobWorker::StartPrinting(PrintedDocument* new_document) {
+bool PrintJobWorker::StartPrintingSanityCheck(
+    const PrintedDocument* new_document) const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (page_number_ != PageNumber::npos()) {
     NOTREACHED();
-    return;
+    return false;
   }
 
   if (!document_) {
     NOTREACHED();
-    return;
+    return false;
   }
 
   if (document_.get() != new_document) {
     NOTREACHED();
-    return;
+    return false;
   }
+
+  return true;
+}
+
+std::u16string PrintJobWorker::GetDocumentName(
+    const PrintedDocument* new_document) const {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   std::u16string document_name = SimplifyDocumentTitle(document_->name());
   if (document_name.empty()) {
     document_name = SimplifyDocumentTitle(
         l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));
   }
-  mojom::ResultCode result = printing_context_->NewDocument(document_name);
+  return document_name;
+}
+
+void PrintJobWorker::StartPrinting(PrintedDocument* new_document) {
+  if (!StartPrintingSanityCheck(new_document))
+    return;
+
+  mojom::ResultCode result =
+      printing_context_->NewDocument(GetDocumentName(new_document));
   if (result != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;

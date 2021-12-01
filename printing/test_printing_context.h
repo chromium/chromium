@@ -43,6 +43,11 @@ class TestPrintingContext : public PrintingContext {
   void SetDeviceSettings(const std::string& device_name,
                          std::unique_ptr<PrintSettings> settings);
 
+  // Enables tests to fail with an access-denied error.
+  void SetNewDocumentBlockedByPermissions() {
+    new_document_blocked_by_permissions_ = true;
+  }
+
   // PrintingContext overrides:
   void AskUserForSettings(int max_pages,
                           bool has_selection,
@@ -66,6 +71,7 @@ class TestPrintingContext : public PrintingContext {
 
  private:
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
+  bool new_document_blocked_by_permissions_ = false;
 };
 
 }  // namespace printing

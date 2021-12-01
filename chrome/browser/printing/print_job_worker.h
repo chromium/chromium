@@ -75,7 +75,7 @@ class PrintJobWorker {
 
   // Starts the printing loop. Every pages are printed as soon as the data is
   // available. Makes sure the new_document is the right one.
-  void StartPrinting(PrintedDocument* new_document);
+  virtual void StartPrinting(PrintedDocument* new_document);
 
   // Updates the printed document.
   void OnDocumentChanged(PrintedDocument* new_document);
@@ -109,6 +109,12 @@ class PrintJobWorker {
   content::WebContents* GetWebContents();
 
  protected:
+  // Sanity check that it is okay to proceed with starting a print job.
+  bool StartPrintingSanityCheck(const PrintedDocument* new_document) const;
+
+  // Get the document name to be used when initiating printing.
+  std::u16string GetDocumentName(const PrintedDocument* new_document) const;
+
   // Reports settings back to |callback|.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
@@ -116,8 +122,13 @@ class PrintJobWorker {
   virtual void UpdatePrintSettings(base::Value new_settings,
                                    SettingsCallback callback);
 
-  // Retrieves the context for testing only.
+  // Discards the current document, the current page and cancels the printing
+  // context.
+  virtual void OnFailure();
+
   PrintingContext* printing_context() { return printing_context_.get(); }
+  PrintedDocument* document() { return document_.get(); }
+  base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
   // The shared NotificationService service can only be accessed from the UI
@@ -144,10 +155,6 @@ class PrintJobWorker {
 
   // Closes the job since spooling is done.
   void OnDocumentDone();
-
-  // Discards the current document, the current page and cancels the printing
-  // context.
-  void OnFailure();
 
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,

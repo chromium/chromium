@@ -37,6 +37,8 @@ class PrintBackendServiceManager {
 
   // Register as a client of PrintBackendServiceManager.  This acts as a signal
   // of impending activity enabling possible optimizations within the manager.
+  // Returns an ID which the caller is to use with `UnregisterClient()` once it
+  // is completed its printing activity.
   uint32_t RegisterClient();
 
   // Notify the manager that this client is no longer needing print backend
