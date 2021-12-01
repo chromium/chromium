@@ -22,6 +22,16 @@
         </bluetooth-device-battery-info>
       </template>
     </div>
+    <template is="dom-if"
+        if="[[device.deviceProperties.isBlockedByPolicy]]" restamp>
+      <iron-icon id="managedIcon" icon="cr:domain"
+          tabindex="0"
+          on-mouseenter="onShowTooltip_"
+          on-focus="onShowTooltip_"
+          aria-label="$i18n{bluetoothManaged}"
+          role="img">
+      </iron-icon>
+    </template>
     <div>
       <cr-icon-button id="subpageButton"
           class="subpage-arrow"

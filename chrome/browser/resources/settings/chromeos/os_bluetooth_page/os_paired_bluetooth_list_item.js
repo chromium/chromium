@@ -10,6 +10,8 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_battery_info.js';
 
@@ -50,6 +52,7 @@ class SettingsPairedBluetoothListItemElement extends
        */
       device: {
         type: Object,
+        observer: 'onDeviceChanged_',
       },
 
       /** The index of this item in its parent list, used for its a11y label. */
@@ -61,6 +64,27 @@ class SettingsPairedBluetoothListItemElement extends
        */
       listSize: Number,
     };
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    // Fire an event in case the tooltip was previously showing for the managed
+    // icon in this item and this item is being removed.
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+  }
+
+  /** @private */
+  onDeviceChanged_() {
+    if (!this.device) {
+      return;
+    }
+
+    if (!this.device.deviceProperties.isBlockedByPolicy) {
+      // Fire an event in case the tooltip was previously showing for this
+      // icon and this icon now is hidden.
+      this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+    }
   }
 
   /**
@@ -288,6 +312,27 @@ class SettingsPairedBluetoothListItemElement extends
     const deviceName = this.getDeviceName_(device);
     return this.i18n(
         'bluetoothPairedDeviceItemSubpageButtonA11yLabel', deviceName);
+  }
+
+  /** @private */
+  onShowTooltip_() {
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
+  }
+
+  /**
+   * @param {boolean} showTooltip
+   */
+  fireTooltipStateChangeEvent_(showTooltip) {
+    this.dispatchEvent(new CustomEvent('managed-tooltip-state-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        address: this.device.deviceProperties.address,
+        show: showTooltip,
+        element: showTooltip ? this.shadowRoot.getElementById('managedIcon') :
+                               undefined,
+      }
+    }));
   }
 }
 

@@ -25,12 +25,13 @@ const mojom = chromeos.bluetoothConfig.mojom;
  *     opt_audioCapability
  * @param {!chromeos.bluetoothConfig.mojom.DeviceType=}
  *     opt_deviceType
+ * @param {boolean=} opt_isBlockedByPolicy
  * @return {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
  */
 export function createDefaultBluetoothDevice(
     id, publicName, connectionState, opt_nickname = undefined,
     opt_audioCapability = mojom.AudioOutputCapability.kNotCapableOfAudioOutput,
-    opt_deviceType = mojom.DeviceType.kUnknown) {
+    opt_deviceType = mojom.DeviceType.kUnknown, opt_isBlockedByPolicy = false) {
   return {
     deviceProperties: {
       id: id,
@@ -39,7 +40,7 @@ export function createDefaultBluetoothDevice(
       deviceType: opt_deviceType,
       audioCapability: opt_audioCapability,
       connectionState: connectionState,
-      isBlockedByPolicy: false,
+      isBlockedByPolicy: opt_isBlockedByPolicy,
     },
     nickname: opt_nickname,
   };
