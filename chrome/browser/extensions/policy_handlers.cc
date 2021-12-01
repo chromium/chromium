@@ -272,25 +272,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           invalid_keys.insert(entry.first);
           continue;
         }
-        if (GURL(update_url).is_valid()) {
-// Unless enterprise managed only extensions from the Chrome Webstore
-// can be force installed.
-#if defined(OS_WIN)
-          // We can't use IsWebstoreUpdateUrl() here since the ExtensionClient
-          // isn't set this early during startup.
-          if (!base::IsMachineExternallyManaged() &&
-              !base::LowerCaseEqualsASCII(
-                  update_url, extension_urls::kChromeWebstoreUpdateURL)) {
-            if (errors) {
-              errors->AddError(policy_name(), entry.first,
-                               IDS_POLICY_OFF_CWS_URL_ERROR,
-                               extension_urls::kChromeWebstoreUpdateURL);
-            }
-            invalid_keys.insert(entry.first);
-            continue;
-          }
-#endif
-        } else {
+        if (!GURL(update_url).is_valid()) {
           // Warns about an invalid update URL.
           if (errors) {
             errors->AddError(policy_name(), IDS_POLICY_INVALID_UPDATE_URL_ERROR,

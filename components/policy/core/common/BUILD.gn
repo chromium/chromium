@@ -122,8 +122,6 @@ source_set("internal") {
     "policy_load_status.h",
     "policy_loader_command_line.cc",
     "policy_loader_command_line.h",
-    "policy_loader_common.cc",
-    "policy_loader_common.h",
     "policy_map.cc",
     "policy_map.h",
     "policy_merger.cc",
@@ -225,6 +223,13 @@ source_set("internal") {
       "secur32.lib",
       "shlwapi.lib",
       "userenv.lib",
+    ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [
+      "policy_loader_common.cc",
+      "policy_loader_common.h",
     ]
   }
 
@@ -481,6 +486,10 @@ source_set("unit_tests") {
       "cloud/machine_level_user_cloud_policy_store_unittest.cc",
       "cloud/user_cloud_policy_store_unittest.cc",
     ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [ "policy_loader_common_unittest.cc" ]
   }
 
   if (is_android) {

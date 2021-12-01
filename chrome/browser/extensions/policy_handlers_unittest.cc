@@ -48,14 +48,28 @@ const char kTestManagementPolicy2[] =
     "    \"installation_mode\": \"blocked\","
     "  },"
     "}";
-#if defined(OS_WIN)
-const char kSanitizedTestManagementPolicy2[] =
+
+const char kSensitiveTestManagementPolicy[] = R"({
+  "[BLOCKED]abcdefghijklmnopabcdefghijklmnop": {
+    "installation_mode": "force_installed",
+    "update_url": "https://example.com/app",
+  },
+  "[BLOCKED]abcdefghijklmnopabcdefghijklmnpo,
+    abcdefghijklmnopabcdefghijklmopn": {
+      "installation_mode": "normal_installed",
+      "update_url": "https://example.com/app",
+  },
+  "*": {
+    "installation_mode": "blocked",
+  },
+})";
+
+const char kSanitizedTestManagementPolicy[] =
     "{"
     "  \"*\": {"
     "    \"installation_mode\": \"blocked\","
     "  },"
     "}";
-#endif  // defined(OS_WIN)
 
 const char kTestManagementPolicy3[] =
     "{"
@@ -455,11 +469,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
 }
 
 TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
-// Mark as enterprise managed.
-#if defined(OS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain(true);
-#endif
-
+  // Mark as enterprise managed.
   base::JSONReader::ValueWithError policy_result =
       base::JSONReader::ReadAndReturnValueWithError(
           kTestManagementPolicy2,
@@ -526,18 +536,15 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
 
 // Only enterprise managed machines can auto install extensions from a location
 // other than the webstore https://crbug.com/809004.
-#if defined(OS_WIN)
 TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   // Mark as not enterprise managed.
-  base::win::ScopedDomainStateForTesting scoped_domain(false);
-
   auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
-      kTestManagementPolicy2,
+      kSensitiveTestManagementPolicy,
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(policy_result.value) << policy_result.error_message;
 
   auto sanitized_policy_result = base::JSONReader::ReadAndReturnValueWithError(
-      kSanitizedTestManagementPolicy2,
+      kSanitizedTestManagementPolicy,
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(sanitized_policy_result.value)
       << sanitized_policy_result.error_message;
@@ -561,6 +568,5 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
   EXPECT_EQ(*sanitized_policy_result.value, *value);
 }
-#endif
 
 }  // namespace extensions
