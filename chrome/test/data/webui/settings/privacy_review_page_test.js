@@ -37,6 +37,10 @@ suite('PrivacyReviewPage', function() {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: true,
         },
+        viewed: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
       },
       generated: {
         cookie_primary_setting: {
@@ -350,6 +354,8 @@ suite('PrivacyReviewPage', function() {
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
     flush();
     assertWelcomeCardVisible();
+
+    assertTrue(page.getPref('privacy_review.viewed').value);
 
     const welcomeFragment =
         page.shadowRoot.querySelector('#' + PrivacyReviewStep.WELCOME);
