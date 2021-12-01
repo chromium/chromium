@@ -8,11 +8,13 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
-#include "base/process/process_handle.h"
+#include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
+#include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
 
 #if defined(OS_WIN)
 #include "base/strings/stringprintf.h"
@@ -21,19 +23,13 @@
 
 namespace remoting {
 
-struct MojoIpcServerBase::PendingConnection {
-  std::unique_ptr<mojo::IsolatedConnection> connection;
-  mojo::ScopedMessagePipeHandle message_pipe;
-};
-
 namespace {
 
-// Sends an invitation and returns the PendingReceiver. Must be called on an
-// IO sequence.
-// Note that this function won't wait for the other end to accept the
-// invitation, even though it makes some blocking API calls.
-std::unique_ptr<MojoIpcServerBase::PendingConnection>
-SendInvitationOnIoSequence(
+// Delay to throttle resending invitations when there is a recurring error.
+// TODO(yuweih): Implement backoff.
+base::TimeDelta kResentInvitationOnErrorDelay = base::Seconds(5);
+
+mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   mojo::NamedPlatformChannel::Options options;
   options.server_name = server_name;
@@ -47,29 +43,14 @@ SendInvitationOnIoSequence(
   std::wstring user_sid;
   if (!base::win::GetUserSidString(&user_sid)) {
     LOG(ERROR) << "Failed to get user SID string.";
-    return nullptr;
+    return mojo::PlatformChannelServerEndpoint();
   }
   options.security_descriptor = base::StringPrintf(
       L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
 #endif  // defined(OS_WIN)
 
   mojo::NamedPlatformChannel channel(options);
-  auto server_endpoint = channel.TakeServerEndpoint();
-  if (!server_endpoint.is_valid()) {
-    LOG(ERROR) << "Failed to send mojo invitation: Invalid server endpoint.";
-    return nullptr;
-  }
-
-  auto pending_connection =
-      std::make_unique<MojoIpcServerBase::PendingConnection>();
-  pending_connection->connection = std::make_unique<mojo::IsolatedConnection>();
-  pending_connection->message_pipe =
-      pending_connection->connection->Connect(std::move(server_endpoint));
-  if (!pending_connection->message_pipe.is_valid()) {
-    LOG(ERROR) << "Message pipe is invalid.";
-    return nullptr;
-  }
-  return pending_connection;
+  return channel.TakeServerEndpoint();
 }
 
 }  // namespace
@@ -77,8 +58,7 @@ SendInvitationOnIoSequence(
 MojoIpcServerBase::MojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name)
     : server_name_(server_name),
-      pending_message_pipe_watcher_(FROM_HERE,
-                                    mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
+      endpoint_connector_(MojoServerEndpointConnector::Create(this)) {
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
@@ -118,11 +98,11 @@ void MojoIpcServerBase::Close(mojo::ReceiverId id) {
 
 void MojoIpcServerBase::SendInvitation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pending_message_pipe_watcher_.IsWatching());
 
   io_sequence_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&SendInvitationOnIoSequence, server_name_),
-      base::BindOnce(&MojoIpcServerBase::OnInvitationSent,
+      FROM_HERE,
+      base::BindOnce(&CreateServerEndpointOnIoSequence, server_name_),
+      base::BindOnce(&MojoIpcServerBase::OnServerEndpointCreated,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -133,61 +113,32 @@ void MojoIpcServerBase::OnIpcDisconnected() {
   Close(current_receiver());
 }
 
-void MojoIpcServerBase::OnInvitationSent(
-    std::unique_ptr<MojoIpcServerBase::PendingConnection> pending_connection) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pending_message_pipe_watcher_.IsWatching());
-  DCHECK(!pending_connection_);
-
-  if (!pending_connection) {
-    LOG(ERROR) << "Connection failed.";
-    return;
-  }
-
-  pending_connection_ = std::move(pending_connection);
-
+void MojoIpcServerBase::OnServerEndpointCreated(
+    mojo::PlatformChannelServerEndpoint endpoint) {
   if (on_invitation_sent_callback_for_testing_) {
     on_invitation_sent_callback_for_testing_.Run();
   }
-
-  pending_message_pipe_watcher_.Watch(
-      pending_connection_->message_pipe.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      base::BindRepeating(&MojoIpcServerBase::OnMessagePipeReady,
-                          weak_factory_.GetWeakPtr()));
-  pending_message_pipe_watcher_.ArmOrNotify();
+  if (!endpoint.is_valid()) {
+    OnServerEndpointConnectionFailed();
+    return;
+  }
+  endpoint_connector_->Connect(std::move(endpoint));
 }
 
-void MojoIpcServerBase::OnMessagePipeReady(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void MojoIpcServerBase::OnServerEndpointConnected(
+    std::unique_ptr<mojo::IsolatedConnection> connection,
+    mojo::ScopedMessagePipeHandle message_pipe,
+    base::ProcessId peer_pid) {
+  auto receiver_id = TrackMessagePipe(std::move(message_pipe), peer_pid);
+  active_connections_[receiver_id] = std::move(connection);
 
-  pending_message_pipe_watcher_.Cancel();
-  if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-    LOG(WARNING) << "The message pipe will never become ready.";
-    pending_connection_.reset();
-    SendInvitation();
-    return;
-  }
-  if (result != MOJO_RESULT_OK) {
-    LOG(ERROR) << "Unexpected message pipe result: " << result;
-    pending_connection_.reset();
-    return;
-  }
-  if (state.peer_closed()) {
-    LOG(ERROR) << "Message pipe is closed.";
-    pending_connection_.reset();
-    SendInvitation();
-    return;
-  }
-
-  DCHECK(pending_connection_->message_pipe.is_valid());
-  auto receiver_id =
-      TrackMessagePipe(std::move(pending_connection_->message_pipe));
-  active_connections_[receiver_id] = std::move(pending_connection_->connection);
-  pending_connection_.reset();
   SendInvitation();
+}
+
+void MojoIpcServerBase::OnServerEndpointConnectionFailed() {
+  resent_invitation_on_error_timer_.Start(FROM_HERE,
+                                          kResentInvitationOnErrorDelay, this,
+                                          &MojoIpcServerBase::SendInvitation);
 }
 
 }  // namespace remoting

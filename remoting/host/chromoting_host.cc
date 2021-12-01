@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "jingle/glue/thread_wrapper.h"
@@ -120,10 +121,14 @@ void ChromotingHost::StartChromotingHostServices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ipc_server_);
 
+#if defined(OS_LINUX) || defined(OS_WIN)
   ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
       GetChromotingHostServicesServerName(), this);
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {

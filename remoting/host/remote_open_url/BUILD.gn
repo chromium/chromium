@@ -101,10 +101,14 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "remote_open_url_client_unittest.cc",
-    "remote_open_url_message_handler_unittest.cc",
-  ]
+  sources = [ "remote_open_url_message_handler_unittest.cc" ]
+
+  # Temporarily disable RemoteOpenUrlClientTest on unsupported platforms due to
+  # dependency on MojoIpcServer.
+  # TODO(yuweih): Undo once https://crrev.com/c/3271578 is checked in.
+  if (is_linux || is_win) {
+    sources += [ "remote_open_url_client_unittest.cc" ]
+  }
 
   deps = [
     ":common",

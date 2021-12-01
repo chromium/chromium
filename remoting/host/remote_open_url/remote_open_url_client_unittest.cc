@@ -67,7 +67,8 @@ class RemoteOpenUrlClientTest : public testing::Test {
  private:
   mojo::NamedPlatformChannel::ServerName test_server_name_ =
       test::GenerateRandomServerName();
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 };
 
 RemoteOpenUrlClientTest::RemoteOpenUrlClientTest() {

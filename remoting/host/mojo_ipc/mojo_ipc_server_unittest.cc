@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -82,7 +83,8 @@ class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
 
   mojo::NamedPlatformChannel::ServerName test_server_name_;
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   // Run loops that wait for MojoIpcServerBase::ObserverForTesting methods to
   // be called.
@@ -129,6 +131,7 @@ void MojoIpcServerTest::EchoString(const std::string& input,
 
   std::move(callback).Run(input);
   last_echo_string_receiver_id_ = ipc_server_->current_receiver();
+  ASSERT_EQ(base::GetCurrentProcId(), ipc_server_->current_peer_pid());
 }
 
 void MojoIpcServerTest::OnInvitationSent() {
@@ -232,6 +235,12 @@ TEST_F(MojoIpcServerTest, RemoteDisconnectedBeforeBound_NewInvitationIsSent) {
   auto handle = client_connection.Connect(ConnectToTestServer());
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { handle.reset(); }));
+  WaitForInvitationSent();
+}
+
+TEST_F(MojoIpcServerTest, RemoteConnectsAndHangs_NewInvitationIsSent) {
+  mojo::IsolatedConnection client_connection;
+  auto handle = client_connection.Connect(ConnectToTestServer());
   WaitForInvitationSent();
 }
 
