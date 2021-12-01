@@ -19,9 +19,7 @@ namespace viz {
 constexpr base::TimeDelta SharedMemoryVideoFramePool::kMinLoggingPeriod;
 
 SharedMemoryVideoFramePool::SharedMemoryVideoFramePool(int capacity)
-    : capacity_(std::max(capacity, 0)) {
-  DCHECK_GT(capacity_, 0u);
-}
+    : VideoFramePool(capacity) {}
 
 SharedMemoryVideoFramePool::~SharedMemoryVideoFramePool() = default;
 
@@ -78,14 +76,15 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
   return WrapBuffer(std::move(additional), format, size);
 }
 
-base::ReadOnlySharedMemoryRegion
-SharedMemoryVideoFramePool::CloneHandleForDelivery(const VideoFrame* frame) {
+media::mojom::VideoBufferHandlePtr
+SharedMemoryVideoFramePool::CloneHandleForDelivery(const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto it = utilized_buffers_.find(frame);
+  const auto it = utilized_buffers_.find(&frame);
   DCHECK(it != utilized_buffers_.end());
 
-  return it->second.Duplicate();
+  return media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
+      it->second.Duplicate());
 }
 
 float SharedMemoryVideoFramePool::GetUtilization() const {

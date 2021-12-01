@@ -952,9 +952,9 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
 
   // Clone a handle to the shared memory backing the populated video frame, to
   // send to the consumer.
-  base::ReadOnlySharedMemoryRegion handle =
-      frame_pool_.CloneHandleForDelivery(frame.get());
-  DCHECK(handle.IsValid());
+  auto handle = frame_pool_.CloneHandleForDelivery(*frame);
+  DCHECK(handle);
+  DCHECK(handle->is_read_only_shmem_region());
 
   // Assemble frame layout, format, and metadata into a mojo struct to send to
   // the consumer.
@@ -987,7 +987,8 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
                     num_frames_in_flight_);
 
   // Send the frame to the consumer.
-  consumer_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
+  consumer_->OnFrameCaptured(std::move(handle->get_read_only_shmem_region()),
+                             std::move(info), content_rect,
                              std::move(callbacks));
 }
 

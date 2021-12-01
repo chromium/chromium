@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -27,7 +28,7 @@ namespace viz {
 
 // A pool of VideoFrames backed by shared memory that can be transported
 // efficiently across mojo service boundaries.
-class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
+class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool : public VideoFramePool {
  public:
   // |capacity| is the maximum number of pooled VideoFrames; but they can be of
   // any byte size.
@@ -37,29 +38,16 @@ class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
   SharedMemoryVideoFramePool& operator=(const SharedMemoryVideoFramePool&) =
       delete;
 
-  ~SharedMemoryVideoFramePool();
+  ~SharedMemoryVideoFramePool() override;
 
-  // Reserves a buffer from the pool and creates a VideoFrame to wrap its shared
-  // memory. When the ref-count of the returned VideoFrame goes to zero, the
-  // reservation is released and the frame becomes available for re-use. Returns
-  // null if the pool is fully utilized.
   scoped_refptr<media::VideoFrame> ReserveVideoFrame(
       media::VideoPixelFormat format,
-      const gfx::Size& size);
+      const gfx::Size& size) override;
 
-  // Returns a cloned handle to the shared memory backing |frame| and its size
-  // in bytes. Note that the client should not allow the ref-count of the
-  // VideoFrame to reach zero until downstream consumers are finished using it,
-  // as this would allow the shared memory to be re-used for a later frame.
-  //
-  // Calling this method is a signal that |frame| should be considered the
-  // last-delivered frame, for the purposes of ResurrectLastVideoFrame().
-  base::ReadOnlySharedMemoryRegion CloneHandleForDelivery(
-      const media::VideoFrame* frame);
+  media::mojom::VideoBufferHandlePtr CloneHandleForDelivery(
+      const media::VideoFrame& frame) override;
 
-  // Returns the current pool utilization, based on the number of VideoFrames
-  // being held by the client.
-  float GetUtilization() const;
+  float GetUtilization() const override;
 
  private:
   using PooledBuffer = base::MappedReadOnlyRegion;
@@ -69,8 +57,8 @@ class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
                                               media::VideoPixelFormat format,
                                               const gfx::Size& size);
 
-  // Called when a reserved/resurrected VideoFrame goes out of scope, to remove
-  // the entry from |utilized_buffers_| and place the PooledBuffer back into
+  // Called when a VideoFrame goes out of scope, to remove the entry from
+  // |utilized_buffers_| and place the PooledBuffer back into
   // |available_buffers_|.
   void OnFrameWrapperDestroyed(const media::VideoFrame* frame,
                                base::WritableSharedMemoryMapping mapping);
@@ -79,10 +67,6 @@ class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
   // throttle, to ensure the logs aren't spammed in chronically low-memory
   // environments.
   bool CanLogSharedMemoryFailure();
-
-  // The maximum number of buffers. However, the buffers themselves can be of
-  // any byte size.
-  const size_t capacity_;
 
   // Buffers available for immediate re-use. Generally, it is best to push and
   // pop from the back of this vector so that the most-recently-used buffers are
@@ -98,8 +82,8 @@ class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
   // The time at which the last shared memory allocation or mapping failed.
   base::TimeTicks last_fail_log_time_;
 
-  // The amount of time that should elapsed between log warnings about shared
-  // memory allocation/mapping failures.
+  // The amount of time that should have elapsed between log warnings about
+  // shared memory allocation/mapping failures.
   static constexpr base::TimeDelta kMinLoggingPeriod = base::Seconds(10);
 
   SEQUENCE_CHECKER(sequence_checker_);

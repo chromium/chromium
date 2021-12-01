@@ -51,9 +51,9 @@ TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {
   ASSERT_TRUE(frame);
   size_t baseline_bytes_allocated;
   {
-    auto handle = pool.CloneHandleForDelivery(frame.get());
-    ExpectValidHandleForDelivery(handle);
-    baseline_bytes_allocated = handle.GetSize();
+    auto handle = pool.CloneHandleForDelivery(*frame);
+    ExpectValidHandleForDelivery(handle->get_read_only_shmem_region());
+    baseline_bytes_allocated = handle->get_read_only_shmem_region().GetSize();
   }
   frame = nullptr;  // Returns frame to pool.
 
@@ -62,9 +62,10 @@ TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {
   frame = pool.ReserveVideoFrame(kFormat, kSmallerSize);
   ASSERT_TRUE(frame);
   {
-    auto handle = pool.CloneHandleForDelivery(frame.get());
-    ExpectValidHandleForDelivery(handle);
-    EXPECT_EQ(baseline_bytes_allocated, handle.GetSize());
+    auto handle = pool.CloneHandleForDelivery(*frame);
+    ExpectValidHandleForDelivery(handle->get_read_only_shmem_region());
+    EXPECT_EQ(baseline_bytes_allocated,
+              handle->get_read_only_shmem_region().GetSize());
   }
   frame = nullptr;  // Returns frame to pool.
 
@@ -75,9 +76,10 @@ TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {
   ASSERT_TRUE(frame);
   size_t larger_buffer_bytes_allocated;
   {
-    auto handle = pool.CloneHandleForDelivery(frame.get());
-    ExpectValidHandleForDelivery(handle);
-    larger_buffer_bytes_allocated = handle.GetSize();
+    auto handle = pool.CloneHandleForDelivery(*frame);
+    ExpectValidHandleForDelivery(handle->get_read_only_shmem_region());
+    larger_buffer_bytes_allocated =
+        handle->get_read_only_shmem_region().GetSize();
     EXPECT_LT(baseline_bytes_allocated, larger_buffer_bytes_allocated);
   }
   frame = nullptr;  // Returns frame to pool.
@@ -89,9 +91,10 @@ TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {
     frame = pool.ReserveVideoFrame(kFormat, size);
     ASSERT_TRUE(frame);
     {
-      auto handle = pool.CloneHandleForDelivery(frame.get());
-      ExpectValidHandleForDelivery(handle);
-      EXPECT_EQ(larger_buffer_bytes_allocated, handle.GetSize());
+      auto handle = pool.CloneHandleForDelivery(*frame);
+      ExpectValidHandleForDelivery(handle->get_read_only_shmem_region());
+      EXPECT_EQ(larger_buffer_bytes_allocated,
+                handle->get_read_only_shmem_region().GetSize());
     }
     frame = nullptr;  // Returns frame to pool.
   }
@@ -135,8 +138,8 @@ TEST(SharedMemoryVideoFramePoolTest, ReportsCorrectUtilization) {
   // Signal that the frame will be delivered. This should not change the
   // utilization.
   {
-    auto handle = pool.CloneHandleForDelivery(frame.get());
-    ExpectValidHandleForDelivery(handle);
+    auto handle = pool.CloneHandleForDelivery(*frame);
+    ExpectValidHandleForDelivery(handle->get_read_only_shmem_region());
   }
   ASSERT_EQ(0.5f, pool.GetUtilization());
 
