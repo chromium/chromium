@@ -28,7 +28,8 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 const SettingsAutofillPageElementBase =
     PrefsMixin(PasswordCheckMixin(BaseMixin(PolymerElement)));
 
-class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
+export class SettingsAutofillPageElement extends
+    SettingsAutofillPageElementBase {
   static get is() {
     return 'settings-autofill-page';
   }
@@ -98,6 +99,12 @@ class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
   private computePasswordManagerSubLabel_(): string {
     return this.leakedPasswords.length > 0 ? this.compromisedPasswordsCount :
                                              '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-autofill-page': SettingsAutofillPageElement;
   }
 }
 

@@ -15,6 +15,7 @@ export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, 
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {SettingsAppearancePageElement} from './appearance_page/appearance_page.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
+export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {MultiStoreExceptionEntry} from './autofill_page/multi_store_exception_entry.js';
 export {MultiStorePasswordUiEntry} from './autofill_page/multi_store_password_ui_entry.js';
 export {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from './autofill_page/password_manager_proxy.js';

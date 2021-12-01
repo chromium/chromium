@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,9 +35,11 @@ declare global {
   }
 }
 
-interface SettingsCreditCardEditDialogElement {
+export interface SettingsCreditCardEditDialogElement {
   $: {
+    cancelButton: CrButtonElement,
     dialog: CrDialogElement,
+    saveButton: CrButtonElement,
     month: HTMLSelectElement,
     year: HTMLSelectElement,
   };
@@ -44,7 +47,7 @@ interface SettingsCreditCardEditDialogElement {
 
 const SettingsCreditCardEditDialogElementBase = I18nMixin(PolymerElement);
 
-class SettingsCreditCardEditDialogElement extends
+export class SettingsCreditCardEditDialogElement extends
     SettingsCreditCardEditDialogElementBase {
   static get is() {
     return 'settings-credit-card-edit-dialog';
@@ -271,6 +274,12 @@ class SettingsCreditCardEditDialogElement extends
     if (this.creditCard.nickname) {
       this.creditCard.nickname = this.creditCard.nickname.trim();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-credit-card-edit-dialog': SettingsCreditCardEditDialogElement;
   }
 }
 

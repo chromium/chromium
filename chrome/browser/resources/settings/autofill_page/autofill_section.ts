@@ -43,7 +43,7 @@ interface RepeaterEvent extends CustomEvent {
   };
 }
 
-interface SettingsAutofillSectionElement {
+export interface SettingsAutofillSectionElement {
   $: {
     addressSharedMenu: CrActionMenuElement,
     addAddress: HTMLElement,
@@ -52,7 +52,7 @@ interface SettingsAutofillSectionElement {
 
 const SettingsAutofillSectionElementBase = I18nMixin(PolymerElement);
 
-class SettingsAutofillSectionElement extends
+export class SettingsAutofillSectionElement extends
     SettingsAutofillSectionElementBase {
   static get is() {
     return 'settings-autofill-section';
@@ -216,6 +216,12 @@ class SettingsAutofillSectionElement extends
   private moreActionsTitle_(label: string, sublabel: string) {
     return this.i18n(
         'moreActionsForAddress', label + (sublabel ? sublabel : ''));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-autofill-section': SettingsAutofillSectionElement;
   }
 }
 

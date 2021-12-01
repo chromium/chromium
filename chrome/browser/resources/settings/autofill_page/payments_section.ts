@@ -21,6 +21,7 @@ import './passwords_shared_css.js';
 import './payments_list.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -45,16 +46,23 @@ declare global {
   }
 }
 
-interface SettingsPaymentsSectionElement {
+export interface SettingsPaymentsSectionElement {
   $: {
+    addCreditCard: CrButtonElement,
+    autofillCreditCardToggle: SettingsToggleButtonElement,
+    canMakePaymentToggle: SettingsToggleButtonElement,
     creditCardSharedMenu: CrActionMenuElement,
-    addCreditCard: HTMLElement,
+    menuClearCreditCard: HTMLElement,
+    menuEditCreditCard: HTMLElement,
+    menuRemoveCreditCard: HTMLElement,
+    migrateCreditCards: HTMLElement,
+    paymentsList: HTMLElement,
   };
 }
 
 const SettingsPaymentsSectionElementBase = I18nMixin(PolymerElement);
 
-class SettingsPaymentsSectionElement extends
+export class SettingsPaymentsSectionElement extends
     SettingsPaymentsSectionElementBase {
   static get is() {
     return 'settings-payments-section';
@@ -66,6 +74,8 @@ class SettingsPaymentsSectionElement extends
 
   static get properties() {
     return {
+      prefs: Object,
+
       /**
        * An array of all saved credit cards.
        */
@@ -114,6 +124,7 @@ class SettingsPaymentsSectionElement extends
     };
   }
 
+  prefs: {[key: string]: any};
   creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
   upiIds: Array<string>;
   private userIsFidoVerifiable_: boolean;
@@ -340,6 +351,12 @@ class SettingsPaymentsSectionElement extends
         this.i18n('migratableCardsInfoMultiple');
 
     return true;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-payments-section': SettingsPaymentsSectionElement;
   }
 }
 

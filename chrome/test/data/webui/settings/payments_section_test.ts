@@ -5,9 +5,10 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {createCreditCardEntry, createEmptyCreditCardEntry,TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -24,7 +25,7 @@ suite('PaymentSectionUiTest', function() {
     document.body.appendChild(section);
 
     assertFalse(
-        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
+        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
     section.set('prefs.autofill.credit_card_enabled.extensionId', 'test-id-1');
     section.set(
         'prefs.autofill.credit_card_fido_auth_enabled.extensionId',
@@ -32,13 +33,13 @@ suite('PaymentSectionUiTest', function() {
     flush();
 
     assertTrue(
-        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
+        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
   });
 });
 
 suite('PaymentsSection', function() {
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({
       migrationEnabled: true,
     });
@@ -46,12 +47,11 @@ suite('PaymentsSection', function() {
 
   /**
    * Creates the payments autofill section for the given list.
-   * @param {!Array<!chrome.autofillPrivate.CreditCardEntry>} creditCards
-   * @param {!Array<!string>} upiIds
    * @param {!Object} prefValues
-   * @return {!Object}
    */
-  function createPaymentsSection(creditCards, upiIds, prefValues) {
+  function createPaymentsSection(
+      creditCards: chrome.autofillPrivate.CreditCardEntry[], upiIds: string[],
+      prefValues: any): SettingsPaymentsSectionElement {
     // Override the PaymentsManagerImpl for testing.
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
@@ -68,10 +68,10 @@ suite('PaymentsSection', function() {
 
   /**
    * Creates the Edit Credit Card dialog.
-   * @param {!chrome.autofillPrivate.CreditCardEntry} creditCardItem
-   * @return {!Object}
    */
-  function createCreditCardDialog(creditCardItem) {
+  function createCreditCardDialog(
+      creditCardItem: chrome.autofillPrivate.CreditCardEntry):
+      SettingsCreditCardEditDialogElement {
     const section = document.createElement('settings-credit-card-edit-dialog');
     section.creditCard = creditCardItem;
     document.body.appendChild(section);
@@ -82,51 +82,45 @@ suite('PaymentsSection', function() {
   // Fakes the existence of a platform authenticator.
   function addFakePlatformAuthenticator() {
     if (!window.PublicKeyCredential) {
-      window.PublicKeyCredential = {};
+      (window.PublicKeyCredential as PublicKeyCredential) = {} as
+          PublicKeyCredential;
     }
     window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable =
         function() {
-      return new Promise(callback => {
-        callback(true);
-      });
+      return Promise.resolve(true);
     };
   }
 
 
   /**
    * Returns an array containing the local and server credit card items.
-   * @return {!Array<!chrome.autofillPrivate.CreditCardEntry>}
    */
   function getLocalAndServerCreditCardListItems() {
-    return document.body.querySelector('settings-payments-section')
-        .shadowRoot.querySelector('#paymentsList')
-        .shadowRoot.querySelectorAll('settings-credit-card-list-entry');
+    return document.body.querySelector('settings-payments-section')!.shadowRoot!
+        .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
+            'settings-credit-card-list-entry')!;
   }
 
   /**
    * Returns the shadow root of the card row from the specified list of
    * payment methods.
-   * @param {!HTMLElement} paymentsList
-   * @return {?HTMLElement}
    */
-  function getCardRowShadowRoot(paymentsList) {
-    const row = paymentsList.shadowRoot.querySelector(
+  function getCardRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
+    const row = paymentsList.shadowRoot!.querySelector(
         'settings-credit-card-list-entry');
     assertTrue(!!row);
-    return row.shadowRoot;
+    return row!.shadowRoot!;
   }
 
   /**
    * Returns the shadow root of the UPI ID row from the specified list of
    * payment methods.
-   * @param {!HTMLElement} paymentsList
-   * @return {?HTMLElement}
    */
-  function getUPIRowShadowRoot(paymentsList) {
+  function getUPIRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
     const row =
-        paymentsList.shadowRoot.querySelector('settings-upi-id-list-entry');
+        paymentsList.shadowRoot!.querySelector('settings-upi-id-list-entry');
     assertTrue(!!row);
-    return row.shadowRoot;
+    return row!.shadowRoot!;
   }
 
   test('verifyNoCreditCards', function() {
@@ -134,18 +128,17 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
 
-    const creditCardList = section.shadowRoot.querySelector('#paymentsList');
+    const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(0, getLocalAndServerCreditCardListItems().length);
 
     assertFalse(
-        creditCardList.shadowRoot.querySelector('#noPaymentMethodsLabel')
-            .hidden);
-    assertTrue(
-        creditCardList.shadowRoot.querySelector('#creditCardsHeading').hidden);
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
-    assertFalse(section.shadowRoot.querySelector('#addCreditCard').disabled);
+        creditCardList.shadowRoot!
+            .querySelector<HTMLElement>('#noPaymentMethodsLabel')!.hidden);
+    assertTrue(creditCardList.shadowRoot!
+                   .querySelector<HTMLElement>('#creditCardsHeading')!.hidden);
+    assertFalse(section.$.autofillCreditCardToggle.disabled);
+    assertFalse(section.$.addCreditCard.disabled);
   });
 
   test('verifyCreditCardsDisabled', function() {
@@ -153,9 +146,8 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: false}});
 
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
-    assertTrue(section.shadowRoot.querySelector('#addCreditCard').hidden);
+    assertFalse(section.$.autofillCreditCardToggle.disabled);
+    assertTrue(section.$.addCreditCard.hidden);
   });
 
   test('verifyCreditCardCount', function() {
@@ -170,42 +162,41 @@ suite('PaymentsSection', function() {
 
     const section = createPaymentsSection(
         creditCards, /*upiIds=*/[], {credit_card_enabled: {value: true}});
-    const creditCardList = section.shadowRoot.querySelector('#paymentsList');
+    const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(
         creditCards.length, getLocalAndServerCreditCardListItems().length);
 
-    assertTrue(creditCardList.shadowRoot.querySelector('#noPaymentMethodsLabel')
-                   .hidden);
-    assertFalse(
-        creditCardList.shadowRoot.querySelector('#creditCardsHeading').hidden);
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
-    assertFalse(section.shadowRoot.querySelector('#addCreditCard').disabled);
+    assertTrue(
+        creditCardList.shadowRoot!
+            .querySelector<HTMLElement>('#noPaymentMethodsLabel')!.hidden);
+    assertFalse(creditCardList.shadowRoot!
+                    .querySelector<HTMLElement>('#creditCardsHeading')!.hidden);
+    assertFalse(section.$.autofillCreditCardToggle.disabled);
+    assertFalse(section.$.addCreditCard.disabled);
   });
 
   test('verifyCreditCardFields', function() {
     const creditCard = createCreditCardEntry();
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertEquals(
-        creditCard.metadata.summaryLabel,
-        rowShadowRoot.querySelector('#creditCardLabel').textContent);
+        creditCard.metadata!.summaryLabel,
+        rowShadowRoot.querySelector<HTMLElement>(
+                         '#creditCardLabel')!.textContent);
     assertEquals(
         creditCard.expirationMonth + '/' + creditCard.expirationYear,
-        rowShadowRoot.querySelector('#creditCardExpiration')
-            .textContent.trim());
+        rowShadowRoot.querySelector<HTMLElement>(
+                         '#creditCardExpiration')!.textContent!.trim());
   });
 
   test('verifyCreditCardRowButtonIsDropdownWhenLocal', function() {
     const creditCard = createCreditCardEntry();
-    creditCard.metadata.isLocal = true;
+    creditCard.metadata!.isLocal = true;
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
     const outlinkButton =
@@ -215,11 +206,10 @@ suite('PaymentsSection', function() {
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', function() {
     const creditCard = createCreditCardEntry();
-    creditCard.metadata.isLocal = false;
+    creditCard.metadata!.isLocal = false;
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertFalse(!!menuButton);
     const outlinkButton =
@@ -233,9 +223,15 @@ suite('PaymentsSection', function() {
     const oldCreditCard = createCreditCardEntry();
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
-    assertNotEquals(oldCreditCardDialog.title_, newCreditCardDialog.title_);
-    assertNotEquals('', newCreditCardDialog.title_);
-    assertNotEquals('', oldCreditCardDialog.title_);
+    function getTitle(dialog: SettingsCreditCardEditDialogElement) {
+      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent;
+    }
+
+    const oldTitle = getTitle(oldCreditCardDialog);
+    const newTitle = getTitle(newCreditCardDialog);
+    assertNotEquals(oldTitle, newTitle);
+    assertNotEquals('', oldTitle);
+    assertNotEquals('', newTitle);
 
     // Wait for dialogs to open before finishing test.
     return Promise.all([
@@ -259,10 +255,10 @@ suite('PaymentsSection', function() {
           const maxYear = now.getFullYear() + 19;
           const yearOptions = creditCardDialog.$.year.options;
 
-          assertEquals('2015', yearOptions[0].textContent.trim());
+          assertEquals('2015', yearOptions[0]!.textContent!.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1].textContent.trim());
+              yearOptions[yearOptions.length - 1]!.textContent!.trim());
           assertEquals(
               creditCard.expirationYear, creditCardDialog.$.year.value);
         });
@@ -283,10 +279,11 @@ suite('PaymentsSection', function() {
           const yearOptions = creditCardDialog.$.year.options;
 
           assertEquals(
-              now.getFullYear().toString(), yearOptions[0].textContent.trim());
+              now.getFullYear().toString(),
+              yearOptions[0]!.textContent!.trim());
           assertEquals(
               farFutureYear.toString(),
-              yearOptions[yearOptions.length - 1].textContent.trim());
+              yearOptions[yearOptions.length - 1]!.textContent!.trim());
           assertEquals(
               creditCard.expirationYear, creditCardDialog.$.year.value);
         });
@@ -308,10 +305,11 @@ suite('PaymentsSection', function() {
           const yearOptions = creditCardDialog.$.year.options;
 
           assertEquals(
-              now.getFullYear().toString(), yearOptions[0].textContent.trim());
+              now.getFullYear().toString(),
+              yearOptions[0]!.textContent!.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1].textContent.trim());
+              yearOptions[yearOptions.length - 1]!.textContent!.trim());
           assertEquals(
               creditCard.expirationYear, creditCardDialog.$.year.value);
         });
@@ -326,7 +324,7 @@ suite('PaymentsSection', function() {
           // Not expired, but still can't be saved, because there's no
           // name.
           const expiredError =
-              creditCardDialog.shadowRoot.querySelector('#expired-error');
+              creditCardDialog.shadowRoot!.querySelector('#expired-error')!;
           assertEquals('hidden', getComputedStyle(expiredError).visibility);
           assertTrue(creditCardDialog.$.saveButton.disabled);
 
@@ -373,78 +371,73 @@ suite('PaymentsSection', function() {
     const creditCard = createCreditCardEntry();
 
     // When credit card is local, |isCached| will be undefined.
-    creditCard.metadata.isLocal = true;
-    creditCard.metadata.isCached = undefined;
+    creditCard.metadata!.isLocal = true;
+    creditCard.metadata!.isCached = undefined;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Local credit cards will show the overflow menu.
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
-    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
 
-    menuButton.click();
+    menuButton!.click();
     flush();
 
-    const menu = section.$.creditCardSharedMenu;
-
     // Menu should have 2 options.
-    assertFalse(menu.querySelector('#menuEditCreditCard').hidden);
-    assertFalse(menu.querySelector('#menuRemoveCreditCard').hidden);
-    assertTrue(menu.querySelector('#menuClearCreditCard').hidden);
+    assertFalse(section.$.menuEditCreditCard.hidden);
+    assertFalse(section.$.menuRemoveCreditCard.hidden);
+    assertTrue(section.$.menuClearCreditCard.hidden);
 
-    menu.close();
+    section.$.creditCardSharedMenu.close();
     flush();
   });
 
   test('verifyCachedCreditCardMenu', function() {
     const creditCard = createCreditCardEntry();
 
-    creditCard.metadata.isLocal = false;
-    creditCard.metadata.isCached = true;
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isCached = true;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Cached remote CCs will show overflow menu.
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
-    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
 
-    menuButton.click();
+    menuButton!.click();
     flush();
 
-    const menu = section.$.creditCardSharedMenu;
-
     // Menu should have 2 options.
-    assertFalse(menu.querySelector('#menuEditCreditCard').hidden);
-    assertTrue(menu.querySelector('#menuRemoveCreditCard').hidden);
-    assertFalse(menu.querySelector('#menuClearCreditCard').hidden);
+    assertFalse(section.$.menuEditCreditCard.hidden);
+    assertTrue(section.$.menuRemoveCreditCard.hidden);
+    assertFalse(section.$.menuClearCreditCard.hidden);
 
-    menu.close();
+    section.$.creditCardSharedMenu.close();
     flush();
   });
 
   test('verifyNotCachedCreditCardMenu', function() {
     const creditCard = createCreditCardEntry();
 
-    creditCard.metadata.isLocal = false;
-    creditCard.metadata.isCached = false;
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isCached = false;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // No overflow menu when not cached.
-    const rowShadowRoot =
-        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertTrue(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     assertFalse(!!rowShadowRoot.querySelector('#creditCardMenu'));
   });
@@ -455,43 +448,43 @@ suite('PaymentsSection', function() {
 
     // Add one migratable credit card.
     const creditCard = createCreditCardEntry();
-    creditCard.metadata.isMigratable = true;
+    creditCard.metadata!.isMigratable = true;
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
+    assertTrue(section.$.migrateCreditCards.hidden);
   });
 
   test('verifyMigrationButtonNotShownIfCreditCardDisabled', function() {
     // Add one migratable credit card.
     const creditCard = createCreditCardEntry();
-    creditCard.metadata.isMigratable = true;
+    creditCard.metadata!.isMigratable = true;
     // Mock credit card save toggle is turned off by users.
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: false}});
 
-    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
+    assertTrue(section.$.migrateCreditCards.hidden);
   });
 
   test('verifyMigrationButtonNotShownIfNoCardIsMigratable', function() {
     // Add one migratable credit card.
     const creditCard = createCreditCardEntry();
     // Mock credit card is not valid.
-    creditCard.metadata.isMigratable = false;
+    creditCard.metadata!.isMigratable = false;
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
+    assertTrue(section.$.migrateCreditCards.hidden);
   });
 
   test('verifyMigrationButtonShown', function() {
     // Add one migratable credit card.
     const creditCard = createCreditCardEntry();
-    creditCard.metadata.isMigratable = true;
+    creditCard.metadata!.isMigratable = true;
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertFalse(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
+    assertFalse(section.$.migrateCreditCards.hidden);
   });
 
   test('verifyFIDOAuthToggleShownIfUserIsVerifiable', function() {
@@ -502,7 +495,7 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
 
-    assertTrue(!!section.shadowRoot.querySelector(
+    assertTrue(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
   });
 
@@ -513,7 +506,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
-    assertFalse(!!section.shadowRoot.querySelector(
+    assertFalse(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
   });
 
@@ -525,9 +518,9 @@ suite('PaymentsSection', function() {
       credit_card_enabled: {value: true},
       credit_card_fido_auth_enabled: {value: true}
     });
-    assertTrue(
-        section.shadowRoot.querySelector('#autofillCreditCardFIDOAuthToggle')
-            .checked);
+    assertTrue(section.shadowRoot!
+                   .querySelector<SettingsToggleButtonElement>(
+                       '#autofillCreditCardFIDOAuthToggle')!.checked);
   });
 
   test('verifyFIDOAuthToggleUncheckedIfOptedOut', function() {
@@ -538,9 +531,9 @@ suite('PaymentsSection', function() {
       credit_card_enabled: {value: true},
       credit_card_fido_auth_enabled: {value: false}
     });
-    assertFalse(
-        section.shadowRoot.querySelector('#autofillCreditCardFIDOAuthToggle')
-            .checked);
+    assertFalse(section.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#autofillCreditCardFIDOAuthToggle')!.checked);
   });
 
   test('verifyUpiIdRow', function() {
@@ -548,11 +541,10 @@ suite('PaymentsSection', function() {
 
     const section = createPaymentsSection(
         /*creditCards=*/[], ['vpa@indianbank'], /*prefValues=*/ {});
-    const rowShadowRoot =
-        getUPIRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
+    const rowShadowRoot = getUPIRowShadowRoot(section.$.paymentsList);
     assertTrue(!!rowShadowRoot);
     assertEquals(
-        rowShadowRoot.querySelector('#upiIdLabel').textContent,
+        rowShadowRoot.querySelector<HTMLElement>('#upiIdLabel')!.textContent,
         'vpa@indianbank');
   });
 
@@ -562,9 +554,9 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[], /*prefValues=*/ {});
 
-    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
+    const paymentsList = section.$.paymentsList;
     const upiRows =
-        paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
+        paymentsList.shadowRoot!.querySelectorAll('settings-upi-id-list-entry');
 
     assertEquals(0, upiRows.length);
   });
@@ -576,9 +568,9 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], upiIds, /*prefValues=*/ {});
 
-    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
+    const paymentsList = section.$.paymentsList;
     const upiRows =
-        paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
+        paymentsList.shadowRoot!.querySelectorAll('settings-upi-id-list-entry');
 
     assertEquals(upiIds.length, upiRows.length);
   });
@@ -591,9 +583,9 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], upiIds, /*prefValues=*/ {});
 
-    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
+    const paymentsList = section.$.paymentsList;
     const upiRows =
-        paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
+        paymentsList.shadowRoot!.querySelectorAll('settings-upi-id-list-entry');
 
     assertEquals(0, upiRows.length);
   });
@@ -605,7 +597,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[], /*prefValues=*/ {});
 
-    section.shadowRoot.querySelector('#canMakePaymentToggle').click();
+    section.$.canMakePaymentToggle.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
 
