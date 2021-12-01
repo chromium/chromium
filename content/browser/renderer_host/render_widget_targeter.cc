@@ -303,7 +303,7 @@ void RenderWidgetTargeter::QueryClient(
   // |target_client| may not be set yet for this |target| on Mac, need to
   // understand why this happens. https://crbug.com/859492.
   // We do not verify hit testing result under this circumstance.
-  if (!target_client.get() || !target_client.is_connected()) {
+  if (!target_client.is_bound() || !target_client.is_connected()) {
     FoundTarget(target, target_location, false, &request);
     return;
   }
