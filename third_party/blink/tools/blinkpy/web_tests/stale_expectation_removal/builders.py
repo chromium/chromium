@@ -55,9 +55,6 @@ class WebTestBuilders(builders.Builders):
             'mac11.0.arm64-blink-rel-dummy': {
                 'mac11.0.arm64-blink-rel',
             },
-            'WebKit Linux composite_after_paint Dummy Builder': {
-                'linux_layout_tests_composite_after_paint',
-            },
             'WebKit Linux layout_ng_disabled Builder': {
                 'linux_layout_tests_layout_ng_disabled',
             },

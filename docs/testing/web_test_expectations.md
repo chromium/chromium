@@ -109,7 +109,7 @@ results from try jobs, by using the command-tool
    Run the tool with the option -
    `blink_tool.py rebaseline-cl --use-blink-try-bots-only`
    * If you would like to rebaseline for flag specific builders, use the flag-specific option.
-   Rebaseline for highdpi, disable-layout-ng and composite-after-paint are
+   Rebaseline for highdpi and disable-layout-ng are
    supported for now. For example, to rebaseline for highdpi, use
    `blink_tool.py rebaseline-cl --flag-specific=highdpi`. This will trigger
    only the highdpi try builder. Since this is an experimental builder at this time,

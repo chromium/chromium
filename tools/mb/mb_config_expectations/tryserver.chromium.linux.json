@@ -1082,18 +1082,6 @@
       "use_goma": true
     }
   },
-  "linux_layout_tests_composite_after_paint": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
   "linux_layout_tests_layout_ng_disabled": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,

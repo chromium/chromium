@@ -82,13 +82,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 '--flag-specific',
                 dest='flag_specific',
                 # TODO: try to get the list from builders.json
-                choices=["composite-after-paint", "disable-layout-ng", "highdpi"],
+                choices=["disable-layout-ng", "highdpi"],
                 default=None,
                 action='store',
                 help=('Name of a flag-specific configuration defined in '
                       'FlagSpecificConfig. This option will rebaseline '
-                      'results for the given FlagSpecificConfig while ignoring results '
-                      'from other builders.')),
+                      'results for the given FlagSpecificConfig while '
+                      'ignoring results from other builders.')),
             optparse.make_option(
                 '--patchset',
                 default=None,

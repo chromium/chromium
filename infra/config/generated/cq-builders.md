@@ -306,14 +306,6 @@ builder.
   Path regular expressions:
   * [`//build/.*check_gn_headers.*`](https://cs.chromium.org/search?q=+file:build/.*check_gn_headers.*)
 
-* [linux_layout_tests_composite_after_paint](https://ci.chromium.org/p/chromium/builders/try/linux_layout_tests_composite_after_paint) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_layout_tests_composite_after_paint"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_layout_tests_composite_after_paint""))
-
-  Path regular expressions:
-  * [`//third_party/blink/renderer/core/paint/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/paint/)
-  * [`//third_party/blink/renderer/core/svg/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/svg/)
-  * [`//third_party/blink/renderer/platform/graphics/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/graphics/)
-  * [`//third_party/blink/web_tests/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/)
-
 * [linux_layout_tests_layout_ng_disabled](https://ci.chromium.org/p/chromium/builders/try/linux_layout_tests_layout_ng_disabled) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_layout_tests_layout_ng_disabled"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_layout_tests_layout_ng_disabled""))
 
   Path regular expressions:

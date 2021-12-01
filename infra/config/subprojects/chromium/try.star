@@ -1552,20 +1552,6 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
-    name = "linux_layout_tests_composite_after_paint",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/third_party/blink/renderer/core/paint/.+",
-            ".+/[+]/third_party/blink/renderer/core/svg/.+",
-            ".+/[+]/third_party/blink/renderer/platform/graphics/.+",
-            ".+/[+]/third_party/blink/web_tests/.+",
-        ],
-    ),
-)
-
-try_.chromium_linux_builder(
     name = "linux_layout_tests_layout_ng_disabled",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",

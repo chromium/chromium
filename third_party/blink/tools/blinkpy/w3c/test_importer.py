@@ -654,9 +654,6 @@ class TestImporter(object):
         self.rebaselined_tests, self.new_test_expectations = (
             self._expectations_updater.update_expectations())
 
-        _log.info('Adding test expectations lines for composite-after-paint')
-        self._expectations_updater.update_expectations_for_flag_specific('composite-after-paint')
-
         _log.info('Adding test expectations lines for disable-layout-ng')
         self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
 

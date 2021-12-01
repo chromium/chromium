@@ -336,14 +336,6 @@
           'shards': 20,
         },
       },
-      'WebKit Linux composite_after_paint Dummy Builder': {
-        'args': [
-          '--flag-specific=composite-after-paint',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'WebKit Linux layout_ng_disabled Builder': {
         'args': [
           '--flag-specific=disable-layout-ng',
