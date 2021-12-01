@@ -100,6 +100,8 @@ crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015
 crbug.com/1173843 external/wpt/css/css-flexbox/frameset-crash.html [ Skip ]
 crbug.com/1069614 external/wpt/css/css-flexbox/overflow-area-001.html [ Failure ]
 crbug.com/1069614 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/scrollbars-auto.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/scrollbars.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/synthesize-vrl-baseline.html [ Failure ]
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-inflexible-in-column-2.html [ Failure ]
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]

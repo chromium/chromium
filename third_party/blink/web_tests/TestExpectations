@@ -987,11 +987,6 @@ crbug.com/1251689 external/wpt/css/css-flexbox/table-as-item-specified-width-ver
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-min-content-001.html [ Failure ]
 
-# These tests are in conflict with overflow-area-*, update them if our change is web compatible.
-crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars-auto.html [ Failure ]
-crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars.html [ Failure ]
-crbug.com/1069614 css3/flexbox/overflow-and-padding.html [ Failure ]
-
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
 
