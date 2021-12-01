@@ -1,7 +1,5 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>CSS Containment Test: Parsing of container-type</title>
-<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-type">
+<!DOCTYPE html>
+<title>Parsing of container-type</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -12,17 +10,10 @@ test_valid_value('container-type', 'inherit');
 test_valid_value('container-type', 'unset');
 test_valid_value('container-type', 'revert');
 test_valid_value('container-type', 'none');
-test_valid_value('container-type', 'style');
-test_valid_value('container-type', 'state');
-test_valid_value('container-type', 'size');
 test_valid_value('container-type', 'inline-size');
+test_valid_value('container-type', 'block-size');
+test_valid_value('container-type', 'size');
 
-test_valid_value('container-type', 'inline-size state');
-test_valid_value('container-type', 'style state');
-test_valid_value('container-type', 'style inline-size');
-test_valid_value('container-type', 'state size');
-
-test_invalid_value('container-type', 'block-size');
 test_invalid_value('container-type', 'none none');
 test_invalid_value('container-type', 'none inline-size');
 test_invalid_value('container-type', 'inline-size none');

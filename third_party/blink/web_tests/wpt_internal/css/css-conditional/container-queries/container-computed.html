@@ -1,8 +1,5 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>CSS Containment Test: Computed values of container</title>
-<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-name">
-<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-type">
+<!DOCTYPE html>
+<title>Computed values of container</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -12,11 +9,12 @@ test_computed_value('container', 'initial', 'none');
 test_computed_value('container', 'inherit', 'none');
 test_computed_value('container', 'unset', 'none');
 test_computed_value('container', 'inline-size');
+test_computed_value('container', 'block-size');
 test_computed_value('container', 'size');
 test_computed_value('container', 'inline-size / inline-size');
+test_computed_value('container', 'block-size / block-size');
 test_computed_value('container', 'size / block-size');
-test_computed_value('container', 'size style / name', 'style size / name');
-test_computed_value('container', 'inline-size state style/ name', 'style state inline-size / name');
+
 test_computed_value('container', 'inline-size / foo');
 test_computed_value('container', 'inline-size /foo', 'inline-size / foo');
 test_computed_value('container', 'inline-size/ foo', 'inline-size / foo');
