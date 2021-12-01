@@ -714,7 +714,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "FakeBinaryExperiment",
 #if BUILDFLAG(USE_FAKE_BINARY_EXPERIMENT)
-      "Enabled",
+      "Enabled"
 #else
       "Disabled"
 #endif
