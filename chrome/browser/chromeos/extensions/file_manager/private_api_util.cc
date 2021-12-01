@@ -350,6 +350,9 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   properties_->can_share =
       std::make_unique<bool>(metadata->capabilities->can_share);
 
+  properties_->can_pin = std::make_unique<bool>(
+      metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk);
+
   if (drivefs::IsAFile(metadata->type)) {
     properties_->thumbnail_url = std::make_unique<std::string>(
         base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));

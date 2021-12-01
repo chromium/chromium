@@ -284,6 +284,7 @@ enum EntryPropertyName {
   canRename,
   canAddChildren,
   canShare,
+  canPin,
   isMachineRoot,
   isExternalMedia,
   isArbitrarySyncFolder
@@ -478,6 +479,9 @@ dictionary EntryProperties {
 
   // True if the entry can be shared by the user.
   boolean? canShare;
+
+  // True if the entry can be pinned by the user.
+  boolean? canPin;
 
   // True if the entry is a machine root for backup and sync.
   boolean? isMachineRoot;

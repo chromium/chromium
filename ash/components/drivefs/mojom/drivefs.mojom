@@ -261,7 +261,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -312,6 +312,13 @@ struct FileMetadata {
   // The unique device local ID used by DriveFS to refer to this file.
   // Note: 0 is an invalid stable id.
   [MinVersion=3] int64 stable_id = 0;
+
+  [Extensible] enum CanPinStatus {
+    kOk,
+    kDisabled,
+  };
+
+  [MinVersion=4] CanPinStatus can_pin;
 };
 
 struct ImageMetadata {

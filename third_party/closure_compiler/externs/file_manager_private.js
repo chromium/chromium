@@ -232,6 +232,15 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   EXTERNAL_FILE_URL: 'externalFileUrl',
   ALTERNATE_URL: 'alternateUrl',
   SHARE_URL: 'shareUrl',
+  CAN_COPY: 'canCopy',
+  CAN_DELETE: 'canDelete',
+  CAN_RENAME: 'canRename',
+  CAN_ADD_CHILDREN: 'canAddChildren',
+  CAN_SHARE: 'canShare',
+  CAN_PIN: 'canPin',
+  IS_MACHINE_ROOT: 'isMachineRoot',
+  IS_EXTERNAL_MEDIA: 'isExternalMedia',
+  IS_ARBITRARY_SYNC_FOLDER: 'isArbitrarySyncFolder',
 };
 
 /** @enum {string} */
@@ -361,6 +370,7 @@ chrome.fileManagerPrivate.FileTask;
  *   canRename: (boolean|undefined),
  *   canAddChildren: (boolean|undefined),
  *   canShare: (boolean|undefined),
+ *   canPin: (boolean|undefined),
  *   isMachineRoot: (boolean|undefined),
  *   isExternalMedia: (boolean|undefined),
  *   isArbitrarySyncFolder: (boolean|undefined)
