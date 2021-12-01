@@ -19,8 +19,17 @@ namespace chromeos {
 namespace {
 
 int GetDeskIndexForBrowser(Browser* browser, int num_desks) {
+  const std::string& workspace = browser->window()->GetWorkspace();
   int desk_index;
-  CHECK(base::StringToInt(browser->window()->GetWorkspace(), &desk_index));
+  // If the window is visible on all workspaces or unassigned
+  // (aura::client::kWindowWorkspaceUnassignedWorkspace),
+  // we should get the active desk index.
+  if (workspace.empty() || browser->window()->IsVisibleOnAllWorkspaces()) {
+    desk_index = DesksHelper::Get(browser->window()->GetNativeWindow())
+                     ->GetActiveDeskIndex();
+  } else {
+    CHECK(base::StringToInt(workspace, &desk_index));
+  }
   CHECK_LT(desk_index, num_desks);
   return desk_index;
 }
