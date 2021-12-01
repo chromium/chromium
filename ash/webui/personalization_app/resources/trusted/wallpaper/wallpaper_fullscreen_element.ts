@@ -162,7 +162,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.selectedLayout_ = layout;
   }
 
-  private getLayoutAriaSelected_(
+  private getLayoutAriaPressed_(
       selectedLayout: WallpaperLayout, str: 'FILL'|'CENTER'): string {
     assert(str === 'FILL' || str === 'CENTER');
     const layout = getWallpaperLayoutEnum(str);

@@ -372,7 +372,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @return {string}
    * @private
    */
-  getCenterAriaSelected_(image) {
+  getCenterAriaPressed_(image) {
     return (!!image && image.layout === WallpaperLayout.kCenter).toString();
   }
 
@@ -381,7 +381,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @return {string}
    * @private
    */
-  getFillAriaSelected_(image) {
+  getFillAriaPressed_(image) {
     return (!!image && image.layout === WallpaperLayout.kCenterCropped)
         .toString();
   }

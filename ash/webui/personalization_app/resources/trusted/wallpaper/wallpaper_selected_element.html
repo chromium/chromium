@@ -160,13 +160,13 @@
       <template is="dom-if" if="[[showWallpaperOptions_]]">
         <div id="wallpaperOptions">
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
-              aria-selected$="[[getFillAriaSelected_(image_)]]">
+              aria-pressed$="[[getFillAriaPressed_(image_)]]">
             <iron-icon icon="[[fillIcon_]]"></iron-icon>
             <div class="text">[[i18n('fill')]]</div>
           </cr-button>
           <cr-button id="center" data-layout="CENTER"
               on-click="onClickLayoutIcon_"
-              aria-selected$="[[getCenterAriaSelected_(image_)]]">
+              aria-pressed$="[[getCenterAriaPressed_(image_)]]">
             <iron-icon icon="[[centerIcon_]]"></iron-icon>
             <div class="text">[[i18n('center')]]</div>
           </cr-button>

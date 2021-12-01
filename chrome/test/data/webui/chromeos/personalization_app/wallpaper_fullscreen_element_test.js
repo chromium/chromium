@@ -229,7 +229,7 @@ export function WallpaperFullscreenTest() {
     assertTrue(centerPreviewMode);
   });
 
-  test('aria selected set for chosen layout option', async () => {
+  test('aria pressed set for chosen layout option', async () => {
     wallpaperFullscreenElement = initElement(WallpaperFullscreen.is);
     const {requestFullscreenPromise} = mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
@@ -251,14 +251,14 @@ export function WallpaperFullscreenTest() {
     const fill = wallpaperFullscreenElement.shadowRoot.querySelector(
         'cr-button[data-layout="FILL"]');
 
-    assertEquals('false', center.getAttribute('aria-selected'));
-    assertEquals('true', fill.getAttribute('aria-selected'));
+    assertEquals('false', center.getAttribute('aria-pressed'));
+    assertEquals('true', fill.getAttribute('aria-pressed'));
 
     wallpaperFullscreenElement.selectedLayout_ = WallpaperLayout.kCenter;
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertEquals('true', center.getAttribute('aria-selected'));
-    assertEquals('false', fill.getAttribute('aria-selected'));
+    assertEquals('true', center.getAttribute('aria-pressed'));
+    assertEquals('false', fill.getAttribute('aria-pressed'));
   });
 
   test('clicking set as wallpaper confirms wallpaper', async () => {
