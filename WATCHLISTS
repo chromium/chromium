@@ -839,9 +839,9 @@
       'filepath': 'ui/webui/resources/cr_element',
     },
     'cros_commercial_policy': {
-      'filepath': 'ash/policy/'\
+      'filepath': 'ash/components/policy/'\
+                  '|ash/policy/'\
                   '|components/policy/'\
-                  '|chromeos/policy/'\
                   '|chrome/browser/ash/policy/'\
                   '|chrome/browser/policy/'
     },

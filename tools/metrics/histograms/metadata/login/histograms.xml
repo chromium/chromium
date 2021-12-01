@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
     enum="AllowedUsersPoliciesInvalidState" expires_after="2022-04-17">
   <owner>emaamari@google.com</owner>
-  <owner>src/chromeos/policy/OWNERS</owner>
+  <owner>src/ash/components/policy/OWNERS</owner>
   <summary>
     Chrome OS histogram that keeps track of cases where devices have an invalid
     combination of allow_new_users and user_allowlist policies. This is emitted

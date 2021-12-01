@@ -24,6 +24,7 @@ static_library("enterprise") {
 
   deps = [
     "//ash/components/arc:prefs",
+    "//ash/components/policy",
     "//ash/constants",
     "//base",
     "//chromeos/cryptohome",
@@ -33,7 +34,6 @@ static_library("enterprise") {
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/upstart:upstart",
-    "//chromeos/policy:policy",
     "//components/prefs",
     "//components/session_manager/core",
     "//components/user_manager",

@@ -1,11 +1,11 @@
 include_rules = [
+  "+ash/components/policy",
   "+ash/constants",
   "+ash/public/cpp",
   "+chromeos/components/sensors",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+chromeos/memory",
-  "+chromeos/policy",
   "+chromeos/system",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",

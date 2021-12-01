@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "ash/components/policy/weekly_time/weekly_time.h"
+#include "ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "base/values.h"
-#include "chromeos/policy/weekly_time/weekly_time.h"
-#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
