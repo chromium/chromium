@@ -1742,6 +1742,7 @@
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
+                "android",
                 "windows"
             ],
             "experiments": [
