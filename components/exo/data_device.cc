@@ -134,7 +134,8 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
   if (focused_surface_) {
     // The ExtendedDragSource instance can be null for tests.
     auto* extended_drag_source = ExtendedDragSource::Get();
-    bool is_extended_drag_source_active = extended_drag_source->IsActive();
+    bool is_extended_drag_source_active =
+        extended_drag_source && extended_drag_source->IsActive();
 
     prevent_motion_drag_events =
         is_extended_drag_source_active &&
