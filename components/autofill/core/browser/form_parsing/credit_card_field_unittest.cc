@@ -514,53 +514,33 @@ TEST_F(CreditCardFieldTest, ParseNonConsecutiveCvc) {
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCard) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillStrictContextualCardNameConditions}, {});
-
   AddTextFormFieldData("accNum", "Account ID", UNKNOWN_TYPE);
   AddTextFormFieldData("name", "Account Name", UNKNOWN_TYPE);
   AddTextFormFieldData("toAcctNum", "Move to Account ID", UNKNOWN_TYPE);
-
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillStrictContextualCardNameConditions}, {});
-
   // TODO(crbug.com/1167977): This should be not parseable, but waiting before
   // changing kNameOnCardRe to use word boundaries.
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("acctName", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("toAcctNum", "Move to Account ID", CREDIT_CARD_NUMBER);
-
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillStrictContextualCardNameConditions}, {});
-
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
-
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillStrictContextualCardNameConditions}, {});
-
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("cvv", "Verification", CREDIT_CARD_VERIFICATION_CODE);
-
   ClassifyAndVerify(ParseResult::PARSED);
 }
 

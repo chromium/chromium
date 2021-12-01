@@ -259,9 +259,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   if (credit_card_field->cardholder_) {
     // If we got the cardholder name with a dangerous check, require at least a
     // card number and one of expiration or verification fields.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillStrictContextualCardNameConditions) ||
-        !cardholder_name_match_has_low_confidence ||
+    if (!cardholder_name_match_has_low_confidence ||
         (!credit_card_field->numbers_.empty() &&
          (credit_card_field->verification_ ||
           credit_card_field->HasExpiration()))) {

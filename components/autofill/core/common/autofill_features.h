@@ -139,8 +139,6 @@ extern const base::Feature kAutofillSilentProfileUpdateForInsufficientImport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSkipComparingInferredLabels;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillStrictContextualCardNameConditions;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillTokenPrefixMatching;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillUploadThrottling;
 COMPONENT_EXPORT(AUTOFILL)
