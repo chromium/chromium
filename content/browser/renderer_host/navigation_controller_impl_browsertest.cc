@@ -15434,7 +15434,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     return;
 
   // Verify the error page committed to the error page process.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_NE(success_site_instance, error_site_instance);
   EXPECT_TRUE(
       success_site_instance->IsRelatedSiteInstance(error_site_instance.get()));
@@ -15442,8 +15441,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             error_site_instance->GetProcess()->GetID());
   EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
 
-  EXPECT_TRUE(policy->GetProcessLock(error_site_instance->GetProcess()->GetID())
-                  .is_error_page());
+  EXPECT_TRUE(
+      error_site_instance->GetProcess()->GetProcessLock().is_error_page());
 }
 
 // Test to verify that LoadPostCommitErrorPage loads an error page in a subframe

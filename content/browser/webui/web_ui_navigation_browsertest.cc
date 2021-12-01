@@ -680,8 +680,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
       webui_rfh->GetProcess()->GetID()));
   EXPECT_FALSE(
       webui_site_instance->GetSiteInfo().process_lock_url().is_empty());
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   TestUntrustedDataSourceHeaders headers;
@@ -875,8 +874,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_EQ(chrome_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       webui_rfh->GetProcess()->GetID()));
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
@@ -894,8 +892,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       root->current_frame_host()->GetSiteInstance()));
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       root->current_frame_host()->GetProcess()->GetID()));
-  EXPECT_NE(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
+  EXPECT_NE(root->current_frame_host()->GetProcess()->GetProcessLock(),
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }
 

@@ -14141,8 +14141,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   const GURL bad_url = GURL("https://b.com");
 
   // Sanity check the process lock logic.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  int process_id = root->current_frame_host()->GetProcess()->GetID();
+  auto process_lock =
+      root->current_frame_host()->GetProcess()->GetProcessLock();
   IsolationContext isolation_context(
       shell()->web_contents()->GetBrowserContext());
   ProcessLock start_url_lock = ProcessLock::FromSiteInfo(
@@ -14151,9 +14151,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       SiteInfo::CreateForTesting(isolation_context, another_url));
   ProcessLock bad_url_lock = ProcessLock::FromSiteInfo(
       SiteInfo::CreateForTesting(isolation_context, bad_url));
-  EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));
-  EXPECT_EQ(another_url_lock, policy->GetProcessLock(process_id));
-  EXPECT_NE(bad_url_lock, policy->GetProcessLock(process_id));
+  EXPECT_EQ(start_url_lock, process_lock);
+  EXPECT_EQ(another_url_lock, process_lock);
+  EXPECT_NE(bad_url_lock, process_lock);
 
   // Leave the commit URL alone, so the URL checks will pass, but change the
   // origin to one that does not match the origin lock of the process.

@@ -509,16 +509,16 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual bool HostHasNotBeenUsed() = 0;
 
   // Locks this RenderProcessHost to documents compatible with |process_lock|.
-  // This method is public so that it can be called from SiteInstanceImpl, and
+  // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
-  // content.
+  // //content.
   virtual void SetProcessLock(const IsolationContext& isolation_context,
                               const ProcessLock& process_lock) = 0;
 
   // Returns the ProcessLock associated with this process.
-  // This method is public so that it can be called from SiteInstanceImpl, and
+  // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
-  // content.
+  // //content.
   virtual ProcessLock GetProcessLock() = 0;
 
   // Returns true if this process is locked to a particular site-specific

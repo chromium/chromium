@@ -71,8 +71,7 @@ void RecentlyDestroyedHosts::Add(
   if (time_spent_running_unload_handlers > kRecentlyDestroyedStorageTimeout)
     return;
 
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock = policy->GetProcessLock(host->GetID());
+  ProcessLock process_lock = host->GetProcessLock();
 
   // Don't record sites with an empty process lock. This includes sites on
   // Android that are not isolated, and some special cases on desktop (e.g.,

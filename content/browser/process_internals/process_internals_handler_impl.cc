@@ -48,12 +48,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       static_cast<SiteInstanceImpl*>(frame->GetSiteInstance());
   frame_info->site_instance = ::mojom::SiteInstanceInfo::New();
   frame_info->site_instance->id = site_instance->GetId().value();
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   frame_info->site_instance->locked =
-      policy->GetProcessLock(site_instance->GetProcess()->GetID())
-          .is_locked_to_site();
-
+      site_instance->GetProcess()->GetProcessLock().is_locked_to_site();
   frame_info->site_instance->site_url =
       site_instance->HasSite()
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())

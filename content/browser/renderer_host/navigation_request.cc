@@ -544,10 +544,7 @@ void RecordReadyToCommitMetrics(
 
   // Navigation.IsLockedProcess
   {
-    ChildProcessSecurityPolicyImpl* policy =
-        ChildProcessSecurityPolicyImpl::GetInstance();
-    ProcessLock process_lock =
-        policy->GetProcessLock(new_rfh->GetProcess()->GetID());
+    ProcessLock process_lock = new_rfh->GetProcess()->GetProcessLock();
     UMA_HISTOGRAM_BOOLEAN("Navigation.IsLockedProcess",
                           process_lock.is_locked_to_site());
     if (common_params.url.SchemeIsHTTPOrHTTPS()) {

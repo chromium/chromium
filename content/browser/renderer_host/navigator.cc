@@ -267,12 +267,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   if (RenderProcessHost::run_renderer_in_process())
     return true;
 
-  ChildProcessSecurityPolicyImpl* security_policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock =
-      security_policy->GetProcessLock(render_frame_host->GetProcess()->GetID());
-
   // In the case of error page process, any URL is allowed to commit.
+  ProcessLock process_lock = render_frame_host->GetProcess()->GetProcessLock();
   if (process_lock.is_error_page())
     return true;
 
@@ -297,7 +293,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     // the browser process must be terminated.
     // TODO(nasko): Convert to CHECK() once it is confirmed this is not
     // violated in reality.
-    if (!security_policy->HasWebUIBindings(
+    if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
             render_frame_host->GetProcess()->GetID())) {
       base::debug::DumpWithoutCrashing();
     }

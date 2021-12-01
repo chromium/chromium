@@ -505,9 +505,7 @@ ProcessLock MockRenderProcessHost::GetProcessLock() {
 }
 
 bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
-  ProcessLock lock =
-      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-  return lock.is_locked_to_site();
+  return GetProcessLock().is_locked_to_site();
 }
 
 void MockRenderProcessHost::BindCacheStorage(

@@ -1160,7 +1160,7 @@ void SiteInstanceImpl::RenderProcessExited(
 void SiteInstanceImpl::LockProcessIfNeeded() {
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock = policy->GetProcessLock(process_->GetID());
+  ProcessLock process_lock = process_->GetProcessLock();
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(process_->GetStoragePartition());
   if (!has_site_) {

@@ -264,9 +264,7 @@ bool HasErrorPageSiteInfo(SiteInstance* site_instance) {
 }
 
 bool HasErrorPageProcessLock(SiteInstance* site_instance) {
-  return ChildProcessSecurityPolicyImpl::GetInstance()
-      ->GetProcessLock(site_instance->GetProcess()->GetID())
-      .is_error_page();
+  return site_instance->GetProcess()->GetProcessLock().is_error_page();
 }
 
 }  // anonymous namespace
@@ -8654,7 +8652,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(siteless_url, web_contents->GetMainFrame()->GetLastCommittedURL());
   RenderProcessHost* process1 = web_contents->GetMainFrame()->GetProcess();
   EXPECT_FALSE(web_contents->GetMainFrame()->GetSiteInstance()->HasSite());
-  auto process1_lock = policy->GetProcessLock(process1->GetID());
+  auto process1_lock = process1->GetProcessLock();
   EXPECT_FALSE(process1_lock.is_invalid());
   EXPECT_TRUE(process1_lock.allows_any_site());
 
