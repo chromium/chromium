@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include "stdint.h"
+#if (defined RUST_ENABLED)
+#include "third_party/rust/cxx/v1/crate/include/cxx.h"
+#endif
 
 #ifndef BUILD_RUST_TESTS_TEST_MIXED_COMPONENT_COMPONENT_H_
 #define BUILD_RUST_TESTS_TEST_MIXED_COMPONENT_COMPONENT_H_
@@ -31,5 +35,10 @@
 #endif
 
 COMPONENT_EXPORT uint32_t bilingual_math(uint32_t a, uint32_t b);
+COMPONENT_EXPORT std::string bilingual_string();
+
+#if (defined RUST_ENABLED)
+rust::String get_a_string_from_cpp();
+#endif
 
 #endif  //  BUILD_RUST_TESTS_TEST_MIXED_COMPONENT_COMPONENT_H_
