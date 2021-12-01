@@ -53,6 +53,10 @@ class HpsDBusClientImpl : public HpsDBusClient {
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&HpsDBusClientImpl::HpsNotifyChangedConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor daemon restarts.
+    hps_proxy_->SetNameOwnerChangedCallback(base::BindRepeating(
+        &HpsDBusClientImpl::NameOwnerChanged, weak_ptr_factory_.GetWeakPtr()));
   }
 
   ~HpsDBusClientImpl() override = default;
@@ -72,6 +76,17 @@ class HpsDBusClientImpl : public HpsDBusClient {
     // Notify observers of state changed.
     for (auto& observer : observers_) {
       observer.OnHpsNotifyChanged(state);
+    }
+  }
+
+  // Called with a non-empty |new_owner| when the service is restarted, or an
+  // empty |new_owner| when the service is shutdown.
+  void NameOwnerChanged(const std::string& /* old_owner */,
+                        const std::string& new_owner) {
+    const auto method =
+        new_owner.empty() ? &Observer::OnShutdown : &Observer::OnRestart;
+    for (auto& observer : observers_) {
+      (observer.*method)();
     }
   }
 
@@ -153,7 +168,6 @@ class HpsDBusClientImpl : public HpsDBusClient {
 
 }  // namespace
 
-HpsDBusClient::Observer::Observer() = default;
 HpsDBusClient::Observer::~Observer() = default;
 
 HpsDBusClient::HpsDBusClient() {

@@ -49,8 +49,10 @@ class ASH_EXPORT HpsNotifyController
 
   // chromeos::HpsDBusClient::Observer:
   void OnHpsNotifyChanged(bool state) override;
+  void OnRestart() override;
+  void OnShutdown() override;
 
-  // Add/remove views that are listening for visibility updates.
+  // Adds/removes views that are listening for visibility updates.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -62,12 +64,19 @@ class ASH_EXPORT HpsNotifyController
   // preference state. If changed, notifies observers.
   void UpdateIconVisibility(bool logged_in, bool hps_state, bool is_enabled);
 
-  // A callback to set our initial state by polling the presence daemon.
-  void OnHpsPollResult(absl::optional<bool> result);
+  // Configures the daemon and opts in to signals from it.
+  void StartHpsObservation(bool service_is_available);
+
+  // Re-configures the daemon and polls its initial state (used in case of
+  // daemon restart).
+  void RestartHpsObservation();
+
+  // Performs the state update from the daemon response.
+  void UpdateHpsState(absl::optional<bool> result);
 
   // A callback to update visibility when the user enables or disables the
   // feature.
-  void OnPrefChanged();
+  void UpdatePrefState();
 
   // Used to track whether a signal should actually trigger a visibility change:
   bool hps_state_ = false;       // The state last reported by the daemon.

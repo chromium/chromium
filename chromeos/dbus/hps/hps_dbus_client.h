@@ -28,11 +28,15 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
    public:
     ~Observer() override;
 
-    // See go/cros-hps-notify-ui-impl for event details.
+    // Called when the presence of a "snooper" looking over the user's shoulder
+    // starts or stops being detected.
     virtual void OnHpsNotifyChanged(bool state) = 0;
 
-   protected:
-    Observer();
+    // Called when the service starts or restarts.
+    virtual void OnRestart() = 0;
+
+    // Called when the service shuts down.
+    virtual void OnShutdown() = 0;
   };
 
   using GetResultHpsNotifyCallback =
@@ -57,6 +61,7 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   virtual void EnableHpsNotify(const hps::FeatureConfig& config) = 0;
   // Disables HpsNotify in HpsService.
   virtual void DisableHpsNotify() = 0;
+
   // Registers |callback| to run when the HpsService becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.

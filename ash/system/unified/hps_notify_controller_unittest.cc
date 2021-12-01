@@ -31,23 +31,28 @@ void SetEnabledPref(bool enabled) {
 // controller hooked up to the test environment.
 class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
  public:
-  // Argument controls whether the DBus method should return true or false when
-  // the controller is being initialized. We can't set this value in individual
-  // tests since it must be done before AshTestBase::SetUp() executes.
-  HpsNotifyControllerTestBase(bool initial_dbus_state)
-      : initial_dbus_state_(initial_dbus_state) {}
+  // Arguments control the state of the feature and service on controller
+  // construction. We can't set this value in individual tests since it must be
+  // done before AshTestBase::SetUp() executes.
+  HpsNotifyControllerTestBase(bool service_available,
+                              bool service_state,
+                              const std::map<std::string, std::string>& params)
+      : service_available_(service_available),
+        service_state_(service_state),
+        params_(params) {}
   HpsNotifyControllerTestBase(const HpsNotifyControllerTestBase&) = delete;
   HpsNotifyControllerTestBase& operator=(const HpsNotifyControllerTestBase&) =
       delete;
   ~HpsNotifyControllerTestBase() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kSnoopingProtection);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ash::features::kSnoopingProtection, params_);
 
     chromeos::HpsDBusClient::InitializeFake();
     dbus_client_ = chromeos::FakeHpsDBusClient::Get();
-    dbus_client_->set_hps_notify_result(initial_dbus_state_);
+    dbus_client_->set_hps_service_is_available(service_available_);
+    dbus_client_->set_hps_notify_result(service_state_);
 
     AshTestBase::SetUp();
 
@@ -65,7 +70,9 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   }
 
  protected:
-  const bool initial_dbus_state_;
+  const bool service_available_;
+  const bool service_state_;
+  const std::map<std::string, std::string> params_;
 
   chromeos::FakeHpsDBusClient* dbus_client_ = nullptr;
   HpsNotifyController* controller_ = nullptr;
@@ -73,11 +80,15 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// A test fixture where no snooper is initially detected.
+// A test fixture where no snooper is initially detected (using a minimal set of
+// valid params).
 class HpsNotifyControllerTestAbsent : public HpsNotifyControllerTestBase {
  public:
   HpsNotifyControllerTestAbsent()
-      : HpsNotifyControllerTestBase(/*initial_dbus_state=*/false) {}
+      : HpsNotifyControllerTestBase(
+            /*service_available=*/true,
+            /*service_state=*/false,
+            /*params=*/{{"filter_config_case", "1"}}) {}
 };
 
 // Test that icon is hidden by default.
@@ -106,11 +117,15 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
   EXPECT_FALSE(controller_->IsIconVisible());
 }
 
-// A test fixture where a snooper is initially detected.
+// A test fixture where a snooper is initially detected (using a minimal set of
+// valid params).
 class HpsNotifyControllerTestPresent : public HpsNotifyControllerTestBase {
  public:
   HpsNotifyControllerTestPresent()
-      : HpsNotifyControllerTestBase(/*initial_dbus_state=*/true) {}
+      : HpsNotifyControllerTestBase(
+            /*service_available=*/true,
+            /*service_state=*/true,
+            /*params=*/{{"filter_config_case", "1"}}) {}
 };
 
 // Test that initial daemon state is considered.
@@ -172,6 +187,77 @@ TEST_F(HpsNotifyControllerTestPresent, Login) {
 
   SetEnabledPref(true);
   EXPECT_TRUE(controller_->IsIconVisible());
+}
+
+// Test that the controller handles service restarts.
+TEST_F(HpsNotifyControllerTestPresent, Restarts) {
+  SimulateUserLogin("testuser@gmail.com");
+  SetEnabledPref(true);
+
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+  EXPECT_TRUE(controller_->IsIconVisible());
+
+  // Icon is hidden when service goes down.
+  dbus_client_->set_hps_service_is_available(false);
+  controller_->OnShutdown();
+  EXPECT_FALSE(controller_->IsIconVisible());
+
+  // Icon returns when service restarts.
+  dbus_client_->set_hps_service_is_available(true);
+  controller_->OnRestart();
+
+  // Controller now polls the DBus service which responds asynchronously.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
+  EXPECT_TRUE(controller_->IsIconVisible());
+}
+
+// Fixture with the DBus service initially unavailable (using a minimal set of
+// valid params).
+class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
+ public:
+  HpsNotifyControllerTestUnavailable()
+      : HpsNotifyControllerTestBase(
+            /*service_available=*/false,
+            /*service_state=*/true,
+            /*params=*/{{"filter_config_case", "1"}}) {}
+};
+
+// Test that the controller waits for the DBus service to be available.
+TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
+  SimulateUserLogin("testuser@gmail.com");
+  SetEnabledPref(true);
+
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_FALSE(controller_->IsIconVisible());
+
+  dbus_client_->set_hps_service_is_available(true);
+  controller_->OnRestart();
+
+  // Controller now polls the DBus service which responds asynchronously.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+  EXPECT_TRUE(controller_->IsIconVisible());
+}
+
+// Fixture with an invalid feature config.
+class HpsNotifyControllerTestBadParams : public HpsNotifyControllerTestBase {
+ public:
+  HpsNotifyControllerTestBadParams()
+      : HpsNotifyControllerTestBase(
+            /*service_available=*/false,
+            /*service_state=*/true,
+            /*params=*/{}) {}
+};
+
+// Test that the controller gracefully handles invalid feature parameters.
+TEST_F(HpsNotifyControllerTestBadParams, BadParams) {
+  SimulateUserLogin("testuser@gmail.com");
+  SetEnabledPref(true);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_FALSE(controller_->IsIconVisible());
 }
 
 }  // namespace ash
