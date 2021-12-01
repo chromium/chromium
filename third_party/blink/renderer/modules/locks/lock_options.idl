@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/web-locks/#enumdef-lockmode
+// https://w3c.github.io/web-locks/#enumdef-lockmode
 enum LockMode { "shared", "exclusive" };
 
-// https://wicg.github.io/web-locks/#dictdef-lockoptions
+// https://w3c.github.io/web-locks/#dictdef-lockoptions
 dictionary LockOptions {
     LockMode mode = "exclusive";
     boolean ifAvailable = false;
