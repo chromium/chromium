@@ -4,6 +4,6 @@
     "ref": "refs/branch-heads/4606",
     "chrome_project": "chrome-m94",
     "branch_types": [
-        "standard"
+        "cros-lts"
     ]
 }
