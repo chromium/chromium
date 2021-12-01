@@ -1265,27 +1265,7 @@ mojom("web_bluetooth_mojo_bindings") {
 
   public_deps = [ "//device/bluetooth/public/mojom" ]
 
-  blink_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "blink.mojom.WebBluetoothDeviceId"
-          cpp = "::WTF::String"
-        },
-        {
-          mojom = "bluetooth.mojom.UUID"
-          cpp = "::WTF::String"
-          nullable_is_same_type = true
-        },
-      ]
-      traits_headers = [
-        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//device/bluetooth" ]
-    },
-  ]
-
-  cpp_typemaps = [
+  shared_cpp_typemaps = [
     {
       types = [
         {
@@ -1296,6 +1276,26 @@ mojom("web_bluetooth_mojo_bindings") {
       traits_headers = [ "//third_party/blink/public/common/bluetooth/web_bluetooth_device_id_mojom_traits.h" ]
     },
   ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.UUID"
+          cpp = "::WTF::String"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_private_headers = [
+        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//device/bluetooth" ]
+    },
+  ]
+
+  blink_cpp_typemaps += shared_cpp_typemaps
+
+  cpp_typemaps = shared_cpp_typemaps
 
   # The chromium variant must be linked with content and use the same export
   # settings in component build because of the WebBluetoothDeviceId typemap
