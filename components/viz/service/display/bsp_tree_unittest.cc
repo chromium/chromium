@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -63,11 +64,9 @@ class BspTreeTest {
       return BSP_BACK;
     if (pos)
       return BSP_FRONT;
-    double dot = gfx::DotProduct(a.normal(), b.normal());
-    if ((dot >= 0.0f && a.order_index() >= b.order_index()) ||
-        (dot <= 0.0f && a.order_index() <= b.order_index())) {
-      // The sign of the dot product of the normals along with document order
-      // determine which side it goes on, the vertices are ambiguous.
+    if (a.order_index() < b.order_index()) {
+      // The document order determines which side it goes on, the vertices are
+      // ambiguous.
       return BSP_COPLANAR_BACK;
     }
     return BSP_COPLANAR_FRONT;
@@ -306,6 +305,11 @@ TEST(BspTreeTest, Coplanar) {
   std::unique_ptr<DrawPolygon> polygon_e = polygon_b->CreateCopy();
   std::unique_ptr<DrawPolygon> polygon_f = polygon_c->CreateCopy();
 
+  std::unique_ptr<DrawPolygon> polygon_g = polygon_a->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_i = polygon_c->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_j = polygon_d->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_l = polygon_f->CreateCopy();
+
   {
     base::circular_deque<std::unique_ptr<DrawPolygon>> polygon_list;
     polygon_list.push_back(std::move(polygon_a));
@@ -323,6 +327,76 @@ TEST(BspTreeTest, Coplanar) {
     polygon_list.push_back(std::move(polygon_f));
     polygon_list.push_back(std::move(polygon_d));
     polygon_list.push_back(std::move(polygon_e));
+
+    int compare_ids[] = {0, 1, 2};
+    std::vector<int> compare_list = INT_VECTOR_FROM_ARRAY(compare_ids);
+    BspTreeTest::RunTest(&polygon_list, compare_list);
+  }
+
+  // Now check that all of the things above still work when the polygons
+  // are facing backwards.
+  std::vector<gfx::Point3F> vertices_a_rev(vertices_a);
+  std::vector<gfx::Point3F> vertices_b_rev(vertices_b);
+  std::vector<gfx::Point3F> vertices_c_rev(vertices_c);
+  std::reverse(vertices_a_rev.begin(), vertices_a_rev.end());
+  std::reverse(vertices_b_rev.begin(), vertices_b_rev.end());
+  std::reverse(vertices_c_rev.begin(), vertices_c_rev.end());
+
+  std::unique_ptr<DrawPolygon> polygon_a_rev(CREATE_DRAW_POLYGON(
+      vertices_a_rev, gfx::Vector3dF(0.0f, 0.0f, -1.0f), 0));
+  std::unique_ptr<DrawPolygon> polygon_b_rev(CREATE_DRAW_POLYGON(
+      vertices_b_rev, gfx::Vector3dF(0.0f, 0.0f, -1.0f), 1));
+  std::unique_ptr<DrawPolygon> polygon_c_rev(CREATE_DRAW_POLYGON(
+      vertices_c_rev, gfx::Vector3dF(0.0f, 0.0f, -1.0f), 2));
+
+  std::unique_ptr<DrawPolygon> polygon_d_rev = polygon_a_rev->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_e_rev = polygon_b_rev->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_f_rev = polygon_c_rev->CreateCopy();
+
+  std::unique_ptr<DrawPolygon> polygon_h = polygon_b_rev->CreateCopy();
+  std::unique_ptr<DrawPolygon> polygon_k = polygon_e_rev->CreateCopy();
+
+  {
+    base::circular_deque<std::unique_ptr<DrawPolygon>> polygon_list;
+    polygon_list.push_back(std::move(polygon_a_rev));
+    polygon_list.push_back(std::move(polygon_b_rev));
+    polygon_list.push_back(std::move(polygon_c_rev));
+
+    int compare_ids[] = {0, 1, 2};
+    std::vector<int> compare_list = INT_VECTOR_FROM_ARRAY(compare_ids);
+    BspTreeTest::RunTest(&polygon_list, compare_list);
+  }
+
+  // Again, check a different order with the reversed polygons.
+  {
+    base::circular_deque<std::unique_ptr<DrawPolygon>> polygon_list;
+    polygon_list.push_back(std::move(polygon_f_rev));
+    polygon_list.push_back(std::move(polygon_d_rev));
+    polygon_list.push_back(std::move(polygon_e_rev));
+
+    int compare_ids[] = {0, 1, 2};
+    std::vector<int> compare_list = INT_VECTOR_FROM_ARRAY(compare_ids);
+    BspTreeTest::RunTest(&polygon_list, compare_list);
+  }
+
+  // Finally, repeat this set of tests with only the middle polygon
+  // facing backwards.
+  {
+    base::circular_deque<std::unique_ptr<DrawPolygon>> polygon_list;
+    polygon_list.push_back(std::move(polygon_g));
+    polygon_list.push_back(std::move(polygon_h));
+    polygon_list.push_back(std::move(polygon_i));
+
+    int compare_ids[] = {0, 1, 2};
+    std::vector<int> compare_list = INT_VECTOR_FROM_ARRAY(compare_ids);
+    BspTreeTest::RunTest(&polygon_list, compare_list);
+  }
+
+  {
+    base::circular_deque<std::unique_ptr<DrawPolygon>> polygon_list;
+    polygon_list.push_back(std::move(polygon_j));
+    polygon_list.push_back(std::move(polygon_k));
+    polygon_list.push_back(std::move(polygon_l));
 
     int compare_ids[] = {0, 1, 2};
     std::vector<int> compare_list = INT_VECTOR_FROM_ARRAY(compare_ids);

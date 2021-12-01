@@ -219,12 +219,10 @@ void DrawPolygon::SplitPolygon(std::unique_ptr<DrawPolygon> polygon,
 
   // Handle non-splitting cases.
   if (!pos_count && !neg_count) {
-    double dot = gfx::DotProduct(normal_, polygon->normal_);
-    if ((dot >= 0.0f && polygon->order_index_ >= order_index_) ||
-        (dot <= 0.0f && polygon->order_index_ <= order_index_)) {
-      *back = std::move(polygon);
-    } else {
+    if (polygon->order_index_ >= order_index_) {
       *front = std::move(polygon);
+    } else {
+      *back = std::move(polygon);
     }
     *is_coplanar = true;
     return;

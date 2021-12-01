@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -58,6 +59,11 @@ class VIZ_SERVICE_EXPORT BspTree {
     (*action_handler)(item);
   }
 
+  static bool OrderIndexLess(const std::unique_ptr<DrawPolygon>& x,
+                             const std::unique_ptr<DrawPolygon>& y) {
+    return x->order_index() < y->order_index();
+  }
+
   template <typename ActionHandlerType>
   void WalkInOrderVisitNodes(
       ActionHandlerType* action_handler,
@@ -69,10 +75,14 @@ class VIZ_SERVICE_EXPORT BspTree {
     if (first_child) {
       WalkInOrderRecursion(action_handler, first_child);
     }
+    DCHECK(std::is_sorted(first_coplanars.begin(), first_coplanars.end(),
+                          OrderIndexLess));
     for (size_t i = 0; i < first_coplanars.size(); i++) {
       WalkInOrderAction(action_handler, first_coplanars[i].get());
     }
     WalkInOrderAction(action_handler, node->node_data.get());
+    DCHECK(std::is_sorted(second_coplanars.begin(), second_coplanars.end(),
+                          OrderIndexLess));
     for (size_t i = 0; i < second_coplanars.size(); i++) {
       WalkInOrderAction(action_handler, second_coplanars[i].get());
     }
@@ -84,12 +94,15 @@ class VIZ_SERVICE_EXPORT BspTree {
   template <typename ActionHandlerType>
   void WalkInOrderRecursion(ActionHandlerType* action_handler,
                             const BspNode* node) const {
-    // If our view is in front of the the polygon
-    // in this node then walk back then front.
+    // If our view is in front of the the polygon in this node then walk
+    // back then front; otherwise the reverse.  However, for coplanars,
+    // the painting order rules in css-transforms consider only paint
+    // order (and not what is back/front facing) when determining how to
+    // paint coplanar planes.
     if (GetCameraPositionRelative(*(node->node_data)) == BSP_FRONT) {
       WalkInOrderVisitNodes<ActionHandlerType>(
           action_handler, node, node->back_child.get(), node->front_child.get(),
-          node->coplanars_front, node->coplanars_back);
+          node->coplanars_back, node->coplanars_front);
     } else {
       WalkInOrderVisitNodes<ActionHandlerType>(
           action_handler, node, node->front_child.get(), node->back_child.get(),
