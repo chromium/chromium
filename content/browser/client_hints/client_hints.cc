@@ -963,8 +963,11 @@ void PersistAcceptCH(const GURL& url,
                      const std::vector<WebClientHintsType>& hints,
                      base::TimeDelta* persist_duration) {
   DCHECK(delegate);
-  delegate->PersistClientHints(url::Origin::Create(url), hints,
-                               base::Days(1000000));
+  delegate->PersistClientHints(
+      url::Origin::Create(url), hints,
+      // JSON cannot store "non-finite" values so a large value was chosen.
+      // TODO(crbug.com/1243060): Remove this argument.
+      base::Days(1000000));
 }
 
 std::vector<WebClientHintsType> LookupAcceptCHForCommit(
