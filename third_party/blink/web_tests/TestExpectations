@@ -403,6 +403,9 @@ crbug.com/1104125 external/wpt/clipboard-apis/feature-policy/clipboard-read/clip
 # differences it claims to support.
 crbug.com/1076129 external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
 
+# No support for un-prefixed background-clip: text or fill-color on text.
+crbug.com/1275365 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
+
 # Flakily timing out or failing.
 # TODO(ccameron): Investigate this.
 crbug.com/730267 virtual/gpu-rasterization/images/color-profile-group.html [ Failure Pass Skip Timeout ]
@@ -3111,8 +3114,6 @@ crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effect
 crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/filters-drop-shadow-001.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/svg-mutation-single-to-multiple-002.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-header-policy-declined.https.sub.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
-crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-004.html [ Failure ]
 crbug.com/626703 [ Linux ] wpt_internal/webcodecs/reconfiguring_encoder.https.any.worker.html [ Timeout ]
