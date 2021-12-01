@@ -7095,6 +7095,28 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Frames"
     units="vsyncs" expires_after="2021-09-01">
+  <obsolete>
+    Removed 2021-11-29.
+  </obsolete>
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time"
+    units="ms" expires_after="2021-09-01">
+  <obsolete>
+    Removed 2021-11-29.
+  </obsolete>
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Frames"
+    units="vsyncs" expires_after="2022-11-29">
   <owner>sadrul@chromium.org</owner>
   <owner>behdadb@chromium.org</owner>
   <summary>
@@ -7106,8 +7128,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time"
-    units="ms" expires_after="2021-09-01">
+    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time"
+    units="ms" expires_after="2022-11-29">
   <owner>sadrul@chromium.org</owner>
   <owner>behdadb@chromium.org</owner>
   <summary>

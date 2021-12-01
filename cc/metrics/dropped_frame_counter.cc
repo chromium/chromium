@@ -197,29 +197,31 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   // Don't measure smoothness for frames that start before FCP is received, or
   // that have already been reported as dropped.
   if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_ &&
-      !frame_sorter_.IsFrameDropped(args.frame_id)) {
+      !frame_sorter_.IsAlreadyReportedDropped(args.frame_id)) {
     ++total_smoothness_dropped_;
 
     if (report_for_ui_)
       ReportFramesForUI();
     else
       ReportFrames();
-  }
-  auto iter = scroll_start_per_frame_.find(args.frame_id);
-  if (iter != scroll_start_per_frame_.end()) {
-    ScrollStartInfo& scroll_start = iter->second;
-    if (args.frame_id.source_id == scroll_start.frame_id.source_id) {
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time",
-          (args.frame_time - scroll_start.timestamp), base::Milliseconds(1),
-          base::Seconds(4), 50);
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Frames",
-          (args.frame_id.sequence_number -
-           scroll_start.frame_id.sequence_number),
-          1, 250, 50);
+
+    auto iter = scroll_start_per_frame_.find(args.frame_id);
+    if (iter != scroll_start_per_frame_.end()) {
+      ScrollStartInfo& scroll_start = iter->second;
+      if (args.frame_id.source_id == scroll_start.frame_id.source_id) {
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time",
+            (args.frame_time - scroll_start.timestamp), base::Milliseconds(1),
+            base::Seconds(4), 50);
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2."
+            "Frames",
+            (args.frame_id.sequence_number -
+             scroll_start.frame_id.sequence_number),
+            1, 250, 50);
+      }
+      scroll_start_per_frame_.erase(iter);
     }
-    scroll_start_per_frame_.erase(iter);
   }
 
   if (fcp_received_)

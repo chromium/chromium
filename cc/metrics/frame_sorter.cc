@@ -107,7 +107,7 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   }
 }
 
-bool FrameSorter::IsFrameDropped(const viz::BeginFrameId& id) const {
+bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
   auto it = frame_states_.find(id);
   if (it == frame_states_.end())
     return false;
