@@ -20,6 +20,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 
@@ -28,6 +29,10 @@ namespace {
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+
+using ::testing::_;
+using ::testing::IsNull;
+using ::testing::Return;
 
 const char kAttributionInternalsUrl[] = "chrome://conversion-internals/";
 
@@ -129,8 +134,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        DisabledByEmbedder_MeasurementConsideredDisabled) {
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client,
+              IsConversionMeasurementOperationAllowed(
+                  _, ContentBrowserClient::ConversionMeasurementOperation::kAny,
+                  IsNull(), IsNull(), IsNull()))
+      .WillRepeatedly(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 

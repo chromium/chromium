@@ -24,12 +24,17 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
+
+using testing::_;
+using testing::Pointee;
+using testing::Return;
 
 // Create a report which should be sent at |report_time|. Impression
 // data/conversion data/conversion id are all the same for simplicity.
@@ -249,10 +254,18 @@ TEST_F(AttributionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
   }
 }
 
-TEST_F(AttributionReporterImplTest,
-       EmbedderDisallowsConversions_ReportNotSent) {
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+TEST_F(AttributionReporterImplTest, EmbedderDisallowsReporting_ReportNotSent) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
+          Pointee(url::Origin::Create(GURL("https://impression.test/"))),
+          Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
+          Pointee(url::Origin::Create(GURL("https://report.test/")))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
 
@@ -263,61 +276,6 @@ TEST_F(AttributionReporterImplTest,
   EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
   // Verify that the report was not sent to the NetworkSender.
   EXPECT_EQ(0, last_sent_report_info()->http_response_code);
-}
-
-TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
-  ConfigurableAttributionTestBrowserClient browser_client;
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  browser_client.BlockConversionMeasurementInContext(
-      url::Origin::Create(GURL("https://impression.example")),
-      url::Origin::Create(GURL("https://conversion.example")),
-      url::Origin::Create(GURL("https://reporting.example")));
-
-  struct {
-    GURL impression_origin;
-    GURL conversion_origin;
-    GURL reporting_origin;
-    bool report_allowed;
-  } kTestCases[] = {
-      {GURL("https://impression.example"), GURL("https://conversion.example"),
-       GURL("https://reporting.example"), false},
-      {GURL("https://conversion.example"), GURL("https://impression.example"),
-       GURL("https://reporting.example"), true},
-      {GURL("https://impression.example"), GURL("https://conversion.example"),
-       GURL("https://other.example"), true},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    auto impression =
-        SourceBuilder(base::Time())
-            .SetImpressionOrigin(
-                url::Origin::Create(test_case.impression_origin))
-            .SetConversionOrigin(
-                url::Origin::Create(test_case.conversion_origin))
-            .SetReportingOrigin(url::Origin::Create(test_case.reporting_origin))
-            .Build();
-    std::vector<AttributionReport> reports{
-        ReportBuilder(std::move(impression))
-            .SetReportTime(clock().Now())
-            .SetReportId(AttributionReport::Id(1))
-            .Build()};
-    reporter_->AddReportsToQueue(std::move(reports));
-
-    // Fast forward by 0, as we yield the thread when a report is scheduled to
-    // be sent.
-    task_environment_.FastForwardBy(base::TimeDelta());
-    EXPECT_EQ(static_cast<size_t>(test_case.report_allowed),
-              sender_->num_reports_sent())
-        << "impression_origin; " << test_case.impression_origin
-        << ", conversion_origin: " << test_case.conversion_origin
-        << ", reporting_origin: " << test_case.reporting_origin;
-    EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
-    EXPECT_EQ(test_case.report_allowed ? 200 : 0,
-              last_sent_report_info()->http_response_code);
-
-    sender_->Reset();
-  }
 }
 
 TEST_F(AttributionReporterImplTest, NetworkConnectionTrackerSkipsSends) {

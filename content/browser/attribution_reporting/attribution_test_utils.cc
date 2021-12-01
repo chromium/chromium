@@ -38,55 +38,11 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-bool AttributionDisallowingContentBrowserClient::
-    IsConversionMeasurementOperationAllowed(
-        content::BrowserContext* browser_context,
-        ConversionMeasurementOperation operation,
-        const url::Origin* impression_origin,
-        const url::Origin* conversion_origin,
-        const url::Origin* reporting_origin) {
-  return false;
-}
+MockAttributionReportingContentBrowserClient::
+    MockAttributionReportingContentBrowserClient() = default;
 
-ConfigurableAttributionTestBrowserClient::
-    ConfigurableAttributionTestBrowserClient() = default;
-ConfigurableAttributionTestBrowserClient::
-    ~ConfigurableAttributionTestBrowserClient() = default;
-
-bool ConfigurableAttributionTestBrowserClient::
-    IsConversionMeasurementOperationAllowed(
-        content::BrowserContext* browser_context,
-        ConversionMeasurementOperation operation,
-        const url::Origin* impression_origin,
-        const url::Origin* conversion_origin,
-        const url::Origin* reporting_origin) {
-  if (!!blocked_impression_origin_ != !!impression_origin ||
-      !!blocked_conversion_origin_ != !!conversion_origin ||
-      !!blocked_reporting_origin_ != !!reporting_origin) {
-    return true;
-  }
-
-  // Allow the operation if any rule doesn't match.
-  if ((impression_origin &&
-       *blocked_impression_origin_ != *impression_origin) ||
-      (conversion_origin &&
-       *blocked_conversion_origin_ != *conversion_origin) ||
-      (reporting_origin && *blocked_reporting_origin_ != *reporting_origin)) {
-    return true;
-  }
-
-  return false;
-}
-
-void ConfigurableAttributionTestBrowserClient::
-    BlockConversionMeasurementInContext(
-        absl::optional<url::Origin> impression_origin,
-        absl::optional<url::Origin> conversion_origin,
-        absl::optional<url::Origin> reporting_origin) {
-  blocked_impression_origin_ = impression_origin;
-  blocked_conversion_origin_ = conversion_origin;
-  blocked_reporting_origin_ = reporting_origin;
-}
+MockAttributionReportingContentBrowserClient::
+    ~MockAttributionReportingContentBrowserClient() = default;
 
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");

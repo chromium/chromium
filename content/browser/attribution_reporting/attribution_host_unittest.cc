@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -51,10 +50,17 @@ class AttributionHostTestPeer {
 
 namespace {
 
+using ConversionMeasurementOperation =
+    ::content::ContentBrowserClient::ConversionMeasurementOperation;
+
+using testing::_;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::IsNull;
+using testing::Pointee;
 using testing::Property;
+using testing::Return;
 using testing::SizeIs;
 
 const char kConversionUrl[] = "https://b.com";
@@ -199,34 +205,23 @@ TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
-TEST_F(AttributionHostTest,
-       ConversionInSubframe_EmbeddedDisabledContextOnMainFrame) {
+TEST_F(AttributionHostTest, ConversionInSubframe_ChecksCorrectOrigins) {
   // Verifies that conversions from subframes use the correct origins when
   // checking if the operation is allowed by the embedded.
 
-  ConfigurableAttributionTestBrowserClient browser_client;
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ConversionMeasurementOperation::kConversion, IsNull(),
+          Pointee(url::Origin::Create(GURL("https://www.example.com/"))),
+          Pointee(url::Origin::Create(GURL("https://report.example/")))))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  browser_client.BlockConversionMeasurementInContext(
-      /*impression_origin=*/absl::nullopt,
-      absl::make_optional(
-          url::Origin::Create(GURL("https://blocked-top.example"))),
-      absl::make_optional(
-          url::Origin::Create(GURL("https://blocked-reporting.example"))));
-
-  struct {
-    GURL top_frame_url;
-    GURL reporting_origin;
-    bool conversion_allowed;
-  } kTestCases[] = {{GURL("https://blocked-top.example"),
-                     GURL("https://blocked-reporting.example"), false},
-                    {GURL("https://blocked-reporting.example"),
-                     GURL("https://blocked-top.example"), true},
-                    {GURL("https://other.example"),
-                     GURL("https://blocked-reporting.example"), true}};
-
-  for (const auto& test_case : kTestCases) {
-    contents()->NavigateAndCommit(test_case.top_frame_url);
+  for (bool conversion_allowed : {false, true}) {
+    contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
     // Create a subframe and use it as a target for the conversion registration
     // mojo.
@@ -239,13 +234,10 @@ TEST_F(AttributionHostTest,
 
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
-        url::Origin::Create(test_case.reporting_origin);
+        url::Origin::Create(GURL("https://report.example"));
     conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
-    EXPECT_THAT(test_manager_.handled_triggers(),
-                SizeIs(test_case.conversion_allowed))
-        << "Top frame url: " << test_case.top_frame_url
-        << ", reporting origin: " << test_case.reporting_origin;
+    EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(conversion_allowed));
 
     test_manager_.Reset();
   }
@@ -312,8 +304,15 @@ TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
 }
 
 TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ConversionMeasurementOperation::kConversion, IsNull(),
+          Pointee(url::Origin::Create(GURL("https://www.example.com/"))),
+          Pointee(url::Origin::Create(GURL("https://secure.com/")))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -327,88 +326,19 @@ TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
-TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
-  ConfigurableAttributionTestBrowserClient browser_client;
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  browser_client.BlockConversionMeasurementInContext(
-      /*impression_origin=*/absl::nullopt,
-      absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
-      absl::make_optional(
-          url::Origin::Create(GURL("https://embedded.example"))));
-
-  struct {
-    GURL top_frame_url;
-    GURL reporting_origin;
-    bool conversion_allowed;
-  } kTestCases[] = {
-      {GURL("https://top.example"), GURL("https://embedded.example"), false},
-      {GURL("https://embedded.example"), GURL("https://top.example"), true},
-      {GURL("https://other.example"), GURL("https://embedded.example"), true}};
-
-  for (const auto& test_case : kTestCases) {
-    contents()->NavigateAndCommit(test_case.top_frame_url);
-    SetCurrentTargetFrameForTesting(main_rfh());
-
-    blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
-    conversion->reporting_origin =
-        url::Origin::Create(test_case.reporting_origin);
-    conversion_host_mojom()->RegisterConversion(std::move(conversion));
-
-    EXPECT_THAT(test_manager_.handled_triggers(),
-                SizeIs(test_case.conversion_allowed))
-        << "Top frame url: " << test_case.top_frame_url
-        << ", reporting origin: " << test_case.reporting_origin;
-
-    test_manager_.Reset();
-  }
-}
-
-TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
-  ConfigurableAttributionTestBrowserClient browser_client;
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  browser_client.BlockConversionMeasurementInContext(
-      absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
-      /*conversion_origin=*/absl::nullopt,
-      absl::make_optional(
-          url::Origin::Create(GURL("https://embedded.example"))));
-
-  struct {
-    GURL top_frame_url;
-    GURL reporting_origin;
-    bool impression_allowed;
-  } kTestCases[] = {
-      {GURL("https://top.example"), GURL("https://embedded.example"), false},
-      {GURL("https://embedded.example"), GURL("https://top.example"), true},
-      {GURL("https://other.example"), GURL("https://embedded.example"), true}};
-
-  for (const auto& test_case : kTestCases) {
-    contents()->NavigateAndCommit(test_case.top_frame_url);
-    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        GURL(kConversionUrl), main_rfh());
-    navigation->SetInitiatorFrame(main_rfh());
-
-    blink::Impression impression;
-    impression.reporting_origin =
-        url::Origin::Create(GURL(test_case.reporting_origin));
-    impression.conversion_destination =
-        url::Origin::Create(GURL(kConversionUrl));
-    navigation->set_impression(std::move(impression));
-    navigation->Commit();
-
-    EXPECT_THAT(test_manager_.handled_sources(),
-                SizeIs(test_case.impression_allowed))
-        << "Top frame url: " << test_case.top_frame_url
-        << ", reporting origin: " << test_case.reporting_origin;
-
-    test_manager_.Reset();
-  }
-}
-
 TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+  MockAttributionReportingContentBrowserClient browser_client;
+  // This is called twice because the real AttributionHost is still active for
+  // the test.
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ConversionMeasurementOperation::kImpression,
+          Pointee(url::Origin::Create(GURL("https://secure_impression.com/"))),
+          IsNull(), Pointee(url::Origin::Create(GURL("https://c.com/")))))
+      .Times(2)
+      .WillRepeatedly(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -823,20 +753,23 @@ TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ConfigurableAttributionTestBrowserClient allowed_browser_client;
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client,
+              IsConversionMeasurementOperationAllowed(
+                  _, ConversionMeasurementOperation::kImpression, Pointee(_),
+                  IsNull(), Pointee(_)))
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   const struct {
-    raw_ptr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
-      {&allowed_browser_client, true},
-      {&disallowed_browser_client, false},
+      {true},
+      {false},
   };
 
   for (const auto& test_case : kTestCases) {
-    ScopedContentBrowserClientSetting setting(test_case.browser_client);
-
     base::HistogramTester histograms;
     conversion_host_mojom()->RegisterImpression(CreateValidImpression());
     histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed",
@@ -849,20 +782,23 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ConfigurableAttributionTestBrowserClient allowed_browser_client;
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client,
+              IsConversionMeasurementOperationAllowed(
+                  _, ConversionMeasurementOperation::kConversion, IsNull(),
+                  Pointee(_), Pointee(_)))
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   const struct {
-    raw_ptr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
-      {&allowed_browser_client, true},
-      {&disallowed_browser_client, false},
+      {true},
+      {false},
   };
 
   for (const auto& test_case : kTestCases) {
-    ScopedContentBrowserClientSetting setting(test_case.browser_client);
-
     base::HistogramTester histograms;
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =

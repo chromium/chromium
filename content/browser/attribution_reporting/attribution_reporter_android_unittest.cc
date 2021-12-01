@@ -11,6 +11,7 @@
 #include "content/common/url_utils.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -19,10 +20,15 @@
 namespace content {
 
 namespace {
+
+using testing::_;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::IsNull;
+using testing::Pointee;
 using testing::Property;
+using testing::Return;
 
 const char kPackageName[] = "org.chromium.chrome.test";
 const char kConversionUrl[] = "https://b.com";
@@ -74,7 +80,13 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
-  AttributionDisallowingContentBrowserClient browser_client;
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+          Pointee(_), IsNull(), Pointee(_)))
+      .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
   attribution_reporter_android::ReportAppImpression(

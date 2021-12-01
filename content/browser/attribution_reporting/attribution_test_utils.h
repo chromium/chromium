@@ -36,49 +36,21 @@ namespace content {
 
 class StorableTrigger;
 
-class AttributionDisallowingContentBrowserClient
+class MockAttributionReportingContentBrowserClient
     : public TestContentBrowserClient {
  public:
-  AttributionDisallowingContentBrowserClient() = default;
-  ~AttributionDisallowingContentBrowserClient() override = default;
+  MockAttributionReportingContentBrowserClient();
+  ~MockAttributionReportingContentBrowserClient() override;
 
   // ContentBrowserClient:
-  bool IsConversionMeasurementOperationAllowed(
-      content::BrowserContext* browser_context,
-      ConversionMeasurementOperation operation,
-      const url::Origin* impression_origin,
-      const url::Origin* conversion_origin,
-      const url::Origin* reporting_origin) override;
-};
-
-// Configurable browser client capable of blocking conversion operations in a
-// single embedded context.
-class ConfigurableAttributionTestBrowserClient
-    : public TestContentBrowserClient {
- public:
-  ConfigurableAttributionTestBrowserClient();
-  ~ConfigurableAttributionTestBrowserClient() override;
-
-  // ContentBrowserClient:
-  bool IsConversionMeasurementOperationAllowed(
-      content::BrowserContext* browser_context,
-      ConversionMeasurementOperation operation,
-      const url::Origin* impression_origin,
-      const url::Origin* conversion_origin,
-      const url::Origin* reporting_origin) override;
-
-  // Sets the origins where conversion measurement is blocked. This only blocks
-  // an operation if all origins match in
-  // `AllowConversionMeasurementOperation()`.
-  void BlockConversionMeasurementInContext(
-      absl::optional<url::Origin> impression_origin,
-      absl::optional<url::Origin> conversion_origin,
-      absl::optional<url::Origin> reporting_origin);
-
- private:
-  absl::optional<url::Origin> blocked_impression_origin_;
-  absl::optional<url::Origin> blocked_conversion_origin_;
-  absl::optional<url::Origin> blocked_reporting_origin_;
+  MOCK_METHOD(bool,
+              IsConversionMeasurementOperationAllowed,
+              (content::BrowserContext * browser_context,
+               ConversionMeasurementOperation operation,
+               const url::Origin* impression_origin,
+               const url::Origin* conversion_origin,
+               const url::Origin* reporting_origin),
+              (override));
 };
 
 base::GUID DefaultExternalReportID();

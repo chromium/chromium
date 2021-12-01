@@ -38,9 +38,9 @@ namespace content {
 
 namespace {
 
-namespace {
+using ::testing::Return;
+
 constexpr char kBaseDataDir[] = "content/test/data/";
-}
 
 // Waits for the a given |report_url| to be received by the test server. Wraps a
 // ControllableHttpResponse so that it can wait for the server request in a
@@ -574,8 +574,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ConversionRegisteredWithEmbedderDisallow_NoData) {
-  AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, IsConversionMeasurementOperationAllowed)
+      .WillRepeatedly(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
