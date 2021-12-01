@@ -738,10 +738,23 @@ class PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest
   PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest& operator=(
       const PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest&) =
       delete;
+  net::EmbeddedTestServer nickpay_server_;
 
  protected:
-  PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest() {
+  PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest()
+      : nickpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+  void SetUpOnMainThread() override {
+    PaymentRequestBrowserTestBase::SetUpOnMainThread();
+    SetHostReplaceRule("*", "127.0.0.1");
+
+    // Choosing nickpay for its JIT installation support.
+    nickpay_server_.ServeFilesFromSourceDirectory(
+        "components/test/data/payments/nickpay.com/");
+
+    ASSERT_TRUE(nickpay_server_.Start());
   }
 
  private:
@@ -840,6 +853,199 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest,
+    Called_False_Shown_Completed) {
+  NavigateTo("/payment_request_can_make_payment_metrics_test.html");
+  base::HistogramTester histogram_tester;
+
+  std::string nickpay_method_name =
+      nickpay_server_.GetURL("nickpay.com", "/pay").spec();
+  std::string nickpay2_method_name =
+      nickpay_server_.GetURL("nickpay2.com", "/pay").spec();
+
+  ResetEventWaiterForSequence({DialogEvent::CAN_MAKE_PAYMENT_CALLED,
+                               DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED});
+  // Install payment apps JIT, so HasEnrolledInstrument returns false.
+  ASSERT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("queryShowWithMethods([{supportedMethods:$1}"
+                                   ",{supportedMethods:$2}]);",
+                                   nickpay_method_name, nickpay2_method_name)));
+  WaitForObservedEvent();
+
+  // Flushing the PaymentRequest::AreRequestedMethodsSupportedCallback()
+  // callback so that EVENT_SHOWN/SKIPPED_SHOW will be recorded.
+  base::RunLoop().RunUntilIdle();
+
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest,
+    Called_False_Shown_OtherAborted) {
+  NavigateTo("/payment_request_can_make_payment_metrics_test.html");
+  base::HistogramTester histogram_tester;
+
+  std::string nickpay_method_name =
+      nickpay_server_.GetURL("nickpay.com", "/pay").spec();
+  std::string nickpay2_method_name =
+      nickpay_server_.GetURL("nickpay2.com", "/pay").spec();
+
+  ResetEventWaiterForSequence({DialogEvent::CAN_MAKE_PAYMENT_CALLED,
+                               DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED});
+  // Install payment apps JIT, so HasEnrolledInstrument returns false.
+  ASSERT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("queryShowWithMethods([{supportedMethods:$1}"
+                                   ",{supportedMethods:$2}]);",
+                                   nickpay_method_name, nickpay2_method_name)));
+  WaitForObservedEvent();
+
+  // Flushing the PaymentRequest::AreRequestedMethodsSupportedCallback()
+  // callback so that EVENT_SHOWN/SKIPPED_SHOW will be recorded.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate that an unexpected error occurs.
+  ResetEventWaiterForSequence(
+      {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
+  const std::string click_buy_button_js =
+      "(function() { document.getElementById('abort').click(); })();";
+  ASSERT_TRUE(
+      content::ExecuteScript(GetActiveWebContents(), click_buy_button_js));
+  WaitForObservedEvent();
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest,
+    Called_False_Shown_UserAborted) {
+  NavigateTo("/payment_request_can_make_payment_metrics_test.html");
+  base::HistogramTester histogram_tester;
+
+  std::string nickpay_method_name =
+      nickpay_server_.GetURL("nickpay.com", "/pay").spec();
+  std::string nickpay2_method_name =
+      nickpay_server_.GetURL("nickpay2.com", "/pay").spec();
+
+  ResetEventWaiterForSequence({DialogEvent::CAN_MAKE_PAYMENT_CALLED,
+                               DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED});
+  // Install payment apps JIT, so HasEnrolledInstrument returns false.
+  ASSERT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("queryShowWithMethods([{supportedMethods:$1}"
+                                   ",{supportedMethods:$2}]);",
+                                   nickpay_method_name, nickpay2_method_name)));
+  WaitForObservedEvent();
+
+  // Flushing the PaymentRequest::AreRequestedMethodsSupportedCallback()
+  // callback so that EVENT_SHOWN/SKIPPED_SHOW will be recorded.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate that the user cancels the Payment Request.
+  ClickOnCancel();
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
   EXPECT_FALSE(buckets[0].min &
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE);
   EXPECT_TRUE(buckets[0].min &
@@ -985,7 +1191,8 @@ IN_PROC_BROWSER_TEST_F(
                                    a_method_name, b_method_name)));
   WaitForObservedEvent();
 
-  // Wait for all callbacks to run.
+  // Flushing the PaymentRequest::AreRequestedMethodsSupportedCallback()
+  // callback so that EVENT_SHOWN/SKIPPED_SHOW will be recorded.
   base::RunLoop().RunUntilIdle();
 
   // Simulate that the user cancels the Payment Request.

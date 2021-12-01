@@ -274,6 +274,12 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
     event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED);
 }
 
+void PaymentRequestBrowserTestBase::SetHostReplaceRule(
+    const std::string& host_pattern,
+    const std::string& replacement) {
+  host_resolver()->AddRule(host_pattern, replacement);
+}
+
 // Install the payment app specified by `hostname`, e.g., "a.com". Specify the
 // filename of the service worker with `service_worker_filename`. Note that
 // the origin has to be initialized first to be supported here. The payment
