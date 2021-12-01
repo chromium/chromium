@@ -51,15 +51,14 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // DeviceOutputListener implementation
   void StartListening(ReferenceOutput::Listener* listener,
                       const std::string& device_id) final;
-  void StopListening(ReferenceOutput::Listener* listener,
-                     const std::string& device_id) final;
+  void StopListening(ReferenceOutput::Listener* listener) final;
 
  private:
   friend class OutputDeviceMixerManagerTest;
 
-  using ListenerSet = std::set<ReferenceOutput::Listener*>;
   using OutputDeviceMixers = std::vector<std::unique_ptr<OutputDeviceMixer>>;
-  using DeviceToListenersMap = base::flat_map<std::string, ListenerSet>;
+  using ListenerToDeviceMap =
+      base::flat_map<base::raw_ptr<ReferenceOutput::Listener>, std::string>;
 
   // Forwards device change notifications to OutputDeviceMixers.
   void OnDeviceChange();
@@ -93,7 +92,11 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // Creates and returns a new mixer, or nullptr if the creation failed.
   OutputDeviceMixer* AddMixer(const std::string& physical_device_id);
 
+  void StartNewListener(ReferenceOutput::Listener* listener,
+                        const std::string& device_id);
+
   bool IsValidMixerId(const std::string& device_id);
+  bool IsNormalizedIfDefault(const std::string& device_id);
 
   SEQUENCE_CHECKER(owning_sequence_);
   const raw_ptr<media::AudioManager> audio_manager_;
@@ -104,7 +107,7 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
 
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
-  DeviceToListenersMap device_id_to_listeners_;
+  ListenerToDeviceMap listener_registration_;
   base::WeakPtrFactory<OutputDeviceMixerManager> device_change_weak_ptr_factory_
       GUARDED_BY_CONTEXT(owning_sequence_);
 };

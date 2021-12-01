@@ -118,17 +118,14 @@ void OutputDeviceMixerManager::OnDeviceChange() {
     mixer->ProcessDeviceChange();
 }
 
-void OutputDeviceMixerManager::StartListening(
+void OutputDeviceMixerManager::StartNewListener(
     ReferenceOutput::Listener* listener,
-    const std::string& output_device_id) {
+    const std::string& device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  DCHECK(IsNormalizedIfDefault(device_id));
 
-  std::string device_id = NormalizeIfDefault(output_device_id);
-
-  ListenerSet& listeners = device_id_to_listeners_[device_id];
-
-  bool insert_succeeded = listeners.insert(listener).second;
-  DCHECK(insert_succeeded);  // |listener| shouldn't already be in the set.
+  DCHECK(!listener_registration_.contains(listener));
+  listener_registration_[listener] = device_id;
 
   OutputDeviceMixer* mixer = FindMixer(ToMixerDeviceId(device_id));
 
@@ -138,23 +135,40 @@ void OutputDeviceMixerManager::StartListening(
   mixer->StartListening(listener);
 }
 
-void OutputDeviceMixerManager::StopListening(
+void OutputDeviceMixerManager::StartListening(
     ReferenceOutput::Listener* listener,
     const std::string& output_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 
   std::string device_id = NormalizeIfDefault(output_device_id);
 
-  ListenerSet& listeners = device_id_to_listeners_.at(device_id);
+  if (!listener_registration_.contains(listener)) {
+    StartNewListener(listener, device_id);
+    return;
+  }
 
-  auto listener_it = listeners.find(listener);
-  DCHECK(listener_it != listeners.end());
+  std::string registered_device_id = listener_registration_.at(listener);
 
-  listeners.erase(listener_it);
+  if (ToMixerDeviceId(registered_device_id) != ToMixerDeviceId(device_id)) {
+    // |listener| is listening to a completely different mixer.
+    StopListening(listener);
+    StartNewListener(listener, device_id);
+    return;
+  }
 
-  // If |listener| is the last listener, remove the set.
-  if (listeners.empty())
-    device_id_to_listeners_.erase(device_id);
+  // |listener| is listening to the right mixer, but we might need to update
+  // its registration (e.g. when switching between
+  // |current_default_device_id_| and kNormalizedDefaultId).
+  if (registered_device_id != device_id)
+    listener_registration_[listener] = device_id;
+}
+
+void OutputDeviceMixerManager::StopListening(
+    ReferenceOutput::Listener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+  const std::string device_id = listener_registration_.at(listener);
+  listener_registration_.erase(listener);
 
   OutputDeviceMixer* mixer = FindMixer(ToMixerDeviceId(device_id));
 
@@ -242,18 +256,13 @@ OutputDeviceMixer* OutputDeviceMixerManager::AddMixer(
 void OutputDeviceMixerManager::AttachListenersById(const std::string& device_id,
                                                    OutputDeviceMixer* mixer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK(!media::AudioDeviceDescription::IsDefaultDevice(device_id) ||
-         device_id == kNormalizedDefaultDeviceId);
+  DCHECK(IsNormalizedIfDefault(device_id));
   DCHECK(mixer);
 
-  auto listeners_it = device_id_to_listeners_.find(device_id);
-
-  // Nothing to attach.
-  if (listeners_it == device_id_to_listeners_.end())
-    return;
-
-  for (auto&& listener : listeners_it->second)
-    mixer->StartListening(listener);
+  for (auto&& listener_device_kvp : listener_registration_) {
+    if (listener_device_kvp.second == device_id)
+      mixer->StartListening(listener_device_kvp.first);
+  }
 }
 
 base::OnceClosure OutputDeviceMixerManager::GetOnDeviceChangeCallback() {
@@ -296,6 +305,12 @@ media::AudioOutputStream* OutputDeviceMixerManager::CreateDeviceListenerStream(
 bool OutputDeviceMixerManager::IsValidMixerId(const std::string& device_id) {
   return device_id == kNormalizedDefaultDeviceId ||
          device_id != current_default_device_id_;
+}
+
+bool OutputDeviceMixerManager::IsNormalizedIfDefault(
+    const std::string& device_id) {
+  return device_id == kNormalizedDefaultDeviceId ||
+         !media::AudioDeviceDescription::IsDefaultDevice(device_id);
 }
 
 }  // namespace audio

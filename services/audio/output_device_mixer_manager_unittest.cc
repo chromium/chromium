@@ -717,7 +717,7 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_StartStop) {
 
   // Attach/detach multiple listeners to/from multiple devices.
   output_mixer_manager_.StartListening(&listener, kFakeDeviceId);
-  output_mixer_manager_.StopListening(&listener, kFakeDeviceId);
+  output_mixer_manager_.StopListening(&listener);
 }
 
 // Attach/detach listeners to multiple devices with no mixers.
@@ -731,8 +731,8 @@ TEST_F(OutputDeviceMixerManagerTest,
   output_mixer_manager_.StartListening(&listener_a, kFakeDeviceId);
   output_mixer_manager_.StartListening(&listener_b, kOtherFakeDeviceId);
 
-  output_mixer_manager_.StopListening(&listener_a, kFakeDeviceId);
-  output_mixer_manager_.StopListening(&listener_b, kOtherFakeDeviceId);
+  output_mixer_manager_.StopListening(&listener_a);
+  output_mixer_manager_.StopListening(&listener_b);
 }
 
 // Attach/detach multiple listeners to a single device with no mixer.
@@ -746,8 +746,8 @@ TEST_F(OutputDeviceMixerManagerTest,
   output_mixer_manager_.StartListening(&listener_a, kFakeDeviceId);
   output_mixer_manager_.StartListening(&listener_b, kFakeDeviceId);
 
-  output_mixer_manager_.StopListening(&listener_a, kFakeDeviceId);
-  output_mixer_manager_.StopListening(&listener_b, kFakeDeviceId);
+  output_mixer_manager_.StopListening(&listener_a);
+  output_mixer_manager_.StopListening(&listener_b);
 }
 
 // Attach/detach to the default device.
@@ -757,7 +757,7 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_StartStop_DefaultId) {
   StrictMock<MockListener> listener;
 
   output_mixer_manager_.StartListening(&listener, kDefaultDeviceId);
-  output_mixer_manager_.StopListening(&listener, kDefaultDeviceId);
+  output_mixer_manager_.StopListening(&listener);
 }
 
 // Listeners are attached as they are added.
@@ -768,7 +768,7 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_CreateStartStop) {
 
   ForceOutputMixerCreation(kOtherFakeDeviceId);
   output_mixer_manager_.StartListening(listener.get(), kOtherFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kOtherFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Listeners are attached on mixer creation.
@@ -779,7 +779,7 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_StartCreateStop) {
 
   output_mixer_manager_.StartListening(listener.get(), kOtherFakeDeviceId);
   ForceOutputMixerCreation(kOtherFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kOtherFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Removed listeners are not attached.
@@ -789,7 +789,7 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_StartStopCreate) {
   auto listener = GetListener_MixerExpectsNoCalls(mixer);
 
   output_mixer_manager_.StartListening(listener.get(), kOtherFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kOtherFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
   ForceOutputMixerCreation(kOtherFakeDeviceId);
 }
 
@@ -804,7 +804,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   ForceOutputMixerCreation(kFakeDeviceId);
   output_mixer_manager_.StartListening(listener.get(), kFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Listeners are attached on mixer creation.
@@ -818,7 +818,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   output_mixer_manager_.StartListening(listener.get(), kFakeDeviceId);
   ForceOutputMixerCreation(kFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Removed listeners are not attached.
@@ -831,7 +831,7 @@ TEST_F(OutputDeviceMixerManagerTest,
   auto listener = GetListener_MixerExpectsNoCalls(mixer);
 
   output_mixer_manager_.StartListening(listener.get(), kFakeDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
   ForceOutputMixerCreation(kFakeDeviceId);
 }
 
@@ -847,8 +847,7 @@ TEST_F(OutputDeviceMixerManagerTest,
                                        current_default_physical_device());
   output_mixer_manager_.StartListening(removed_listener.get(),
                                        current_default_physical_device());
-  output_mixer_manager_.StopListening(removed_listener.get(),
-                                      current_default_physical_device());
+  output_mixer_manager_.StopListening(removed_listener.get());
   ForceOutputMixerCreation(current_default_physical_device());
 }
 
@@ -860,7 +859,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   ForceOutputMixerCreation(kDefaultDeviceId);
   output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kDefaultDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 TEST_F(OutputDeviceMixerManagerTest,
@@ -871,7 +870,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
   ForceOutputMixerCreation(kDefaultDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kDefaultDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 TEST_F(OutputDeviceMixerManagerTest,
@@ -883,7 +882,7 @@ TEST_F(OutputDeviceMixerManagerTest,
   // kEmptyDeviceId should be treated the same as kDefaultDeviceId.
   output_mixer_manager_.StartListening(listener.get(), kEmptyDeviceId);
   ForceOutputMixerCreation(kEmptyDeviceId);
-  output_mixer_manager_.StopListening(listener.get(), kEmptyDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Makes sure default-listeners are attached to the default-mixer when it is
@@ -896,7 +895,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
   ForceOutputMixerCreation(current_default_physical_device());
-  output_mixer_manager_.StopListening(listener.get(), kDefaultDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Makes sure current_default_physical_device() listeners are attached when the
@@ -910,8 +909,7 @@ TEST_F(OutputDeviceMixerManagerTest,
   output_mixer_manager_.StartListening(listener.get(),
                                        current_default_physical_device());
   ForceOutputMixerCreation(kDefaultDeviceId);
-  output_mixer_manager_.StopListening(listener.get(),
-                                      current_default_physical_device());
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Makes sure the presence of listeners does not force device recreation
@@ -928,7 +926,7 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   SimulateDeviceChange();
 
-  output_mixer_manager_.StopListening(listener.get(), kOtherFakeDeviceId);
+  output_mixer_manager_.StopListening(listener.get());
 }
 
 // Makes sure listeners are re-attached when mixers are recreated.
@@ -1115,4 +1113,89 @@ TEST_F(OutputDeviceMixerManagerTest,
   // Only |other_listener| should be attached to |other_mixer|.
   ForceOutputMixerCreation(kOtherFakeDeviceId);
 }
+
+// Makes sure we can call StartListening multiple times with the same listener,
+// when the different device IDs map to the same mixer.
+TEST_F(OutputDeviceMixerManagerTest,
+       DeviceOutputListener_MultipleStarts_EquivalentIds) {
+  MockOutputDeviceMixer* default_mixer = SetUpMockMixer_NoStreams();
+  ForceOutputMixerCreation(kDefaultDeviceId);
+
+  auto listener = GetListener_MixerExpectsStartStop(default_mixer);
+
+  // Start listener.
+  output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
+
+  // Verify starting with the same ID.
+  output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
+
+  // Verify starting with equivalent IDs.
+  output_mixer_manager_.StartListening(listener.get(), kEmptyDeviceId);
+  output_mixer_manager_.StartListening(listener.get(),
+                                       current_default_physical_device());
+
+  // Return to the original ID.
+  output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
+
+  output_mixer_manager_.StopListening(listener.get());
+}
+
+// Makes sure we can call StartListening multiple times with the same listener,
+// with different device IDs.
+TEST_F(OutputDeviceMixerManagerTest,
+       DeviceOutputListener_MultipleStarts_DifferentIds) {
+  MockOutputDeviceMixer* default_mixer;
+  MockOutputDeviceMixer* other_mixer;
+  {
+    InSequence s;
+    default_mixer = SetUpMockMixer_NoStreams(kNormalizedDefaultDeviceId);
+    other_mixer = SetUpMockMixer_NoStreams(kOtherFakeDeviceId);
+    ForceOutputMixerCreation(kDefaultDeviceId);
+    ForceOutputMixerCreation(kOtherFakeDeviceId);
+  }
+
+  auto listener = GetListener_MixerExpectsStartStop(default_mixer);
+  EXPECT_CALL(*other_mixer, StartListening(listener.get())).Times(1);
+  EXPECT_CALL(*other_mixer, StopListening(listener.get())).Times(0);
+
+  output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
+
+  // This call should stop |default_mixer|.
+  output_mixer_manager_.StartListening(listener.get(), kOtherFakeDeviceId);
+}
+
+// Makes sure listeners are properly updated internally when going from a
+// default to a specific device.
+TEST_F(OutputDeviceMixerManagerTest,
+       DeviceOutputListener_MultipleStarts_DefaultToSpecific) {
+  MockOutputDeviceMixer* default_mixer = SetUpMockMixer_NoStreams();
+  ForceOutputMixerCreation(kDefaultDeviceId);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  auto listener = GetListener_MixerExpectsStart(default_mixer);
+  output_mixer_manager_.StartListening(listener.get(), kDefaultDeviceId);
+
+  // Switch |listener| to listen to the current default device.
+  ASSERT_EQ(current_default_physical_device(), kFakeDeviceId);
+  output_mixer_manager_.StartListening(listener.get(), kFakeDeviceId);
+
+  // Change the default device.
+  ASSERT_NE(current_default_physical_device(), kOtherFakeDeviceId);
+  SimulateDeviceChange(/*new_default_physical_device=*/kOtherFakeDeviceId);
+
+  // The default mixer should not receive any start/stop calls with listener.
+  MockOutputDeviceMixer* new_default_mixer = SetUpMockMixer_NoStreams();
+  EXPECT_CALL(*new_default_mixer, StartListening(listener.get())).Times(0);
+  EXPECT_CALL(*new_default_mixer, StopListening(listener.get())).Times(0);
+  ForceOutputMixerCreation(kDefaultDeviceId);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // The kFakeDeviceId mixer should be started with listener.
+  MockOutputDeviceMixer* physical_mixer =
+      SetUpMockMixer_NoStreams(kFakeDeviceId);
+  EXPECT_CALL(*physical_mixer, StartListening(listener.get())).Times(1);
+  EXPECT_CALL(*physical_mixer, StopListening(listener.get())).Times(0);
+  ForceOutputMixerCreation(kFakeDeviceId);
+}
+
 }  // namespace audio
