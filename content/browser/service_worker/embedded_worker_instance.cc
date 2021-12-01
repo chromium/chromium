@@ -310,7 +310,6 @@ void EmbeddedWorkerInstance::Start(
       auto* storage_partition =
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
       coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-          CrossOriginEmbedderPolicyReporter::Creator::kServiceWorker,
           storage_partition->GetWeakPtr(), params->script_url,
           owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
           owner_version_->cross_origin_embedder_policy()
@@ -872,7 +871,6 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
     coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        CrossOriginEmbedderPolicyReporter::Creator::kServiceWorker,
         storage_partition->GetWeakPtr(), owner_version_->script_url(),
         owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
         owner_version_->cross_origin_embedder_policy()

@@ -9833,7 +9833,6 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
     coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        CrossOriginEmbedderPolicyReporter::Creator::kDocument,
         storage_partition->GetWeakPtr(), url,
         cross_origin_embedder_policy_.reporting_endpoint,
         cross_origin_embedder_policy_.report_only_reporting_endpoint,

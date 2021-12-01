@@ -42,7 +42,6 @@ class MockDedicatedWorker
     // The COEP reporter is replaced by a placeholder connection. Reports are
     // ignored.
     auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-        CrossOriginEmbedderPolicyReporter::Creator::kDedicatedWorker,
         RenderFrameHostImpl::FromID(render_frame_host_id)
             ->GetStoragePartition()
             ->GetWeakPtr(),

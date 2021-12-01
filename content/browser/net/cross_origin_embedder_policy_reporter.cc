@@ -4,7 +4,6 @@
 
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 
-#include "base/debug/alias.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
@@ -27,15 +26,13 @@ GURL StripUsernameAndPassword(const GURL& url) {
 }  // namespace
 
 CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
-    Creator creator,
     base::WeakPtr<StoragePartition> storage_partition,
     const GURL& context_url,
     const absl::optional<std::string>& endpoint,
     const absl::optional<std::string>& report_only_endpoint,
     const base::UnguessableToken& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key)
-    : creator_(creator),
-      storage_partition_(std::move(storage_partition)),
+    : storage_partition_(std::move(storage_partition)),
       context_url_(context_url),
       endpoint_(endpoint),
       report_only_endpoint_(report_only_endpoint),
@@ -101,10 +98,6 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
   const absl::optional<std::string>& endpoint =
       report_only ? report_only_endpoint_ : endpoint_;
   const char* const disposition = report_only ? "reporting" : "enforce";
-  uint32_t mark = 0xdeadbeaf;
-  Creator creator = creator_;
-  base::debug::Alias(&mark);
-  base::debug::Alias(&creator);
   if (observer_) {
     std::vector<blink::mojom::ReportBodyElementPtr> list;
 
