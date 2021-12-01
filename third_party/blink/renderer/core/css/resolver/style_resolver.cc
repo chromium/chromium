@@ -1547,10 +1547,6 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
 }
 
 bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
-  // TODO(crbug.com/1180159): @container and transitions properly.
-  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
-    return false;
-
   ElementAnimations* element_animations = GetElementAnimations(state);
   if (!element_animations || !element_animations->IsAnimationStyleChange())
     return false;
