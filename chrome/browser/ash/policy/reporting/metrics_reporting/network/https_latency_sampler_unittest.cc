@@ -4,174 +4,287 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 
-#include "base/test/bind.h"
+#include <memory>
+#include <utility>
+
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/net/network_diagnostics/https_latency_routine.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
+#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace reporting {
+using ::chromeos::network_diagnostics::NetworkDiagnostics;
+using ::chromeos::network_diagnostics::mojom::HttpsLatencyResultValue;
+using ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines;
+using ::chromeos::network_diagnostics::mojom::RoutineProblems;
+using ::chromeos::network_diagnostics::mojom::RoutineResult;
+using ::chromeos::network_diagnostics::mojom::RoutineResultValue;
 
+using HttpsLatencyProblemMojom =
+    ::chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+using RoutineVerdictMojom =
+    ::chromeos::network_diagnostics::mojom::RoutineVerdict;
+
+namespace reporting {
 namespace {
 
-using HttpsLatencyRoutine = chromeos::network_diagnostics::HttpsLatencyRoutine;
-
-std::unique_ptr<HttpsLatencyRoutine> HttpsLatencyRoutineGetterTestHelper(
-    std::unique_ptr<HttpsLatencyRoutine> routine) {
-  return routine;
-}
-}  // namespace
-
-class FakeHttpsLatencyRoutine
-    : public chromeos::network_diagnostics::HttpsLatencyRoutine {
+class FakeNetworkDiagnostics : public NetworkDiagnostics {
  public:
-  FakeHttpsLatencyRoutine() {
-    set_verdict(
-        chromeos::network_diagnostics::mojom::RoutineVerdict::kNoProblem);
+  FakeNetworkDiagnostics() : NetworkDiagnostics(&fake_debug_daemon_client_) {}
+
+  FakeNetworkDiagnostics(const FakeNetworkDiagnostics&) = delete;
+  FakeNetworkDiagnostics& operator=(const FakeNetworkDiagnostics&) = delete;
+
+  ~FakeNetworkDiagnostics() override = default;
+
+  void RunHttpsLatency(RunHttpsLatencyCallback callback) override {
+    ASSERT_FALSE(callback_);
+    callback_ = std::move(callback);
   }
 
-  FakeHttpsLatencyRoutine(
-      chromeos::network_diagnostics::mojom::RoutineVerdict verdict,
-      chromeos::network_diagnostics::mojom::HttpsLatencyProblem problem) {
-    using chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
-    using chromeos::network_diagnostics::mojom::RoutineProblems;
-
-    set_verdict(verdict);
-    std::vector<HttpsLatencyProblem> problems;
-    problems.emplace_back(problem);
-    set_problems(RoutineProblems::NewHttpsLatencyProblems(problems));
+  void ExecuteCallback() {
+    // Block until all previously posted tasks are executed to make sure
+    // `RunHttpsLatency` is called and `callback_` is set.
+    base::RunLoop run_loop;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     run_loop.QuitClosure());
+    run_loop.Run();
+    ASSERT_TRUE(callback_);
+    std::move(callback_).Run(routine_result_.Clone());
   }
 
-  ~FakeHttpsLatencyRoutine() override = default;
+  void SetReceiver(
+      mojo::PendingReceiver<NetworkDiagnosticsRoutines> pending_receiver) {
+    receiver_ = std::make_unique<mojo::Receiver<NetworkDiagnosticsRoutines>>(
+        this, std::move(pending_receiver));
+  }
 
-  void Run() override {}
+  void SetResultNoProblem(int latency_ms) {
+    routine_result_.result_value =
+        RoutineResultValue::NewHttpsLatencyResultValue(
+            HttpsLatencyResultValue::New(base::Milliseconds(latency_ms)));
+    routine_result_.verdict = RoutineVerdictMojom::kNoProblem;
+    routine_result_.problems = RoutineProblems::NewHttpsLatencyProblems({});
+  }
 
-  void AnalyzeResultsAndExecuteCallback() override { ExecuteCallback(); }
+  void SetResultProblem(HttpsLatencyProblemMojom problem) {
+    routine_result_.problems =
+        RoutineProblems::NewHttpsLatencyProblems({problem});
+    routine_result_.verdict = RoutineVerdictMojom::kProblem;
+  }
+
+  void SetResultProblemLatency(HttpsLatencyProblemMojom problem,
+                               int latency_ms) {
+    routine_result_.result_value =
+        RoutineResultValue::NewHttpsLatencyResultValue(
+            HttpsLatencyResultValue::New(base::Milliseconds(latency_ms)));
+    SetResultProblem(problem);
+  }
+
+ private:
+  RoutineResult routine_result_;
+
+  std::unique_ptr<mojo::Receiver<NetworkDiagnosticsRoutines>> receiver_;
+
+  RunHttpsLatencyCallback callback_;
+
+  ::chromeos::FakeDebugDaemonClient fake_debug_daemon_client_;
+};
+
+class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
+ public:
+  explicit FakeHttpsLatencyDelegate(FakeNetworkDiagnostics* fake_diagnostics)
+      : fake_diagnostics_(fake_diagnostics) {}
+
+  FakeHttpsLatencyDelegate(const FakeHttpsLatencyDelegate&) = delete;
+  FakeHttpsLatencyDelegate& operator=(const FakeHttpsLatencyDelegate&) = delete;
+
+  ~FakeHttpsLatencyDelegate() override = default;
+
+  void BindDiagnosticsReceiver(mojo::PendingReceiver<NetworkDiagnosticsRoutines>
+                                   pending_receiver) override {
+    fake_diagnostics_->SetReceiver(std::move(pending_receiver));
+  }
+
+ private:
+  FakeNetworkDiagnostics* const fake_diagnostics_;
 };
 
 TEST(HttpsLatencySamplerTest, NoProblem) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  auto routine = std::make_unique<FakeHttpsLatencyRoutine>();
-  auto* routine_ptr = routine.get();
-
-  auto sampler = std::make_unique<HttpsLatencySampler>();
-  sampler->SetHttpsLatencyRoutineGetterForTest(base::BindRepeating(
-      &HttpsLatencyRoutineGetterTestHelper, base::Passed(std::move(routine))));
+  FakeNetworkDiagnostics diagnostics;
+  int latency_ms = 100;
+  diagnostics.SetResultNoProblem(latency_ms);
+  HttpsLatencySampler sampler(
+      std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
   test::TestEvent<MetricData> metric_collect_event;
-  sampler->Collect(metric_collect_event.cb());
-  routine_ptr->AnalyzeResultsAndExecuteCallback();
+  sampler.Collect(metric_collect_event.cb());
+  diagnostics.ExecuteCallback();
   const auto metric_result = metric_collect_event.result();
-  ASSERT_TRUE(metric_result.has_telemetry_data());
-  const TelemetryData& result = metric_result.telemetry_data();
 
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
+  ASSERT_TRUE(metric_result.has_telemetry_data());
+  EXPECT_EQ(metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .verdict(),
             RoutineVerdict::NO_PROBLEM);
+  EXPECT_EQ(metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .latency_ms(),
+            latency_ms);
+  EXPECT_FALSE(metric_result.telemetry_data()
+                   .networks_telemetry()
+                   .https_latency_data()
+                   .has_problem());
 }
 
 TEST(HttpsLatencySamplerTest, FailedRequests) {
-  using HttpsLatencyProblemMojom =
-      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom =
-      chromeos::network_diagnostics::mojom::RoutineVerdict;
-
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  auto routine = std::make_unique<FakeHttpsLatencyRoutine>(
-      RoutineVerdictMojom::kProblem,
-      HttpsLatencyProblemMojom::kFailedHttpsRequests);
-  auto* routine_ptr = routine.get();
-
-  auto sampler = std::make_unique<HttpsLatencySampler>();
-  sampler->SetHttpsLatencyRoutineGetterForTest(base::BindRepeating(
-      &HttpsLatencyRoutineGetterTestHelper, base::Passed(std::move(routine))));
+  FakeNetworkDiagnostics diagnostics;
+  diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedHttpsRequests);
+  HttpsLatencySampler sampler(
+      std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
   test::TestEvent<MetricData> metric_collect_event;
-  sampler->Collect(metric_collect_event.cb());
-  routine_ptr->AnalyzeResultsAndExecuteCallback();
+  sampler.Collect(metric_collect_event.cb());
+  diagnostics.ExecuteCallback();
   const auto metric_result = metric_collect_event.result();
-  ASSERT_TRUE(metric_result.has_telemetry_data());
-  const TelemetryData& result = metric_result.telemetry_data();
 
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
+  ASSERT_TRUE(metric_result.has_telemetry_data());
+  EXPECT_EQ(metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .verdict(),
             RoutineVerdict::PROBLEM);
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().problem(),
+  EXPECT_FALSE(metric_result.telemetry_data()
+                   .networks_telemetry()
+                   .https_latency_data()
+                   .has_latency_ms());
+  EXPECT_EQ(metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .problem(),
             HttpsLatencyProblem::FAILED_HTTPS_REQUESTS);
 }
 
 TEST(HttpsLatencySamplerTest, OverlappingCalls) {
-  using HttpsLatencyProblemMojom =
-      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom =
-      chromeos::network_diagnostics::mojom::RoutineVerdict;
-
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  auto routine = std::make_unique<FakeHttpsLatencyRoutine>(
-      RoutineVerdictMojom::kProblem,
-      HttpsLatencyProblemMojom::kFailedDnsResolutions);
-  auto* routine_ptr = routine.get();
+  FakeNetworkDiagnostics diagnostics;
+  diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedDnsResolutions);
+  HttpsLatencySampler sampler(
+      std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  auto sampler = std::make_unique<HttpsLatencySampler>();
-  sampler->SetHttpsLatencyRoutineGetterForTest(base::BindRepeating(
-      &HttpsLatencyRoutineGetterTestHelper, base::Passed(std::move(routine))));
   test::TestEvent<MetricData> metric_collect_events[2];
-  for (int i = 0; i < 2; ++i) {
-    sampler->Collect(metric_collect_events[i].cb());
-  }
-  routine_ptr->AnalyzeResultsAndExecuteCallback();
+  sampler.Collect(metric_collect_events[0].cb());
+  sampler.Collect(metric_collect_events[1].cb());
+  diagnostics.ExecuteCallback();
 
-  for (int i = 0; i < 2; ++i) {
-    const auto metric_result = metric_collect_events[i].result();
-    ASSERT_TRUE(metric_result.has_telemetry_data());
-    const TelemetryData& result = metric_result.telemetry_data();
+  const auto first_metric_result = metric_collect_events[0].result();
+  ASSERT_TRUE(first_metric_result.has_telemetry_data());
+  EXPECT_EQ(first_metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .verdict(),
+            RoutineVerdict::PROBLEM);
+  EXPECT_FALSE(first_metric_result.telemetry_data()
+                   .networks_telemetry()
+                   .https_latency_data()
+                   .has_latency_ms());
+  EXPECT_EQ(first_metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .problem(),
+            HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS);
 
-    EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
-              RoutineVerdict::PROBLEM);
-    EXPECT_EQ(result.networks_telemetry().https_latency_data().problem(),
-              HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS);
-  }
+  const auto second_metric_result = metric_collect_events[1].result();
+  ASSERT_TRUE(second_metric_result.has_telemetry_data());
+  EXPECT_EQ(second_metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .verdict(),
+            RoutineVerdict::PROBLEM);
+  EXPECT_FALSE(second_metric_result.telemetry_data()
+                   .networks_telemetry()
+                   .https_latency_data()
+                   .has_latency_ms());
+  EXPECT_EQ(second_metric_result.telemetry_data()
+                .networks_telemetry()
+                .https_latency_data()
+                .problem(),
+            HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS);
 }
 
 TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
-  using HttpsLatencyProblemMojom =
-      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom =
-      chromeos::network_diagnostics::mojom::RoutineVerdict;
-
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  HttpsLatencyProblemMojom problems[] = {
-      HttpsLatencyProblemMojom::kHighLatency,
-      HttpsLatencyProblemMojom::kVeryHighLatency};
-  HttpsLatencyProblem expected_problems[] = {
-      HttpsLatencyProblem::HIGH_LATENCY,
-      HttpsLatencyProblem::VERY_HIGH_LATENCY};
+  FakeNetworkDiagnostics diagnostics;
+  HttpsLatencySampler sampler(
+      std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  auto sampler = std::make_unique<HttpsLatencySampler>();
-  for (int i = 0; i < 2; ++i) {
-    auto routine = std::make_unique<FakeHttpsLatencyRoutine>(
-        RoutineVerdictMojom::kProblem, problems[i]);
-    auto* routine_ptr = routine.get();
-
-    sampler->SetHttpsLatencyRoutineGetterForTest(
-        base::BindRepeating(&HttpsLatencyRoutineGetterTestHelper,
-                            base::Passed(std::move(routine))));
-
+  {
+    const int latency_ms = 1000;
+    diagnostics.SetResultProblemLatency(HttpsLatencyProblemMojom::kHighLatency,
+                                        latency_ms);
     test::TestEvent<MetricData> metric_collect_event;
-    sampler->Collect(metric_collect_event.cb());
-    routine_ptr->AnalyzeResultsAndExecuteCallback();
-    const auto metric_result = metric_collect_event.result();
-    ASSERT_TRUE(metric_result.has_telemetry_data());
-    const TelemetryData& result = metric_result.telemetry_data();
+    sampler.Collect(metric_collect_event.cb());
+    diagnostics.ExecuteCallback();
+    const auto first_metric_result = metric_collect_event.result();
 
-    EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
+    ASSERT_TRUE(first_metric_result.has_telemetry_data());
+    EXPECT_EQ(first_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .verdict(),
               RoutineVerdict::PROBLEM);
-    EXPECT_EQ(result.networks_telemetry().https_latency_data().problem(),
-              expected_problems[i]);
+    EXPECT_EQ(first_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .latency_ms(),
+              latency_ms);
+    EXPECT_EQ(first_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .problem(),
+              HttpsLatencyProblem::HIGH_LATENCY);
+  }
+
+  {
+    const int latency_ms = 5000;
+    diagnostics.SetResultProblemLatency(
+        HttpsLatencyProblemMojom::kVeryHighLatency, latency_ms);
+    test::TestEvent<MetricData> metric_collect_event;
+    sampler.Collect(metric_collect_event.cb());
+    diagnostics.ExecuteCallback();
+    const auto second_metric_result = metric_collect_event.result();
+
+    ASSERT_TRUE(second_metric_result.has_telemetry_data());
+    EXPECT_EQ(second_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .verdict(),
+              RoutineVerdict::PROBLEM);
+    EXPECT_EQ(second_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .latency_ms(),
+              latency_ms);
+    EXPECT_EQ(second_metric_result.telemetry_data()
+                  .networks_telemetry()
+                  .https_latency_data()
+                  .problem(),
+              HttpsLatencyProblem::VERY_HIGH_LATENCY);
   }
 }
 
@@ -286,4 +399,5 @@ TEST(HttpsLatencyEventDetectorTest, EventDetected) {
   ASSERT_TRUE(event_type.has_value());
   EXPECT_EQ(event_type.value(), expected_event_type);
 }
+}  // namespace
 }  // namespace reporting

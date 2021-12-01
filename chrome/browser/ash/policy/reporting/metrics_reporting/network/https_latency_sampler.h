@@ -5,38 +5,47 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_HTTPS_LATENCY_SAMPLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_HTTPS_LATENCY_SAMPLER_H_
 
-#include "base/callback.h"
+#include <memory>
+
 #include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/sampler.h"
-#include "components/reporting/proto/synced/metric_data.pb.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace chromeos {
-namespace network_diagnostics {
-
-class HttpsLatencyRoutine;
-
-}  // namespace network_diagnostics
-}  // namespace chromeos
 
 namespace reporting {
 
-using HttpsLatencyRoutineGetter = base::RepeatingCallback<
-    std::unique_ptr<chromeos::network_diagnostics::HttpsLatencyRoutine>()>;
+class MetricData;
 
 // `HttpsLatencySampler` collects a sample of the current network latency by
-// invoking the `HttpsLatencyRoutine` and parsing its results, no info is
-// collected by this sampler only telemetry is collected.
+// running https latency test of `NetworkDiagnosticsRoutines` parsing its
+// results. A single `HttpsLatencySampler` instance can be shared between
+// multiple consumers, and overlapping `Collect` calls will share the same
+// routine run and result.
 class HttpsLatencySampler : public Sampler {
-  using HttpsLatencyRoutine =
-      chromeos::network_diagnostics::HttpsLatencyRoutine;
-  using RoutineResultPtr =
-      chromeos::network_diagnostics::mojom::RoutineResultPtr;
-
  public:
-  HttpsLatencySampler();
+  class Delegate {
+   public:
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    virtual void BindDiagnosticsReceiver(
+        mojo::PendingReceiver<
+            ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+            receiver);
+  };
+
+  // Default arg is used in prod and set in test.
+  explicit HttpsLatencySampler(
+      std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());
 
   HttpsLatencySampler(const HttpsLatencySampler&) = delete;
   HttpsLatencySampler& operator=(const HttpsLatencySampler&) = delete;
@@ -45,17 +54,18 @@ class HttpsLatencySampler : public Sampler {
 
   void Collect(MetricCallback callback) override;
 
-  void SetHttpsLatencyRoutineGetterForTest(
-      HttpsLatencyRoutineGetter https_latency_routine_getter);
-
  private:
-  void OnHttpsLatencyRoutineCompleted(RoutineResultPtr routine_result);
+  void OnHttpsLatencyRoutineCompleted(
+      ::chromeos::network_diagnostics::mojom::RoutineResultPtr routine_result);
 
   bool is_routine_running_ = false;
 
-  HttpsLatencyRoutineGetter https_latency_routine_getter_;
-  std::unique_ptr<HttpsLatencyRoutine> https_latency_routine_;
+  mojo::Remote<
+      ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+      network_diagnostics_service_;
   base::queue<MetricCallback> metric_callbacks_;
+
+  const std::unique_ptr<Delegate> delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
