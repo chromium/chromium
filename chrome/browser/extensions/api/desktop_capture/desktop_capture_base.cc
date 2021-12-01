@@ -114,10 +114,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_AUDIO: {
-        if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-                extensions::switches::kDisableDesktopCaptureAudio)) {
-          request_audio = true;
-        }
+        request_audio = true;
         break;
       }
     }

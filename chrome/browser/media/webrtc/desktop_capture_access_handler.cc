@@ -485,12 +485,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
        loopback_audio_supported) ||
       media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS;
 
-  const bool check_audio_permission =
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          extensions::switches::kDisableDesktopCaptureAudio);
   const bool capture_audio =
-      (check_audio_permission ? audio_permitted : true) && audio_requested &&
-      audio_supported;
+      audio_permitted && audio_requested && audio_supported;
 
   // Determine if the extension is required to display a notification.
   const bool display_notification =

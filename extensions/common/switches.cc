@@ -32,9 +32,6 @@ const char kEmbeddedExtensionOptions[] = "embedded-extension-options";
 // Enable BLE Advertisiing in apps.
 const char kEnableBLEAdvertising[] = "enable-ble-advertising-in-apps";
 
-const char kDisableDesktopCaptureAudio[] =
-    "disable-audio-support-for-desktop-share";
-
 // Enables extension APIs that are in development.
 const char kEnableExperimentalExtensionApis[] =
     "enable-experimental-extension-apis";
