@@ -86,12 +86,24 @@ base::Value ScreencastListToValue(
 }
 
 bool IsUserPrefSupported(const std::string& pref) {
-  return pref == ash::prefs::kProjectorCreationFlowEnabled;
+  return pref == ash::prefs::kProjectorCreationFlowEnabled ||
+         pref == ash::prefs::kProjectorGalleryOnboardingShowCount ||
+         pref == ash::prefs::kProjectorViewerOnboardingShowCount;
+}
+
+bool IsValidOnboardingPref(const SetUserPrefArgs& args) {
+  return args.value.is_int() &&
+         (args.pref_name == ash::prefs::kProjectorGalleryOnboardingShowCount ||
+          args.pref_name == ash::prefs::kProjectorViewerOnboardingShowCount);
+}
+
+bool IsValidCreationFlowPref(const SetUserPrefArgs& args) {
+  return args.value.is_bool() &&
+         args.pref_name == ash::prefs::kProjectorCreationFlowEnabled;
 }
 
 bool IsValidPrefValueArg(const SetUserPrefArgs& args) {
-  return args.pref_name == ash::prefs::kProjectorCreationFlowEnabled &&
-         args.value.is_bool();
+  return IsValidCreationFlowPref(args) || IsValidOnboardingPref(args);
 }
 
 // Returns true if the request, `args`, contains a valid user preference string.

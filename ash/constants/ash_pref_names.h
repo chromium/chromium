@@ -406,6 +406,12 @@ extern const char kProjectorCreationFlowLanguage[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppFolderShortcuts[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorGalleryOnboardingShowCount[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorViewerOnboardingShowCount[];
+
 }  // namespace prefs
 }  // namespace ash
 

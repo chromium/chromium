@@ -44,6 +44,12 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
   registry->RegisterStringPref(
       ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      ash::prefs::kProjectorGalleryOnboardingShowCount, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      ash::prefs::kProjectorViewerOnboardingShowCount, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl()

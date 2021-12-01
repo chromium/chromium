@@ -888,6 +888,16 @@ const char kProjectorCreationFlowLanguage[] =
 // across devices.
 const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
 
+// An integer pref counting the number of times the Onboarding flow has been
+// shown to the user inside the Projector Gallery.
+const char kProjectorGalleryOnboardingShowCount[] =
+    "ash.projector.projectorGalleryOnboardingShowCount";
+
+// An integer pref counting the number of times the Onboarding flow has been
+// shown to the user inside the Projector Viewer.
+const char kProjectorViewerOnboardingShowCount[] =
+    "ash.projector.projectorViewerOnboardingShowCount";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
