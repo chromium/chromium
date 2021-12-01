@@ -50,10 +50,12 @@ void AppServiceAppWindowShelfItemController::ItemSelected(
         Profile* profile = ChromeShelfController::instance()->profile();
         arc::ArcPipBridge* pip_bridge =
             arc::ArcPipBridge::GetForBrowserContext(profile);
-        // ClosePip() actually expands PIP.
-        pip_bridge->ClosePip();
-        std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
-        return;
+        if (pip_bridge) {
+          // ClosePip() actually expands PIP.
+          pip_bridge->ClosePip();
+          std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
+          return;
+        }
       }
     }
     AppWindowShelfItemController::ItemSelected(std::move(event), display_id,
