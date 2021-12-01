@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Test `Referer` header</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const referrer_key = KEYS["referrer.value"];
+  const referrer_ack_key = KEYS["referrer.value ACK"];
+
+  attachFencedFrame('resources/check-header-referrer.py');
+
+  const expected_referrer = "";
+  const actual_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(actual_referrer, expected_referrer,
+                "The top-level fenced frame does't have the right value for " +
+                "`Referer` header");
+
+  attachFencedFrame("resources/header-referrer-inner.html");
+
+  const iframe_expected_referrer =
+      new URL("resources/header-referrer-inner.html", location.href).toString();
+  const iframe_actual_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(iframe_actual_referrer, iframe_expected_referrer,
+                "The iframe inside the fenced frame does't have the right value for " +
+                "`Referer` header");
+
+  writeValueToServer(referrer_ack_key, "ACK");
+
+  const nested_fenced_frame_expected_referrer = "";
+  const nested_fenced_frame_actual_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(nested_fenced_frame_actual_referrer, nested_fenced_frame_expected_referrer,
+                "The nested fenced frame does't have the right value for " +
+                "`Referer` header");
+
+  writeValueToServer(referrer_ack_key, "ACK");
+
+  const navigate_self_expected_referrer =
+      new URL("resources/header-referrer-inner.html", location.href).toString();
+  const navigate_self_actual_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(navigate_self_actual_referrer, navigate_self_expected_referrer,
+                "The fenced frame after it navigates itself does't have the right value for " +
+                "`Referer` header");
+}, "header.referrer");
+</script>
+
+</body>
