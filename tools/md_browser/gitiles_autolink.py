@@ -9,7 +9,7 @@ This extention auto links basic URLs that aren't bracketed by <...>.
 https://gerrit.googlesource.com/gitiles/+/master/java/com/google/gitiles/Linkifier.java
 """
 
-from markdown.inlinepatterns import (AutolinkPattern, Pattern)
+from markdown.inlinepatterns import (AutolinkInlineProcessor, Pattern)
 from markdown.extensions import Extension
 
 
@@ -24,10 +24,10 @@ AUTOLINK_RE = (r'(https?://[a-zA-Z0-9$_.+!*\',%;:@=?#/~<>-]+'
 
 class _GitilesSmartQuotesExtension(Extension):
   """Add Gitiles' simpler linkifier to Markdown."""
-  def extendMarkdown(self, md, md_globals):
+
+  def extendMarkdown(self, md):
     md.inlinePatterns.add('gitilesautolink',
-                          AutolinkPattern(AUTOLINK_RE, md),
-                          '<autolink')
+                          AutolinkInlineProcessor(AUTOLINK_RE, md), '<autolink')
 
 
 def makeExtension(*args, **kwargs):

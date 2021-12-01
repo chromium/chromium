@@ -29,10 +29,11 @@ class _GitilesSmartQuotesPattern(Pattern):
 
 class _GitilesSmartQuotesExtension(Extension):
   """Add Gitiles' smart quotes to Markdown."""
-  def extendMarkdown(self, md, md_globals):
+
+  def extendMarkdown(self, md):
     md.inlinePatterns.add('gitilessmartquotes',
                           _GitilesSmartQuotesPattern(r"""(['"])([^\2]+)\2"""),
-                          '<emphasis')
+                          '<em_strong')
 
 
 def makeExtension(*args, **kwargs):

@@ -74,7 +74,8 @@ class _GitilesExtBlockProcessor(BlockProcessor):
 
 class _GitilesExtBlockExtension(Extension):
   """Add Gitiles' extended blocks to Markdown."""
-  def extendMarkdown(self, md, md_globals):
+
+  def extendMarkdown(self, md):
     md.parser.blockprocessors.add('gitilesextblocks',
                                   _GitilesExtBlockProcessor(md.parser),
                                   '_begin')
