@@ -120,7 +120,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   bool has_column_percent_flex_basis_ = false;
   bool ignore_child_scrollbar_changes_ = false;
-  bool has_block_fragmentation_ = false;
+  bool involved_in_block_fragmentation_ = false;
 
   // This will be set during block fragmentation once we've processed the first
   // flex item in a given line. It is used to check if we're at a valid class A
