@@ -313,11 +313,6 @@ const base::Feature kDesktopPWAsRunOnOsLogin {
 #endif
 };
 
-// API that allows installed PWAs to add additional shortcuts by means of
-// installing sub app components.
-const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Makes user navigations via links within web app scopes get captured tab
 // tabbed app windows.
 // TODO(crbug.com/897314): Enable this feature.
