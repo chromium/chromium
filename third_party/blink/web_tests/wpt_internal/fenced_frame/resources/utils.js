@@ -68,6 +68,10 @@ const KEYS = {
 
   "presentation.receiver"                       : "00000000-0000-0000-0000-000000000021",
   "background-sync"                             : "00000000-0000-0000-0000-000000000022",
+
+  "prerender READY"                             : "00000000-0000-0000-0000-000000000023",
+  "prerender LOADED"                            : "00000000-0000-0000-0000-000000000024",
+  "prerender ACTIVATED"                         : "00000000-0000-0000-0000-000000000025",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

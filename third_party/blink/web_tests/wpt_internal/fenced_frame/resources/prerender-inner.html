@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the result of prerendering</title>
+
+<body>
+<script>
+(() => {
+  document.addEventListener('prerenderingchange', () => {
+    const prerender_activated_key = KEYS['prerender READY'];
+    writeValueToServer(prerender_activated_key, 'activated');
+  });
+  if (document.prerendering) {
+    const prerender_ready_key = KEYS['prerender READY'];
+    writeValueToServer(prerender_ready_key, 'ready');
+  } else {
+    const prerender_loaded_key = KEYS['prerender LOADED'];
+    writeValueToServer(prerender_loaded_key, 'loaded');
+  }
+})();
+</script>
+</body>
