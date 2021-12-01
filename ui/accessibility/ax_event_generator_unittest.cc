@@ -3012,4 +3012,356 @@ TEST(AXEventGeneratorTest, LiveRootDescendantOfClearedNodeChanged) {
           HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 3)));
 }
 
+TEST(AXEventGeneratorTest, NoParentChangedOnIgnoredNode) {
+  // This test produces parent-changed events on ignored nodes, and serves as a
+  // way to test they are properly removed in PostprocessEvents.
+  // It was created through pseudo-automatic code generation and is based on the
+  // chrome://history page, where we detected this kind of events happening.
+
+  // BEFORE:
+  // id=47 application child_ids=167,94
+  //   id=167 inlineTextBox
+  //   id=94 grid child_ids=98,99
+  //     id=98 genericContainer IGNORED
+  //     id=99 genericContainer child_ids=100
+  //       id=100 genericContainer IGNORED child_ids=101
+  //         id=101 genericContainer IGNORED INVISIBLE
+
+  // AFTER
+  // id=47 application child_ids=167,168
+  //   id=167 inlineTextBox
+  //   id=168 grid IGNORED INVISIBLE child_ids=169,170
+  //     id=169 genericContainer IGNORED INVISIBLE
+  //     id=170 genericContainer IGNORED INVISIBLE child_ids=100
+  //       id=100 genericContainer IGNORED INVISIBLE child_ids=101
+  //         id=101 genericContainer IGNORED INVISIBLE
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 47;
+  {
+    AXNodeData data;
+    data.id = 47;
+    data.role = ax::mojom::Role::kApplication;
+    data.child_ids = {167, 94};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 167;
+    data.role = ax::mojom::Role::kInlineTextBox;
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 94;
+    data.role = ax::mojom::Role::kGrid;
+    data.child_ids = {98, 99};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 98;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 99;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {100};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 100;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {101};
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 101;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update;
+  {
+    AXNodeData data;
+    data.id = 47;
+    data.role = ax::mojom::Role::kApplication;
+    data.child_ids = {167, 168};
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 167;
+    data.role = ax::mojom::Role::kInlineTextBox;
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 168;
+    data.role = ax::mojom::Role::kGrid;
+    data.child_ids = {169, 170};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 169;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 170;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {100};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 100;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {101};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 101;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 47),
+          HasEventAtNode(AXEventGenerator::Event::STATE_CHANGED, 100),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         100),
+          HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 168)));
+  // These are the events that shouldn't be happening:
+  // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 100),
+  // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 101),
+}
+
+TEST(AXEventGeneratorTest, ParentChangedOnIgnoredNodeFiresOnChildren) {
+  // This is a variation of the previous test, designed to check if, in the
+  // situation of parent-changed events happening on ignored nodes, the events
+  // are correctly fired in their non-ignored children.
+
+  // BEFORE:
+  // id=47 application child_ids=167,94
+  //   id=167 inlineTextBox
+  //   id=94 grid child_ids=98,99
+  //     id=98 genericContainer IGNORED
+  //     id=99 genericContainer child_ids=100
+  //       id=100 genericContainer IGNORED child_ids=101,102
+  //         id=101 genericContainer IGNORED INVISIBLE child_ids=103,104
+  //           id=103 staticText
+  //           id=104 staticText
+  //         id=102 staticText
+
+  // AFTER
+  // id=47 application child_ids=167,168
+  //   id=167 inlineTextBox
+  //   id=168 grid IGNORED INVISIBLE child_ids=169,170
+  //     id=169 genericContainer IGNORED INVISIBLE
+  //     id=170 genericContainer IGNORED INVISIBLE child_ids=100
+  //       id=100 genericContainer IGNORED INVISIBLE child_ids=101,102
+  //         id=101 genericContainer IGNORED INVISIBLE child_ids=103,104
+  //           id=103 staticText
+  //           id=104 staticText
+  //         id=102 staticText
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 47;
+  {
+    AXNodeData data;
+    data.id = 47;
+    data.role = ax::mojom::Role::kApplication;
+    data.child_ids = {167, 94};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 167;
+    data.role = ax::mojom::Role::kInlineTextBox;
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 94;
+    data.role = ax::mojom::Role::kGrid;
+    data.child_ids = {98, 99};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 98;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 99;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {100};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 100;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {101, 102};
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 101;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {103, 104};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 102;
+    data.role = ax::mojom::Role::kStaticText;
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 103;
+    data.role = ax::mojom::Role::kStaticText;
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 104;
+    data.role = ax::mojom::Role::kStaticText;
+    initial_state.nodes.push_back(data);
+  }
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update;
+  {
+    AXNodeData data;
+    data.id = 47;
+    data.role = ax::mojom::Role::kApplication;
+    data.child_ids = {167, 168};
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 167;
+    data.role = ax::mojom::Role::kInlineTextBox;
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 168;
+    data.role = ax::mojom::Role::kGrid;
+    data.child_ids = {169, 170};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 169;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 170;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {100};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 100;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {101, 102};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 101;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {103, 104};
+    data.AddState(ax::mojom::State::kInvisible);
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 102;
+    data.role = ax::mojom::Role::kStaticText;
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 103;
+    data.role = ax::mojom::Role::kStaticText;
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 104;
+    data.role = ax::mojom::Role::kStaticText;
+    update.nodes.push_back(data);
+  }
+
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 47),
+          HasEventAtNode(AXEventGenerator::Event::STATE_CHANGED, 100),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         100),
+          HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 168),
+          HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 102),
+          HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 103),
+          HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 104)));
+  // These are the events that shouldn't be happening:
+  // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 100),
+  // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 101),
+}
+
 }  // namespace ui

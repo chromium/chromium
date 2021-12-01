@@ -1135,6 +1135,14 @@ void AXEventGenerator::PostprocessEvents() {
       }
     }
 
+    // Don't fire parent changed on ignored events, because these nodes do not
+    // exist for platform accessibility. If the node toggles the ignored state,
+    // that's an IGNORED_CHANGED event and it's treated differently. In some
+    // occasions it may result in a PARENT_CHANGED event on a different node
+    // (see AXEventGenerator::OnIgnoredChanged).
+    if (node->IsIgnored())
+      RemoveEvent(&node_events, Event::PARENT_CHANGED);
+
     // Don't fire subtree created on this node if any of its ancestors also has
     // subtree created.
     parent = node->GetUnignoredParent();
