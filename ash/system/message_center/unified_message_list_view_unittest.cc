@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -130,7 +131,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
 
     AshTestBase::SetUp();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
   }
 
   bool IsNotificationsRefreshEnabled() const { return GetParam(); }
@@ -197,9 +198,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
         message_list_view()->animation_.get());
   }
 
-  void AnimateToEnd() {
-    message_list_view()->animation_->End();
-  }
+  void AnimateToEnd() { message_list_view()->animation_->End(); }
 
   void AnimateUntilIdle() {
     while (message_list_view()->animation_->is_animating())
@@ -222,7 +221,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
   int id_ = 0;
   int size_changed_count_ = 0;
 
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestUnifiedMessageListView> message_list_view_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };

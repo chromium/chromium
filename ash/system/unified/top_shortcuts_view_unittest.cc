@@ -11,6 +11,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -28,7 +29,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
   }
 
@@ -67,7 +68,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   void Layout() { top_shortcuts_view_->Layout(); }
 
  private:
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<TopShortcutsView> top_shortcuts_view_;
 };

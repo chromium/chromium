@@ -122,7 +122,7 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
 
     bubble_view_->ResetDelegate();
     bubble_widget_->RemoveObserver(this);
-    bubble_widget_->CloseNow();
+    bubble_widget_->Close();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
 }

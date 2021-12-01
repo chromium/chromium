@@ -15,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,7 +73,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
   }
 
   void TearDown() override {
@@ -241,7 +242,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
   int id_ = 0;
   int size_changed_count_ = 0;
 
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestUnifiedMessageCenterView> message_center_view_;
 };
 

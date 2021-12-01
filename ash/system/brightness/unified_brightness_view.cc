@@ -9,13 +9,14 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
 UnifiedBrightnessView::UnifiedBrightnessView(
     UnifiedBrightnessSliderController* controller,
-    UnifiedSystemTrayModel* model)
+    scoped_refptr<UnifiedSystemTrayModel> model)
     : UnifiedSliderView(views::Button::PressedCallback(),
                         controller,
                         kUnifiedMenuBrightnessIcon,

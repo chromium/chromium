@@ -230,13 +230,13 @@ void UnifiedSliderBubbleController::CreateSliderController() {
           std::make_unique<UnifiedVolumeSliderController>(this);
       return;
     case SLIDER_TYPE_DISPLAY_BRIGHTNESS:
-      slider_controller_ =
-          std::make_unique<UnifiedBrightnessSliderController>(tray_->model());
+      slider_controller_ = std::make_unique<UnifiedBrightnessSliderController>(
+          tray_->model().get());
       return;
     case SLIDER_TYPE_KEYBOARD_BRIGHTNESS:
       slider_controller_ =
           std::make_unique<UnifiedKeyboardBrightnessSliderController>(
-              tray_->model());
+              tray_->model().get());
       return;
     case SLIDER_TYPE_MIC:
       slider_controller_ = std::make_unique<MicGainSliderController>();

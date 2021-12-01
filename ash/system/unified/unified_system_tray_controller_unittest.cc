@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -53,7 +54,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model());
   }
 
@@ -106,7 +107,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
  private:
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemTrayView> view_;
 

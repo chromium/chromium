@@ -7,6 +7,7 @@
 
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -18,7 +19,7 @@ class UnifiedBrightnessView : public UnifiedSliderView,
                               public UnifiedSystemTrayModel::Observer {
  public:
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
-                        UnifiedSystemTrayModel* model);
+                        scoped_refptr<UnifiedSystemTrayModel> model);
 
   UnifiedBrightnessView(const UnifiedBrightnessView&) = delete;
   UnifiedBrightnessView& operator=(const UnifiedBrightnessView&) = delete;
@@ -33,7 +34,7 @@ class UnifiedBrightnessView : public UnifiedSliderView,
   void OnThemeChanged() override;
 
  private:
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
 };
 
 }  // namespace ash

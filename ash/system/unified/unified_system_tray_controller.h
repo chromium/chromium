@@ -13,6 +13,7 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/point.h"
@@ -44,9 +45,10 @@ class ASH_EXPORT UnifiedSystemTrayController
       public UnifiedVolumeSliderController::Delegate,
       public UnifiedMediaControlsController::Delegate {
  public:
-  UnifiedSystemTrayController(UnifiedSystemTrayModel* model,
-                              UnifiedSystemTrayBubble* bubble = nullptr,
-                              views::View* owner_view = nullptr);
+  explicit UnifiedSystemTrayController(
+      scoped_refptr<UnifiedSystemTrayModel> model,
+      UnifiedSystemTrayBubble* bubble = nullptr,
+      views::View* owner_view = nullptr);
 
   UnifiedSystemTrayController(const UnifiedSystemTrayController&) = delete;
   UnifiedSystemTrayController& operator=(const UnifiedSystemTrayController&) =
@@ -155,7 +157,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowMediaControls() override;
   void OnMediaControlsViewClicked() override;
 
-  UnifiedSystemTrayModel* model() { return model_; }
+  scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
 
   PaginationController* pagination_controller() {
     return pagination_controller_.get();
@@ -227,7 +229,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   base::TimeDelta GetAnimationDurationForReporting() const override;
 
   // Model that stores UI specific variables. Unowned.
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Unowned. Owned by Views hierarchy.
   UnifiedSystemTrayView* unified_view_ = nullptr;

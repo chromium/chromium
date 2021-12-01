@@ -21,6 +21,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
@@ -45,7 +46,7 @@ constexpr base::TimeDelta kCollapseAnimationDuration = base::Milliseconds(640);
 
 class ScrollerContentsView : public views::View {
  public:
-  ScrollerContentsView(UnifiedMessageListView* message_list_view) {
+  explicit ScrollerContentsView(UnifiedMessageListView* message_list_view) {
     auto* contents_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     contents_layout->set_cross_axis_alignment(
@@ -70,7 +71,7 @@ class ScrollerContentsView : public views::View {
 
 UnifiedMessageCenterView::UnifiedMessageCenterView(
     UnifiedSystemTrayView* parent,
-    UnifiedSystemTrayModel* model,
+    scoped_refptr<UnifiedSystemTrayModel> model,
     UnifiedMessageCenterBubble* bubble)
     : parent_(parent),
       model_(model),
@@ -92,6 +93,7 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
 }
 
 UnifiedMessageCenterView::~UnifiedMessageCenterView() {
+  DCHECK(model_);
   model_->set_notification_target_mode(
       UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
 
@@ -300,6 +302,8 @@ void UnifiedMessageCenterView::OnMessageCenterScrolled() {
   last_scroll_position_from_bottom_ =
       scroll_bar_->GetMaxPosition() - scroller_->GetVisibleRect().y();
 
+  DCHECK(model_);
+
   // Reset the target if user scrolls the list manually.
   model_->set_notification_target_mode(
       UnifiedSystemTrayModel::NotificationTargetMode::LAST_POSITION);
@@ -411,6 +415,7 @@ void UnifiedMessageCenterView::UpdateVisibility() {
       (!session_controller->IsScreenLocked() ||
        AshMessageCenterLockScreenController::IsEnabled()));
 
+  DCHECK(model_);
   if (!GetVisible()) {
     // When notification list went invisible, the last notification should be
     // targeted next time.
@@ -429,6 +434,8 @@ void UnifiedMessageCenterView::ScrollToTarget() {
   // the height of |scroller_|.
   if (!GetVisible())
     return;
+
+  DCHECK(model_);
 
   auto target_mode = model_->notification_target_mode();
 

@@ -11,6 +11,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
@@ -51,7 +52,7 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
     device_client_->SetSimulationIntervalMs(0);
     task_environment()->RunUntilIdle();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     bt_detailed_view_controller_ =
@@ -107,7 +108,7 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
  private:
   bluez::FakeBluetoothAdapterClient* adapter_client_;
   bluez::FakeBluetoothDeviceClient* device_client_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<UnifiedBluetoothDetailedViewController>
       bt_detailed_view_controller_;

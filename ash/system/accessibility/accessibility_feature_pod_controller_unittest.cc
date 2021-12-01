@@ -8,6 +8,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -26,7 +27,7 @@ class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
   }
@@ -53,7 +54,7 @@ class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
   FeaturePodButton* button() { return button_.get(); }
 
  private:
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<AccessibilityFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;

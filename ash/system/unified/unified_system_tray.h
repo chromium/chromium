@@ -14,6 +14,8 @@
 #include "ash/shell_observer.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
@@ -40,7 +42,6 @@ class PrivacyScreenToastController;
 class TrayItemView;
 class UnifiedSliderBubbleController;
 class UnifiedSystemTrayBubble;
-class UnifiedSystemTrayModel;
 class UnifiedMessageCenterBubble;
 class CameraMicTrayItemView;
 
@@ -189,7 +190,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
 
   AshMessagePopupCollection* GetMessagePopupCollection();
 
-  UnifiedSystemTrayModel* model() { return model_.get(); }
+  scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
 
   UnifiedMessageCenterBubble* message_center_bubble() {
@@ -233,7 +234,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   std::unique_ptr<UnifiedMessageCenterBubble> message_center_bubble_;
 
   // Model class that stores UnifiedSystemTray's UI specific variables.
-  const std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
 
   const std::unique_ptr<UnifiedSliderBubbleController>
       slider_bubble_controller_;

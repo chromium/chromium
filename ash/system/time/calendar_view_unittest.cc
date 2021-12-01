@@ -10,6 +10,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -32,7 +33,8 @@ class CalendarViewTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_model_ =
+        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
@@ -152,7 +154,7 @@ class CalendarViewTest : public AshTestBase {
   // Owned by `widget_`.
   CalendarView* calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   static base::Time fake_time_;
 };
@@ -573,7 +575,8 @@ class CalendarViewAnimationTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_model_ =
+        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
@@ -605,7 +608,7 @@ class CalendarViewAnimationTest : public AshTestBase {
   // Owned by `widget_`.
   CalendarView* calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   static base::Time fake_time_;
 };

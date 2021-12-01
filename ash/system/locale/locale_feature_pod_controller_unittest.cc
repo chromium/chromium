@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class LocaleFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     controller_ =
@@ -51,7 +52,7 @@ class LocaleFeaturePodControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<LocaleFeaturePodController> controller_;
 
  private:
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 

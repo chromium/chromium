@@ -18,6 +18,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/compositor/compositor.h"
@@ -130,6 +131,7 @@ class UnifiedMessageListView::MessageViewContainer
   // Check if the notification is manually expanded / collapsed before and
   // restores the state.
   void LoadExpandedState(UnifiedSystemTrayModel* model, bool is_latest) {
+    DCHECK(model);
     absl::optional<bool> manually_expanded =
         model->GetNotificationExpanded(GetNotificationId());
     if (manually_expanded.has_value()) {
@@ -145,6 +147,7 @@ class UnifiedMessageListView::MessageViewContainer
   // Stores if the notification is manually expanded or collapsed so that we can
   // restore that when UnifiedSystemTray is reopened.
   void StoreExpandedState(UnifiedSystemTrayModel* model) {
+    DCHECK(model);
     if (message_view_->IsManuallyExpandedOrCollapsed()) {
       model->SetNotificationExpanded(GetNotificationId(),
                                      message_view_->IsExpanded());
@@ -258,7 +261,7 @@ class UnifiedMessageListView::MessageViewContainer
 
 UnifiedMessageListView::UnifiedMessageListView(
     UnifiedMessageCenterView* message_center_view,
-    UnifiedSystemTrayModel* model)
+    scoped_refptr<UnifiedSystemTrayModel> model)
     : views::AnimationDelegateViews(this),
       message_center_view_(message_center_view),
       model_(model),
@@ -278,18 +281,20 @@ UnifiedMessageListView::UnifiedMessageListView(
 }
 
 UnifiedMessageListView::~UnifiedMessageListView() {
+  DCHECK(model_);
   model_->ClearNotificationChanges();
   for (auto* view : children())
-    AsMVC(view)->StoreExpandedState(model_);
+    AsMVC(view)->StoreExpandedState(model_.get());
 }
 
 void UnifiedMessageListView::Init() {
+  DCHECK(model_);
   bool is_latest = true;
   for (auto* notification :
        message_center_utils::GetSortedNotificationsWithOwnView()) {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
-    view->LoadExpandedState(model_, is_latest);
+    view->LoadExpandedState(model_.get(), is_latest);
     AddChildViewAt(view, 0);
     MessageCenter::Get()->DisplayedNotification(
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
@@ -763,6 +768,7 @@ void UnifiedMessageListView::InterruptClearAll() {
 }
 
 void UnifiedMessageListView::DeleteRemovedNotifications() {
+  DCHECK(model_);
   views::View::Views removed_views;
   std::copy_if(children().cbegin(), children().cend(),
                std::back_inserter(removed_views),

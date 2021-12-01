@@ -65,6 +65,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +98,7 @@ void ReportCollapseAnimationSmoothness(int smoothness) {
 }
 
 UnifiedSystemTrayController::UnifiedSystemTrayController(
-    UnifiedSystemTrayModel* model,
+    scoped_refptr<UnifiedSystemTrayModel> model,
     UnifiedSystemTrayBubble* bubble,
     views::View* owner_view)
     : views::AnimationDelegateViews(owner_view),

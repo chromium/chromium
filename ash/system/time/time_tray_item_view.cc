@@ -12,6 +12,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_utils.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/views/border.h"
 
 namespace ash {
@@ -20,10 +21,10 @@ namespace tray {
 
 TimeTrayItemView::TimeTrayItemView(
     Shelf* shelf,
-    UnifiedSystemTrayModel* model,
+    scoped_refptr<UnifiedSystemTrayModel> model,
     absl::optional<TimeView::OnTimeViewActionPerformedCallback> callback)
     : TrayItemView(shelf), model_(model), session_observer_(this) {
-  system_tray_model_observation_.Observe(model_);
+  system_tray_model_observation_.Observe(model_.get());
 
   TimeView::ClockLayout clock_layout =
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/message_center/unified_message_list_view.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -36,7 +37,7 @@ class UnifiedSystemTrayModel;
 class UnifiedSystemTrayView;
 
 // Note: This enum represents the current animation state for
-// UnifiedMessageCenterView. There is an equivalent animation state emum in
+// UnifiedMessageCenterView. There is an equivalent animation state enum in
 // the child UnifiedMessageListView. The animations for these two views can
 // occur simultaneously or independently, so states for both views are tracked
 // separately.
@@ -62,7 +63,7 @@ class ASH_EXPORT UnifiedMessageCenterView
       public gfx::AnimationDelegate {
  public:
   UnifiedMessageCenterView(UnifiedSystemTrayView* parent,
-                           UnifiedSystemTrayModel* model,
+                           scoped_refptr<UnifiedSystemTrayModel> model,
                            UnifiedMessageCenterBubble* bubble);
 
   UnifiedMessageCenterView(const UnifiedMessageCenterView&) = delete;
@@ -178,7 +179,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   View* GetLastFocusableChild();
 
   UnifiedSystemTrayView* const parent_;
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   UnifiedMessageCenterBubble* const message_center_bubble_;
   StackedNotificationBar* const notification_bar_;
   views::ScrollBar* scroll_bar_;

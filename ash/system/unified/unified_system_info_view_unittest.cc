@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class UnifiedSystemInfoViewTest : public AshTestBase,
     scoped_feature_list_->InitWithFeatureState(
         features::kManagedDeviceUIRedesign, IsManagedDeviceUIRedesignEnabled());
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
     info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
   }
@@ -55,7 +56,7 @@ class UnifiedSystemInfoViewTest : public AshTestBase,
   }
 
  private:
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemInfoView> info_view_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -105,7 +106,7 @@ using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
 TEST_F(UnifiedSystemInfoViewNoSessionTest, ChildVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kManagedDeviceUIRedesign);
-  auto model = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+  auto model = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
   auto controller = std::make_unique<UnifiedSystemTrayController>(model.get());
 
   SessionControllerImpl* session = Shell::Get()->session_controller();
