@@ -45,6 +45,12 @@ suite('SiteDataDetailsSubpage', function() {
   const site = 'foo.com';
 
   setup(function() {
+    const routes = Router.getInstance().getRoutes();
+    routes.SITE_SETTINGS_SITE_DATA = routes.COOKIES.createChild('/siteData');
+    routes.SITE_SETTINGS_DATA_DETAILS =
+        routes.SITE_SETTINGS_SITE_DATA.createChild('/cookies/detail');
+    Router.resetInstanceForTesting(new Router(routes));
+
     browserProxy = new TestLocalDataBrowserProxy();
     browserProxy.setCookieDetails([cookieDetails]);
     LocalDataBrowserProxyImpl.setInstance(browserProxy);
