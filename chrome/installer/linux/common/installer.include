@@ -143,10 +143,7 @@ stage_install_common() {
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
   # crashpad
-  buildfile="${OUTPUTDIR}/chrome_crashpad_handler"
-  strippedfile="${buildfile}.stripped"
-  debugfile="${buildfile}.debug"
-  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  strippedfile="${OUTPUTDIR}/chrome_crashpad_handler.stripped"
   install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
 
   # resources
@@ -182,10 +179,7 @@ stage_install_common() {
   # where it did not support hyphens, so this is stuck as is to avoid breaking
   # anyone who expects the build artifact to have the underscore.
   # the code looks for, but the build targets can't use hyphens (scons bug?)
-  buildfile="${OUTPUTDIR}/${PROGNAME}_sandbox"
-  strippedfile="${buildfile}.stripped"
-  debugfile="${buildfile}.debug"
-  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  strippedfile="${OUTPUTDIR}/${PROGNAME}_sandbox.stripped"
   install -m 4755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome-sandbox"
 
   # l10n paks
@@ -220,10 +214,7 @@ stage_install_common() {
   # ANGLE
   if [ -f "${OUTPUTDIR}/libEGL.so" ]; then
     for file in libEGL.so libGLESv2.so; do
-      buildfile="${OUTPUTDIR}/${file}"
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      strippedfile="${OUTPUTDIR}/${file}.stripped"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     done
   fi
@@ -231,10 +222,7 @@ stage_install_common() {
   # ANGLE's libvulkan library
   if [ -f "${OUTPUTDIR}/libvulkan.so.1" ]; then
     file="libvulkan.so.1"
-    buildfile="${OUTPUTDIR}/${file}"
-    strippedfile="${buildfile}.stripped"
-    debugfile="${buildfile}.debug"
-    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
     install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
 
@@ -242,10 +230,7 @@ stage_install_common() {
   if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
     for file in libEGL.so libGLESv2.so; do
-      buildfile="${OUTPUTDIR}/swiftshader/${file}"
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      strippedfile="${OUTPUTDIR}/swiftshader/${file}.stripped"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/swiftshader/${file}"
     done
   fi
@@ -254,10 +239,7 @@ stage_install_common() {
   if [ -f "${OUTPUTDIR}/libvk_swiftshader.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/"
     file="libvk_swiftshader.so"
-    buildfile="${OUTPUTDIR}/${file}"
-    strippedfile="${buildfile}.stripped"
-    debugfile="${buildfile}.debug"
-    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
     install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     # Install the ICD json file to point ANGLE to libvk_swiftshader.so
     install -m 644 "${OUTPUTDIR}/vk_swiftshader_icd.json" "${STAGEDIR}/${INSTALLDIR}/"
@@ -277,8 +259,6 @@ stage_install_common() {
     buildfile="${OUTPUTDIR}/${file}"
     if [ -f "${buildfile}" ]; then
       strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     fi
   done

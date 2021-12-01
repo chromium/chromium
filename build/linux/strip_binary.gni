@@ -22,21 +22,33 @@ template("strip_binary") {
   action("${target_name}") {
     eu_strip_binary = "//buildtools/third_party/eu-strip/bin/eu-strip"
     script = "//build/linux/strip_binary.py"
+
+    if (defined(invoker.stripped_binary_output)) {
+      stripped_binary_output = invoker.stripped_binary_output
+    } else {
+      stripped_binary_output = invoker.binary_input + ".stripped"
+    }
+    if (defined(invoker.symbol_output)) {
+      symbol_output = invoker.symbol_output
+    } else {
+      symbol_output = invoker.binary_input + ".debug"
+    }
+
     inputs = [
       invoker.binary_input,
       eu_strip_binary,
     ]
     outputs = [
-      invoker.symbol_output,
-      invoker.stripped_binary_output,
+      symbol_output,
+      stripped_binary_output,
     ]
     args = [
       "--eu-strip-binary-path",
       rebase_path(eu_strip_binary, root_build_dir),
       "--symbol-output",
-      rebase_path(invoker.symbol_output, root_build_dir),
+      rebase_path(symbol_output, root_build_dir),
       "--stripped-binary-output",
-      rebase_path(invoker.stripped_binary_output, root_build_dir),
+      rebase_path(stripped_binary_output, root_build_dir),
       "--binary-input",
       rebase_path(invoker.binary_input, root_build_dir),
     ]
