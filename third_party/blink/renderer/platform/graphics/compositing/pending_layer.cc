@@ -31,7 +31,7 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 // When possible, provides a clip rect that limits the visibility.
 absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
-    return ToGfxRectF(state.Clip().PaintClipRect().Rect());
+    return state.Clip().PaintClipRect().Rect();
   if (const auto* scroll = state.Transform().ScrollNode())
     return gfx::RectF(scroll->ContentsRect());
   return absl::nullopt;

@@ -217,14 +217,14 @@ FloatRoundedRect::Radii ComputeCornerRadii(
 
 // Given 3 points defining a right angle corner, returns the corresponding
 // corner in |convex_radii| or |concave_radii|.
-FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& convex_radii,
-                         const FloatRoundedRect::Radii& concave_radii,
-                         const SkPoint& p1,
-                         const SkPoint& p2,
-                         const SkPoint& p3) {
+gfx::SizeF GetRadiiCorner(const FloatRoundedRect::Radii& convex_radii,
+                          const FloatRoundedRect::Radii& concave_radii,
+                          const SkPoint& p1,
+                          const SkPoint& p2,
+                          const SkPoint& p3) {
   if (p1.x() == p2.x()) {
     if (p1.y() == p2.y() || p2.x() == p3.x())
-      return FloatSize();
+      return gfx::SizeF();
     DCHECK_EQ(p2.y(), p3.y());
     if (p1.y() < p2.y()) {
       return p2.x() < p3.x() ? concave_radii.BottomLeft()
@@ -234,7 +234,7 @@ FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& convex_radii,
   }
   DCHECK_EQ(p1.y(), p2.y());
   if (p2.x() != p3.x() || p2.y() == p3.y())
-    return FloatSize();
+    return gfx::SizeF();
   if (p1.x() < p2.x()) {
     return p2.y() < p3.y() ? convex_radii.TopRight()
                            : concave_radii.BottomRight();
@@ -248,10 +248,10 @@ void AdjustLineBetweenCorners(Line& line,
                               const FloatRoundedRect::Radii& concave_radii,
                               const SkPoint& prev_point,
                               const SkPoint& next_point) {
-  FloatSize corner1 = GetRadiiCorner(convex_radii, concave_radii, prev_point,
-                                     line.start, line.end);
-  FloatSize corner2 = GetRadiiCorner(convex_radii, concave_radii, line.start,
-                                     line.end, next_point);
+  gfx::SizeF corner1 = GetRadiiCorner(convex_radii, concave_radii, prev_point,
+                                      line.start, line.end);
+  gfx::SizeF corner2 = GetRadiiCorner(convex_radii, concave_radii, line.start,
+                                      line.end, next_point);
   if (line.start.x() == line.end.x()) {
     // |line| is vertical, and adjacent lines are horizontal.
     float height = std::abs(line.end.y() - line.start.y());
@@ -803,8 +803,9 @@ void PaintSingleFocusRing(GraphicsContext& context,
 
   SkRect rect;
   if (path.isRect(&rect)) {
-    context.DrawFocusRingRect(FloatRoundedRect(rect, corner_radii), color,
-                              width, auto_dark_mode);
+    context.DrawFocusRingRect(
+        SkRRect(FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii)),
+        color, width, auto_dark_mode);
     return;
   }
 

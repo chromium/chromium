@@ -140,7 +140,7 @@ class PaintRecordMatcher
     const auto* clip_op =                                     \
         (op_buffer).GetOpAtForTesting<cc::ClipRectOp>(index); \
     ASSERT_NE(nullptr, clip_op);                              \
-    EXPECT_EQ(SkRect(r), clip_op->rect);                      \
+    EXPECT_EQ(gfx::RectFToSkRect(r), clip_op->rect);          \
   } while (false)
 
 #define EXPECT_ROUNDED_CLIP(r, op_buffer, index)               \
@@ -798,20 +798,17 @@ TEST_P(PaintChunksToCcLayerTest, CombineClipsAcrossTransform) {
            cc::PaintOpType::Restore,     // </c3 non_identity>
            cc::PaintOpType::Restore}));  // </c1+c2>
 
-  EXPECT_CLIP(FloatRect(50, 50, 50, 50), *output, 1);
+  EXPECT_CLIP(gfx::RectF(50, 50, 50, 50), *output, 1);
   EXPECT_TRANSFORM_MATRIX(non_identity->Matrix(), *output, 3);
-  EXPECT_CLIP(FloatRect(1, 2, 3, 4), *output, 4);
+  EXPECT_CLIP(gfx::RectF(1, 2, 3, 4), *output, 4);
   EXPECT_TRANSFORM_MATRIX(non_invertible->Matrix(), *output, 6);
-  EXPECT_CLIP(FloatRect(5, 6, 7, 8), *output, 7);
+  EXPECT_CLIP(gfx::RectF(5, 6, 7, 8), *output, 7);
 }
 
 TEST_P(PaintChunksToCcLayerTest, CombineClipsWithRoundedRects) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
-  FloatSize corner(5, 5);
-  FloatRoundedRect big_rounded_clip_rect(FloatRect(0, 0, 200, 200), corner,
-                                         corner, corner, corner);
-  FloatRoundedRect small_rounded_clip_rect(FloatRect(0, 0, 100, 100), corner,
-                                           corner, corner, corner);
+  FloatRoundedRect big_rounded_clip_rect(gfx::RectF(0, 0, 200, 200), 5);
+  FloatRoundedRect small_rounded_clip_rect(gfx::RectF(0, 0, 100, 100), 5);
 
   auto c1 = CreateClip(c0(), t0(), clip_rect);
   auto c2 = CreateClip(*c1, t0(), small_rounded_clip_rect);

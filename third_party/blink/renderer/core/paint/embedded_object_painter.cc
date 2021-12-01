@@ -74,7 +74,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
       LayoutUnit(kReplacementTextRoundedRectHeight));
   background_rect.offset += content_rect.Center() - background_rect.Center();
   FloatRoundedRect rounded_background_rect(
-      FloatRect(PixelSnappedIntRect(background_rect)),
+      gfx::RectF(ToPixelSnappedRect(background_rect)),
       kReplacementTextRoundedRectRadius);
   Color color = ScaleAlpha(Color::kWhite, kReplacementTextRoundedRectOpacity);
   AutoDarkMode auto_dark_mode(

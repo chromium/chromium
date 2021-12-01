@@ -175,8 +175,7 @@ inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const FloatRoundedRect& clip_rect) {
-  return CreateClip(parent, local_transform_space, ToGfxRectF(clip_rect.Rect()),
-                    clip_rect);
+  return CreateClip(parent, local_transform_space, clip_rect.Rect(), clip_rect);
 }
 
 inline void UpdateClip(ClipPaintPropertyNode& clip,
@@ -189,15 +188,15 @@ inline void UpdateClip(ClipPaintPropertyNode& clip,
 
 inline void UpdateClip(ClipPaintPropertyNode& clip,
                        const FloatRoundedRect& clip_rect) {
-  UpdateClip(clip, ToGfxRectF(clip_rect.Rect()), clip_rect);
+  UpdateClip(clip, clip_rect.Rect(), clip_rect);
 }
 
 inline scoped_refptr<ClipPaintPropertyNode> CreateClipPathClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const FloatRoundedRect& clip_rect) {
-  ClipPaintPropertyNode::State state(&local_transform_space,
-                                     ToGfxRectF(clip_rect.Rect()), clip_rect);
+  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect.Rect(),
+                                     clip_rect);
   state.clip_path = base::AdoptRef(new RefCountedPath);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
@@ -300,7 +299,7 @@ inline RefCountedPropertyTreeState CreateScrollTranslationState(
                                container_rect, contents_size,
                                compositing_reasons),
       *CreateClip(parent_state.Clip(), parent_state.Transform(),
-                  FloatRoundedRect(IntRect(container_rect))),
+                  FloatRoundedRect(container_rect)),
       e0()));
 }
 

@@ -228,7 +228,7 @@ bool FloatQuad::IntersectsCircle(const gfx::PointF& center,
 }
 
 bool FloatQuad::IntersectsEllipse(const gfx::PointF& center,
-                                  const FloatSize& radii) const {
+                                  const gfx::SizeF& radii) const {
   // Transform the ellipse to an origin-centered circle whose radius is the
   // product of major radius and minor radius.  Here we apply the same
   // transformation to the quad.

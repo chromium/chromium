@@ -15,31 +15,31 @@ namespace blink {
 namespace {
 
 FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
-                                     FloatSize size) {
+                                     gfx::SizeF size) {
   return FloatRoundedRect::Radii(
-      FloatSizeForLengthSize(style.BorderTopLeftRadius(), size),
-      FloatSizeForLengthSize(style.BorderTopRightRadius(), size),
-      FloatSizeForLengthSize(style.BorderBottomLeftRadius(), size),
-      FloatSizeForLengthSize(style.BorderBottomRightRadius(), size));
+      SizeForLengthSize(style.BorderTopLeftRadius(), size),
+      SizeForLengthSize(style.BorderTopRightRadius(), size),
+      SizeForLengthSize(style.BorderBottomLeftRadius(), size),
+      SizeForLengthSize(style.BorderBottomRightRadius(), size));
 }
 
 void ExcludeSides(PhysicalBoxSides sides_to_include,
                   FloatRoundedRect::Radii* radii) {
   if (!sides_to_include.left) {
-    radii->SetTopLeft(FloatSize(0, radii->TopLeft().height()));
-    radii->SetBottomLeft(FloatSize(0, radii->BottomLeft().height()));
+    radii->SetTopLeft(gfx::SizeF(0, radii->TopLeft().height()));
+    radii->SetBottomLeft(gfx::SizeF(0, radii->BottomLeft().height()));
   }
   if (!sides_to_include.right) {
-    radii->SetTopRight(FloatSize(0, radii->TopRight().height()));
-    radii->SetBottomRight(FloatSize(0, radii->BottomRight().height()));
+    radii->SetTopRight(gfx::SizeF(0, radii->TopRight().height()));
+    radii->SetBottomRight(gfx::SizeF(0, radii->BottomRight().height()));
   }
   if (!sides_to_include.top) {
-    radii->SetTopLeft(FloatSize(radii->TopLeft().width(), 0));
-    radii->SetTopRight(FloatSize(radii->TopRight().width(), 0));
+    radii->SetTopLeft(gfx::SizeF(radii->TopLeft().width(), 0));
+    radii->SetTopRight(gfx::SizeF(radii->TopRight().width(), 0));
   }
   if (!sides_to_include.bottom) {
-    radii->SetBottomLeft(FloatSize(radii->BottomLeft().width(), 0));
-    radii->SetBottomRight(FloatSize(radii->BottomRight().width(), 0));
+    radii->SetBottomLeft(gfx::SizeF(radii->BottomLeft().width(), 0));
+    radii->SetBottomRight(gfx::SizeF(radii->BottomRight().width(), 0));
   }
 }
 
@@ -48,10 +48,10 @@ void ExcludeSides(PhysicalBoxSides sides_to_include,
 FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect) {
-  FloatRoundedRect rounded_rect((FloatRect(border_rect)));
+  FloatRoundedRect rounded_rect((gfx::RectF(border_rect)));
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =
-        CalcRadiiFor(style, FloatSize(border_rect.size));
+        CalcRadiiFor(style, gfx::SizeF(border_rect.size));
     rounded_rect.SetRadii(radii);
     rounded_rect.ConstrainRadii();
   }
@@ -62,10 +62,10 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  FloatRoundedRect rounded_rect(PixelSnappedIntRect(border_rect));
+  FloatRoundedRect rounded_rect(ToPixelSnappedRect(border_rect));
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =
-        CalcRadiiFor(style, FloatSize(border_rect.size));
+        CalcRadiiFor(style, gfx::SizeF(border_rect.size));
     ExcludeSides(sides_to_include, &radii);
     rounded_rect.SetRadii(radii);
     rounded_rect.ConstrainRadii();
@@ -88,7 +88,7 @@ FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
   inner_rect.Expand(insets);
   inner_rect.size.ClampNegativeToZero();
 
-  FloatRoundedRect float_inner_rect((FloatRect(inner_rect)));
+  FloatRoundedRect float_inner_rect((gfx::RectF(inner_rect)));
 
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =
@@ -132,12 +132,12 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
   // preventing an inner border for a very thin element from snapping to
   // zero size as occurs when a unit width border is applied to a sub-pixel
   // sized element. So round without forcing non-near-zero sizes to one.
-  FloatRoundedRect rounded_rect(
-      IntRect(ToRoundedPoint(rect_with_outsets.offset),
-              IntSize(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
-                                                  rect_with_outsets.X()),
-                      SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
-                                                  rect_with_outsets.Y()))));
+  FloatRoundedRect rounded_rect(gfx::Rect(
+      ToRoundedPoint(rect_with_outsets.offset),
+      gfx::Size(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
+                                            rect_with_outsets.X()),
+                SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
+                                            rect_with_outsets.Y()))));
 
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =

@@ -217,7 +217,9 @@ struct CORE_EXPORT PhysicalRect {
       : offset(r.origin()), size(r.size()) {}
   explicit PhysicalRect(const gfx::Rect& r) : PhysicalRect(IntRect(r)) {}
 
-  static IntRect InfiniteIntRect() { return LayoutRect::InfiniteIntRect(); }
+  static constexpr gfx::Rect InfiniteIntRect() {
+    return LayoutRect::InfiniteIntRect();
+  }
 
   String ToString() const;
 };
@@ -243,6 +245,19 @@ inline IntRect EnclosingIntRect(const PhysicalRect& r) {
 }
 inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
   return {r.PixelSnappedOffset(), r.PixelSnappedSize()};
+}
+inline gfx::Rect ToEnclosingRect(const PhysicalRect& r) {
+  gfx::Point location = ToFlooredPoint(r.offset);
+  gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());
+  // Because the range of LayoutUnit is much smaller than int, the following
+  // '-' operations can never overflow, so no clamping is needed.
+  // TODO(1261553): We can have a special version of gfx::Rect constructor that
+  // skips internal clamping to improve performance.
+  return gfx::Rect(location.x(), location.y(), max_point.x() - location.x(),
+                   max_point.y() - location.y());
+}
+inline gfx::Rect ToPixelSnappedRect(const PhysicalRect& r) {
+  return {r.PixelSnappedOffset(), ToGfxSize(r.PixelSnappedSize())};
 }
 
 // TODO(wangxianzhu): For temporary conversion from LayoutRect to PhysicalRect,

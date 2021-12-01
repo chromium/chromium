@@ -132,8 +132,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
         UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
     auto& shape = To<ShapeClipPathOperation>(clip_path);
     gfx::RectF bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
-    bounding_box.Intersect(
-        gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())));
+    bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
     return bounding_box;
   }
 
@@ -153,7 +152,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     // local space is shifted by paint offset.
     bounding_box.Offset(reference_box.OffsetFromOrigin());
   }
-  bounding_box.Intersect(gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())));
+  bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
   return bounding_box;
 }
 
@@ -226,8 +225,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   // CompositeClipPathAnimation.
   DrawingRecorder recorder(
       context, display_item_client, DisplayItem::kSVGClip,
-      ToGfxRect(
-          EnclosingIntRect(properties->MaskClip()->PaintClipRect().Rect())));
+      gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect()));
   context.Save();
   context.Translate(paint_offset.left, paint_offset.top);
 

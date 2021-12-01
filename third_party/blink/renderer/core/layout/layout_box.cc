@@ -1968,9 +1968,9 @@ gfx::PointF LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
     return gfx::PointF();
 
   // Use the |size| parameter instead of |Size()| if present.
-  FloatSize float_size = size ? FloatSize(*size) : FloatSize(Size());
+  gfx::SizeF float_size = size ? gfx::SizeF(*size) : gfx::SizeF(Size());
 
-  return FloatPointForLengthPoint(StyleRef().PerspectiveOrigin(), float_size);
+  return PointForLengthPoint(StyleRef().PerspectiveOrigin(), float_size);
 }
 
 bool LayoutBox::MapVisualRectToContainer(

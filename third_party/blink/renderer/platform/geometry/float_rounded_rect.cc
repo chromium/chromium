@@ -33,23 +33,24 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/insets_f.h"
 
 namespace blink {
 
 FloatRoundedRect::FloatRoundedRect(float x, float y, float width, float height)
     : rect_(x, y, width, height) {}
 
-FloatRoundedRect::FloatRoundedRect(const FloatRect& rect, const Radii& radii)
+FloatRoundedRect::FloatRoundedRect(const gfx::RectF& rect, const Radii& radii)
     : rect_(rect), radii_(radii) {}
 
-FloatRoundedRect::FloatRoundedRect(const IntRect& rect, const Radii& radii)
-    : rect_(FloatRect(rect)), radii_(radii) {}
+FloatRoundedRect::FloatRoundedRect(const gfx::Rect& rect, const Radii& radii)
+    : rect_(rect), radii_(radii) {}
 
-FloatRoundedRect::FloatRoundedRect(const FloatRect& rect,
-                                   const FloatSize& top_left,
-                                   const FloatSize& top_right,
-                                   const FloatSize& bottom_left,
-                                   const FloatSize& bottom_right)
+FloatRoundedRect::FloatRoundedRect(const gfx::RectF& rect,
+                                   const gfx::SizeF& top_left,
+                                   const gfx::SizeF& top_right,
+                                   const gfx::SizeF& bottom_left,
+                                   const gfx::SizeF& bottom_right)
     : rect_(rect), radii_(top_left, top_right, bottom_left, bottom_right) {}
 
 void FloatRoundedRect::Radii::SetMinimumRadius(float minimum_radius) {
@@ -78,16 +79,16 @@ void FloatRoundedRect::Radii::Scale(float factor) {
   // If either radius on a corner becomes zero, reset both radii on that corner.
   top_left_.Scale(factor);
   if (!top_left_.width() || !top_left_.height())
-    top_left_ = FloatSize();
+    top_left_ = gfx::SizeF();
   top_right_.Scale(factor);
   if (!top_right_.width() || !top_right_.height())
-    top_right_ = FloatSize();
+    top_right_ = gfx::SizeF();
   bottom_left_.Scale(factor);
   if (!bottom_left_.width() || !bottom_left_.height())
-    bottom_left_ = FloatSize();
+    bottom_left_ = gfx::SizeF();
   bottom_right_.Scale(factor);
   if (!bottom_right_.width() || !bottom_right_.height())
-    bottom_right_ = FloatSize();
+    bottom_right_ = gfx::SizeF();
 }
 
 void FloatRoundedRect::Radii::Shrink(float top_width,
@@ -141,20 +142,21 @@ void FloatRoundedRect::Radii::Expand(float top_width,
   }
 }
 
-static inline float CornerRectIntercept(float y, const FloatRect& corner_rect) {
+static inline float CornerRectIntercept(float y,
+                                        const gfx::RectF& corner_rect) {
   DCHECK_GT(corner_rect.height(), 0);
   return corner_rect.width() *
          sqrt(1 - (y * y) / (corner_rect.height() * corner_rect.height()));
 }
 
-FloatRect FloatRoundedRect::RadiusCenterRect() const {
-  FloatRectOutsets maximum_radius_insets(
-      -std::max(radii_.TopLeft().height(), radii_.TopRight().height()),
-      -std::max(radii_.TopRight().width(), radii_.BottomRight().width()),
-      -std::max(radii_.BottomLeft().height(), radii_.BottomRight().height()),
-      -std::max(radii_.TopLeft().width(), radii_.BottomLeft().width()));
-  FloatRect center_rect(rect_);
-  center_rect.Expand(maximum_radius_insets);
+gfx::RectF FloatRoundedRect::RadiusCenterRect() const {
+  gfx::InsetsF maximum_radius_insets(
+      std::max(radii_.TopLeft().height(), radii_.TopRight().height()),
+      std::max(radii_.TopRight().width(), radii_.BottomRight().width()),
+      std::max(radii_.BottomLeft().height(), radii_.BottomRight().height()),
+      std::max(radii_.TopLeft().width(), radii_.BottomLeft().width()));
+  gfx::RectF center_rect(rect_);
+  center_rect.Inset(maximum_radius_insets);
   return center_rect;
 }
 
@@ -170,8 +172,8 @@ bool FloatRoundedRect::XInterceptsAtY(float y,
     return true;
   }
 
-  const FloatRect& top_left_rect = TopLeftCorner();
-  const FloatRect& bottom_left_rect = BottomLeftCorner();
+  const gfx::RectF& top_left_rect = TopLeftCorner();
+  const gfx::RectF& bottom_left_rect = BottomLeftCorner();
 
   if (!top_left_rect.IsEmpty() && y >= top_left_rect.y() &&
       y < top_left_rect.bottom()) {
@@ -187,8 +189,8 @@ bool FloatRoundedRect::XInterceptsAtY(float y,
     min_x_intercept = rect_.x();
   }
 
-  const FloatRect& top_right_rect = TopRightCorner();
-  const FloatRect& bottom_right_rect = BottomRightCorner();
+  const gfx::RectF& top_right_rect = TopRightCorner();
+  const gfx::RectF& bottom_right_rect = BottomRightCorner();
 
   if (!top_right_rect.IsEmpty() && y >= top_right_rect.y() &&
       y <= top_right_rect.bottom()) {
@@ -208,7 +210,7 @@ bool FloatRoundedRect::XInterceptsAtY(float y,
 }
 
 void FloatRoundedRect::InflateWithRadii(int size) {
-  FloatRect old = rect_;
+  gfx::RectF old = rect_;
 
   rect_.Outset(size);
   // Considering the inflation factor of shorter size to scale the radii seems
@@ -226,53 +228,53 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
 
-  const FloatSize& top_left = radii_.TopLeft();
+  const gfx::SizeF& top_left = radii_.TopLeft();
   if (!top_left.IsEmpty()) {
-    FloatRect rect(rect_.x(), rect_.y(), top_left.width(), top_left.height());
+    gfx::RectF rect(rect_.x(), rect_.y(), top_left.width(), top_left.height());
     if (quad.IntersectsRect(rect)) {
       gfx::PointF center(rect_.x() + top_left.width(),
                          rect_.y() + top_left.height());
-      FloatSize size(top_left.width(), top_left.height());
+      gfx::SizeF size(top_left.width(), top_left.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
     }
   }
 
-  const FloatSize& top_right = radii_.TopRight();
+  const gfx::SizeF& top_right = radii_.TopRight();
   if (!top_right.IsEmpty()) {
-    FloatRect rect(rect_.right() - top_right.width(), rect_.y(),
-                   top_right.width(), top_right.height());
+    gfx::RectF rect(rect_.right() - top_right.width(), rect_.y(),
+                    top_right.width(), top_right.height());
     if (quad.IntersectsRect(rect)) {
       gfx::PointF center(rect_.right() - top_right.width(),
                          rect_.y() + top_right.height());
-      FloatSize size(top_right.width(), top_right.height());
+      gfx::SizeF size(top_right.width(), top_right.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
     }
   }
 
-  const FloatSize& bottom_left = radii_.BottomLeft();
+  const gfx::SizeF& bottom_left = radii_.BottomLeft();
   if (!bottom_left.IsEmpty()) {
-    FloatRect rect(rect_.x(), rect_.bottom() - bottom_left.height(),
-                   bottom_left.width(), bottom_left.height());
+    gfx::RectF rect(rect_.x(), rect_.bottom() - bottom_left.height(),
+                    bottom_left.width(), bottom_left.height());
     if (quad.IntersectsRect(rect)) {
       gfx::PointF center(rect_.x() + bottom_left.width(),
                          rect_.bottom() - bottom_left.height());
-      FloatSize size(bottom_left.width(), bottom_left.height());
+      gfx::SizeF size(bottom_left.width(), bottom_left.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
     }
   }
 
-  const FloatSize& bottom_right = radii_.BottomRight();
+  const gfx::SizeF& bottom_right = radii_.BottomRight();
   if (!bottom_right.IsEmpty()) {
-    FloatRect rect(rect_.right() - bottom_right.width(),
-                   rect_.bottom() - bottom_right.height(), bottom_right.width(),
-                   bottom_right.height());
+    gfx::RectF rect(rect_.right() - bottom_right.width(),
+                    rect_.bottom() - bottom_right.height(),
+                    bottom_right.width(), bottom_right.height());
     if (quad.IntersectsRect(rect)) {
       gfx::PointF center(rect_.right() - bottom_right.width(),
                          rect_.bottom() - bottom_right.height());
-      FloatSize size(bottom_right.width(), bottom_right.height());
+      gfx::SizeF size(bottom_right.width(), bottom_right.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
     }
@@ -323,16 +325,18 @@ std::ostream& operator<<(std::ostream& ostream,
 }
 
 String FloatRoundedRect::Radii::ToString() const {
-  return "tl:" + TopLeft().ToString() + "; tr:" + TopRight().ToString() +
-         "; bl:" + BottomLeft().ToString() + "; br:" + BottomRight().ToString();
+  return String::Format(
+      "tl:%s; tr:%s; bl:%s; br:%s", TopLeft().ToString().c_str(),
+      TopRight().ToString().c_str(), BottomLeft().ToString().c_str(),
+      BottomRight().ToString().c_str());
 }
 
 String FloatRoundedRect::ToString() const {
-  if (Rect() == FloatRect(LayoutRect::InfiniteIntRect()))
+  if (Rect() == gfx::RectF(LayoutRect::InfiniteIntRect()))
     return "InfiniteIntRect";
   if (GetRadii().IsZero())
-    return Rect().ToString();
-  return Rect().ToString() + " radii:(" + GetRadii().ToString() + ")";
+    return String(Rect().ToString());
+  return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
 }
 
 }  // namespace blink

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -222,6 +223,14 @@ inline IntSize FlooredIntSize(const LayoutSize& s) {
 
 inline IntSize RoundedIntSize(const LayoutSize& s) {
   return IntSize(s.Width().Round(), s.Height().Round());
+}
+
+inline gfx::Size ToFlooredSize(const LayoutSize& s) {
+  return gfx::Size(s.Width().Floor(), s.Height().Floor());
+}
+
+inline gfx::Size ToRoundedSize(const LayoutSize& s) {
+  return gfx::Size(s.Width().Round(), s.Height().Round());
 }
 
 inline LayoutSize RoundedLayoutSize(const FloatSize& s) {

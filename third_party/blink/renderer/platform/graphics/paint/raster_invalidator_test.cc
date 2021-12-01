@@ -335,9 +335,9 @@ TEST_P(RasterInvalidatorTest, UncacheableChunks) {
 
 // Tests the path based on ClipPaintPropertyNode::Changed().
 TEST_P(RasterInvalidatorTest, ClipPropertyChangeRounded) {
-  FloatRoundedRect::Radii radii(FloatSize(1, 2), FloatSize(2, 3),
-                                FloatSize(3, 4), FloatSize(4, 5));
-  FloatRoundedRect clip_rect(FloatRect(-1000, -1000, 2000, 2000), radii);
+  FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
+                                gfx::SizeF(3, 4), gfx::SizeF(4, 5));
+  FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
   auto clip0 = CreateClip(c0(), t0(), clip_rect);
   auto clip2 = CreateClip(*clip0, t0(), clip_rect);
 
@@ -358,7 +358,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeRounded) {
 
   // Change both clip0 and clip2.
   invalidator_.SetTracksRasterInvalidations(true);
-  FloatRoundedRect new_clip_rect(FloatRect(-2000, -2000, 4000, 4000), radii);
+  FloatRoundedRect new_clip_rect(gfx::RectF(-2000, -2000, 4000, 4000), radii);
   UpdateClip(*clip0, new_clip_rect);
   UpdateClip(*clip2, new_clip_rect);
 
@@ -399,15 +399,14 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
   auto clip1 = CreateClip(*clip0, t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
-  PaintChunkSubset chunks(
-      TestPaintArtifact()
-          .Chunk(0)
-          .Properties(t0(), *clip0, e0())
-          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
-          .Chunk(1)
-          .Properties(t0(), *clip1, e0())
-          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
-          .Build());
+  PaintChunkSubset chunks(TestPaintArtifact()
+                              .Chunk(0)
+                              .Properties(t0(), *clip0, e0())
+                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
+                              .Chunk(1)
+                              .Properties(t0(), *clip1, e0())
+                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
+                              .Build());
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -463,13 +462,12 @@ TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
   auto c1 = CreateClip(c0(), t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
-  PaintChunkSubset chunks(
-      TestPaintArtifact()
-          .Chunk(0)
-          .Properties(t0(), *c1, e0())
-          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
-          .IsMovedFromCachedSubsequence()
-          .Build());
+  PaintChunkSubset chunks(TestPaintArtifact()
+                              .Chunk(0)
+                              .Properties(t0(), *c1, e0())
+                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
+                              .IsMovedFromCachedSubsequence()
+                              .Build());
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -505,7 +503,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
       TestPaintArtifact()
           .Chunk(0)
           .Properties(t0(), *clip, e0())
-          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
+          .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
           .SetRasterEffectOutset(RasterEffectOutset::kWholePixel)
           .Build());
 
@@ -532,9 +530,9 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChange) {
   auto t1 = CreateTransform(t0(), TransformationMatrix());
   auto t2 = CreateTransform(*t1, TransformationMatrix());
 
-  FloatRoundedRect::Radii radii(FloatSize(1, 2), FloatSize(2, 3),
-                                FloatSize(3, 4), FloatSize(4, 5));
-  FloatRoundedRect clip_rect(FloatRect(-1000, -1000, 2000, 2000), radii);
+  FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
+                                gfx::SizeF(3, 4), gfx::SizeF(4, 5));
+  FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
   auto c1 = CreateClip(c0(), *t1, clip_rect);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
@@ -566,9 +564,9 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChangeNoInvalidation) {
   auto t1 = CreateTransform(t0(), TransformationMatrix());
   auto t2 = CreateTransform(*t1, TransformationMatrix());
 
-  FloatRoundedRect::Radii radii(FloatSize(1, 2), FloatSize(2, 3),
-                                FloatSize(3, 4), FloatSize(4, 5));
-  FloatRoundedRect clip_rect(FloatRect(-1000, -1000, 2000, 2000), radii);
+  FloatRoundedRect::Radii radii(gfx::SizeF(1, 2), gfx::SizeF(2, 3),
+                                gfx::SizeF(3, 4), gfx::SizeF(4, 5));
+  FloatRoundedRect clip_rect(gfx::RectF(-1000, -1000, 2000, 2000), radii);
   // This set is different from ClipLocalTransformSpaceChange.
   auto c1 = CreateClip(c0(), *t2, clip_rect);
 

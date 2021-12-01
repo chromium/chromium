@@ -1302,13 +1302,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsEffect(object_, full_context_.direct_compositing_reasons)) {
-      absl::optional<IntRect> mask_clip = CSSMaskPainter::MaskBoundingBox(
+      absl::optional<gfx::Rect> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       bool has_clip_path =
           style.HasClipPath() && fragment_data_.ClipPathBoundingBox();
       bool has_mask_based_clip_path =
           has_clip_path && !fragment_data_.ClipPathPath();
-      absl::optional<IntRect> clip_path_clip;
+      absl::optional<gfx::Rect> clip_path_clip;
       if (has_mask_based_clip_path)
         clip_path_clip = fragment_data_.ClipPathBoundingBox();
 
@@ -1317,7 +1317,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
                                     : nullptr;
 
       if (mask_clip || clip_path_clip) {
-        IntRect combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
+        gfx::Rect combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
         if (mask_clip && clip_path_clip)
           combined_clip.Intersect(*clip_path_clip);
 
@@ -1327,7 +1327,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
-                                         gfx::RectF(ToGfxRect(combined_clip)),
+                                         gfx::RectF(combined_clip),
                                          FloatRoundedRect(combined_clip))));
         output_clip = properties_->MaskClip();
       } else {
@@ -1680,7 +1680,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 }
 
 static FloatRoundedRect ToSnappedClipRect(const PhysicalRect& rect) {
-  return FloatRoundedRect(PixelSnappedIntRect(rect));
+  return FloatRoundedRect(ToPixelSnappedRect(rect));
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateFragmentClip() {
@@ -1747,7 +1747,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
       // coordinates.
       ClipPaintPropertyNode::State state(
           context_.current.transform,
-          gfx::RectF(ToGfxRect(*fragment_data_.ClipPathBoundingBox())),
+          gfx::RectF(*fragment_data_.ClipPathBoundingBox()),
           FloatRoundedRect(*fragment_data_.ClipPathBoundingBox()));
       state.clip_path = fragment_data_.ClipPathPath();
       OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
@@ -1917,9 +1917,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       ClipPaintPropertyNode::State state(
           context_.current.transform,
-          ToGfxRectF(RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(),
-                                                               box_rect)
-                         .Rect()),
+          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
+              .Rect(),
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
                                                                 box_rect));
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
@@ -1967,12 +1966,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           // could overflow by 1px due to pre-snapping. Adjust clip rect to
           // match pre-snapped box as a special case.
           clip_rect.SetRect(
-              FloatRect(clip_rect.Rect().origin(),
-                        FloatSize(replaced.ReplacedContentRect().size)));
+              gfx::RectF(clip_rect.Rect().origin(),
+                         gfx::SizeF(replaced.ReplacedContentRect().size)));
         }
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?
-        state.SetClipRect(ToGfxRectF(clip_rect.Rect()), clip_rect);
+        state.SetClipRect(clip_rect.Rect(), clip_rect);
       } else if (object_.IsBox()) {
         PhysicalRect clip_rect;
         if (pre_paint_info_) {
@@ -2015,8 +2014,7 @@ static gfx::PointF PerspectiveOrigin(const LayoutBox& box) {
   const ComputedStyle& style = box.StyleRef();
   // Perspective origin has no effect without perspective.
   DCHECK(style.HasPerspective());
-  FloatSize border_box_size(box.Size());
-  return FloatPointForLengthPoint(style.PerspectiveOrigin(), border_box_size);
+  return PointForLengthPoint(style.PerspectiveOrigin(), gfx::SizeF(box.Size()));
 }
 
 static bool NeedsPerspective(const LayoutObject& object) {
@@ -2142,8 +2140,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // The container bounds are snapped to integers to match the equivalent
       // bounds on cc::ScrollNode. The offset is snapped to match the current
       // integer offsets used in CompositedLayerMapping.
-      state.container_rect = ToGfxRect(PixelSnappedIntRect(
-          box.OverflowClipRect(context_.current.paint_offset)));
+      state.container_rect = ToPixelSnappedRect(
+          box.OverflowClipRect(context_.current.paint_offset));
       state.contents_size = ToGfxSize(scrollable_area->PixelSnappedContentsSize(
           context_.current.paint_offset));
 
@@ -2833,7 +2831,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
   if (path)
     path->Translate(gfx::Vector2dF(fragment_data_.PaintOffset()));
   fragment_data_.SetClipPathCache(
-      IntRect(gfx::ToEnclosingRect(*bounding_box)),
+      gfx::ToEnclosingRect(*bounding_box),
       path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);
 }
 

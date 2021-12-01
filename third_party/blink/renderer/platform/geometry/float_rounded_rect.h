@@ -32,10 +32,13 @@
 
 #include <iosfwd>
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -56,32 +59,32 @@ class PLATFORM_EXPORT FloatRoundedRect {
 
    public:
     constexpr Radii() = default;
-    constexpr Radii(const FloatSize& top_left,
-                    const FloatSize& top_right,
-                    const FloatSize& bottom_left,
-                    const FloatSize& bottom_right)
+    constexpr Radii(const gfx::SizeF& top_left,
+                    const gfx::SizeF& top_right,
+                    const gfx::SizeF& bottom_left,
+                    const gfx::SizeF& bottom_right)
         : top_left_(top_left),
           top_right_(top_right),
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
     explicit constexpr Radii(float radius) : Radii(radius, radius) {}
     constexpr Radii(float radius_x, float radius_y)
-        : Radii(FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y)) {}
+        : Radii(gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y)) {}
 
     constexpr Radii(const Radii&) = default;
     constexpr Radii& operator=(const Radii&) = default;
 
-    void SetTopLeft(const FloatSize& size) { top_left_ = size; }
-    void SetTopRight(const FloatSize& size) { top_right_ = size; }
-    void SetBottomLeft(const FloatSize& size) { bottom_left_ = size; }
-    void SetBottomRight(const FloatSize& size) { bottom_right_ = size; }
-    constexpr const FloatSize& TopLeft() const { return top_left_; }
-    constexpr const FloatSize& TopRight() const { return top_right_; }
-    constexpr const FloatSize& BottomLeft() const { return bottom_left_; }
-    constexpr const FloatSize& BottomRight() const { return bottom_right_; }
+    void SetTopLeft(const gfx::SizeF& size) { top_left_ = size; }
+    void SetTopRight(const gfx::SizeF& size) { top_right_ = size; }
+    void SetBottomLeft(const gfx::SizeF& size) { bottom_left_ = size; }
+    void SetBottomRight(const gfx::SizeF& size) { bottom_right_ = size; }
+    constexpr const gfx::SizeF& TopLeft() const { return top_left_; }
+    constexpr const gfx::SizeF& TopRight() const { return top_right_; }
+    constexpr const gfx::SizeF& BottomLeft() const { return bottom_left_; }
+    constexpr const gfx::SizeF& BottomRight() const { return bottom_right_; }
 
     void SetMinimumRadius(float);
     absl::optional<float> UniformRadius() const;
@@ -108,38 +111,35 @@ class PLATFORM_EXPORT FloatRoundedRect {
     String ToString() const;
 
    private:
-    FloatSize top_left_;
-    FloatSize top_right_;
-    FloatSize bottom_left_;
-    FloatSize bottom_right_;
+    gfx::SizeF top_left_;
+    gfx::SizeF top_right_;
+    gfx::SizeF bottom_left_;
+    gfx::SizeF bottom_right_;
   };
 
   constexpr FloatRoundedRect() = default;
-  explicit FloatRoundedRect(const gfx::RectF& rect,
-                            const Radii& radii = Radii())
-      : FloatRoundedRect(FloatRect(rect), radii) {}
-  explicit FloatRoundedRect(const FloatRect&, const Radii& = Radii());
-  explicit FloatRoundedRect(const IntRect&, const Radii& = Radii());
+  explicit FloatRoundedRect(const gfx::RectF&, const Radii& radii = Radii());
+  explicit FloatRoundedRect(const gfx::Rect&, const Radii& radii = Radii());
   FloatRoundedRect(float x, float y, float width, float height);
-  FloatRoundedRect(const FloatRect&,
-                   const FloatSize& top_left,
-                   const FloatSize& top_right,
-                   const FloatSize& bottom_left,
-                   const FloatSize& bottom_right);
-  FloatRoundedRect(const FloatRect& r, float radius)
-      : FloatRoundedRect(r, Radii(radius)) {}
-  FloatRoundedRect(const FloatRect& r, float radius_x, float radius_y)
+  FloatRoundedRect(const gfx::RectF& rect,
+                   const gfx::SizeF& top_left,
+                   const gfx::SizeF& top_right,
+                   const gfx::SizeF& bottom_left,
+                   const gfx::SizeF& bottom_right);
+  FloatRoundedRect(const gfx::RectF& rect, float radius)
+      : rect_(rect), radii_(radius) {}
+  FloatRoundedRect(const gfx::RectF& r, float radius_x, float radius_y)
       : FloatRoundedRect(r, Radii(radius_x, radius_y)) {}
 
-  constexpr const FloatRect& Rect() const { return rect_; }
+  constexpr const gfx::RectF& Rect() const { return rect_; }
   constexpr const Radii& GetRadii() const { return radii_; }
   constexpr bool IsRounded() const { return !radii_.IsZero(); }
   constexpr bool IsEmpty() const { return rect_.IsEmpty(); }
 
-  void SetRect(const FloatRect& rect) { rect_ = rect; }
+  void SetRect(const gfx::RectF& rect) { rect_ = rect; }
   void SetRadii(const Radii& radii) { radii_ = radii; }
 
-  void Move(const FloatSize& size) { rect_.Offset(size); }
+  void Move(const gfx::Vector2dF& offset) { rect_.Offset(offset); }
   void InflateWithRadii(int size);
   void Inflate(float size) { rect_.Outset(size); }
 
@@ -151,25 +151,26 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void ShrinkRadii(float size) { radii_.Shrink(size); }
 
   // Returns a quickly computed rect enclosed by the rounded rect.
-  FloatRect RadiusCenterRect() const;
+  gfx::RectF RadiusCenterRect() const;
 
-  constexpr FloatRect TopLeftCorner() const {
-    return FloatRect(rect_.x(), rect_.y(), radii_.TopLeft().width(),
-                     radii_.TopLeft().height());
+  constexpr gfx::RectF TopLeftCorner() const {
+    return gfx::RectF(rect_.x(), rect_.y(), radii_.TopLeft().width(),
+                      radii_.TopLeft().height());
   }
-  constexpr FloatRect TopRightCorner() const {
-    return FloatRect(rect_.right() - radii_.TopRight().width(), rect_.y(),
-                     radii_.TopRight().width(), radii_.TopRight().height());
+  constexpr gfx::RectF TopRightCorner() const {
+    return gfx::RectF(rect_.right() - radii_.TopRight().width(), rect_.y(),
+                      radii_.TopRight().width(), radii_.TopRight().height());
   }
-  constexpr FloatRect BottomLeftCorner() const {
-    return FloatRect(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
-                     radii_.BottomLeft().width(), radii_.BottomLeft().height());
+  constexpr gfx::RectF BottomLeftCorner() const {
+    return gfx::RectF(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
+                      radii_.BottomLeft().width(),
+                      radii_.BottomLeft().height());
   }
-  constexpr FloatRect BottomRightCorner() const {
-    return FloatRect(rect_.right() - radii_.BottomRight().width(),
-                     rect_.bottom() - radii_.BottomRight().height(),
-                     radii_.BottomRight().width(),
-                     radii_.BottomRight().height());
+  constexpr gfx::RectF BottomRightCorner() const {
+    return gfx::RectF(rect_.right() - radii_.BottomRight().width(),
+                      rect_.bottom() - radii_.BottomRight().height(),
+                      radii_.BottomRight().width(),
+                      radii_.BottomRight().height());
   }
 
   bool XInterceptsAtY(float y,
@@ -192,12 +193,12 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // the rounded border.
   void ConstrainRadii();
 
-  operator SkRRect() const;
+  explicit operator SkRRect() const;
 
   String ToString() const;
 
  private:
-  FloatRect rect_;
+  gfx::RectF rect_;
   Radii radii_;
 };
 
@@ -215,9 +216,9 @@ inline FloatRoundedRect::operator SkRRect() const {
     radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().width(),
                                           BottomLeftCorner().height());
 
-    rrect.setRectRadii(Rect(), radii);
+    rrect.setRectRadii(gfx::RectFToSkRect(Rect()), radii);
   } else {
-    rrect.setRect(Rect());
+    rrect.setRect(gfx::RectFToSkRect(Rect()));
   }
 
   return rrect;

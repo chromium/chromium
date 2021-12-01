@@ -101,7 +101,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   }
   void InvalidateClipPathCache();
 
-  absl::optional<IntRect> ClipPathBoundingBox() const {
+  absl::optional<gfx::Rect> ClipPathBoundingBox() const {
     DCHECK(IsClipPathCacheValid());
     return rare_data_ ? rare_data_->clip_path_bounding_box : absl::nullopt;
   }
@@ -109,7 +109,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     DCHECK(IsClipPathCacheValid());
     return rare_data_ ? rare_data_->clip_path_path.get() : nullptr;
   }
-  void SetClipPathCache(const IntRect& bounding_box,
+  void SetClipPathCache(const gfx::Rect& bounding_box,
                         scoped_refptr<const RefCountedPath>);
   void ClearClipPathCache() {
     if (rare_data_) {
@@ -247,7 +247,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeState> local_border_box_properties;
     bool is_clip_path_cache_valid = false;
-    absl::optional<IntRect> clip_path_bounding_box;
+    absl::optional<gfx::Rect> clip_path_bounding_box;
     scoped_refptr<const RefCountedPath> clip_path_path;
     CullRect cull_rect_;
     CullRect contents_cull_rect_;

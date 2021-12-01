@@ -307,12 +307,12 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
 
     Path new_path;
     for (auto& rect : rects) {
-      FloatRect snapped_rect(PixelSnappedIntRect(rect));
+      gfx::RectF snapped_rect(ToPixelSnappedRect(rect));
       if (use_rounded_rects) {
         constexpr float kRadius = 3;
         new_path.AddRoundedRect(FloatRoundedRect(snapped_rect, kRadius));
       } else {
-        new_path.AddRect(ToGfxRectF(snapped_rect));
+        new_path.AddRect(snapped_rect);
       }
     }
 

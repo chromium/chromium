@@ -450,7 +450,8 @@ void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
   if (rect.IsEmpty())
     return;
 
-  path_.addRRect(rect, clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
+  path_.addRRect(SkRRect(rect),
+                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
                  /* start at upper-left after corner radius */ 0);
 }
 

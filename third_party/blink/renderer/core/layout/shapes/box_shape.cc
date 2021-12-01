@@ -58,7 +58,7 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 
   float y1 = logical_top.ToFloat();
   float y2 = (logical_top + logical_height).ToFloat();
-  const FloatRect& rect = margin_bounds.Rect();
+  const gfx::RectF& rect = margin_bounds.Rect();
 
   if (!margin_bounds.IsRounded())
     return LineSegment(margin_bounds.Rect().x(), margin_bounds.Rect().right());

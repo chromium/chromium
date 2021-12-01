@@ -63,16 +63,16 @@ static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
   return std::make_unique<BoxShape>(bounds);
 }
 
-static inline FloatRect PhysicalRectToLogical(const FloatRect& rect,
-                                              float logical_box_height,
-                                              WritingMode writing_mode) {
+static inline gfx::RectF PhysicalRectToLogical(const gfx::RectF& rect,
+                                               float logical_box_height,
+                                               WritingMode writing_mode) {
   if (IsHorizontalWritingMode(writing_mode))
     return rect;
   if (IsFlippedBlocksWritingMode(writing_mode)) {
-    return FloatRect(rect.y(), logical_box_height - rect.right(), rect.height(),
-                     rect.width());
+    return gfx::RectF(rect.y(), logical_box_height - rect.right(),
+                      rect.height(), rect.width());
   }
-  return rect.TransposedRect();
+  return gfx::TransposeRect(rect);
 }
 
 static inline gfx::PointF PhysicalPointToLogical(const gfx::PointF& point,
@@ -85,11 +85,11 @@ static inline gfx::PointF PhysicalPointToLogical(const gfx::PointF& point,
   return gfx::TransposePoint(point);
 }
 
-static inline FloatSize PhysicalSizeToLogical(const FloatSize& size,
-                                              WritingMode writing_mode) {
+static inline gfx::SizeF PhysicalSizeToLogical(const gfx::SizeF& size,
+                                               WritingMode writing_mode) {
   if (IsHorizontalWritingMode(writing_mode))
     return size;
-  return size.TransposedSize();
+  return gfx::TransposeSize(size);
 }
 
 std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
@@ -162,24 +162,20 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       float top = FloatValueForLength(inset.Top(), box_height);
       float right = FloatValueForLength(inset.Right(), box_width);
       float bottom = FloatValueForLength(inset.Bottom(), box_height);
-      FloatRect rect(left, top, std::max<float>(box_width - left - right, 0),
-                     std::max<float>(box_height - top - bottom, 0));
-      FloatRect logical_rect = PhysicalRectToLogical(
+      gfx::RectF rect(left, top, std::max<float>(box_width - left - right, 0),
+                      std::max<float>(box_height - top - bottom, 0));
+      gfx::RectF logical_rect = PhysicalRectToLogical(
           rect, logical_box_size.Height().ToFloat(), writing_mode);
 
-      FloatSize box_size(box_width, box_height);
-      FloatSize top_left_radius = PhysicalSizeToLogical(
-          FloatSizeForLengthSize(inset.TopLeftRadius(), box_size),
-          writing_mode);
-      FloatSize top_right_radius = PhysicalSizeToLogical(
-          FloatSizeForLengthSize(inset.TopRightRadius(), box_size),
-          writing_mode);
-      FloatSize bottom_left_radius = PhysicalSizeToLogical(
-          FloatSizeForLengthSize(inset.BottomLeftRadius(), box_size),
-          writing_mode);
-      FloatSize bottom_right_radius = PhysicalSizeToLogical(
-          FloatSizeForLengthSize(inset.BottomRightRadius(), box_size),
-          writing_mode);
+      gfx::SizeF box_size(box_width, box_height);
+      gfx::SizeF top_left_radius = PhysicalSizeToLogical(
+          SizeForLengthSize(inset.TopLeftRadius(), box_size), writing_mode);
+      gfx::SizeF top_right_radius = PhysicalSizeToLogical(
+          SizeForLengthSize(inset.TopRightRadius(), box_size), writing_mode);
+      gfx::SizeF bottom_left_radius = PhysicalSizeToLogical(
+          SizeForLengthSize(inset.BottomLeftRadius(), box_size), writing_mode);
+      gfx::SizeF bottom_right_radius = PhysicalSizeToLogical(
+          SizeForLengthSize(inset.BottomRightRadius(), box_size), writing_mode);
       FloatRoundedRect::Radii corner_radii(top_left_radius, top_right_radius,
                                            bottom_left_radius,
                                            bottom_right_radius);
@@ -350,8 +346,7 @@ std::unique_ptr<Shape> Shape::CreateLayoutBoxShape(
     const FloatRoundedRect& rounded_rect,
     WritingMode writing_mode,
     float margin) {
-  FloatRect rect(0, 0, rounded_rect.Rect().width(),
-                 rounded_rect.Rect().height());
+  gfx::RectF rect(rounded_rect.Rect().size());
   FloatRoundedRect bounds(rect, rounded_rect.GetRadii());
   std::unique_ptr<Shape> shape = CreateInsetShape(bounds);
   shape->writing_mode_ = writing_mode;

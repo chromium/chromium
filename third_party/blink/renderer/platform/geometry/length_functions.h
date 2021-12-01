@@ -30,11 +30,11 @@
 
 namespace gfx {
 class PointF;
+class SizeF;
 }
 
 namespace blink {
 
-class FloatSize;
 class LayoutUnit;
 class Length;
 class LengthSize;
@@ -56,10 +56,10 @@ inline LayoutUnit MinimumValueForLength(const Length& length,
 
 PLATFORM_EXPORT LayoutUnit ValueForLength(const Length&,
                                           LayoutUnit maximum_value);
-PLATFORM_EXPORT FloatSize FloatSizeForLengthSize(const LengthSize&,
-                                                 const FloatSize& box_size);
-PLATFORM_EXPORT gfx::PointF FloatPointForLengthPoint(const LengthPoint&,
-                                                     const FloatSize& box_size);
+PLATFORM_EXPORT gfx::SizeF SizeForLengthSize(const LengthSize&,
+                                             const gfx::SizeF& box_size);
+PLATFORM_EXPORT gfx::PointF PointForLengthPoint(const LengthPoint&,
+                                                const gfx::SizeF& box_size);
 
 }  // namespace blink
 

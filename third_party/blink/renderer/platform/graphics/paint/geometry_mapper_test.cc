@@ -440,9 +440,9 @@ TEST_P(GeometryMapperTest, SimpleClipPlusOpacityInclusiveIntersect) {
 }
 
 TEST_P(GeometryMapperTest, RoundedClip) {
-  FloatRoundedRect rect(FloatRect(10, 10, 50, 50),
-                        FloatRoundedRect::Radii(FloatSize(1, 1), FloatSize(),
-                                                FloatSize(), FloatSize()));
+  FloatRoundedRect rect(gfx::RectF(10, 10, 50, 50),
+                        FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(),
+                                                gfx::SizeF(), gfx::SizeF()));
   auto clip = CreateClip(c0(), t0(), rect);
   local_state.SetClip(*clip);
 
@@ -455,9 +455,9 @@ TEST_P(GeometryMapperTest, RoundedClip) {
 }
 
 TEST_P(GeometryMapperTest, ClipPath) {
-  FloatRoundedRect rect(FloatRect(10, 10, 50, 50),
-                        FloatRoundedRect::Radii(FloatSize(1, 1), FloatSize(),
-                                                FloatSize(), FloatSize()));
+  FloatRoundedRect rect(gfx::RectF(10, 10, 50, 50),
+                        FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(),
+                                                gfx::SizeF(), gfx::SizeF()));
   auto clip = CreateClipPathClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
   local_state.SetClip(*clip);
 
@@ -471,9 +471,9 @@ TEST_P(GeometryMapperTest, ClipPath) {
 
 TEST_P(GeometryMapperTest, TwoClips) {
   FloatRoundedRect clip_rect1(
-      FloatRect(10, 10, 30, 40),
-      FloatRoundedRect::Radii(FloatSize(1, 1), FloatSize(), FloatSize(),
-                              FloatSize()));
+      gfx::RectF(10, 10, 30, 40),
+      FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(), gfx::SizeF(),
+                              gfx::SizeF()));
 
   auto clip1 = CreateClip(c0(), t0(), clip_rect1);
   auto clip2 = CreateClip(*clip1, t0(), FloatRoundedRect(10, 10, 50, 50));
@@ -496,9 +496,9 @@ TEST_P(GeometryMapperTest, TwoClipsTransformAbove) {
   auto transform = Create2DTranslation(t0(), 0, 0);
 
   FloatRoundedRect clip_rect1(
-      FloatRect(10, 10, 50, 50),
-      FloatRoundedRect::Radii(FloatSize(1, 1), FloatSize(), FloatSize(),
-                              FloatSize()));
+      gfx::RectF(10, 10, 50, 50),
+      FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(), gfx::SizeF(),
+                              gfx::SizeF()));
 
   auto clip1 = CreateClip(c0(), *transform, clip_rect1);
   auto clip2 = CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 30, 40));

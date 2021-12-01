@@ -268,12 +268,12 @@ class LayoutUnit {
 
   // Versions of max/min that are slightly smaller/larger than max/min() to
   // allow for roinding without overflowing.
-  static const LayoutUnit NearlyMax() {
+  static constexpr LayoutUnit NearlyMax() {
     LayoutUnit m;
     m.value_ = std::numeric_limits<int>::max() - kFixedPointDenominator / 2;
     return m;
   }
-  static const LayoutUnit NearlyMin() {
+  static constexpr LayoutUnit NearlyMin() {
     LayoutUnit m;
     m.value_ = std::numeric_limits<int>::min() + kFixedPointDenominator / 2;
     return m;

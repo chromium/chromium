@@ -69,6 +69,8 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(location), size_(size) {}
   constexpr explicit LayoutRect(const IntRect& rect)
       : location_(rect.origin()), size_(rect.size()) {}
+  constexpr explicit LayoutRect(const gfx::Rect& rect)
+      : location_(rect.origin()), size_(rect.size()) {}
 
   // Don't do these implicitly since they are lossy.
   constexpr explicit LayoutRect(const FloatRect& r)
@@ -280,14 +282,13 @@ class PLATFORM_EXPORT LayoutRect {
     return LayoutRect(location_.TransposedPoint(), size_.TransposedSize());
   }
 
-  static IntRect InfiniteIntRect() {
-    // Due to saturated arithemetic this value is not the same as
+  static constexpr gfx::Rect InfiniteIntRect() {
+    // Due to saturated arithmetic this value is not the same as
     // LayoutRect(IntRect(INT_MIN/2, INT_MIN/2, INT_MAX, INT_MAX)).
-    static IntRect infinite_int_rect(LayoutUnit::NearlyMin().ToInt() / 2,
-                                     LayoutUnit::NearlyMin().ToInt() / 2,
-                                     LayoutUnit::NearlyMax().ToInt(),
-                                     LayoutUnit::NearlyMax().ToInt());
-    return infinite_int_rect;
+    return gfx::Rect(LayoutUnit::NearlyMin().ToInt() / 2,
+                     LayoutUnit::NearlyMin().ToInt() / 2,
+                     LayoutUnit::NearlyMax().ToInt(),
+                     LayoutUnit::NearlyMax().ToInt());
   }
 
   String ToString() const;
@@ -334,17 +335,37 @@ inline IntRect PixelSnappedIntRect(const LayoutRect& rect) {
                  IntSize(SnapSizeToPixel(rect.Width(), rect.X()),
                          SnapSizeToPixel(rect.Height(), rect.Y())));
 }
+inline gfx::Rect ToPixelSnappedRect(const LayoutRect& rect) {
+  return gfx::Rect(ToRoundedPoint(rect.Location()),
+                   gfx::Size(SnapSizeToPixel(rect.Width(), rect.X()),
+                             SnapSizeToPixel(rect.Height(), rect.Y())));
+}
 
 inline IntRect EnclosingIntRect(const LayoutRect& rect) {
   gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
   gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
   return IntRect(location, IntSize(max_point - location));
 }
+inline gfx::Rect ToEnclosingRect(const LayoutRect& rect) {
+  gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
+  // Because the range of LayoutUnit is much smaller than int, the following
+  // '-' operations can never overflow, so no clamping is needed.
+  // TODO(1261553): We can have a special version of gfx::Rect constructor that
+  // skips internal clamping to improve performance.
+  return gfx::Rect(location.x(), location.y(), max_point.x() - location.x(),
+                   max_point.y() - location.y());
+}
 
 inline IntRect EnclosedIntRect(const LayoutRect& rect) {
   gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
   gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
   return IntRect(location, IntSize(max_point - location));
+}
+inline gfx::Rect ToEnclosedRect(const LayoutRect& rect) {
+  gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
+  return gfx::BoundingRect(location, max_point);
 }
 
 inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
@@ -361,26 +382,6 @@ inline LayoutRect EnclosingLayoutRect(const gfx::RectF& rect) {
   LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.right());
   LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.bottom());
   return LayoutRect(x, y, max_x - x, max_y - y);
-}
-
-inline IntRect PixelSnappedIntRect(LayoutUnit left,
-                                   LayoutUnit top,
-                                   LayoutUnit width,
-                                   LayoutUnit height) {
-  return IntRect(left.Round(), top.Round(), SnapSizeToPixel(width, left),
-                 SnapSizeToPixel(height, top));
-}
-
-inline IntRect PixelSnappedIntRectFromEdges(LayoutUnit left,
-                                            LayoutUnit top,
-                                            LayoutUnit right,
-                                            LayoutUnit bottom) {
-  return IntRect(left.Round(), top.Round(), SnapSizeToPixel(right - left, left),
-                 SnapSizeToPixel(bottom - top, top));
-}
-
-inline IntRect PixelSnappedIntRect(LayoutPoint location, LayoutSize size) {
-  return IntRect(ToRoundedPoint(location), PixelSnappedIntSize(size, location));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutRect&);

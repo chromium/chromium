@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 struct SkPoint;
 
@@ -62,7 +64,19 @@ class PLATFORM_EXPORT FloatQuad {
         p3_(in_rect.right(), in_rect.bottom()),
         p4_(in_rect.x(), in_rect.bottom()) {}
 
+  explicit constexpr FloatQuad(const gfx::RectF& in_rect)
+      : p1_(in_rect.origin()),
+        p2_(in_rect.right(), in_rect.y()),
+        p3_(in_rect.right(), in_rect.bottom()),
+        p4_(in_rect.x(), in_rect.bottom()) {}
+
   explicit FloatQuad(const IntRect& in_rect)
+      : p1_(in_rect.origin()),
+        p2_(in_rect.right(), in_rect.y()),
+        p3_(in_rect.right(), in_rect.bottom()),
+        p4_(in_rect.x(), in_rect.bottom()) {}
+
+  explicit FloatQuad(const gfx::Rect& in_rect)
       : p1_(in_rect.origin()),
         p2_(in_rect.right(), in_rect.y()),
         p3_(in_rect.right(), in_rect.bottom()),
@@ -113,6 +127,9 @@ class PLATFORM_EXPORT FloatQuad {
   // This intersection is edge-inclusive and will return true even if the
   // intersecting area is empty (i.e., the intersection is a line or a point).
   bool IntersectsRect(const FloatRect&) const;
+  bool IntersectsRect(const gfx::RectF& rect) const {
+    return IntersectsRect(FloatRect(rect));
+  }
 
   // Test whether any part of the circle/ellipse intersects with this quad.
   // Note that these two functions only work for convex quads.
@@ -120,7 +137,7 @@ class PLATFORM_EXPORT FloatQuad {
   // intersecting area is empty (i.e., the intersection is a line or a point).
   bool IntersectsCircle(const gfx::PointF& center, float radius) const;
   bool IntersectsEllipse(const gfx::PointF& center,
-                         const FloatSize& radii) const;
+                         const gfx::SizeF& radii) const;
 
   // The center of the quad. If the quad is the result of a affine-transformed
   // rectangle this is the same as the original center transformed.

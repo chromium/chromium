@@ -14,7 +14,7 @@ const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
       ClipPaintPropertyNode, root,
       base::AdoptRef(new ClipPaintPropertyNode(
           nullptr, State(&TransformPaintPropertyNode::Root(),
-                         gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())),
+                         gfx::RectF(LayoutRect::InfiniteIntRect()),
                          FloatRoundedRect(LayoutRect::InfiniteIntRect())))));
   return *root;
 }
@@ -45,7 +45,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
     json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
-  json->SetString("rect", state_.paint_clip_rect.Rect().ToString());
+  json->SetString("rect", String(state_.paint_clip_rect.Rect().ToString()));
   if (state_.layout_clip_rect_excluding_overlay_scrollbars) {
     json->SetString(
         "rectExcludingOverlayScrollbars",

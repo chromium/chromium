@@ -624,8 +624,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
   }
 
   const RefCountedPath* path = clip.ClipPath();
-  SkRRect new_rrect = clip.PaintClipRect();
-  IntRect layer_bounds = EnclosingIntRect(clip.PaintClipRect().Rect());
+  SkRRect new_rrect(clip.PaintClipRect());
+  gfx::Rect layer_bounds = gfx::ToEnclosingRect(clip.PaintClipRect().Rect());
   bool needs_display = false;
 
   auto new_translation_2d_or_matrix =
@@ -653,8 +653,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
     layer_->SetNeedsDisplay();
 
   layer_->SetOffsetToTransformParent(
-      gfx::Vector2dF(layer_bounds.x(), layer_bounds.y()));
-  layer_->SetBounds(ToGfxSize(layer_bounds.size()));
+      gfx::Vector2dF(layer_bounds.OffsetFromOrigin()));
+  layer_->SetBounds(layer_bounds.size());
   rrect_ = new_rrect;
   path_ = path;
 }

@@ -836,8 +836,7 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
   for (auto it = clips.rbegin(); it != clips.rend(); ++it) {
     const ClipPaintPropertyNode* paint_clip_node = it->get();
     EXPECT_EQ(cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP, clip_node->clip_type);
-    EXPECT_EQ(ToGfxRectF(paint_clip_node->PaintClipRect().Rect()),
-              clip_node->clip);
+    EXPECT_EQ(paint_clip_node->PaintClipRect().Rect(), clip_node->clip);
     clip_node = GetPropertyTrees().clip_tree.Node(clip_node->parent_id);
   }
 }
@@ -2570,9 +2569,7 @@ TEST_P(PaintArtifactCompositorTest, UpdateManagesLayerElementIds) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipSimple) {
   // This tests the simplest case that a single layer needs to be clipped
   // by a single composited rounded clip.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -2614,9 +2611,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
                                    FloatPoint3D(100, 100, 0),
                                    CompositingReason::k3DTransform);
 
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), *transform, rrect);
 
   TestPaintArtifact artifact;
@@ -2669,9 +2664,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClip90DegRotationSupported) {
                                    FloatPoint3D(100, 100, 0),
                                    CompositingReason::k3DTransform);
 
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), *transform, rrect);
 
   TestPaintArtifact artifact;
@@ -2711,9 +2704,7 @@ TEST_P(PaintArtifactCompositorTest,
   // This tests the simplest case that a single layer needs to be clipped
   // by a single composited rounded clip. Because the radius is unsymmetric,
   // it falls back to a mask layer.
-  FloatSize corner(30, 40);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 30, 40);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -2765,9 +2756,9 @@ TEST_P(
     SynthesizedClipSimpleShaderBasedBorderRadiusNotSupportedMacNonEqualCorners) {
   // Tests that on Mac, we fall back to a mask layer if the corners are not all
   // the same radii.
-  FloatSize corner(30, 30);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         FloatSize());
+  gfx::SizeF corner(30, 30);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), corner, corner, corner,
+                         gfx::SizeF());
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -2785,9 +2776,7 @@ TEST_P(
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
   // This tests the simplest case that a single layer needs to be clipped
   // by a single composited rounded clip.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(*c1, t0(), rrect);
   auto c3 = CreateClip(*c2, t0(), rrect);
@@ -2882,9 +2871,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipIsNotDrawable) {
   // This tests the simplist case that a single layer needs to be clipped
   // by a single composited rounded clip.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -2918,9 +2905,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipIsNotDrawable) {
 TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   // This tests the simplist case that a single layer needs to be clipped
   // by a single composited rounded clip.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(c0(), t0(), rrect);
 
@@ -3017,9 +3002,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipContiguous) {
   auto t1 = CreateTransform(t0(), TransformationMatrix(), FloatPoint3D(),
                             CompositingReason::kWillChangeTransform);
 
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -3073,9 +3056,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
   auto t1 = CreateTransform(t0(), TransformationMatrix(), FloatPoint3D(),
                             CompositingReason::kWillChangeTransform);
 
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   TestPaintArtifact artifact;
@@ -3142,9 +3123,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipAcrossChildEffect) {
   // This tests the case that an effect having the same output clip as the
   // layers before and after it can share the synthesized mask.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto e1 = CreateOpacityEffect(e0(), t0(), c1.get(), 1,
                                 CompositingReason::kWillChangeOpacity);
@@ -3203,9 +3182,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   // This tests the case that a layer cannot share the synthesized mask despite
   // having the same composited rounded clip if it's enclosed by an effect not
   // clipped by the common clip.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   CompositorFilterOperations non_trivial_filter;
@@ -3286,9 +3263,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   // This tests the case that an effect with exotic blending cannot share
   // the synthesized mask with its siblings because its blending has to be
   // applied by the outermost mask.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
 
   EffectPaintPropertyNode::State e1_state;
@@ -3369,9 +3344,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   // This tests the case that an effect with backdrop filter cannot share
   // the synthesized mask with its siblings because its backdrop filter has to
   // be applied by the outermost mask in the correct transform space.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(*c1, t0(), FloatRoundedRect(60, 60, 200, 100));
 
@@ -3488,9 +3461,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   // This tests the case that multiple non-backdrop effects can share the
   // synthesized mask.
-  FloatSize corner(5, 5);
-  FloatRoundedRect rrect(FloatRect(50, 50, 300, 200), corner, corner, corner,
-                         corner);
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(*c1, t0(), FloatRoundedRect(60, 60, 200, 100));
 
@@ -3636,10 +3607,8 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedOpaque1) {
 TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedWithRoundedClip) {
   // Almost the same as ContentsOpaqueUnitedOpaque1, but the first layer has a
   // rounded clip.
-  FloatSize corner(5, 5);
   auto clip1 = CreateClip(c0(), t0(),
-                          FloatRoundedRect(FloatRect(175, 175, 100, 100),
-                                           corner, corner, corner, corner));
+                          FloatRoundedRect(gfx::RectF(175, 175, 100, 100), 5));
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), *clip1, e0())
       .RectDrawing(gfx::Rect(100, 100, 210, 210), Color::kBlack)
@@ -4281,9 +4250,7 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedClip) {
 
 TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
   auto rotate = CreateTransform(t0(), TransformationMatrix().Rotate(45));
-  FloatSize corner(5, 5);
-  FloatRoundedRect rounded_clip(FloatRect(50, 50, 50, 50), corner, corner,
-                                corner, corner);
+  FloatRoundedRect rounded_clip(gfx::RectF(50, 50, 50, 50), 5);
   auto clip = CreateClip(c0(), *rotate, rounded_clip);
   auto opacity = CreateOpacityEffect(
       e0(), 0.5f, CompositingReason::kActiveOpacityAnimation);

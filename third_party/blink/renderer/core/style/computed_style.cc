@@ -1397,7 +1397,7 @@ void ComputedStyle::ApplyMotionPathTransform(
   // they will have the default value, auto.
   gfx::PointF anchor_point(origin_x, origin_y);
   if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
-    anchor_point = FloatPointForLengthPoint(anchor, bounding_box.size());
+    anchor_point = PointForLengthPoint(anchor, ToGfxSizeF(bounding_box.size()));
     anchor_point += bounding_box.OffsetFromOrigin();
 
     // Shift the origin from transform-origin to offset-anchor.

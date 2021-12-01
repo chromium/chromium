@@ -530,7 +530,7 @@ void CanvasPath::roundRect(
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
-  FloatSize r[num_radii];
+  gfx::SizeF r[num_radii];
   for (int i = 0; i < num_radii; ++i) {
     switch (radii[i]->GetContentType()) {
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::
@@ -550,8 +550,8 @@ void CanvasPath::roundRect(
               "Y-radius value " + String::Number(r_y) + " is negative.");
           return;
         }
-        r[i] = FloatSize(base::saturated_cast<float>(p->x()),
-                         base::saturated_cast<float>(p->y()));
+        r[i] = gfx::SizeF(base::saturated_cast<float>(p->x()),
+                          base::saturated_cast<float>(p->y()));
         break;
       }
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::
@@ -565,7 +565,7 @@ void CanvasPath::roundRect(
                                           " is negative.");
           return;
         }
-        r[i] = FloatSize(a, a);
+        r[i] = gfx::SizeF(a, a);
         break;
       }
     }
@@ -578,7 +578,7 @@ void CanvasPath::roundRect(
     return;
   }
 
-  FloatSize corner_radii[4];  // row-wise ordering
+  gfx::SizeF corner_radii[4];  // row-wise ordering
   switch (num_radii) {
     case 1:
       corner_radii[0] = corner_radii[1] = corner_radii[2] = corner_radii[3] =
@@ -606,12 +606,9 @@ void CanvasPath::roundRect(
     clockwise = false;
     x += width;
     width = -width;
-    FloatSize tmp = corner_radii[1];
-    corner_radii[1] = corner_radii[0];
-    corner_radii[0] = tmp;
-    tmp = corner_radii[3];
-    corner_radii[3] = corner_radii[2];
-    corner_radii[2] = tmp;
+    using std::swap;
+    swap(corner_radii[0], corner_radii[1]);
+    swap(corner_radii[2], corner_radii[3]);
   }
 
   if (UNLIKELY(height < 0)) {
@@ -619,15 +616,12 @@ void CanvasPath::roundRect(
     clockwise = !clockwise;
     y += height;
     height = -height;
-    FloatSize tmp = corner_radii[2];
-    corner_radii[2] = corner_radii[0];
-    corner_radii[0] = tmp;
-    tmp = corner_radii[3];
-    corner_radii[3] = corner_radii[1];
-    corner_radii[1] = tmp;
+    using std::swap;
+    swap(corner_radii[0], corner_radii[2]);
+    swap(corner_radii[1], corner_radii[3]);
   }
 
-  FloatRect rect(x, y, width, height);
+  gfx::RectF rect(x, y, width, height);
   path_.AddRoundedRect(FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
                                         corner_radii[2], corner_radii[3]),
                        clockwise);

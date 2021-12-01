@@ -772,8 +772,8 @@ void GraphicsContext::DrawImageRRect(
     return;
 
   if (!dest.IsRounded()) {
-    DrawImage(image, decode_mode, auto_dark_mode, dest.Rect(), &src_rect, op,
-              respect_orientation);
+    DrawImage(image, decode_mode, auto_dark_mode, FloatRect(dest.Rect()),
+              &src_rect, op, respect_orientation);
     return;
   }
 
@@ -785,7 +785,7 @@ void GraphicsContext::DrawImageRRect(
     return;
 
   SkSamplingOptions sampling =
-      ComputeSamplingOptions(image, dest.Rect(), src_rect);
+      ComputeSamplingOptions(image, FloatRect(dest.Rect()), src_rect);
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
@@ -800,9 +800,10 @@ void GraphicsContext::DrawImageRRect(
                      image->HasDefaultOrientation());
   if (use_shader) {
     const SkMatrix local_matrix =
-        SkMatrix::RectToRect(visible_src, dest.Rect());
-    use_shader = image->ApplyShader(image_flags, local_matrix, dest.Rect(),
-                                    src_rect, draw_options);
+        SkMatrix::RectToRect(visible_src, FloatRect(dest.Rect()));
+    use_shader =
+        image->ApplyShader(image_flags, local_matrix, FloatRect(dest.Rect()),
+                           src_rect, draw_options);
   }
 
   if (use_shader) {
@@ -810,14 +811,15 @@ void GraphicsContext::DrawImageRRect(
     // Should be replaced with explicit sampling parameter passed to
     // ApplyShader()
     image_flags.setFilterQuality(
-        ComputeFilterQuality(image, dest.Rect(), src_rect));
+        ComputeFilterQuality(image, FloatRect(dest.Rect()), src_rect));
     // Shader-based fast path.
-    canvas_->drawRRect(dest, image_flags);
+    canvas_->drawRRect(SkRRect(dest), image_flags);
   } else {
     // Clip-based fallback.
     PaintCanvasAutoRestore auto_restore(canvas_, true);
-    canvas_->clipRRect(dest, image_flags.isAntiAlias());
-    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
+    canvas_->clipRRect(SkRRect(dest), image_flags.isAntiAlias());
+    image->Draw(canvas_, image_flags, FloatRect(dest.Rect()), src_rect,
+                draw_options);
   }
 
   paint_controller_.SetImagePainted();
@@ -940,19 +942,19 @@ void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
                                       const Color& color,
                                       const AutoDarkMode& auto_dark_mode) {
   if (!rrect.IsRounded() || !rrect.IsRenderable()) {
-    FillRect(rrect.Rect(), color, auto_dark_mode);
+    FillRect(FloatRect(rrect.Rect()), color, auto_dark_mode);
     return;
   }
 
   if (color == FillColor()) {
-    DrawRRect(rrect, ImmutableState()->FillFlags(), auto_dark_mode);
+    DrawRRect(SkRRect(rrect), ImmutableState()->FillFlags(), auto_dark_mode);
     return;
   }
 
   PaintFlags flags = ImmutableState()->FillFlags();
   flags.setColor(color.Rgb());
 
-  DrawRRect(rrect, flags, auto_dark_mode);
+  DrawRRect(SkRRect(rrect), flags, auto_dark_mode);
 }
 
 namespace {
@@ -971,8 +973,8 @@ bool IsSimpleDRRect(const FloatRoundedRect& outer,
     return false;
   }
 
-  const auto& is_simple_corner = [&stroke_size](const FloatSize& outer,
-                                                const FloatSize& inner) {
+  const auto& is_simple_corner = [&stroke_size](const gfx::SizeF& outer,
+                                                const gfx::SizeF& inner) {
     // trivial/zero-radius corner
     if (outer.IsZero() && inner.IsZero())
       return true;
@@ -1007,12 +1009,12 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   if (!IsSimpleDRRect(outer, inner)) {
     if (color == FillColor()) {
       canvas_->drawDRRect(
-          outer, inner,
+          SkRRect(outer), SkRRect(inner),
           DarkModeFlags(this, auto_dark_mode, ImmutableState()->FillFlags()));
     } else {
       PaintFlags flags(ImmutableState()->FillFlags());
       flags.setColor(color.Rgb());
-      canvas_->drawDRRect(outer, inner,
+      canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
                           DarkModeFlags(this, auto_dark_mode, flags));
     }
 
@@ -1021,7 +1023,7 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
 
   // We can draw this as a stroked rrect.
   float stroke_width = inner.Rect().x() - outer.Rect().x();
-  SkRRect stroke_r_rect = outer;
+  SkRRect stroke_r_rect(outer);
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
   PaintFlags stroke_flags(ImmutableState()->FillFlags());
@@ -1040,7 +1042,7 @@ void GraphicsContext::FillRectWithRoundedHole(
     const AutoDarkMode& auto_dark_mode) {
   PaintFlags flags(ImmutableState()->FillFlags());
   flags.setColor(color.Rgb());
-  canvas_->drawDRRect(SkRRect::MakeRect(rect), rounded_hole_rect,
+  canvas_->drawDRRect(SkRRect::MakeRect(rect), SkRRect(rounded_hole_rect),
                       DarkModeFlags(this, auto_dark_mode, flags));
 }
 
@@ -1096,11 +1098,11 @@ void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,
                                       SkClipOp clip_op,
                                       AntiAliasingMode should_antialias) {
   if (!rrect.IsRounded()) {
-    ClipRect(rrect.Rect(), should_antialias, clip_op);
+    ClipRect(FloatRect(rrect.Rect()), should_antialias, clip_op);
     return;
   }
 
-  ClipRRect(rrect, should_antialias, clip_op);
+  ClipRRect(SkRRect(rrect), should_antialias, clip_op);
 }
 
 void GraphicsContext::ClipOut(const Path& path_to_clip) {

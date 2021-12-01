@@ -149,7 +149,7 @@ void BasicShapeInset::GetPath(Path& path,
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
   float top = FloatValueForLength(top_, bounding_box.height());
-  FloatRect rect(
+  gfx::RectF rect(
       left + bounding_box.x(), top + bounding_box.y(),
       std::max<float>(bounding_box.width() - left -
                           FloatValueForLength(right_, bounding_box.width()),
@@ -157,12 +157,12 @@ void BasicShapeInset::GetPath(Path& path,
       std::max<float>(bounding_box.height() - top -
                           FloatValueForLength(bottom_, bounding_box.height()),
                       0));
-  FloatSize box_size(bounding_box.size());
+  gfx::SizeF box_size = bounding_box.size();
   auto radii = FloatRoundedRect::Radii(
-      FloatSizeForLengthSize(top_left_radius_, box_size),
-      FloatSizeForLengthSize(top_right_radius_, box_size),
-      FloatSizeForLengthSize(bottom_left_radius_, box_size),
-      FloatSizeForLengthSize(bottom_right_radius_, box_size));
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
 
   FloatRoundedRect final_rect(rect, radii);
   final_rect.ConstrainRadii();

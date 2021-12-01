@@ -19,7 +19,7 @@ class PLATFORM_EXPORT FloatClipRect {
 
  public:
   FloatClipRect()
-      : rect_(ToGfxRect(LayoutRect::InfiniteIntRect())),
+      : rect_(LayoutRect::InfiniteIntRect()),
         has_radius_(false),
         is_tight_(true),
         is_infinite_(true) {}
@@ -27,7 +27,7 @@ class PLATFORM_EXPORT FloatClipRect {
   explicit FloatClipRect(const gfx::RectF& rect) { SetRect(rect); }
 
   explicit FloatClipRect(const FloatRoundedRect& rect)
-      : rect_(ToGfxRectF(rect.Rect())),
+      : rect_(rect.Rect()),
         has_radius_(rect.IsRounded()),
         is_tight_(!rect.IsRounded()),
         is_infinite_(false) {}

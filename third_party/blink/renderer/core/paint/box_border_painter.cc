@@ -86,8 +86,8 @@ inline bool BorderStyleHasUnmatchedColorsAtCorner(EBorderStyle style,
   return false;
 }
 
-inline bool BorderWillArcInnerEdge(const FloatSize& first_radius,
-                                   const FloatSize& second_radius) {
+inline bool BorderWillArcInnerEdge(const gfx::SizeF& first_radius,
+                                   const gfx::SizeF& second_radius) {
   return !first_radius.IsZero() || !second_radius.IsZero();
 }
 
@@ -127,7 +127,7 @@ inline bool BorderStylesRequireMiter(BoxSide side,
 FloatRect CalculateSideRect(const FloatRoundedRect& outer_border,
                             const BorderEdge& edge,
                             BoxSide side) {
-  FloatRect side_rect = outer_border.Rect();
+  FloatRect side_rect(outer_border.Rect());
   float width = edge.Width();
 
   if (side == BoxSide::kTop)
@@ -150,7 +150,7 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
   // radii not contained within each edge if one of the radii for an edge is
   // zero, so we can shift the arc towards the zero radius corner.
   FloatRoundedRect::Radii new_radii = inner_border.GetRadii();
-  FloatRect new_rect = inner_border.Rect();
+  gfx::RectF new_rect = inner_border.Rect();
 
   float overshoot;
   float max_radii;
@@ -166,8 +166,8 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
         if (!new_radii.TopLeft().width())
           new_rect.Offset(-overshoot, 0);
       }
-      new_radii.SetBottomLeft(FloatSize(0, 0));
-      new_radii.SetBottomRight(FloatSize(0, 0));
+      new_radii.SetBottomLeft(gfx::SizeF(0, 0));
+      new_radii.SetBottomRight(gfx::SizeF(0, 0));
       max_radii =
           std::max(new_radii.TopLeft().height(), new_radii.TopRight().height());
       if (max_radii > new_rect.height())
@@ -182,8 +182,8 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
         if (!new_radii.BottomLeft().width())
           new_rect.Offset(-overshoot, 0);
       }
-      new_radii.SetTopLeft(FloatSize(0, 0));
-      new_radii.SetTopRight(FloatSize(0, 0));
+      new_radii.SetTopLeft(gfx::SizeF(0, 0));
+      new_radii.SetTopRight(gfx::SizeF(0, 0));
       max_radii = std::max(new_radii.BottomLeft().height(),
                            new_radii.BottomRight().height());
       if (max_radii > new_rect.height()) {
@@ -200,8 +200,8 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
         if (!new_radii.TopLeft().height())
           new_rect.Offset(0, -overshoot);
       }
-      new_radii.SetTopRight(FloatSize(0, 0));
-      new_radii.SetBottomRight(FloatSize(0, 0));
+      new_radii.SetTopRight(gfx::SizeF(0, 0));
+      new_radii.SetBottomRight(gfx::SizeF(0, 0));
       max_radii =
           std::max(new_radii.TopLeft().width(), new_radii.BottomLeft().width());
       if (max_radii > new_rect.width())
@@ -216,8 +216,8 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
         if (!new_radii.TopRight().height())
           new_rect.Offset(0, -overshoot);
       }
-      new_radii.SetTopLeft(FloatSize(0, 0));
-      new_radii.SetBottomLeft(FloatSize(0, 0));
+      new_radii.SetTopLeft(gfx::SizeF(0, 0));
+      new_radii.SetBottomLeft(gfx::SizeF(0, 0));
       max_radii = std::max(new_radii.TopRight().width(),
                            new_radii.BottomRight().width());
       if (max_radii > new_rect.width()) {
@@ -264,7 +264,7 @@ void DrawBleedAdjustedDRRect(GraphicsContext& context,
       // *outside* of inner rrect, all the way to the layer bounds (enclosing
       // int rect for the clip, in device space).
       SkPath path;
-      path.addRRect(inner);
+      path.addRRect(SkRRect(inner));
       path.setFillType(SkPathFillType::kInverseWinding);
 
       PaintFlags flags;
@@ -816,7 +816,8 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
       if (is_uniform_width_ && !outer_.IsRounded()) {
         // 4-side, solid, uniform-width, rectangular border => one drawRect()
         DrawSolidBorderRect(
-            context_, outer_.Rect(), FirstEdge().Width(), FirstEdge().color,
+            context_, FloatRect(outer_.Rect()), FirstEdge().Width(),
+            FirstEdge().color,
             PaintAutoDarkMode(style_,
                               DarkModeFilter::ElementRole::kBackground));
       } else {
@@ -1114,7 +1115,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
   const Color color(edge.color.Red(), edge.color.Green(), edge.color.Blue(),
                     alpha);
 
-  FloatRect side_rect = outer_.Rect();
+  FloatRect side_rect(outer_.Rect());
   const Path* path = nullptr;
 
   // TODO(fmalita): find a way to consolidate these without sacrificing
@@ -1326,7 +1327,7 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
   context_.SetStrokeStyle(kNoStroke);
   context_.SetFillColor(color);
   context_.DrawRect(
-      RoundedIntRect(outer_.Rect()),
+      IntRect(gfx::ToRoundedRect(outer_.Rect())),
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 }
 
@@ -1461,7 +1462,7 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
 
 FloatRect BoxBorderPainter::CalculateSideRectIncludingInner(
     BoxSide side) const {
-  FloatRect side_rect = outer_.Rect();
+  FloatRect side_rect(outer_.Rect());
   float width;
 
   switch (side) {

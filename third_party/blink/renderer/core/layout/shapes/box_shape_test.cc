@@ -130,10 +130,10 @@ TEST_F(BoxShapeTest, zeroRadii) {
  */
 TEST_F(BoxShapeTest, getIntervals) {
   const FloatRoundedRect::Radii corner_radii(
-      FloatSize(10, 15), FloatSize(10, 20), FloatSize(25, 15),
-      FloatSize(20, 30));
+      gfx::SizeF(10, 15), gfx::SizeF(10, 20), gfx::SizeF(25, 15),
+      gfx::SizeF(20, 30));
   std::unique_ptr<Shape> shape = CreateBoxShape(
-      FloatRoundedRect(IntRect(0, 0, 100, 100), corner_radii), 0);
+      FloatRoundedRect(gfx::Rect(0, 0, 100, 100), corner_radii), 0);
   EXPECT_FALSE(shape->IsEmpty());
 
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), shape->ShapeMarginLogicalBoundingBox());

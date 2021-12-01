@@ -511,7 +511,7 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   // transformed by a non-translation transform.
   owning_layer_->SetSubpixelAccumulation(subpixel_accumulation);
 
-  absl::optional<IntRect> mask_bounding_box =
+  absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(GetLayoutObject(), subpixel_accumulation);
   absl::optional<gfx::RectF> clip_path_bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(GetLayoutObject());
@@ -522,7 +522,7 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   // the compositor implementation requires mask layer bound to match its
   // host layer.
   if (mask_bounding_box) {
-    local_bounds = *mask_bounding_box;
+    local_bounds = IntRect(*mask_bounding_box);
     if (clip_path_bounding_box) {
       local_bounds.Intersect(
           IntRect(gfx::ToEnclosingRect(*clip_path_bounding_box)));

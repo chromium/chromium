@@ -481,7 +481,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
         // TODO(schenney) The LayoutUnit(float) constructor always
         // rounds down. We should FromFloatFloor or FromFloatCeil to
         // move toward the border.
-        FloatRect inner_border_rect =
+        gfx::RectF inner_border_rect =
             RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
                 positioning_box_->StyleRef(), unsnapped_positioning_area)
                 .Rect();
@@ -518,7 +518,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       // move toward the border.
       BorderEdge edges[4];
       positioning_box_->StyleRef().GetBorderEdgeInfo(edges);
-      FloatRect inner_border_rect =
+      gfx::RectF inner_border_rect =
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
               positioning_box_->StyleRef(), unsnapped_positioning_area)
               .Rect();
@@ -580,7 +580,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
         // the size and position of the borders, sometimes adjusting the inner
         // border by more than a pixel when done (particularly under magnifying
         // zoom).
-        FloatRect inner_border_rect =
+        gfx::RectF inner_border_rect =
             RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
                 positioning_box_->StyleRef(), unsnapped_positioning_area)
                 .Rect();

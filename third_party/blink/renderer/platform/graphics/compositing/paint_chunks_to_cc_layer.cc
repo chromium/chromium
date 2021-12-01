@@ -413,10 +413,10 @@ void ConversionContext::StartClip(
   ApplyTransform(local_transform);
   const bool antialias = true;
   if (combined_clip_rect.IsRounded()) {
-    cc_list_.push<cc::ClipRRectOp>(combined_clip_rect, SkClipOp::kIntersect,
-                                   antialias);
+    cc_list_.push<cc::ClipRRectOp>(SkRRect(combined_clip_rect),
+                                   SkClipOp::kIntersect, antialias);
   } else {
-    cc_list_.push<cc::ClipRectOp>(combined_clip_rect.Rect(),
+    cc_list_.push<cc::ClipRectOp>(gfx::RectFToSkRect(combined_clip_rect.Rect()),
                                   SkClipOp::kIntersect, antialias);
   }
   if (const auto* clip_path = lowest_combined_clip_node.ClipPath()) {
