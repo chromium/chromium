@@ -53,8 +53,6 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       }
     }
     .contentShape(Rectangle())
-    .accessibilityElement(children: .ignore)
-    .accessibilityLabel(Text("destination.name"))
   }
 
   /// View representing the background of the icon.
