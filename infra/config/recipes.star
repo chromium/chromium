@@ -136,6 +136,9 @@ build_recipe(
 build_recipe(
     name = "recipe:chromium/orchestrator",
     bootstrappable = True,
+    experiments = {
+        "luci.recipes.use_python3": 1,
+    },
 )
 
 build_recipe(
