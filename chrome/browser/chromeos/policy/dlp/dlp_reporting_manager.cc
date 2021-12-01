@@ -17,6 +17,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"
 #include "url/gurl.h"
 
@@ -194,17 +195,18 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
   return event;
 }
 
-DlpReportingManager::DlpReportingManager() : report_queue_{nullptr} {}
+DlpReportingManager::DlpReportingManager()
+    : report_queue_(
+          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
+              ::reporting::EventType::kUser,
+              ::reporting::Destination::DLP_EVENTS)) {}
+
 DlpReportingManager::~DlpReportingManager() = default;
 
-DlpReportingManager::ReportQueueSetterCallback
-DlpReportingManager::GetReportQueueSetter() {
-  return base::BindOnce(&DlpReportingManager::SetReportQueue,
-                        weak_factory_.GetWeakPtr());
-}
-
-void DlpReportingManager::SetReportQueue(
-    std::unique_ptr<reporting::ReportQueue> report_queue) {
+void DlpReportingManager::SetReportQueueForTest(
+    std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+        report_queue) {
+  report_queue_.reset();
   report_queue_ = std::move(report_queue);
 }
 

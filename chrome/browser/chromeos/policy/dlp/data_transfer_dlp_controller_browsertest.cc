@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -139,7 +140,7 @@ class FakeDlpController : public DataTransferDlpController,
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state, /* dm_token_value= */ "") {}
+      : DlpRulesManagerImpl(local_state) {}
   ~MockDlpRulesManager() override = default;
 
   MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
@@ -746,7 +747,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
 
   DlpReportingManager reporting_manager;
   std::vector<DlpPolicyEvent> events;
-  SetReportQueueForReportingManager(&reporting_manager, events);
+  SetReportQueueForReportingManager(&reporting_manager, events,
+                                    base::SequencedTaskRunnerHandle::Get());
   EXPECT_CALL(rules_manager, GetReportingManager)
       .WillRepeatedly(::testing::Return(&reporting_manager));
 

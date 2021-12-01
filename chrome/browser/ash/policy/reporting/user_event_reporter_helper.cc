@@ -8,25 +8,14 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/reporting/client/report_queue_factory.h"
 
 namespace reporting {
 
 UserEventReporterHelper::UserEventReporterHelper(Destination destination)
-    : report_queue_(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()))) {
-  policy::DMToken dm_token = GetDMToken();
-  if (!dm_token.is_valid()) {
-    DVLOG(1) << "Cannot initialize user event reporter. Invalid DMToken.";
-    return;
-  }
-  report_queue_ = ReportQueueFactory::CreateSpeculativeReportQueue(
-      dm_token.value(), destination);
-}
+    : report_queue_(
+          ReportQueueFactory::CreateSpeculativeReportQueue(EventType::kDevice,
+                                                           destination)) {}
 
 UserEventReporterHelper::UserEventReporterHelper(
     std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue)
@@ -64,24 +53,5 @@ void UserEventReporterHelper::ReportEvent(
 
 bool UserEventReporterHelper::IsCurrentUserNew() const {
   return user_manager::UserManager::Get()->IsCurrentUserNew();
-}
-
-// static
-policy::DMToken UserEventReporterHelper::GetDMToken() {
-  policy::DMToken dm_token(policy::DMToken::Status::kEmpty, "");
-
-  auto* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector) {
-    return dm_token;
-  }
-
-  auto* const policy_manager = connector->GetDeviceCloudPolicyManager();
-  if (policy_manager && policy_manager->IsClientRegistered()) {
-    dm_token = policy::DMToken(policy::DMToken::Status::kValid,
-                               policy_manager->core()->client()->dm_token());
-  }
-
-  return dm_token;
 }
 }  // namespace reporting
