@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.TITLE;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,7 +22,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -35,6 +38,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /** Mediator of the single tab tab switcher. */
 public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
@@ -256,7 +260,19 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     private void updateSelectedTab(Tab tab) {
-        mPropertyModel.set(TITLE, tab.getTitle());
+        if (tab.isLoading() && TextUtils.isEmpty(tab.getTitle())) {
+            TabObserver tabObserver = new EmptyTabObserver() {
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    super.onPageLoadFinished(tab, url);
+                    mPropertyModel.set(TITLE, tab.getTitle());
+                    tab.removeObserver(this);
+                }
+            };
+            tab.addObserver(tabObserver);
+        } else {
+            mPropertyModel.set(TITLE, tab.getTitle());
+        }
         mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
