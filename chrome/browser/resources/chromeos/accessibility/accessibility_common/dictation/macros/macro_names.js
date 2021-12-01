@@ -10,7 +10,7 @@
  * @enum {number}
  */
 export const MacroName = {
-  UNSPECIFID: 1,
+  UNSPECIFID: 0,
 
   // Simply input text into a text field.
   INPUT_TEXT_VIEW: 1,

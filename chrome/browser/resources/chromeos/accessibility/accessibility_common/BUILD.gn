@@ -43,12 +43,16 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/earcons/audio_initiate.wav",
     "dictation/earcons/null_selection.wav",
     "dictation/input_controller.js",
+    "dictation/input_text_strategy.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
     "dictation/metrics_utils.js",
+    "dictation/parse_strategy.js",
+    "dictation/pumpkin_parse_strategy.js",
+    "dictation/simple_parse_strategy.js",
     "dictation/speech_parser.js",
     "magnifier/magnifier.js",
   ]
@@ -225,7 +229,13 @@ js_library("dictation_macros") {
 }
 
 js_library("dictation_commands") {
-  sources = [ "dictation/speech_parser.js" ]
+  sources = [
+    "dictation/input_text_strategy.js",
+    "dictation/parse_strategy.js",
+    "dictation/pumpkin_parse_strategy.js",
+    "dictation/simple_parse_strategy.js",
+    "dictation/speech_parser.js",
+  ]
   if (enable_pumpkin_for_dictation) {
     sources += [ "dictation/pumpkin/include_pumpkin.js" ]
   } else {
