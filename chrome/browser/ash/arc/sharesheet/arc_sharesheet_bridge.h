@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SHARESHEET_ARC_SHARESHEET_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_SHARESHEET_ARC_SHARESHEET_BRIDGE_H_
 
+#include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/mojom/sharesheet.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

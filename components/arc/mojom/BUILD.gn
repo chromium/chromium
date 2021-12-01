@@ -18,15 +18,7 @@ if (is_chromeos_ash) {
       "file_system.mojom",
       "intent_common.mojom",
       "intent_helper.mojom",
-      "rotation_lock.mojom",
       "scale_factor.mojom",
-      "screen_capture.mojom",
-      "sensor.mojom",
-      "sensor_service.mojom",
-      "sharesheet.mojom",
-      "storage_manager.mojom",
-      "timer.mojom",
-      "tracing.mojom",
       "tts.mojom",
       "usb_host.mojom",
       "volume_mounter.mojom",
@@ -100,18 +92,6 @@ if (is_chromeos_ash) {
             [ "//components/arc/intent_helper/intent_filter_mojom_traits.h" ]
         traits_sources =
             [ "//components/arc/intent_helper/intent_filter_mojom_traits.cc" ]
-      },
-      {
-        types = [
-          {
-            mojom = "arc.mojom.ClockId"
-            cpp = "::clockid_t"
-          },
-        ]
-        traits_headers =
-            [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
-        traits_sources =
-            [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
       },
       {
         types = [

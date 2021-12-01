@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/mojom/tracing.mojom.h"
+#include "ash/components/arc/mojom/tracing.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace arc {

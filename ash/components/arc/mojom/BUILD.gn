@@ -55,6 +55,14 @@ if (is_chromeos_ash) {
       "print_spooler.mojom",
       "process.mojom",
       "property.mojom",
+      "rotation_lock.mojom",
+      "screen_capture.mojom",
+      "sensor.mojom",
+      "sensor_service.mojom",
+      "sharesheet.mojom",
+      "storage_manager.mojom",
+      "timer.mojom",
+      "tracing.mojom",
     ]
 
     public_deps = [
@@ -156,6 +164,18 @@ if (is_chromeos_ash) {
         traits_private_headers = [ "print_mojom_traits.h" ]
         traits_sources = [ "print_mojom_traits.cc" ]
         traits_public_deps = [ "//printing" ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.ClockId"
+            cpp = "::clockid_t"
+          },
+        ]
+        traits_headers =
+            [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
+        traits_sources =
+            [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
       },
     ]
   }

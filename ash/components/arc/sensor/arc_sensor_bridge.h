@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
 
-#include "components/arc/mojom/sensor.mojom.h"
+#include "ash/components/arc/mojom/sensor.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

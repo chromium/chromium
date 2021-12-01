@@ -195,8 +195,9 @@ void ArcScreenCaptureBridge::OpenSession(
   }
 
   // TODO(crbug.com/955171): Remove this temporary conversion to InterfacePtr
-  // once OpenSession callback from //components/arc/mojom/screen_capture.mojom
-  // could take pending_remote directly. Refer to crrev.com/c/1868870.
+  // once OpenSession callback from
+  // //ash/components/arc/mojom/screen_capture.mojom could take pending_remote
+  // directly. Refer to crrev.com/c/1868870.
   mojo::PendingRemote<mojom::ScreenCaptureSession>
       screen_capture_session_remote(ArcScreenCaptureSession::Create(
           std::move(notifier), found->second.display_name,

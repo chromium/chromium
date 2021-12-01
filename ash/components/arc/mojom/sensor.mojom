@@ -4,7 +4,7 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/sensor_service.mojom";
+import "ash/components/arc/mojom/sensor_service.mojom";
 
 // Chrome implements this interface to handle requests from ARC.
 // Next method ID: 1

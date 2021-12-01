@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/timer.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/arc/mojom/timer.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

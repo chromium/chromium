@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_SHARESHEET_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_SHARESHEET_INSTANCE_H_
 
-#include "components/arc/mojom/sharesheet.mojom.h"
+#include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
