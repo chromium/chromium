@@ -19,7 +19,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -211,6 +213,39 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
 
     EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, actual_image));
   }
+}
+
+TEST_F(BluetoothDeviceListItemViewTest,
+       HasEnterpriseIconWhenDeviceIsBlockedByPolicy) {
+  PairedBluetoothDevicePropertiesPtr paired_device_properties =
+      CreatePairedDeviceProperties();
+
+  paired_device_properties->device_properties->is_blocked_by_policy = false;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+  EXPECT_FALSE(bluetooth_device_list_item()->right_view());
+
+  paired_device_properties->device_properties->is_blocked_by_policy = true;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+  ASSERT_TRUE(bluetooth_device_list_item()->right_view());
+  EXPECT_TRUE(bluetooth_device_list_item()->right_view()->GetVisible());
+
+  const gfx::Image expected_image(CreateVectorIcon(
+      chromeos::kEnterpriseIcon, /*dip_size=*/20, gfx::kGoogleGrey100));
+
+  ASSERT_TRUE(views::IsViewClass<views::ImageView>(
+      bluetooth_device_list_item()->right_view()));
+  const gfx::Image actual_image(
+      static_cast<views::ImageView*>(bluetooth_device_list_item()->right_view())
+          ->GetImage());
+
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, actual_image));
+
+  paired_device_properties->device_properties->is_blocked_by_policy = false;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+  ASSERT_FALSE(bluetooth_device_list_item()->right_view());
 }
 
 TEST_F(BluetoothDeviceListItemViewTest, NotifiesListenerWhenClicked) {

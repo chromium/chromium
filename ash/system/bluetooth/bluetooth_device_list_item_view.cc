@@ -11,7 +11,9 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -25,6 +27,8 @@ using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
 using chromeos::bluetooth_config::mojom::DeviceConnectionState;
 using chromeos::bluetooth_config::mojom::DeviceType;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+
+constexpr int kEnterpriseManagedIconSizeDip = 20;
 
 // Returns the icon corresponding to the provided |device_type| and
 // |connection_state|.
@@ -81,6 +85,15 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
           AshColorProvider::Get()->GetContentLayerColor(
               AshColorProvider::ContentLayerType::kIconColorPrimary)),
       GetPairedDeviceName(device_properties_.get()));
+
+  // Adds an icon to indicate that the device supports profiles or services that
+  // are disabled or blocked by enterprise policy.
+  if (device_properties->device_properties->is_blocked_by_policy) {
+    AddRightIcon(
+        CreateVectorIcon(chromeos::kEnterpriseIcon,
+                         kEnterpriseManagedIconSizeDip, gfx::kGoogleGrey100),
+        /*icon_size=*/kEnterpriseManagedIconSizeDip);
+  }
 
   const DeviceConnectionState& connection_state =
       device_properties_->device_properties->connection_state;
