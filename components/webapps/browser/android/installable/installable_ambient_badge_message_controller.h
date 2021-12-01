@@ -40,6 +40,7 @@ class InstallableAmbientBadgeMessageController {
   void EnqueueMessage(content::WebContents* web_contents,
                       const std::u16string& app_name,
                       const SkBitmap& icon,
+                      const bool is_primary_icon_maskable,
                       const GURL& start_url);
 
   // Dismisses displayed message. This method is safe to call  when there is no

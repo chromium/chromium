@@ -62,6 +62,8 @@ class MessageWrapper {
   void SetIconResourceId(int resource_id);
   bool IsValidIcon();
   void SetIcon(const SkBitmap& icon);
+  void EnableLargeIcon(bool enabled);
+  void SetIconRoundedCornerRadius(int radius);
   // The icon is tinted to default_icon_color_accent1 by default.
   // Call this method to display icons of original colors.
   void DisableIconTint();
@@ -91,6 +93,8 @@ class MessageWrapper {
   const base::android::JavaRef<jobject>& java_window_android() {
     return java_window_android_;
   }
+
+  const SkBitmap GetIconBitmap();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;

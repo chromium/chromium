@@ -9,7 +9,9 @@ import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTI
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_MAX_LINES;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
+import static org.chromium.components.messages.MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
+import static org.chromium.components.messages.MessageBannerProperties.LARGE_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK;
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
@@ -52,6 +54,10 @@ public class MessageBannerViewBinder {
                     AppCompatResources.getDrawable(view.getContext(), model.get(ICON_RESOURCE_ID)));
         } else if (propertyKey == ICON_TINT_COLOR) {
             view.setIconTint(model.get(ICON_TINT_COLOR));
+        } else if (propertyKey == ICON_ROUNDED_CORNER_RADIUS_PX) {
+            view.setIconCornerRadius(model.get(ICON_ROUNDED_CORNER_RADIUS_PX));
+        } else if (propertyKey == LARGE_ICON) {
+            view.enableLargeIcon(model.get(LARGE_ICON));
         } else if (propertyKey == SECONDARY_ICON) {
             view.setSecondaryIcon(model.get(SECONDARY_ICON));
         } else if (propertyKey == SECONDARY_ICON_RESOURCE_ID) {

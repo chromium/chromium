@@ -69,6 +69,7 @@ public class WebappsIconUtils {
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
     @TargetApi(Build.VERSION_CODES.O)
+    @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
         Icon adaptiveIcon = Icon.createWithAdaptiveBitmap(padded);
@@ -193,6 +194,16 @@ public class WebappsIconUtils {
      */
     public static int getIdealAdaptiveLauncherIconSizeInPx(Context context) {
         return getSizeFromResourceInPx(context, R.dimen.webapk_adaptive_icon_size);
+    }
+
+    /**
+     * Returns the ideal size for prompt UI icon corner radius.
+     * @return the dimensions in pixels which the prompt UI should use as the corner radius.
+     */
+    @CalledByNative
+    public static int getIdealIconCornerRadiusPxForPromptUI() {
+        Context context = ContextUtils.getApplicationContext();
+        return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
     }
 
     /**

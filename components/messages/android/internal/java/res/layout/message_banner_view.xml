@@ -25,10 +25,9 @@
     <ImageView
         android:id="@+id/message_icon"
         app:tint="@macro/default_icon_color_accent1"
-        android:paddingStart="@dimen/message_icon_padding"
-        android:paddingEnd="@dimen/message_icon_padding"
+        android:layout_marginHorizontal="@dimen/message_icon_margin"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="@dimen/message_icon_size"
         android:importantForAccessibility="no" />
 
     <LinearLayout

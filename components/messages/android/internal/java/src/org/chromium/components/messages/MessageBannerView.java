@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
@@ -27,6 +29,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -44,6 +47,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private Runnable mSecondaryActionCallback;
     private SwipeGestureListener mSwipeGestureDetector;
     private Runnable mOnTitleChanged;
+    private int mCornerRadius = -1;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -78,6 +82,8 @@ public class MessageBannerView extends BoundedLinearLayout {
 
     void setIcon(Drawable icon) {
         mIconView.setImageDrawable(icon);
+        // Reset radius to generate a new drawable with expected radius.
+        if (mCornerRadius >= 0) setIconCornerRadius(mCornerRadius);
     }
 
     void setIconTint(@ColorInt int color) {
@@ -86,6 +92,17 @@ public class MessageBannerView extends BoundedLinearLayout {
         } else {
             ApiCompatibilityUtils.setImageTintList(mIconView, ColorStateList.valueOf(color));
         }
+    }
+
+    void setIconCornerRadius(int cornerRadius) {
+        mCornerRadius = cornerRadius;
+        if (!(mIconView.getDrawable() instanceof BitmapDrawable)) {
+            return;
+        }
+        BitmapDrawable drawable = (BitmapDrawable) mIconView.getDrawable();
+        RoundedBitmapDrawable bitmap = ViewUtils.createRoundedBitmapDrawable(
+                getResources(), drawable.getBitmap(), cornerRadius);
+        mIconView.setImageDrawable(bitmap);
     }
 
     void setPrimaryButtonText(String text) {
@@ -121,6 +138,19 @@ public class MessageBannerView extends BoundedLinearLayout {
 
     void setOnTitleChanged(Runnable runnable) {
         mOnTitleChanged = runnable;
+    }
+
+    void enableLargeIcon(boolean enabled) {
+        int smallSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size);
+        int largeSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
+        LayoutParams params = (LayoutParams) mIconView.getLayoutParams();
+        if (enabled) {
+            params.height = params.width = largeSize;
+        } else {
+            params.width = LayoutParams.WRAP_CONTENT;
+            params.height = smallSize;
+        }
+        mIconView.setLayoutParams(params);
     }
 
     // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
