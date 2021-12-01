@@ -22,17 +22,20 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/snoopable.h"
+#include "services/audio/reference_output.h"
 #include "services/audio/stream_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioBus;
 class AudioInputStream;
 class AudioManager;
+class Snoopable;
 class UserInputMonitor;
 }  // namespace media
 
 namespace audio {
+class DeviceOutputListener;
 class InputStreamActivityMonitor;
 
 // Only do power monitoring for non-mobile platforms to save resources.
@@ -143,6 +146,7 @@ class InputController final : public StreamMonitor {
       SyncWriter* sync_writer,
       media::UserInputMonitor* user_input_monitor,
       InputStreamActivityMonitor* activity_monitor,
+      DeviceOutputListener* device_output_listener,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool agc_is_enabled);
@@ -167,6 +171,29 @@ class InputController final : public StreamMonitor {
   void OnStreamInactive(Snoopable* snoopable) override;
 
  private:
+  class AudioProcessor final : public ReferenceOutput::Listener {
+   public:
+    explicit AudioProcessor(DeviceOutputListener* device_output_listener);
+    AudioProcessor(const AudioProcessor&) = delete;
+    AudioProcessor& operator=(const AudioProcessor&) = delete;
+    ~AudioProcessor() final;
+
+    void SetOutputDeviceForAec(const std::string& output_device_id);
+    void Start();
+    void Stop();
+
+   private:
+    // Listener
+    void OnPlayoutData(const media::AudioBus& audio_bus,
+                       int sample_rate,
+                       base::TimeDelta delay) final;
+
+    THREAD_CHECKER(owning_thread_);
+    bool active_ = false;
+    std::string output_device_id_ = "";
+    DeviceOutputListener* const device_output_listener_;
+  };
+
   // Used to log the result of capture startup.
   // This was previously logged as a boolean with only the no callback and OK
   // options. The enum order is kept to ensure backwards compatibility.
@@ -191,6 +218,7 @@ class InputController final : public StreamMonitor {
                   SyncWriter* sync_writer,
                   media::UserInputMonitor* user_input_monitor,
                   InputStreamActivityMonitor* activity_monitor,
+                  DeviceOutputListener* device_output_listener,
                   const media::AudioParameters& params,
                   StreamType type);
 
@@ -258,6 +286,8 @@ class InputController final : public StreamMonitor {
   StreamType type_;
 
   double max_volume_ = 0.0;
+
+  std::unique_ptr<AudioProcessor> audio_processor_ = nullptr;
 
   const raw_ptr<media::UserInputMonitor> user_input_monitor_;
 

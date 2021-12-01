@@ -77,8 +77,8 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_,
       UserInputMonitor::Create(std::move(key_press_count_buffer)),
-      &stream_count_metric_reporter_, device_id, params, shared_memory_count,
-      enable_agc));
+      &stream_count_metric_reporter_, output_device_mixer_manager_.get(),
+      device_id, params, shared_memory_count, enable_agc));
 }
 
 void StreamFactory::AssociateInputAndOutputForAec(

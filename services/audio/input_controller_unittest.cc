@@ -20,6 +20,8 @@
 #include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
+#include "services/audio/device_output_listener.h"
+#include "services/audio/reference_output.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,6 +95,16 @@ class MockInputStreamActivityMonitor : public InputStreamActivityMonitor {
   MOCK_METHOD0(OnInputStreamInactive, void());
 };
 
+class MockDeviceOutputListener : public DeviceOutputListener {
+ public:
+  MockDeviceOutputListener() = default;
+  ~MockDeviceOutputListener() override = default;
+
+  MOCK_METHOD2(StartListening,
+               void(ReferenceOutput::Listener*, const std::string&));
+  MOCK_METHOD1(StopListening, void(ReferenceOutput::Listener*));
+};
+
 class MockAudioInputStream : public media::AudioInputStream {
  public:
   MockAudioInputStream() {}
@@ -137,14 +149,19 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   }
 
  protected:
+  void SetUseDeviceOutputListener() { use_device_output_listener_ = true; }
+
   void CreateAudioController() {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
-        &user_input_monitor_, &mock_stream_activity_monitor_, params_,
-        media::AudioDeviceDescription::kDefaultDeviceId, false);
+        &user_input_monitor_, &mock_stream_activity_monitor_,
+        use_device_output_listener_ ? &device_output_listener_ : nullptr,
+        params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
   base::test::TaskEnvironment task_environment_;
+
+  bool use_device_output_listener_ = false;
 
   std::unique_ptr<InputController> controller_;
   media::FakeAudioLogFactory log_factory_;
@@ -152,6 +169,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   MockInputControllerEventHandler event_handler_;
   MockSyncWriter sync_writer_;
   MockUserInputMonitor user_input_monitor_;
+  MockDeviceOutputListener device_output_listener_;
   StrictMock<MockInputStreamActivityMonitor> mock_stream_activity_monitor_;
   media::AudioParameters params_;
   MockAudioInputStream stream_;
@@ -205,6 +223,71 @@ TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
   controller_->Close();
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(InputControllerTest, RecordBeforeSetOutputForAec) {
+  const std::string kOutputDeviceId = "0x123";
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+
+  // Calling Record() will start listening to the "" device by default.
+  EXPECT_CALL(device_output_listener_, StartListening(_, "")).Times(1);
+  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+      .Times(1);
+  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+
+  SetUseDeviceOutputListener();
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->Record();
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
+  controller_->Close();
+}
+
+TEST_F(InputControllerTest, RecordAfterSetOutputForAec) {
+  const std::string kOutputDeviceId = "0x123";
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+      .Times(1);
+  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+
+  SetUseDeviceOutputListener();
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
+  controller_->Record();
+  controller_->Close();
+}
+
+TEST_F(InputControllerTest, ChangeOutputForAec) {
+  const std::string kOutputDeviceId = "0x123";
+  const std::string kOtherOutputDeviceId = "0x987";
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+
+  // Each output ID should receive one call to StartListening().
+  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+      .Times(1);
+  EXPECT_CALL(device_output_listener_, StartListening(_, kOtherOutputDeviceId))
+      .Times(1);
+
+  // StopListening() should be called once, regardless of how many ID changes.
+  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+
+  SetUseDeviceOutputListener();
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
+  controller_->Record();
+  controller_->SetOutputDeviceForAec(kOtherOutputDeviceId);
+  controller_->Close();
 }
 
 TEST_F(InputControllerTest, RecordTwice) {

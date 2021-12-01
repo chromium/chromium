@@ -72,6 +72,7 @@ InputStream::InputStream(
     media::AudioManager* audio_manager,
     std::unique_ptr<UserInputMonitor> user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
+    DeviceOutputListener* device_output_listener,
     const std::string& device_id,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
@@ -132,7 +133,7 @@ InputStream::InputStream(
 
   controller_ = InputController::Create(
       audio_manager, this, writer_.get(), user_input_monitor_.get(),
-      activity_monitor, params, device_id, enable_agc);
+      activity_monitor, device_output_listener, params, device_id, enable_agc);
 }
 
 InputStream::~InputStream() {

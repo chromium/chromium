@@ -29,6 +29,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/user_input_monitor.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
+#include "services/audio/device_output_listener.h"
 
 namespace audio {
 namespace {
@@ -203,10 +204,55 @@ class InputController::AudioCallback
   bool error_during_callback_ = false;
 };
 
+InputController::AudioProcessor::AudioProcessor(
+    DeviceOutputListener* device_output_listener)
+    : device_output_listener_(device_output_listener) {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(device_output_listener_);
+}
+
+InputController::AudioProcessor::~AudioProcessor() {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  if (active_)
+    Stop();
+}
+
+void InputController::AudioProcessor::SetOutputDeviceForAec(
+    const std::string& output_device_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  output_device_id_ = output_device_id;
+
+  if (active_)
+    device_output_listener_->StartListening(this, output_device_id_);
+}
+
+void InputController::AudioProcessor::Start() {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(!active_);
+  active_ = true;
+  device_output_listener_->StartListening(this, output_device_id_);
+}
+
+void InputController::AudioProcessor::Stop() {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(active_);
+  device_output_listener_->StopListening(this);
+  active_ = false;
+}
+
+void InputController::AudioProcessor::OnPlayoutData(
+    const media::AudioBus& audio_bus,
+    int sample_rate,
+    base::TimeDelta delay) {
+  TRACE_EVENT2("audio", "AudioProcessor::OnData", "this",
+               static_cast<void*>(this), "delay", delay.InMillisecondsF());
+}
+
 InputController::InputController(EventHandler* handler,
                                  SyncWriter* sync_writer,
                                  media::UserInputMonitor* user_input_monitor,
                                  InputStreamActivityMonitor* activity_monitor,
+                                 DeviceOutputListener* device_output_listener,
                                  const media::AudioParameters& params,
                                  StreamType type)
     : handler_(handler),
@@ -219,6 +265,10 @@ InputController::InputController(EventHandler* handler,
   DCHECK(handler_);
   DCHECK(sync_writer_);
   DCHECK(activity_monitor_);
+
+  if (device_output_listener)
+    audio_processor_ = std::make_unique<AudioProcessor>(device_output_listener);
+
   if (!user_input_monitor_) {
     handler_->OnLog(
         "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
@@ -239,6 +289,7 @@ std::unique_ptr<InputController> InputController::Create(
     SyncWriter* sync_writer,
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
+    DeviceOutputListener* device_output_listener,
     const media::AudioParameters& params,
     const std::string& device_id,
     bool enable_agc) {
@@ -255,8 +306,8 @@ std::unique_ptr<InputController> InputController::Create(
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
   std::unique_ptr<InputController> controller(new InputController(
-      event_handler, sync_writer, user_input_monitor, activity_monitor, params,
-      ParamsToStreamType(params)));
+      event_handler, sync_writer, user_input_monitor, activity_monitor,
+      device_output_listener, params, ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;
@@ -279,6 +330,10 @@ void InputController::Record() {
   stream_create_time_ = base::TimeTicks::Now();
 
   audio_callback_ = std::make_unique<AudioCallback>(this);
+
+  if (audio_processor_)
+    audio_processor_->Start();
+
   stream_->Start(audio_callback_.get());
   activity_monitor_->OnInputStreamActive();
   return;
@@ -298,6 +353,9 @@ void InputController::Close() {
 
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
+    if (audio_processor_)
+      audio_processor_->Stop();
+
     stream_->Stop();
     activity_monitor_->OnInputStreamInactive();
 
@@ -390,6 +448,9 @@ void InputController::SetOutputDeviceForAec(
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   if (stream_)
     stream_->SetOutputDeviceForAec(output_device_id);
+
+  if (audio_processor_)
+    audio_processor_->SetOutputDeviceForAec(output_device_id);
 }
 
 void InputController::OnStreamActive(Snoopable* output_stream) {
