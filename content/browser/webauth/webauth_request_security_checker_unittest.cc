@@ -82,23 +82,22 @@ class WebAuthRequestSecurityCheckerTest
     : public testing::TestWithParam<TestCase> {
  protected:
   WebAuthRequestSecurityCheckerTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{features::kSecurePaymentConfirmation},
-        /*disabled_features=*/{});
-  }
+      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
 
   ~WebAuthRequestSecurityCheckerTest() override = default;
 
   content::WebContents* web_contents() const { return web_contents_; }
 
  private:
+  // Must be first because ScopedFeatureList must be initialized before other
+  // threads are started.
+  base::test::ScopedFeatureList features_{
+      /*enable_feature=*/features::kSecurePaymentConfirmation};
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents>
       web_contents_;  // Owned by `web_contents_factory_`.
-  base::test::ScopedFeatureList features_;
 };
 
 TEST_P(WebAuthRequestSecurityCheckerTest, ValidateAncestorOrigins) {
