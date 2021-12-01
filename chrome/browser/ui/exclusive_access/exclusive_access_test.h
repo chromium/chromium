@@ -46,6 +46,10 @@ class FullscreenNotificationObserver : public FullscreenObserver {
   // observed, in which case it returns immediately).
   void Wait();
 
+  // Resets the observer so that it can be re-used to wait for another change of
+  // fullscreen.
+  void Reset();
+
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
 
