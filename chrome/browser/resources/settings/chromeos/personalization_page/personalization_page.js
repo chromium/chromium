@@ -24,6 +24,7 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
+import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
 import {WallpaperBrowserProxy, WallpaperBrowserProxyImpl} from './wallpaper_browser_proxy.js';
 
 Polymer({
@@ -66,6 +67,15 @@ Polymer({
       readOnly: true,
     },
 
+    /** @private */
+    isPersonalizationHubEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isPersonalizationHubEnabled');
+      },
+      readOnly: true,
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -91,21 +101,26 @@ Polymer({
     },
   },
 
+  /** @private {?PersonalizationHubBrowserProxy} */
+  personalizationHubBrowserProxy_: null,
+
   /** @private {?WallpaperBrowserProxy} */
-  browserProxy_: null,
+  wallpaperBrowserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = WallpaperBrowserProxyImpl.getInstance();
+    this.wallpaperBrowserProxy_ = WallpaperBrowserProxyImpl.getInstance();
+    this.personalizationHubBrowserProxy_ =
+        PersonalizationHubBrowserProxyImpl.getInstance();
   },
 
   /** @override */
   ready() {
-    this.browserProxy_.isWallpaperSettingVisible().then(
+    this.wallpaperBrowserProxy_.isWallpaperSettingVisible().then(
         isWallpaperSettingVisible => {
           this.showWallpaperRow_ = isWallpaperSettingVisible;
         });
-    this.browserProxy_.isWallpaperPolicyControlled().then(
+    this.wallpaperBrowserProxy_.isWallpaperPolicyControlled().then(
         isPolicyControlled => {
           this.isWallpaperPolicyControlled_ = isPolicyControlled;
         });
@@ -128,7 +143,12 @@ Polymer({
    * @private
    */
   openWallpaperManager_() {
-    this.browserProxy_.openWallpaperManager();
+    this.wallpaperBrowserProxy_.openWallpaperManager();
+  },
+
+  /** @private */
+  openPersonalizationHub_() {
+    this.personalizationHubBrowserProxy_.openPersonalizationHub();
   },
 
   /** @private */

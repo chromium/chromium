@@ -697,6 +697,12 @@
   <message name="IDS_OS_SETTINGS_AMBIENT_MODE_DISABLED" desc="Sub label for the ambient mode row in settings page when it is disabled.">
     Disabled
   </message>
+  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
+    Personalize your device
+  </message>
+  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
+    Customize wallpaper, avatar, screensaver and more
+  </message>
 
   <!-- Ambient Mode Page -->
   <message name="IDS_OS_SETTINGS_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">

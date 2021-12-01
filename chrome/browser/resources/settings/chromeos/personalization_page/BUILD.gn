@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
     ":change_picture",
     ":change_picture_browser_proxy",
     ":dark_mode_subpage",
+    ":personalization_hub_browser_proxy",
     ":personalization_page",
     ":wallpaper_browser_proxy",
   ]
@@ -57,6 +58,7 @@ js_library("dark_mode_subpage") {
 
 js_library("personalization_page") {
   deps = [
+    ":personalization_hub_browser_proxy",
     ":wallpaper_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
@@ -66,6 +68,11 @@ js_library("personalization_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+}
+
+js_library("personalization_hub_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("wallpaper_browser_proxy") {

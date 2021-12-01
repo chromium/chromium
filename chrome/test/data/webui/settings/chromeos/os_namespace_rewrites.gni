@@ -22,6 +22,7 @@ os_test_namespace_rewrites = os_settings_namespace_rewrites + [
                                "settings.TestLanguagesBrowserProxy|TestLanguagesBrowserProxy",
                                "settings.TestLanguagesMetricsProxy|TestLanguagesMetricsProxy",
                                "settings.TestLifetimeBrowserProxy|TestLifetimeBrowserProxy",
+                               "settings.TestPersonalizationHubBrowserProxy|TestPersonalizationHubBrowserProxy",
                                "settings.TestWallpaperBrowserProxy|TestWallpaperBrowserProxy",
                                "printerBrowserProxy.TestCupsPrintersBrowserProxy|TestCupsPrintersBrowserProxy",
                                "test_util.eventToPromise|eventToPromise",
