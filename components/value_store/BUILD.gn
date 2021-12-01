@@ -25,7 +25,6 @@ source_set("value_store") {
 
   deps = [
     "//base",
-    "//content/public/browser",
     "//third_party/abseil-cpp:absl",
   ]
 }
@@ -45,7 +44,7 @@ source_set("test_support") {
   deps = [
     ":value_store",
     "//base",
-    "//content/test:test_support",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
@@ -64,7 +63,7 @@ source_set("unit_tests") {
     ":test_support",
     ":value_store",
     "//base",
-    "//content/test:test_support",
+    "//base/test:test_support",
     "//skia",
     "//testing/gtest",
   ]

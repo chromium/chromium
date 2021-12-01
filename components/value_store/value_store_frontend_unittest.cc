@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/value_store_task_runner.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace value_store {
@@ -39,7 +39,7 @@ class ValueStoreFrontendTest : public testing::Test {
   }
 
   void TearDown() override {
-    content::RunAllTasksUntilIdle();
+    RunUntilIdle();
     storage_.reset();
   }
 
@@ -47,27 +47,30 @@ class ValueStoreFrontendTest : public testing::Test {
   void ResetStorage() {
     storage_ = std::make_unique<ValueStoreFrontend>(
         factory_, base::FilePath(FILE_PATH_LITERAL("Test dir")),
-        "test_uma_name", value_store::GetValueStoreTaskRunner());
+        "test_uma_name", base::ThreadTaskRunnerHandle::Get(),
+        value_store::GetValueStoreTaskRunner());
   }
 
   bool Get(const std::string& key, std::unique_ptr<base::Value>* output) {
     storage_->Get(key, base::BindOnce(&ValueStoreFrontendTest::GetAndWait,
                                       base::Unretained(this), output));
-    content::RunAllTasksUntilIdle();
+    RunUntilIdle();
     return !!output->get();
   }
 
  protected:
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
   void GetAndWait(std::unique_ptr<base::Value>* output,
                   std::unique_ptr<base::Value> result) {
     *output = std::move(result);
   }
 
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestValueStoreFactory> factory_;
   std::unique_ptr<ValueStoreFrontend> storage_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(ValueStoreFrontendTest, GetExistingData) {

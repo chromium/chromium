@@ -10,10 +10,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store_test_suite.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -64,10 +64,9 @@ class LeveldbValueStoreUnitTest : public testing::Test {
   const base::FilePath& database_path() { return database_dir_.GetPath(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<LeveldbValueStore> store_;
   base::ScopedTempDir database_dir_;
-
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Check that we can restore a single corrupted key in the LeveldbValueStore.
