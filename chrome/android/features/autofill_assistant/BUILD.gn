@@ -59,9 +59,15 @@ android_library("java") {
   ]
 
   if (enable_chrome_android_internal) {
-    deps += [ "//clank/features/autofill_assistant:animated_poodle_java" ]
+    deps += [
+      "//clank/components/autofill_assistant:gms_integrator_java",
+      "//clank/features/autofill_assistant:animated_poodle_java",
+    ]
   } else {
-    deps += [ "//components/autofill_assistant/android:animated_poodle_java" ]
+    deps += [
+      "//components/autofill_assistant/android:animated_poodle_java",
+      "//components/autofill_assistant/android:gms_integrator_java",
+    ]
   }
 
   sources = [

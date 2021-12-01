@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -83,6 +84,10 @@ class Client {
   // Returns the orientation of the screen.
   virtual ClientContextProto::ScreenOrientation GetScreenOrientation()
       const = 0;
+
+  // Returns the payments client token through the |callback|.
+  virtual void FetchPaymentsClientToken(
+      base::OnceCallback<void(const std::string&)> callback) = 0;
 
   // Returns current WebContents.
   virtual content::WebContents* GetWebContents() const = 0;

@@ -26,6 +26,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
+// Next ID: 20
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -122,6 +123,9 @@ message ClientContextProto {
     LANDSCAPE = 2;
   }
   optional ScreenOrientation screen_orientation = 16;
+
+  // An opaque client token for interactions with payments' systems.
+  optional bytes payments_client_token = 19;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -508,6 +512,8 @@ message InitialScriptActionsRequestProto {
     // The exact URL on which the script was initially started.
     optional string url = 2;
     optional PolicyType policy = 3;
+
+    reserved 4 to 12;
   }
   optional QueryProto query = 3;
 
@@ -515,6 +521,8 @@ message InitialScriptActionsRequestProto {
 
   // Specify a bundle and version to run.
   optional ScriptStoreConfig script_store_config = 6;
+
+  reserved 1, 4, 5, 7 to 11;
 }
 
 message RoundtripTimingStats {

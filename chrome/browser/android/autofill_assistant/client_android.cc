@@ -400,6 +400,12 @@ void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
   controller_->OnSpokenFeedbackAccessibilityServiceChanged(enabled);
 }
 
+base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return jdependencies_;
+}
+
 int ClientAndroid::FindDirectAction(const std::string& action_name) {
   // It's too late to create a controller. This should have been done in
   // FetchWebsiteActions.
@@ -480,6 +486,27 @@ ClientContextProto::ScreenOrientation ClientAndroid::GetScreenOrientation()
     return ui_controller_android_->GetScreenOrientation();
   }
   return ClientContextProto::UNDEFINED_ORIENTATION;
+}
+
+void ClientAndroid::FetchPaymentsClientToken(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK(!fetch_payments_client_token_callback_);
+  fetch_payments_client_token_callback_ = std::move(callback);
+
+  Java_AutofillAssistantClient_fetchPaymentsClientToken(AttachCurrentThread(),
+                                                        java_object_);
+}
+
+void ClientAndroid::OnPaymentsClientToken(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jstring>& jclient_token) {
+  if (!fetch_payments_client_token_callback_) {
+    return;
+  }
+  std::move(fetch_payments_client_token_callback_)
+      .Run(ui_controller_android_utils::SafeConvertJavaStringToNative(
+          AttachCurrentThread(), jclient_token));
 }
 
 AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {

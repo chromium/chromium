@@ -74,6 +74,10 @@ class ClientAndroid : public Client,
                      const base::android::JavaParamRef<jobject>& jcaller,
                      jboolean success,
                      const base::android::JavaParamRef<jstring>& access_token);
+  void OnPaymentsClientToken(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jstring>& jclient_token);
 
   void FetchWebsiteActions(
       JNIEnv* env,
@@ -108,6 +112,10 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean enabled);
 
+  base::android::ScopedJavaGlobalRef<jobject> GetDependencies(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
+
   // Overrides Client
   void AttachUI() override;
   void DestroyUI() override;
@@ -116,6 +124,8 @@ class ClientAndroid : public Client,
   std::string GetChromeSignedInEmailAddress() const override;
   absl::optional<std::pair<int, int>> GetWindowSize() const override;
   ClientContextProto::ScreenOrientation GetScreenOrientation() const override;
+  void FetchPaymentsClientToken(
+      base::OnceCallback<void(const std::string&)> callback) override;
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
@@ -183,6 +193,8 @@ class ClientAndroid : public Client,
 
   base::OnceCallback<void(bool, const std::string&)>
       fetch_access_token_callback_;
+  base::OnceCallback<void(const std::string&)>
+      fetch_payments_client_token_callback_;
 
   base::WeakPtrFactory<ClientAndroid> weak_ptr_factory_{this};
 };

@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/client.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
@@ -50,16 +52,19 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
       /* disable_auth_if_no_access_token = */ true);
 
   return std::make_unique<ServiceImpl>(
-      std::move(request_sender), url_fetcher.GetSupportsScriptEndpoint(),
+      client, std::move(request_sender),
+      url_fetcher.GetSupportsScriptEndpoint(),
       url_fetcher.GetNextActionsEndpoint(),
       std::make_unique<ClientContextImpl>(client));
 }
 
-ServiceImpl::ServiceImpl(std::unique_ptr<ServiceRequestSender> request_sender,
+ServiceImpl::ServiceImpl(Client* client,
+                         std::unique_ptr<ServiceRequestSender> request_sender,
                          const GURL& script_server_url,
                          const GURL& action_server_url,
                          std::unique_ptr<ClientContext> client_context)
-    : request_sender_(std::move(request_sender)),
+    : client_(client),
+      request_sender_(std::move(request_sender)),
       script_server_url_(script_server_url),
       script_action_server_url_(action_server_url),
       client_context_(std::move(client_context)) {
@@ -94,6 +99,41 @@ void ServiceImpl::GetActions(const std::string& script_path,
                              ResponseCallback callback) {
   DCHECK(!script_path.empty());
   client_context_->Update(trigger_context);
+  if (client_context_->AsProto().payments_client_token().empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAssistantGetPaymentsClientToken)) {
+    client_->FetchPaymentsClientToken(base::BindOnce(
+        &ServiceImpl::OnFetchPaymentsClientToken,
+        weak_ptr_factory_.GetWeakPtr(), script_path, url,
+        std::make_unique<TriggerContext>(
+            std::vector<const TriggerContext*>{&trigger_context}),
+        global_payload, script_payload, std::move(callback)));
+  } else {
+    SendGetActions(script_path, url, trigger_context, global_payload,
+                   script_payload, std::move(callback));
+  }
+}
+
+void ServiceImpl::OnFetchPaymentsClientToken(
+    const std::string& script_path,
+    const GURL& url,
+    std::unique_ptr<TriggerContext> trigger_context,
+    const std::string& global_payload,
+    const std::string& script_payload,
+    ResponseCallback callback,
+    const std::string& client_token) {
+  DCHECK(!client_token.empty());
+  client_context_->SetPaymentsClientToken(client_token);
+  SendGetActions(script_path, url, *trigger_context, global_payload,
+                 script_payload, std::move(callback));
+}
+
+void ServiceImpl::SendGetActions(const std::string& script_path,
+                                 const GURL& url,
+                                 const TriggerContext& trigger_context,
+                                 const std::string& global_payload,
+                                 const std::string& script_payload,
+                                 ResponseCallback callback) {
   request_sender_->SendRequest(
       script_action_server_url_,
       ProtocolUtils::CreateInitialScriptActionsRequest(

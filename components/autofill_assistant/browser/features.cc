@@ -42,6 +42,12 @@ const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Get a payments client token from GMS. This is an emergency off-switch in
+// case calling this by default has a negative impact.
+const base::Feature kAutofillAssistantGetPaymentsClientToken{
+    "AutofillAssistantGetPaymentsClientToken",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting
 // and showing trigger scripts in CCTs without explicit user request. This
 // requires also specifying valid URL heuristics via

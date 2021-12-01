@@ -32,6 +32,18 @@ android_resources("animated_poodle_resources") {
       [ "internal/java/res_poodle/drawable/ic_autofill_assistant_24dp.xml" ]
 }
 
+# The paments_integrator_java target is overridden downstream and used instead
+# of this one if the enable_chrome_android_internal flag is enabled.
+android_library("gms_integrator_java") {
+  deps = [
+    "//base:base_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  sources = [ "internal/java/src/org/chromium/chrome/browser/" +
+              "autofill_assistant/user_data/GmsIntegrator.java" ]
+}
+
 android_resources("java_resources") {
   sources = [
     "internal/java/res/drawable/autofill_assistant_actions_gradient.xml",

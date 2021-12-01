@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.accounts.Account;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -18,7 +19,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -71,6 +74,9 @@ public class AutofillAssistantClient {
 
     /** If set, fetch the access token once the accounts are fetched. */
     private boolean mShouldFetchAccessToken;
+
+    /** If set, fetch the payments client token once the accounts are fetched. */
+    private boolean mShouldFetchPaymentsClientToken;
 
     /** Returns the client for the given web contents, null if it does not exist. */
     public static AutofillAssistantClient fromWebContents(WebContents webContents) {
@@ -247,6 +253,11 @@ public class AutofillAssistantClient {
             mShouldFetchAccessToken = false;
             fetchAccessToken();
         }
+
+        if (mShouldFetchPaymentsClientToken) {
+            mShouldFetchPaymentsClientToken = false;
+            fetchPaymentsClientToken();
+        }
     }
 
     private static Account findAccountByName(List<Account> accounts, String name) {
@@ -311,6 +322,41 @@ public class AutofillAssistantClient {
     @CalledByNative
     private String getEmailAddressForAccessTokenAccount() {
         return mAccount != null ? mAccount.name : "";
+    }
+
+    @CalledByNative
+    private void fetchPaymentsClientToken() {
+        if (mNativeClientAndroid == 0) {
+            return;
+        }
+        if (!mAccountInitialized) {
+            // Still getting the account list. Fetch the token as soon as an account is available.
+            mShouldFetchPaymentsClientToken = true;
+            return;
+        }
+        if (mAccount == null) {
+            // If there is no account, send an empty token.
+            AutofillAssistantClientJni.get().onPaymentsClientToken(
+                    mNativeClientAndroid, AutofillAssistantClient.this, "");
+            return;
+        }
+
+        Activity activity = ActivityUtils.getActivityFromWebContents(
+                AutofillAssistantClientJni.get()
+                        .getDependencies(mNativeClientAndroid, AutofillAssistantClient.this)
+                        .getWebContents());
+        if (activity == null) {
+            // We require an activity to retrieve the token.
+            AutofillAssistantClientJni.get().onPaymentsClientToken(
+                    mNativeClientAndroid, AutofillAssistantClient.this, "");
+            return;
+        }
+        GmsIntegrator gmsIntegrator = new GmsIntegrator(mAccount.name, activity);
+        gmsIntegrator.getClientToken((Callback<byte[]>) result -> {
+            String clientToken = result == null ? "" : new String(result);
+            AutofillAssistantClientJni.get().onPaymentsClientToken(
+                    mNativeClientAndroid, AutofillAssistantClient.this, clientToken);
+        });
     }
 
     /**
@@ -388,6 +434,8 @@ public class AutofillAssistantClient {
         void onOnboardingUiChange(WebContents webContents, boolean shown);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
+        void onPaymentsClientToken(
+                long nativeClientAndroid, AutofillAssistantClient caller, String clientToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
         void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
         void transferUITo(
@@ -396,15 +444,15 @@ public class AutofillAssistantClient {
                 String experimentIds, String[] argumentNames, String[] argumentValues,
                 Object callback);
         boolean hasRunFirstCheck(long nativeClientAndroid, AutofillAssistantClient caller);
-
         AutofillAssistantDirectAction[] getDirectActions(
                 long nativeClientAndroid, AutofillAssistantClient caller);
-
         boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
                 String actionId, String experimentId, String[] argumentNames,
                 String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
         void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
         void onSpokenFeedbackAccessibilityServiceChanged(
                 long nativeClientAndroid, AutofillAssistantClient caller, boolean enabled);
+        AssistantDependencies getDependencies(
+                long nativeClientAndroid, AutofillAssistantClient caller);
     }
 }
