@@ -709,6 +709,63 @@ class YouTubeDesktopStory2019(_MediaBrowsingStory):
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
 
 
+class PhotoshopDesktopStory2021(_MediaBrowsingStory):
+  """Photoshop desktop story,
+  Measure the time it takes to open a shared Photoshop file.
+  """
+  NAME = 'browse:tools:photoshop:2021'
+  URL = 'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2021, story_tags.WEBASSEMBLY, story_tags.WEBGL]
+
+  # This map translates page-specific event names to event names needed for
+  # the reported_by_page:* metric.
+  EVENTS_REPORTED_BY_PAGE = '''
+    window.__telemetry_reported_page_events = {
+      'Doc.open':
+          'telemetry:reported_by_page:benchmark_begin',
+      'Doc.open complete':
+          'telemetry:reported_by_page:benchmark_end'
+    };
+  '''
+
+  # Patch performance.mark to get notified about page events.
+  PERFORMANCE_MARK_PATCH = '''
+    window.__telemetry_observed_page_events = new Set();
+    (function () {
+      let reported = window.__telemetry_reported_page_events;
+      let observed = window.__telemetry_observed_page_events;
+      let performance_mark = window.performance.mark;
+      window.performance.mark = function (label) {
+        performance_mark.call(window.performance, label);
+        if (reported.hasOwnProperty(label)) {
+          performance_mark.call(
+              window.performance, reported[label]);
+          observed.add(reported[label]);
+        }
+      }
+    })();
+  '''
+
+  # Page event queries.
+  FINISHED_EVENT = '''
+    (window.__telemetry_observed_page_events.has(
+        "telemetry:reported_by_page:benchmark_end"))
+  '''
+
+  def __init__(self, story_set, take_memory_measurement):
+    super(PhotoshopDesktopStory2021, self).__init__(story_set,
+                                                    take_memory_measurement)
+    self.script_to_evaluate_on_commit = js_template.Render(
+        '''{{@events_reported_by_page}}
+        {{@performance_mark}}''',
+        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+        performance_mark=self.PERFORMANCE_MARK_PATCH)
+
+  def _DidLoadDocument(self, action_runner):
+    action_runner.WaitForJavaScriptCondition(self.FINISHED_EVENT)
+
+
 class AutoCADDesktopStory2021(_MediaBrowsingStory):
   """AutoCAD desktop story,
   TODO: add a description here.
