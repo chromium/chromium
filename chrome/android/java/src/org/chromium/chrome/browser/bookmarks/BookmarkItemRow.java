@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -32,12 +33,24 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
      */
     public BookmarkItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        mMinIconSize = isVisualRefreshEnabled()
+                ? getResources().getDimensionPixelSize(R.dimen.bookmark_refresh_min_start_icon_size)
+                : getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
+
         mDisplayedIconSize = isVisualRefreshEnabled()
                 ? getResources().getDimensionPixelSize(
                         R.dimen.bookmark_refresh_preferred_start_icon_size)
                 : getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
+        if (isVisualRefreshEnabled()) {
+            mIconGenerator = new RoundedIconGenerator(mDisplayedIconSize, mDisplayedIconSize,
+                    mDisplayedIconSize / 2,
+                    ApiCompatibilityUtils.getColor(
+                            getResources(), R.color.default_favicon_background_color),
+                    getResources().getDimensionPixelSize(
+                            R.dimen.bookmark_refresh_circular_monogram_text_size));
+        } else {
+            mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
+        }
     }
 
     // BookmarkRow implementation.
