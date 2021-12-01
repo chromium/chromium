@@ -179,6 +179,7 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_ENTERED:
+    case ui::ET_MOUSE_RELEASED:
     case ui::ET_MOUSE_EXITED:
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP: {

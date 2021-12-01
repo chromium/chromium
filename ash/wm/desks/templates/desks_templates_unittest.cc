@@ -1219,6 +1219,17 @@ TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
   event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(hover_container_view1->GetVisible());
   EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Test to make sure hover is updated after dragging to another item.
+  event_generator->DragMouseTo(second_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(hover_container_view2->GetVisible());
+
+  // Test to make sure hover is hidden on all items when dragging to off the
+  // grid.
+  event_generator->DragMouseTo(gfx::Point(0, 0));
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
 }
 
 // Tests that when a supported app doesn't have any app launch info and a
