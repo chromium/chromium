@@ -240,6 +240,10 @@ public class NotificationUmaTracker {
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Content.Click.Age.SmsFetcher", createTime);
                 break;
+            case SystemNotificationType.PRICE_DROP_ALERTS:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Content.Click.Age.PriceDrop", createTime);
+                break;
         }
     }
 
@@ -273,6 +277,10 @@ public class NotificationUmaTracker {
             case SystemNotificationType.SMS_FETCHER:
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Dismiss.Age.SmsFetcher", createTime);
+                break;
+            case SystemNotificationType.PRICE_DROP_ALERTS:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Dismiss.Age.PriceDrop", createTime);
                 break;
         }
     }
@@ -309,6 +317,10 @@ public class NotificationUmaTracker {
             case SystemNotificationType.SMS_FETCHER:
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Action.Click.Age.SmsFetcher", createTime);
+                break;
+            case SystemNotificationType.PRICE_DROP_ALERTS:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Action.Click.Age.PriceDrop", createTime);
                 break;
         }
     }
