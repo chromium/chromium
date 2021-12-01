@@ -65,9 +65,7 @@ template("weblayer_shell_apk_helper") {
   jinja_template(_manifest_target) {
     input = "shell_apk/AndroidManifest.xml"
     output = _weblayer_shell_manifest
-    if (defined(invoker.weblayer_package)) {
-      variables = [ "weblayer_package=" + invoker.weblayer_package ]
-    }
+    variables = [ "weblayer_package=" + invoker.weblayer_package ]
   }
 
   android_apk(target_name + "_apk") {
@@ -98,6 +96,7 @@ weblayer_shell_apk_helper("weblayer_shell") {
 }
 
 weblayer_shell_apk_helper("weblayer_shell_system_webview") {
+  weblayer_package = system_webview_package_name
   apk_name = "WebLayerShellSystemWebView"
 }
 
