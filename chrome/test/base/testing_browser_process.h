@@ -36,7 +36,6 @@ class NotificationPlatformBridge;
 class NotificationUIManager;
 class PrefService;
 class SystemNotificationHelper;
-class WatchDogThread;
 
 namespace content {
 class NotificationService;
@@ -87,7 +86,6 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
   network::NetworkQualityTracker* network_quality_tracker() override;
-  WatchDogThread* watchdog_thread() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
   variations::VariationsService* variations_service() override;

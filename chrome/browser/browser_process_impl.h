@@ -158,7 +158,6 @@ class BrowserProcessImpl : public BrowserProcess,
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
   network::NetworkQualityTracker* network_quality_tracker() override;
-  WatchDogThread* watchdog_thread() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
   variations::VariationsService* variations_service() override;
@@ -236,7 +235,6 @@ class BrowserProcessImpl : public BrowserProcess,
   // changes to the render process.
   void CreateNetworkQualityObserver();
 
-  void CreateWatchdogThread();
   void CreateProfileManager();
   void CreateIconManager();
   void CreateNotificationPlatformBridge();
@@ -260,9 +258,6 @@ class BrowserProcessImpl : public BrowserProcess,
   void Unpin();
 
   const raw_ptr<StartupData> startup_data_;
-
-  bool created_watchdog_thread_ = false;
-  std::unique_ptr<WatchDogThread> watchdog_thread_;
 
   // Must be destroyed after |local_state_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>

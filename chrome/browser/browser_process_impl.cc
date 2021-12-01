@@ -57,7 +57,6 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/browser/metrics/thread_watcher.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -470,9 +469,6 @@ void BrowserProcessImpl::StartTearDown() {
   if (gcm_driver_)
     gcm_driver_->Shutdown();
 
-  // Stop the watchdog thread before stopping other threads.
-  watchdog_thread_.reset();
-
   platform_part()->StartTearDown();
 
   // Cancel any uploads to release the system url request context references.
@@ -703,14 +699,6 @@ network::NetworkQualityTracker* BrowserProcessImpl::network_quality_tracker() {
         base::BindRepeating(&content::GetNetworkService));
   }
   return network_quality_tracker_.get();
-}
-
-WatchDogThread* BrowserProcessImpl::watchdog_thread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!created_watchdog_thread_)
-    CreateWatchdogThread();
-  DCHECK(watchdog_thread_.get() != NULL);
-  return watchdog_thread_.get();
 }
 
 ProfileManager* BrowserProcessImpl::profile_manager() {
@@ -1105,18 +1093,6 @@ void BrowserProcessImpl::CreateNetworkQualityObserver() {
 }
 
 void BrowserProcessImpl::OnKeepAliveRestartStateChanged(bool can_restart) {}
-
-void BrowserProcessImpl::CreateWatchdogThread() {
-  DCHECK(!created_watchdog_thread_ && !watchdog_thread_);
-  created_watchdog_thread_ = true;
-
-  auto thread = std::make_unique<WatchDogThread>();
-  base::Thread::Options options;
-  options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-  if (!thread->StartWithOptions(std::move(options)))
-    return;
-  watchdog_thread_.swap(thread);
-}
 
 void BrowserProcessImpl::CreateProfileManager() {
   DCHECK(!created_profile_manager_ && !profile_manager_);

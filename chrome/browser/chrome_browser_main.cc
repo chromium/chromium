@@ -72,7 +72,7 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/expired_histograms_array.h"
-#include "chrome/browser/metrics/thread_watcher.h"
+#include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -187,7 +187,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/metrics/thread_watcher_android.h"
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -1206,12 +1205,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Now that the file thread has been started, start metrics.
   StartMetricsRecording();
-
-  if (!base::debug::BeingDebugged()) {
-    // Create watchdog thread after creating all other threads because it will
-    // watch the other threads and they must be running.
-    browser_process_->watchdog_thread();
-  }
 
   // Do any initializating in the browser process that requires all threads
   // running.

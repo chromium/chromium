@@ -181,10 +181,6 @@ TestingBrowserProcess::network_quality_tracker() {
   return test_network_quality_tracker_.get();
 }
 
-WatchDogThread* TestingBrowserProcess::watchdog_thread() {
-  return nullptr;
-}
-
 ProfileManager* TestingBrowserProcess::profile_manager() {
   return profile_manager_.get();
 }

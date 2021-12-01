@@ -25,7 +25,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/metrics/thread_watcher.h"
+#include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/buildflags.h"
