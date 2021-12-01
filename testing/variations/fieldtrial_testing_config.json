@@ -6209,7 +6209,7 @@
             ]
         }
     ],
-    "PreconnectToSearch": [
+    "PreconnectToSearchDesktop": [
         {
             "platforms": [
                 "linux",
@@ -6220,10 +6220,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithoutStartupDelay",
+                    "name": "EnabledWithStartupDelayForegroundOnly",
                     "params": {
                         "skip_in_background": "true",
-                        "startup_delay_ms": "0"
+                        "startup_delay_ms": "5000"
                     },
                     "enable_features": [
                         "PreconnectToSearch"
