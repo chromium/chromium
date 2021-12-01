@@ -19,6 +19,12 @@
       font-weight: 400;
     }
 
+    @media (prefers-color-scheme: dark) {
+      .description-header {
+        color: var(--google-blue-300);
+      }
+    }
+
     .description-wrapper {
       padding: 16px;
     }
@@ -37,6 +43,12 @@
       line-height: 1.15;
     }
 
+    @media (prefers-color-scheme: dark) {
+      .headline {
+        color: white;
+      }
+    }
+
     .embedded-setting-wrapper {
       border: 1px solid var(--google-grey-refresh-300);
       border-radius: 4px;
@@ -44,7 +56,7 @@
 
     @media (prefers-color-scheme: dark) {
       .embedded-setting-wrapper {
-        border: 1px solid var(--google-grey-refresh-700);
+        border-color: var(--google-grey-refresh-700);
       }
     }
 
