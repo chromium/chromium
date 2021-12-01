@@ -619,25 +619,6 @@ message SystemProfileProto {
     // it only gives the process a few seconds to clean up.)
     optional int32 incomplete_shutdown_count = 17;
 
-    // The number of times the program was able register with breakpad crash
-    // services.
-    optional int32 breakpad_registration_success_count = 18;
-
-    // The number of times the program failed to register with breakpad crash
-    // services.  If crash registration fails then when the program crashes no
-    // crash report will be generated.
-    optional int32 breakpad_registration_failure_count = 19;
-
-    // The number of times the program has run under a debugger.  This should
-    // be an exceptional condition.  Running under a debugger prevents crash
-    // dumps from being generated.
-    optional int32 debugger_present_count = 20;
-
-    // The number of times the program has run without a debugger attached.
-    // This should be most common scenario and should be very close to
-    // |launch_count|.
-    optional int32 debugger_not_present_count = 21;
-
     // Whether the metrics being reported are from a previous run picked up via
     // the left-over memory mapped files.
     optional bool from_previous_run = 29;
