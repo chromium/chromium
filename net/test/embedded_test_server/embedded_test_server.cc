@@ -168,7 +168,7 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   using OCSPProduced = EmbeddedTestServer::OCSPConfig::Produced;
   switch (config.produced) {
     case OCSPProduced::kValid:
-      produced_at = now - base::Days(1);
+      produced_at = std::max(now - base::Days(1), target_not_before);
       break;
     case OCSPProduced::kBeforeCert:
       produced_at = target_not_before - base::Days(1);
