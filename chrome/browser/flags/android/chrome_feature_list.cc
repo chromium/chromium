@@ -185,6 +185,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTExternalLinkHandling,
     &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
+    &kCCTNewDownloadTab,
     &kCCTPostMessageAPI,
     &kCCTRedirectPreconnect,
     &kCCTRemoveRemoteViewIds,
@@ -451,6 +452,9 @@ const base::Feature kCCTBackgroundTab{"CCTBackgroundTab",
 
 const base::Feature kCCTClientDataHeader{"CCTClientDataHeader",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCCTNewDownloadTab{"CCTNewDownloadTab",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTExternalLinkHandling{"CCTExternalLinkHandling",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
