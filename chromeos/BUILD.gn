@@ -27,10 +27,7 @@ component("chromeos") {
   sources = []
 
   if (is_chromeos_ash) {
-    configs += [
-      ":chromeos_implementation",
-      "//build/config/linux/nss:system_nss_no_ssl_config",
-    ]
+    configs += [ ":chromeos_implementation" ]
     if (is_chromeos_device) {
       configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
     }
@@ -130,10 +127,7 @@ source_set("test_utils") {
 }
 
 test("chromeos_unittests") {
-  configs += [
-    "//build/config/linux/dbus",
-    "//build/config/linux/nss:system_nss_no_ssl_config",
-  ]
+  configs += [ "//build/config/linux/dbus" ]
 
   deps = [
     "//base/test:test_support",

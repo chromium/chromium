@@ -14,10 +14,7 @@ config("chromeos_implementation") {
 
 component("memory") {
   defines = [ "IS_CHROMEOS_MEMORY_IMPL" ]
-  configs += [
-    ":chromeos_implementation",
-    "//build/config/linux/nss:system_nss_no_ssl_config",
-  ]
+  configs += [ ":chromeos_implementation" ]
   deps = [
     "//base",
     "//chromeos:chromeos_export",
@@ -45,7 +42,6 @@ component("memory") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
   deps = [
     ":memory",
     "//base/test:test_support",

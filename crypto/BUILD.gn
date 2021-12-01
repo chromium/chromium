@@ -203,15 +203,19 @@ static_library("test_support") {
   ]
 }
 
-# This is a meta-target that forwards to NSS's SSL library or OpenSSL,
-# according to the state of the crypto flags. A target just wanting to depend
-# on the current SSL library should just depend on this.
+# This target historically abstracted between different cryptography and TLS
+# libraries. Now we always use //third_party/boringssl for cryptography and TLS.
+# On Linux and Chrome OS, we additionally use //build/config/linux/nss for some
+# certificate-related platform integration points. Depend on one or both of the
+# individual targets instead of this one.
+#
+# TODO(https://crbug.com/1275165): Remove this target.
 group("platform") {
   public_deps = [ "//third_party/boringssl" ]
 
   # Link in NSS if it is used for the platform certificate library
   # (use_nss_certs).
   if (use_nss_certs) {
-    public_configs = [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
+    public_configs = [ "//build/config/linux/nss" ]
   }
 }
