@@ -1387,6 +1387,7 @@ component("base") {
     ":cfi_buildflags",
     ":clang_profiling_buildflags",
     ":debugging_buildflags",
+    ":feature_list_buildflags",
     ":logging_buildflags",
     ":orderfile_buildflags",
     ":profiler_buildflags",
@@ -2494,6 +2495,19 @@ buildflag_header("debugging_buildflags") {
   ]
 }
 
+buildflag_header("feature_list_buildflags") {
+  header = "feature_list_buildflags.h"
+
+  if (is_chromeos_ash) {
+    flags = [
+      "ENABLE_BANNED_BASE_FEATURE_PREFIX=true",
+      "BANNED_BASE_FEATURE_PREFIX=\"CrOSLateBoot\"",
+    ]
+  } else {
+    flags = [ "ENABLE_BANNED_BASE_FEATURE_PREFIX=false" ]
+  }
+}
+
 buildflag_header("logging_buildflags") {
   header = "logging_buildflags.h"
 
@@ -3279,6 +3293,7 @@ test("base_unittests") {
     ":base",
     ":base_stack_sampling_profiler_test_util",
     ":base_unittests_tasktraits",
+    ":feature_list_buildflags",
     ":i18n",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
