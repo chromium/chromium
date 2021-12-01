@@ -117,15 +117,15 @@ class DriverContext:
 
     self.WriteScenarioSummary(scenario_driver)
 
-    output_file = os.path.join(self._output_dir,
-                               f"{scenario_driver.name}_powermetrics.plist")
+    output_file = os.path.join(self._output_dir, scenario_driver.name,
+                               "powermetrics.plist")
 
     powermetrics_process = None
     try:
       scenario_driver.Launch()
       powermetrics_args = [
-          "sudo", "powermetrics", "-f", "plist", "--samplers", "tasks",
-          "cpu_power", "gpu_power", "thermal", "disk", "network",
+          "sudo", "powermetrics", "-f", "plist", "--samplers",
+          "tasks,cpu_power,gpu_power,thermal,disk,network",
           "--show-process-coalition", "--show-process-gpu",
           "--show-process-energy", "-i", "10000", "--output-file", output_file
       ]
@@ -164,8 +164,8 @@ class DriverContext:
 
     self.WriteScenarioSummary(scenario_driver)
 
-    dtraces_output_dir = os.path.join(
-        self._output_dir, f"{scenario_driver.name}_dtraces_{profile_mode}")
+    dtraces_output_dir = os.path.join(self._output_dir, scenario_driver.name,
+                                      f"dtraces_{profile_mode}")
     os.makedirs(dtraces_output_dir, exist_ok=True)
     scenario_driver.Launch()
     browser_process = scenario_driver.browser.browser_process
@@ -178,9 +178,8 @@ class DriverContext:
 
     try:
       with open(
-          os.path.join(self._output_dir,
-                       f'{scenario_driver.name}_dtrace_{profile_mode}_log.txt'),
-          "w") as dtrace_log:
+          os.path.join(self._output_dir, scenario_driver.name,
+                       f'dtrace_{profile_mode}_log.txt'), "w") as dtrace_log:
         # Keep looking for child processes as long as the scenario is running.
         while scenario_driver.IsRunning():
 
@@ -229,7 +228,9 @@ class DriverContext:
     """Outputs a json file describing `scenario_driver` arguments into the
         output directory
     """
+    os.makedirs(os.path.join(self._output_dir, scenario_driver.name),
+                exist_ok=True)
     with open(
-        os.path.join(self._output_dir, f'{scenario_driver.name}_summary.json'),
+        os.path.join(self._output_dir, scenario_driver.name, 'metadata.json'),
         'w') as summary_file:
       json.dump(scenario_driver.Summary(), summary_file, indent=2)

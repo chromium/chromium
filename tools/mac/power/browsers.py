@@ -52,7 +52,11 @@ class BrowserDriver(abc.ABC):
     """Returns a dictionary describing the browser.
     """
     info = self.GetApplicationInfo()
-    return {'name': self.name, 'version': info['CFBundleShortVersionString']}
+    return {
+        'name': self.name,
+        'version': info['CFBundleShortVersionString'],
+        'identifier': info['CFBundleIdentifier']
+    }
 
   def _EnsureStarted(self):
     """Waits until a browser with the given `process_name` is running.
@@ -109,6 +113,7 @@ class ChromiumDriver(BrowserDriver):
     info = self.GetApplicationInfo()
     return {
         'name': self.name,
+        'identifier': info['CFBundleIdentifier'],
         'version': info['CFBundleShortVersionString'],
         'commit': info['SCMRevision']
     }
@@ -122,19 +127,22 @@ def Safari():
 
 
 def Chrome(extra_args=[]):
-  return ChromiumDriver("chrome", "Google Chrome", extra_args)
+  return ChromiumDriver("chrome", "Google Chrome", extra_args=extra_args)
 
 
 def Canary(extra_args=[]):
-  return ChromiumDriver("canary", "Google Chrome Canary", extra_args)
+  return ChromiumDriver("canary", "Google Chrome Canary", extra_args=extra_args)
 
 
 def Chromium(executable_path=None, extra_args=[]):
-  return ChromiumDriver("chromium", "Chromium", executable_path, extra_args)
+  return ChromiumDriver("chromium",
+                        "Chromium",
+                        executable_path=executable_path,
+                        extra_args=extra_args)
 
 
 def Edge(extra_args=[]):
-  return ChromiumDriver("edge", "Microsoft Edge", extra_args)
+  return ChromiumDriver("edge", "Microsoft Edge", extra_args=extra_args)
 
 
 PROCESS_NAMES = [
@@ -162,7 +170,7 @@ def MakeBrowserDriver(browser_name: str,
     else:
       chrome_extra_arg = ["--guest"]
     if browser_name == "chrome":
-      return Chrome(chrome_extra_arg)
+      return Chrome(extra_args=chrome_extra_arg)
     elif browser_name == "chromium":
       return Chromium(executable_path=chromium_path,
                       extra_args=chrome_extra_arg)
