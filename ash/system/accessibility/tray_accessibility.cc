@@ -86,7 +86,7 @@ namespace tray {
 ////////////////////////////////////////////////////////////////////////////////
 // ash::tray::AccessibilityDetailedView
 
-constexpr char AccessibilityDetailedView::kClassName[];
+const char AccessibilityDetailedView::kClassName[] = "AccessibilityDetailedView";
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)

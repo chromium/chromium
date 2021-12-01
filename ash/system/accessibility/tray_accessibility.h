@@ -40,7 +40,7 @@ class ASH_EXPORT AccessibilityDetailedView
     : public TrayDetailedView,
       public speech::SodaInstaller::Observer {
  public:
-  static constexpr char kClassName[] = "AccessibilityDetailedView";
+  static const char kClassName[];
 
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
 
