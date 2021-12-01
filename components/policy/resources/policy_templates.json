@@ -8006,9 +8006,9 @@
       ],
       'example_value': False,
       'id': 766,
-      'caption': '''Specifies whether to allow insecure websites to make requests to more-private network endpoints''',
+      'caption': '''Specifies whether to allow websites to make requests to more-private network endpoints in an insecure manner''',
       'tags': ['system-security'],
-      'desc': '''Controls whether insecure websites are allowed to make requests to more-private network endpoints.
+      'desc': '''Controls whether websites are allowed to make requests to more-private network endpoints in an insecure manner.
 
           This policy relates to the Private Network Access specification. See https://wicg.github.io/private-network-access/ for more details.
 
@@ -8017,11 +8017,9 @@
           2) Its IP address is private and the other is public.
           In the future, depending on spec evolution, this policy might apply to all cross-origin requests directed at private IPs or localhost.
 
-          A website is deemed secure if it meets the definition of a secure context in https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Otherwise, it will be treated as an insecure context.
+          When this policy is either not set or set to false, the default behavior for requests to more-private network endpoints will depend on the user's personal configuration for the <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME">BlockInsecurePrivateNetworkRequests</ph>, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME">PrivateNetworkAccessSendPreflights</ph>, and <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME">PrivateNetworkAccessRespectPreflightResults</ph> feature flags, which may be set by field trials or on the command line.
 
-          When this policy is either not set or set to false, the default behavior for requests from insecure contexts to more-private network endpoints will depend on the user's personal configuration for the <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME">BlockInsecurePrivateNetworkRequests</ph> feature, which may be set by a field trial or on the command line.
-
-          When this policy is set to true, insecure websites are allowed to make requests to any network endpoint, subject to other cross-origin checks.''',
+          When this policy is set to true, websites are allowed to make requests to any network endpoint, subject to other cross-origin checks.''',
     },
     {
       'name': 'InsecurePrivateNetworkRequestsAllowedForUrls',
@@ -8047,15 +8045,13 @@
       },
       'example_value': ['http://www.example.com:8080', '[*.]example.edu'],
       'id': 767,
-      'caption': '''Allow the listed sites to make requests to more-private network endpoints from insecure contexts.''',
+      'caption': '''Allow the listed sites to make requests to more-private network endpoints in an insecure manner.''',
       'tags': ['system-security'],
-      'desc': '''List of URL patterns. Private network requests initiated from insecure websites served by matching origins are allowed.
+      'desc': '''List of URL patterns. Requests initiated from websites served by matching origins are not subject to Private Network Access checks.
 
           If unset, this policy behaves as if set to the empty list.
 
           For origins not covered by the patterns specified here, the global default value will be used either from the <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME">InsecurePrivateNetworkRequestsAllowed</ph> policy, if it is set, or the user's personal configuration otherwise.
-
-          Note that this policy only affects insecure origins, so secure origins (e.g. https://example.com) included in this list will be ignored.
 
           For detailed information on valid URL patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
     },
