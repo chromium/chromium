@@ -500,6 +500,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.CanvasOopRaster.OopRasterAndGpuAcceleration"
+    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2022-11-01">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>nazabris@microsoft.com</owner>
+  <owner>jochin@microsoft.com</owner>
+  <summary>
+    Records, during GPU process initialization, the combination of the following
+    two features being enabled/disabled: 1) Accelerated 2D Canvas 2) OOP
+    Rasterization of Canvas.
+  </summary>
+</histogram>
+
 <histogram name="GPU.CollectContextGraphicsInfo" units="microseconds"
     expires_after="M77">
   <owner>vmiura@chromium.org</owner>

@@ -224,6 +224,47 @@ void EnableIntelShaderCache() {
 }
 #endif  // OS_WIN
 
+// These values are persistent to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This should match enum CanvasOopRasterAndGpuAcceleration in
+//  \tools\metrics\histograms\enums.xml
+enum class CanvasOopRasterAndGpuAcceleration {
+  kAccelOop = 0,
+  kAccelNoOop = 1,
+  kNoAccelOop = 2,
+  kNoAccelNoOop = 3,
+  kMaxValue = kNoAccelNoOop,
+};
+
+void RecordCanvasAcceleratedOopRasterHistogram(
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    bool gpu_compositing_disabled) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  bool accelerated_canvas =
+      gpu_feature_info
+              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] ==
+          gpu::kGpuFeatureStatusEnabled &&
+      !command_line.HasSwitch(switches::kDisableAccelerated2dCanvas);
+  bool oopr_canvas =
+      gpu_feature_info
+          .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
+      gpu::kGpuFeatureStatusEnabled;
+
+  CanvasOopRasterAndGpuAcceleration oop_acceleration_state =
+      CanvasOopRasterAndGpuAcceleration::kNoAccelNoOop;
+  if (!gpu_compositing_disabled) {
+    if (accelerated_canvas && oopr_canvas)
+      oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kAccelOop;
+    else if (accelerated_canvas && !oopr_canvas)
+      oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kAccelNoOop;
+    else if (!accelerated_canvas && oopr_canvas)
+      oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kNoAccelOop;
+  }
+  UMA_HISTOGRAM_ENUMERATION("GPU.CanvasOopRaster.OopRasterAndGpuAcceleration",
+                            oop_acceleration_state);
+}
+
 // Send UMA histograms about the enabled features and GPU properties.
 void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   // Update applied entry stats.
@@ -1223,6 +1264,8 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
   if (update_histograms_) {
     UpdateFeatureStats(gpu_feature_info_);
     UpdateDriverBugListStats(gpu_feature_info_);
+    RecordCanvasAcceleratedOopRasterHistogram(gpu_feature_info_,
+                                              IsGpuCompositingDisabled());
   }
 }
 

@@ -11263,6 +11263,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="Aborted because there was no surface"/>
 </enum>
 
+<enum name="CanvasOopRasterAndGpuAcceleration">
+  <int value="0" label="Canvas2D accelerated and OOPR enabled"/>
+  <int value="1" label="Canvas2D accelerated and OOPR disabled"/>
+  <int value="2" label="Canvas2D not accelerated and OOPR enabled"/>
+  <int value="3" label="Canvas2D not accelerated and OOPR disabled"/>
+</enum>
+
 <enum name="CanvasOverdrawOp">
   <int value="0" label="None (should have 0 counts)"/>
   <int value="1" label="Total ops"/>
