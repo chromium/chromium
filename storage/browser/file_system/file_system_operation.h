@@ -243,9 +243,8 @@ class FileSystemOperation {
   // set to the copied file size.
   using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
-  // The possible options for copy or move operations.
-  // Some combinations might not work (e.g. kPreserveLastModified and
-  // kPreserveDestinationPermissions on Mac).
+  // The possible options for copy or move operations. Used as an EnumSet to
+  // allow multiple options to be specified.
   enum class CopyOrMoveOption {
     // Preserves last modified time if possible. If the operation to update
     // last modified time is not supported on the file system for the
