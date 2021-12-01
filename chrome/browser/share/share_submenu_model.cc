@@ -98,7 +98,8 @@ ShareSubmenuModel::ShareSubmenuModel(
   AddGenerateQRCodeItem();
   AddSendTabToSelfItem();
   AddCopyLinkItem();
-  AddShareToThirdPartyItems();
+  // Temporarily disabled: https://crbug.com/1272875
+  // AddShareToThirdPartyItems();
 }
 
 ShareSubmenuModel::~ShareSubmenuModel() = default;
