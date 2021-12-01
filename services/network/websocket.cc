@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/ignore_result.h"
 #include "base/location.h"
@@ -274,11 +276,7 @@ void WebSocket::WebSocketEventHandler::OnDataFrame(
   if (payload.size() > 0) {
     impl_->pending_data_frames_.push(payload);
   }
-  if (impl_->incoming_frame_interceptor_ &&
-      impl_->incoming_frame_interceptor_->IsFrameStarted()) {
-    return;
-  }
-  impl_->SendPendingDataFrames();
+  impl_->SendPendingDataFrames(InterruptionReason::kNone);
 }
 
 void WebSocket::WebSocketEventHandler::OnSendDataFrameDone() {
@@ -516,10 +514,8 @@ void WebSocket::SendMessage(mojom::WebSocketMessageType type,
 
   // Safe if ReadAndSendFromDataPipe() deletes |this| because this method is
   // only called from mojo.
-  if (!blocked_on_websocket_channel_ &&
-      (!outgoing_frame_interceptor_ ||
-       !outgoing_frame_interceptor_->IsFrameStarted())) {
-    ReadAndSendFromDataPipe();
+  if (!blocked_on_websocket_channel_) {
+    ReadAndSendFromDataPipe(InterruptionReason::kNone);
   }
 }
 
@@ -653,47 +649,51 @@ void WebSocket::OnWritable(MojoResult result,
     OnConnectionError(FROM_HERE);
     return;
   }
-  wait_for_writable_ = false;
-  SendPendingDataFrames();
-  if (pending_data_frames_.empty()) {
-    ignore_result(channel_->ReadFrames());
-  }
+  SendPendingDataFrames(InterruptionReason::kMojoPipe);
 }
 
-void WebSocket::SendPendingDataFrames() {
+void WebSocket::SendPendingDataFrames(InterruptionReason resume_reason) {
   DVLOG(3) << "WebSocket::SendPendingDataFrames @"
            << reinterpret_cast<void*>(this)
            << ", pending_data_frames_.size=" << pending_data_frames_.size()
-           << ", wait_for_writable_?" << wait_for_writable_;
+           << ", incoming_frames_interrupted_="
+           << static_cast<int>(incoming_frames_interrupted_);
 
-  if (wait_for_writable_) {
+  if (incoming_frames_interrupted_ != resume_reason)
     return;
+
+  bool resuming_after_interruption = false;
+  if (incoming_frames_interrupted_ != InterruptionReason::kNone) {
+    incoming_frames_interrupted_ = InterruptionReason::kNone;
+    resuming_after_interruption = true;
   }
   while (!pending_data_frames_.empty()) {
     base::span<const char>& data_frame = pending_data_frames_.front();
     if (incoming_frame_interceptor_ &&
-        !incoming_frame_interceptor_->IsFrameStarted()) {
-      // `Intercept` always intercepts sending data per frame. Once intercepted,
-      // the intercepteror needs to be notified when the whole frame is sent by
-      // calling `FinishFrame`.
+        resume_reason == InterruptionReason::kNone) {
+      // `Intercept` always intercepts sending data per frame.
       auto intercept_result = incoming_frame_interceptor_->Intercept(
           data_frame.size(), base::BindOnce(&WebSocket::SendPendingDataFrames,
-                                            base::Unretained(this)));
-      if (intercept_result == WebSocketInterceptor::kShouldWait)
+                                            base::Unretained(this),
+                                            InterruptionReason::kInterceptor));
+      if (intercept_result == WebSocketInterceptor::kShouldWait) {
+        DCHECK_EQ(incoming_frames_interrupted_, InterruptionReason::kNone);
+        incoming_frames_interrupted_ = InterruptionReason::kInterceptor;
         return;
+      }
     }
     SendDataFrame(&data_frame);
     if (data_frame.size() > 0) {
       // Mojo doesn't have any write buffer so far.
       writable_watcher_.ArmOrNotify();
-      wait_for_writable_ = true;
+      DCHECK_EQ(incoming_frames_interrupted_, InterruptionReason::kNone);
+      incoming_frames_interrupted_ = InterruptionReason::kMojoPipe;
       return;
     }
     pending_data_frames_.pop();
-    if (incoming_frame_interceptor_ &&
-        incoming_frame_interceptor_->IsFrameStarted()) {
-      incoming_frame_interceptor_->FinishFrame();
-    }
+  }
+  if (resuming_after_interruption) {
+    ignore_result(channel_->ReadFrames());
   }
 }
 
@@ -737,42 +737,38 @@ void WebSocket::OnReadable(MojoResult result,
     OnConnectionError(FROM_HERE);
     return;
   }
-  wait_for_readable_ = false;
-
   // Safe if ReadAndSendFromDataPipe() deletes |this| because this method is
   // only called from mojo.
-  if (!outgoing_frame_interceptor_ ||
-      !outgoing_frame_interceptor_->IsFrameStarted()) {
-    ReadAndSendFromDataPipe();
-  }
+  ReadAndSendFromDataPipe(InterruptionReason::kMojoPipe);
 }
 
-void WebSocket::ReadAndSendFromDataPipe() {
-  if (wait_for_readable_) {
+void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
+  if (outgoing_frames_interrupted_ != resume_reason)
     return;
-  }
+
+  if (outgoing_frames_interrupted_ != InterruptionReason::kNone)
+    outgoing_frames_interrupted_ = InterruptionReason::kNone;
+
   while (!pending_send_data_frames_.empty()) {
     DataFrame& data_frame = pending_send_data_frames_.front();
     DVLOG(2) << " ConsumePendingDataFrame frame=(" << data_frame.type
              << ", (data_length = " << data_frame.data_length << "))";
     if (outgoing_frame_interceptor_ &&
-        !outgoing_frame_interceptor_->IsFrameStarted()) {
-      // `Intercept` always intercepts reading data per frame. Once intercepted,
-      // the intercepteror needs to be notified when the whole frame is read by
-      // calling `FinishFrame`.
+        resume_reason == InterruptionReason::kNone) {
+      // `Intercept` always intercepts reading data per frame.
       auto intercept_result = outgoing_frame_interceptor_->Intercept(
           data_frame.data_length,
           base::BindOnce(&WebSocket::ReadAndSendFromDataPipe,
-                         base::Unretained(this)));
-      if (intercept_result == WebSocketInterceptor::kShouldWait)
+                         base::Unretained(this),
+                         InterruptionReason::kInterceptor));
+      if (intercept_result == WebSocketInterceptor::kShouldWait) {
+        DCHECK_EQ(outgoing_frames_interrupted_, InterruptionReason::kNone);
+        outgoing_frames_interrupted_ = InterruptionReason::kInterceptor;
         return;
+      }
     }
     if (!ReadAndSendFrameFromDataPipe(&data_frame)) {
       return;
-    }
-    if (outgoing_frame_interceptor_ &&
-        outgoing_frame_interceptor_->IsFrameStarted()) {
-      outgoing_frame_interceptor_->FinishFrame();
     }
     pending_send_data_frames_.pop();
   }
@@ -802,7 +798,8 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
     const MojoResult begin_result = readable_->BeginReadData(
         &buffer, &readable_size, MOJO_READ_DATA_FLAG_NONE);
     if (begin_result == MOJO_RESULT_SHOULD_WAIT) {
-      wait_for_readable_ = true;
+      DCHECK_EQ(outgoing_frames_interrupted_, InterruptionReason::kNone);
+      outgoing_frames_interrupted_ = InterruptionReason::kMojoPipe;
       if (!blocked_on_websocket_channel_) {
         readable_watcher_.ArmOrNotify();
       }

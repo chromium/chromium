@@ -46,12 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
   //   * kShouldWait: frame processing should be paused until `retry_callback`
   //     is invoked.
   //     Calling Intercept again before the callback runs is not allowed.
-  //     Calling Intercept again before calling FinishFrame is also not allowed.
   InterceptResult Intercept(size_t size, base::OnceClosure retry_callback);
-  // This is meant to be called when processing of a single frame is done and it
-  // resets the interceptor state.
-  void FinishFrame();
-  bool IsFrameStarted() { return frame_started_; }
 
  private:
   void ThrottleCallback(int result, int64_t bytes);
@@ -62,7 +57,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
   const std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
   base::OnceClosure pending_callback_;
-  bool frame_started_ = false;
 };
 
 }  // namespace network

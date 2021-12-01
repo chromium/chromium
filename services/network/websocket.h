@@ -170,15 +170,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   void Reset();
 
+  enum class InterruptionReason {
+    // Not interrupted or not resuming after interruptions (but processing a
+    // brand new frame)
+    kNone,
+    // Interrupted by empty Mojo pipe or resuming afterwards
+    kMojoPipe,
+    // Interrupted by the interceptor or resuming afterwards
+    kInterceptor,
+  };
+
   // Datapipe functions to receive.
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state);
-  void SendPendingDataFrames();
+  void SendPendingDataFrames(InterruptionReason resume_reason);
   void SendDataFrame(base::span<const char>* data_span);
 
   // Datapipe functions to send.
   void OnReadable(MojoResult result, const mojo::HandleSignalsState& state);
 
-  void ReadAndSendFromDataPipe();
+  void ReadAndSendFromDataPipe(InterruptionReason resume_reason);
   // This helper method only called from ReadAndSendFromDataPipe.
   // Note that it may indirectly delete |this|.
   // Returns true if the frame has been sent completely.
@@ -218,17 +228,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   bool handshake_succeeded_ = false;
   const HasRawHeadersAccess has_raw_headers_access_;
 
+  InterruptionReason incoming_frames_interrupted_ = InterruptionReason::kNone;
+  InterruptionReason outgoing_frames_interrupted_ = InterruptionReason::kNone;
+
   // Datapipe fields to receive.
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   base::queue<base::span<const char>> pending_data_frames_;
-  bool wait_for_writable_ = false;
 
   // Datapipe fields to send.
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::SimpleWatcher readable_watcher_;
   base::queue<DataFrame> pending_send_data_frames_;
-  bool wait_for_readable_ = false;
   bool blocked_on_websocket_channel_ = false;
 
   // True if we should preserve the old behaviour where <=64KB messages were

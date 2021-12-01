@@ -36,7 +36,6 @@ WebSocketInterceptor::InterceptResult WebSocketInterceptor::Intercept(
     size_t size,
     base::OnceClosure retry_callback) {
   DCHECK(!pending_callback_);
-  DCHECK(!frame_started_);
 
   auto* throttling_interceptor =
       ThrottlingController::GetInterceptor(net_log_source_id_);
@@ -50,16 +49,9 @@ WebSocketInterceptor::InterceptResult WebSocketInterceptor::Intercept(
       /*is_upload=*/direction_ == kOutgoing, throttle_callback_);
   if (start_throttle_result == net::ERR_IO_PENDING) {
     pending_callback_ = std::move(retry_callback);
-    frame_started_ = true;
     return kShouldWait;
   }
   return kContinue;
-}
-
-void WebSocketInterceptor::FinishFrame() {
-  DCHECK(frame_started_);
-  DCHECK(pending_callback_.is_null());
-  frame_started_ = false;
 }
 
 void WebSocketInterceptor::ThrottleCallback(int result, int64_t bytes) {
