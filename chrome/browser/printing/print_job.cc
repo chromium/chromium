@@ -513,6 +513,17 @@ void PrintJob::SyncPrintedDocumentToWorker() {
                                     base::RetainedRef(document_))));
 }
 
+#if defined(OS_WIN)
+void PrintJob::OnPageDone(PrintedPage* page) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (pdf_conversion_state_) {
+    pdf_conversion_state_->OnPageProcessed(
+        base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
+  }
+  document_->DropPage(page);
+}
+#endif  // defined(OS_WIN)
+
 void PrintJob::OnNotifyPrintJobEvent(const JobEventDetails& event_details) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -526,15 +537,6 @@ void PrintJob::OnNotifyPrintJobEvent(const JobEventDetails& event_details) {
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&PrintJob::OnDocumentDone, this));
       break;
-#if defined(OS_WIN)
-    case JobEventDetails::PAGE_DONE:
-      if (pdf_conversion_state_) {
-        pdf_conversion_state_->OnPageProcessed(
-            base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
-      }
-      document_->DropPage(event_details.page());
-      break;
-#endif  // defined(OS_WIN)
     default:
       break;
   }
@@ -613,14 +615,6 @@ void PrintJob::set_job_pending(bool pending) {
   is_job_pending_ = pending;
 }
 
-#if defined(OS_WIN)
-JobEventDetails::JobEventDetails(Type type,
-                                 int job_id,
-                                 PrintedDocument* document,
-                                 PrintedPage* page)
-    : document_(document), page_(page), type_(type), job_id_(job_id) {}
-#endif
-
 JobEventDetails::JobEventDetails(Type type,
                                  int job_id,
                                  PrintedDocument* document)
@@ -630,9 +624,5 @@ JobEventDetails::~JobEventDetails() {
 }
 
 PrintedDocument* JobEventDetails::document() const { return document_.get(); }
-
-#if defined(OS_WIN)
-PrintedPage* JobEventDetails::page() const { return page_.get(); }
-#endif
 
 }  // namespace printing

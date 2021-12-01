@@ -84,6 +84,9 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // of pages, because all PDF pages will be converted, but only the user's
   // selected pages should be sent to the printer. See https://crbug.com/823876.
   void ResetPageMapping();
+
+  // Called when |page| is done printing.
+  void OnPageDone(PrintedPage* page);
 #endif
 
   // content::NotificationObserver implementation.
@@ -254,20 +257,9 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
     JOB_DONE,
 
     // An error occured. Printing is canceled.
-    FAILED,
-
-#if defined(OS_WIN)
-    // A page is done printing. Only used on Windows.
-    PAGE_DONE,
-#endif
+    FAILED
   };
 
-#if defined(OS_WIN)
-  JobEventDetails(Type type,
-                  int job_id,
-                  PrintedDocument* document,
-                  PrintedPage* page);
-#endif
   JobEventDetails(Type type, int job_id, PrintedDocument* document);
 
   JobEventDetails(const JobEventDetails&) = delete;
@@ -275,9 +267,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
 
   // Getters.
   PrintedDocument* document() const;
-#if defined(OS_WIN)
-  PrintedPage* page() const;
-#endif
   Type type() const {
     return type_;
   }
@@ -289,9 +278,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
   ~JobEventDetails();
 
   scoped_refptr<PrintedDocument> document_;
-#if defined(OS_WIN)
-  scoped_refptr<PrintedPage> page_;
-#endif
   const Type type_;
   int job_id_;
 };

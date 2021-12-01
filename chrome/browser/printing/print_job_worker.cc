@@ -129,17 +129,8 @@ void NotificationCallback(PrintJob* print_job,
 }
 
 #if defined(OS_WIN)
-void PageNotificationCallback(PrintJob* print_job,
-                              JobEventDetails::Type detail_type,
-                              int job_id,
-                              PrintedDocument* document,
-                              PrintedPage* page) {
-  auto details = base::MakeRefCounted<JobEventDetails>(detail_type, job_id,
-                                                       document, page);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_EVENT,
-      content::Source<PrintJob>(print_job),
-      content::Details<JobEventDetails>(details.get()));
+void PageNotificationCallback(PrintJob* print_job, PrintedPage* page) {
+  print_job->OnPageDone(page);
 }
 #endif
 
@@ -533,12 +524,10 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
 
   // Signal everyone that the page is printed.
   DCHECK(print_job_);
-  print_job_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PageNotificationCallback,
-                     base::RetainedRef(print_job_.get()),
-                     JobEventDetails::PAGE_DONE, printing_context_->job_id(),
-                     base::RetainedRef(document_), base::RetainedRef(page)));
+  print_job_->PostTask(FROM_HERE,
+                       base::BindOnce(&PageNotificationCallback,
+                                      base::RetainedRef(print_job_.get()),
+                                      base::RetainedRef(page)));
 }
 #endif  // defined(OS_WIN)
 
