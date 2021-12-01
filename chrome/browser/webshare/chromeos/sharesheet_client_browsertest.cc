@@ -123,8 +123,10 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
 
   const base::FilePath share_cache =
       file_manager::util::GetShareCacheFilePath(browser()->profile());
-  EXPECT_EQ(file_paths[0], share_cache.AppendASCII(".WebShare/share1.mp3"));
-  EXPECT_EQ(file_paths[1], share_cache.AppendASCII(".WebShare/share2.mp4"));
+  EXPECT_EQ(file_paths[0],
+            share_cache.AppendASCII(".WebShare/share1/sam.ple.mp3"));
+  EXPECT_EQ(file_paths[1],
+            share_cache.AppendASCII(".WebShare/share2/_sample.mp4"));
 
   CheckSize(file_paths[0], /*expected_size=*/345);
   CheckSize(file_paths[1], /*expected_size=*/67890);

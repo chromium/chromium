@@ -9,6 +9,8 @@ if (is_chromeos || is_mac) {
     sources = [
       "prepare_directory_task.cc",
       "prepare_directory_task.h",
+      "prepare_subdirectory_task.cc",
+      "prepare_subdirectory_task.h",
       "store_file_task.cc",
       "store_file_task.h",
       "store_files_task.cc",
@@ -22,13 +24,6 @@ if (is_chromeos || is_mac) {
       "//base",
       "//third_party/blink/public/common",
     ]
-
-    if (is_mac) {
-      sources += [
-        "prepare_subdirectory_task.cc",
-        "prepare_subdirectory_task.h",
-      ]
-    }
   }
 }
 

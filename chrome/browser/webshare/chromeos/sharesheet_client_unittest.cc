@@ -130,18 +130,20 @@ TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   const base::FilePath share_cache_dir =
       file_manager::util::GetShareCacheFilePath(profile());
   const base::FilePath first_file =
-      share_cache_dir.AppendASCII(".WebShare/share1.txt");
+      share_cache_dir.AppendASCII(".WebShare/share1/first.txt");
   const base::FilePath second_file =
-      share_cache_dir.AppendASCII(".WebShare/share2.txt");
+      share_cache_dir.AppendASCII(".WebShare/share2/second.txt");
 
   const std::string title = "Subject";
   const std::string text = "Message";
   const GURL share_url("https://example.com/");
   std::vector<blink::mojom::SharedFilePtr> files;
-  files.push_back(blink::mojom::SharedFile::New(
-      first_file.AsUTF8Unsafe(), blink::mojom::SerializedBlob::New()));
-  files.push_back(blink::mojom::SharedFile::New(
-      second_file.AsUTF8Unsafe(), blink::mojom::SerializedBlob::New()));
+  files.push_back(
+      blink::mojom::SharedFile::New(first_file.BaseName().AsUTF8Unsafe(),
+                                    blink::mojom::SerializedBlob::New()));
+  files.push_back(
+      blink::mojom::SharedFile::New(second_file.BaseName().AsUTF8Unsafe(),
+                                    blink::mojom::SerializedBlob::New()));
 
   base::RunLoop run_loop;
   blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
