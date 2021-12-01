@@ -92,7 +92,7 @@ FencedFrameURLMapping::FencedFrameURLMapping() = default;
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
 absl::optional<GURL> FencedFrameURLMapping::ConvertFencedFrameURNToURL(
-    GURL& urn_uuid,
+    const GURL& urn_uuid,
     absl::optional<PendingAdComponentsMap>& out_ad_components) const {
   CHECK(urn_uuid.is_valid());
   CHECK_EQ(url::kUrnScheme, urn_uuid.scheme());
