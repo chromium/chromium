@@ -61,7 +61,7 @@ export class BaseSettings extends View {
    *     mapped by element ids.
    */
   constructor(name, itemHandlers = {}) {
-    super(name, true, true);
+    super(name, {dismissByEsc: true, dismissByBackgroundClick: true});
 
     dom.getFrom(this.root, '.menu-header button', HTMLButtonElement)
         .addEventListener('click', () => this.leave());

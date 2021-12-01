@@ -76,7 +76,7 @@ export class Review extends View {
    * @public
    */
   constructor(viewName = ViewName.REVIEW) {
-    super(viewName);
+    super(viewName, {defaultFocusSelector: '.primary'});
 
     /**
      * @private {!ViewName}
@@ -108,13 +108,6 @@ export class Review extends View {
      * @private {?HTMLButtonElement}
      */
     this.primaryBtn_ = null;
-  }
-
-  /**
-   * @override
-   */
-  focus() {
-    this.primaryBtn_.focus();
   }
 
   /**

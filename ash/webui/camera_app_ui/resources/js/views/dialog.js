@@ -16,7 +16,9 @@ export class Dialog extends View {
    * @param {!ViewName} name View name of the dialog.
    */
   constructor(name) {
-    super(name, true);
+    super(
+        name,
+        {dismissByEsc: true, defaultFocusSelector: '.dialog-positive-button'});
 
     /**
      * @type {!HTMLButtonElement}
@@ -58,12 +60,5 @@ export class Dialog extends View {
     if (this.negativeButton_ !== null) {
       this.negativeButton_.hidden = !cancellable;
     }
-  }
-
-  /**
-   * @override
-   */
-  focus() {
-    this.positiveButton_.focus();
   }
 }

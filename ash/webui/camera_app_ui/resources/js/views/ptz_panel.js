@@ -100,8 +100,8 @@ export class PTZPanel extends View {
    */
   constructor() {
     super(
-        ViewName.PTZ_PANEL, /* dismissByEsc */ true,
-        /* dismissByBkgndClick */ true);
+        ViewName.PTZ_PANEL,
+        {dismissByEsc: true, dismissByBackgroundClick: true});
 
     /**
      * Video track of opened stream having PTZ support.

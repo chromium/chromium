@@ -71,11 +71,19 @@ export class View {
   /**
    * @param {!ViewName} name Unique name of view which should be same as its DOM
    *     element id.
-   * @param {boolean=} dismissByEsc Enable dismissible by Esc-key.
-   * @param {boolean=} dismissByBkgndClick Enable dismissible by
-   *     background-click.
+   * @param {{
+   *   dismissByEsc: (boolean|undefined),
+   *   dismissByBackgroundClick: (boolean|undefined),
+   *   defaultFocusSelector: (string|undefined),
+   * }=} params
+   * |dismissByEsc| enables dismissible by Esc-key.
+   * |dismissByBackgroundClick| enables dismissible by background-click.
+   * |defaultFocusSelector| selects element to be focused in focus(). Focus to
+   * first element whose tabindex is not -1 when argument is not presented.
    */
-  constructor(name, dismissByEsc = false, dismissByBkgndClick = false) {
+  constructor(
+      name,
+      {dismissByEsc, dismissByBackgroundClick, defaultFocusSelector} = {}) {
     /**
      * @const {!ViewName}
      */
@@ -94,12 +102,19 @@ export class View {
     this.session_ = null;
 
     /**
-     * @type {boolean}
+     * @const {boolean}
      * @private
      */
-    this.dismissByEsc_ = dismissByEsc;
+    this.dismissByEsc_ = dismissByEsc ?? false;
 
-    if (dismissByBkgndClick) {
+    /**
+     * @const {string}
+     * @private
+     */
+    this.defaultFocusSelector_ =
+        defaultFocusSelector ?? '[tabindex]:not([tabindex="-1"])';
+
+    if (dismissByBackgroundClick) {
       this.root.addEventListener(
           'click',
           (event) => event.target === this.root && this.leave({bkgnd: true}));
@@ -141,7 +156,9 @@ export class View {
   /**
    * Focuses the default element on the view if applicable.
    */
-  focus() {}
+  focus() {
+    this.root.querySelector(this.defaultFocusSelector_)?.focus();
+  }
 
   /**
    * Layouts the view.
