@@ -120,7 +120,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREY:
     default:
-      return {gfx::kGoogleGrey600, gfx::kGoogleGrey300};
+      return {gfx::kGoogleGrey700, gfx::kGoogleGrey300};
   }
 }
 

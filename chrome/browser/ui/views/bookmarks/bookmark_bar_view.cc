@@ -440,7 +440,7 @@ class BookmarkTabGroupButton : public BookmarkMenuButtonBase {
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
   tab_groups::TabGroupColorId tab_group_color_id_ =
-      tab_groups::TabGroupColorId::kOrange;
+      tab_groups::TabGroupColorId::kGrey;
   float border_radius_ = 4.5f;
   float button_radius_ = 5.0f;
 };
@@ -1756,17 +1756,19 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
         // Use this variable to set the tab_group_color for all folders in the
         // bookmark bar
         tab_groups::TabGroupColorId tab_group_color_id =
-            tab_groups::TabGroupColorId::kOrange;
+            tab_groups::TabGroupColorId::kGrey;
 
         // In most cases our text color will match the hover border color
         // However, for yellow, orange, and custom colors this may not be true
         // for contrast and visibility, so a default grey color may be
         // more appropriate.
-        text_color =
-            tp->GetColor(GetTabGroupContextMenuColorId(tab_group_color_id));
-        bool default_to_grey = text_color == gfx::kGoogleYellow600 ||
-                               text_color == gfx::kGoogleOrange400;
-        if (default_to_grey)
+        SkColor background_color =
+            tp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id));
+        text_color = tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id));
+        bool meets_contrast_req =
+            color_utils::GetContrastRatio(background_color, text_color) >=
+            color_utils::kMinimumVisibleContrastRatio;
+        if (!meets_contrast_req)
           text_color = gfx::kGoogleGrey800;
 
         // Set empty border using the default horizontal padding (but leaving
