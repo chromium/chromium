@@ -151,6 +151,8 @@ std::string GetReauthAccessPointHistogramSuffix(
       return "ToGeneratePassword";
     case signin_metrics::ReauthAccessPoint::kPasswordMoveBubble:
       return "ToMovePassword";
+    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
+      return "ToSavePasswordLocallyThenMove";
   }
 }
 

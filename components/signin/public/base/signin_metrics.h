@@ -177,13 +177,18 @@ enum class ReauthAccessPoint {
 
   // Account password storage opt-in:
   kAutofillDropdown = 1,
+  // The password save bubble, which included the destination picker (set to
+  // "Save to your Google Account").
   kPasswordSaveBubble = 2,
   kPasswordSettings = 3,
   kGeneratePasswordDropdown = 4,
   kGeneratePasswordContextMenu = 5,
   kPasswordMoveBubble = 6,
+  // The password save bubble *without* a destination picker, i.e. the password
+  // was already saved locally.
+  kPasswordSaveLocallyBubble = 7,
 
-  kMaxValue = kPasswordMoveBubble
+  kMaxValue = kPasswordSaveLocallyBubble
 };
 
 // Enum values which enumerates all user actions on the sign-in promo.

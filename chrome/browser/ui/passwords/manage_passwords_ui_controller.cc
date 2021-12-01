@@ -690,7 +690,7 @@ void ManagePasswordsUIController::
   // updated with any edits the user made in the Save bubble. So at this point,
   // just using GetPendingCredentials() is safe.
   passwords_data_.client()->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
+      signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble,
       base::BindOnce(&ManagePasswordsUIController::
                          MoveJustSavedPasswordAfterAccountStoreOptIn,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -17860,6 +17860,9 @@ chromium-metrics-reviews@google.com.
       label="The reauth happened to move a password to the account store."/>
   <suffix name="ToSaveOrUpdatePassword"
       label="The reauth happened to save a password to the account store."/>
+  <suffix name="ToSavePasswordLocallyThenMove"
+      label="The reauth happened to move a just-locally-saved password to the
+             account store."/>
   <affected-histogram name="Signin.TransactionalReauthResult"/>
   <affected-histogram name="Signin.TransactionalReauthUserAction"/>
 </histogram_suffixes>

@@ -8845,11 +8845,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_DESC" desc="Body of the account password storage reauth tab modal dialog.">
         Passwords from your Google Account will also be available on this device while you're signed in
       </message>
+      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_DESC_ALREADY_SAVED_LOCALLY" desc="Body of the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally.">
+        Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.
+      </message>
       <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the account password storage reauth tab modal dialog.">
         Yes
       </message>
       <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL" desc="Label of the close button in the account password storage reauth tab modal dialog.">
         No thanks
+      </message>
+      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL_ALREADY_SAVED_LOCALLY" desc="Label of the close button in the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally.">
+        No, this device only
       </message>
 
       <message name="IDS_PLUGIN_OUTDATED_PROMPT" desc="Infobar message when an outdated plugin was disabled">
