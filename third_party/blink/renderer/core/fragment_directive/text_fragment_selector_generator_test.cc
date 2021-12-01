@@ -1804,44 +1804,6 @@ TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
 }
 
 // Check the case when GetPreviousTextBlock is an EOL node from Shadow Root.
-// SharedHighlightingLayoutObjectFix feature disabled does not ensures that the
-// next previous non-empty visible text has a layout object. See
-// crbug.com/1233762 for more context.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_ShouldCrashWithNoLayoutObject) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingLayoutObjectFix);
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id="host1"></div>
-  )HTML");
-  ShadowRoot& shadow1 =
-      GetDocument().getElementById("host1")->AttachShadowRootInternal(
-          ShadowRootType::kOpen);
-  shadow1.setInnerHTML(R"HTML(
-    <style>
-          :host {display: contents;}
-    </style>
-    <p>Right click the link below to experience a crash:</p>
-    <a href="/foo" id='first'>I crash</a>
-  )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_FALSE(GetDocument().View()->NeedsLayout());
-  Node* first_paragraph = shadow1.getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  EXPECT_DEATH(
-      GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(start),
-      "");
-}
-
-// Check the case when GetPreviousTextBlock is an EOL node from Shadow Root.
-// SharedHighlightingLayoutObjectFix feature enabled ensures that the next
-// previous non-empty visible text node has a layout object. See
-// crbug.com/1233762 for more context.
 TEST_F(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_ShouldSkipNodesWithNoLayoutObject) {
   SimRequest request("https://example.com/test.html", "text/html");
