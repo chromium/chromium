@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
@@ -26,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -57,7 +59,6 @@ import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsP
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.AutoDarkSiteSettingObserver;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
@@ -94,17 +95,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class SiteSettingsTest {
     public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
-
-    static class TestAutoDarkObserver implements AutoDarkSiteSettingObserver {
-        public boolean mDefaultValue;
-        @Override
-        public void onDefaultValueChanged(boolean isEnabled) {
-            mDefaultValue = isEnabled;
-        }
-
-        @Override
-        public void onSiteExceptionChanged(boolean isAdded) {}
-    }
 
     @ClassRule
     public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
@@ -1157,33 +1147,32 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowAutoDark() {
-        TestAutoDarkObserver observer = new TestAutoDarkObserver();
-        SingleCategorySettings.setAutoDarkSiteSettingsObserver(observer);
-
         new TwoStatePermissionTestCase("AutoDarkWebContent",
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, true)
                 .run();
-
-        Assert.assertTrue("Auto dark should be enabled.", observer.mDefaultValue);
-        SingleCategorySettings.setAutoDarkSiteSettingsObserver(null);
+        Assert.assertEquals("<Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Enabled> "
+                        + "should be recorded for SITE_SETTINGS_GLOBAL.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Enabled",
+                        SITE_SETTINGS_GLOBAL));
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockAutoDark() {
-        TestAutoDarkObserver observer = new TestAutoDarkObserver();
-        observer.mDefaultValue = true;
-        SingleCategorySettings.setAutoDarkSiteSettingsObserver(observer);
-
         new TwoStatePermissionTestCase("AutoDarkWebContent",
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, false)
                 .run();
-
-        Assert.assertFalse("Auto dark should be disabled.", observer.mDefaultValue);
-        SingleCategorySettings.setAutoDarkSiteSettingsObserver(null);
+        Assert.assertEquals("<Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Disabled> "
+                        + "should be recorded for SITE_SETTINGS_GLOBAL.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Disabled",
+                        SITE_SETTINGS_GLOBAL));
     }
 
     @Test

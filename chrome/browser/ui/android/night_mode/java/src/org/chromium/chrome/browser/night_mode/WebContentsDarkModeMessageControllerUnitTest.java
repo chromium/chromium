@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 
 import org.junit.After;
@@ -27,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -36,8 +39,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController.AutoDarkClickableSpan;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControllerUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -46,9 +49,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -62,7 +63,8 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
  * engagement system.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowAppCompatResources.class)
+@Config(manifest = Config.NONE,
+        shadows = {ShadowAppCompatResources.class, ShadowWebContentsDarkModeController.class})
 public class WebContentsDarkModeMessageControllerUnitTest {
     private static final String USER_ED_FEATURE =
             FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE;
@@ -94,6 +96,17 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         }
     }
 
+    @Implements(WebContentsDarkModeController.class)
+    static class ShadowWebContentsDarkModeController {
+        static boolean sIsFeatureEnabled;
+
+        @Implementation
+        public static boolean isFeatureEnabled(
+                Context context, BrowserContextHandle browserContextHandle) {
+            return sIsFeatureEnabled;
+        }
+    }
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -111,10 +124,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     HelpAndFeedbackLauncher mMockFeedbackLauncher;
 
     @Mock
-    UserPrefs.Natives mMockUserPrefJni;
-    @Mock
-    PrefService mMockPrefService;
-    @Mock
     Resources mMockResources;
     @Mock
     Tracker mMockTracker;
@@ -125,10 +134,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefJni);
-        when(mMockUserPrefJni.get(eq(mMockProfile))).thenReturn(mMockPrefService);
-        when(mMockPrefService.getBoolean(eq(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED)))
-                .thenReturn(true);
         when(mMockActivity.getResources()).thenReturn(mMockResources);
         when(mMockResources.getString(anyInt())).thenReturn("<link></link>");
 
@@ -138,6 +143,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         mModalDialogManager = new FakeModalDialogManager();
 
         TrackerFactory.setTrackerForTests(mMockTracker);
+        ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
     }
 
     @After
@@ -188,7 +194,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Test
     public void testSendMessage_featureDisabled() {
         // Feature is disabled.
-        when(mMockPrefService.getBoolean(any())).thenReturn(false);
+        ShadowWebContentsDarkModeController.sIsFeatureEnabled = false;
 
         // Attempt to send message and fail because feature is disabled.
         WebContentsDarkModeMessageController.attemptToSendMessage(

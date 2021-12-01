@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -30,7 +29,6 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -55,13 +53,13 @@ public class WebContentsDarkModeMessageController {
      * should be sent. Otherwise return false.
      *
      * @param profile Profile associated with current tab.
+     * @param context {@link Context} used to check whether UI is in night mode.
      * @return Whether or not the user education message should be shown.
      */
-    private static boolean shouldSendMessage(Profile profile) {
+    private static boolean shouldSendMessage(Profile profile, Context context) {
         // Only send message if the feature is enabled and the message has not yet been shown.
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        boolean featureEnabled =
-                UserPrefs.get(profile).getBoolean(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED);
+        boolean featureEnabled = WebContentsDarkModeController.isFeatureEnabled(context, profile);
         return featureEnabled
                 && tracker.shouldTriggerHelpUI(
                         FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
@@ -92,7 +90,7 @@ public class WebContentsDarkModeMessageController {
      */
     public static void attemptToSendMessage(Activity activity, Profile profile,
             SettingsLauncher settingsLauncher, MessageDispatcher messageDispatcher) {
-        if (!shouldSendMessage(profile)) return;
+        if (!shouldSendMessage(profile, activity)) return;
 
         // Set the properties (icon, text, etc.) for the message.
         Resources resources = activity.getResources();

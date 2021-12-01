@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -77,7 +76,6 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -701,12 +699,13 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isAutoDarkWebContentsEnabled() {
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        assert profile != null;
         boolean isFlagEnabled = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
-
-        return isFlagEnabled
-                && UserPrefs.get(mTabModelSelector.getCurrentModel().getProfile())
-                           .getBoolean(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED);
+        boolean isFeatureEnabled =
+                WebContentsDarkModeController.isFeatureEnabled(mContext, profile);
+        return isFlagEnabled && isFeatureEnabled;
     }
 
     /**

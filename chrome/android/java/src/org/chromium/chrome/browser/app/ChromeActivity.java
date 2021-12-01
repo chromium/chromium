@@ -1189,7 +1189,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             WebContents webContents = tab.getWebContents();
             LaunchMetrics.commitLaunchMetrics(webContents);
 
-            // For picture-in-picture mode
+            // For picture-in-picture mode / auto-darken web contents.
             if (webContents != null) webContents.notifyRendererPreferenceUpdate();
         }
 
