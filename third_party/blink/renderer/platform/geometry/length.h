@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 
+#include <cmath>
 #include <cstring>
 
 #include "base/notreached.h"
@@ -82,16 +83,19 @@ class PLATFORM_EXPORT Length {
 
   Length(LayoutUnit v, Length::Type t, bool q = false)
       : float_value_(v.ToFloat()), quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v.ToFloat()));
     DCHECK_NE(t, kCalculated);
   }
 
   Length(float v, Length::Type t, bool q = false)
       : float_value_(v), quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v));
     DCHECK_NE(t, kCalculated);
   }
 
   Length(double v, Length::Type t, bool q = false)
       : quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v));
     float_value_ = ClampTo<float>(v);
   }
 
