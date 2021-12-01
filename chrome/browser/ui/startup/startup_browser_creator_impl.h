@@ -188,9 +188,6 @@ class StartupBrowserCreatorImpl {
       chrome::startup::IsProcessStartup process_startup,
       bool is_post_crash_launch);
 
-  // Adds any startup infobars to the selected tab of the given browser.
-  void AddInfoBarsIfNecessary(Browser* browser);
-
   // Determines how the launch flow should obtain a Browser.
   static BrowserOpenBehavior DetermineBrowserOpenBehavior(
       const SessionStartupPref& pref,
@@ -205,11 +202,6 @@ class StartupBrowserCreatorImpl {
 
   // Returns whether or not a browser window should be created/restored.
   static bool ShouldLaunch(const base::CommandLine& command_line);
-
-  // Returns whether `switches::kEnableAutomation` is set on the command line of
-  // the current process. This is a static method to avoid accidentally reading
-  // it from `command_line_`.
-  static bool IsAutomationEnabled();
 
   // Returns whether `switches::kKioskMode` is set on the command line of
   // the current process. This is a static method to avoid accidentally reading

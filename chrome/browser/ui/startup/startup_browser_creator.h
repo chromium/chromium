@@ -142,6 +142,7 @@ class StartupBrowserCreator {
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
+      chrome::startup::IsFirstRun is_first_run,
       Profile* last_used_profile,
       const Profiles& last_opened_profiles);
 

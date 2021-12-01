@@ -1249,6 +1249,8 @@ static_library("ui") {
       "startup/automation_infobar_delegate.h",
       "startup/google_api_keys_infobar_delegate.cc",
       "startup/google_api_keys_infobar_delegate.h",
+      "startup/infobar_utils.cc",
+      "startup/infobar_utils.h",
       "startup/launch_mode_recorder.cc",
       "startup/launch_mode_recorder.h",
       "startup/obsolete_system_infobar_delegate.cc",

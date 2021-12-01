@@ -29,9 +29,11 @@
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -69,16 +71,18 @@ class StartupWebAppCreator
   // Factory to create a `StartupWebAppCreator` to handle the given command
   // line. Will return false if this launch will not be handled as a web app
   // launch, or true if it will.
-  static bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
-                                      const base::FilePath& cur_dir,
-                                      Profile* profile) {
+  static bool MaybeHandleWebAppLaunch(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir,
+      Profile* profile,
+      chrome::startup::IsFirstRun is_first_run) {
     std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
     // There must be a kAppId switch arg in the command line to launch.
     if (app_id.empty())
       return false;
 
-    base::AdoptRef(
-        new StartupWebAppCreator(command_line, cur_dir, profile, app_id))
+    base::AdoptRef(new StartupWebAppCreator(command_line, cur_dir, profile,
+                                            is_first_run, app_id))
         ->Start();
     return true;
   }
@@ -96,10 +100,12 @@ class StartupWebAppCreator
   StartupWebAppCreator(const base::CommandLine& command_line,
                        const base::FilePath& cur_dir,
                        Profile* profile,
+                       chrome::startup::IsFirstRun is_first_run,
                        const AppId& app_id)
       : command_line_(command_line),
         cur_dir_(cur_dir),
         profile_(profile),
+        is_first_run_(is_first_run),
         app_id_(app_id),
         profile_keep_alive_(
             profile,
@@ -301,13 +307,15 @@ class StartupWebAppCreator
   }
 
   void OnAppLaunched(Browser* browser, apps::mojom::LaunchContainer container) {
-    FinalizeWebAppLaunch(launch_mode_, browser, container);
+    FinalizeWebAppLaunch(launch_mode_, command_line_, is_first_run_, browser,
+                         container);
   }
 
   // Command line for this launch.
   const base::CommandLine command_line_;
   const base::FilePath cur_dir_;
   const raw_ptr<Profile> profile_;
+  chrome::startup::IsFirstRun is_first_run_;
 
   // The app id for this launch, corresponding to --app-id on the command line.
   const AppId app_id_;
@@ -330,12 +338,15 @@ class StartupWebAppCreator
 
 bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
                              const base::FilePath& cur_dir,
-                             Profile* profile) {
+                             Profile* profile,
+                             chrome::startup::IsFirstRun is_first_run) {
   return StartupWebAppCreator::MaybeHandleWebAppLaunch(command_line, cur_dir,
-                                                       profile);
+                                                       profile, is_first_run);
 }
 
 void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
+                          const base::CommandLine& command_line,
+                          chrome::startup::IsFirstRun is_first_run,
                           Browser* browser,
                           apps::mojom::LaunchContainer container) {
   if (!browser)
@@ -361,6 +372,10 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
   }
 
   LaunchModeRecorder().SetLaunchMode(mode);
+
+  AddInfoBarsIfNecessary(browser, browser->profile(), command_line,
+                         is_first_run,
+                         /*is_web_app=*/true);
 
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
 }

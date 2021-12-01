@@ -3374,6 +3374,58 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest, CheckInfobar) {
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
 }
 
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
+                       CheckInfobarIsShownForWebApps) {
+  // We deliberately set the flag on the process command line instead of on the
+  // command_line passed to the StartupBrowserCreator, because these flags are
+  // all read from CommandLine::ForCurrentProcess and ignore the command line
+  // passed to StartupBrowserCreator. In browser tests, this references the
+  // browser test's instead of the new process.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
+
+  Profile* test_profile = browser()->profile();
+  // Install web app
+  GURL example_url("http://www.example.com");
+  web_app::AppId app_id = InstallPWA(test_profile, example_url);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchBrowserAndGetCreatedInfoBarManager(command_line);
+  ASSERT_TRUE(infobar_manager);
+
+  EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
+            policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
+}
+
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
+                       CheckInfobarIsShownForAppUrlShortcuts) {
+  // We deliberately set the flag on the process command line instead of on the
+  // command_line passed to the StartupBrowserCreator, because these flags are
+  // all read from CommandLine::ForCurrentProcess and ignore the command line
+  // passed to StartupBrowserCreator. In browser tests, this references the
+  // browser test's instead of the new process.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
+
+  // Add --app=<url> to the command line. Tests launching legacy apps which may
+  // have been created by "Add to Desktop" in old versions of Chrome.
+  // TODO(mgiuca): Delete this feature (https://crbug.com/751029). We are
+  // keeping it for now to avoid disrupting existing workflows.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GURL url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  command_line.AppendSwitchASCII(switches::kApp, url.spec());
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchBrowserAndGetCreatedInfoBarManager(command_line);
+  ASSERT_TRUE(infobar_manager);
+
+  EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
+            policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
+}
+
 // The trybots set the kNoSandbox flag when running browser tests with the
 // address sanitizer enabled, which contradicts with the assumption of this test
 // that there is no bad flag on the process command line.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 #define CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,10 +26,13 @@ namespace startup {
 // return true if the --app-id flag was found, otherwise false.
 bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
                              const base::FilePath& cur_dir,
-                             Profile* profile);
+                             Profile* profile,
+                             chrome::startup::IsFirstRun is_first_run);
 
 // Final handling after a web app has been launched.
 void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
+                          const base::CommandLine& command_line,
+                          chrome::startup::IsFirstRun is_first_run,
                           Browser* browser,
                           apps::mojom::LaunchContainer container);
 

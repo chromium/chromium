@@ -26,7 +26,6 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
-#include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -43,13 +42,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/session_crashed_bubble.h"
-#include "chrome/browser/ui/startup/automation_infobar_delegate.h"
-#include "chrome/browser/ui/startup/bad_flags_prompt.h"
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
-#include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
+#include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
-#include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -68,7 +62,6 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "google_apis/google_api_keys.h"
 #include "rlz/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
 
@@ -134,23 +127,6 @@ void AppendTabs(const StartupTabs& from, StartupTabs* to) {
 // Prepends the contents of |from| to the beginning of |to|.
 void PrependTabs(const StartupTabs& from, StartupTabs* to) {
   to->insert(to->begin(), from.begin(), from.end());
-}
-
-bool ShouldShowBadFlagsSecurityWarnings() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state)
-    return true;
-
-  const auto* pref = local_state->FindPreference(
-      prefs::kCommandLineFlagSecurityWarningsEnabled);
-  DCHECK(pref);
-
-  // The warnings can only be disabled by policy. Default to show warnings.
-  if (pref->IsManaged())
-    return pref->GetValue()->GetBool();
-#endif
-  return true;
 }
 
 }  // namespace
@@ -428,7 +404,8 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
 
   // Finally, add info bars.
-  AddInfoBarsIfNecessary(browser);
+  AddInfoBarsIfNecessary(browser, profile_, command_line_, is_first_run_,
+                         /*is_web_app=*/false);
   return result.launch_result;
 }
 
@@ -632,73 +609,6 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   return browser;
 }
 
-void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(Browser* browser) {
-  if (!browser || !profile_ || browser->tab_strip_model()->count() == 0)
-    return;
-
-  // Show the Automation info bar unless it has been disabled by policy.
-  bool show_bad_flags_security_warnings = ShouldShowBadFlagsSecurityWarnings();
-  if (IsAutomationEnabled() && show_bad_flags_security_warnings) {
-    AutomationInfoBarDelegate::Create();
-  }
-
-  // Do not show any other info bars in Kiosk mode, because it's unlikely that
-  // the viewer can act upon or dismiss them.
-  if (IsKioskModeEnabled())
-    return;
-
-  if (HasPendingUncleanExit(browser->profile()))
-    SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
-        browser, /*skip_tab_checking=*/false);
-
-  // These info bars are not shown when the browser is being controlled by
-  // automated tests, so that they don't interfere with tests that assume no
-  // info bars.
-  if (!command_line_.HasSwitch(switches::kTestType) && !IsAutomationEnabled()) {
-    // The below info bars are only added to the first profile which is
-    // launched. Other profiles might be restoring the browsing sessions
-    // asynchronously, so we cannot add the info bars to the focused tabs here.
-    //
-    // We cannot use `chrome::startup::IsProcessStartup` to determine whether
-    // this is the first profile that launched: The browser may be started
-    // without a startup window (`kNoStartupWindow`), or open the profile
-    // picker, which means that `chrome::startup::IsProcessStartup` will already
-    // be `kNo` when the first browser window is opened.
-    static bool infobars_shown = false;
-    if (infobars_shown)
-      return;
-    infobars_shown = true;
-
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    DCHECK(web_contents);
-
-    if (show_bad_flags_security_warnings)
-      chrome::ShowBadFlagsPrompt(web_contents);
-
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
-
-    if (!google_apis::HasAPIKeyConfigured())
-      GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
-
-    if (ObsoleteSystem::IsObsoleteNowOrSoon()) {
-      PrefService* local_state = g_browser_process->local_state();
-      if (!local_state ||
-          !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning))
-        ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
-    }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!command_line_.HasSwitch(switches::kNoDefaultBrowserCheck)) {
-      // The default browser prompt should only be shown after the first run.
-      if (is_first_run_ == chrome::startup::IsFirstRun::kNo)
-        ShowDefaultBrowserPrompt(profile_);
-    }
-#endif
-  }
-}
-
 // static
 StartupBrowserCreatorImpl::BrowserOpenBehavior
 StartupBrowserCreatorImpl::DetermineBrowserOpenBehavior(
@@ -768,12 +678,6 @@ bool StartupBrowserCreatorImpl::ShouldLaunch(
 #endif
 
   return true;
-}
-
-// static
-bool StartupBrowserCreatorImpl::IsAutomationEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableAutomation);
 }
 
 // static

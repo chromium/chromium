@@ -371,6 +371,7 @@ bool CanOpenWebApp(Profile* profile) {
 // Handles the --app switch.
 bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
                                   const base::FilePath& cur_dir,
+                                  chrome::startup::IsFirstRun is_first_run,
                                   Profile* profile) {
   if (!command_line.HasSwitch(switches::kApp))
     return false;
@@ -394,7 +395,7 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
           apps::OpenExtensionAppShortcutWindow(profile, url);
       if (web_contents) {
         web_app::startup::FinalizeWebAppLaunch(
-            LaunchMode::kAsWebAppInWindowByUrl,
+            LaunchMode::kAsWebAppInWindowByUrl, command_line, is_first_run,
             chrome::FindBrowserWithWebContents(web_contents),
             apps::mojom::LaunchContainer::kLaunchContainerWindow);
         return true;
@@ -409,26 +410,28 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
+    chrome::startup::IsFirstRun is_first_run,
     Profile* last_used_profile,
     const std::vector<Profile*>& last_opened_profiles) {
   auto on_urls_unhandled_cb = base::BindOnce(
       [](const base::CommandLine& command_line, const base::FilePath& cur_dir,
          chrome::startup::IsProcessStartup process_startup,
-         Profile* last_used_profile,
+         chrome::startup::IsFirstRun is_first_run, Profile* last_used_profile,
          const std::vector<Profile*>& last_opened_profiles) {
         // TODO(crbug.com/1208199): Refactor StartupBrowserCreator and use the
         // state struct here.
         StartupBrowserCreator startup_browser_creator;
         startup_browser_creator.LaunchBrowserForLastProfiles(
-            command_line, cur_dir, process_startup, last_used_profile,
-            last_opened_profiles);
+            command_line, cur_dir, process_startup, is_first_run,
+            last_used_profile, last_opened_profiles);
       },
-      command_line, cur_dir, process_startup, last_used_profile,
+      command_line, cur_dir, process_startup, is_first_run, last_used_profile,
       last_opened_profiles);
 
   return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
       command_line, cur_dir, std::move(on_urls_unhandled_cb),
-      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt));
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt,
+                     command_line, is_first_run));
 }
 #endif
 
@@ -571,12 +574,9 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
+    chrome::startup::IsFirstRun is_first_run,
     Profile* last_used_profile,
     const Profiles& last_opened_profiles) {
-  chrome::startup::IsFirstRun is_first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
-                                    : chrome::startup::IsFirstRun::kNo;
-
   // On Windows, when chrome is launched by notification activation where the
   // kNotificationLaunchId switch is used, always use |last_used_profile| which
   // contains the profile id extracted from the notification launch id.
@@ -780,10 +780,16 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
     const std::vector<GURL>& urls,
     base::OnceCallback<void()> on_urls_unhandled_cb) {
+  chrome::startup::IsFirstRun is_first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
+
   // Web app URL handling.
   web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
       urls, std::move(on_urls_unhandled_cb),
-      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt));
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt,
+                     base::CommandLine(base::CommandLine::NO_PROGRAM),
+                     is_first_run));
 }
 #endif  // defined(OS_MAC)
 
@@ -801,6 +807,10 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       command_line.HasSwitch(switches::kDisablePromptOnRepost)) {
     content::NavigationController::DisablePromptOnRepost();
   }
+
+  chrome::startup::IsFirstRun is_first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
 
   bool silent_launch = false;
   bool should_launch_incognito = IncognitoModePrefs::ShouldLaunchIncognito(
@@ -1050,7 +1060,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // AppServiceProxyFactory available. The --app command line switch does not
   // require the AppServiceProxyFactory. This also allows the --app parameter
   // to work in conjunction with the --incognito command line parameter.
-  if (MaybeLaunchAppShortcutWindow(command_line, cur_dir,
+  if (MaybeLaunchAppShortcutWindow(command_line, cur_dir, is_first_run,
                                    privacy_safe_profile)) {
     return true;
   }
@@ -1058,20 +1068,20 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // Launch the browser if the profile is unable to open web apps.
   if (!CanOpenWebApp(privacy_safe_profile)) {
     return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                                        last_used_profile,
+                                        is_first_run, last_used_profile,
                                         last_opened_profiles);
   }
 
   bool handled_as_app =
       // Try a web app launch (--app-id is present).
-      web_app::startup::MaybeHandleWebAppLaunch(command_line, cur_dir,
-                                                privacy_safe_profile);
+      web_app::startup::MaybeHandleWebAppLaunch(
+          command_line, cur_dir, privacy_safe_profile, is_first_run);
 
 #if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   handled_as_app = handled_as_app ||
                    // Give web apps a chance to handle a URL.
                    MaybeLaunchUrlHandlerWebAppFromCmd(
-                       command_line, cur_dir, process_startup,
+                       command_line, cur_dir, process_startup, is_first_run,
                        last_used_profile, last_opened_profiles);
 #endif
 
@@ -1081,7 +1091,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     return true;
 
   return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                                      last_used_profile, last_opened_profiles);
+                                      is_first_run, last_used_profile,
+                                      last_opened_profiles);
 }
 
 bool StartupBrowserCreator::ProcessLastOpenedProfiles(
