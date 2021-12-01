@@ -25,6 +25,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="LightweightReactions.AssetsFetchDuration" units="ms"
+    expires_after="2022-07-31">
+  <obsolete>
+    Removed 12/2021 in favor of
+    LightweightReactions.AssetsFetchDuration.{Outcome}, which is more useful
+    because it includes whether the fetch was a success or not.
+  </obsolete>
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to download all assets during dialog
+    initialization.
+  </summary>
+</histogram>
+
 <histogram name="LightweightReactions.AssetsFetchDuration.{Outcome}" units="ms"
     expires_after="2022-07-31">
   <owner>gujen@google.com</owner>
