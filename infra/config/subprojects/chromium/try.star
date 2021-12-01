@@ -1968,7 +1968,7 @@ try_.chromium_win_orchestrator_pair(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    orchestrator_cores = 4,
+    orchestrator_cores = "2|4",
     orchestrator_tryjob = try_.job(),
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
