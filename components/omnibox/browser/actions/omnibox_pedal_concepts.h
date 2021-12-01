@@ -10,7 +10,7 @@
 // This value is generated during Pedal concept data processing, and written
 // to all data files as well as the source code here to ensure synchrony.
 // The runtime loaded data must match this version exactly or it won't load.
-constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16122060;
+constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16140733;
 
 // Unique identifiers for Pedals, used to bind loaded data to implementations.
 // Also used in the Omnibox.SuggestionUsed.Pedal histogram. Do not remove or
