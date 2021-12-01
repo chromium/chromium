@@ -23,6 +23,8 @@ namespace {
 
 using media::AudioOutputStream;
 
+const std::string kDeviceId = "device-id";
+
 MATCHER_P(AudioParamsEq, other, "AudioParameters matcher") {
   return arg.Equals(other);
 }
@@ -173,7 +175,7 @@ class MockMixingGraph : public MixingGraph {
   MixingGraph::OnErrorCallback on_error_cb_;
 };
 
-class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
+class OutputDeviceMixerImplTestBase {
  protected:
   enum class PlaybackMode { kMixing, kIndependent };
 
@@ -207,13 +209,14 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
 
   // Creates the mixer for testing, passing callbacks to produce mock
   // MixingGraph and mock physical output stream_under_test.
-  std::unique_ptr<OutputDeviceMixer> CreateMixerUnderTest() {
+  std::unique_ptr<OutputDeviceMixer> CreateMixerUnderTest(
+      const std::string& device_id = kDeviceId) {
     auto mixer = std::make_unique<OutputDeviceMixerImpl>(
-        kDeviceId, mixer_output_params_,
-        base::BindOnce(&OutputDeviceMixerImplTest::CreateMockMixingGraph,
+        device_id, mixer_output_params_,
+        base::BindOnce(&OutputDeviceMixerImplTestBase::CreateMockMixingGraph,
                        base::Unretained(this)),
-        base::BindRepeating(&OutputDeviceMixerImplTest::CreateOutputStream,
-                            base::Unretained(this)));
+        base::BindRepeating(&OutputDeviceMixerImplTestBase::CreateOutputStream,
+                            base::Unretained(this), device_id));
     return mixer;
   }
 
@@ -224,12 +227,12 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
     EXPECT_LE(mix_track_mocks_in_use_count_, mix_track_mocks_.size() - 1);
     const media::AudioParameters params =
         mix_track_mocks_[mix_track_mocks_in_use_count_].params;
-    return {
-        mixer->MakeMixableStream(
-            params, base::BindOnce(
-                        &OutputDeviceMixerImplTest::OnDeviceChangeForMixMember,
-                        base::Unretained(this), params)),
-        &mix_track_mocks_[mix_track_mocks_in_use_count_++]};
+    return {mixer->MakeMixableStream(
+                params,
+                base::BindOnce(
+                    &OutputDeviceMixerImplTestBase::OnDeviceChangeForMixMember,
+                    base::Unretained(this), params)),
+            &mix_track_mocks_[mix_track_mocks_in_use_count_++]};
   }
 
   // Opens a MixabeOutputStream created by the mixer under test and sets
@@ -397,9 +400,10 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
       media::CHANNEL_LAYOUT_STEREO, 48000, 5};
 
  private:
-  AudioOutputStream* CreateOutputStream(const std::string& device_id,
+  AudioOutputStream* CreateOutputStream(const std::string& expected_device_id,
+                                        const std::string& device_id,
                                         const media::AudioParameters& params) {
-    EXPECT_EQ(device_id, kDeviceId);
+    EXPECT_EQ(device_id, expected_device_id);
     if (!MockCreateOutputStream(params))
       return nullptr;  // Fail stream creation.
     if (params.Equals(mixer_output_params_))
@@ -413,8 +417,9 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
       MixingGraph::OnMoreDataCallback on_more_data_cb,
       MixingGraph::OnErrorCallback on_error_cb) {
     auto mock_mixing_graph = std::make_unique<StrictMock<MockMixingGraph>>(
-        base::BindRepeating(&OutputDeviceMixerImplTest::CreateMockGraphInput,
-                            base::Unretained(this)),
+        base::BindRepeating(
+            &OutputDeviceMixerImplTestBase::CreateMockGraphInput,
+            base::Unretained(this)),
         std::move(on_more_data_cb), std::move(on_error_cb));
     mock_mixing_graph_ = mock_mixing_graph.get();
     return mock_mixing_graph;
@@ -441,8 +446,6 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 
-  const std::string kDeviceId = "device-id";
-
   // A set of mocks for the data associated with MixableOutputStream; each mock
   // is identfied by its MixTrackMock::|params|.frames_per_buffer().
   // To create mixable_stream output streams_under_test the tests call
@@ -459,8 +462,15 @@ class OutputDeviceMixerImplTest : public testing::TestWithParam<int> {
   bool mixing_graph_output_stream_not_running_ = true;
 };
 
-TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_CreateClose) {
-  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
+class OutputDeviceMixerImplTest : public OutputDeviceMixerImplTestBase,
+                                  public testing::TestWithParam<int> {};
+
+class OutputDeviceMixerImplTestWithDefault
+    : public OutputDeviceMixerImplTestBase,
+      public testing::TestWithParam<std::string> {};
+
+TEST_P(OutputDeviceMixerImplTestWithDefault, OneUmixedStream_CreateClose) {
+  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest(GetParam());
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
 
   // Physical output streams are created only on Open().
@@ -545,8 +555,8 @@ TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_PhysicalStreamOpenFailed) {
   stream_under_test.mixable_stream->Close();
 }
 
-TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_CreateOpenClose) {
-  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
+TEST_P(OutputDeviceMixerImplTestWithDefault, OneUmixedStream_CreateOpenClose) {
+  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest(GetParam());
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
   OpenAndVerifyStreamUnderTest(stream_under_test);
   CloseAndVerifyStreamUnderTest(stream_under_test);
@@ -1241,9 +1251,13 @@ TEST_F(OutputDeviceMixerImplTest,
   mixer->StopListening(&listener);
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        OutputDeviceMixerImplTest,
-                        testing::Values(0, 1, 2, 3));
+INSTANTIATE_TEST_SUITE_P(,
+                         OutputDeviceMixerImplTest,
+                         testing::Values(0, 1, 2, 3));
+
+INSTANTIATE_TEST_SUITE_P(,
+                         OutputDeviceMixerImplTestWithDefault,
+                         testing::Values(kDeviceId, ""));
 
 }  // namespace
 

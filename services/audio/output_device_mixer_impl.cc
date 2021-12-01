@@ -386,7 +386,6 @@ OutputDeviceMixerImpl::OutputDeviceMixerImpl(
   DCHECK(mixing_graph_output_params_.IsValid());
   DCHECK_EQ(mixing_graph_output_params_.format(),
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
-  DCHECK(!media::AudioDeviceDescription::IsDefaultDevice(device_id));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(TRACE_DISABLED_BY_DEFAULT("audio"),
                                     "OutputDeviceMixerImpl", this, "device_id",
                                     device_id);

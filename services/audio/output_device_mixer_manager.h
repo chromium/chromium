@@ -18,7 +18,6 @@
 #include "services/audio/device_output_listener.h"
 #include "services/audio/output_device_mixer.h"
 #include "services/audio/reference_output.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioManager;
@@ -65,13 +64,11 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // Forwards device change notifications to OutputDeviceMixers.
   void OnDeviceChange();
 
-  // Returns the current physical default device ID, which can change after
-  // OnDeviceChange().
-  const std::string& GetCurrentDefaultDeviceId();
-
-  // Returns |device_id|, or the current default device ID if |device_id| is
-  // the default ID.
-  const std::string& ConvertToPhysicalDeviceId(const std::string& device_id);
+  // Helper function which merges "default IDs" (as defined by
+  // AudioDeviceDescription::IsDefaultId()) and physical IDs matching
+  // GetCurrentDefaultPhysicalDeviceIdOrEmpty() into the same normalized default
+  // ID. This guarantees we create a single "default ID" OutputDeviceMixer.
+  std::string ToMixerDeviceId(const std::string& device_id);
 
   // Returns a callback that call OnDeviceChange(), and that can be cancelled
   // through invalidating |device_change_weak_ptr_factory_|.
@@ -96,9 +93,15 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // Creates and returns a new mixer, or nullptr if the creation failed.
   OutputDeviceMixer* AddMixer(const std::string& physical_device_id);
 
+  bool IsValidMixerId(const std::string& device_id);
+
   SEQUENCE_CHECKER(owning_sequence_);
-  absl::optional<std::string> current_default_device_id_ = absl::nullopt;
   const raw_ptr<media::AudioManager> audio_manager_;
+
+  // Physical device ID of the current default device, or kNormalizedDefaultId
+  // if not supported by the platform.
+  std::string current_default_device_id_;
+
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
   DeviceToListenersMap device_id_to_listeners_;
