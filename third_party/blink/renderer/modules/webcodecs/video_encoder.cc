@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_svc_output_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
@@ -865,8 +866,12 @@ void VideoEncoder::CallOutputCallback(
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
 
   auto* metadata = EncodedVideoChunkMetadata::Create();
-  if (active_config->options.scalability_mode.has_value())
+  if (active_config->options.scalability_mode.has_value()) {
+    auto* svc_metadata = SvcOutputMetadata::Create();
+    svc_metadata->setTemporalLayerId(output.temporal_id);
+    metadata->setSvc(svc_metadata);
     metadata->setTemporalLayerId(output.temporal_id);
+  }
 
   // TODO(https://crbug.com/1241448): All encoders should output color space.
   // For now, fallback to 601 since that is correct most often.

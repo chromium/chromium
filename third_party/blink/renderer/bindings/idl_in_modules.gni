@@ -827,6 +827,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webcodecs/image_track_list.idl",
           "//third_party/blink/renderer/modules/webcodecs/latency_mode.idl",
           "//third_party/blink/renderer/modules/webcodecs/plane_layout.idl",
+          "//third_party/blink/renderer/modules/webcodecs/svc_output_metadata.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_color_primaries.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_color_space.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_color_space_init.idl",

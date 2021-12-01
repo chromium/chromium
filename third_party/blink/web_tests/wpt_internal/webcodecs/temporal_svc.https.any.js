@@ -16,8 +16,10 @@ async function svc_test(codec, layers, base_layer_decimator) {
       frames_encoded++;
 
       // Filter out all frames, but base layer.
-      assert_less_than(metadata.temporalLayerId, layers);
-      if (metadata.temporalLayerId == 0)
+      assert_own_property(metadata, "svc");
+      assert_own_property(metadata.svc, "temporalLayerId");
+      assert_less_than(metadata.svc.temporalLayerId, layers);
+      if (metadata.svc.temporalLayerId == 0)
         chunks.push(chunk);
     },
     error(e) {

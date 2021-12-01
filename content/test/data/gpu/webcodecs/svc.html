@@ -54,9 +54,10 @@ some chunks.
           }
 
           frames_encoded++;
-          TEST.assert(metadata.temporalLayerId < arg.layers,
+          TEST.assert(metadata.svc != null);
+          TEST.assert(metadata.svc.temporalLayerId < arg.layers,
                       "too large temporal ID");
-          if (metadata.temporalLayerId == 0) {
+          if (metadata.svc.temporalLayerId == 0) {
             decoder.decode(chunk);
           }
         },

@@ -4,8 +4,6 @@
 
 // https://github.com/WICG/web-codecs
 
-dictionary EncodedVideoChunkMetadata {
-  VideoDecoderConfig decoderConfig;
-  SvcOutputMetadata svc;
+dictionary SvcOutputMetadata {
   [EnforceRange] unsigned long temporalLayerId;
 };

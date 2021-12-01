@@ -871,6 +871,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_event_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_svc_output_metadata.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_svc_output_metadata.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_options.cc",
