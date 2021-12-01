@@ -642,16 +642,6 @@
              "--enable-features=EyeDropper"]
   },
   {
-    "prefix": "container-queries",
-    "bases": ["wpt_internal/css/css-conditional/container-queries",
-              "wpt_internal/css/css-contain",
-              "inspector-protocol/css/css-get-styles-for-node.js",
-              "inspector-protocol/css/container-queries",
-              "inspector-protocol/dom/container-queries",
-              "inspector-protocol/overlay/overlay-container-query.js"],
-    "args": ["--enable-blink-features=CSSContainerQueries,CSSDelayedAnimationUpdates"]
-  },
-  {
     "prefix": "delayed-animation-updates",
     "bases": ["external/wpt/css/css-animations",
               "external/wpt/css/css-transitions",

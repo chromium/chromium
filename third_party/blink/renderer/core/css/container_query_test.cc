@@ -23,9 +23,11 @@
 namespace blink {
 
 class ContainerQueryTest : public PageTestBase,
-                           private ScopedCSSContainerQueriesForTest {
+                           private ScopedCSSContainerQueriesForTest,
+                           private ScopedLayoutNGForTest {
  public:
-  ContainerQueryTest() : ScopedCSSContainerQueriesForTest(true) {}
+  ContainerQueryTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 
   bool HasUnknown(StyleRuleContainer* rule) {
     return rule && rule->GetContainerQuery().Query().HasUnknown();

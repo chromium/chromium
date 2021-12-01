@@ -566,6 +566,7 @@
     {
       // https://drafts.csswg.org/css-contain-3/#container-queries
       name: "CSSContainerQueries",
+      status: "test"
     },
     {
       // https://drafts.csswg.org/css-contain-3/#container-lengths
@@ -1256,7 +1257,7 @@
       // provides a convenient way for testing legacy layout code path in blink
       // unit tests.
       name: "LayoutNG",
-      implied_by: ["BidiCaretAffinity", "CSSContainerQueries"],
+      implied_by: ["BidiCaretAffinity"],
       status: "stable",
     },
     {
