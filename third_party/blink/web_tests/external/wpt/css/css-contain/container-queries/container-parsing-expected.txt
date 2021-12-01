@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+PASS e.style['container'] = "initial" should set the property value
+PASS e.style['container'] = "inherit" should set the property value
+PASS e.style['container'] = "unset" should set the property value
+PASS e.style['container'] = "revert" should set the property value
+PASS e.style['container'] = "none" should set the property value
+PASS e.style['container'] = "none / none" should set the property value
+PASS e.style['container'] = "inline-size" should set the property value
+PASS e.style['container'] = "inline-size / none" should set the property value
+PASS e.style['container'] = "size" should set the property value
+PASS e.style['container'] = "size / block-size" should set the property value
+PASS e.style['container'] = "inline-size / inline-size" should set the property value
+PASS e.style['container'] = "size / size" should set the property value
+FAIL e.style['container'] = "size state / none" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['container'] = "none none" should not set the property value
+PASS e.style['container'] = "none inline-size" should not set the property value
+PASS e.style['container'] = "inline-size none" should not set the property value
+PASS e.style['container'] = "inline-size inline-size" should not set the property value
+PASS e.style['container'] = "inline-size block-size unknown" should not set the property value
+PASS e.style['container'] = "inline-size block-size" should not set the property value
+PASS e.style['container'] = "size block-size" should not set the property value
+PASS e.style['container'] = "none, none" should not set the property value
+PASS e.style['container'] = "foo" should not set the property value
+PASS e.style['container'] = "foo, bar" should not set the property value
+PASS e.style['container'] = "#fff" should not set the property value
+PASS e.style['container'] = "1px" should not set the property value
+PASS e.style['container'] = "default" should not set the property value
+PASS e.style['container'] = "inline-size / 10px" should not set the property value
+PASS e.style['container'] = "inline-size / #fefefe" should not set the property value
+PASS e.style['container'] = "inline-size / calc(3px)" should not set the property value
+PASS e.style['container'] = "size 1 / name" should not set the property value
+FAIL e.style['container'] = "block-size" should not set the property value assert_equals: expected "" but got "block-size"
+FAIL e.style['container'] = "block-size / name" should not set the property value assert_equals: expected "" but got "block-size / name"
+FAIL e.style['container'] = "block-size /  NAME" should not set the property value assert_equals: expected "" but got "block-size / NAME"
+FAIL e.style['container'] = "block-size/NAME" should not set the property value assert_equals: expected "" but got "block-size / NAME"
+FAIL e.style['container'] = "block-size / block-size" should not set the property value assert_equals: expected "" but got "block-size / block-size"
+Harness: the test ran to completion.
+
