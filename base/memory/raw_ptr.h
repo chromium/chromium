@@ -35,8 +35,13 @@
 
 namespace base {
 
-// NOTE: All methods should be ALWAYS_INLINE. raw_ptr is meant to be a
-// lightweight replacement of a raw pointer, hence performance is critical.
+// NOTE: All methods should be `ALWAYS_INLINE NO_STACK_PROTECTOR`.
+// ALWAYS_INLINE: raw_ptr is meant to be a lightweight replacement of a raw
+// pointer, hence performance is critical.
+// NO_STACK_PROTECTOR: This annotation is required to avoid failures when a
+// raw_ptr is inside a NO_STACK_PROTECTOR function.
+// TODO(https://crbug.com/1274129): Remove NO_STACK_PROTECTOR.
+#define RAW_PTR_FUNC_ATTRIBUTES ALWAYS_INLINE NO_STACK_PROTECTOR
 
 namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
@@ -45,38 +50,41 @@ namespace internal {
 struct RawPtrNoOpImpl {
   // Wraps a pointer.
   template <typename T>
-  static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* WrapRawPtr(T* ptr) {
     return ptr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static ALWAYS_INLINE void ReleaseWrappedPtr(T*) {}
+  static RAW_PTR_FUNC_ATTRIBUTES void ReleaseWrappedPtr(T*) {}
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -86,19 +94,20 @@ struct RawPtrNoOpImpl {
 
   // Advance the wrapped pointer by |delta| bytes.
   template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* Advance(T* wrapped_ptr,
+                                            ptrdiff_t delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  static ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // This is for accounting only, used by unit tests.
-  static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
 };
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -112,7 +121,8 @@ struct BackupRefPtrImpl {
   // modify the same smart pointer object without synchronization, a data race
   // will occur.
 
-  static ALWAYS_INLINE bool IsSupportedAndNotNull(const volatile void* cv_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES bool IsSupportedAndNotNull(
+      const volatile void* cv_ptr) {
     // |const volatile| qualifiers are used only to compile with |T*| pointers
     // passed by the caller that may have those qualifiers. From now on, the
     // pointer value is used, but is never dereferenced.
@@ -171,7 +181,7 @@ struct BackupRefPtrImpl {
 
   // Wraps a pointer.
   template <typename T>
-  static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* WrapRawPtr(T* ptr) {
     if (IsSupportedAndNotNull(ptr)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(ptr != nullptr);
@@ -190,7 +200,7 @@ struct BackupRefPtrImpl {
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES void ReleaseWrappedPtr(T* wrapped_ptr) {
     if (IsSupportedAndNotNull(wrapped_ptr)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(wrapped_ptr != nullptr);
@@ -208,7 +218,8 @@ struct BackupRefPtrImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (IsSupportedAndNotNull(wrapped_ptr)) {
       CHECK(wrapped_ptr != nullptr);
@@ -221,20 +232,22 @@ struct BackupRefPtrImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -244,7 +257,8 @@ struct BackupRefPtrImpl {
 
   // Advance the wrapped pointer by |delta| bytes.
   template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elem) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* Advance(T* wrapped_ptr,
+                                            ptrdiff_t delta_elem) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (IsSupportedAndNotNull(wrapped_ptr))
       CHECK(IsValidDelta(wrapped_ptr, delta_elem * sizeof(T)));
@@ -258,12 +272,12 @@ struct BackupRefPtrImpl {
   // memory was freed or not.
   // This method increments the reference count of the allocation slot.
   template <typename T>
-  static ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  static RAW_PTR_FUNC_ATTRIBUTES T* Duplicate(T* wrapped_ptr) {
     return WrapRawPtr(wrapped_ptr);
   }
 
   // This is for accounting only, used by unit tests.
-  static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
 
  private:
   // We've evaluated several strategies (inline nothing, various parts, or
@@ -374,17 +388,18 @@ class raw_ptr {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
-  constexpr ALWAYS_INLINE raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
+  constexpr RAW_PTR_FUNC_ATTRIBUTES raw_ptr() noexcept
+      : wrapped_ptr_(nullptr) {}
 
-  raw_ptr(const raw_ptr& p) noexcept
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {}
 
-  raw_ptr(raw_ptr&& p) noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(raw_ptr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
     p.wrapped_ptr_ = nullptr;
   }
 
-  raw_ptr& operator=(const raw_ptr& p) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(const raw_ptr& p) {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     T* new_ptr = Impl::Duplicate(p.wrapped_ptr_);
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
@@ -392,7 +407,7 @@ class raw_ptr {
     return *this;
   }
 
-  raw_ptr& operator=(raw_ptr&& p) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(raw_ptr&& p) {
     if (LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
       wrapped_ptr_ = p.wrapped_ptr_;
@@ -401,7 +416,7 @@ class raw_ptr {
     return *this;
   }
 
-  ALWAYS_INLINE ~raw_ptr() noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     // Work around external issues where raw_ptr is used after destruction.
     wrapped_ptr_ = nullptr;
@@ -414,30 +429,31 @@ class raw_ptr {
   //
   // TODO(lukasza): Always initialize |wrapped_ptr_|.  Fix resulting build
   // errors.  Analyze performance impact.
-  constexpr raw_ptr() noexcept = default;
+  constexpr RAW_PTR_FUNC_ATTRIBUTES raw_ptr() noexcept = default;
 
   // In addition to nullptr_t ctor above, raw_ptr needs to have these
   // as |=default| or |constexpr| to avoid hitting -Wglobal-constructors in
   // cases like this:
   //     struct SomeStruct { int int_field; raw_ptr<int> ptr_field; };
   //     SomeStruct g_global_var = { 123, nullptr };
-  raw_ptr(const raw_ptr&) noexcept = default;
-  raw_ptr(raw_ptr&&) noexcept = default;
-  raw_ptr& operator=(const raw_ptr&) noexcept = default;
-  raw_ptr& operator=(raw_ptr&&) noexcept = default;
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(const raw_ptr&) noexcept = default;
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(raw_ptr&&) noexcept = default;
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(const raw_ptr&) noexcept = default;
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(raw_ptr&&) noexcept = default;
 
-  ~raw_ptr() = default;
+  RAW_PTR_FUNC_ATTRIBUTES ~raw_ptr() = default;
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr ALWAYS_INLINE raw_ptr(std::nullptr_t) noexcept
+  constexpr RAW_PTR_FUNC_ATTRIBUTES raw_ptr(std::nullptr_t) noexcept
       : wrapped_ptr_(nullptr) {}
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(T* p) noexcept : wrapped_ptr_(Impl::WrapRawPtr(p)) {}
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(T* p) noexcept
+      : wrapped_ptr_(Impl::WrapRawPtr(p)) {}
 
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
@@ -445,7 +461,7 @@ class raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(const raw_ptr<U, Impl>& ptr) noexcept
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(const raw_ptr<U, Impl>& ptr) noexcept
       : wrapped_ptr_(
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
@@ -454,19 +470,19 @@ class raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(raw_ptr<U, Impl>&& ptr) noexcept
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr(raw_ptr<U, Impl>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     ptr.wrapped_ptr_ = nullptr;
 #endif
   }
 
-  ALWAYS_INLINE raw_ptr& operator=(std::nullptr_t) noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(std::nullptr_t) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = nullptr;
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator=(T* p) noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(T* p) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtr(p);
     return *this;
@@ -477,7 +493,8 @@ class raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, Impl>& ptr) noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(
+      const raw_ptr<U, Impl>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -493,7 +510,7 @@ class raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, Impl>&& ptr) noexcept {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator=(raw_ptr<U, Impl>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -510,50 +527,52 @@ class raw_ptr {
 
   // Avoid using. The goal of raw_ptr is to be as close to raw pointer as
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
-  ALWAYS_INLINE T* get() const { return GetForExtraction(); }
+  RAW_PTR_FUNC_ATTRIBUTES T* get() const { return GetForExtraction(); }
 
-  explicit ALWAYS_INLINE operator bool() const { return !!wrapped_ptr_; }
+  explicit RAW_PTR_FUNC_ATTRIBUTES operator bool() const {
+    return !!wrapped_ptr_;
+  }
 
   template <typename U = T,
             typename Unused = std::enable_if_t<
                 !std::is_void<typename std::remove_cv<U>::type>::value>>
-  ALWAYS_INLINE U& operator*() const {
+  RAW_PTR_FUNC_ATTRIBUTES U& operator*() const {
     return *GetForDereference();
   }
-  ALWAYS_INLINE T* operator->() const { return GetForDereference(); }
+  RAW_PTR_FUNC_ATTRIBUTES T* operator->() const { return GetForDereference(); }
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)
-  ALWAYS_INLINE operator T*() const { return GetForExtraction(); }
+  RAW_PTR_FUNC_ATTRIBUTES operator T*() const { return GetForExtraction(); }
   template <typename U>
-  explicit ALWAYS_INLINE operator U*() const {
+  explicit RAW_PTR_FUNC_ATTRIBUTES operator U*() const {
     // This operator may be invoked from static_cast, meaning the types may not
     // be implicitly convertible, hence the need for static_cast here.
     return static_cast<U*>(GetForExtraction());
   }
 
-  ALWAYS_INLINE raw_ptr& operator++() {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator++() {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1);
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator--() {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator--() {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, -1);
     return *this;
   }
-  ALWAYS_INLINE raw_ptr operator++(int /* post_increment */) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr operator++(int /* post_increment */) {
     raw_ptr result = *this;
     ++(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr operator--(int /* post_decrement */) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr operator--(int /* post_decrement */) {
     raw_ptr result = *this;
     --(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr& operator+=(ptrdiff_t delta_elems) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator+=(ptrdiff_t delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator-=(ptrdiff_t delta_elems) {
+  RAW_PTR_FUNC_ATTRIBUTES raw_ptr& operator-=(ptrdiff_t delta_elems) {
     return *this += -delta_elems;
   }
 
@@ -571,48 +590,53 @@ class raw_ptr {
   // because a comparison operator defined inline would not be allowed to call
   // `raw_ptr<U>`'s private `GetForComparison()` method.
   template <typename U, typename V, typename I>
-  friend ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                                       const raw_ptr<V, I>& rhs);
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator==(const raw_ptr<U, I>& lhs,
+                                                 const raw_ptr<V, I>& rhs);
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
-                                       const raw_ptr<U, Impl>& rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator!=(const raw_ptr& lhs,
+                                                 const raw_ptr<U, Impl>& rhs) {
     return !(lhs == rhs);
   }
 
   // Comparisons with U*. These operators also handle the case where the RHS is
   // T*.
   template <typename U>
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator==(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() == rhs;
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, U* rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator!=(const raw_ptr& lhs, U* rhs) {
     return !(lhs == rhs);
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator==(U* lhs, const raw_ptr& rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator==(U* lhs, const raw_ptr& rhs) {
     return rhs == lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(U* lhs, const raw_ptr& rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator!=(U* lhs, const raw_ptr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
 
   // Comparisons with `std::nullptr_t`.
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, std::nullptr_t) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator==(const raw_ptr& lhs,
+                                                 std::nullptr_t) {
     return !lhs;
   }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator!=(const raw_ptr& lhs,
+                                                 std::nullptr_t) {
     return !!lhs;  // Use !! otherwise the costly implicit cast will be used.
   }
-  friend ALWAYS_INLINE bool operator==(std::nullptr_t, const raw_ptr& rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator==(std::nullptr_t,
+                                                 const raw_ptr& rhs) {
     return !rhs;
   }
-  friend ALWAYS_INLINE bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
+  friend RAW_PTR_FUNC_ATTRIBUTES bool operator!=(std::nullptr_t,
+                                                 const raw_ptr& rhs) {
     return !!rhs;  // Use !! otherwise the costly implicit cast will be used.
   }
 
-  friend ALWAYS_INLINE void swap(raw_ptr& lhs, raw_ptr& rhs) noexcept {
+  friend RAW_PTR_FUNC_ATTRIBUTES void swap(raw_ptr& lhs,
+                                           raw_ptr& rhs) noexcept {
     Impl::IncrementSwapCountForTest();
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
   }
@@ -621,19 +645,19 @@ class raw_ptr {
   // This getter is meant for situations where the pointer is meant to be
   // dereferenced. It is allowed to crash on nullptr (it may or may not),
   // because it knows that the caller will crash on nullptr.
-  ALWAYS_INLINE T* GetForDereference() const {
+  RAW_PTR_FUNC_ATTRIBUTES T* GetForDereference() const {
     return Impl::SafelyUnwrapPtrForDereference(wrapped_ptr_);
   }
   // This getter is meant for situations where the raw pointer is meant to be
   // extracted outside of this class, but not necessarily with an intention to
   // dereference. It mustn't crash on nullptr.
-  ALWAYS_INLINE T* GetForExtraction() const {
+  RAW_PTR_FUNC_ATTRIBUTES T* GetForExtraction() const {
     return Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
   }
   // This getter is meant *only* for situations where the pointer is meant to be
   // compared (guaranteeing no dereference or extraction outside of this class).
   // Any verifications can and should be skipped for performance reasons.
-  ALWAYS_INLINE T* GetForComparison() const {
+  RAW_PTR_FUNC_ATTRIBUTES T* GetForComparison() const {
     return Impl::UnsafelyUnwrapPtrForComparison(wrapped_ptr_);
   }
 
@@ -644,8 +668,8 @@ class raw_ptr {
 };
 
 template <typename U, typename V, typename I>
-ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                              const raw_ptr<V, I>& rhs) {
+RAW_PTR_FUNC_ATTRIBUTES bool operator==(const raw_ptr<U, I>& lhs,
+                                        const raw_ptr<V, I>& rhs) {
   return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
