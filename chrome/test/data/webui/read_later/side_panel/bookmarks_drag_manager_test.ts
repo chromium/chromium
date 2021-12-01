@@ -4,7 +4,6 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import {FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {BookmarksDragManager, DROP_POSITION_ATTR, DropPosition, overrideFolderOpenerTimeoutDelay} from 'chrome://read-later.top-chrome/side_panel/bookmarks_drag_manager.js';
 import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
@@ -16,14 +15,9 @@ import {flushTasks} from 'chrome://webui-test/test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarkDragManagerTest', () => {
-  /** @type {!BookmarkDragManager} */
-  let bookmarkDragManager;
+  let delegate: BookmarksListElement;
 
-  /** @type {!BookmarksListElement} */
-  let delegate;
-
-  /** @type {!Array<!chrome.bookmarks.BookmarkTreeNode>} */
-  const folders = [{
+  const folders: chrome.bookmarks.BookmarkTreeNode[] = [{
     id: '1',
     title: 'Bookmarks bar',
     parentId: '0',
@@ -65,14 +59,14 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     ],
   }];
 
-  function getDraggableElements() {
-    function getDraggableElementsInner(root) {
-      const draggableElements = [];
-      const children =
-          root.shadowRoot.querySelectorAll('bookmark-folder, .bookmark');
+  function getDraggableElements(): HTMLElement[] {
+    function getDraggableElementsInner(root: HTMLElement) {
+      const draggableElements: HTMLElement[] = [];
+      const children = root.shadowRoot!.querySelectorAll<HTMLElement>(
+          'bookmark-folder, .bookmark');
       children.forEach(child => {
         if (child.tagName === 'BOOKMARK-FOLDER') {
-          draggableElements.push(child.shadowRoot.querySelector('#folder'));
+          draggableElements.push(child.shadowRoot!.querySelector('#folder')!);
           draggableElements.push(...getDraggableElementsInner(child));
         } else {
           draggableElements.push(child);
@@ -81,7 +75,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
       return draggableElements;
     }
 
-    const rootFolder = delegate.shadowRoot.querySelector('bookmark-folder');
+    const rootFolder = delegate.shadowRoot!.querySelector('bookmark-folder')!;
     return getDraggableElementsInner(rootFolder);
   }
 
@@ -93,32 +87,33 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     });
 
     const bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(
-        /** @type {!Array<!chrome.bookmarks.BookmarkTreeNode>} */ (
-            JSON.parse(JSON.stringify(folders))));
+    bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
         JSON.stringify(['1', '4']);
 
     delegate = new BookmarksListElement();
-    bookmarkDragManager = new BookmarksDragManager(delegate);
+    new BookmarksDragManager(delegate);
     document.body.appendChild(delegate);
 
     await flushTasks();
   });
 
   test('DragStartCallsAPI', () => {
-    let calledIds, calledIndex, calledTouch, calledX, calledY;
-    chrome.bookmarkManagerPrivate.startDrag = (ids, index, touch, x, y) => {
-      calledIds = ids;
-      calledIndex = index;
-      calledTouch = touch;
-      calledX = x;
-      calledY = y;
-    };
+    let calledIds, calledIndex, calledX, calledY;
+    let calledTouch = false;
+    chrome.bookmarkManagerPrivate.startDrag =
+        (ids: string[], index: number, touch: boolean, x: number,
+         y: number) => {
+          calledIds = ids;
+          calledIndex = index;
+          calledTouch = touch;
+          calledX = x;
+          calledY = y;
+        };
 
-    const draggableBookmark = getDraggableElements()[0];
+    const draggableBookmark = getDraggableElements()[0]!;
     draggableBookmark.dispatchEvent(new DragEvent(
         'dragstart',
         {bubbles: true, composed: true, clientX: 100, clientY: 200}));
@@ -133,16 +128,13 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   test('DragOverUpdatesAttributes', () => {
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     const draggableElements = getDraggableElements();
-    const draggedBookmark = draggableElements[0];
+    const draggedBookmark = draggableElements[0]!;
     draggedBookmark.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
 
-    /**
-     * @param {!HTMLElement} dragOverElement
-     * @param {number} yRatio
-     * @param {!DropPosition} dropPosition
-     */
-    function assertDropPosition(dragOverElement, yRatio, dropPosition) {
+    function assertDropPosition(
+        dragOverElement: HTMLElement, yRatio: number,
+        dropPosition: DropPosition) {
       const dragOverRect = dragOverElement.getBoundingClientRect();
       dragOverElement.dispatchEvent(new DragEvent('dragover', {
         bubbles: true,
@@ -154,12 +146,12 @@ suite('SidePanelBookmarkDragManagerTest', () => {
           dropPosition, dragOverElement.getAttribute(DROP_POSITION_ATTR));
     }
 
-    const dragOverBookmark = draggableElements[1];
+    const dragOverBookmark = draggableElements[1]!;
     assertDropPosition(dragOverBookmark, 0.2, DropPosition.ABOVE);
     assertDropPosition(dragOverBookmark, 0.5, DropPosition.ABOVE);
     assertDropPosition(dragOverBookmark, 0.8, DropPosition.BELOW);
 
-    const dragOverFolder = draggableElements[2];
+    const dragOverFolder = draggableElements[2]!;
     assertDropPosition(dragOverFolder, 0.2, DropPosition.ABOVE);
     assertDropPosition(dragOverFolder, 0.5, DropPosition.INTO);
     delegate.isFolderOpen = () => false;
@@ -171,7 +163,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   test('DragOverDescendant', async () => {
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     const draggableElements = getDraggableElements();
-    const draggedFolder = draggableElements[2];
+    const draggedFolder = draggableElements[2]!;
     draggedFolder.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
 
@@ -185,7 +177,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     }));
     assertEquals(null, draggedFolder.getAttribute(DROP_POSITION_ATTR));
 
-    const dragOverChild = draggableElements[3];
+    const dragOverChild = draggableElements[3]!;
     dragOverRect = dragOverChild.getBoundingClientRect();
     dragOverChild.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,
@@ -205,11 +197,11 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     };
 
     const draggableElements = getDraggableElements();
-    const draggedBookmark = draggableElements[0];
+    const draggedBookmark = draggableElements[0]!;
     draggedBookmark.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
 
-    const dropFolder = draggableElements[2];
+    const dropFolder = draggableElements[2]!;
     const dragOverRect = dropFolder.getBoundingClientRect();
     dropFolder.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,
@@ -233,11 +225,11 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     };
 
     const draggableElements = getDraggableElements();
-    const draggedBookmark = draggableElements[2];
+    const draggedBookmark = draggableElements[2]!;
     draggedBookmark.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
 
-    const dragAboveBookmark = draggableElements[0];
+    const dragAboveBookmark = draggableElements[0]!;
     const dragAboveRect = dragAboveBookmark.getBoundingClientRect();
     dragAboveBookmark.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,
@@ -252,7 +244,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
 
     draggedBookmark.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
-    const dragBelowBookmark = draggableElements[1];
+    const dragBelowBookmark = draggableElements[1]!;
     const dragBelowRect = dragBelowBookmark.getBoundingClientRect();
     dragBelowBookmark.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,
@@ -270,12 +262,12 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     overrideFolderOpenerTimeoutDelay(0);
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     const draggableElements = getDraggableElements();
-    const draggedBookmark = draggableElements[0];
+    const draggedBookmark = draggableElements[0]!;
     draggedBookmark.dispatchEvent(new DragEvent(
         'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
 
-    const folderNode = folders[0].children[3];
-    const dragOverFolder = draggableElements[4];
+    const folderNode = folders[0]!.children![3]!;
+    const dragOverFolder = draggableElements[4]!;
     const dragOverRect = dragOverFolder.getBoundingClientRect();
     dragOverFolder.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,
@@ -287,7 +279,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
 
     // Drag over a new bookmark before the timeout runs out to ensure the
     // timeout is canceled.
-    const newDragOverBookmark = draggableElements[3];
+    const newDragOverBookmark = draggableElements[3]!;
     const newDragOverBookmarkRect = newDragOverBookmark.getBoundingClientRect();
     newDragOverBookmark.dispatchEvent(new DragEvent('dragover', {
       bubbles: true,

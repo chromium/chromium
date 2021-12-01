@@ -246,13 +246,20 @@ export class BookmarkFolderElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmark-folder': BookmarkFolderElement;
+  }
+}
+
 customElements.define(BookmarkFolderElement.is, BookmarkFolderElement);
 
 interface DraggableElement extends HTMLElement {
   dataBookmark: chrome.bookmarks.BookmarkTreeNode;
 }
 
-export function getBookmarkFromElement(element: HTMLElement) {
+export function getBookmarkFromElement(element: HTMLElement):
+    chrome.bookmarks.BookmarkTreeNode {
   return (element as DraggableElement).dataBookmark;
 }
 

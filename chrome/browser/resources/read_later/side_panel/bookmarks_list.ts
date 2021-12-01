@@ -346,4 +346,10 @@ export class BookmarksListElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-list': BookmarksListElement;
+  }
+}
+
 customElements.define(BookmarksListElement.is, BookmarksListElement);

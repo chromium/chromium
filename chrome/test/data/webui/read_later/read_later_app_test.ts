@@ -84,8 +84,7 @@ suite('ReadLaterAppTest', () => {
     testProxy.setEntries(getSampleData());
     document.body.innerHTML = '';
 
-    readLaterApp = /** @type {!ReadLaterAppElement} */ (
-        document.createElement('read-later-app'));
+    readLaterApp = document.createElement('read-later-app');
     document.body.appendChild(readLaterApp);
     await flushTasks();
   });
@@ -267,8 +266,8 @@ suite('ReadLaterAppTest', () => {
       });
 
   test('Favicons present in the dom', async () => {
-    const readLaterItems = /** @type {!NodeList<!Element>} */
-        (readLaterApp.shadowRoot!.querySelectorAll('read-later-item'));
+    const readLaterItems =
+        readLaterApp.shadowRoot!.querySelectorAll('read-later-item');
 
     readLaterItems.forEach((readLaterItem) => {
       assertTrue(!!readLaterItem.shadowRoot!.querySelector('.favicon'));

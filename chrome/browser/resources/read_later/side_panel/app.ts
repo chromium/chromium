@@ -89,4 +89,11 @@ export class SidePanelAppElement extends PolymerElement {
         Object.keys(this.tabs_)[tabIndex];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'side-panel-app': SidePanelAppElement;
+  }
+}
+
 customElements.define(SidePanelAppElement.is, SidePanelAppElement);

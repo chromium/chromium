@@ -5,26 +5,23 @@
 // ReadLaterUI is a Mojo WebUI controller and therefore needs mojo defined to
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import 'chrome://read-later.top-chrome/side_panel/app.js';
 
 import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/side_panel/app.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
-import {assertEquals} from 'chrome:/webui-test/chai_assert.js';
 
 suite('SidePanelAppElementTest', () => {
-  /** @type {!SidePanelAppElement} */
-  let sidePanelApp;
+  let sidePanelApp: SidePanelAppElement;
 
   setup(() => {
     document.body.innerHTML = '';
-    sidePanelApp = /** @type {!SidePanelAppElement} */ (
-        document.createElement('side-panel-app'));
+    sidePanelApp = document.createElement('side-panel-app');
     document.body.appendChild(sidePanelApp);
   });
 
   test('RemembersLastActiveTab', () => {
-    const tabs = sidePanelApp.shadowRoot.querySelector('cr-tabs');
+    const tabs = sidePanelApp.shadowRoot!.querySelector('cr-tabs')!;
 
     // Remove the app, change localStorage to select the Bookmarks tab, and add
     // the app back to the DOM to see if the app changes tabs on
@@ -41,17 +38,17 @@ suite('SidePanelAppElementTest', () => {
   });
 
   test('LazilyLoadsTabContents', async () => {
-    const tabs = sidePanelApp.shadowRoot.querySelector('cr-tabs');
+    const tabs = sidePanelApp.shadowRoot!.querySelector('cr-tabs')!;
     tabs.selected = 0;
     await flushTasks();
     assertEquals(
-        1, sidePanelApp.shadowRoot.querySelectorAll('read-later-app').length);
+        1, sidePanelApp.shadowRoot!.querySelectorAll('read-later-app').length);
     assertEquals(
-        0, sidePanelApp.shadowRoot.querySelectorAll('bookmarks-list').length);
+        0, sidePanelApp.shadowRoot!.querySelectorAll('bookmarks-list').length);
 
     tabs.selected = 1;
     await flushTasks();
     assertEquals(
-        1, sidePanelApp.shadowRoot.querySelectorAll('bookmarks-list').length);
+        1, sidePanelApp.shadowRoot!.querySelectorAll('bookmarks-list').length);
   });
 });

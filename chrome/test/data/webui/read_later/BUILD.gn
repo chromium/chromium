@@ -28,14 +28,17 @@ ts_library("build_ts") {
   ]
   in_files = [
     "read_later_app_test.ts",
-    "side_panel/bookmark_folder_test.js",
-    "side_panel/bookmarks_drag_manager_test.js",
-    "side_panel/bookmarks_list_test.js",
-    "side_panel/side_panel_app_test.js",
+    "side_panel/bookmark_folder_test.ts",
+    "side_panel/bookmarks_drag_manager_test.ts",
+    "side_panel/bookmarks_list_test.ts",
+    "side_panel/side_panel_app_test.ts",
     "side_panel/test_bookmarks_api_proxy.ts",
     "test_read_later_api_proxy.ts",
   ]
-  definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+  ]
   deps = [ "//chrome/browser/resources/read_later:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
 }

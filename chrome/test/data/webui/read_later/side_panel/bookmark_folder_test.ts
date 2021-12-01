@@ -8,24 +8,20 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 
-import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarkFolderTest', () => {
-  /** @type {!BookmarkFolderElement} */
-  let bookmarkFolder;
+  let bookmarkFolder: BookmarkFolderElement;
+  let bookmarksApi: TestBookmarksApiProxy;
 
-  /** @type {!TestBookmarksApiProxy} */
-  let bookmarksApi;
-
-  /** @type {!chrome.bookmarks.BookmarkTreeNode} */
-  const folder = {
+  const folder: chrome.bookmarks.BookmarkTreeNode = {
     id: '0',
     title: 'Bookmarks bar',
     children: [
@@ -53,11 +49,9 @@ suite('SidePanelBookmarkFolderTest', () => {
     ],
   };
 
-  /** @return {!Array<!HTMLElement|!BookmarkFolderElement>} */
-  function getChildElements() {
-    return /** @type {!Array<!HTMLElement|!BookmarkFolderElement>} */ (
-        Array.from(bookmarkFolder.shadowRoot.querySelectorAll(
-            'bookmark-folder, .bookmark')));
+  function getChildElements(): Array<HTMLElement|BookmarkFolderElement> {
+    return Array.from(bookmarkFolder.shadowRoot!.querySelectorAll(
+        'bookmark-folder, .bookmark'));
   }
 
   setup(async () => {
@@ -66,8 +60,7 @@ suite('SidePanelBookmarkFolderTest', () => {
     bookmarksApi = new TestBookmarksApiProxy();
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
-    bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
-        document.createElement('bookmark-folder'));
+    bookmarkFolder = document.createElement('bookmark-folder');
     bookmarkFolder.folder = folder;
     bookmarkFolder.openFolders = ['0'];
     document.body.appendChild(bookmarkFolder);
@@ -86,14 +79,16 @@ suite('SidePanelBookmarkFolderTest', () => {
     assertEquals(3, childElements.length);
 
     assertTrue(childElements[0] instanceof BookmarkFolderElement);
-    assertEquals(folder.children[0], childElements[0].folder);
+    assertEquals(
+        folder.children![0],
+        (childElements[0]! as BookmarkFolderElement).folder);
 
     assertEquals(
-        folder.children[1].title,
-        childElements[1].querySelector('.title').textContent);
+        folder.children![1]!.title,
+        childElements[1]!.querySelector('.title')!.textContent);
     assertEquals(
-        folder.children[2].title,
-        childElements[2].querySelector('.title').textContent);
+        folder.children![2]!.title,
+        childElements[2]!.querySelector('.title')!.textContent);
   });
 
   test('UpdatesChildCountVariable', () => {
@@ -115,43 +110,44 @@ suite('SidePanelBookmarkFolderTest', () => {
   });
 
   test('ShowsFaviconForBookmarks', () => {
-    const fooWebsiteElement = getChildElements()[1];
+    const fooWebsiteElement = getChildElements()[1]!;
     assertEquals(
-        getFaviconForPageURL(folder.children[1].url, false),
-        fooWebsiteElement.querySelector('.icon').style.getPropertyValue(
-            'background-image'));
+        getFaviconForPageURL(folder.children![1]!.url!, false),
+        fooWebsiteElement.querySelector<HTMLElement>('.icon')!.style
+            .getPropertyValue('background-image'));
   });
 
   test('OpensAndClosesFolder', async () => {
-    const arrowIcon = bookmarkFolder.shadowRoot.querySelector('#arrowIcon');
+    const arrowIcon =
+        bookmarkFolder.shadowRoot!.querySelector<HTMLElement>('#arrowIcon')!;
     assertTrue(arrowIcon.hasAttribute('open'));
     assertEquals(3, getChildElements().length);
 
     const eventPromise =
         eventToPromise(FOLDER_OPEN_CHANGED_EVENT, document.body);
-    bookmarkFolder.shadowRoot.querySelector('.row').click();
+    bookmarkFolder.shadowRoot!.querySelector<HTMLElement>('.row')!.click();
     await eventPromise;
 
     // Normally, the event listener for FOLDER_OPEN_CHANGED_EVENT will update
     // the openFolders property.
     bookmarkFolder.openFolders = [];
-    await waitAfterNextRender();
+    await waitAfterNextRender(bookmarkFolder);
     assertFalse(arrowIcon.hasAttribute('open'));
     assertEquals(0, getChildElements().length);
   });
 
   test('UpdatesOpenStateBasedOnOpenFolders', async () => {
     bookmarkFolder.openFolders = [];
-    await waitAfterNextRender();
+    await waitAfterNextRender(bookmarkFolder);
     getChildElements().forEach(
         child => assertEquals('none', child.style.display));
   });
 
   test('OpensBookmark', async () => {
-    getChildElements()[1].click();
+    getChildElements()[1]!.click();
     const [url, parentFolderDepth] =
         await bookmarksApi.whenCalled('openBookmark');
-    assertEquals(folder.children[1].url, url);
+    assertEquals(folder.children![1]!.url, url);
     assertEquals(0, parentFolderDepth);
   });
 
@@ -159,24 +155,24 @@ suite('SidePanelBookmarkFolderTest', () => {
     // No focus yet, should focus folder row.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.shadowRoot.querySelector('.row'),
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.querySelector('.row'),
+        bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus down one, should focus first child which is a folder.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.shadowRoot.querySelector('#children bookmark-folder'),
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.querySelector('#children bookmark-folder'),
+        bookmarkFolder.shadowRoot!.activeElement);
 
     const bookmarkElements =
-        bookmarkFolder.shadowRoot.querySelectorAll('#children .row');
+        bookmarkFolder.shadowRoot!.querySelectorAll('#children .row');
     // Move focus down one, should focus second child, the first bookmark.
     assertTrue(bookmarkFolder.moveFocus(1));
-    assertEquals(bookmarkElements[0], bookmarkFolder.shadowRoot.activeElement);
+    assertEquals(bookmarkElements[0], bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus down one, should focus second child, the second bookmark.
     assertTrue(bookmarkFolder.moveFocus(1));
-    assertEquals(bookmarkElements[1], bookmarkFolder.shadowRoot.activeElement);
+    assertEquals(bookmarkElements[1], bookmarkFolder.shadowRoot!.activeElement);
 
     // No more room.
     assertFalse(bookmarkFolder.moveFocus(1));
@@ -185,27 +181,27 @@ suite('SidePanelBookmarkFolderTest', () => {
   test('MovesFocusUp', () => {
     // No focus yet, should focus last bookmark.
     const bookmarkElements =
-        bookmarkFolder.shadowRoot.querySelectorAll('#children .row');
+        bookmarkFolder.shadowRoot!.querySelectorAll('#children .row');
     assertTrue(bookmarkFolder.moveFocus(-1));
     assertEquals(
         bookmarkElements[bookmarkElements.length - 1],
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus up one, should focus the first bookmark.
     assertTrue(bookmarkFolder.moveFocus(-1));
-    assertEquals(bookmarkElements[0], bookmarkFolder.shadowRoot.activeElement);
+    assertEquals(bookmarkElements[0], bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus up one, should focus the child folder.
     assertTrue(bookmarkFolder.moveFocus(-1));
     assertEquals(
-        bookmarkFolder.shadowRoot.querySelector('#children bookmark-folder'),
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.querySelector('#children bookmark-folder'),
+        bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus up one, should focus the folder itself.
     assertTrue(bookmarkFolder.moveFocus(-1));
     assertEquals(
-        bookmarkFolder.shadowRoot.querySelector('.row'),
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.querySelector('.row'),
+        bookmarkFolder.shadowRoot!.activeElement);
 
     // No more room.
     assertFalse(bookmarkFolder.moveFocus(-1));
@@ -213,7 +209,7 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('DoesNotFocusHiddenChildren', async () => {
     bookmarkFolder.openFolders = [];
-    await waitAfterNextRender();
+    await waitAfterNextRender(bookmarkFolder);
     assertTrue(bookmarkFolder.moveFocus(1));   // Moves focus to folder.
     assertFalse(bookmarkFolder.moveFocus(1));  // No children to move focus to.
   });
@@ -237,44 +233,48 @@ suite('SidePanelBookmarkFolderTest', () => {
       }],
     };
     bookmarkFolder.openFolders = ['0', '1', '2', '3'];
-    await waitAfterNextRender();
+    await waitAfterNextRender(bookmarkFolder);
 
     // Move focus down 1, should focus root folder.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.shadowRoot.querySelector('.row'),
-        bookmarkFolder.shadowRoot.activeElement);
+        bookmarkFolder.shadowRoot!.querySelector('.row'),
+        bookmarkFolder.shadowRoot!.activeElement);
 
     // Move focus down 1, should focus first nested folder.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.folder.children[0],
-        bookmarkFolder.shadowRoot.activeElement.folder);
+        bookmarkFolder.folder.children![0],
+        (bookmarkFolder.shadowRoot!.activeElement! as BookmarkFolderElement)
+            .folder);
 
     // Move focus down 1, should focus grandchild folder.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.folder.children[0].children[0],
-        bookmarkFolder.shadowRoot.activeElement.shadowRoot.activeElement
+        bookmarkFolder.folder.children![0]!.children![0],
+        (bookmarkFolder.shadowRoot!.activeElement!.shadowRoot!.activeElement! as
+         BookmarkFolderElement)
             .folder);
 
     // Move focus down 1, should focus great grandchild folder.
     assertTrue(bookmarkFolder.moveFocus(1));
     assertEquals(
-        bookmarkFolder.folder.children[0].children[0].children[0],
-        bookmarkFolder.shadowRoot.activeElement.shadowRoot.activeElement
-            .shadowRoot.activeElement.folder);
+        bookmarkFolder.folder.children![0]!.children![0]!.children![0],
+        (bookmarkFolder.shadowRoot!.activeElement!.shadowRoot!.activeElement!
+             .shadowRoot!.activeElement! as BookmarkFolderElement)
+            .folder);
 
     // Move focus up 1, should focus grandchild folder.
     assertTrue(bookmarkFolder.moveFocus(-1));
     assertEquals(
-        bookmarkFolder.folder.children[0].children[0],
-        bookmarkFolder.shadowRoot.activeElement.shadowRoot.activeElement
+        bookmarkFolder.folder.children![0]!.children![0],
+        (bookmarkFolder.shadowRoot!.activeElement!.shadowRoot!.activeElement! as
+         BookmarkFolderElement)
             .folder);
   });
 
   test('SendsClickModifiers', async () => {
-    const item = getChildElements()[1];
+    const item = getChildElements()[1]!;
     item.dispatchEvent(new MouseEvent('click'));
     const [, , click] = await bookmarksApi.whenCalled('openBookmark');
     assertFalse(
@@ -311,33 +311,38 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('GetsFocusableElements', async () => {
     let focusableElement = bookmarkFolder.getFocusableElement([folder]);
-    assertEquals('folder', focusableElement.id);
+    assertTrue(!!focusableElement);
+    assertEquals('folder', focusableElement!.id);
 
-    const childBookmark = folder.children[1];
+    const childBookmark = folder.children![1]!;
     focusableElement = bookmarkFolder.getFocusableElement([childBookmark]);
-    assertTrue(focusableElement.classList.contains('bookmark'));
-    assertEquals(childBookmark, focusableElement.dataBookmark);
+    assertTrue(!!focusableElement);
+    assertTrue(focusableElement!.classList.contains('bookmark'));
+    assertEquals(childBookmark, getBookmarkFromElement(focusableElement!));
 
-    const childFolder = folder.children[0];
+    const childFolder = folder.children![0]!;
     focusableElement = bookmarkFolder.getFocusableElement([childFolder]);
-    assertEquals('folder', focusableElement.id);
-    assertEquals(childFolder.id, focusableElement.dataBookmark.id);
+    assertTrue(!!focusableElement);
+    assertEquals('folder', focusableElement!.id);
+    assertEquals(childFolder.id, getBookmarkFromElement(focusableElement!).id);
 
     // Grandchild bookmark is in a closed folder, so the focusable element
     // should still be the child folder.
-    const grandchildBookmark = childFolder.children[0];
+    const grandchildBookmark = childFolder.children![0]!;
     focusableElement =
         bookmarkFolder.getFocusableElement([childFolder, grandchildBookmark]);
-    assertEquals('folder', focusableElement.id);
-    assertEquals(childFolder.id, focusableElement.dataBookmark.id);
+    assertTrue(!!focusableElement);
+    assertEquals('folder', focusableElement!.id);
+    assertEquals(childFolder.id, getBookmarkFromElement(focusableElement!).id);
 
     // Once the child folder is opened, the grandchild bookmark element should
     // be focusable.
     bookmarkFolder.openFolders = ['0', '1'];
-    await waitAfterNextRender();
+    await waitAfterNextRender(bookmarkFolder);
     focusableElement =
         bookmarkFolder.getFocusableElement([childFolder, grandchildBookmark]);
-    assertTrue(focusableElement.classList.contains('bookmark'));
-    assertEquals(grandchildBookmark, focusableElement.dataBookmark);
+    assertTrue(!!focusableElement);
+    assertTrue(focusableElement!.classList.contains('bookmark'));
+    assertEquals(grandchildBookmark, getBookmarkFromElement(focusableElement!));
   });
 });
