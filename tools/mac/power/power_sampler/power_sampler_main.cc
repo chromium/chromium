@@ -43,6 +43,7 @@ void InitLogging() {
 constexpr char kSwitchHelp[] = "h";
 constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
+constexpr char kSwitchTimeout[] = "timeout";
 constexpr char kSwitchJsonOutputFile[] = "json-output-file";
 constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
 constexpr char kSwitchResourceCoalitionPid[] = "resource-coalition-pid";
@@ -56,6 +57,7 @@ Options:
   --sample-on-notification        Sample on power manager notifications.
       Note that interval and event notifications are mutually exclusive.
   --sample-count=<num>            Collect <num> samples before exiting.
+  --timeout=<num>                 Stops the sampler after <num> seconds.
   --json-output-file=<path>       Produce JSON output to <path> before exit.
       By default output is in CSV format on STDOUT.
   --resource-coalition-pid=<pid>  The pid of a process that is part of a
@@ -113,6 +115,11 @@ int main(int argc, char** argv) {
   }
   int64_t sample_count = -1;
   if (command_line.HasSwitch(kSwitchSampleCount)) {
+    if (command_line.HasSwitch(kSwitchTimeout)) {
+      PrintUsage("sample-count should not be specified with --timeout");
+      return kStatusInvalidParam;
+    }
+
     std::string sample_count_switch =
         command_line.GetSwitchValueASCII(kSwitchSampleCount);
     if (!base::StringToInt64(sample_count_switch, &sample_count) &&
@@ -120,6 +127,23 @@ int main(int argc, char** argv) {
       PrintUsage("sample-count must be numeric and larger than 0.");
       return kStatusInvalidParam;
     }
+  }
+
+  base::TimeDelta timeout;
+  if (command_line.HasSwitch(kSwitchTimeout)) {
+    // Those 2 switches are exclusives but it is already checked when handling
+    // --sample-count.
+    DCHECK(command_line.HasSwitch(kSwitchSampleCount));
+
+    std::string timeout_seconds_switch =
+        command_line.GetSwitchValueASCII(kSwitchTimeout);
+    uint64_t timeout_seconds = 0;
+    if (!base::StringToUint64(timeout_seconds_switch, &timeout_seconds) ||
+        timeout_seconds < 1) {
+      PrintUsage("duration must be numeric and larger than 0.");
+      return kStatusInvalidParam;
+    }
+    timeout = base::Seconds(timeout_seconds);
   }
 
   base::FilePath json_output_file_path;
@@ -189,18 +213,24 @@ int main(int argc, char** argv) {
         start_time, base::File(STDOUT_FILENO)));
   }
 
+  DCHECK(timeout.is_zero() || sample_count == 0);
   if (sample_count > 0) {
     controller.AddMonitor(
         std::make_unique<power_sampler::SampleCounter>(sample_count));
   }
 
   base::RunLoop run_loop;
+
+  if (!timeout.is_zero()) {
+    executor.task_runner()->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
+                                            timeout);
+  }
+
   if (!event_source->Start(BindRepeating(
           [](power_sampler::SamplingController* controller,
              base::OnceClosure quit_closure) {
-            if (controller->OnSamplingEvent()) {
+            if (controller->OnSamplingEvent())
               std::move(quit_closure).Run();
-            }
           },
           base::Unretained(&controller), run_loop.QuitClosure()))) {
     PrintUsage("Could not start the sampling event source.");
