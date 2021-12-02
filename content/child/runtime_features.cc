@@ -396,7 +396,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppTranslations", blink::features::kWebAppEnableTranslations},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
-          {"WebAssemblyDynamicTiering", features::kWebAssemblyTiering},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"WindowOpenNewPopupBehavior",
            blink::features::kWindowOpenNewPopupBehavior},
