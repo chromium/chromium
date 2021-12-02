@@ -43,6 +43,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -1938,6 +1939,25 @@ TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(window->subtree_capture_id().is_valid());
+}
+
+TEST_F(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
+  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  auto* window = widget->GetNativeWindow();
+  auto recorded_window = CreateTestWindow(gfx::Rect(200, 200));
+
+  auto* controller = StartSessionAndRecordWindow(recorded_window.get());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+
+  // Activate the window so that it becomes on top of the recorded window, and
+  // expect it gets dimmed.
+  wm::ActivateWindow(window);
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(window));
+
+  // Close the widget, this should not lead to any use-after-free. See
+  // https://crbug.com/1273197.
+  widget->Close();
 }
 
 TEST_F(CaptureModeTest, DimmingOfUnRecordedWindows) {
