@@ -11919,7 +11919,8 @@
       'schema': {
         'type': 'boolean',
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:98-'],
+      'supported_chrome_os_management': ['google_cloud'],
       'device_only': True,
       'features': {
         'cloud_only': True,
