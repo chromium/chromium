@@ -381,25 +381,16 @@ void ShimlessRmaService::GetWriteProtectManuallyDisabledInstructions(
   std::move(callback).Run(url, std::move(qr_code));
 }
 
-void ShimlessRmaService::GetWriteProtectDisableCompleteState(
-    GetWriteProtectDisableCompleteStateCallback callback) {
+void ShimlessRmaService::GetWriteProtectDisableCompleteAction(
+    GetWriteProtectDisableCompleteActionCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableComplete) {
     LOG(ERROR) << "ConfirmManualWpDisableComplete called from incorrect state "
                << state_proto_.state_case();
-    std::move(callback).Run(mojom::WriteProtectDisableCompleteState::kUnknown);
+    std::move(callback).Run(
+        rmad::WriteProtectDisableCompleteState::RMAD_WP_DISABLE_UNKNOWN);
     return;
   }
-  // TODO(gavindodd): Replace this with the rmad Action enum using traits when
-  // implemented
-  mojom::WriteProtectDisableCompleteState state =
-      mojom::WriteProtectDisableCompleteState::kCompleteAssembleDevice;
-
-  if (state_proto_.wp_disable_complete().keep_device_open()) {
-    state = mojom::WriteProtectDisableCompleteState::kCompleteKeepDeviceOpen;
-  } else if (state_proto_.wp_disable_complete().wp_disable_skipped()) {
-    state = mojom::WriteProtectDisableCompleteState::kSkippedAssembleDevice;
-  }
-  std::move(callback).Run(state);
+  std::move(callback).Run(state_proto_.wp_disable_complete().action());
 }
 
 void ShimlessRmaService::ConfirmManualWpDisableComplete(

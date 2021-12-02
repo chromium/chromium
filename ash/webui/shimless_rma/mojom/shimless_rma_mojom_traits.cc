@@ -29,6 +29,10 @@ using MojomComponentRepairState =
 using ProtoComponentRepairState =
     rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus;
 
+using MojomWpDisableAction =
+    ash::shimless_rma::mojom::WriteProtectDisableCompleteAction;
+using ProtoWpDisableAction = rmad::WriteProtectDisableCompleteState::Action;
+
 using MojomProvisioningStatus = ash::shimless_rma::mojom::ProvisioningStatus;
 using ProtoProvisioningStatus = rmad::ProvisionStatus::Status;
 
@@ -592,6 +596,57 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
       return true;
 
     default:
+      NOTREACHED();
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+MojomWpDisableAction
+EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::ToMojom(
+    ProtoWpDisableAction action) {
+  switch (action) {
+    case rmad::WriteProtectDisableCompleteState::
+        RMAD_WP_DISABLE_SKIPPED_ASSEMBLE_DEVICE:
+      return MojomWpDisableAction::kSkippedAssembleDevice;
+    case rmad::WriteProtectDisableCompleteState::
+        RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE:
+      return MojomWpDisableAction::kCompleteAssembleDevice;
+    case rmad::WriteProtectDisableCompleteState::
+        RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN:
+      return MojomWpDisableAction::kCompleteKeepDeviceOpen;
+    case rmad::WriteProtectDisableCompleteState::RMAD_WP_DISABLE_UNKNOWN:
+      return MojomWpDisableAction::kUnknown;
+
+    default:
+      NOTREACHED();
+      return MojomWpDisableAction::kUnknown;
+  }
+  NOTREACHED();
+  return MojomWpDisableAction::kUnknown;
+}
+
+// static
+bool EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::FromMojom(
+    MojomWpDisableAction input,
+    ProtoWpDisableAction* out) {
+  switch (input) {
+    case MojomWpDisableAction::kSkippedAssembleDevice:
+      *out = rmad::WriteProtectDisableCompleteState::
+          RMAD_WP_DISABLE_SKIPPED_ASSEMBLE_DEVICE;
+      return true;
+    case MojomWpDisableAction::kCompleteAssembleDevice:
+      *out = rmad::WriteProtectDisableCompleteState::
+          RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE;
+      return true;
+    case MojomWpDisableAction::kCompleteKeepDeviceOpen:
+      *out = rmad::WriteProtectDisableCompleteState::
+          RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN;
+      return true;
+
+    case MojomWpDisableAction::kUnknown:
       NOTREACHED();
       return false;
   }

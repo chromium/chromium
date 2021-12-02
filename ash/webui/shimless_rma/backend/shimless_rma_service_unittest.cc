@@ -1035,6 +1035,32 @@ TEST_F(ShimlessRmaServiceTest,
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetWriteProtectDisableCompleteAction) {
+  rmad::GetStateReply wp_disable_complete_state = CreateStateReply(
+      rmad::RmadState::kWpDisableComplete, rmad::RMAD_ERROR_OK);
+  wp_disable_complete_state.mutable_state()
+      ->mutable_wp_disable_complete()
+      ->set_action(rmad::WriteProtectDisableCompleteState::
+                       RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE);
+
+  std::vector<rmad::GetStateReply> fake_states = {wp_disable_complete_state};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWPDisableComplete);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+  shimless_rma_provider_->GetWriteProtectDisableCompleteAction(
+      base::BindLambdaForTesting(
+          [&](rmad::WriteProtectDisableCompleteState::Action action) {
+            EXPECT_EQ(action, rmad::WriteProtectDisableCompleteState::
+                                  RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE);
+          }));
+}
+
 TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);

@@ -62,6 +62,17 @@ struct EnumTraits<ash::shimless_rma::mojom::OsUpdateOperation,
 };
 
 template <>
+struct EnumTraits<ash::shimless_rma::mojom::WriteProtectDisableCompleteAction,
+                  rmad::WriteProtectDisableCompleteState::Action> {
+  static ash::shimless_rma::mojom::WriteProtectDisableCompleteAction ToMojom(
+      rmad::WriteProtectDisableCompleteState::Action action);
+
+  static bool FromMojom(
+      ash::shimless_rma::mojom::WriteProtectDisableCompleteAction input,
+      rmad::WriteProtectDisableCompleteState::Action* out);
+};
+
+template <>
 struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStatus,
                   rmad::ProvisionStatus::Status> {
   static ash::shimless_rma::mojom::ProvisioningStatus ToMojom(

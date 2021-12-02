@@ -9,15 +9,15 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteState} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
-/** @type {!Object<!WriteProtectDisableCompleteState, string>} */
-const disableStateTextKeys = {
-  [WriteProtectDisableCompleteState.kSkippedAssembleDevice]:
+/** @type {!Object<WriteProtectDisableCompleteAction, string>} */
+const disableActionTextKeys = {
+  [WriteProtectDisableCompleteAction.kSkippedAssembleDevice]:
       'wpDisableSkippedText',
-  [WriteProtectDisableCompleteState.kCompleteAssembleDevice]:
+  [WriteProtectDisableCompleteAction.kCompleteAssembleDevice]:
       'wpDisableReassembleNowText',
-  [WriteProtectDisableCompleteState.kCompleteKeepDeviceOpen]:
+  [WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen]:
       'wpDisableLeaveDisassembledText',
 };
 
@@ -48,16 +48,10 @@ export class OnboardingWpDisableCompletePage extends
 
   static get properties() {
     return {
-      /** @protected {!WriteProtectDisableCompleteState} */
-      state_: {
-        type: Object,
-        value: WriteProtectDisableCompleteState.kUnknown,
-      },
-
       /** @protected */
-      statusString_: {
+      actionString_: {
         type: String,
-        computed: 'getStatusString_(state_)',
+        computed: 'getActionString_(action_)',
       },
     };
   }
@@ -75,10 +69,13 @@ export class OnboardingWpDisableCompletePage extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.shimlessRmaService_.getWriteProtectDisableCompleteState().then(
+    /** @private {WriteProtectDisableCompleteAction} */
+    this.action_ = WriteProtectDisableCompleteAction.kUnknown;
+
+    this.shimlessRmaService_.getWriteProtectDisableCompleteAction().then(
         (res) => {
           if (res) {
-            this.state_ = res.state;
+            this.action_ = res.action;
           }
         });
   }
@@ -87,12 +84,10 @@ export class OnboardingWpDisableCompletePage extends
    * @protected
    * @return {string}
    */
-  getStatusString_() {
-    if (this.state_ === WriteProtectDisableCompleteState.kUnknown) {
-      return '';
-    } else {
-      return this.i18n(disableStateTextKeys[this.state_]);
-    }
+  getActionString_() {
+    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown) ?
+        '' :
+        this.i18n(disableActionTextKeys[this.action_]);
   }
 
   /** @return {!Promise<!StateResult>} */

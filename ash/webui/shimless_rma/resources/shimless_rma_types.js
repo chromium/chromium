@@ -52,9 +52,9 @@ export const ComponentType = ash.shimlessRma.mojom.ComponentType;
 export const ComponentRepairStatus =
     ash.shimlessRma.mojom.ComponentRepairStatus;
 
-/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteState} */
-export const WriteProtectDisableCompleteState =
-    ash.shimlessRma.mojom.WriteProtectDisableCompleteState;
+/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteAction} */
+export const WriteProtectDisableCompleteAction =
+    ash.shimlessRma.mojom.WriteProtectDisableCompleteAction;
 
 /**
  * @typedef {ash.shimlessRma.mojom.CalibrationSetupInstruction}

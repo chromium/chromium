@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeCalibrationComponents, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels, fakeLog, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
-import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteState} from './shimless_rma_types.js';
+import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -61,8 +61,8 @@ function setupFakeShimlessRmaService_() {
   service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
       fakeRsuChallengeQrCode);
 
-  service.setGetWriteProtectDisableCompleteState(
-      WriteProtectDisableCompleteState.kCompleteAssembleDevice);
+  service.setGetWriteProtectDisableCompleteAction(
+      WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
 
   service.setGetWriteProtectManuallyDisabledInstructionsResult(
       'g.co/help', fakeRsuChallengeQrCode);

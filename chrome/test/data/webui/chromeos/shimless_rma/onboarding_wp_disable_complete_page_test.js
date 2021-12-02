@@ -6,6 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingWpDisableCompletePage} from 'chrome://shimless-rma/onboarding_wp_disable_complete_page.js';
+import {WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -36,6 +37,8 @@ export function onboardingWpDisableCompletePageTest() {
   /** @return {!Promise} */
   function initializeOnboardingWpDisableCompletePage() {
     assertFalse(!!component);
+    service.setGetWriteProtectDisableCompleteAction(
+        WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
 
     component = /** @type {!OnboardingWpDisableCompletePage} */ (
         document.createElement('onboarding-wp-disable-complete-page'));
@@ -51,6 +54,17 @@ export function onboardingWpDisableCompletePageTest() {
 
     const basePage = component.shadowRoot.querySelector('base-page');
     assertTrue(!!basePage);
+  });
+
+  test('OnBoardingPageSetsActionMessage', async () => {
+    await initializeOnboardingWpDisableCompletePage();
+
+    const actionComponent =
+        component.shadowRoot.querySelector('#writeProtectAction');
+
+    assertEquals(
+        'Write protection disable complete, you can reassemble the device.',
+        actionComponent.textContent.trim());
   });
 
   test('OnBoardingPageOnNextCallsConfirmManualWpDisableComplete', async () => {

@@ -270,6 +270,24 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
   TestMojoToProto(enums);
 }
 
+TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<mojom::WriteProtectDisableCompleteAction,
+                             rmad::WriteProtectDisableCompleteState::Action>(
+          {{mojom::WriteProtectDisableCompleteAction::kSkippedAssembleDevice,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_SKIPPED_ASSEMBLE_DEVICE},
+           {mojom::WriteProtectDisableCompleteAction::kCompleteAssembleDevice,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE},
+           {mojom::WriteProtectDisableCompleteAction::kCompleteKeepDeviceOpen,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN}});
+
+  TestProtoToMojo(enums);
+  TestMojoToProto(enums);
+}
+
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStatusMatch) {
   constexpr auto enums = base::MakeFixedFlatMap<mojom::ProvisioningStatus,
                                                 rmad::ProvisionStatus::Status>(

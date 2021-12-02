@@ -262,7 +262,7 @@ struct Component {
 
 // Enumeration of all instructions for next steps after manually disabling write
 // protect.
-enum WriteProtectDisableCompleteState {
+enum WriteProtectDisableCompleteAction {
   kUnknown = 0,
   kSkippedAssembleDevice = 1,
   kCompleteAssembleDevice = 2,
@@ -503,12 +503,12 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kWPDisableComplete state.
   //
-  // Get the state enum that specifies any steps the user needs to take before
+  // Get the action enum that specifies any steps the user needs to take before
   // progressing to the next state.
   // The device may need to be re-assembled or left disassembled, depending on
   // the method of HWWP disable chosen.
-  GetWriteProtectDisableCompleteState()
-      => (WriteProtectDisableCompleteState state);
+  GetWriteProtectDisableCompleteAction()
+      => (WriteProtectDisableCompleteAction action);
   // User acknowledges manual HWWP disable is complete and transitions to next
   // state.
   ConfirmManualWpDisableComplete()
