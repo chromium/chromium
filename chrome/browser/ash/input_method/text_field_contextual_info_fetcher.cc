@@ -19,7 +19,7 @@ void TextFieldContextualInfoWithUrl(TextFieldContextualInfoCallback cb,
                                     TextFieldContextualInfo& info,
                                     const absl::optional<GURL>& url) {
   if (url.has_value()) {
-    info.tab_url = url.value().host();
+    info.tab_url = url.value();
   }
   std::move(cb).Run(std::move(info));
 }
@@ -27,9 +27,6 @@ void TextFieldContextualInfoWithUrl(TextFieldContextualInfoCallback cb,
 }  // namespace
 
 TextFieldContextualInfo::TextFieldContextualInfo() = default;
-
-TextFieldContextualInfo::TextFieldContextualInfo(ash::AppType type)
-    : app_type(type) {}
 
 TextFieldContextualInfo::~TextFieldContextualInfo() = default;
 

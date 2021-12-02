@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
+#include "chrome/browser/ash/input_method/ime_rules_config.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
@@ -278,8 +279,8 @@ void AutocorrectManager::UndoAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  // TODO(b/207587725): Check whether auto correct is allowed by rules.
-  disabled_by_rule_ = false;
+  disabled_by_rule_ =
+      ImeRulesConfig::GetInstance()->IsAutoCorrectDisabled(info);
 }
 
 bool AutocorrectManager::DisabledByRule() {

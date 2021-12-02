@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -83,13 +84,20 @@ void ImeRulesConfig::InitFromTrialParams() {
   }
 }
 
-bool ImeRulesConfig::IsAutoCorrectAllowed(const GURL& url) const {
+bool ImeRulesConfig::IsAutoCorrectDisabled(
+    const TextFieldContextualInfo& info) {
+  // Check the domain denylist rules
   for (const auto& domain : auto_correct_domain_denylist_) {
-    if (url.DomainIs(domain)) {
-      return false;
+    if (info.tab_url.DomainIs(domain)) {
+      return true;
     }
   }
-  return true;
+  return false;
+}
+
+// static
+ImeRulesConfig* ImeRulesConfig::GetInstance() {
+  return base::Singleton<ImeRulesConfig>::get();
 }
 
 }  // namespace input_method

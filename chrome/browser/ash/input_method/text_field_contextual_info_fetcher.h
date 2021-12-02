@@ -20,7 +20,6 @@ namespace input_method {
 
 struct TextFieldContextualInfo {
   TextFieldContextualInfo();
-  explicit TextFieldContextualInfo(ash::AppType t);
   ~TextFieldContextualInfo();
 
   // Type of app associated with the text field.
@@ -28,7 +27,7 @@ struct TextFieldContextualInfo {
   // Optional, key of the app associated with this text field.
   std::string app_key;
   // Optional, tab's url where this text field is.
-  std::string tab_url;
+  GURL tab_url;
 };
 
 // Get the type and key of the current active app where the text filed is

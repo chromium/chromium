@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +30,11 @@ const char kNormalAutocorrectRulesParams[] = R"(
      }
     })";
 
+TextFieldContextualInfo FakeTextFieldContextualInfo(GURL url) {
+  TextFieldContextualInfo info;
+  info.tab_url = url;
+  return info;
+}
 }  // namespace
 
 using ::testing::UnorderedElementsAre;
@@ -38,9 +44,8 @@ class ImeRulesConfigTest : public testing::Test {
   ImeRulesConfigTest() = default;
   ~ImeRulesConfigTest() override = default;
 
-  std::vector<std::string> GetAutocorrectDomainDenylistForTest(
-      const ImeRulesConfig& rules) {
-    return rules.auto_correct_domain_denylist_;
+  std::vector<std::string> GetAutocorrectDomainDenylistForTest() {
+    return ImeRulesConfig::GetInstance()->auto_correct_domain_denylist_;
   }
 };
 
@@ -50,24 +55,26 @@ TEST_F(ImeRulesConfigTest, LoadRulesFromFieldTrial) {
       ash::features::kImeRuleConfig,
       {{"json_rules", kNormalAutocorrectRulesParams}});
 
-  ImeRulesConfig rules;
-  EXPECT_THAT(GetAutocorrectDomainDenylistForTest(rules),
+  EXPECT_THAT(GetAutocorrectDomainDenylistForTest(),
               UnorderedElementsAre("docs.google.com", "chromium.org",
                                    "example.com", "test.com.au"));
 }
 
-TEST_F(ImeRulesConfigTest, IsAutoCorrectAllowed) {
+TEST_F(ImeRulesConfigTest, IsAutoCorrectDisabled) {
   auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
   feature_list->InitAndEnableFeatureWithParameters(
       ash::features::kImeRuleConfig,
       {{"json_rules", kNormalAutocorrectRulesParams}});
 
-  ImeRulesConfig rules;
-  EXPECT_TRUE(rules.IsAutoCorrectAllowed(GURL("http://abc.com")));
-  EXPECT_FALSE(rules.IsAutoCorrectAllowed(GURL("https://www.example.com")));
-  EXPECT_FALSE(rules.IsAutoCorrectAllowed(GURL("https://test.com.au")));
-  EXPECT_FALSE(rules.IsAutoCorrectAllowed(
-      GURL("https://docs.google.com/document/d/documentId/edit")));
+  auto* rules = ImeRulesConfig::GetInstance();
+  EXPECT_FALSE(rules->IsAutoCorrectDisabled(
+      FakeTextFieldContextualInfo(GURL("http://abc.com"))));
+  EXPECT_TRUE(rules->IsAutoCorrectDisabled(
+      FakeTextFieldContextualInfo(GURL("https://www.example.com"))));
+  EXPECT_TRUE(rules->IsAutoCorrectDisabled(
+      FakeTextFieldContextualInfo(GURL("https://test.com.au"))));
+  EXPECT_TRUE(rules->IsAutoCorrectDisabled(FakeTextFieldContextualInfo(
+      GURL("https://docs.google.com/document/d/documentId/edit"))));
 }
 
 }  // namespace input_method

@@ -5,10 +5,15 @@
 #include <string>
 #include <vector>
 
-#include "url/gurl.h"
+#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
+
+namespace base {
+template <typename Type>
+struct DefaultSingletonTraits;
+}  // namespace base
 
 namespace ash {
 namespace input_method {
@@ -16,13 +21,23 @@ namespace input_method {
 // IME config that implements a rule check for IME features.
 class ImeRulesConfig {
  public:
-  ImeRulesConfig();
+  ImeRulesConfig(const ImeRulesConfig&) = delete;
+  ImeRulesConfig& operator=(const ImeRulesConfig&) = delete;
+
   ~ImeRulesConfig();
 
-  // Runs the rule checkagainst |url|.
-  bool IsAutoCorrectAllowed(const GURL& url) const;
+  // Obtains the singleton instance.
+  static ImeRulesConfig* GetInstance();
+
+  // Runs the rule check against contextual info.
+  bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 
  private:
+  ImeRulesConfig();
+
+  // For Singleton to be able to construct an instance.
+  friend struct base::DefaultSingletonTraits<ImeRulesConfig>;
+
   friend class ImeRulesConfigTest;
 
   // Initializes the config from IME rules trial parameters. If there is
