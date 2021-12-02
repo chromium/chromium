@@ -4668,6 +4668,10 @@ bool RenderFrameImpl::IsMainFrame() {
   return is_main_frame_;
 }
 
+bool RenderFrameImpl::IsInFencedFrameTree() const {
+  return GetWebFrame()->IsInFencedFrameTree();
+}
+
 bool RenderFrameImpl::IsHidden() {
   return GetLocalRootWebFrameWidget()->IsHidden();
 }

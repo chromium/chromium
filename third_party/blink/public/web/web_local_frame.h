@@ -254,6 +254,11 @@ class WebLocalFrame : public WebFrame {
   virtual const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
       const = 0;
 
+  // "Returns true if the frame the document belongs to, or any of its ancestor
+  // nodes is a fenced frame. See blink::Frame::IsInFencedFrameTree() for more
+  // details.
+  virtual bool IsInFencedFrameTree() const = 0;
+
   // Navigation Ping --------------------------------------------------------
 
   virtual void SendPings(const WebURL& destination_url) = 0;

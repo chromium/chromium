@@ -98,6 +98,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -2313,6 +2314,12 @@ WebFrame* WebLocalFrameImpl::FindFrameByName(const WebString& name) {
 void WebLocalFrameImpl::SetEmbeddingToken(
     const base::UnguessableToken& embedding_token) {
   frame_->SetEmbeddingToken(embedding_token);
+}
+
+bool WebLocalFrameImpl::IsInFencedFrameTree() const {
+  bool result = frame_->IsInFencedFrameTree();
+  DCHECK(!result || blink::features::IsFencedFramesEnabled());
+  return result;
 }
 
 const absl::optional<base::UnguessableToken>&

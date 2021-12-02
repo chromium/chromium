@@ -43,6 +43,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1035,4 +1036,57 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleNotSupervisedTest,
   // Even though the URL is marked as blocked, the load should go through, since
   // the user isn't supervised.
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+}
+
+class SupervisedUserNavigationThrottleFencedFramesTest
+    : public SupervisedUserNavigationThrottleTest {
+ public:
+  SupervisedUserNavigationThrottleFencedFramesTest() = default;
+  ~SupervisedUserNavigationThrottleFencedFramesTest() override = default;
+  SupervisedUserNavigationThrottleFencedFramesTest(
+      const SupervisedUserNavigationThrottleFencedFramesTest&) = delete;
+
+  SupervisedUserNavigationThrottleFencedFramesTest& operator=(
+      const SupervisedUserNavigationThrottleFencedFramesTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleFencedFramesTest,
+                       BlockFencedFrame) {
+  BlockHost(kIframeHost2);
+  const GURL kInitialUrl = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Same origin fenced frame is not blocked, and therefore must be allowed.
+  const GURL kSameOriginFencedFrameUrl = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/fenced_frame.html");
+  content::RenderFrameHost* rfh_same_origin =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), kSameOriginFencedFrameUrl);
+  EXPECT_TRUE(rfh_same_origin);
+
+  // Host1 is not blocked, and therefore must be allowed.
+  const GURL kHost1FencedFrameUrl = embedded_test_server()->GetURL(
+      kIframeHost1, "/supervised_user/fenced_frame.html");
+  content::RenderFrameHost* rfh_host1 =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), kHost1FencedFrameUrl);
+  EXPECT_TRUE(rfh_host1);
+
+  // Host2 is blocked, and therefore should result in a interstitial being
+  // shown, which is validated by the expectation of net::Error::ERR_FAILED.
+  const GURL kHost2FencedFrameUrl = embedded_test_server()->GetURL(
+      kIframeHost2, "/supervised_user/fenced_frame.html");
+  content::RenderFrameHost* rfh_host2 =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), kHost2FencedFrameUrl,
+          net::Error::ERR_FAILED);
+  EXPECT_TRUE(rfh_host2);
 }

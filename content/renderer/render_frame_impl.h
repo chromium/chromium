@@ -355,6 +355,7 @@ class CONTENT_EXPORT RenderFrameImpl
                                  const blink::WebPluginParams& params) override;
   void ExecuteJavaScript(const std::u16string& javascript) override;
   bool IsMainFrame() override;
+  bool IsInFencedFrameTree() const override;
   bool IsHidden() override;
   void BindLocalInterface(
       const std::string& interface_name,

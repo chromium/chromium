@@ -183,6 +183,11 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   // Returns true if this is the main (top-level) frame.
   virtual bool IsMainFrame() = 0;
 
+  // Returns false if fenced frames are disabled. Returns true if the
+  // feature is enabled and if |this| or any of its ancestor nodes is a
+  // fenced frame.
+  virtual bool IsInFencedFrameTree() const = 0;
+
   // Return true if this frame is hidden.
   virtual bool IsHidden() = 0;
 

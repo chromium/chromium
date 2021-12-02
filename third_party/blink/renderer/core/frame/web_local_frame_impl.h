@@ -133,6 +133,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const base::UnguessableToken& embedding_token) override;
   const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
       const override;
+  bool IsInFencedFrameTree() const override;
   void SendPings(const WebURL& destination_url) override;
   void StartReload(WebFrameLoadType) override;
   void ClearActiveFindMatchForTesting() override;
