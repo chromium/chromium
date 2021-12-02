@@ -1539,4 +1539,14 @@ WebMediaPlayerMS::GetMediaStreamType() {
   return absl::nullopt;
 }
 
+void WebMediaPlayerMS::RegisterFrameSinkHierarchy() {
+  if (bridge_)
+    bridge_->RegisterFrameSinkHierarchy();
+}
+
+void WebMediaPlayerMS::UnregisterFrameSinkHierarchy() {
+  if (bridge_)
+    bridge_->UnregisterFrameSinkHierarchy();
+}
+
 }  // namespace blink

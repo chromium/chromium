@@ -3988,13 +3988,13 @@ bool WebMediaPlayerImpl::IsVideoBeingCaptured() const {
 }
 
 void WebMediaPlayerImpl::RegisterFrameSinkHierarchy() {
-  DCHECK(bridge_);
-  bridge_->RegisterFrameSinkHierarchy();
+  if (bridge_)
+    bridge_->RegisterFrameSinkHierarchy();
 }
 
 void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
-  DCHECK(bridge_);
-  bridge_->UnregisterFrameSinkHierarchy();
+  if (bridge_)
+    bridge_->UnregisterFrameSinkHierarchy();
 }
 
 }  // namespace blink
