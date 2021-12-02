@@ -560,6 +560,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kClientHintThirdPartyDelegation;
 BLINK_COMMON_EXPORT extern const base::Feature kPrefetchAndroidFonts;
 #endif
 
+BLINK_COMMON_EXPORT extern const base::Feature
+    kLazyInitializeTimeZoneController;
+
 }  // namespace features
 }  // namespace blink
 

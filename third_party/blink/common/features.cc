@@ -1165,5 +1165,9 @@ const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Lazy initialize TimeZoneController.
+const base::Feature kLazyInitializeTimeZoneController{
+    "LazyInitializeTimeZoneController", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
