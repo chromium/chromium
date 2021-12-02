@@ -20,6 +20,25 @@ _MODULE_NAME = 'test_app'
 _XCTEST_PATH = '/PlugIns/boringssl_ssl_tests_module.xctest'
 
 
+class UtilTest(test_runner_test.TestCase):
+  """Tests utility functions."""
+
+  @mock.patch('subprocess.check_output', return_value=b'\x01\x00\x00\x00')
+  def test_is_running_rosetta_true(self, _):
+    """Tests is_running_rosetta function on arm64 running rosetta."""
+    self.assertTrue(test_apps.is_running_rosetta())
+
+  @mock.patch('subprocess.check_output', return_value=b'\x00\x00\x00\x00')
+  def test_is_running_rosetta_false(self, _):
+    """Tests is_running_rosetta function on arm64 not running rosetta."""
+    self.assertFalse(test_apps.is_running_rosetta())
+
+  @mock.patch('subprocess.check_output', return_value=b'')
+  def test_is_running_rosetta_not_arm(self, _):
+    """Tests is_running_rosetta function not invoked in arm."""
+    self.assertFalse(test_apps.is_running_rosetta())
+
+
 class GetGTestFilterTest(test_runner_test.TestCase):
   """Tests for test_runner.get_gtest_filter."""
 
