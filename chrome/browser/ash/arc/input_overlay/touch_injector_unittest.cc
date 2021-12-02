@@ -143,6 +143,14 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return widget;
   }
 
+  bool IsPointsEqual(gfx::PointF& point_a, const gfx::PointF& point_b) {
+    if (std::abs(point_a.x() - point_b.x()) < 0.0001 &&
+        std::abs(point_a.y() - point_b.y()) < 0.0001) {
+      return true;
+    }
+    return false;
+  }
+
   aura::TestScreen* test_screen() {
     return aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
   }
@@ -202,9 +210,9 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectA1 = gfx::PointF(300, 300);
-  expectA1.Offset(0, caption_height_);
-  EXPECT_EQ(expectA1, event->root_location_f());
+  gfx::PointF expectA1 =
+      gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -213,7 +221,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectA1, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   // Next touch position.
   EXPECT_EQ(1, actionA->current_position_index());
@@ -239,9 +247,9 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectB = gfx::PointF(360, 420);
-  expectB.Offset(0, caption_height_);
-  EXPECT_EQ(expectB, event->root_location_f());
+  gfx::PointF expectB =
+      gfx::PointF(360, 100 + (400 - caption_height_) * 0.8 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -249,9 +257,9 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectA2 = gfx::PointF(260, 220);
-  expectA2.Offset(0, caption_height_);
-  EXPECT_EQ(expectA2, event->root_location_f());
+  gfx::PointF expectA2 =
+      gfx::PointF(260, 100 + (400 - caption_height_) * 0.3 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expectA2, event->root_location_f()));
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -259,7 +267,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectA2, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA2, event->root_location_f()));
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
@@ -267,7 +275,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   event_capturer_.Clear();
 
@@ -277,7 +285,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -285,7 +293,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_EQ(expectA1, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
@@ -293,7 +301,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -301,7 +309,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectA1, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(1, event->pointer_details().id);
   event_capturer_.Clear();
 
@@ -310,7 +318,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_generator_->PressKey(ui::VKEY_B, ui::EF_IS_REPEAT, 1);
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
   event_capturer_.Clear();
 
@@ -322,7 +330,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events().back().get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, event->type());
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   event_capturer_.Clear();
   // Register the event-rewriter and press key again.
@@ -332,7 +340,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_EQ(expectB, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
   event_capturer_.Clear();
@@ -357,15 +365,15 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   // Generate touch down event.
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expect = gfx::PointF(300, 300);
-  expect.Offset(0, caption_height_);
-  EXPECT_EQ(expect, event->root_location_f());
+  gfx::PointF expect =
+      gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
   // Generate touch move left event.
   gfx::PointF expectA = gfx::PointF(expect);
   expectA.Offset(-10, 0);
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
-  EXPECT_EQ(expectA, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
 
   // Press key W (move left + up) and generate touch move (up and left) event.
@@ -375,7 +383,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectW = gfx::PointF(expectA);
   expectW.Offset(0, -10);
-  EXPECT_EQ(expectW, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectW, event->root_location_f()));
 
   // Release key A and generate touch move up event (Key W is still pressed).
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -384,7 +392,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectW = gfx::PointF(expect);
   expectW.Offset(0, -10);
-  EXPECT_EQ(expectW, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectW, event->root_location_f()));
 
   // Press key D and generate touch move (up and right) event.
   event_generator_->PressKey(ui::VKEY_D, ui::EF_NONE, 1);
@@ -393,7 +401,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectD = gfx::PointF(expectW);
   expectD.Offset(10, 0);
-  EXPECT_EQ(expectD, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
 
   // Release key W and generate touch move (right) event (Key D is still
   // pressed).
@@ -403,14 +411,14 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectD = gfx::PointF(expect);
   expectD.Offset(10, 0);
-  EXPECT_EQ(expectD, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
 
   // Release key D and generate touch release event.
   event_generator_->ReleaseKey(ui::VKEY_D, ui::EF_NONE, 1);
   EXPECT_TRUE((int)event_capturer_.touch_events().size() == 7);
   event = event_capturer_.touch_events()[6].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_EQ(expectD, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
   event_capturer_.Clear();
 
   // Press A again, it should repeat the same as previous result.
@@ -422,11 +430,11 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   // Generate touch down event.
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_EQ(expect, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
   // Generate touch move left event.
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
-  EXPECT_EQ(expectA, event->root_location_f());
+  EXPECT_TRUE(IsPointsEqual(expectA, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
   event_capturer_.Clear();

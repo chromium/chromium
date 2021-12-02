@@ -12,6 +12,22 @@
 #include "ui/views/window/non_client_view.h"
 
 namespace arc {
+namespace {
+
+// Calculate the window content bounds (excluding caption if it exists) in the
+// root window.
+gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
+  DCHECK(window);
+  auto* widget = views::Widget::GetWidgetForNativeView(window);
+  DCHECK(widget->non_client_view());
+  auto* frame_view = widget->non_client_view()->frame_view();
+  DCHECK(frame_view);
+  int height = frame_view->GetBoundsForClientView().y();
+  auto bounds = gfx::RectF(window->bounds());
+  bounds.Inset(0, height, 0, 0);
+  return bounds;
+}
+}  // namespace
 
 TouchInjector::TouchInjector(aura::Window* top_level_window)
     : target_window_(top_level_window) {}
@@ -77,13 +93,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (text_input_active_)
     return SendEvent(continuation, &event);
 
-  auto* widget = views::Widget::GetWidgetForNativeView(target_window_);
-  DCHECK(widget->non_client_view());
-  auto* frame_view = widget->non_client_view()->frame_view();
-  DCHECK(frame_view);
-  int height = frame_view->GetWindowBoundsForClientBounds(gfx::Rect()).y();
-  auto bounds = gfx::RectF(target_window_->bounds());
-  bounds.Offset(0, -height);
+  auto bounds = CalculateWindowContentBounds(target_window_);
 
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
