@@ -281,6 +281,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPowerFastSuspendWhenBacklightsForcedOff[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPowerSmartDimEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPowerAlsLoggingEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPowerQuickDimEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAlignment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAlignmentLocal[];

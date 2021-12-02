@@ -598,6 +598,9 @@ const char kPowerSmartDimEnabled[] = "power.smart_dim_enabled";
 // Boolean controlling whether ALS logging is enabled.
 const char kPowerAlsLoggingEnabled[] = "power.als_logging_enabled";
 
+// Boolean controlling whether quick dim is enabled.
+const char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
+
 // Boolean controlling whether the settings is enabled. This pref is intended to
 // be set only by policy not by user.
 const char kOsSettingsEnabled[] = "os_settings_enabled";
