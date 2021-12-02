@@ -24031,7 +24031,8 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Failed to Generate a Response"/>
   <int value="6" label="Failed to Sign the Response"/>
   <int value="7" label="Failed to Serialize the Response"/>
-  <int value="8" label="Success"/>
+  <int value="8" label="Serialized Response is Empty"/>
+  <int value="9" label="Success"/>
 </enum>
 
 <enum name="DTLS_SRTPCryptoSuite">
