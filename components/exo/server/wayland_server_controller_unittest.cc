@@ -10,8 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "components/exo/capabilities.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "components/exo/data_exchange_delegate.h"
+#include "components/exo/input_method_surface_manager.h"
+#include "components/exo/notification_surface_manager.h"
+#include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo {
@@ -41,36 +45,25 @@ class WaylandServerControllerTest : public ash::AshTestBase {
 
 }  // namespace
 
-TEST_F(WaylandServerControllerTest, DefaultPath) {
-  std::unique_ptr<Capabilities> capabilities =
-      Capabilities::GetDefaultCapabilities();
-  // You are not allowed to create a custom server with the default security
-  // context.
-  EXPECT_EQ(WaylandServerController::PathHelper::Create(*capabilities),
-            nullptr);
-}
+TEST_F(WaylandServerControllerTest, RequestServer) {
+  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
 
-TEST_F(WaylandServerControllerTest, CustomPath) {
-  TestCapabilities capabilities;
-  std::unique_ptr<WaylandServerController::PathHelper> helper =
-      WaylandServerController::PathHelper::Create(capabilities);
+  base::RunLoop loop;
+  base::FilePath socket_path;
+  wsc.CreateServer(
+      std::make_unique<TestCapabilities>(),
+      base::BindLambdaForTesting(
+          [&loop, &socket_path](bool success, const base::FilePath& new_path) {
+            socket_path = std::move(new_path);
+            loop.Quit();
+          }));
 
-  base::FilePath server_dir = helper->GetPath().DirName();
+  loop.Run();
+  EXPECT_FALSE(socket_path.empty());
+  EXPECT_TRUE(base::PathExists(socket_path));
 
-  // Should create a directory for the server.
-  EXPECT_TRUE(base::DirectoryExists(server_dir));
-
-  // Must not be a child of the XDG dir.
-  EXPECT_TRUE(base::IsDirectoryEmpty(xdg_dir_));
-
-  // Must be distinct from other servers in the same context.
-  std::unique_ptr<WaylandServerController::PathHelper> helper2 =
-      WaylandServerController::PathHelper::Create(capabilities);
-  EXPECT_NE(helper->GetPath(), helper2->GetPath());
-
-  // Must be deleted when the helper is removed.
-  helper.reset();
-  EXPECT_FALSE(base::DirectoryExists(server_dir));
+  wsc.DeleteServer(socket_path);
+  EXPECT_FALSE(base::PathExists(socket_path));
 }
 
 }  // namespace exo

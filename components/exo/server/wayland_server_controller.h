@@ -7,8 +7,12 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
+#include "components/exo/wayland/server.h"
 
 namespace exo {
 
@@ -16,7 +20,6 @@ namespace wayland {
 class Server;
 }  // namespace wayland
 
-class Capabilities;
 class DataExchangeDelegate;
 class InputMethodSurfaceManager;
 class NotificationSurfaceManager;
@@ -25,24 +28,6 @@ class WMHelper;
 
 class WaylandServerController {
  public:
-  // Helper to manage the lifetimes of the directories associated with custom
-  // wayland servers.
-  class PathHelper {
-   public:
-    static std::unique_ptr<PathHelper> Create(const Capabilities& capabilities);
-
-    PathHelper(const PathHelper&) = delete;
-    PathHelper& operator=(const PathHelper&) = delete;
-
-    const base::FilePath& GetPath() const { return socket_path_; }
-
-   private:
-    explicit PathHelper(base::ScopedTempDir runtime_dir);
-
-    base::ScopedTempDir runtime_dir_;
-    base::FilePath socket_path_;
-  };
-
   static std::unique_ptr<WaylandServerController> CreateForArcIfNecessary(
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 
@@ -69,10 +54,20 @@ class WaylandServerController {
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
 
+  void CreateServer(std::unique_ptr<Capabilities> capabilities,
+                    wayland::Server::StartCallback callback);
+  void DeleteServer(const base::FilePath& path);
+
  private:
+  void OnStarted(std::unique_ptr<wayland::Server> server,
+                 wayland::Server::StartCallback callback,
+                 bool success,
+                 const base::FilePath& path);
+
   std::unique_ptr<WMHelper> wm_helper_;
   std::unique_ptr<Display> display_;
-  std::unique_ptr<wayland::Server> wayland_server_;
+  base::flat_map<base::FilePath, std::unique_ptr<wayland::Server>> servers_;
+  base::WeakPtrFactory<WaylandServerController> weak_factory_{this};
 };
 
 }  // namespace exo

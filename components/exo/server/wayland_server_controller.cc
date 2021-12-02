@@ -22,55 +22,6 @@
 #include "components/exo/wm_helper_chromeos.h"
 
 namespace exo {
-namespace {
-
-// Directory name where all custom wayland sockets will live.
-constexpr base::FilePath::CharType kCustomServerDir[] =
-    FILE_PATH_LITERAL("wayland");
-
-}  // namespace
-
-// Custom wayland sockets are stored at:
-//
-//              /<sibling>/wayland/<context>/<unique>/<socket>
-//
-// where:
-//  - "sibling" is a sibling of the $XDG_RUNTIME_DIR
-//  - "context" is a directory to be bind-mounted into whatever namespace needs
-//    access to the wayland server.
-//  - "unique" is a directory created to prevent collisions of servers in the
-//    same context.
-//  - "socket" is the name of the wayland socket, usually "wayland-0"
-// This is documented in go/secure-exo-ids
-std::unique_ptr<WaylandServerController::PathHelper>
-WaylandServerController::PathHelper::Create(const Capabilities& capabilities) {
-  char* xdg_dir_str = getenv("XDG_RUNTIME_DIR");
-  if (!xdg_dir_str) {
-    LOG(ERROR) << "XDG_RUNTIME_DIR is not set.";
-    return nullptr;
-  }
-  std::string security_context = capabilities.GetSecurityContext();
-  if (security_context.empty()) {
-    LOG(ERROR) << "Providing an empty security context is an error.";
-    return nullptr;
-  }
-  base::ScopedTempDir dir;
-  base::FilePath parent_path = base::FilePath(xdg_dir_str)
-                                   .DirName()
-                                   .Append(kCustomServerDir)
-                                   .Append(security_context);
-  if (!dir.CreateUniqueTempDirUnderPath(parent_path)) {
-    LOG(ERROR) << "Unable to create runtime directory under " << parent_path;
-    return nullptr;
-  }
-  return base::WrapUnique(
-      new WaylandServerController::PathHelper(std::move(dir)));
-}
-
-WaylandServerController::PathHelper::PathHelper(base::ScopedTempDir runtime_dir)
-    : runtime_dir_(std::move(runtime_dir)),
-      socket_path_(
-          runtime_dir_.GetPath().Append(wayland::Server::GetSocketName())) {}
 
 // static
 std::unique_ptr<WaylandServerController>
@@ -98,7 +49,52 @@ WaylandServerController::WaylandServerController(
           std::make_unique<Display>(std::move(notification_surface_manager),
                                     std::move(input_method_surface_manager),
                                     std::move(toast_surface_manager),
-                                    std::move(data_exchange_delegate))),
-      wayland_server_(wayland::Server::Create(display_.get())) {}
+                                    std::move(data_exchange_delegate))) {
+  CreateServer(
+      /*capabilities=*/nullptr,
+      base::BindOnce([](bool success, const base::FilePath& path) {
+        DCHECK(success) << "Failed to start the default wayland server.";
+      }));
+}
+
+void WaylandServerController::CreateServer(
+    std::unique_ptr<Capabilities> capabilities,
+    wayland::Server::StartCallback callback) {
+  bool async = true;
+  if (!capabilities) {
+    capabilities = Capabilities::GetDefaultCapabilities();
+    async = false;
+  }
+
+  std::unique_ptr<wayland::Server> server =
+      wayland::Server::Create(display_.get(), std::move(capabilities));
+  auto* server_ptr = server.get();
+  auto start_callback = base::BindOnce(&WaylandServerController::OnStarted,
+                                       weak_factory_.GetWeakPtr(),
+                                       std::move(server), std::move(callback));
+
+  if (async) {
+    server_ptr->StartAsync(std::move(start_callback));
+  } else {
+    server_ptr->StartWithDefaultPath(std::move(start_callback));
+  }
+}
+
+void WaylandServerController::OnStarted(std::unique_ptr<wayland::Server> server,
+                                        wayland::Server::StartCallback callback,
+                                        bool success,
+                                        const base::FilePath& path) {
+  if (success) {
+    DCHECK(server->socket_path() == path);
+    auto iter_success_pair = servers_.emplace(path, std::move(server));
+    DCHECK(iter_success_pair.second);
+  }
+  std::move(callback).Run(success, path);
+}
+
+void WaylandServerController::DeleteServer(const base::FilePath& path) {
+  // Maybe delete async.
+  servers_.erase(path);
+}
 
 }  // namespace exo
