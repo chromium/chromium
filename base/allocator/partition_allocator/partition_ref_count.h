@@ -144,12 +144,14 @@ class BASE_EXPORT PartitionRefCount {
     return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
            kCookieSalt;
   }
-
-  static constexpr uint32_t kCookieSalt = 0xc01dbeef;
-  volatile uint32_t brp_cookie_;
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
   std::atomic<int32_t> count_{1};
+
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+  static constexpr uint32_t kCookieSalt = 0xc01dbeef;
+  volatile uint32_t brp_cookie_;
+#endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 };
 
 ALWAYS_INLINE PartitionRefCount::PartitionRefCount()
