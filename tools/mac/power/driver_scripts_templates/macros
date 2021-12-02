@@ -7,3 +7,11 @@
 {% macro hash_bang() -%}
   #!/usr/bin/osascript
 {%- endmacro %}
+
+{% macro make_maximized() -%}
+  tell application "Finder" to set desktopBounds to bounds of window of desktop
+  set screenWidth to item 3 of desktopBounds
+  set screenHeight to item 4 of desktopBounds
+  set w to first window
+  set bounds of w to {0, 0, screenWidth, screenHeight}
+{%- endmacro %}
