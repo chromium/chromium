@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">Hindi ma-resolve ang DNS</translation>
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
+<translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
@@ -61,6 +62,7 @@
 <translation id="175763766237925754">Mabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">pagsasalin</translation>
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +83,7 @@
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB sa <ph name="TOTAL_MEMORY" /> GB ang available</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
@@ -106,6 +109,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
 <translation id="2517472476991765520">I-scan</translation>
+<translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
 <translation id="2585245331261708204">Ano'ng bago sa Chrome OS</translation>
@@ -116,6 +120,7 @@
 <translation id="2783010256799387990">NAKAPASA</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2805756323405976993">Mga App</translation>
+<translation id="28232023175184696">Hindi makakonekta sa internet. I-click para subukan ulit.</translation>
 <translation id="2859243502336719778">Mahalagang update</translation>
 <translation id="2860473693272905224">Maglagay ng isa pang pahina sa scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
@@ -152,6 +157,7 @@
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
 <translation id="3462187165860821523">Ina-update ang <ph name="DEVICE_NAME" /></translation>
+<translation id="3486220673238053218">kahulugan</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
@@ -162,6 +168,7 @@
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
+<translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
@@ -239,8 +246,10 @@
 <translation id="4707579418881001319">L2TP/IPsec + certificate ng user</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
+<translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="475869545581454722">Na-update ang password sa Chrome OS</translation>
 <translation id="4773299976671772492">Inihinto</translation>
+<translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4794140124556169553">Posibleng makaapekto sa performance ng iyong system ang pagpapatakbo ng pagsusuri sa CPU</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Aking Mga Larawan</translation>
@@ -267,6 +276,7 @@
 <translation id="4999333166442584738">Itago ang ulat</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">Payagan</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Pangalan ng pangkat</translation>
 <translation id="5051044138948155788">Ito lang ang page. Dadalhin ka nito sa screen ng pagsisimula ng pag-scan.</translation>
@@ -274,6 +284,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Pag-authenticate</translation>
 <translation id="5154917547274118687">Memorya</translation>
+<translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5212543919916444558">Wala akong makitang kahit ano sa iyong screen kung saan ako makakatulong.
@@ -314,6 +325,8 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
+<translation id="5620281292257375798">Internal lang</translation>
+<translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
@@ -371,6 +384,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
+<translation id="6500818810472529210">Tingnan ang resulta sa Google Search</translation>
 <translation id="6516990319416533844">Para masubukan ang rate ng pag-charge ng baterya, gumamit ng malaking porsyento ng baterya sa maikling panahon</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
@@ -384,6 +398,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6657585470893396449">Password</translation>
+<translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6749473226660745022">Mga Larawan</translation>
@@ -391,6 +406,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
 <translation id="680983167891198932">Key</translation>
+<translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
 <translation id="6853312040151791195">Rate ng Pag-discharge</translation>
 <translation id="6905724422583748843">Bumalik sa <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nakabukas ang takip ng scanner. Isara ang takip at subukan ulit.</translation>
@@ -425,9 +441,11 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">Mapupunta ang device sa ibang may-ari</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
@@ -456,6 +474,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">Walang naka-set up na DNS server</translation>
 <translation id="7786540085520432425">Habang ina-update, puwede mong i-minimize ang window pero huwag i-unplug ang iyong device. Posible itong tumagal nang ilang minuto at posibleng hindi gumana ang iyong device sa panahon ng pag-update na ito</translation>
+<translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">I-install ang CloudReady</translation>
@@ -524,6 +543,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8660881923941176839">pounds</translation>
 <translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>
 <translation id="8675354002693747642">Pre-shared key:</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gamitin ang mga Kaliwa o Pakanang arrow key para pamahalaan ang feature na ito.</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>
@@ -539,6 +559,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>
+<translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
 <translation id="8898840733695078011">Lakas ng signal</translation>
@@ -560,6 +581,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9062831201344759865">Mataas ang latency ng resolution ng DNS</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
 <translation id="9095415590198785865">Mapupunta ang device sa parehong may-ari</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

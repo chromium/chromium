@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
+<translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
@@ -16,6 +17,7 @@
 <translation id="1175951029573070619">सरासरी (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
+<translation id="1196959502276349371">आवृत्ती <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
@@ -61,6 +63,7 @@
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">भाषांतर</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +84,7 @@
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">क्‍यूमध्ये आहे</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2209788852729124853">ट्रॅफिक काउंटर रीसेट करा</translation>
@@ -107,6 +111,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
+<translation id="2536159006530886390">इंटरनेटशी कनेक्ट करू शकत नाही.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
@@ -117,6 +122,7 @@
 <translation id="2783010256799387990">पास झाले</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
+<translation id="28232023175184696">इंटरनेटशी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करण्यासाठी क्लिक करा.</translation>
 <translation id="2859243502336719778">महत्त्वाचे अपडेट</translation>
 <translation id="2860473693272905224">स्कॅनरवर दुसरे पेज ठेवा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
@@ -153,6 +159,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट होत आहे</translation>
+<translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
@@ -163,6 +170,7 @@
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
+<translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
@@ -240,8 +248,10 @@
 <translation id="4707579418881001319">L2TP/IPsec + वापरकर्ता सर्टिफिकेट</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
+<translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
 <translation id="475869545581454722">Chrome OS चा पासवर्ड अपडेट करण्यात आला</translation>
 <translation id="4773299976671772492">थांबविले</translation>
+<translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
 <translation id="4794140124556169553">सीपीयू चाचणी रन केल्याने तुमच्या सिस्टमच्या परफॉर्मन्सवर परिणाम होऊ शकतो</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> हे प्रिंट कार्य रद्द केले</translation>
 <translation id="4813136279048157860">माझ्या इमेज</translation>
@@ -268,6 +278,7 @@
 <translation id="4999333166442584738">अहवाल लपवा</translation>
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5049856988445523908">सिम लॉक केले (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">गट नाव</translation>
 <translation id="5051044138948155788">हे एकमेव पेज आहे. हे तुम्हाला स्कॅनिंग सुरुवात स्क्रीनवर घेऊन जाईल.</translation>
@@ -275,6 +286,7 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
 <translation id="5154917547274118687">मेमरी</translation>
+<translation id="5166918508782100047">क्विक आन्सर्स सेटिंग्ज</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
@@ -315,6 +327,8 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
+<translation id="5620281292257375798">फक्त अंतर्गत</translation>
+<translation id="5649768706273821470">ऐका</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">कुटुंब</translation>
@@ -372,6 +386,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
+<translation id="6500818810472529210">Google Search मधील परिणाम पहा</translation>
 <translation id="6516990319416533844">बॅटरी चार्जिंग रेटची चाचणी घेण्यासाठी, थोडा वेळ तुमची बॅटरी ड्रेन होऊ द्या</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
@@ -385,6 +400,7 @@
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
+<translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="6749473226660745022">फोटो</translation>
@@ -392,6 +408,7 @@
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="680983167891198932">की</translation>
+<translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6853312040151791195">डिस्चार्ज होण्याचा रेट</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> वर परत या</translation>
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -426,9 +443,11 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">डिव्हाइस दुसऱ्या मालकाला दिले जाईल</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
@@ -457,6 +476,7 @@
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
 <translation id="7784116172884276937">कोणतेही DNS सर्व्हर सेट केलेले नाहीत</translation>
 <translation id="7786540085520432425">अपडेट करताना, तुम्ही विंडो लहान करू शकता, पण तुमचे डिव्हाइस अनप्लग करू नका. याला काही मिनिटे लागू शकतात आणि या अपडेटदरम्यान तुमचे डिव्हाइस कदाचित काम करणार नाही</translation>
+<translation id="780301667611848630">नाही, नको</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7819857487979277519">PSK (WPA किंवा RSN)</translation>
 <translation id="7835501727204647447">CloudReady इंस्टॉल करा</translation>
@@ -525,6 +545,7 @@
 <translation id="8660881923941176839">पाउंड</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटन्सी सीमेपेक्षा जास्त आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>
@@ -540,6 +561,7 @@
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8855781559874488009">फायरवॉलद्वारे HTTP वेबसाइटशी कनेक्ट करू शकत नाही</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" आणि आणखी बऱ्याच गोष्टींसाठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8898840733695078011">सिग्नल सामर्थ्य</translation>
@@ -561,6 +583,7 @@
 <translation id="9062831201344759865">DNS रिझोल्यूशनची लेटन्सी जास्त आहे</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
+<translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
 <translation id="9095415590198785865">डिव्हाइस त्याच मालकाला दिले जाईल</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

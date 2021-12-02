@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">Non se puido resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelados</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
+<translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
@@ -61,6 +62,7 @@
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">tradución</translation>
 <translation id="1792647875738159689">Cancelando escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +83,7 @@
 <translation id="2126937207024182736">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
@@ -107,6 +110,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualizar imaxe de fondo de pantalla actual</translation>
 <translation id="2517472476991765520">Buscar</translation>
+<translation id="2536159006530886390">Non foi posible conectarse a Internet.</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
 <translation id="2585245331261708204">Novidades de Chrome OS</translation>
@@ -117,6 +121,7 @@
 <translation id="2783010256799387990">PROBA SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
+<translation id="28232023175184696">Non foi posible conectarse a Internet. Facer clic para tentalo de novo.</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
 <translation id="2872961005593481000">Pechar</translation>
@@ -153,6 +158,7 @@
 <translation id="345898999683440380">Escaneando páxina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3462187165860821523">Actualizando dispositivo (<ph name="DEVICE_NAME" />)</translation>
+<translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
@@ -163,6 +169,7 @@
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
+<translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
@@ -240,8 +247,10 @@
 <translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4744944742468440486">Información relacionada coa túa selección</translation>
 <translation id="475869545581454722">Modificouse o contrasinal de Chrome OS</translation>
 <translation id="4773299976671772492">Detido</translation>
+<translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">As miñas imaxes</translation>
@@ -268,6 +277,7 @@
 <translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única páxina. Ao realizar esta acción, redirixirásete á pantalla de inicio da función do escáner.</translation>
@@ -275,6 +285,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5154917547274118687">Memoria</translation>
+<translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
@@ -315,6 +326,8 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
+<translation id="5620281292257375798">Só para uso interno</translation>
+<translation id="5649768706273821470">Escoitar</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -372,6 +385,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Xestionado por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
+<translation id="6500818810472529210">Consulta o resultado na Busca de Google</translation>
 <translation id="6516990319416533844">Se queres comprobar a taxa de carga da batería, agarda un anaco para deixar que se descargue un pouco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
@@ -385,6 +399,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
+<translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -392,6 +407,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="680983167891198932">Clave</translation>
+<translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tapa do escáner está aberta. Péchaa e téntao de novo.</translation>
@@ -426,9 +442,11 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">Vai cambiar a propiedade do dispositivo</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP moi alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Escaneouse 1 páxina}other{A operación rematou. Escaneáronse {NUMBER_OF_PAGES} páxinas}}</translation>
@@ -457,6 +475,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
 <translation id="7786540085520432425">Mentres se realiza a actualización, podes minimizar a ventá, pero non desconectes o dispositivo. O proceso da actualización pode tardar uns minutos, durante os cales pode que non funcione o dispositivo</translation>
+<translation id="780301667611848630">Non, grazas</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
@@ -525,6 +544,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizar teclas frecha cara á esquerda ou frecha arriba para xestionar esta función.</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
@@ -540,6 +560,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8855781559874488009">Non se puido establecer conexión con sitios web HTTP a través do firewall</translation>
+<translation id="8863888432376731307">Obtén a <ph name="INTENT" /> de "<ph name="QUERY" />" e moito máis</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
@@ -561,6 +582,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9062831201344759865">A resolución de DNS ten latencia alta</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="9095415590198785865">Non vai cambiar a propiedade do dispositivo</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

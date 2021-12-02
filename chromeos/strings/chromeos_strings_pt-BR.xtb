@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
+<translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
@@ -16,6 +17,7 @@
 <translation id="1175951029573070619">Médio (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
+<translation id="1196959502276349371">Versão <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
@@ -61,6 +63,7 @@
 <translation id="175763766237925754">Bom (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">tradução</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1851218745569890714">Videoconferência</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +84,7 @@
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">EM FILA</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
 <translation id="2180197493692062006">Algo deu errado. Tente abrir o app novamente.</translation>
 <translation id="2209788852729124853">Redefinir contadores de tráfego</translation>
@@ -107,6 +111,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Atualizar o plano de fundo atual</translation>
 <translation id="2517472476991765520">Verificar</translation>
+<translation id="2536159006530886390">Não é possível se conectar à Internet.</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
 <translation id="2585245331261708204">Novidades do Chrome OS</translation>
@@ -117,6 +122,7 @@
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="28232023175184696">Não é possível se conectar à Internet. Clique para tentar novamente.</translation>
 <translation id="2859243502336719778">Atualização crítica</translation>
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Desligar</translation>
@@ -153,6 +159,7 @@
 <translation id="345898999683440380">Digitalizando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3462187165860821523">Atualizando o <ph name="DEVICE_NAME" /></translation>
+<translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
@@ -163,6 +170,7 @@
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
 <translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
+<translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avaliações)</translation>
 <translation id="3748026146096797577">Não conectado</translation>
@@ -175,6 +183,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
+<translation id="3924044641767672375">Recomendamos conectar o dispositivo ao Wi-Fi para facilitar o processo de reparo. Sua rede será salva.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
 <translation id="3941014780699102620">Falha na resolução do host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
@@ -219,6 +228,7 @@
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
+<translation id="4485626319513081846">Selecione esta opção caso o dispositivo volte para o estoque ou seja recondicionado e distribuído para um novo cliente.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Correspondência do nome alternativo do assunto</translation>
 <translation id="4536864596629708641">Configuração do IP</translation>
@@ -240,8 +250,10 @@
 <translation id="4707579418881001319">L2TP/IPsec + certificado de usuário</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
 <translation id="473775607612524610">Atualizar</translation>
+<translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
 <translation id="475869545581454722">Senha do Chrome OS atualizada</translation>
 <translation id="4773299976671772492">Interrompida</translation>
+<translation id="4782311465517282004">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado</translation>
 <translation id="4794140124556169553">Um teste de CPU pode afetar o desempenho do sistema</translation>
 <translation id="4808449224298348341">Trabalho de impressão cancelado: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Minhas imagens</translation>
@@ -268,6 +280,7 @@
 <translation id="4999333166442584738">Ocultar relatório</translation>
 <translation id="500920857929044050">Interromper teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">Chip bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Essa é a única página. Se você removê-la, a tela inicial de digitalização será aberta.</translation>
@@ -275,6 +288,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5154917547274118687">Memória</translation>
+<translation id="5166918508782100047">Configurações das Respostas rápidas</translation>
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
@@ -315,6 +329,8 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Digitalizar novamente</translation>
+<translation id="5620281292257375798">Somente uso interno</translation>
+<translation id="5649768706273821470">Ouvir</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -372,6 +388,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
+<translation id="6500818810472529210">Ver resultados na Pesquisa Google</translation>
 <translation id="6516990319416533844">Para testar a taxa de carregamento da bateria, deixe-a descarregar por um curto período</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido</translation>
@@ -385,6 +402,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6620487321149975369">Os trabalhos de impressão aparecerão no histórico, a menos que sejam removidos manualmente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6657585470893396449">Senha</translation>
+<translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6747215703636344499">Parado (saída cheia)</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -392,6 +410,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6766275201586212568">Falha em resoluções de DNS</translation>
 <translation id="6768237774506518020">Taxa elevada de erro de resolução de DNS</translation>
 <translation id="680983167891198932">Chave</translation>
+<translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
 <translation id="6905724422583748843">Voltar para <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche-a e tente novamente.</translation>
@@ -399,6 +418,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6957231940976260713">Nome do serviço</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
+<translation id="6992266763844448459">Selecione esta opção caso a propriedade do dispositivo continue a mesma. Por exemplo, caso o dispositivo esteja sendo transferido para uma pessoa diferente dentro da organização.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Concluir e salvar</translation>
@@ -426,9 +446,11 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">O dispositivo vai mudar de proprietário</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pressione Pesquisar + barra de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de arquivo</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
@@ -457,6 +479,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7769672763586021400">Código do modelo</translation>
 <translation id="7784116172884276937">Nenhum servidor DNS está configurado</translation>
 <translation id="7786540085520432425">Durante a atualização, você pode minimizar a janela, mas não desconecte o dispositivo. Isso pode levar alguns minutos, e seu dispositivo pode não funcionar nesse período</translation>
+<translation id="780301667611848630">Não</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">Pre-shared key (PSK): WPA ou RSN</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
@@ -525,6 +548,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8662671328352114214">Entrar na rede <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use as teclas de seta para a esquerda ou direita para gerenciar este recurso.</translation>
 <translation id="871560550817059752">Falha - Sem tinta</translation>
 <translation id="8723108084122415655">Rede não padrão acima do limite de latência</translation>
 <translation id="8726019395068607495">Parado (porta aberta)</translation>
@@ -540,6 +564,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8855781559874488009">O firewall impediu a conexão a sites HTTP</translation>
+<translation id="8863888432376731307">Veja a <ph name="INTENT" /> de "<ph name="QUERY" />" e muito mais</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
@@ -561,6 +586,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9062831201344759865">A resolução de DNS tem alta latência</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="9095415590198785865">O dispositivo vai continuar com o mesmo proprietário</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

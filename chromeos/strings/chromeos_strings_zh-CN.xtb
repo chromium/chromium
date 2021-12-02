@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">无法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
+<translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
@@ -61,6 +62,7 @@
 <translation id="175763766237925754">良好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">翻译</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +83,7 @@
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">已加入队列</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
@@ -107,6 +110,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2517472476991765520">扫描</translation>
+<translation id="2536159006530886390">无法连接到互联网。</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2585245331261708204">Chrome 操作系统的新变化</translation>
@@ -117,6 +121,7 @@
 <translation id="2783010256799387990">通过</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2805756323405976993">应用</translation>
+<translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
 <translation id="2859243502336719778">重要更新</translation>
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
 <translation id="2872961005593481000">关机</translation>
@@ -153,6 +158,7 @@
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3462187165860821523">正在更新“<ph name="DEVICE_NAME" />”</translation>
+<translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
@@ -163,6 +169,7 @@
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
+<translation id="370665806235115550">正在加载...</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
@@ -240,8 +247,10 @@
 <translation id="4707579418881001319">L2TP/IPSec + 用户证书</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4744944742468440486">与您所选内容相关的信息</translation>
 <translation id="475869545581454722">Chrome 操作系统密码已更新</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4813136279048157860">我的图片</translation>
@@ -268,6 +277,7 @@
 <translation id="4999333166442584738">隐藏报告</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">允许</translation>
 <translation id="5049856988445523908">SIM 卡已锁定 (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">群组名称</translation>
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
@@ -275,6 +285,7 @@
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5154917547274118687">内存</translation>
+<translation id="5166918508782100047">快速解答设置</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
@@ -315,6 +326,8 @@
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
+<translation id="5620281292257375798">仅供内部使用</translation>
+<translation id="5649768706273821470">收听</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家用</translation>
@@ -372,6 +385,7 @@
 <translation id="6472207088655375767">一次性密码</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
+<translation id="6500818810472529210">查看“Google 搜索”中的结果</translation>
 <translation id="6516990319416533844">若要测试电池充电速率，请先耗掉少许电池电量</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全协议</translation>
@@ -385,6 +399,7 @@
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6657585470893396449">密码</translation>
+<translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>
@@ -392,6 +407,7 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="680983167891198932">密钥</translation>
+<translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
@@ -426,9 +442,11 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">设备将由新所有者使用</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">换算</translation>
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
@@ -457,6 +475,7 @@
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7784116172884276937">未设置 DNS 服务器</translation>
 <translation id="7786540085520432425">更新时，您可以最小化窗口，但不要拔掉设备的电源插头。整个更新过程可能需要几分钟的时间，在此期间，您的设备可能会无法正常运行</translation>
+<translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>
 <translation id="7835501727204647447">安装 CloudReady</translation>
@@ -525,6 +544,7 @@
 <translation id="8660881923941176839">磅</translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
@@ -540,6 +560,7 @@
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>
+<translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8898840733695078011">信号强度</translation>
@@ -561,6 +582,7 @@
 <translation id="9062831201344759865">DNS 解析延迟时间较长</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">蓝牙</translation>
+<translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9095415590198785865">设备将由原所有者使用</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

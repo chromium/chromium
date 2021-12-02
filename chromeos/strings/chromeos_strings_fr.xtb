@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">Impossible de résoudre le DNS</translation>
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
+<translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1059913517121127803">Impossible de lancer la numérisation</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
@@ -61,6 +62,7 @@
 <translation id="175763766237925754">Bonne (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">traduction</translation>
 <translation id="1792647875738159689">Annulation de la numérisation…</translation>
 <translation id="1851218745569890714">Visioconférence</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +83,7 @@
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> Go</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">Test ajouté à la file d'attente</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
@@ -107,6 +110,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2517472476991765520">Scanner</translation>
+<translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Pour configurer, accédez à Paramètres</translation>
 <translation id="2585245331261708204">Nouveautés de Chrome OS</translation>
@@ -117,6 +121,7 @@
 <translation id="2783010256799387990">RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le scanner</translation>
 <translation id="2872961005593481000">Éteindre</translation>
@@ -153,6 +158,7 @@
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" />… Numérisation terminée à <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" />…</translation>
+<translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
@@ -163,6 +169,7 @@
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
+<translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
@@ -240,8 +247,10 @@
 <translation id="4707579418881001319">L2TP/IPSec + Certificat utilisateur</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
+<translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
 <translation id="475869545581454722">Le mot de passe de Chrome OS a été mis à jour</translation>
 <translation id="4773299976671772492">Interrompu</translation>
+<translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte</translation>
 <translation id="4794140124556169553">Tester le processeur peut affecter les performances système</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Mes images</translation>
@@ -268,6 +277,7 @@
 <translation id="4999333166442584738">Masquer le rapport</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Vous allez revenir à l'écran où commencer à scanner.</translation>
@@ -275,6 +285,7 @@
 <translation id="5089810972385038852">État</translation>
 <translation id="5142961317498132443">Authentification</translation>
 <translation id="5154917547274118687">Mémoire</translation>
+<translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
@@ -315,6 +326,8 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescanner</translation>
+<translation id="5620281292257375798">Interne uniquement</translation>
+<translation id="5649768706273821470">Écouter</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
@@ -372,6 +385,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6472207088655375767">Mot de passe à usage unique</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Tâche suspendue - Bourrage papier</translation>
+<translation id="6500818810472529210">Voir le résultat dans la recherche Google</translation>
 <translation id="6516990319416533844">Pour évaluer le niveau de charge de la batterie, laissez votre batterie se décharger sur une courte période</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
@@ -385,6 +399,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
+<translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
 <translation id="6749473226660745022">Photos</translation>
@@ -392,6 +407,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="680983167891198932">Clé</translation>
+<translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
@@ -426,9 +442,11 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">L'appareil sera transféré à un autre propriétaire</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages numérisées}}</translation>
@@ -457,6 +475,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
 <translation id="7784116172884276937">Aucun serveur DNS configuré</translation>
 <translation id="7786540085520432425">Pendant la mise à jour, vous pouvez réduire la fenêtre, mais ne débranchez pas votre appareil. Cela peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil est compromis.</translation>
+<translation id="780301667611848630">Non merci</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Installer CloudReady</translation>
@@ -525,6 +544,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8660881923941176839">livres</translation>
 <translation id="8662671328352114214">Rejoindre le réseau <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clé pré-partagée</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
 <translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
@@ -540,6 +560,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8855781559874488009">Impossible de se connecter aux sites HTTP via le pare-feu</translation>
+<translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> pour "<ph name="QUERY" />" et plus</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test réussi</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>
@@ -561,6 +582,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="9062831201344759865">Latence élevée pour la résolution DNS</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9087578468327036362">Signaler cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9095415590198785865">L'appareil sera transféré au même propriétaire</translation>
 <translation id="9095775724867566971">PluginVM</translation>

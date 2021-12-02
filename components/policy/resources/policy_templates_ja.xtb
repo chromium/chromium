@@ -1345,20 +1345,6 @@
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> はインストールされたネイティブ メッセージング ホストをすべて読み込みます。</translation>
 <translation id="2568488785376704318">このポリシーはサポートを終了しました。代わりに <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> を使用してください。</translation>
-<translation id="2570216126125490811">安全でないウェブサイトから、アクセスが限定されたプライベート ネットワーク エンドポイントへのリクエストを許可するかどうかを制御します。
-
-          このポリシーはプライベート ネットワーク アクセスの仕様に関連したものです。詳しくは https://wicg.github.io/private-network-access/ をご覧ください。
-
-          次に該当するネットワーク エンドポイントは、アクセスがより限定されます。
-          1) IP アドレスがローカルホストである（ローカルホストでないエンドポイントと比較して）。
-          2) IP アドレスがプライベートである（パブリックなエンドポイントと比較して）。
-          仕様の発展に応じて、このポリシーは将来的にプライベート IP またはローカルホストに対するすべてのクロスオリジンのリクエストに適用される可能性があります。
-
-          ウェブサイトは、https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts に記載された安全なコンテキストの定義を満たしている場合、安全とみなされます。そうでない場合は、安全でないコンテキストとして扱われます。
-
-          このポリシーを設定しない場合や False に設定した場合、安全でないウェブサイトから、より限定されたプライベート ネットワーク エンドポイントに送信されたリクエストがデフォルトで許可またはブロックされるかは、ユーザーの個人設定で <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" /> 機能がどのように設定されているかによって決まります。なお、この機能は、フィールド トライアルまたはコマンドラインで設定できます。
-
-          このポリシーを True に設定した場合は、他のクロスオリジン チェックに合格することを条件として、安全でないウェブサイトから任意のネットワーク エンドポイントにリクエストを送信できます。</translation>
 <translation id="2575198840408498393">ローミング プロファイルの作成を無効にする</translation>
 <translation id="257788512393330403">6 時間ごとにパスワードの入力を求める</translation>
 <translation id="2580757713966614760">このポリシーでは、プリンタの一括設定に適用するアクセス ポリシーを指定して、ユーザーが <ph name="DEVICE_PRINTERS_POLICY_NAME" /> のどのプリンタを使用できるかを制御できます。
@@ -1643,7 +1629,6 @@
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> を使用してください。</translation>
 <translation id="2952347049958405264">制限事項:</translation>
-<translation id="2957047180944828740">より限定されたプライベート ネットワークのエンドポイントに対して、安全でないウェブサイトからのリクエスト実行を許可するかどうかを指定します</translation>
 <translation id="2957506574938329824">すべてのサイトに対して Web Bluetooth API による Bluetooth デバイスへのアクセスを許可しない</translation>
 <translation id="2957513448235202597">「<ph name="HTTP_NEGOTIATE" />」認証用のアカウントの種類</translation>
 <translation id="2959469725686993410">タイムゾーンを解決する際、常に Wi-Fi アクセス ポイントをサーバーに送信する</translation>
@@ -2742,7 +2727,6 @@
 <translation id="4322842393287974810">遅延なしで自動開始されるキオスクアプリから <ph name="PRODUCT_OS_NAME" /> のバージョンを制御できるようにする</translation>
 <translation id="4325690621216251241">システム トレイにログアウト ボタンを追加する</translation>
 <translation id="4329095223358818804">クイック アンサーに選択したコンテンツへのアクセスを許可する</translation>
-<translation id="4330372709562934569">安全でないウェブサイトがリストに指定されている場合、そのウェブサイトからより限定されたプライベート ネットワーク エンドポイントへのリクエストは許可されます。</translation>
 <translation id="4330908525441222205">デフォルトの AppCache 動作を使用する</translation>
 <translation id="4331357743227845302">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で接続を許可する Bluetooth サービスを指定できます。
 
@@ -6598,15 +6582,6 @@
 <translation id="9111850884577810507">このフィールドは、<ph name="PRODUCT_NAME" /> 対応のプリンタを示す文字列のいずれかと一致する必要があります。この文字列は、プリンタに適した PPD の特定とインストールに使用されます。詳しくは、https://support.google.com/chrome?p=noncloudprint をご覧ください。</translation>
 <translation id="9112727953998243860">企業プリンタの設定ファイル</translation>
 <translation id="911605919007170833">セキュリティ ステータスを報告する</translation>
-<translation id="9116740039944096995">URL パターンのリスト。安全でないウェブサイトのオリジンが、このリスト内のパターンの 1 つと一致する場合、そのウェブサイトからプライベート ネットワークへのリクエストは許可されます。
-
-          リストを設定しない場合、このポリシーは空のリストに対して評価されます。
-
-          ここで指定したパターンに含まれていないオリジンについては、グローバル デフォルト値として、<ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> ポリシーで値が設定されていればその値、設定されていなければユーザーが個人設定する値が使用されます。
-
-          このポリシーの対象となるのは安全でないオリジンのみです。安全なオリジン（https://example.com など）がリストに含まれている場合は無視されます。
-
-          有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="9117826695152538214">このポリシーを True に設定した場合、固定キーが有効になります。このポリシーを False に設定した場合、固定キーが無効になります。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、固定キーは最初は無効ですが、ユーザーはいつでも有効にできます。</translation>

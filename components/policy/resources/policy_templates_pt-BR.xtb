@@ -1400,20 +1400,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="2568488785376704318">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
-<translation id="2570216126125490811">Controla se os sites não seguros têm permissão para fazer solicitações para endpoints de uma rede mais particular.
-
-          Esta política está relacionada à especificação Private Network Access. Para ver mais detalhes, acesse https://wicg.github.io/private-network-access/ (link em inglês).
-
-          Um endpoint de rede será mais particular que outro se:
-          1) o endereço IP dele for localhost e o do outro não for;
-          2) o endereço IP dele for particular e o do outro for público.
-          No futuro, dependendo da evolução das especificações, esta política poderá ser aplicada a todas as solicitações de origem cruzada direcionadas ao localhost ou IPs particulares.
-
-          Um site será considerado seguro se ele atender à definição de contexto seguro apresentada em https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts (link em inglês). Caso contrário, ele será tratado como um contexto não seguro.
-
-          Quando esta política for deixada sem definição ou definida como falsa, o comportamento padrão para solicitações de contexto não seguro para endpoints de uma rede mais particular dependerá da configuração pessoal do usuário para o recurso <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, que pode ser definido por um experimento público ou na linha de comando.
-
-          Quando a política for definida como verdadeira, os sites não seguros terão permissão para fazer solicitações para qualquer endpoint de rede, sujeito a outras verificações de origem cruzada.</translation>
 <translation id="2575198840408498393">Desativar a criação de perfis de roaming</translation>
 <translation id="257788512393330403">A senha precisa ser digitada a cada seis horas</translation>
 <translation id="2580757713966614760">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="DEVICE_PRINTERS_POLICY_NAME" /> estão disponíveis para os usuários.
@@ -1500,6 +1486,10 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
+<translation id="2717628606602248727">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados enviam as informações sobre memória.
+
+      Se a política for desativada, os dispositivos registrados não vão enviar informações sobre a memória.
+      Exceção: no M95 e em versões anteriores, as informações de memória livre são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="2721185634942265347">Desativar sugestões de pesquisa</translation>
 <translation id="2721582713721006926">Desativar a definição das Respostas rápidas</translation>
 <translation id="2723692978495226412">Se a política for definida como "Ativada", haverá recomendações para apps instalados anteriormente pelo usuário ou em outros dispositivos. Se nenhum texto de pesquisa tiver sido inserido, essas recomendações aparecerão no acesso rápido depois das recomendações de apps locais.
@@ -1700,7 +1690,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="2952347049958405264">Restrições:</translation>
-<translation id="2957047180944828740">Especifica se sites não seguros podem fazer solicitações para endpoints de uma rede mais privada</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo de conta para autenticação <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Sempre enviar pontos de acesso Wi-Fi para o servidor ao determinar o fuso horário</translation>
@@ -2824,7 +2813,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Adicionar um botão de logout à bandeja do sistema</translation>
 <translation id="4329095223358818804">Permitir que o recurso "Respostas rápidas" acesse conteúdo selecionado</translation>
-<translation id="4330372709562934569">Permitir que os sites listados façam solicitações para endpoints de uma rede mais privada a partir de contextos não seguros.</translation>
 <translation id="4330908525441222205">Usar o comportamento padrão do AppCache</translation>
 <translation id="4331357743227845302">Esta política permite que os administradores configurem os serviços Bluetooth a que o <ph name="PRODUCT_OS_NAME" /> pode se conectar.
 
@@ -4005,6 +3993,9 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, as informações sobre os VPD do dispositivo serão enviadas.
       Os VPD são um conjunto de dados informativos e de configuração, como números de série e peças, associados ao dispositivo.</translation>
+<translation id="576158229686912964">Esta política foi descontinuada no M96. Use as políticas <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> e <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
+
+      Se a política for ativada ou deixada sem definição, a lista de interfaces de rede com os tipos e endereços de hardware será informada pelos dispositivos registrados. Se a política for desativada, a interface de rede não será informada pelos dispositivos registrados.</translation>
 <translation id="5762969307102447459">Desativar o preenchimento automático de endereços</translation>
 <translation id="5765780083710877561">Descrição:</translation>
 <translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -5419,6 +5410,10 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
           Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo da política DefaultKeygenSetting, caso ela esteja definida, ou da configuração pessoal do usuário.
 
           Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="7394023172636522064">Se a política for ativada, os dispositivos registrados vão informar o status de segurança TPM.
+
+      Se ela for desativada ou for deixada sem definição, os dispositivos registrados não vão gravar ou informar o status de segurança TPM.
+      Exceção: no M95 e em versões anteriores, as informações do TPM são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="739556497251174388">Permitir reutilização das credenciais de login do <ph name="PRODUCT_OS_NAME" /> para a autenticação de rede</translation>
 <translation id="7400971609879083218">Se a política for definida como "Ativada", imagens de terceiros em uma página poderão ser exibidas em um prompt de autenticação.
 
@@ -5496,6 +5491,9 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política for deixada sem definição, o padrão será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para usuários gerenciados por empresas e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para usuários não gerenciados.
 
       No futuro, será possível fazer com que o <ph name="LACROS_NAME" /> seja o único navegador disponível no <ph name="PRODUCT_OS_NAME" /> usando o valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="7509761893401042250">Esta política foi descontinuada no M96. Use as políticas <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> e <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
+
+      Se a política for ativada ou for deixada sem definição, as estatísticas de hardware, como o uso de CPU/RAM, serão informadas pelos dispositivos registrados. Se a política for desativada, as estatísticas de hardware não serão informadas pelos dispositivos registrados.</translation>
 <translation id="7519218194072744342">O URL do gerenciador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir a geração de chaves nesses sites</translation>
 <translation id="7529144158022474049">Fator de dispersão de atualizações automáticas</translation>
@@ -5503,6 +5501,10 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Quando a política for definida como verdadeira ou não for definida, um alerta será exibido para lembrar os usuários de saírem da tela cheia antes de digitarem a senha. Quando a política for definida como falsa, nenhum alerta será exibido.</translation>
 <translation id="7534199150025803530">Esta política não tem nenhum efeito sobre o app Google Drive para Android. Para impedir o uso do Google Drive por conexões celulares, bloqueie a instalação do app Google Drive para Android.</translation>
+<translation id="7538583957913002726">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados informam o nome do modelo, a arquitetura e a velocidade máxima do clock da CPU, além da temperatura e utilização da CPU no M96 e versões mais recentes.
+
+      Se a política for desativada, os dispositivos registrados não vão enviar informações sobre a CPU.
+      Exceção: no M95 e em versões anteriores, o envio de informações sobre a temperatura e a utilização da CPU é controlado por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="7540622499178214923">Concede permissão ao controlador de telemetria e diagnósticos wilco</translation>
 <translation id="7540826630642174841">Se a política for definida, as políticas do dispositivo serão ignoradas durante os intervalos especificados, e os valores padrão delas serão usados. As políticas do dispositivo serão reaplicadas pelo <ph name="PRODUCT_NAME" /> quando o período da política começar ou terminar. O usuário será notificado e forçado a se desconectar quando o período e as configurações de política do dispositivo mudarem (por exemplo, quando um usuário fizer login com uma conta sem permissão).</translation>
 <translation id="7540945123920084379">Se a política for definida, ela controlará quais modos de desbloqueio rápido podem desbloquear a tela.
@@ -5677,6 +5679,10 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="7717938661004793600">Configurar recursos de acessibilidade do <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="7718127720248642697">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados enviam estatísticas e identificadores de hardware para dispositivos de armazenamento.
+
+      Se a política for desativada, os dispositivos registrados não vão informar estatísticas de armazenamento.
+      Exceção: no M95 e em versões anteriores, o tamanho e espaço livre do disco são controlados por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 
@@ -6816,6 +6822,10 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
 <translation id="9068629430243705879">porta 6566 (pode ser desbloqueada até 15/10/2021)</translation>
+<translation id="9069588907259547232">Se a política for ativada ou deixada sem definição, os dispositivos registrados vão informar o volume do áudio.
+
+      Se ela for desativada, os dispositivos registrados não vão gravar nem informar o status do áudio.
+      Exceção: no M95 e em versões anteriores, as informações do nível de volume do sistema são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="9073405975862312795">Se a política for definida como "Ativada" ou não for definida, os períodos de atividade do usuário nos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada", os períodos de atividade nos dispositivos registrados não serão gravados ou informados.</translation>
@@ -6841,15 +6851,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="9111850884577810507">Este campo precisa corresponder a uma das strings que representam uma impressora compatível com <ph name="PRODUCT_NAME" />. A string será usada para identificar e instalar o PPD apropriado para a impressora. Mais informações estão disponíveis em https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">Arquivo de configuração de impressora corporativa</translation>
 <translation id="911605919007170833">Informar status de segurança</translation>
-<translation id="9116740039944096995">Lista de padrões de URL. São permitidas solicitações de redes privadas iniciadas por sites não seguros veiculados por origens correspondentes.
-
-          Se esta política ficar sem definição, ela se comportará como se a lista tivesse sido definida como vazia.
-
-          No caso de origens não cobertas pelos padrões especificados aqui, o valor global padrão usado será o da política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se ela estiver definida, ou o da configuração pessoal do usuário.
-
-          Observe que esta política afeta apenas origens não seguras. Origens seguras incluídas nesta lista, como https://example.com, serão ignoradas.
-
-          Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="9117826695152538214">Se esta política for definida como verdadeira, as teclas de aderência serão ativadas. Se esta política for definida como falsa, as teclas de aderência serão desativadas.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, as teclas de aderência serão desativadas inicialmente, mas os usuários poderão ativá-las quando quiserem.</translation>

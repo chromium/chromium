@@ -4,6 +4,7 @@
 <translation id="1018219910092211213">Nu se poate rezolva solicitarea DNS</translation>
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
+<translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
@@ -16,6 +17,7 @@
 <translation id="1175951029573070619">Medie (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
+<translation id="1196959502276349371">Versiunea <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1204296502688602597">Latența DNS</translation>
 <translation id="123124571410524056">Posibil portal</translation>
@@ -61,6 +63,7 @@
 <translation id="175763766237925754">Bună (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1782199038061388045">traducere</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -81,6 +84,7 @@
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: reîncearcă</translation>
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
 <translation id="2209788852729124853">Resetează contoarele de trafic</translation>
@@ -107,6 +111,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
 <translation id="2517472476991765520">Scanează</translation>
+<translation id="2536159006530886390">Nu ne putem conecta la internet.</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
 <translation id="2585245331261708204">Noutăți în SO Chrome</translation>
@@ -117,6 +122,7 @@
 <translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
+<translation id="28232023175184696">Nu ne putem conecta la internet. Dă clic pentru a încerca din nou.</translation>
 <translation id="2859243502336719778">Actualizare esențială</translation>
 <translation id="2860473693272905224">Așază altă pagină pe scaner</translation>
 <translation id="2872961005593481000">Închide</translation>
@@ -153,6 +159,7 @@
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3462187165860821523">Se actualizează dispozitivul <ph name="DEVICE_NAME" /></translation>
+<translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
@@ -163,6 +170,7 @@
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
+<translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3748026146096797577">Neconectat</translation>
@@ -240,8 +248,10 @@
 <translation id="4707579418881001319">L2TP/IPSec + certificat de utilizator</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="473775607612524610">Actualizează</translation>
+<translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="475869545581454722">Parola sistemului de operare Chrome a fost actualizată</translation>
 <translation id="4773299976671772492">Oprit</translation>
+<translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Imaginile mele</translation>
@@ -268,6 +278,7 @@
 <translation id="4999333166442584738">Ascunde raportul</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5039804452771397117">Permite</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
 <translation id="5051044138948155788">Aceasta este singura pagină. Astfel, vei accesa ecranul de pornire a scanării.</translation>
@@ -275,6 +286,7 @@
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5142961317498132443">Autentificare</translation>
 <translation id="5154917547274118687">Memorie</translation>
+<translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
@@ -315,6 +327,8 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scanează din nou</translation>
+<translation id="5620281292257375798">Numai intern</translation>
+<translation id="5649768706273821470">Ascultă</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -372,6 +386,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat de <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
+<translation id="6500818810472529210">Vezi rezultatul în Căutarea Google</translation>
 <translation id="6516990319416533844">Pentru a testa rata de încărcare a bateriei, lasă bateria să se descarce o scurtă perioadă de timp</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
@@ -385,6 +400,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6657585470893396449">Parolă</translation>
+<translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
 <translation id="6749473226660745022">Fotografii</translation>
@@ -392,6 +408,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="680983167891198932">Cheie</translation>
+<translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
@@ -426,9 +443,11 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">Dispozitivul va avea alt proprietar</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
@@ -457,6 +476,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
 <translation id="7786540085520432425">În timpul actualizării, poți minimiza fereastra, dar nu deconecta dispozitivul de la sursa de alimentare. Procesul poate dura câteva minute și este posibil ca dispozitivul să nu funcționeze pe durata actualizării.</translation>
+<translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7819857487979277519">PSK (WPA sau RSN)</translation>
 <translation id="7835501727204647447">Instalează CloudReady</translation>
@@ -525,6 +545,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8660881923941176839">livre</translation>
 <translation id="8662671328352114214">Conectează-te la rețeaua <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> folosește tastele săgeată la stânga sau la dreapta ca să gestionezi această funcție.</translation>
 <translation id="871560550817059752">Nereușită – Cerneală epuizată</translation>
 <translation id="8723108084122415655">Rețeaua care nu este prestabilită depășește pragul de latență</translation>
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
@@ -540,6 +561,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8855781559874488009">Nu se poate conecta la site-uri HTTP prin firewall</translation>
+<translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8898840733695078011">Puterea semnalului</translation>
@@ -561,6 +583,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="9095415590198785865">Dispozitivul va avea același proprietar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

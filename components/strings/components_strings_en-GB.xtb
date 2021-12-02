@@ -403,6 +403,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
+<translation id="2188852899391513400">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends changing it now, and then checking your saved passwords.</translation>
 <translation id="2202020181578195191">Enter a valid expiry year</translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2212735316055980242">Policy not found</translation>
@@ -896,6 +897,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3827112369919217609">Absolute</translation>
 <translation id="3827475930221174051">Based on activity related to '<ph name="SEARCH_TERM" />'</translation>
 <translation id="3828924085048779000">Empty passphrase is not allowed.</translation>
+<translation id="3831065134033923230">Check your saved passwords</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> has installed extensions for additional functions. Extensions have access to some of your data.</translation>
 <translation id="3832522519263485449">Multiple punch left</translation>
 <translation id="3835233591525155343">Your device use</translation>
@@ -1095,6 +1097,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
+<translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
 <translation id="4455222631300069614">Change your password now</translation>
 <translation id="4460315069258617173">Allowed until you close tabs for this site</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
@@ -1583,6 +1586,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="6051898664905071243">Page count:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">The password that you just used was found in a data breach. Google Password Manager recommends changing this password now.</translation>
 <translation id="6055888660316801977">Secure payment credential no matching credential sheet</translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>

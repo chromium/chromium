@@ -1381,20 +1381,6 @@
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="2568488785376704318">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
-<translation id="2570216126125490811">此政策旨在控制是否允许不安全网站向更专用网络端点发送请求。
-
-          此政策与专用网络访问规范相关。如需了解详情，请访问 https://wicg.github.io/private-network-access/。
-
-          在以下情况下，某个网络端点会比另一个端点更专用：
-          1) 该端点的 IP 地址是 localhost，另一个端点的 IP 地址不是 localhost。
-          2) 该端点的 IP 地址是专用的，另一个端点的 IP 地址是公开的。
-          日后，此政策可能会适用于针对专用 IP 或 localhost 发出的所有跨源请求，具体取决于相关规范的演变情况。
-
-          如果某个网站符合 https://developer.mozilla.org/zh-CN/docs/Web/Security/Secure_Contexts 中所述的安全情境的定义，即会被视为安全网站。否则，便会被视为不安全情境。
-
-          如果此政策未设置或设为 false，对于从不安全情境向更专用网络端点发送的请求，其默认行为将取决于用户针对 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" /> 功能（此功能可通过现场试验来设置，也可在命令行中设置）指定的个人配置。
-
-          如果此政策设为 true，系统将允许不安全网站向任意网络端点发送请求，但这些网站会受到其他跨源检查机制的约束。</translation>
 <translation id="2575198840408498393">禁止创建漫游个人资料</translation>
 <translation id="257788512393330403">必须每 6 小时输入一次密码</translation>
 <translation id="2580757713966614760">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
@@ -1680,7 +1666,6 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />。</translation>
 <translation id="2952347049958405264">限制：</translation>
-<translation id="2957047180944828740">指定是否允许不安全网站向更专用网络上的端点发送请求</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
@@ -2799,7 +2784,6 @@
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
 <translation id="4325690621216251241">向系统任务栏添加退出按钮</translation>
 <translation id="4329095223358818804">允许“快速解答”功能访问所选内容</translation>
-<translation id="4330372709562934569">允许所列网站从不安全情境向更专用网络上的端点发送请求。</translation>
 <translation id="4330908525441222205">使用默认 AppCache 行为</translation>
 <translation id="4331357743227845302">此政策让管理员能够配置允许 <ph name="PRODUCT_OS_NAME" />连接到的蓝牙服务。
 
@@ -6778,15 +6762,6 @@
 <translation id="9111850884577810507">此字段必须与某个代表 <ph name="PRODUCT_NAME" />所支持打印机的字符串匹配。该字符串将用于识别和为打印机安装相应的 PPD。如需了解详情，请访问：https://support.google.com/chrome?p=noncloudprint。</translation>
 <translation id="9112727953998243860">企业打印机配置文件</translation>
 <translation id="911605919007170833">报告安全状态</translation>
-<translation id="9116740039944096995">以列表形式指定一系列网址格式。允许匹配来源提供的不安全网站向专用网络发送请求。
-
-          如果此政策未设置，则等同于设为空列表。
-
-          对于与此处所列格式不匹配的来源：倘若 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策已设置，系统便会采用该政策中的全局默认值；否则，就会采用用户个人配置中的全局默认值。
-
-          请注意，此政策仅会影响不安全来源，所以此列表中包含的安全来源（例如 https://example.com）将会被忽略。
-
-          如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="9117826695152538214">将此政策设为 True 会使粘滞键保持开启状态。将此政策设为 False 会使粘滞键保持关闭状态。
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，粘滞键最初会处于关闭状态，但用户可随时开启它。</translation>

@@ -1385,20 +1385,6 @@
       你可以透過這項政策，指定拒絕載入的原生訊息傳遞主機。如果將拒絕清單的值設為 <ph name="WILDCARD_VALUE" />，系統會拒絕所有原生訊息傳遞主機，但政策明確允許使用的主機除外。
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的原生訊息傳遞主機。</translation>
 <translation id="2568488785376704318">這項政策已遭淘汰，請改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> 政策。</translation>
-<translation id="2570216126125490811">這項政策可控管是否允許不安全網站向更私密的網路端點傳送要求。
-
-          這項政策與私人網路存取權規格有關。詳情請參閱 https://wicg.github.io/private-network-access/。
-
-          當網路端點符合以下條件時，私密程度較高：
-          1) 其 IP 位址為 localhost，且其他網路端點的 IP 位址不是 localhost。
-          2) 其 IP 位址為私人位址，且其他網路端點的 IP 位址為公開位址。
-          視未來的規格演進而定，這項政策可能會適用於所有導向私人 IP 或 localhost 的跨來源要求。
-
-          如果網站符合以下頁面中對於安全內容的定義，系統會將其視為安全網站：https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts。如果不符合定義，系統會將其視為不安全網站。
-
-          如果不設定這項政策或設為 False，從不安全網站向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" /> 功能的個人設定，使用者可以透過實際測試或指令列來進行設定。
-
-          如果將這項政策設為 True，不安全網站即可向任何網路端點傳送要求，並且需經過其他跨來源檢查。</translation>
 <translation id="2575198840408498393">停用漫遊設定檔建立功能</translation>
 <translation id="257788512393330403">每 6 小時需輸入密碼</translation>
 <translation id="2580757713966614760">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 的哪些印表機。
@@ -1484,6 +1470,10 @@
 <translation id="2716623398185506073">如果將這項政策設為啟用，已註冊的裝置會回報與電源相關的硬體統計資料和 ID。
 
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報電源統計資料。</translation>
+<translation id="2717628606602248727">這項政策預設為啟用，已註冊的裝置會回報記憶體資訊。
+
+      如果將這項政策設為停用，則已註冊的裝置不會回報任何記憶體資訊。
+      例外狀況：裝置搭載 M95 以下版本，且可用記憶體資訊是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="2721185634942265347">停用搜尋建議</translation>
 <translation id="2721582713721006926">停用快速解答的定義功能</translation>
 <translation id="2723692978495226412">如果將這項政策設為啟用，系統會根據使用者先前在其他裝置上安裝的應用程式，提供應用程式建議。如果未輸入任何搜尋文字，這類建議會顯示在啟動器中的本機應用程式建議之後。
@@ -1684,7 +1674,6 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />。</translation>
 <translation id="2952347049958405264">限制：</translation>
-<translation id="2957047180944828740">指定是否允許不安全網站向更私密的網站端點傳送要求</translation>
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
 <translation id="2959469725686993410">解析時區時一律將 Wi-Fi 存取點傳送至伺服器</translation>
@@ -2798,7 +2787,6 @@
 <translation id="4322842393287974810">允許使用無延遲資訊站應用程式的自動啟動功能來控制 <ph name="PRODUCT_OS_NAME" /> 版本</translation>
 <translation id="4325690621216251241">在系統列顯示登出按鈕</translation>
 <translation id="4329095223358818804">允許快速解答功能存取所選內容</translation>
-<translation id="4330372709562934569">允許列出的不安全網站向更私密的網路端點傳送要求。</translation>
 <translation id="4330908525441222205">使用預設的 AppCache 行為</translation>
 <translation id="4331357743227845302">管理員可以透過這項政策設定允許 <ph name="PRODUCT_OS_NAME" /> 連接的藍牙服務。
 
@@ -3955,6 +3943,9 @@
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統將會回報裝置的 VPD 資訊。
       重要產品資料 (VPD) 是與裝置相關聯的一組設定和說明資料 (例如零件和序號)。</translation>
+<translation id="576158229686912964">這項政策已在 M96 遭到淘汰，請改用 <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> 和 <ph name="REPORT_DEVICE_NETWORK_STATUS" />。
+
+      如果將這項政策設為啟用或不設定，已註冊的裝置會回報網路介面清單，當中包含網路介面類型和硬體位址資料。如果將這項政策設為停用，已註冊的裝置不會回報網路介面資訊。</translation>
 <translation id="5762969307102447459">停用地址的自動填入功能</translation>
 <translation id="5765780083710877561">說明：</translation>
 <translation id="5766438888216077649">不要為目標是 <ph name="BLANK_PAGE_NAME" /> 的連結設定 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
@@ -5354,6 +5345,10 @@
           如果不設定這項政策，系統會根據「DefaultKeygenSetting」政策 (如有設定) 或使用者的個人設定，將全域預設值套用至所有網站。
 
           想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
+<translation id="7394023172636522064">如果將這項政策設為啟用，系統會回報裝置 TPM 安全性狀態。
+
+      如果將這項政策設為停用或不設定，則已註冊的裝置不會記錄或回報 TPM 安全性狀態。
+      例外狀況：裝置搭載 M95 以下版本，且 TPM 資訊是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="739556497251174388">允許重複使用 <ph name="PRODUCT_OS_NAME" />登入憑證進行網路驗證</translation>
 <translation id="7400971609879083218">如果將這項政策設為啟用，網頁上的第三方映像檔即可顯示驗證提示。
 
@@ -5432,6 +5427,9 @@
       如果不設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />；其他未受管理使用者的預設值則為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />。
 
       日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" /> 中唯一可用的瀏覽器。</translation>
+<translation id="7509761893401042250">這項政策已在 M96 遭到淘汰，請改用 <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" /> 和 <ph name="REPORT_DEVICE_AUDIO_STATUS" />。
+
+      如果將這項政策設為啟用或不設定，已註冊的裝置會回報 CPU/RAM 使用量等硬體統計資料。如果將這項政策設為停用，已註冊的裝置不會回報硬體統計資料。</translation>
 <translation id="7519218194072744342">通訊協定處理常式的網址。</translation>
 <translation id="7519251620064708155">允許在這些網站上使用金鑰產生功能</translation>
 <translation id="7529144158022474049">自動更新分散係數</translation>
@@ -5439,6 +5437,10 @@
 
       如果未設定這項政策或設為 True，系統將顯示警示，提醒使用者先結束全螢幕模式再輸入密碼。如果將這項政策設為 False，系統不會顯示警示。</translation>
 <translation id="7534199150025803530">這項政策對 Android Google 雲端硬碟應用程式沒有影響。如要禁止透過行動網路連線使用 Google 雲端硬碟，則必須禁止安裝 Android Google 雲端硬碟應用程式。</translation>
+<translation id="7538583957913002726">這項政策預設為啟用，已註冊的裝置會回報 CPU 型號名稱、架構和最高時脈速度；如果搭載 M96 以上版本則會進一步提供 CPU 使用率和溫度資訊。
+
+      如果將這項政策設為停用，則已註冊的裝置不會回報任何 CPU 資訊。
+      例外狀況：搭載 M95 以下版本，且 CPU 使用率和溫度回報功能是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="7540622499178214923">允許使用 wilco 診斷與遙測控制器</translation>
 <translation id="7540826630642174841">如果設定這項政策，系統會在指定的時間間隔內忽略特定裝置政策，並使用這類政策的預設設定。<ph name="PRODUCT_NAME" /> 會在這項政策所設定的期間開始或結束時重新套用裝置政策。當此期間變更或裝置政策設定變更時 (例如，當使用者以禁止使用的帳戶登入時)，系統會通知使用者並將其強制登出。</translation>
 <translation id="7540945123920084379">你可以透過這項政策，控管可解鎖螢幕畫面的快速解鎖模式。
@@ -5606,6 +5608,10 @@
 
       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="7717938661004793600">設定 <ph name="PRODUCT_OS_NAME" /> 無障礙功能。</translation>
+<translation id="7718127720248642697">這項政策預設為啟用，已註冊的裝置會回報儲存裝置的硬體統計資料和 ID。
+
+      如果將這項政策設為停用，則已註冊的裝置不會回報儲存空間統計資料。
+      例外狀況：裝置搭載 M95 以下版本，且磁碟大小和磁碟可用空間是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 使用者 ID</translation>
 <translation id="7724161903134898864">如果將這項政策設為 1，網站即可顯示彈出式視窗。如果將這項政策設為 2，網站將無法顯示彈出式視窗。
 
@@ -6729,6 +6735,10 @@
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="9068629430243705879">通訊埠 6566 (2021 年 10 月 15 日前可解除封鎖)</translation>
+<translation id="9069588907259547232">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
+
+      如果將這項政策設為停用，則已註冊的裝置不會記錄或回報音訊狀態。
+      例外狀況：裝置搭載 M95 以下版本，且系統音量資訊是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="9073405975862312795">如果將這項政策設為啟用或不設定，已註冊的裝置會回報使用者的裝置使用時間範圍。
 
       如果將這項政策設為停用，已註冊的裝置不會記錄或回報活動時間。</translation>
@@ -6754,15 +6764,6 @@
 <translation id="9111850884577810507">這個欄位必須符合其中一個代表 <ph name="PRODUCT_NAME" />相容印表機的字串。系統會利用這個字串找出並安裝印表機適用的 PPD。詳情請參閱 https://support.google.com/chrome?p=noncloudprint。</translation>
 <translation id="9112727953998243860">企業印表機設定檔</translation>
 <translation id="911605919007170833">回報安全性狀態</translation>
-<translation id="9116740039944096995">網址模式清單。系統會允許相符來源提供的不安全網站所傳送的私人網路要求。
-
-          如果不設定，這項政策的運作方式會如同已設為空白清單。
-
-          如果來源不符合此處指定的模式，系統會根據 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定套用全域預設值。
-
-          請注意，這項政策只會影響不安全來源，因此系統會忽略這份清單中包含的安全來源 (例如 https://example.com)。
-
-          如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="9117826695152538214">將這項政策設為 True 時，系統會讓相黏鍵保持在啟用狀態。將這項政策設為 False 時，系統會讓相黏鍵保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用相黏鍵，但使用者隨時可以啟用。</translation>

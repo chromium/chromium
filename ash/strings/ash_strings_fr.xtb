@@ -12,7 +12,6 @@
 Pour commencer, voici des exemples de ce que vous pouvez me demander.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
 <translation id="1047017786576569492">partiel</translation>
-<translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1052916631016577720">Parcourir</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1056898198331236512">Avertissement</translation>
@@ -133,7 +132,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1768366657309696705">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+. (point) a été modifié. Pour utiliser la touche Entrée, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Maj+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée vers la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vers la droite</translation>
-<translation id="1782199038061388045">traduction</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1804572139604454141">Enregistrement interrompu, car l'espace sur le disque est presque saturé</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
@@ -185,7 +183,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
-<translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />.</translation>
@@ -233,7 +230,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches persistantes</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
-<translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2542089167727451762">Appuyez sur votre image de profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
@@ -269,7 +265,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
-<translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place.</translation>
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
@@ -368,7 +363,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
 <translation id="3477079411857374384">Ctrl+Maj+Espace</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="3486220673238053218">définition</translation>
 <translation id="348799646910989694">Étagère automatiquement masquée</translation>
 <translation id="3509391053705095206">Impossible de localiser votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
@@ -416,7 +410,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Population au Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
@@ -579,13 +572,11 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> et sur une touche de la rangée supérieure.</translation>
-<translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
-<translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte</translation>
 <translation id="479989351350248267">rechercher</translation>
 <translation id="4804818685124855865">Se déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
@@ -621,7 +612,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5033299697334913360">Cliquez n'importe où pour effectuer une capture en plein écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est associé à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
-<translation id="5039804452771397117">Autoriser</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5071064518267176975">Une appli souhaite utiliser le micro</translation>
 <translation id="5075554201838155866">Lancer les sous-titres</translation>
@@ -632,7 +622,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
-<translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
@@ -694,10 +683,8 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5619862035903135339">Une règle définie par l'administrateur a désactivé la capture d'écran</translation>
-<translation id="5620281292257375798">Interne uniquement</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
-<translation id="5649768706273821470">Écouter</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
 <translation id="5662709761327382534">Enregistrement via le micro <ph name="CURRENT_STATE" />, appuyez sur Entrée pour qu'il soit <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activation</translation>
@@ -815,7 +802,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige la mise à jour de votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>
 <translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
-<translation id="6500818810472529210">Voir le résultat dans la recherche Google</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur le bouton Marche/Arrêt tant que la mise à jour n'est pas terminée.</translation>
@@ -846,7 +832,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6670153871843998651">Bureau 3</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6671661918848783005">Impossible de déverrouiller votre Chromebook</translation>
-<translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
 <translation id="6707693040195709527">Délai de rétablissement d'une version antérieure de l'appareil expiré</translation>
@@ -865,7 +850,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
 <translation id="6811454077060061666">Google Drive pour ordinateur est indisponible</translation>
-<translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
@@ -914,7 +898,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7130207228079676353">CLIC PROBABLE</translation>
 <translation id="7131634465328662194">Vous allez être déconnecté automatiquement.</translation>
 <translation id="7143207342074048698">Connexion</translation>
-<translation id="7144878232160441200">Réessayer</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -930,7 +913,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="731589979057211264">Shelf Party est activé.</translation>
 <translation id="7319740667687257810">Lanceur d'applications, vue partielle</translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
@@ -946,7 +928,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7405710164030118432">Pour déverrouiller l'appareil, saisissez le code d'accès parental Family Link</translation>
 <translation id="7406608787870898861">Finaliser la configuration de votre réseau mobile</translation>
 <translation id="740790383907119240">Raccourcis d'application</translation>
-<translation id="741244894080940828">conversion</translation>
 <translation id="7413851974711031813">Appuyez sur la touche Échap pour fermer</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
@@ -1002,7 +983,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7780159184141939021">Rotation d'écran</translation>
 <translation id="7796353162336583443">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran et utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7798302898096527229">Appuyez sur Rechercher ou Maj pour annuler.</translation>
-<translation id="780301667611848630">Non merci</translation>
 <translation id="7807067443225230855">Recherche et Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal de forte intensité</translation>
@@ -1015,6 +995,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7868900307798234037">Déverrouillage en cours avec votre empreinte digitale</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Apparemment, le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Activez-le pour utiliser Phone Hub.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Rétablir une version antérieure de l'appareil maintenant}=1{Rétablir une version antérieure de l'appareil d'ici 1 seconde}one{Rétablir une version antérieure de l'appareil d'ici # seconde}other{Rétablir une version antérieure de l'appareil d'ici # secondes}}</translation>
 <translation id="7886169021410746335">Régler les paramètres de confidentialité</translation>
 <translation id="7886277072580235377">Votre session Internet est effacée lorsque vous vous déconnectez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoie un e-mail</translation>
@@ -1136,7 +1117,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8683506306463609433">Suivi des performances actif</translation>
 <translation id="8685326675965865247">Effectuez des recherches sur votre appareil, dans vos applications et sur le Web. Utilisez les touches fléchées pour naviguer dans vos applications.</translation>
 <translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
-<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capture plein écran</translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
@@ -1157,7 +1137,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8843682306134542540">Activer/Désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
-<translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> pour "<ph name="QUERY" />" et plus</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
 <translation id="8871580645200179206">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connecté</translation>
@@ -1194,7 +1173,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9080132581049224423">Balayer l'écran vers le haut pour revenir à l'accueil</translation>
 <translation id="9080206825613744995">Le micro est en cours d'utilisation.</translation>
 <translation id="9084606467167974638">Activer/Désactiver la position du menu</translation>
-<translation id="9087578468327036362">Signaler cette requête</translation>
 <translation id="9089416786594320554">Modes de saisie</translation>
 <translation id="9091626656156419976">Suppression de l'écran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Couper le son du téléphone</translation>

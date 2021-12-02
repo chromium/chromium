@@ -476,7 +476,6 @@
 <translation id="1486096554574027028">搜索密码</translation>
 <translation id="1487335504823219454">开启 - 自定义设置</translation>
 <translation id="1489664337021920575">选择其他选项</translation>
-<translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1493892686965953381">正在等待<ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">网站可以询问能否使用您设备上安装的字体</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
@@ -2019,7 +2018,6 @@
 <translation id="3038612606416062604">手动添加打印机</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="3043428542602830640">读取设备序列号和组件序列号。</translation>
 <translation id="3043581297103810752">源自：<ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">此网站已自动下载多个文件</translation>
 <translation id="3046178388369461825">Linux 磁盘空间严重不足</translation>
@@ -2030,7 +2028,6 @@
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
-<translation id="3055087258198109191">如果要使用默认搜索引擎以外的搜索引擎，请输入其快捷字词，然后按您的首选键盘快捷键。您还可以在此处更改默认搜索引擎。</translation>
 <translation id="3055590424724986000">使用您选择的提供商</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
@@ -3022,7 +3019,6 @@
 <translation id="4084835346725913160">关闭 <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">在网站想访问串行端口时询问您</translation>
 <translation id="4085298594534903246">已拦截此网页上的 JavaScript。</translation>
-<translation id="4085947337119280756">其他扩展程序</translation>
 <translation id="4087089424473531098">已创建扩展程序：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3639,7 +3635,6 @@
 <translation id="4779766576531456629">重命名 eSIM 卡移动网络</translation>
 <translation id="4780321648949301421">页面存储为...</translation>
 <translation id="4781443161433589743">您正在享受 Chrome 的最强安全保护</translation>
-<translation id="4784559565779618838">如果要在特定网站或 Chrome 的某个部分进行搜索，您可以在地址栏中输入此处的快捷字词，然后按 Tab 键或空格键。</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="478708757211772586">使用“下一项”即可在屏幕上向前移动焦点</translation>
 <translation id="4788092183367008521">请检查您的网络连接，然后重试。</translation>
@@ -4020,7 +4015,6 @@
 <translation id="5191094172448199359">您输入的 PIN 码不一致</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5192062846343383368">打开 Family Link 应用，查看您的监管设置</translation>
-<translation id="5192652123103143854">读取 Chrome 操作系统设备信息和设备数据，并运行诊断测试。</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5194256020863090856">此操作只会影响无痕式窗口</translation>
 <translation id="5195863934285556588"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测此设备所在的位置。<ph name="END_PARAGRAPH1" />
@@ -4608,7 +4602,6 @@
 <translation id="5817918615728894473">配对</translation>
 <translation id="5821565227679781414">创建快捷方式</translation>
 <translation id="5822095611691580107">左侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
-<translation id="5822865422567397338">如果要在特定网站或 Chrome 的某个部分进行搜索，您可以使用此处的快捷字词。例如，如果要仅搜索 Gmail，则输入“@gmail”，然后按 Tab 键或空格键。</translation>
 <translation id="5825412242012995131">开启（推荐）</translation>
 <translation id="5826395379250998812">请将您的 <ph name="DEVICE_TYPE" /> 连接到手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
@@ -4775,7 +4768,6 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
-<translation id="6001999913519612328">运行诊断测试。</translation>
 <translation id="6002210667729577411">将标签页组移至新窗口</translation>
 <translation id="6002452033851752583">密码已从您的 Google 帐号中删除</translation>
 <translation id="6002458620803359783">首选语音</translation>
@@ -5967,7 +5959,6 @@
 <translation id="7257666756905341374">读取您复制和粘贴的数据</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
-<translation id="7264432249010320236">其他网站</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
     <ph name="BEGIN_LIST" />
     <ph name="LIST_ITEM" />确保您的设备包含正常运行的内部存储设备，例如 HDD、SSD 或 eMMC
@@ -6068,7 +6059,6 @@
 <translation id="7367758267317684635">您会在所有已同步的设备中看到自己的 Chrome 历史记录</translation>
 <translation id="736877393389250337">无法在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开 <ph name="URL" />。请与您的系统管理员联系。</translation>
 <translation id="7370592524170198497">以太网 EAP：</translation>
-<translation id="7371006317849674875">开始时间</translation>
 <translation id="7371490947952970241">只需关闭您设备上的主要“位置信息”设置，即可关闭位置信息服务。您还可在“位置信息”设置中关闭那些使用 WLAN、移动网络和传感器来获取位置信息的功能。</translation>
 <translation id="7371917887111892735">将标签页收缩至固定标签页宽度</translation>
 <translation id="7374376573160927383">管理 USB 设备</translation>
@@ -6237,7 +6227,6 @@
 <translation id="7535730537657706072">若要清除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="7535791657097741517">开启浅色主题</translation>
 <translation id="7537451260744431038">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
-<translation id="753769905878158714">在地址栏中，输入您要搜索的网站的关键字，然后使用键盘快捷键继续操作。</translation>
 <translation id="7540972813190816353">检查更新时出错：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已将此设备回滚到上一个版本。请保存重要文件，然后重启。此设备上的所有数据都将被删除。</translation>
 <translation id="7541773865713908457">使用“<ph name="APP_NAME" />”应用来<ph name="ACTION_NAME" /></translation>
@@ -6559,7 +6548,6 @@
 <translation id="7829877209233347340">如需添加学校帐号，请让家长登录并向您授权</translation>
 <translation id="7830594666202422257">连接到 Linux</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
-<translation id="7832084384634357321">结束时间</translation>
 <translation id="783229689197954457">如果 Google 找到了折扣信息，您就会在此页面上看到相应信息</translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
 <translation id="7835178595033117206">已移除书签</translation>
@@ -7093,7 +7081,6 @@
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8388770971141403598">次级个人资料不受支持</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您在所访问的网站上留存的所有数据：</translation>
-<translation id="8389930402285404246">系统可能会与您的设备制造商分享此信息。如果数据由特定组织（而非 Google）处理，则须遵循相应组织自设的隐私权政策。</translation>
 <translation id="8390449457866780408">服务器无法使用。</translation>
 <translation id="8391218455464584335">黑胶唱片</translation>
 <translation id="8392364544846746346">在网站想要修改您设备上的文件或文件夹时要先询问您</translation>
@@ -7102,6 +7089,7 @@
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8397825320644530257">断开已连接的手机</translation>
 <translation id="8398877366907290961">仍然继续</translation>
+<translation id="8399282673057829204">查看密码</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
 <translation id="8404893580027489425">指纹传感器位于您 <ph name="DEVICE_TYPE" />的右侧。请用任一根手指轻触它。</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
@@ -7182,7 +7170,6 @@
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
 <translation id="8492960370534528742">Google Cast 反馈</translation>
 <translation id="8493236660459102203">麦克风：</translation>
-<translation id="84959976576210191">在地址栏中，输入您要搜索的网站的快捷字词，例如“@gmail”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="8496717697661868878">运行此插件</translation>
 <translation id="8497219075884839166">Windows 实用程序</translation>
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
@@ -7638,7 +7625,6 @@
 <translation id="8962051932294470566">您一次只能分享 1 个文件。请在当前传输任务完成后重试。</translation>
 <translation id="8962083179518285172">隐藏详细信息</translation>
 <translation id="8962918469425892674">此网站正在使用动态传感器或光传感器。</translation>
-<translation id="8964943308070692533">其他无效网站</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="89667524227025535">请使用您设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
 <translation id="8966809848145604011">其他个人资料</translation>

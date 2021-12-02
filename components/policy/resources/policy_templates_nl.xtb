@@ -1385,20 +1385,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
 <translation id="2568488785376704318">Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
-<translation id="2570216126125490811">Hiermee kun je bepalen of niet-beveiligde websites verzoeken mogen sturen aan meer-privé netwerkeindpunten.
-
-          Dit beleid heeft betrekking op de specificatie voor toegang tot privénetwerken. Zie https://wicg.github.io/private-network-access/ voor meer informatie.
-
-          Een netwerkeindpunt is meer privé dan een ander eindpunt als:
-1) Het IP-adres van het netwerkeindpunt localhost is en het andere niet.
-          2) Het IP-adres van het netwerkeindpunt privé is en het andere openbaar.
-          Afhankelijk van hoe de specificatie zich ontwikkelt, kan dit beleid in de toekomt van toepassing zijn op alle cross-origin-verzoeken naar privé-IP-adressen of localhost.
-
-          Een website wordt als beveiligd beschouwd als deze voldoet aan de definitie van een beveiligde context in https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Anders wordt de website als onbeveiligde context behandeld.
-
-          Als je dit beleid niet instelt of instelt op False, hangt het standaardgedrag voor verzoeken vanuit niet-beveiligde contexten naar meer-privé netwerkeindpunten af van de persoonlijke configuratie van de gebruiker voor de functie <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, die kan worden ingesteld via een praktijktest of via de opdrachtregel.
-
-          Als je dit beleid instelt op True, mogen niet-beveiligde websites verzoeken sturen naar elk willekeurig netwerkeindpunt (hiervoor worden andere cross-origin-checks uitgevoerd).</translation>
 <translation id="2575198840408498393">Maken van roamingprofielen uitzetten</translation>
 <translation id="257788512393330403">Het wachtwoord moet elke zes uur worden opgegeven</translation>
 <translation id="2580757713966614760">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="DEVICE_PRINTERS_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
@@ -1485,6 +1471,10 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2716623398185506073">Als je het beleid toepast, rapporteren ingeschreven apparaten hardwarestatistieken en ID's met betrekking tot de stroomstatus.
 
       Als je dit beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten geen statistieken met betrekking tot de stroomstatus.</translation>
+<translation id="2717628606602248727">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om de geheugeninformatie te rapporteren.
+
+      Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen geheugeninformatie rapporteren.
+      Uitzondering: informatie over vrij geheugen wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="2721185634942265347">Zoeksuggesties uitzetten</translation>
 <translation id="2721582713721006926">Definitie van Snelle antwoorden uitzetten</translation>
 <translation id="2723692978495226412">Als je dit beleid toepast, worden aanbevelingen gedaan voor apps die de gebruiker eerder heeft geïnstalleerd op andere apparaten. Deze aanbevelingen worden in de Launcher weergegeven na de aanbevelingen voor lokale apps als er geen zoektekst is ingevoerd.
@@ -1685,7 +1675,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="2952347049958405264">Beperkingen:</translation>
-<translation id="2957047180944828740">Hiermee geef je aan of niet-beveiligde websites verzoeken mogen sturen naar meer-privé netwerkeindpunten</translation>
 <translation id="2957506574938329824">Niet toestaan dat sites toegang tot Bluetooth-apparaten vragen via de Web Bluetooth API</translation>
 <translation id="2957513448235202597">Accounttype voor <ph name="HTTP_NEGOTIATE" />-verificatie</translation>
 <translation id="2959469725686993410">Wifi-toegangspunten altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
@@ -2806,7 +2795,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
 <translation id="4329095223358818804">'Snelle antwoorden' toegang tot geselecteerde content geven</translation>
-<translation id="4330372709562934569">Hiermee kunnen de vermelde websites vanuit niet-beveiligde contexten verzoeken sturen naar meer-privé netwerkeindpunten.</translation>
 <translation id="4330908525441222205">Standaard AppCache-gedrag gebruiken</translation>
 <translation id="4331357743227845302">Met dit beleid kunnen beheerders bluetooth-services instellen waarmee <ph name="PRODUCT_OS_NAME" /> verbinding mag maken.
 
@@ -3978,6 +3966,9 @@ Als je dit beleid instelt, kun je bepalen of een gebruiker mag inloggen bij <ph 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
+<translation id="576158229686912964">Dit beleid is beëindigd in M96. Gebruik in plaats daarvan <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> en <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
+
+      Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres. Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
 <translation id="5762969307102447459">Automatisch invullen voor adressen uitzetten</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
 <translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
@@ -5371,6 +5362,10 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
           Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites. Deze vind je in het beleid DefaultKeygenSetting (als dit is ingesteld) of in de persoonlijke configuratie van de gebruiker.
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="7394023172636522064">Als je het beleid toepast, wordt de TPM-beveiligingsstatus van het apparaat gerapporteerd.
+
+      Als je het beleid niet toepast of niet instelt, betekent dit dat ingeschreven apparaten geen TPM-beveiligingsstatus vastleggen of rapporteren.
+      Uitzondering: informatie over TPM wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="739556497251174388">Hiermee kunnen de inloggegevens voor <ph name="PRODUCT_OS_NAME" /> opnieuw worden gebruikt voor netwerkverificatie</translation>
 <translation id="7400971609879083218">Als je het beleid toepast, kunnen afbeeldingen van derden op een pagina een verificatieprompt tonen.
 
@@ -5448,6 +5443,9 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
       Als het beleid niet is ingesteld, is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> de standaard voor gebruikers die op ondernemingsniveau worden beheerd en <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> voor niet-beheerde gebruikers.
 
       In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="7509761893401042250">Dit beleid is beëindigd vanaf M96. Gebruik in plaats daarvan <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> en <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
+
+      Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten hardwarestatistieken, zoals het CPU/RAM-gebruik. Als je het beleid niet toepast, rapporteren ingeschreven apparaten de hardwarestatistieken niet.</translation>
 <translation id="7519218194072744342">De URL van de protocolhandler.</translation>
 <translation id="7519251620064708155">Het genereren van sleutels toestaan op deze sites</translation>
 <translation id="7529144158022474049">Spreidingsfactor voor automatische update</translation>
@@ -5455,6 +5453,10 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als je het beleid niet instelt of instelt op True, zien gebruikers een melding om ze eraan te herinneren dat ze het volledige scherm moeten verlaten voordat ze een wachtwoord opgeven. Als je het beleid instelt op False, zien gebruikers geen melding.</translation>
 <translation id="7534199150025803530">Dit beleid is niet van invloed op de Google Drive-app voor Android. Als je wilt voorkomen dat Google Drive kan worden gebruikt via een mobiele verbinding, moet je de installatie van de Google Drive-app voor Android blokkeren.</translation>
+<translation id="7538583957913002726">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om de CPU-modelnaam, architectuur en maximale kloksnelheid (en CPU-gebruik en -temperatuur voor M96 en hoger) te rapporteren.
+
+      Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen CPU-informatie rapporteren.
+      Uitzondering: De rapportage voor CPU-gebruik en -temperatuur wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="7540622499178214923">Hiermee wordt wilco DTC toegestaan</translation>
 <translation id="7540826630642174841">Als je het beleid instelt, wordt het opgegeven apparaatbeleid genegeerd (de standaardinstellingen van dit beleid worden gebruikt) gedurende de opgegeven intervallen. Het apparaatbeleid wordt weer toegepast door <ph name="PRODUCT_NAME" /> als de beleidsperiode start of eindigt. Gebruikers krijgen een melding en worden gedwongen uitgelogd als deze periode wordt gewijzigd en de instellingen van het apparaatbeleid worden gewijzigd (bijvoorbeeld als een gebruiker inlogt met een niet-toegestaan account).</translation>
 <translation id="7540945123920084379">Met dit beleid bepaal je welke standen voor snel ontgrendelen kunnen worden gebruikt om het vergrendelscherm te ontgrendelen.
@@ -5627,6 +5629,10 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Opmerking: Voor gedetailleerde voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7717938661004793600">Toegankelijkheidsfuncties van <ph name="PRODUCT_OS_NAME" /> configureren.</translation>
+<translation id="7718127720248642697">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om hardwarestatistieken en ID's voor opslagapparaten te rapporteren.
+
+      Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen opslagstatistieken rapporteren.
+      Uitzondering: schijfgrootte en vrije schijfruimte worden beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="7721944091689270995">Gebruikers-ID voor <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Als je het beleid instelt op 1, kunnen websites pop-ups weergeven. Als je het beleid instelt op 2, worden pop-ups geblokkeerd.
 
@@ -6761,6 +6767,10 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="9068629430243705879">poort 6566 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
+<translation id="9069588907259547232">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
+
+      Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen audiostatus vastleggen of rapporteren.
+      Uitzondering: informatie over het systeemvolumeniveau wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="9073405975862312795">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de perioden dat een gebruiker actief is op het apparaat.
 
       Als je het beleid niet toepast, registreren of rapporteren ingeschreven apparaten geen tijden van activiteit.</translation>
@@ -6786,15 +6796,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="9111850884577810507">Dit veld moet overeenkomen met een van de tekenreeksen die een door <ph name="PRODUCT_NAME" /> ondersteunde printer vertegenwoordigen. De tekenreeks wordt gebruikt om de juiste PPD voor de printer te identificeren en te installeren. Meer informatie hierover vind je op https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">Configuratiebestand voor bedrijfsprinters</translation>
 <translation id="911605919007170833">Beveiligingsstatus rapporteren</translation>
-<translation id="9116740039944096995">Lijst met URL-patronen. Privénetwerkverzoeken die worden gestart vanaf niet-beveiligde websites die worden geleverd via overeenkomende herkomsten, zijn toegestaan.
-
-          Als je dit beleid niet instelt, gedraagt het zich alsof het is ingesteld op de lege lijst.
-
-          Voor herkomsten die niet overeenkomen met de hier genoemde patronen, wordt de algemene standaardwaarde gebruikt op basis van het beleid <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (als dit is ingesteld) of anders op basis van de persoonlijke configuratie van de gebruiker.
-
-          Houd er rekening mee dat dit beleid alleen van invloed is op niet-beveiligde herkomsten, dus beveiligde herkomsten (bijv. https://example.com) in deze lijst worden genegeerd.
-
-          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="9117826695152538214">Als het beleid is ingesteld op True, blijven plaktoetsen aan. Als het beleid is ingesteld op False, blijven plaktoetsen uit.
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, staan plaktoetsen in eerste instantie uit, maar kunnen gebruikers deze op elk moment aanzetten.</translation>

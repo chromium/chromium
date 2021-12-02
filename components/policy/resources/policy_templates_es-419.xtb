@@ -1401,20 +1401,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajería nativa instalados.</translation>
 <translation id="2568488785376704318">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
-<translation id="2570216126125490811">Controla si los sitios web no seguros pueden enviar solicitudes a extremos de red más privados.
-
-          Esta política está relacionada con la especificación Acceso a redes privadas. Para obtener más información, consulta https://wicg.github.io/private-network-access/.
-
-          Un extremo de red es más privado que otro en los siguientes casos:
-          1) Si su dirección IP es localhost y la otra no lo es.
-          2) Si su dirección IP es privada y la otra es pública.
-          En el futuro, en función de la evolución de las especificaciones, es posible que se aplique esta política a todas las solicitudes de origen cruzado dirigidas a IP privadas o localhost.
-
-          Un sitio web se considera seguro si cumple con la definición de contexto seguro descrita en https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. De lo contrario, se lo considerará como no seguro.
-
-          Si estableces esta política como falsa o no la estableces, el comportamiento predeterminado para las solicitudes que se envíen desde contextos no seguros a extremos de red más privados dependerá de la configuración personal del usuario con respecto a la función <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, la cual se puede establecer en una prueba de campo o en la línea de comandos.
-
-          Si estableces esta política como verdadera, los sitios web no seguros podrán enviar solicitudes a cualquier extremo de red, sujeto a otras verificaciones de origen cruzado.</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
 <translation id="257788512393330403">Se requiere el ingreso de la contraseña cada 6 horas</translation>
 <translation id="2580757713966614760">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="DEVICE_PRINTERS_POLICY_NAME" /> que estarán disponibles para los usuarios.
@@ -1699,7 +1685,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Esta política es obsoleta; usa la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
-<translation id="2957047180944828740">Especifica si se permite que los sitios web no seguros envíen solicitudes a extremos de red más privados</translation>
 <translation id="2957506574938329824">No permitir que ningún sitio solicite acceso a dispositivos Bluetooth mediante la API de Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre puntos de acceso de Wi-Fi al servidor mientras se determina la zona horaria</translation>
@@ -2827,7 +2812,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4322842393287974810">Permitir que la aplicación de kiosko con lanzamiento automático sin tiempo de espera controle la versión de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Agregar un botón para cerrar sesión en la bandeja del sistema</translation>
 <translation id="4329095223358818804">Permite que Respuestas rápidas acceda al contenido seleccionado</translation>
-<translation id="4330372709562934569">Permite que los sitios de la lista envíen solicitudes a extremos de red más privados desde contextos no seguros</translation>
 <translation id="4330908525441222205">Usar el comportamiento predeterminado de Memoria caché de la app</translation>
 <translation id="4331357743227845302">Esta política permite que los administradores establezcan los servicios de Bluetooth a los que <ph name="PRODUCT_OS_NAME" /> puede conectarse.
 
@@ -6862,15 +6846,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="9111850884577810507">Este campo debe coincidir con uno de los strings que representa una impresora compatible con <ph name="PRODUCT_NAME" />. El string se usará para identificar e instalar el PPD correspondiente para la impresora. Para obtener más información, visita https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">Archivo de configuración de impresoras empresariales</translation>
 <translation id="911605919007170833">Informar el estado de seguridad</translation>
-<translation id="9116740039944096995">Lista de patrones de URL. Se permiten las solicitudes de red privada enviadas desde sitios web no seguros publicados por orígenes que estén contemplados en los patrones especificados.
-
-          Si no estableces esta política, se comportará como si se hubiera establecido con una lista vacía.
-
-          En el caso de orígenes no contemplados en los patrones especificados en la política, se utilizará el valor predeterminado global ya sea de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (si se establece) o de la configuración personal del usuario.
-
-          Ten en cuenta que esta política solo afecta a los orígenes no seguros. Por lo tanto, se ignorarán los orígenes seguros (p. ej., https://example.com) que se incluyan en la lista.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="9117826695152538214">Si estableces el valor "True" para la política, se activarán las teclas especiales. Si estableces el valor "False", se desactivarán estas teclas.
 
       Si configuras la política, los usuarios no podrán cambiarla. Si no la estableces, las teclas especiales estarán desactivadas al principio, pero los usuarios podrán activarlas en cualquier momento.</translation>
