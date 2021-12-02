@@ -251,10 +251,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
     // This must be called on the origin thread.
     ResponseOrErrorCallback ReleaseCallback();
 
-    // Whether |callback_| is null.
-    // TODO(http://crbug/1211451): Remove after fix.
-    bool IsNullCallback() const;
-
    private:
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
     ResponseOrErrorCallback callback_;
