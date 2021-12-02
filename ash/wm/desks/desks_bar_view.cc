@@ -517,6 +517,9 @@ bool DesksBarView::IsZeroState() const {
 
 void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
                                     const ui::LocatedEvent& event) {
+  if (mini_view->is_animating_to_remove())
+    return;
+
   DeskNameView::CommitChanges(GetWidget());
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
@@ -525,6 +528,9 @@ void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
 
 void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
                                         const ui::LocatedEvent& event) {
+  if (mini_view->is_animating_to_remove())
+    return;
+
   DeskNameView::CommitChanges(GetWidget());
 
   // Initialize and start drag.
@@ -535,8 +541,9 @@ void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
 
 void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
                                    const ui::LocatedEvent& event) {
-  // Do not perform drag if drag proxy is not initialized.
-  if (!drag_proxy_)
+  // Do not perform drag if drag proxy is not initialized, or the mini view is
+  // animating to be removed.
+  if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return;
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
@@ -557,8 +564,9 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
 
 bool DesksBarView::HandleReleaseEvent(DeskMiniView* mini_view,
                                       const ui::LocatedEvent& event) {
-  // Do not end drag if the proxy is not initialized.
-  if (!drag_proxy_)
+  // Do not end drag if the proxy is not initialized, or the mini view is
+  // animating to be removed.
+  if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return false;
 
   // If the drag didn't start, finalize the drag. Otherwise, end the drag and
@@ -578,6 +586,8 @@ bool DesksBarView::HandleReleaseEvent(DeskMiniView* mini_view,
 
 void DesksBarView::InitDragDesk(DeskMiniView* mini_view,
                                 const gfx::PointF& location_in_screen) {
+  DCHECK(!mini_view->is_animating_to_remove());
+
   // If another view is being dragged, then end the drag.
   if (drag_view_)
     EndDragDesk(drag_view_, /*end_by_user=*/false);
@@ -599,6 +609,7 @@ void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   // Hide the dragged mini view.
   drag_view_->layer()->SetOpacity(0.0f);
@@ -615,6 +626,7 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   drag_proxy_->DragToX(location_in_screen.x());
 
@@ -643,6 +655,7 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   // Update default desk names after dropping.
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();

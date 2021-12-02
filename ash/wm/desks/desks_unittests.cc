@@ -5536,6 +5536,42 @@ TEST_F(DesksTest, RemoveDeskWhileDragging) {
   ExitOverview();
 }
 
+// Regression test for the asan failure at https://crbug.com/1274641.
+TEST_F(DesksTest, DragMiniViewWhileRemoving) {
+  NewDesk();
+  NewDesk();
+
+  EnterOverview();
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Cache the center point of the desk preview that is about to be removed.
+  auto* mini_view = desks_bar_view->mini_views().back();
+  const gfx::Point desk_preview_center =
+      mini_view->GetPreviewBoundsInScreen().CenterPoint();
+
+  {
+    // This test requires animation to repro the asan failure.
+    ui::ScopedAnimationDurationScaleMode animation_scale(
+        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+    // This will trigger the mini view removal animation, and the miniview won't
+    // be removed immediately.
+    CloseDeskFromMiniView(mini_view, event_generator);
+
+    // Drag the mini view that is being animated to be removed, and expect drag
+    // not to start, nor trigger a crash or an asan failure.
+    event_generator->set_current_screen_location(desk_preview_center);
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(0, 50);
+    EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
+  }
+}
+
 // Tests that the right desk containers are visible when switching between desks
 // really fast. Regression test for https://crbug.com/1194757.
 TEST_F(DesksTest, FastDeskSwitches) {
