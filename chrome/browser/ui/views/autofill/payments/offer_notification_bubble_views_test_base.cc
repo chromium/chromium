@@ -106,6 +106,11 @@ OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
   return offer_data_entry;
 }
 
+void OfferNotificationBubbleViewsTestBase::DeleteFreeListingCouponForUrl(
+    const GURL& url) {
+  coupon_service_->DeleteFreeListingCouponsForUrl(url);
+}
+
 void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
     AutofillOfferData::OfferType offer_type,
     const std::vector<GURL>& domains) {
