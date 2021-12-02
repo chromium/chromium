@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 
+#include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
+#include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -20,8 +22,6 @@
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
-#include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 namespace ash {
 namespace diagnostics {
@@ -75,8 +75,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   void AddTouchDevice(int id, const ui::EventDeviceInfo* device_info);
   void AddKeyboard(int id, const ui::EventDeviceInfo* device_info);
 
-  void ProcessXkbLayout(GetKeyboardVisualLayoutCallback callback);
-  mojom::KeyGlyphSetPtr LookupGlyphSet(uint32_t evdev_code);
+  InputDataProviderKeyboard keyboard_helper_;
+  InputDataProviderTouch touch_helper_;
 
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, mojom::TouchDeviceInfoPtr> touch_devices_;
@@ -86,9 +86,6 @@ class InputDataProvider : public mojom::InputDataProvider,
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 
   std::unique_ptr<ui::DeviceManager> device_manager_;
-
-  ui::XkbEvdevCodes xkb_evdev_codes_;
-  ui::XkbKeyboardLayoutEngine xkb_layout_engine_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };

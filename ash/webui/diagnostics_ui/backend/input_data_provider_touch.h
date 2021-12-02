@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_TOUCH_H_
+#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_TOUCH_H_
+
+#include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
+
+namespace ash {
+namespace diagnostics {
+
+// Helper to provide InputDataProvider diagnostic interface with touch-specific
+// logic.
+class InputDataProviderTouch {
+ public:
+  InputDataProviderTouch();
+  InputDataProviderTouch(const InputDataProviderTouch&) = delete;
+  InputDataProviderTouch& operator=(const InputDataProviderTouch&) = delete;
+  ~InputDataProviderTouch();
+
+  mojom::TouchDeviceInfoPtr ConstructTouchDevice(
+      int id,
+      const ui::EventDeviceInfo* device_info,
+      mojom::ConnectionType connection_type);
+};
+
+}  // namespace diagnostics
+}  // namespace ash
+
+#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_TOUCH_H_
