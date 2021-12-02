@@ -125,8 +125,8 @@ class UpdateCTSTest(unittest.TestCase):
          tempfile_ext.NamedTemporaryDirectory() as repoRoot:
       cts_utils_test.setup_fake_repo(repoRoot)
       cts_updater = update_cts.UpdateCTS(workDir, repoRoot)
-      self.assertEquals(
-          os.path.join(workDir, 'downloaded'), cts_updater.download_dir)
+      self.assertEqual(os.path.join(workDir, 'downloaded'),
+                       cts_updater.download_dir)
 
       cts_updater.download_cts(platforms=['platform1'])
       download_mock.assert_has_calls([
@@ -135,7 +135,7 @@ class UpdateCTSTest(unittest.TestCase):
           call(CONFIG_DATA['origin12'],
                os.path.join(cts_updater.download_dir, CONFIG_DATA['base12']))
       ])
-      self.assertEquals(2, download_mock.call_count)
+      self.assertEqual(2, download_mock.call_count)
 
   @patch('cts_utils.download')
   def testDownloadCTS_allPlatforms(self, download_mock):
@@ -155,7 +155,7 @@ class UpdateCTSTest(unittest.TestCase):
           call(CONFIG_DATA['origin22'],
                os.path.join(cts_updater.download_dir, CONFIG_DATA['base22']))
       ])
-      self.assertEquals(4, download_mock.call_count)
+      self.assertEqual(4, download_mock.call_count)
 
   def testFilterCTS(self):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
@@ -164,7 +164,7 @@ class UpdateCTSTest(unittest.TestCase):
       cts_utils_test.setup_fake_repo(repoRoot)
       cts_updater = update_cts.UpdateCTS('.', repoRoot)
       expected_download_dir = os.path.abspath('downloaded')
-      self.assertEquals(expected_download_dir, cts_updater.download_dir)
+      self.assertEqual(expected_download_dir, cts_updater.download_dir)
       os.makedirs(expected_download_dir)
       with cts_utils.chdir('downloaded'):
         generate_zip_file(CONFIG_DATA['base11'], CONFIG_DATA['apk1'],
@@ -173,7 +173,7 @@ class UpdateCTSTest(unittest.TestCase):
                           'not/a/webview/apk')
       cts_updater.filter_downloaded_cts()
       with cts_utils.chdir('filtered'):
-        self.assertEquals(2, len(os.listdir('.')))
+        self.assertEqual(2, len(os.listdir('.')))
         verify_zip_file(CONFIG_DATA['base11'], CONFIG_DATA['apk1'])
         verify_zip_file(CONFIG_DATA['base12'], CONFIG_DATA['apk1'])
 
@@ -227,12 +227,12 @@ class UpdateCTSTest(unittest.TestCase):
       cts_updater.stage_cipd_update()
       self.assertTrue(os.path.isdir('staged'))
       with cts_utils.chdir('staged'):
-        self.assertEquals('n1', cts_utils_test.readfile(CONFIG_DATA['file11']))
-        self.assertEquals('n3', cts_utils_test.readfile(CONFIG_DATA['file12']))
-        self.assertEquals('o2', cts_utils_test.readfile(CONFIG_DATA['file21']))
-        self.assertEquals('o4', cts_utils_test.readfile(CONFIG_DATA['file22']))
-        self.assertEquals(CIPD_DATA['yaml'],
-                          cts_utils_test.readfile('cipd.yaml'))
+        self.assertEqual('n1', cts_utils_test.readfile(CONFIG_DATA['file11']))
+        self.assertEqual('n3', cts_utils_test.readfile(CONFIG_DATA['file12']))
+        self.assertEqual('o2', cts_utils_test.readfile(CONFIG_DATA['file21']))
+        self.assertEqual('o4', cts_utils_test.readfile(CONFIG_DATA['file22']))
+        self.assertEqual(CIPD_DATA['yaml'],
+                         cts_utils_test.readfile('cipd.yaml'))
 
   @patch('cts_utils.update_cipd_package')
   def testCommitStagedCIPD(self, update_mock):
@@ -258,8 +258,8 @@ class UpdateCTSTest(unittest.TestCase):
       cts_updater.commit_staged_cipd()
       update_mock.assert_called_with(
           os.path.join(workDir, 'staged', 'cipd.yaml'))
-      self.assertEquals('newcipdversion',
-                        cts_utils_test.readfile('cipd_version.txt'))
+      self.assertEqual('newcipdversion',
+                       cts_utils_test.readfile('cipd_version.txt'))
 
   @patch('devil.utils.cmd_helper.RunCmd')
   @patch('devil.utils.cmd_helper.GetCmdOutput')
@@ -379,7 +379,7 @@ class UpdateCTSTest(unittest.TestCase):
 
       latest_version = fake_cipd.get_latest_version(
           'chromium/android_webview/tools/cts_archive')
-      self.assertNotEquals(DEPS_DATA['revision'], latest_version)
+      self.assertNotEqual(DEPS_DATA['revision'], latest_version)
       self._assertCIPDVersionUpdated(repoRoot, latest_version)
 
       repo_cipd_yaml = os.path.join(repoRoot, cts_utils.TOOLS_DIR,
@@ -405,10 +405,10 @@ class UpdateCTSTest(unittest.TestCase):
         AssertionError: If contents of DEPS and test suite files were not
           expected.
       """
-    self.assertEquals(
+    self.assertEqual(
         DEPS_DATA['template'] % (CIPD_DATA['package'], new_version),
         cts_utils_test.readfile(os.path.join(repo_root, 'DEPS')))
-    self.assertEquals(
+    self.assertEqual(
         cts_utils_test.SUITES_DATA['template'] % (new_version, new_version),
         cts_utils_test.readfile(
             os.path.join(repo_root, 'testing', 'buildbot', 'test_suites.pyl')))
