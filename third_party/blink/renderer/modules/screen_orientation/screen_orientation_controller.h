@@ -71,6 +71,12 @@ class MODULES_EXPORT ScreenOrientationController final
 
   void UpdateOrientation();
 
+  // Sends binding requests to the browser for
+  // device::mojom::blink::ScreenOrientation. This method can be called when:
+  // * `this` is created in non-prerendering context.
+  // * The corresponding prerendering context is activated.
+  void BuildMojoConnection();
+
   bool IsActiveAndVisible() const;
 
   void OnLockOrientationResult(int, ScreenOrientationLockResult);
