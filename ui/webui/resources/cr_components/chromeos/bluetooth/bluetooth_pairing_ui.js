@@ -211,7 +211,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     // If there's a specific device to pair with, immediately go to the spinner
     // page.
     if (this.pairingDeviceAddress) {
-      // TODO(1010321):  Confirm the UI displayed when waiting for pairing.
       this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
     }
   }
@@ -327,16 +326,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       this.keyEnteredReceiver_ = null;
     }
 
-    if (this.pairingDeviceAddress) {
-      // Device-specific pairing has failed. Display the error code page and
-      // don't reset |this.pairingDelegateReceiver_| so then no more pairing
-      // attempts can be made.
-      if (result !== chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
-        // TODO(1010321):  Add UI if pairing fails.
-        return;
-      }
-    }
-
     this.pairingDelegateReceiver_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
@@ -346,6 +335,11 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       }));
       return;
     }
+
+    // If |pairingDeviceAddress| is defined, this was a device-specific pairing
+    // request that has failed. Clear |pairingDeviceAddress| so that we don't
+    // automatically attempt to re-pair with the same device again.
+    this.pairingDeviceAddress = null;
 
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE;
     this.lastFailedPairingDeviceId_ = this.devicePendingPairing_.id;
@@ -501,12 +495,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     // pairDevice promise is returned in handlePairDeviceResult_().
     // pairDevice promise is returned when close() is called above. If we are
     // on |DEVICE_SELECTION_PAGE|, canceling closes the pairing dialog.
-    //
-    // If |pairingDeviceAddress| is defined, this dialog is specific to pairing
-    // with one device and should close if cancel is clicked on any page.
     if (this.selectedPageId_ ===
-            BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE ||
-        this.pairingDeviceAddress) {
+        BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE) {
       this.dispatchEvent(new CustomEvent('finished', {
         bubbles: true,
         composed: true,

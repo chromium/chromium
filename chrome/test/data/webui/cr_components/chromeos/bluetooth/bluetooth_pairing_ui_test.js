@@ -5,12 +5,21 @@
 // clang-format off
 import 'chrome://bluetooth-pairing/strings.m.js';
 
+import {SettingsBluetoothPairingConfirmCodePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_confirm_code_page.js';
+import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
+import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
+import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_request_code_page.js';
 import {SettingsBluetoothPairingUiElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
+import {SettingsBluetoothSpinnerPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_spinner_page.js';
 import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 import {eventToPromise, flushTasks} from '../../../test_util.js';
+import {waitAfterNextRender} from '../../../test_util.js';
+
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
+
 // clang-format on
 
 const mojom = chromeos.bluetoothConfig.mojom;
@@ -40,13 +49,51 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   }
 
   /**
+   * @return {?SettingsBluetoothPairingDeviceSelectionPageElement}
+   */
+  function getDeviceSelectionPage() {
+    return /** @type {?SettingsBluetoothPairingDeviceSelectionPageElement} */ (
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage'));
+  }
+
+  /**
+   * @return {?SettingsBluetoothSpinnerPageElement}
+   */
+  function getSpinnerPage() {
+    return /** @type {?SettingsBluetoothSpinnerPageElement} */ (
+        bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage'));
+  }
+
+  /**
+   * @return {?SettingsBluetoothPairingEnterCodeElement}
+   */
+  function getEnterCodePage() {
+    return /** @type {?SettingsBluetoothPairingEnterCodeElement} */ (
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceEnterCodePage'));
+  }
+
+  /**
+   * @return {?SettingsBluetoothRequestCodePageElement}
+   */
+  function getDeviceRequestCodePage() {
+    return /** @type {?SettingsBluetoothRequestCodePageElement} */ (
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceRequestCodePage'));
+  }
+
+  /**
+   * @return {?SettingsBluetoothPairingConfirmCodePageElement}
+   */
+  function getConfirmCodePage() {
+    return /** @type {?SettingsBluetoothPairingConfirmCodePageElement} */ (
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceConfirmCodePage'));
+  }
+
+  /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
    */
   async function selectDevice(device) {
-    let deviceSelectionPage =
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
     let event = new CustomEvent('pair-device', {detail: {device}});
-    deviceSelectionPage.dispatchEvent(event);
+    getDeviceSelectionPage().dispatchEvent(event);
     await flushTasks();
   }
 
@@ -63,10 +110,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
    */
   async function displayPinOrPasskey(pairingAuthType) {
     await init();
-    const getDeviceSelectionPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    const getEnterCodePage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceEnterCodePage');
 
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
@@ -126,10 +169,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   async function pairingPinOrPassKey(pairingAuthType) {
     await init();
     let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
-    const getDeviceSelectionPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    const getDeviceRequestCodePage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceRequestCodePage');
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
         /*publicName=*/ 'BeatsX',
@@ -220,11 +259,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     // paired with.
     await init(/*pairingDeviceAddress=*/ address);
 
-    const getDeviceSelectionPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    const getSpinnerPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage');
-
     // We should immediately be in the spinner page, not the device selection
     // page.
     assertTrue(!!getSpinnerPage());
@@ -238,10 +272,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
   test('Device list is correctly updated', async function() {
     await init();
-    const deviceSelectionPage =
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    assertTrue(!!deviceSelectionPage);
-    assertEquals(0, deviceSelectionPage.devices.length);
+    assertTrue(!!getDeviceSelectionPage());
+    assertEquals(0, getDeviceSelectionPage().devices.length);
 
     const device = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
@@ -256,16 +288,14 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
 
     await flushTasks();
-    assertTrue(!!deviceSelectionPage.devices);
-    assertEquals(1, deviceSelectionPage.devices.length);
+    assertTrue(!!getDeviceSelectionPage().devices);
+    assertEquals(1, getDeviceSelectionPage().devices.length);
   });
 
   test('finished event fired on successful device pair', async function() {
     await init();
     const id = '12//345&6789';
-    const deviceSelectionPage =
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    assertTrue(!!deviceSelectionPage);
+    assertTrue(!!getDeviceSelectionPage());
     let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
 
     const device = createDefaultBluetoothDevice(
@@ -283,7 +313,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
     const event = new CustomEvent(
         'pair-device', {detail: {device: device.deviceProperties}});
-    deviceSelectionPage.dispatchEvent(event);
+    getDeviceSelectionPage().dispatchEvent(event);
     await flushTasks();
 
     const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
@@ -293,8 +323,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
   test('Only one device is paired at a time', async function() {
     await init();
-    const deviceSelectionPage =
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
     const deviceId = '123456';
     const device = createDefaultBluetoothDevice(
         deviceId,
@@ -322,29 +350,29 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
 
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 0);
-    assertEquals(deviceSelectionPage.failedPairingDeviceId, '');
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, '');
 
     let event = new CustomEvent(
         'pair-device', {detail: {device: device.deviceProperties}});
-    deviceSelectionPage.dispatchEvent(event);
+    getDeviceSelectionPage().dispatchEvent(event);
     await flushTasks();
 
     assertEquals(
-        device.deviceProperties, deviceSelectionPage.devicePendingPairing);
+        device.deviceProperties, getDeviceSelectionPage().devicePendingPairing);
 
     // Complete pairing to |device|.
     deviceHandler.completePairDevice(/*success=*/ false);
     await flushTasks();
 
-    assertEquals(deviceSelectionPage.failedPairingDeviceId, deviceId);
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId);
 
     await flushTasks();
     event = new CustomEvent(
         'pair-device', {detail: {device: device.deviceProperties}});
-    deviceSelectionPage.dispatchEvent(event);
+    getDeviceSelectionPage().dispatchEvent(event);
     await flushTasks();
     assertEquals(
-        device.deviceProperties, deviceSelectionPage.devicePendingPairing);
+        device.deviceProperties, getDeviceSelectionPage().devicePendingPairing);
 
     // pairDevice() should be called twice.
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 2);
@@ -362,9 +390,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
       'Finish event is fired when cancel is pressed in device selection page',
       async function() {
         await init();
-        const deviceSelectionPage =
-            bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-        assertTrue(!!deviceSelectionPage);
+        assertTrue(!!getDeviceSelectionPage());
         let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
 
         const device = createDefaultBluetoothDevice(
@@ -392,12 +418,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   test('Confirm code', async function() {
     await init();
     let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
-    const getDeviceSelectionPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
-    const getDeviceConfirmCodePage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceConfirmCodePage');
-    const getSpinnerPage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage');
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
         /*publicName=*/ 'BeatsX',
@@ -414,7 +434,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // By default device selection page should be shown.
     assertTrue(!!getDeviceSelectionPage());
-    assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getConfirmCodePage());
     assertFalse(!!getSpinnerPage());
 
     // Test canceling while on confirm code page.
@@ -424,8 +444,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         PairingAuthType.CONFIRM_PASSKEY, pairingCode);
     await flushTasks();
 
-    assertTrue(!!getDeviceConfirmCodePage());
-    assertEquals(getDeviceConfirmCodePage().code, pairingCode);
+    assertTrue(!!getConfirmCodePage());
+    assertEquals(getConfirmCodePage().code, pairingCode);
 
     // Simulate pairing cancelation.
     await simulateCancelation();
@@ -433,7 +453,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     // We return to device selection page when pairing is cancelled.
-    assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getConfirmCodePage());
     assertFalse(!!getSpinnerPage());
 
     // Retry pairing.
@@ -444,10 +464,10 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     // When Confirm code page is shown.
-    assertTrue(!!getDeviceConfirmCodePage());
-    assertEquals(getDeviceConfirmCodePage().code, pairingCode);
+    assertTrue(!!getConfirmCodePage());
+    assertEquals(getConfirmCodePage().code, pairingCode);
     let event = new CustomEvent('confirm-code');
-    getDeviceConfirmCodePage().dispatchEvent(event);
+    getConfirmCodePage().dispatchEvent(event);
     await flushTasks();
 
     // Spinner should be shown.
@@ -458,7 +478,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     // We return to device selection page on pair failure.
-    assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getConfirmCodePage());
     assertFalse(!!getSpinnerPage());
 
     // Retry pairing.
@@ -469,7 +489,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     event = new CustomEvent('confirm-code');
-    getDeviceConfirmCodePage().dispatchEvent(event);
+    getConfirmCodePage().dispatchEvent(event);
     await flushTasks();
 
     // Spinner should be shown.
@@ -559,14 +579,41 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   });
 
   test('Pair with a specific device by address, failure', async function() {
-    await pairByDeviceAddress(/*address=*/ '123456');
+    const deviceId1 = '123456';
+    await pairByDeviceAddress(/*address=*/ deviceId1);
 
     const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
     deviceHandler.completePairDevice(/*success=*/ false);
 
-    // TODO(crbug.com/1010321): Right now we will still be in the spinner
-    // page but this should be updated to check we're in the error page.
-    assertTrue(!!bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage'));
+    // Wait for the callback to finish (flushTasks() doesn't wait long enough
+    // here).
+    await waitAfterNextRender(bluetoothPairingUi);
+
+    // On failure, the device selection page should be shown.
+    assertTrue(!!getDeviceSelectionPage());
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId1);
+
+    // There should no longer be a device-specific address to pair to.
+    assertFalse(!!bluetoothPairingUi.pairingDeviceAddress);
+
+    // Verify we can pair with another device.
+    const device2 = createDefaultBluetoothDevice(
+        /*id=*/ '34567',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    bluetoothConfig.appendToDiscoveredDeviceList([device2.deviceProperties]);
+    await flushTasks();
+
+    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+    await selectDevice(device2.deviceProperties);
+
+    deviceHandler.completePairDevice(/*success=*/ true);
+    await finishedPromise;
   });
 
   test('Pair with a specific device by address with auth', async function() {
@@ -579,18 +626,16 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     // Confirmation code page should be shown.
-    const getDeviceConfirmCodePage = () =>
-        bluetoothPairingUi.shadowRoot.querySelector('#deviceConfirmCodePage');
-    assertTrue(!!getDeviceConfirmCodePage());
-    assertEquals(getDeviceConfirmCodePage().code, pairingCode);
+    assertTrue(!!getConfirmCodePage());
+    assertEquals(getConfirmCodePage().code, pairingCode);
 
     // Simulate pressing 'Confirm'.
     let event = new CustomEvent('confirm-code');
-    getDeviceConfirmCodePage().dispatchEvent(event);
+    getConfirmCodePage().dispatchEvent(event);
     await flushTasks();
 
     // Spinner should be shown.
-    assertTrue(!!bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage'));
+    assertTrue(!!getSpinnerPage());
     assertTrue(deviceHandler.getConfirmPasskeyResult());
 
     // Finishing the pairing with success should fire the |finished| event.
@@ -611,16 +656,19 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         await flushTasks();
 
         // Confirmation code page should be shown.
-        const getDeviceConfirmCodePage = () =>
-            bluetoothPairingUi.shadowRoot.querySelector(
-                '#deviceConfirmCodePage');
-        assertTrue(!!getDeviceConfirmCodePage());
-        assertEquals(getDeviceConfirmCodePage().code, pairingCode);
+        assertTrue(!!getConfirmCodePage());
+        assertEquals(getConfirmCodePage().code, pairingCode);
 
-        // Simulate clicking 'Cancel'. The |finished| event should fire.
-        let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+        // Simulate clicking 'Cancel'.
         await simulateCancelation();
-        await finishedPromise;
+        deviceHandler.completePairDevice(/*success=*/ false);
+        await flushTasks();
+
+        // The device selection page should be shown.
+        assertTrue(!!getDeviceSelectionPage());
+
+        // There should no longer be a device-specific address to pair to.
+        assertFalse(!!bluetoothPairingUi.pairingDeviceAddress);
       });
 
   test(
@@ -628,8 +676,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
       async function() {
         await pairByDeviceAddress(/*address=*/ '123456');
 
-        const getEnterCodePage = () =>
-            bluetoothPairingUi.shadowRoot.querySelector('#deviceEnterCodePage');
         assertFalse(!!getEnterCodePage());
 
         const pairingCode = '123456';
