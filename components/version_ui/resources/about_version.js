@@ -82,6 +82,10 @@ function returnCustomizationId(response) {
 }
 // </if>
 
+function copyToClipboard() {
+  navigator.clipboard.writeText($('copy-content').innerText);
+}
+
 /* All the work we do onload. */
 function onLoadWork() {
   // <if expr="chromeos or is_win">
@@ -106,6 +110,8 @@ function onLoadWork() {
   if ($('sanitizer').textContent !== '') {
     $('sanitizer-section').hidden = false;
   }
+
+  $('copy-to-clipboard').addEventListener('click', copyToClipboard);
 }
 
 document.addEventListener('DOMContentLoaded', onLoadWork);

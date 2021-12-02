@@ -53,13 +53,16 @@ about:version template page
       <table id="inner" cellpadding="0" cellspacing="0" border="0">
         <tr><td class="label">$i18n{application_label}</td>
           <td class="version" id="version">
-            <span>$i18n{version}</span>
-            (<span>$i18n{official}</span>)
-            <span>$i18n{version_modifier}</span>
-            <span>$i18n{version_processor_variation}</span>
-<if expr="is_win">
-            <span>$i18n{update_cohort_name}</span>
-</if>
+            <span id="copy-content">
+              <span>$i18n{version}</span>
+              (<span>$i18n{official}</span>)
+              <span>$i18n{version_modifier}</span>
+              <span>$i18n{version_processor_variation}</span>
+  <if expr="is_win">
+              <span>$i18n{update_cohort_name}</span>
+  </if>
+            </span>
+            <button id="copy-to-clipboard"></button>
           </td>
         </tr>
         <tr>
