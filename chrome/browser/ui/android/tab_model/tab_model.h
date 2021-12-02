@@ -120,6 +120,23 @@ class TabModel {
     SIZE
   };
 
+  // Various types of user agent.
+  // Values must be numbered from 0 and can't have gaps.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+  enum class TabUserAgent {
+    // Choose user agent based on default setting.
+    DEFAULT,
+    // Use mobile user agent.
+    MOBILE,
+    // Use desktop user agent.
+    DESKTOP,
+    // User agent not set, due to an earlier version not having the user agent
+    // bit.
+    UNSET,
+    // Must be last.
+    SIZE
+  };
+
   TabModel(const TabModel&) = delete;
   TabModel& operator=(const TabModel&) = delete;
 

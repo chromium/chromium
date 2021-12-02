@@ -17,7 +17,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabImpl.TabUserAgent;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -101,7 +101,7 @@ public class TabUtils {
                             == switchToDesktop) {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
-            ((TabImpl) tab).setTabUserAgent(tabUserAgent);
+            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
         }
     }
 
