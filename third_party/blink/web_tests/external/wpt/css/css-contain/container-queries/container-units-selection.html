@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <title>Container Relative Units: Advanced Container Selection</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-lengths">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
   * { writing-mode: initial; }
   .inline { container-type: inline-size; }
-  .block { container-type: block-size; }
   .size { container-type: size; }
   .vertical { writing-mode: vertical-rl; }
   .w500 { width: 500px; }
@@ -40,30 +40,29 @@
 
   test(() => {
     try {
-      c1.className = 'inline w500';
-      c2.className = 'size w300 h400'; // Selected by qw, qi.
-      c3.className = 'block h200'; // Selected by qh, qb.
-      assert_unit_equals(child, '10qw', '30px');
-      assert_unit_equals(child, '10qi', '30px');
-      assert_unit_equals(child, '10qh', '20px');
-      assert_unit_equals(child, '10qb', '20px');
-      assert_unit_equals(child, '10qmin', '20px');
-      assert_unit_equals(child, '10qmax', '30px');
-
-      c1.className = 'block h400';
-      c2.className = 'size w300 h200'; // Selected by qh, qb.
+      c1.className = 'inline w500'; // Selected by nothing.
+      c2.className = 'size h400 w300'; // Selected by qh, qb.
       c3.className = 'inline w100'; // Selected by qw, qi.
-      assert_unit_equals(child, '10qh', '20px');
-      assert_unit_equals(child, '10qb', '20px');
       assert_unit_equals(child, '10qw', '10px');
       assert_unit_equals(child, '10qi', '10px');
+      assert_unit_equals(child, '10qh', '40px');
+      assert_unit_equals(child, '10qb', '40px');
       assert_unit_equals(child, '10qmin', '10px');
-      assert_unit_equals(child, '10qmax', '20px');
+      assert_unit_equals(child, '10qmax', '40px');
+
+      c3.className = ''; // qw, qi now selects c2 instead.
+      assert_unit_equals(child, '10qw', '30px');
+      assert_unit_equals(child, '10qi', '30px');
+      assert_unit_equals(child, '10qh', '40px');
+      assert_unit_equals(child, '10qb', '40px');
+      assert_unit_equals(child, '10qmin', '30px');
+      assert_unit_equals(child, '10qmax', '40px');
+
     } finally {
       for (let c of [c1, c2, c3, c4, child])
         c.className = '';
     }
-  }, 'Containers that have both inline/block type are selected for all units');
+  }, 'Container units select the proper container');
 
   test(() => {
     try {
@@ -107,19 +106,18 @@
     try {
       c1.className = 'size w500 h400';
       c2.className = 'inline w300';
-      c3.className = 'block h200';
 
       assert_unit_equals(child, '10qw', '30px');
       assert_unit_equals(child, '10qi', '30px');
-      assert_unit_equals(child, '10qh', '20px');
-      assert_unit_equals(child, '10qb', '20px');
+      assert_unit_equals(child, '10qh', '40px');
+      assert_unit_equals(child, '10qb', '40px');
 
       child.className = 'vertical';
 
       assert_unit_equals(child, '10qw', '30px');
       assert_unit_equals(child, '10qi', '30px');
-      assert_unit_equals(child, '10qh', '20px');
-      assert_unit_equals(child, '10qb', '20px');
+      assert_unit_equals(child, '10qh', '40px');
+      assert_unit_equals(child, '10qb', '40px');
 
     } finally {
       for (let c of [c1, c2, c3, c4, child])
