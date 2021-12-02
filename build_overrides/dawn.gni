@@ -11,5 +11,6 @@ dawn_shaderc_dir = "//third_party/shaderc/src"
 dawn_spirv_cross_dir = "//third_party/vulkan-deps/spirv-cross/src"
 dawn_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 dawn_swiftshader_dir = "//third_party/swiftshader"
+dawn_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
 dawn_vulkan_validation_layers_dir =
     "//third_party/vulkan-deps/vulkan-validation-layers/src"
