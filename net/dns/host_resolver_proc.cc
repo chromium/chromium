@@ -176,8 +176,8 @@ int SystemHostResolverCall(const std::string& host,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) && \
-    !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if defined(OS_POSIX) && \
+    !(defined(OS_APPLE) || defined(OS_OPENBSD) || defined(OS_ANDROID))
   DnsReloaderMaybeReload();
 #endif
   absl::optional<AddressInfo> ai;
