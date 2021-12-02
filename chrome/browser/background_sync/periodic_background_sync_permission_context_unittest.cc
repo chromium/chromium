@@ -186,25 +186,34 @@ TEST_F(PeriodicBackgroundSyncPermissionContextTest, DefaultSearchEngine) {
   // 1. Flag disabled (by default)
   SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
   EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
+}
 
-  // Enable the flag for the rest of the test
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitFromCommandLine(
-      "PeriodicSyncPermissionForDefaultSearchEngine", "");
+class PeriodicBackgroundSyncPermissionContextWithPermissionTest
+    : public PeriodicBackgroundSyncPermissionContextTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      base::Feature{"PeriodicSyncPermissionForDefaultSearchEngine",
+                    base::FEATURE_ENABLED_BY_DEFAULT}};
+};
 
-  // 2. No default search engine
+TEST_F(PeriodicBackgroundSyncPermissionContextWithPermissionTest,
+       DefaultSearchEngine) {
+  GURL requesting_origin("https://example.com");
+  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
+
+  // No default search engine.
   SetDefaultSearchEngineUrl(GURL());
   EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
 
-  // 3. Default search engine doesn't match
+  // Default search engine doesn't match.
   SetDefaultSearchEngineUrl(GURL("https://differentexample.com"));
   EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
 
-  // 4. Default search engine matches
+  // Default search engine matches.
   SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
   EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_ALLOW);
 
-  // 5. Default search engine matches but no BACKGROUND_SYNC permission.
+  // Default search engine matches but no BACKGROUND_SYNC permission.
   SetBackgroundSyncContentSetting(requesting_origin, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
 }
