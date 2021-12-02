@@ -20,8 +20,7 @@ namespace lottie {
 // Used for loading a Lottie asset intended as a still image (not animated).
 COMPONENT_EXPORT(UI_LOTTIE)
 gfx::ImageSkiaRep ParseLottieAsStillImage(
-    const base::RefCountedString& bytes_string,
-    float scale);
+    const base::RefCountedString& bytes_string);
 
 }  // namespace lottie
 

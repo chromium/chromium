@@ -136,7 +136,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
       return image;
 
     const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-    if (rep.scale() == scale)
+    if (rep.scale() == scale || rep.unscaled())
       return image;
 
     if (scaled_image_.HasRepresentation(scale))

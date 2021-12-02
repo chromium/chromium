@@ -219,14 +219,9 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
     // TODO(https://crbug.com/1128684): Consolidate |LoadBitmap| and
     // |LoadLottie|.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (is_lottie_) {
-      gfx::ImageSkiaRep rep_from_lottie;
-      if (rb_->LoadLottie(resource_id_, scale, scale_factor, &rep_from_lottie))
-        return rep_from_lottie;
-      NOTREACHED() << "Unable to load Lottie image with id " << resource_id_
-                   << ", scale=" << scale;
-      return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
-    }
+    gfx::ImageSkiaRep rep_from_lottie;
+    if (rb_->LoadLottie(resource_id_, scale_factor, &rep_from_lottie))
+      return rep_from_lottie;
 #endif
 
     SkBitmap image;
@@ -238,7 +233,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
-      NOTREACHED() << "Unable to load bitmap image with id " << resource_id_
+      NOTREACHED() << "Unable to load image with id " << resource_id_
                    << ", scale=" << scale;
       return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
 #endif
@@ -262,12 +257,13 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
     return gfx::ImageSkiaRep(image, scale);
   }
 
+ private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool HasRepresentationAtAllScales() const override { return is_lottie_; }
 #endif
 
- private:
   raw_ptr<ResourceBundle> rb_;
+
   const int resource_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lottie_;
@@ -663,10 +659,13 @@ base::StringPiece ResourceBundle::GetRawDataResource(int resource_id) const {
 
 base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     int resource_id,
-    ResourceScaleFactor scale_factor) const {
+    ResourceScaleFactor scale_factor,
+    ResourceScaleFactor* loaded_scale_factor) const {
   base::StringPiece data;
   if (delegate_ &&
       delegate_->GetRawDataResource(resource_id, scale_factor, &data)) {
+    if (loaded_scale_factor)
+      *loaded_scale_factor = scale_factor;
     return data;
   }
 
@@ -674,8 +673,11 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     for (size_t i = 0; i < data_packs_.size(); i++) {
       if (data_packs_[i]->GetResourceScaleFactor() == scale_factor &&
           data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                         &data))
+                                         &data)) {
+        if (loaded_scale_factor)
+          *loaded_scale_factor = scale_factor;
         return data;
+      }
     }
   }
 
@@ -686,10 +688,13 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
          data_packs_[i]->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
         data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
                                        &data)) {
+      if (loaded_scale_factor)
+        *loaded_scale_factor = data_packs_[i]->GetResourceScaleFactor();
       return data;
     }
   }
-
+  if (loaded_scale_factor)
+    *loaded_scale_factor = ui::kScaleFactorNone;
   return base::StringPiece();
 }
 
@@ -1183,19 +1188,22 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ResourceBundle::LoadLottie(int resource_id,
-                                float scale,
                                 ResourceScaleFactor scale_factor,
                                 gfx::ImageSkiaRep* rep) const {
-  const base::StringPiece potential_lottie =
-      GetRawDataResourceForScale(resource_id, scale_factor);
+  ResourceScaleFactor loaded_scale_factor = ui::kScaleFactorNone;
+  const base::StringPiece potential_lottie = GetRawDataResourceForScale(
+      resource_id, scale_factor, &loaded_scale_factor);
   if (potential_lottie.substr(0u, base::size(kLottiePrefix)) !=
       base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
     return false;
 
+  // Lottie resource should be in the unscaled resource pak.
+  DCHECK_EQ(ui::kScaleFactorNone, loaded_scale_factor);
+
   auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
   DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
                      &(bytes_string->data()));
-  *rep = (*g_parse_lottie_as_still_image_)(*bytes_string, scale);
+  *rep = (*g_parse_lottie_as_still_image_)(*bytes_string);
   return true;
 }
 #endif
