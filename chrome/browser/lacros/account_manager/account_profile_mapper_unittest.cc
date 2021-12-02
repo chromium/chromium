@@ -163,6 +163,10 @@ class AccountProfileMapperTest : public testing::Test {
         << " unsatisfied GetAccounts() callbacks";
   }
 
+  TestingProfileManager* testing_profile_manager() {
+    return &testing_profile_manager_;
+  }
+
   ProfileAttributesStorage* attributes_storage() {
     return &testing_profile_manager_.profile_manager()
                 ->GetProfileAttributesStorage();
@@ -777,16 +781,13 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromSecondaryProfile) {
   AccountProfileMapper* mapper =
       CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
   SetPrimaryAccountForProfile(other_path, "B");
-  // OnAccountUpserted() is not called when a previously assigned account
-  // becomes unassigned.
-  // TODO(https://crbug.com/1260376): Fix this by calling `OnAccountUpserted()`
-  // when a profile is deleted.
-  TestMapperUpdateGaia(mapper,
-                       /*accounts_in_facade=*/{"A", "C"},
-                       /*expected_accounts_upserted=*/{},
-                       /*expected_accounts_removed=*/{{other_path, {"B"}}},
-                       /*expected_accounts_in_storage=*/
-                       {{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
+  TestMapperUpdateGaia(
+      mapper,
+      /*accounts_in_facade=*/{"A", "C"},
+      /*expected_accounts_upserted=*/{{base::FilePath(), {"C"}}},
+      /*expected_accounts_removed=*/{{other_path, {"B"}}},
+      /*expected_accounts_in_storage=*/
+      {{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
 }
@@ -801,14 +802,13 @@ TEST_F(AccountProfileMapperTest,
   AccountProfileMapper* mapper = CreateMapper(
       {{main_path(), {"A"}}, {second_path, {"B", "C"}}, {third_path, {"D"}}});
   SetPrimaryAccountForProfile(second_path, "B");
-  // OnAccountUpserted() is not called when a previously assigned account
-  // becomes unassigned.
-  TestMapperUpdateGaia(mapper,
-                       /*accounts_in_facade=*/{"A", "C", "D"},
-                       /*expected_accounts_upserted=*/{},
-                       /*expected_accounts_removed=*/{{second_path, {"B"}}},
-                       /*expected_accounts_in_storage=*/
-                       {{main_path(), {"A"}}, {third_path, {"D"}}});
+  TestMapperUpdateGaia(
+      mapper,
+      /*accounts_in_facade=*/{"A", "C", "D"},
+      /*expected_accounts_upserted=*/{{base::FilePath(), {"C"}}},
+      /*expected_accounts_removed=*/{{second_path, {"B"}}},
+      /*expected_accounts_in_storage=*/
+      {{main_path(), {"A"}}, {third_path, {"D"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(second_path);
 }
@@ -871,6 +871,23 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
                        /*expected_accounts_removed=*/{{main_path(), {"A"}}},
                        /*expected_accounts_in_storage=*/
                        {{main_path(), {"B"}}});
+}
+
+// Tests that accounts from deleted profile remain unassigned.
+TEST_F(AccountProfileMapperTest, DeleteProfile) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"B", "C"}}});
+  ExpectOnAccountRemoved(&mock_observer, {});
+
+  testing_profile_manager()->DeleteTestingProfile("Other");
+  ExpectAccountsInStorage({{main_path(), {"A"}}});
 }
 
 TEST_F(AccountProfileMapperTest, ShowAddAccountDialogBeforeInit) {

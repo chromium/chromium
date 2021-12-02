@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_cache.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -26,8 +27,11 @@ struct Account;
 class AccountKey;
 }  // namespace account_manager
 
+namespace base {
+class FilePath;
+}
+
 class AddAccountHelper;
-class ProfileAttributesStorage;
 class ProfileAttributesEntry;
 class PrefService;
 
@@ -51,7 +55,8 @@ class PrefService;
 //   system accounts with the storage accounts. Then, it updates the storage
 //   accordingly, and notifies the observers.
 class AccountProfileMapper
-    : public account_manager::AccountManagerFacade::Observer {
+    : public account_manager::AccountManagerFacade::Observer,
+      public ProfileAttributesStorage::Observer {
  public:
   // Result type for `ShowAddAccountDialog()`.
   // If the account was added to the system, but could not be added to the
@@ -140,6 +145,9 @@ class AccountProfileMapper
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
+  // ProfileAttributesStorage::Observer:
+  void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
+
   // Adds or updates an account programmatically without user interaction
   // Should only be used in tests.
   void UpsertAccountForTesting(const base::FilePath& profile_path,
@@ -223,6 +231,9 @@ class AccountProfileMapper
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_storage_observation_{this};
 
   AccountCache account_cache_;
 

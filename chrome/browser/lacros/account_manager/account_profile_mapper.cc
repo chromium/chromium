@@ -14,6 +14,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/add_account_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,8 +35,6 @@ void DeleteProfile(const base::FilePath& profile_path,
   // profile deletion.
   g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
       profile_path, base::DoNothing(), delete_metric);
-  // TODO(https://crbug.com/1257610): observe profile deletion and remove all
-  // accounts from deleted profiles.
 }
 
 }  // namespace
@@ -54,6 +53,7 @@ AccountProfileMapper::AccountProfileMapper(
   MigrateOldProfiles();
 
   account_manager_facade_observation_.Observe(account_manager_facade_);
+  profile_attributes_storage_observation_.Observe(profile_attributes_storage_);
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
@@ -247,6 +247,44 @@ void AccountProfileMapper::OnAccountRemoved(
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
+}
+
+void AccountProfileMapper::OnProfileWillBeRemoved(
+    const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry_to_be_removed =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry_to_be_removed);
+
+  // Compute a set of accounts that are assigned to at least one profile.
+  base::flat_set<std::string> assigned_account_ids;
+  for (ProfileAttributesEntry* entry :
+       profile_attributes_storage_->GetAllProfilesAttributes()) {
+    if (entry == entry_to_be_removed)
+      continue;
+    base::flat_set<std::string> profile_account_ids = entry->GetGaiaIds();
+    assigned_account_ids.insert(profile_account_ids.begin(),
+                                profile_account_ids.end());
+  }
+
+  // Compute a list of accounts that will become unassigned after a profile at
+  // `profile_path` is removed.
+  base::flat_set<std::string> freed_account_ids =
+      entry_to_be_removed->GetGaiaIds();
+  std::vector<std::string> unassigned_account_ids;
+  base::ranges::set_difference(freed_account_ids, assigned_account_ids,
+                               std::back_inserter(unassigned_account_ids));
+
+  // Notify observers about accounts that became unassiged.
+  for (const std::string& unassiged_account_id : unassigned_account_ids) {
+    const account_manager::Account* account =
+        account_cache_.FindAccountByGaiaId(unassiged_account_id);
+    // `account_cache_` might be outdated.
+    if (!account)
+      continue;
+
+    for (auto& obs : observers_)
+      obs.OnAccountUpserted(base::FilePath(), *account);
+  }
 }
 
 void AccountProfileMapper::UpsertAccountForTesting(
