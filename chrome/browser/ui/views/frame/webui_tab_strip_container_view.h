@@ -195,7 +195,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};
 
-  raw_ptr<views::Widget> editor_bubble_widget_;
+  raw_ptr<views::Widget> editor_bubble_widget_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_CONTAINER_VIEW_H_
