@@ -7144,12 +7144,7 @@
     "SendTabToSelfWhenSignedIn": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {
