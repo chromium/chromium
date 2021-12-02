@@ -139,7 +139,8 @@ void SelectionEditor::SetSelectionAndEndTyping(
   selection_ = new_selection;
 }
 
-void SelectionEditor::DidChangeChildren(const ContainerNode&) {
+void SelectionEditor::DidChangeChildren(const ContainerNode&,
+                                        const ContainerNode::ChildrenChange&) {
   selection_.ResetDirectionCache();
   MarkCacheDirty();
   DidFinishDOMMutation();

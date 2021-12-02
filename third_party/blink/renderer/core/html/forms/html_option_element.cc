@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -331,10 +332,14 @@ void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
 }
 
 void HTMLOptionElement::DidChangeTextContent() {
-  if (HTMLDataListElement* data_list = OwnerDataListElement())
+  if (HTMLDataListElement* data_list = OwnerDataListElement()) {
     data_list->OptionElementChildrenChanged();
-  else if (HTMLSelectElement* select = OwnerSelectElement())
+  } else if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
+  } else if (HTMLSelectMenuElement* select_menu =
+                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+    select_menu->OptionElementChildrenChanged(*this);
+  }
   UpdateLabel();
 }
 

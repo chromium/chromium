@@ -5,12 +5,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/mutation_observer.h"
-#include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -30,12 +28,20 @@
 namespace blink {
 
 class HTMLSelectMenuElement::SelectMutationCallback
-    : public MutationObserver::Delegate {
+    : public GarbageCollected<HTMLSelectMenuElement::SelectMutationCallback>,
+      public SynchronousMutationObserver {
  public:
   explicit SelectMutationCallback(HTMLSelectMenuElement& select);
 
-  ExecutionContext* GetExecutionContext() const override;
-  void Deliver(const MutationRecordVector& records, MutationObserver&) override;
+  // SynchronousMutationObserver:
+  void DidChangeChildren(const ContainerNode& container,
+                         const ContainerNode::ChildrenChange& change) final;
+  void AttributeChanged(const Element& target,
+                        const QualifiedName& name,
+                        const AtomicString& old_value,
+                        const AtomicString& new_value) final;
+  void DidMoveTreeToNewDocument(const Node& root) final;
+
   void Trace(Visitor* visitor) const override;
 
  private:
@@ -49,80 +55,79 @@ class HTMLSelectMenuElement::SelectMutationCallback
   void SlotChanged(const StringType& slot_name);
 
   Member<HTMLSelectMenuElement> select_;
-  Member<MutationObserver> observer_;
 };
 
 HTMLSelectMenuElement::SelectMutationCallback::SelectMutationCallback(
     HTMLSelectMenuElement& select)
-    : select_(select), observer_(MutationObserver::Create(this)) {
-  MutationObserverInit* init = MutationObserverInit::Create();
-  init->setAttributeOldValue(true);
-  init->setAttributes(true);
-  // TODO(crbug.com/1121840) There are more attributes that affect <selectmenu>.
-  init->setAttributeFilter({"behavior", "slot"});
-  init->setChildList(true);
-  init->setSubtree(true);
-  observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
-  observer_->observe(select_->GetShadowRoot(), init, ASSERT_NO_EXCEPTION);
-}
-
-ExecutionContext*
-HTMLSelectMenuElement::SelectMutationCallback::GetExecutionContext() const {
-  return select_->GetExecutionContext();
+    : select_(select) {
+  SetDocument(&select_->GetDocument());
 }
 
 void HTMLSelectMenuElement::SelectMutationCallback::Trace(
     Visitor* visitor) const {
   visitor->Trace(select_);
-  visitor->Trace(observer_);
-  MutationObserver::Delegate::Trace(visitor);
+  SynchronousMutationObserver::Trace(visitor);
 }
 
-void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
-    const MutationRecordVector& records,
-    MutationObserver&) {
-  for (const auto& record : records) {
-    if (record->type() == "attributes") {
-      if (record->attributeName() == html_names::kBehaviorAttr) {
-        auto* target = DynamicTo<Element>(record->target());
-        if (target && record->oldValue() !=
-                          target->getAttribute(html_names::kBehaviorAttr)) {
-          PartRemoved(record->oldValue(), target);
-          PartInserted(target->getAttribute(html_names::kBehaviorAttr), target);
-        }
-      } else if (record->attributeName() == html_names::kSlotAttr) {
-        auto* target = DynamicTo<Element>(record->target());
-        if (target && record->oldValue() != target->SlotName()) {
-          SlotChanged(record->oldValue());
-          SlotChanged(target->SlotName());
-        }
-      }
-    } else if (record->type() == "childList") {
-      for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
-        auto* element = DynamicTo<Element>(record->addedNodes()->item(i));
-        if (!element) {
-          continue;
-        }
+void HTMLSelectMenuElement::SelectMutationCallback::DidChangeChildren(
+    const ContainerNode& container,
+    const ContainerNode::ChildrenChange& change) {
+  if (!select_->IsShadowIncludingInclusiveAncestorOf(container))
+    return;
 
-        const AtomicString& part =
-            element->getAttribute(html_names::kBehaviorAttr);
-        PartInserted(part, element);
-        SlotChanged(element->SlotName());
-      }
+  if (change.type == ChildrenChangeType::kElementInserted) {
+    if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
+      const AtomicString& part =
+          element->getAttribute(html_names::kBehaviorAttr);
+      PartInserted(part, element);
+      SlotChanged(element->SlotName());
+    }
+  } else if (change.type == ChildrenChangeType::kElementRemoved) {
+    if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
+      const AtomicString& part =
+          element->getAttribute(html_names::kBehaviorAttr);
+      PartRemoved(part, element);
+      SlotChanged(element->SlotName());
+    }
+  } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
+    select_->EnsureButtonPartIsValid();
+    select_->EnsureSelectedValuePartIsValid();
+    select_->EnsureListboxPartIsValid();
+  }
+}
 
-      for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
-        auto* element = DynamicTo<Element>(record->removedNodes()->item(i));
-        if (!element) {
-          continue;
-        }
+void HTMLSelectMenuElement::SelectMutationCallback::AttributeChanged(
+    const Element& target,
+    const QualifiedName& name,
+    const AtomicString& old_value,
+    const AtomicString& new_value) {
+  if (old_value == new_value ||
+      !select_->IsShadowIncludingInclusiveAncestorOf(target)) {
+    return;
+  }
 
-        const AtomicString& part =
-            element->getAttribute(html_names::kBehaviorAttr);
-        PartRemoved(part, element);
-        SlotChanged(element->SlotName());
+  auto* element = const_cast<Element*>(&target);
+  if (name == html_names::kBehaviorAttr) {
+    PartRemoved(old_value, element);
+    PartInserted(new_value, element);
+  } else if (name == html_names::kSlotAttr) {
+    if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+      if (!select_->IsValidOptionPart(element, /*show_warning=*/false)) {
+        select_->OptionPartRemoved(option);
+      } else {
+        select_->OptionPartInserted(option);
       }
+    } else {
+      SlotChanged(old_value);
+      SlotChanged(new_value);
     }
   }
+}
+
+void HTMLSelectMenuElement::SelectMutationCallback::DidMoveTreeToNewDocument(
+    const Node& root) {
+  if (root == select_)
+    SetDocument(&select_->GetDocument());
 }
 
 template <typename StringType>
@@ -163,8 +168,6 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
   } else if (slot_name == kButtonPartName) {
     select_->UpdateButtonPart();
     select_->UpdateSelectedValuePart();
-  } else if (slot_name.IsEmpty()) {
-    select_->ResetOptionParts();
   }
 }
 
@@ -513,6 +516,14 @@ void HTMLSelectMenuElement::UpdateButtonPart() {
   SetButtonPart(FirstValidButtonPart());
 }
 
+void HTMLSelectMenuElement::EnsureButtonPartIsValid() {
+  if (!button_part_ ||
+      !SelectMenuPartTraversal::IsDescendantOf(*button_part_, *this) ||
+      !IsValidButtonPart(button_part_, /*show_warning*/ false)) {
+    UpdateButtonPart();
+  }
+}
+
 Element* HTMLSelectMenuElement::FirstValidSelectedValuePart() const {
   for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
        node = SelectMenuPartTraversal::Next(*node, this)) {
@@ -544,6 +555,15 @@ void HTMLSelectMenuElement::SelectedValuePartRemoved(
 
 void HTMLSelectMenuElement::UpdateSelectedValuePart() {
   selected_value_part_ = FirstValidSelectedValuePart();
+}
+
+void HTMLSelectMenuElement::EnsureSelectedValuePartIsValid() {
+  if (!selected_value_part_ ||
+      selected_value_part_->getAttribute(html_names::kBehaviorAttr) !=
+          kSelectedValuePartName ||
+      !SelectMenuPartTraversal::IsDescendantOf(*selected_value_part_, *this)) {
+    UpdateSelectedValuePart();
+  }
 }
 
 Element* HTMLSelectMenuElement::FirstValidListboxPart() const {
@@ -583,6 +603,24 @@ void HTMLSelectMenuElement::UpdateListboxPart() {
   ResetOptionParts();
 }
 
+void HTMLSelectMenuElement::EnsureListboxPartIsValid() {
+  if (!listbox_part_ ||
+      !SelectMenuPartTraversal::IsDescendantOf(*listbox_part_, *this) ||
+      !IsValidListboxPart(listbox_part_, /*show_warning*/ false)) {
+    UpdateListboxPart();
+  } else {
+    HeapLinkedHashSet<Member<HTMLOptionElement>> invalid_option_parts;
+    for (auto& option : option_parts_) {
+      if (!IsValidOptionPart(option.Get(), /*show_warning=*/false)) {
+        invalid_option_parts.insert(option.Get());
+      }
+    }
+    for (auto& invalid_option : invalid_option_parts) {
+      OptionPartRemoved(invalid_option.Get());
+    }
+  }
+}
+
 void HTMLSelectMenuElement::ResetOptionParts() {
   // Remove part status from all current option parts
   while (!option_parts_.IsEmpty()) {
@@ -608,11 +646,7 @@ void HTMLSelectMenuElement::OptionPartInserted(
     return;
   }
 
-  if (auto* new_option_element =
-          DynamicTo<HTMLOptionElement>(new_option_part)) {
-    new_option_element->OptionInsertedIntoSelectMenuElement();
-  }
-
+  new_option_part->OptionInsertedIntoSelectMenuElement();
   new_option_part->addEventListener(
       event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
   new_option_part->addEventListener(
@@ -634,10 +668,7 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
     return;
   }
 
-  if (auto* option_element = DynamicTo<HTMLOptionElement>(option_part)) {
-    option_element->OptionRemovedFromSelectMenuElement();
-  }
-
+  option_part->OptionRemovedFromSelectMenuElement();
   option_part->removeEventListener(
       event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
   option_part->removeEventListener(
@@ -699,6 +730,12 @@ void HTMLSelectMenuElement::SetSelectedOption(
 
   UpdateSelectedValuePartContents();
   NotifyFormStateChanged();
+}
+
+void HTMLSelectMenuElement::OptionElementChildrenChanged(
+    const HTMLOptionElement& option) {
+  if (selected_option_ == &option)
+    UpdateSelectedValuePartContents();
 }
 
 void HTMLSelectMenuElement::SelectNextOption() {

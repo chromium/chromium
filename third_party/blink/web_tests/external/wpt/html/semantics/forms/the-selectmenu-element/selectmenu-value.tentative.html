@@ -108,4 +108,22 @@ test(() => {
   assert_equals(customSelectedValuePart.innerText, "two", "Custom selected value part should be updated when value of selectmenu changes");
 }, "Test that option parts in a slotted-in listbox are reflected in the value property");
 
+test(() => {
+  let selectMenu = document.createElement('selectmenu');
+  assert_equals(selectMenu.value, "");
+  let option = document.createElement('option');
+  option.innerText = "one";
+  selectMenu.appendChild(option);
+  assert_equals(selectMenu.value, "one");
+
+  let newOption = document.createElement('option');
+  newOption.innerText = 'two';
+  selectMenu.appendChild(newOption);
+  selectMenu.value = "two";
+  assert_equals(selectMenu.value, "two");
+
+  option.click();
+  assert_equals(selectMenu.value, "one");
+}, "Test that value is correctly updated");
+
 </script>

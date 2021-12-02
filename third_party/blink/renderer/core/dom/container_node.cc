@@ -1051,7 +1051,7 @@ void ContainerNode::DetachLayoutTree(bool performing_reattach) {
 
 void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   GetDocument().IncDOMTreeVersion();
-  GetDocument().NotifyChangeChildren(*this);
+  GetDocument().NotifyChangeChildren(*this, change);
   InvalidateNodeListCachesInAncestors(nullptr, nullptr, &change);
   if (change.IsChildRemoval() ||
       change.type == ChildrenChangeType::kAllChildrenRemoved) {

@@ -89,7 +89,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   // Implementation of |SynchronousMutationObsderver| member functions.
   void ContextDestroyed() final;
-  void DidChangeChildren(const ContainerNode&) final;
+  void DidChangeChildren(const ContainerNode&,
+                         const ContainerNode::ChildrenChange&) final;
   void DidMergeTextNodes(const Text& merged_node,
                          const NodeWithIndex& node_to_be_removed_with_index,
                          unsigned old_length) final;

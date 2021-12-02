@@ -216,7 +216,8 @@ class TestSynchronousMutationObserver
  private:
   // Implement |SynchronousMutationObserver| member functions.
   void ContextDestroyed() final;
-  void DidChangeChildren(const ContainerNode&) final;
+  void DidChangeChildren(const ContainerNode&,
+                         const ContainerNode::ChildrenChange&) final;
   void DidMergeTextNodes(const Text&, const NodeWithIndex&, unsigned) final;
   void DidMoveTreeToNewDocument(const Node& root) final;
   void DidSplitTextNode(const Text&) final;
@@ -247,7 +248,8 @@ void TestSynchronousMutationObserver::ContextDestroyed() {
 }
 
 void TestSynchronousMutationObserver::DidChangeChildren(
-    const ContainerNode& container) {
+    const ContainerNode& container,
+    const ContainerNode::ChildrenChange&) {
   children_changed_nodes_.push_back(&container);
 }
 

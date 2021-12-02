@@ -1687,7 +1687,12 @@ class CORE_EXPORT Document : public ContainerNode,
                                  unsigned offset,
                                  unsigned old_length,
                                  unsigned new_length);
-  void NotifyChangeChildren(const ContainerNode& container);
+  void NotifyChangeChildren(const ContainerNode& container,
+                            const ContainerNode::ChildrenChange& change);
+  void NotifyAttributeChanged(const Element& element,
+                              const QualifiedName& name,
+                              const AtomicString& old_value,
+                              const AtomicString& new_value);
 
   FontPreloadManager& GetFontPreloadManager() { return *font_preload_manager_; }
   void FontPreloadingFinishedOrTimedOut();

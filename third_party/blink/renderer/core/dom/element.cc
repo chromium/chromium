@@ -2334,6 +2334,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   ParseAttribute(params);
 
   GetDocument().IncDOMTreeVersion();
+  GetDocument().NotifyAttributeChanged(*this, params.name, params.old_value,
+                                       params.new_value);
 
   if (name == html_names::kIdAttr) {
     AtomicString new_id = MakeIdForStyleResolution(
