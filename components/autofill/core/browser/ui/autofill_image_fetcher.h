@@ -12,7 +12,9 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Image;
@@ -48,7 +50,10 @@ class ImageFetchOperation : public base::RefCounted<ImageFetchOperation> {
   ImageFetchOperation& operator=(const ImageFetchOperation&) = delete;
 
   // Invoked when an image fetch is complete and data is returned.
-  void ImageFetched(const GURL& card_art_url, const gfx::Image& card_art_image);
+  void ImageFetched(
+      const GURL& card_art_url,
+      const gfx::Image& card_art_image,
+      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp);
 
  private:
   friend class base::RefCounted<ImageFetchOperation>;
@@ -101,6 +106,7 @@ class AutofillImageFetcher : public KeyedService {
   static void OnCardArtImageFetched(
       const scoped_refptr<ImageFetchOperation>& operation,
       const GURL& card_art_url,
+      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 };

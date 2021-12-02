@@ -3087,6 +3087,12 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 }
 
 // static
+void AutofillMetrics::LogImageFetcherRequestLatency(
+    const base::TimeDelta& duration) {
+  base::UmaHistogramLongTimes("Autofill.ImageFetcher.RequestLatency", duration);
+}
+
+// static
 void AutofillMetrics::LogAutofillingSourceForStateSelectionFieldAtSubmission(
     AutofilledSourceMetricForStateSelectionField
         autofilled_source_metric_for_state_selection_field) {

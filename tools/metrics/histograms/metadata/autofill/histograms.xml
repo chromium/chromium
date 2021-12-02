@@ -1551,6 +1551,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"
+    expires_after="2022-07-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the roundtrip latency for fetching an image in AutofillImageFetcher. It
+    is logged when the fetch request for image is completed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ImageFetcher.Result" enum="BooleanSuccess"
     expires_after="2022-07-01">
   <owner>siyua@chromium.org</owner>

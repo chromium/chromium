@@ -1908,6 +1908,8 @@ class AutofillMetrics {
 
   // Logs the image fetching result for one image in AutofillImageFetcher.
   static void LogImageFetchResult(bool succeeded);
+  // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
+  static void LogImageFetcherRequestLatency(const base::TimeDelta& latency);
 
   // Records the source of the state selection field if autofilled, when the
   // form is submitted.
