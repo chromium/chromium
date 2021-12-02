@@ -42,6 +42,8 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBLAYER)
 from blinkpy.web_tests.port.factory import platform_options
 
+from functools import reduce
+
 _log = logging.getLogger(__name__)
 
 
@@ -50,10 +52,12 @@ def lint(host, options):
 
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend(
-        PRODUCTS_TO_EXPECTATION_FILE_PATHS.values() + [ANDROID_DISABLED_TESTS] + [
-        host.filesystem.join(port.web_tests_dir(), 'WPTOverrideExpectations'),
-        host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
-    ])
+        list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()) +
+        [ANDROID_DISABLED_TESTS] + [
+            host.filesystem.join(port.web_tests_dir(),
+                                 'WPTOverrideExpectations'),
+            host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
+        ])
 
     ports_to_lint = [
         host.port_factory.get(name, options=options)
@@ -489,7 +493,7 @@ def main(argv, stderr, host=None):
     except KeyboardInterrupt:
         exit_status = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:  # pylint: disable=broad-except
-        print >> stderr, '\n%s raised: %s' % (error.__class__.__name__, error)
+        print('\n%s raised: %s' % (error.__class__.__name__, error), stderr)
         traceback.print_exc(file=stderr)
         exit_status = exit_codes.EXCEPTIONAL_EXIT_STATUS
 
