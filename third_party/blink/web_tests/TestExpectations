@@ -153,9 +153,6 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
-crbug.com/1264472 plugins/focus-change-2-change-focus.html [ Failure Pass ]
-
-
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
 # ====== Site Isolation failures from here ======
