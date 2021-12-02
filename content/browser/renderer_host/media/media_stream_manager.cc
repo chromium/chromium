@@ -2628,7 +2628,7 @@ std::string MediaStreamManager::GetHMACForMediaDeviceID(
   // CrOS and this check failed when tested on an experimental builder. Revert
   // https://crrev.com/c/2932244 to enable it. See go/chrome-dcheck-on-cros
   // or http://crbug.com/1113456 for more details.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!raw_unique_id.empty());
 #endif
   if (raw_unique_id == media::AudioDeviceDescription::kDefaultDeviceId ||
