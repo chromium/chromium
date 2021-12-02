@@ -1645,6 +1645,9 @@ Polymer({
     if (!this.isValidWireGuardKey_(peer.publicKey)) {
       return false;
     }
+    if (!!peer.presharedKey && !this.isValidWireGuardKey_(peer.presharedKey)) {
+      return false;
+    }
     // endpoint should be the form of IP:port or hostname:port
     if (!peer.endpoint || !peer.endpoint.match(/^[a-zA-Z0-9\-\.]+:[0-9]+$/i)) {
       return false;

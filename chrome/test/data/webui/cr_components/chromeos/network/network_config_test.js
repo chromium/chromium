@@ -195,12 +195,14 @@ suite('network-config', function() {
       configProperties.name = 'test-wireguard';
       const peer = configProperties.typeConfig.vpn.wireguard.peers[0];
       peer.publicKey = 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=';
-      assertFalse(networkConfig.enableConnect);
+      assertFalse(networkConfig.vpnIsConfigured_());
       peer.endpoint = '192.168.66.66:32000';
       peer.allowedIps = '0.0.0.0/0';
-      return flushAsync().then(() => {
-        assertTrue(networkConfig.enableConnect);
-      });
+      assertTrue(networkConfig.vpnIsConfigured_());
+      peer.presharedKey = 'invalid_key';
+      assertFalse(networkConfig.vpnIsConfigured_());
+      peer.presharedKey = '';
+      assertTrue(networkConfig.vpnIsConfigured_());
     });
   });
 
