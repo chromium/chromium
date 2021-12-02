@@ -21,7 +21,6 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/os_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -918,8 +917,9 @@ TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
 
 #if defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
+// TODO(crbug.com/1200034): investigate fixing and enabling on Ozone/Wayland.
 #define MAYBE_TouchSelectionQuickMenuIsNotActivated \
   DISABLED_TouchSelectionQuickMenuIsNotActivated
 #else
