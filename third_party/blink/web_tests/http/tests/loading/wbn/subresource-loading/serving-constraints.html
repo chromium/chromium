@@ -16,26 +16,30 @@ await new Promise((resolve) => {
     window.addEventListener('load', () => setTimeout(resolve, 0));
   });
 
-if (!document.createElement('link').relList.supports('webbundle')) {
+if (!HTMLScriptElement.supports('webbundle')) {
   console.error("Subresource Web Bundles is not supported");
   testRunner.notifyDone();
   return;
 }
 
 await new Promise((resolve, reject) => {
-    const link = document.createElement('link');
-    link.rel = 'webbundle';
-    link.href = '../resources/wbn/hello.wbn-wrong-mime-type';
-    link.addEventListener('error', resolve);
-    document.body.appendChild(link);
+    const script = document.createElement('script');
+    script.type = 'webbundle';
+    script.textContent = JSON.stringify({
+      source: '../resources/wbn/hello.wbn-wrong-mime-type'
+    });
+    script.addEventListener('error', resolve);
+    document.body.appendChild(script);
   });
 
 await new Promise((resolve, reject) => {
-    const link = document.createElement('link');
-    link.rel = 'webbundle';
-    link.href = '../resources/wbn/hello.wbn-without-nosniff';
-    link.addEventListener('error', resolve);
-    document.body.appendChild(link);
+    const script = document.createElement('script');
+    script.type = 'webbundle';
+    script.textContent = JSON.stringify({
+      source: '../resources/wbn/hello.wbn-without-nosniff'
+    });
+    script.addEventListener('error', resolve);
+    document.body.appendChild(script);
   });
 
 testRunner.notifyDone();

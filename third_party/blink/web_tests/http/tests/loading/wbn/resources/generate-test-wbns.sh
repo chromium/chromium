@@ -14,7 +14,7 @@ if ! command -v gen-bundle > /dev/null 2>&1; then
 fi
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -baseURL http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/ \
   -primaryURL http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/script.js \
   -dir hello/ \
@@ -24,28 +24,28 @@ cp wbn/hello.wbn wbn/hello.wbn-without-nosniff
 cp wbn/hello.wbn wbn/hello.wbn-wrong-mime-type
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -baseURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/ \
   -primaryURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/script.js \
   -dir wbn-subresource-origin-trial/ \
   -o wbn/wbn-subresource-origin-trial.wbn
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -baseURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/ \
   -primaryURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/script.js \
   -dir wbn-subresource-third-party-origin-trial/ \
   -o wbn/wbn-subresource-third-party-origin-trial.wbn
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -baseURL http://127.0.0.1:8000/loading/wbn/resources/wbn/ \
   -primaryURL http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js \
   -dir empty-resource/ \
   -o wbn/empty-resource.wbn
 
 gen-bundle \
-  -version b1 \
-  -har urn-uuid-html.har \
-  -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
-  -o wbn/urn-uuid-html.wbn
+  -version b2 \
+  -har uuid-in-package-html.har \
+  -primaryURL uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae \
+  -o wbn/uuid-in-package-html.wbn

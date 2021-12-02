@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Subresource loading using relative URLs in the 'resources' attribute</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script type="webbundle">
+    {
+      "source": "../resources/wbn/hello.wbn",
+      "resources": ["/loading/wbn/resources/hello/script.js"]
+    }
+  </script>
+  <script id="script" src="/loading/wbn/resources/hello/script.js"></script>
+
+  <script>
+    // When preload scanner encounters a <script type="webbundle"> element, it must not
+    // preload a request for the webbundle itself and any subresources mentioned in the
+    // 'resources' attribute.
+    // This test loads a simple hello.wbn bundle and script.js served from the bundle,
+    // and checks that both hello.wbn and script.js were not preloaded.
+    const onLoadPromise = new Promise((resolve) => {
+      window.addEventListener('load', resolve, false);
+    });
+
+    promise_test(async () => {
+      await onLoadPromise;
+
+      if (window.internals) {
+        assert_false(internals.isPreloaded(script.src));
+        assert_false(internals.isPreloaded('../resources/wbn/hello.wbn'));
+        assert_equals(script_result, 'loaded from webbundle');
+      }
+    }, "A subresource script.js should be loaded from WebBundle using the relative URL.");
+  </script>
+</body>
