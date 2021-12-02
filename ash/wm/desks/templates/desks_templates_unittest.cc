@@ -1312,4 +1312,36 @@ TEST_F(DesksTemplatesTest, TemplatesAreVisibleAfterSecondSave) {
   EXPECT_FALSE(grid_items[0]->bounds().IsEmpty());
 }
 
+// Tests that the desks templates are organized in alphabetical order.
+TEST_F(DesksTemplatesTest, ShowTemplatesInAlphabeticalOrder) {
+  // Create a window and add three test entry in different names.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "1_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  ASSERT_TRUE(grid_widget);
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  ASSERT_TRUE(templates_grid_view);
+
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(3ul, grid_views.size());
+
+  // Tests that templates are sorted in alphabetical order.
+  EXPECT_EQ(
+      u"1_template",
+      static_cast<DesksTemplatesItemView*>(grid_views[0])->GetAccessibleName());
+  EXPECT_EQ(
+      u"A_template",
+      static_cast<DesksTemplatesItemView*>(grid_views[1])->GetAccessibleName());
+  EXPECT_EQ(
+      u"B_template",
+      static_cast<DesksTemplatesItemView*>(grid_views[2])->GetAccessibleName());
+}
+
 }  // namespace ash

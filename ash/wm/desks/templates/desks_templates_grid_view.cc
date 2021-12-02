@@ -135,11 +135,24 @@ void DesksTemplatesGridView::UpdateGridUI(
     layout_->AddRows(1, fixed_size);
   }
 
-  // Add each of the templates to the grid.
+  std::vector<std::unique_ptr<DesksTemplatesItemView>> desk_template_views;
+
   for (DeskTemplate* desk_template : desk_templates) {
-    grid_items_.push_back(
-        AddChildView(std::make_unique<DesksTemplatesItemView>(desk_template)));
+    desk_template_views.push_back(
+        std::make_unique<DesksTemplatesItemView>(desk_template));
   }
+
+  // Sort the `desk_template_views` into alphabetical order based on template
+  // name, note that accessible name == template name.
+  std::sort(desk_template_views.begin(), desk_template_views.end(),
+            [](const std::unique_ptr<DesksTemplatesItemView>& a,
+               const std::unique_ptr<DesksTemplatesItemView>& b) {
+              return a->GetAccessibleName() < b->GetAccessibleName();
+            });
+
+  // Add each of the templates to the grid.
+  for (auto& view : desk_template_views)
+    grid_items_.push_back(AddChildView(std::move(view)));
 
   const gfx::Size previous_size = size();
 
