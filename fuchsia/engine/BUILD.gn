@@ -580,6 +580,7 @@ test("web_engine_unittests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//ui/ozone",
   ]
   additional_manifest_fragments = [
     # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.

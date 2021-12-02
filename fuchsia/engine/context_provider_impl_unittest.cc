@@ -46,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace {
 
@@ -316,6 +317,9 @@ class ContextProviderImplTest : public base::MultiProcessTest {
                           sys_launcher_.get()),
         provider_(std::make_unique<ContextProviderImpl>()) {
     bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchNative(
+        switches::kOzonePlatform, "scenic");
   }
 
   ContextProviderImplTest(const ContextProviderImplTest&) = delete;
