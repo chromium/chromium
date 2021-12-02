@@ -57,7 +57,7 @@ String CSSImportRule::cssText() const {
 
   if (import_rule_->IsLayered()) {
     result.Append(" layer");
-    String layer_name = import_rule_->GetLayerNameAsString();
+    String layer_name = layerName();
     if (layer_name.length()) {
       result.Append("(");
       result.Append(layer_name);
@@ -87,6 +87,12 @@ CSSStyleSheet* CSSImportRule::styleSheet() const {
     style_sheet_cssom_wrapper_ = MakeGarbageCollected<CSSStyleSheet>(
         import_rule_->GetStyleSheet(), const_cast<CSSImportRule*>(this));
   return style_sheet_cssom_wrapper_.Get();
+}
+
+String CSSImportRule::layerName() const {
+  if (!import_rule_->IsLayered())
+    return g_null_atom;
+  return import_rule_->GetLayerNameAsString();
 }
 
 void CSSImportRule::Reattach(StyleRuleBase*) {

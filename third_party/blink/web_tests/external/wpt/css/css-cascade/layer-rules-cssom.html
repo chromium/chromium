@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<title>The CSSOM API for @layer Rules</title>
-<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#the-csslayerblockrule-interface">
-<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#the-csslayerstatementrule-interface">
+<title>The CSSOM API for Cascade Layers</title>
+<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#layer-apis">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -51,6 +50,27 @@ const testCases = [
     expectedNames: ['outer', ['foo.bar', 'baz'], ['outer.foo.bar', 'outer.baz']],
     title: 'Nested layer statement name lists',
   },
+  {
+    style: `
+      @import url('data:text/css,') layer;
+    `,
+    expectedNames: [''],
+    title: 'Import into anonymous layer',
+  },
+  {
+    style: `
+      @import url('data:text/css,') layer(foo);
+    `,
+    expectedNames: ['foo'],
+    title: 'Import into named layer',
+  },
+  {
+    style: `
+      @import url('data:text/css,');
+    `,
+    expectedNames: [null],
+    title: 'Import without layer',
+  },
 ];
 
 for (let testCase of testCases) {
@@ -66,6 +86,8 @@ for (let testCase of testCases) {
     function compareNames(ruleOrSheet) {
       if (ruleOrSheet instanceof CSSLayerBlockRule)
         assert_equals(ruleOrSheet.name, testCase.expectedNames[index++]);
+      else if (ruleOrSheet instanceof CSSImportRule)
+        assert_equals(ruleOrSheet.layerName, testCase.expectedNames[index++]);
       else if (ruleOrSheet instanceof CSSLayerStatementRule)
         assert_array_equals(ruleOrSheet.nameList, testCase.expectedNames[index++]);
       if (ruleOrSheet.cssRules) {

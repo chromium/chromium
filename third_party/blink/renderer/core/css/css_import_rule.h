@@ -45,6 +45,8 @@ class CSSImportRule final : public CSSRule {
   MediaList* media() const;
   CSSStyleSheet* styleSheet() const;
 
+  String layerName() const;
+
   void Trace(Visitor*) const override;
 
  private:

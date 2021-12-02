@@ -753,6 +753,7 @@ interface CSSImageValue : CSSStyleValue
 interface CSSImportRule : CSSRule
     attribute @@toStringTag
     getter href
+    getter layerName
     getter media
     getter styleSheet
     method constructor
