@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -48,6 +49,9 @@ void RadioMonitorAndroid::MaybeRecordURLLoader(
       kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority, request.priority,
       static_cast<net::RequestPriority>(
           net::RequestPrioritySize::NUM_PRIORITIES));
+  base::UmaHistogramBoolean(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestIsPrefetch,
+      request.load_flags & net::LOAD_PREFETCH);
   base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId,
                            traffic_annotation.unique_id_hash_code);
 }

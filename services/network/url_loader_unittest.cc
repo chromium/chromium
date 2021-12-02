@@ -7291,6 +7291,8 @@ void CheckRadioWakeupTriggerHistograms(base::HistogramTester& histograms,
   histograms.ExpectTotalCount(
       kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority, expected_count);
   histograms.ExpectTotalCount(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestIsPrefetch, expected_count);
+  histograms.ExpectTotalCount(
       kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId, expected_count);
 }
 

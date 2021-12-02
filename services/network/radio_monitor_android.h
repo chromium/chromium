@@ -23,6 +23,8 @@ constexpr char kUmaNamePossibleWakeupTriggerURLLoaderRequestDestination[] =
     "Network.Radio.PossibleWakeupTrigger.URLLoaderRequestDestination";
 constexpr char kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority[] =
     "Network.Radio.PossibleWakeupTrigger.URLLoaderRequestPriority";
+constexpr char kUmaNamePossibleWakeupTriggerURLLoaderRequestIsPrefetch[] =
+    "Network.Radio.PossibleWakeupTrigger.URLLoaderRequestIsPrefetch";
 constexpr char kUmaNamePossibleWakeupTriggerResolveHost[] =
     "Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose2";
 
