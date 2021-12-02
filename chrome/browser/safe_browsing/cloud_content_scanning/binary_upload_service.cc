@@ -370,6 +370,15 @@ void BinaryUploadService::OnGetRequestData(Request* request,
     return;
   }
 
+  if (!request->IsAuthRequest() && data.size == 0) {
+    // A size of 0 implies an edge case like an empty file being uploaded. In
+    // such a case, the file doesn't need to scan so the request can simply
+    // finish early.
+    FinishRequest(request, Result::SUCCESS,
+                  enterprise_connectors::ContentAnalysisResponse());
+    return;
+  }
+
   std::string metadata;
   request->SerializeToString(&metadata);
   base::Base64Encode(metadata, &metadata);

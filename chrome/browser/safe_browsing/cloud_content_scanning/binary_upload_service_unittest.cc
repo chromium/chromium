@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -232,6 +234,7 @@ class BinaryUploadServiceTest : public testing::Test {
             Invoke([](BinaryUploadService::Request::DataCallback callback) {
               BinaryUploadService::Request::Data data;
               data.contents = "contents";
+              data.size = data.contents.size();
               std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
                                       data);
             }));
@@ -905,6 +908,33 @@ TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
         "wp-max-parallel-active-requests", "-1");
     EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
   }
+}
+
+TEST_F(BinaryUploadServiceTest, EmptyFileRequest) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+
+  ExpectInstanceID("valid id");
+  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<FileAnalysisRequest> request =
+      std::make_unique<FileAnalysisRequest>(
+          enterprise_connectors::AnalysisSettings(), file_path,
+          file_path.BaseName(), "fake/mimetype", false,
+          base::BindLambdaForTesting(
+              [&run_loop](
+                  BinaryUploadService::Result result,
+                  enterprise_connectors::ContentAnalysisResponse response) {
+                ASSERT_EQ(BinaryUploadService::Result::SUCCESS, result);
+                run_loop.Quit();
+              }));
+  request->set_device_token("fake_device_token");
+
+  UploadForDeepScanning(std::move(request));
+  run_loop.Run();
 }
 
 }  // namespace safe_browsing

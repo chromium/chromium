@@ -87,6 +87,8 @@ StringAnalysisRequest::StringAnalysisRequest(
     std::string text,
     BinaryUploadService::ContentAnalysisCallback callback)
     : Request(std::move(callback), analysis_url) {
+  data_.size = text.size();
+
   // Only remember strings less than the maximum allowed.
   if (text.size() < BinaryUploadService::kMaxUploadSizeBytes) {
     data_.contents = std::move(text);
