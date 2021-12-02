@@ -831,6 +831,9 @@
                 {
                     "name": "RAM",
                     "params": {
+                        "critical_kib": "322560",
+                        "moderate_kib": "0",
+                        "reclaim_kib": "322560",
                         "shift_mib": "0"
                     },
                     "enable_features": [
@@ -840,6 +843,9 @@
                 {
                     "name": "RAM - 512",
                     "params": {
+                        "critical_kib": "322560",
+                        "moderate_kib": "0",
+                        "reclaim_kib": "322560",
                         "shift_mib": "-512"
                     },
                     "enable_features": [
