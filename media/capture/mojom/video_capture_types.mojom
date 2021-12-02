@@ -238,6 +238,7 @@ enum VideoCaptureError {
   kDesktopCaptureDeviceMacFailedStreamCreate,
   kDesktopCaptureDeviceMacFailedStreamStart,
   kCrosHalV3BufferManagerFailedToReserveBuffers,
+  [MinVersion=1] kWinMediaFoundationSystemPermissionDenied,
 };
 
 [Stable, Extensible]

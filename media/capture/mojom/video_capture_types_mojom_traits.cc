@@ -718,6 +718,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
         kCrosHalV3BufferManagerFailedToReserveBuffers:
       return media::mojom::VideoCaptureError::
           kCrosHalV3BufferManagerFailedToReserveBuffers;
+    case media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied:
+      return media::mojom::VideoCaptureError::
+          kWinMediaFoundationSystemPermissionDenied;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1279,6 +1282,11 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kCrosHalV3BufferManagerFailedToReserveBuffers:
       *output = media::VideoCaptureError::
           kCrosHalV3BufferManagerFailedToReserveBuffers;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kWinMediaFoundationSystemPermissionDenied:
+      *output =
+          media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied;
       return true;
   }
   NOTREACHED();

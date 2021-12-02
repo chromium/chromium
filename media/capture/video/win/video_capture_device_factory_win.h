@@ -24,6 +24,14 @@ namespace media {
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Devices::Enumeration::DeviceInformationCollection;
 
+enum class MFSourceOutcome {
+  kSuccess = 0,
+  // Failed due to an unknown or unspecified reason.
+  kFailed,
+  // Failed to open due to OS-level system permissions.
+  kFailedSystemPermissions,
+};
+
 // Extension of VideoCaptureDeviceFactory to create and manipulate Windows
 // devices, via either DirectShow or MediaFoundation APIs.
 class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
@@ -59,10 +67,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   virtual bool CreateDeviceFilterDirectShow(
       Microsoft::WRL::ComPtr<IMoniker> moniker,
       IBaseFilter** capture_filter);
-  virtual bool CreateDeviceSourceMediaFoundation(const std::string& device_id,
-                                                 VideoCaptureApi capture_api,
-                                                 IMFMediaSource** source_out);
-  virtual bool CreateDeviceSourceMediaFoundation(
+  virtual MFSourceOutcome CreateDeviceSourceMediaFoundation(
+      const std::string& device_id,
+      VideoCaptureApi capture_api,
+      IMFMediaSource** source_out);
+  virtual MFSourceOutcome CreateDeviceSourceMediaFoundation(
       Microsoft::WRL::ComPtr<IMFAttributes> attributes,
       IMFMediaSource** source);
   virtual bool EnumerateDeviceSourcesMediaFoundation(
