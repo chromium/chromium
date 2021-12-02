@@ -88,15 +88,14 @@ class TestClusteringBackend : public ClusteringBackend {
   std::vector<history::AnnotatedVisit> last_clustered_visits_;
 };
 
-class HistoryClustersServiceTest : public testing::Test {
+class HistoryClustersServiceTestBase : public testing::Test {
  public:
-  HistoryClustersServiceTest()
+  HistoryClustersServiceTestBase()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-        run_loop_quit_(run_loop_.QuitClosure()) {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(kJourneys);
+        run_loop_quit_(run_loop_.QuitClosure()) {}
 
+  void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
@@ -115,9 +114,10 @@ class HistoryClustersServiceTest : public testing::Test {
         std::move(test_backend));
   }
 
-  HistoryClustersServiceTest(const HistoryClustersServiceTest&) = delete;
-  HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
+  HistoryClustersServiceTestBase(const HistoryClustersServiceTestBase&) =
       delete;
+  HistoryClustersServiceTestBase& operator=(
+      const HistoryClustersServiceTestBase&) = delete;
 
   // Add hardcoded completed visits with context annotations to the history
   // database.
@@ -214,13 +214,15 @@ class HistoryClustersServiceTest : public testing::Test {
   }
 
  protected:
+  // ScopedFeatureList needs to be declared before TaskEnvironment, so that it
+  // it is destroyed after the TaskEnvironment is destroyed, preventing other
+  // threads from accessing the feature list while it's being destroyed.
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   // Used to construct a `HistoryClustersService`.
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
-
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   std::unique_ptr<HistoryClustersService> history_clusters_service_;
   std::unique_ptr<HistoryClustersServiceTestApi>
@@ -237,6 +239,13 @@ class HistoryClustersServiceTest : public testing::Test {
 
   // Tracks the next available navigation ID to be associated with visits.
   int64_t next_navigation_id_ = 0;
+};
+
+class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
+ public:
+  HistoryClustersServiceTest() {
+    scoped_feature_list_.InitAndEnableFeature(kJourneys);
+  }
 };
 
 TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
@@ -730,17 +739,23 @@ TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest,
+class HistoryClustersServiceJourneysDisabledTest
+    : public HistoryClustersServiceTestBase {
+ public:
+  HistoryClustersServiceJourneysDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            kJourneys,
+            kPersistContextAnnotationsInHistoryDb,
+        });
+  }
+};
+
+TEST_F(HistoryClustersServiceJourneysDisabledTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureDisabled) {
   // When the feature is disabled, the `IncompleteVisitContextAnnotations`
   // should be removed but not added to visits.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          kJourneys,
-          kPersistContextAnnotationsInHistoryDb,
-      });
-
   auto& incomplete_visit_context_annotations =
       history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
           0);
@@ -893,15 +908,20 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
-TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterMaxKeywordPhrases) {
+class HistoryClustersServiceMaxKeywordsTest
+    : public HistoryClustersServiceTestBase {
+ public:
+  HistoryClustersServiceMaxKeywordsTest() {
+    // Set the max keyword phrases to 5.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kJourneys, {
+                       {kMaxKeywordPhrases.name, "5"},
+                   });
+  }
+};
+TEST_F(HistoryClustersServiceMaxKeywordsTest,
+       DoesQueryMatchAnyClusterMaxKeywordPhrases) {
   base::HistogramTester histogram_tester;
-
-  // Set the max keyword phrases to 5.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeatureWithParameters(
-      kJourneys, {
-                     {kMaxKeywordPhrases.name, "5"},
-                 });
 
   // Add visits.
   const auto yesterday = base::Time::Now() - base::Days(1);
