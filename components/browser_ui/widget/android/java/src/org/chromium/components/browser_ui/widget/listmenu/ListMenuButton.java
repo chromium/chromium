@@ -72,8 +72,10 @@ public class ListMenuButton
      * @param context The string representation of the list item this button represents.
      */
     public void setContentDescriptionContext(String context) {
-        if (context == null) {
-            context = "";
+        if (TextUtils.isEmpty(context)) {
+            setContentDescription(
+                    getContext().getResources().getString(R.string.accessibility_toolbar_btn_menu));
+            return;
         }
         setContentDescription(getContext().getResources().getString(
                 R.string.accessibility_list_menu_button, context));
