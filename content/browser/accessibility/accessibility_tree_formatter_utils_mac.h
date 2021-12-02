@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
 
-#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer.h"
 
@@ -19,22 +19,22 @@ class AXPropertyNode;
 namespace content {
 namespace a11y {
 
-// IsBrowserAccessibilityCocoa or IsAXUIElement accessible node comparator.
+// NSAccessibilityElement or AXUIElement accessible node comparator.
 struct NodeComparator {
   constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
                             const gfx::NativeViewAccessible& rhs) const {
-    if (IsAXUIElement(lhs)) {
-      DCHECK(IsAXUIElement(rhs));
+    if (ui::IsAXUIElement(lhs)) {
+      DCHECK(ui::IsAXUIElement(rhs));
       return CFHash(lhs) < CFHash(rhs);
     }
-    DCHECK(IsBrowserAccessibilityCocoa(lhs));
-    DCHECK(IsBrowserAccessibilityCocoa(rhs));
+    DCHECK(ui::IsNSAccessibilityElement(lhs));
+    DCHECK(ui::IsNSAccessibilityElement(rhs));
     return lhs < rhs;
   }
 };
 
 using LineIndexer =
-    ui::AXTreeIndexer<GetDOMId, NSArray*, ChildrenOf, NodeComparator>;
+    ui::AXTreeIndexer<ui::GetDOMId, NSArray*, ui::AXChildrenOf, NodeComparator>;
 
 // Optional tri-state id object.
 using OptionalNSObject = ui::AXOptional<id>;

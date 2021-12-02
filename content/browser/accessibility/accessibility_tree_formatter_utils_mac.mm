@@ -62,6 +62,18 @@ namespace {
 
 }  // namespace
 
+using ui::AXActionNamesOf;
+using ui::AXAttributeNamesOf;
+using ui::AXAttributeValueOf;
+using ui::IsNSAccessibilityElement;
+using ui::IsAXUIElement;
+using ui::IsValidAXAttribute;
+using ui::AXParameterizedAttributeNamesOf;
+using ui::AXParameterizedAttributeValueOf;
+using ui::PerformAXAction;
+using ui::PerformAXSelector;
+using ui::SetAXAttributeValueOf;
+
 // AttributeInvoker
 
 AttributeInvoker::AttributeInvoker(const LineIndexer* line_indexer,
@@ -173,7 +185,7 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
 OptionalNSObject AttributeInvoker::InvokeFor(
     const id target,
     const AXPropertyNode& property_node) const {
-  if (IsBrowserAccessibilityCocoa(target) || IsAXUIElement(target))
+  if (IsNSAccessibilityElement(target) || IsAXUIElement(target))
     return InvokeForAXElement(target, property_node);
 
   if (content::IsAXTextMarkerRange(target)) {
@@ -195,43 +207,43 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     const AXPropertyNode& property_node) const {
   // Actions.
   if (property_node.name_or_value == "AXActionNames") {
-    return OptionalNSObject::NotNullOrNotApplicable(ActionNamesOf(target));
+    return OptionalNSObject::NotNullOrNotApplicable(AXActionNamesOf(target));
   }
   if (property_node.name_or_value == "AXPerformAction") {
     OptionalNSObject param = ParamByPropertyNode(property_node);
     if (param.IsNotNull()) {
-      PerformAction(target, *param);
+      PerformAXAction(target, *param);
       return OptionalNSObject::Unsupported();
     }
     return OptionalNSObject::Error();
   }
 
   // Attributes.
-  for (NSString* attribute : AttributeNamesOf(target)) {
+  for (NSString* attribute : AXAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       // Setter
       if (property_node.rvalue) {
         OptionalNSObject rvalue = Invoke(*property_node.rvalue);
         if (rvalue.IsNotNull()) {
-          SetAttributeValueOf(target, attribute, *rvalue);
+          SetAXAttributeValueOf(target, attribute, *rvalue);
           return {rvalue};
         }
         return rvalue;
       }
       // Getter. Make sure to expose null values in ax scripts.
-      id value = AttributeValueOf(target, attribute);
+      id value = AXAttributeValueOf(target, attribute);
       return IsDumpingTree() ? OptionalNSObject::NotNullOrNotApplicable(value)
                              : OptionalNSObject(value);
     }
   }
 
   // Parameterized attributes.
-  for (NSString* attribute : ParameterizedAttributeNamesOf(target)) {
+  for (NSString* attribute : AXParameterizedAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       OptionalNSObject param = ParamByPropertyNode(property_node);
       if (param.IsNotNull()) {
         return OptionalNSObject(
-            ParameterizedAttributeValueOf(target, attribute, *param));
+            AXParameterizedAttributeValueOf(target, attribute, *param));
       }
       return param;
     }
@@ -241,7 +253,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   // that they all start with the prefix "accessibility...", ignore all
   // other selectors the object may respond.
   if (base::StartsWith(property_node.name_or_value, "accessibility")) {
-    auto optional_id = PerformSelector(target, property_node.name_or_value);
+    auto optional_id = PerformAXSelector(target, property_node.name_or_value);
     if (optional_id) {
       return OptionalNSObject(*optional_id);
     }
@@ -255,7 +267,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   // * We also explicitly choose not to return an error if the NSAccessibility
   // attribute is valid and is in the list of attributes that our tree formatter
   // supports, but is not exposed on a given node.
-  if (IsDumpingTree() || IsValidAttribute(property_node.name_or_value)) {
+  if (IsDumpingTree() || IsValidAXAttribute(property_node.name_or_value)) {
     return OptionalNSObject::NotApplicable();
   }
 

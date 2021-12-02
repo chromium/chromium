@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 
 #include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 
 // error: 'accessibilityAttributeNames' is deprecated: first deprecated in
@@ -17,8 +16,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-namespace content {
-namespace a11y {
+namespace ui {
 
 using base::SysNSStringToUTF8;
 
@@ -33,7 +31,7 @@ struct NSStringComparator {
   }
 };
 
-bool IsValidAttribute(const std::string& attribute) {
+bool IsValidAXAttribute(const std::string& attribute) {
   // static local to avoid a global static constructor.
   static auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
       {NSAccessibilityAccessKeyAttribute,
@@ -69,16 +67,16 @@ bool IsValidAttribute(const std::string& attribute) {
   return kValidAttributes.contains(base::SysUTF8ToNSString(attribute));
 }
 
-bool IsBrowserAccessibilityCocoa(const id node) {
-  return [node isKindOfClass:[BrowserAccessibilityCocoa class]];
+bool IsNSAccessibilityElement(const id node) {
+  return [node isKindOfClass:[NSAccessibilityElement class]];
 }
 
 bool IsAXUIElement(const id node) {
   return CFGetTypeID(node) == AXUIElementGetTypeID();
 }
 
-NSArray* ChildrenOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node))
+NSArray* AXChildrenOf(const id node) {
+  if (IsNSAccessibilityElement(node))
     return [node children];
 
   if (IsAXUIElement(node)) {
@@ -95,9 +93,9 @@ NSArray* ChildrenOf(const id node) {
   return nil;
 }
 
-NSSize SizeOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [[static_cast<BrowserAccessibilityCocoa*>(node) size] sizeValue];
+NSSize AXSizeOf(const id node) {
+  if (IsNSAccessibilityElement(node)) {
+    return [node accessibilityFrame].size;
   }
 
   if (!IsAXUIElement(node)) {
@@ -106,7 +104,7 @@ NSSize SizeOf(const id node) {
     return NSMakeSize(0, 0);
   }
 
-  id value = AttributeValueOf(node, NSAccessibilitySizeAttribute);
+  id value = AXAttributeValueOf(node, NSAccessibilitySizeAttribute);
   if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
     AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
     if (type == kAXValueCGSizeType) {
@@ -119,10 +117,9 @@ NSSize SizeOf(const id node) {
   return NSMakeSize(0, 0);
 }
 
-NSPoint PositionOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return
-        [[static_cast<BrowserAccessibilityCocoa*>(node) position] pointValue];
+NSPoint AXPositionOf(const id node) {
+  if (IsNSAccessibilityElement(node)) {
+    return [node accessibilityFrame].origin;
   }
 
   if (!IsAXUIElement(node)) {
@@ -131,7 +128,7 @@ NSPoint PositionOf(const id node) {
     return NSMakePoint(0, 0);
   }
 
-  id value = AttributeValueOf(node, NSAccessibilityPositionAttribute);
+  id value = AXAttributeValueOf(node, NSAccessibilityPositionAttribute);
   if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
     AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
     if (type == kAXValueCGPointType) {
@@ -144,8 +141,8 @@ NSPoint PositionOf(const id node) {
   return NSMakePoint(0, 0);
 }
 
-NSArray* AttributeNamesOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node))
+NSArray* AXAttributeNamesOf(const id node) {
+  if (IsNSAccessibilityElement(node))
     return [node accessibilityAttributeNames];
 
   if (IsAXUIElement(node)) {
@@ -161,8 +158,8 @@ NSArray* AttributeNamesOf(const id node) {
   return nil;
 }
 
-NSArray* ParameterizedAttributeNamesOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node))
+NSArray* AXParameterizedAttributeNamesOf(const id node) {
+  if (IsNSAccessibilityElement(node))
     return [node accessibilityParameterizedAttributeNames];
 
   if (IsAXUIElement(node)) {
@@ -179,8 +176,8 @@ NSArray* ParameterizedAttributeNamesOf(const id node) {
   return nil;
 }
 
-id AttributeValueOf(const id node, NSString* attribute) {
-  if (IsBrowserAccessibilityCocoa(node))
+id AXAttributeValueOf(const id node, NSString* attribute) {
+  if (IsNSAccessibilityElement(node))
     return [node accessibilityAttributeValue:attribute];
 
   if (IsAXUIElement(node)) {
@@ -197,10 +194,10 @@ id AttributeValueOf(const id node, NSString* attribute) {
   return nil;
 }
 
-id ParameterizedAttributeValueOf(const id node,
-                                 NSString* attribute,
-                                 id parameter) {
-  if (IsBrowserAccessibilityCocoa(node))
+id AXParameterizedAttributeValueOf(const id node,
+                                   NSString* attribute,
+                                   id parameter) {
+  if (IsNSAccessibilityElement(node))
     return [node accessibilityAttributeValue:attribute forParameter:parameter];
 
   if (IsAXUIElement(node)) {
@@ -218,8 +215,8 @@ id ParameterizedAttributeValueOf(const id node,
   return nil;
 }
 
-absl::optional<id> PerformSelector(const id node,
-                                   const std::string& selector_string) {
+absl::optional<id> PerformAXSelector(const id node,
+                                     const std::string& selector_string) {
   if (![node conformsToProtocol:@protocol(NSAccessibility)])
     return absl::nullopt;
 
@@ -230,26 +227,8 @@ absl::optional<id> PerformSelector(const id node,
   return absl::nullopt;
 }
 
-bool IsAttributeSettable(const id node, NSString* attribute) {
-  if (IsBrowserAccessibilityCocoa(node))
-    return [node accessibilityIsAttributeSettable:attribute];
-
-  if (IsAXUIElement(node)) {
-    Boolean settable;
-    if (AXUIElementIsAttributeSettable(static_cast<AXUIElementRef>(node),
-                                       static_cast<CFStringRef>(attribute),
-                                       &settable) == kAXErrorSuccess)
-      return static_cast<bool>(settable);
-    return false;
-  }
-
-  NOTREACHED()
-      << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
-  return false;
-}
-
-void SetAttributeValueOf(const id node, NSString* attribute, id value) {
-  if (IsBrowserAccessibilityCocoa(node)) {
+void SetAXAttributeValueOf(const id node, NSString* attribute, id value) {
+  if (IsNSAccessibilityElement(node)) {
     [node accessibilitySetValue:value forAttribute:attribute];
     return;
   }
@@ -265,8 +244,8 @@ void SetAttributeValueOf(const id node, NSString* attribute, id value) {
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 
-NSArray* ActionNamesOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node))
+NSArray* AXActionNamesOf(const id node) {
+  if (IsNSAccessibilityElement(node))
     return [node accessibilityActionNames];
 
   if (IsAXUIElement(node)) {
@@ -282,8 +261,8 @@ NSArray* ActionNamesOf(const id node) {
   return nil;
 }
 
-void PerformAction(const id node, NSString* action) {
-  if (IsBrowserAccessibilityCocoa(node)) {
+void PerformAXAction(const id node, NSString* action) {
+  if (IsNSAccessibilityElement(node)) {
     [node accessibilityPerformAction:action];
     return;
   }
@@ -300,16 +279,16 @@ void PerformAction(const id node, NSString* action) {
 
 std::string GetDOMId(const id node) {
   const id domid_value =
-      AttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
+      AXAttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
   return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
 }
 
 AXUIElementRef FindAXUIElement(const AXUIElementRef node,
-                               const FindCriteria& criteria) {
+                               const AXFindCriteria& criteria) {
   if (criteria.Run(node))
     return node;
 
-  NSArray* children = ChildrenOf(static_cast<id>(node));
+  NSArray* children = AXChildrenOf(static_cast<id>(node));
   for (id child in children) {
     AXUIElementRef found =
         FindAXUIElement(static_cast<AXUIElementRef>(child), criteria);
@@ -330,19 +309,16 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
       kCGNullWindowID));
 
   std::string title;
-  if (selector.types & AXTreeSelector::Chrome) {
+  if (selector.types & AXTreeSelector::Chrome)
     title = kChromeTitle;
-  } else if (selector.types & AXTreeSelector::Chromium) {
+  else if (selector.types & AXTreeSelector::Chromium)
     title = kChromiumTitle;
-  } else if (selector.types & AXTreeSelector::Firefox) {
+  else if (selector.types & AXTreeSelector::Firefox)
     title = kFirefoxTitle;
-  } else if (selector.types & AXTreeSelector::Safari) {
+  else if (selector.types & AXTreeSelector::Safari)
     title = kSafariTitle;
-  } else {
-    LOG(ERROR) << selector.AppName()
-               << " application is not supported on the system";
+  else
     return {nil, 0};
-  }
 
   for (NSDictionary* window_info in windows) {
     int pid =
@@ -376,8 +352,8 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
           node, base::BindRepeating([](const AXUIElementRef node) {
             // Only active tab in exposed in browsers, thus find first
             // AXWebArea role.
-            NSString* role = AttributeValueOf(static_cast<id>(node),
-                                              NSAccessibilityRoleAttribute);
+            NSString* role = AXAttributeValueOf(static_cast<id>(node),
+                                                NSAccessibilityRoleAttribute);
             return SysNSStringToUTF8(role) == "AXWebArea";
           }));
     }
@@ -391,24 +367,23 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
 
 AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
                                  const std::string& pattern) {
-  NSArray* children = ChildrenOf(static_cast<id>(parent));
+  NSArray* children = AXChildrenOf(static_cast<id>(parent));
   if ([children count] == 0)
     return nil;
 
   id window = [children objectAtIndex:0];
-  NSString* role = AttributeValueOf(window, NSAccessibilityRoleAttribute);
+  NSString* role = AXAttributeValueOf(window, NSAccessibilityRoleAttribute);
   if (SysNSStringToUTF8(role) != "AXWindow")
     return nil;
 
   NSString* window_title =
-      AttributeValueOf(window, NSAccessibilityTitleAttribute);
+      AXAttributeValueOf(window, NSAccessibilityTitleAttribute);
   if (base::MatchPattern(SysNSStringToUTF8(window_title), pattern))
     return static_cast<AXUIElementRef>(window);
 
   return nil;
 }
 
-}  // namespace a11y
-}  // namespace content
+}  // namespace ui
 
 #pragma clang diagnostic pop

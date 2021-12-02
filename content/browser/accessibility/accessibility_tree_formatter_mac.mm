@@ -10,13 +10,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
@@ -29,18 +29,15 @@ using base::StringPrintf;
 using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
 using content::a11y::AttributeInvoker;
-using content::a11y::AttributeNamesOf;
-using content::a11y::AttributeValueOf;
-using content::a11y::ChildrenOf;
-using content::a11y::SizeOf;
-using content::a11y::PositionOf;
-using content::a11y::IsAXUIElement;
-using content::a11y::IsBrowserAccessibilityCocoa;
 using content::a11y::LineIndexer;
 using content::a11y::OptionalNSObject;
 using std::string;
+using ui::AXPositionOf;
 using ui::AXPropertyFilter;
 using ui::AXPropertyNode;
+using ui::AXAttributeNamesOf;
+using ui::AXAttributeValueOf;
+using ui::AXSizeOf;
 using ui::AXFormatValue;
 using ui::AXMakeConst;
 using ui::AXMakeOrderedKey;
@@ -91,7 +88,7 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(
 base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   AXUIElementRef node = nil;
-  std::tie(node, std::ignore) = a11y::FindAXUIElement(selector);
+  std::tie(node, std::ignore) = ui::FindAXUIElement(selector);
   if (node == nil) {
     return base::Value(base::Value::Type::DICTIONARY);
   }
@@ -109,8 +106,8 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
   LineIndexer line_indexer(root);
   base::Value dict(base::Value::Type::DICTIONARY);
 
-  NSPoint position = PositionOf(root);
-  NSSize size = SizeOf(root);
+  NSPoint position = AXPositionOf(root);
+  NSSize size = AXSizeOf(root);
   NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
 
   RecursiveBuildTree(root, rect, &line_indexer, &dict);
@@ -178,8 +175,8 @@ base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {
   LineIndexer line_indexer(node);
   base::Value dict(base::Value::Type::DICTIONARY);
 
-  NSPoint position = PositionOf(node);
-  NSSize size = SizeOf(node);
+  NSPoint position = AXPositionOf(node);
+  NSSize size = AXSizeOf(node);
   NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
 
   AddProperties(node, rect, &line_indexer, &dict);
@@ -192,7 +189,7 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const LineIndexer* line_indexer,
     base::Value* dict) const {
   BrowserAccessibility* platform_node =
-      IsBrowserAccessibilityCocoa(node)
+      ui::IsNSAccessibilityElement(node)
           ? [static_cast<BrowserAccessibilityCocoa*>(node) owner]
           : nullptr;
 
@@ -203,7 +200,7 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
   if (platform_node && !ShouldDumpChildren(*platform_node))
     return;
 
-  NSArray* children = ChildrenOf(node);
+  NSArray* children = ui::AXChildrenOf(node);
   base::Value child_dict_list(base::Value::Type::LIST);
   for (id child in children) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
@@ -223,11 +220,11 @@ void AccessibilityTreeFormatterMac::AddProperties(
 
   // Dump all attributes if match-all filter is specified.
   if (HasMatchAllPropertyFilter()) {
-    NSArray* attributes = AttributeNamesOf(node);
+    NSArray* attributes = AXAttributeNamesOf(node);
     for (NSString* attribute : attributes) {
       dict->SetPath(
           SysNSStringToUTF8(attribute),
-          PopulateObject(AttributeValueOf(node, attribute), line_indexer));
+          PopulateObject(AXAttributeValueOf(node, attribute), line_indexer));
     }
     return;
   }
@@ -261,8 +258,8 @@ base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
   int root_top = -static_cast<int>(root_rect.origin.y + root_rect.size.height);
   int root_left = static_cast<int>(root_rect.origin.x);
 
-  NSPoint node_position = PositionOf(node);
-  NSSize node_size = SizeOf(node);
+  NSPoint node_position = AXPositionOf(node);
+  NSSize node_size = AXSizeOf(node);
 
   return PopulatePoint(NSMakePoint(
       static_cast<int>(node_position.x - root_left),
@@ -341,7 +338,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   }
 
   // Accessible object
-  if (IsBrowserAccessibilityCocoa(value) || IsAXUIElement(value)) {
+  if (ui::IsNSAccessibilityElement(value) || ui::IsAXUIElement(value)) {
     return base::Value(NodeToLineIndex(value, line_indexer));
   }
 
