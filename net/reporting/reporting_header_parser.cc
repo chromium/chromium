@@ -171,14 +171,9 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
 
   std::vector<ReportingEndpoint::EndpointInfo> endpoints;
 
-  for (size_t i = 0; i < endpoint_list->GetList().size(); i++) {
-    const base::Value* endpoint = nullptr;
-    bool got_endpoint = endpoint_list->Get(i, &endpoint);
-    DCHECK(got_endpoint);
-
+  for (const base::Value& endpoint : endpoint_list->GetList()) {
     ReportingEndpoint::EndpointInfo parsed_endpoint;
-
-    if (ProcessEndpoint(delegate, group_key, *endpoint, &parsed_endpoint))
+    if (ProcessEndpoint(delegate, group_key, endpoint, &parsed_endpoint))
       endpoints.push_back(std::move(parsed_endpoint));
   }
 

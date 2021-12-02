@@ -137,14 +137,10 @@ void GinJavaMethodInvocationHelper::Invoke() {
   GinJavaBridgeError coercion_error = kGinJavaBridgeNoError;
   std::vector<jvalue> parameters(method->num_parameters());
   for (size_t i = 0; i < method->num_parameters(); ++i) {
-    const base::Value* argument;
-    arguments_->Get(i, &argument);
-    parameters[i] = CoerceJavaScriptValueToJavaValue(env,
-                                                     argument,
-                                                     method->parameter_type(i),
-                                                     true,
-                                                     object_refs_,
-                                                     &coercion_error);
+    const base::Value& argument = arguments_->GetList()[i];
+    parameters[i] = CoerceJavaScriptValueToJavaValue(
+        env, &argument, method->parameter_type(i), true, object_refs_,
+        &coercion_error);
   }
 
   if (coercion_error == kGinJavaBridgeNoError) {

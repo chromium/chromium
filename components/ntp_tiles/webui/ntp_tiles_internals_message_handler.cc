@@ -112,10 +112,9 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
     return;
   }
 
-  const base::Value* dict = nullptr;
   DCHECK_EQ(1u, args->GetList().size());
-  args->Get(0, &dict);
-  DCHECK(dict && dict->is_dict());
+  const base::Value& dict = args->GetList()[0];
+  DCHECK(dict.is_dict());
 
   PrefService* prefs = client_->GetPrefs();
 
@@ -123,7 +122,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
       most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     popular_sites_json_.clear();
 
-    const std::string* url = dict->FindStringPath("popular.overrideURL");
+    const std::string* url = dict.FindStringPath("popular.overrideURL");
     if (url->empty()) {
       prefs->ClearPref(ntp_tiles::prefs::kPopularSitesOverrideURL);
     } else {
@@ -132,7 +131,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
     }
 
     const std::string* directory =
-        dict->FindStringPath("popular.overrideDirectory");
+        dict.FindStringPath("popular.overrideDirectory");
     if (directory->empty()) {
       prefs->ClearPref(ntp_tiles::prefs::kPopularSitesOverrideDirectory);
     } else {
@@ -140,8 +139,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
                        *directory);
     }
 
-    const std::string* country =
-        dict->FindStringPath("popular.overrideCountry");
+    const std::string* country = dict.FindStringPath("popular.overrideCountry");
     if (country->empty()) {
       prefs->ClearPref(ntp_tiles::prefs::kPopularSitesOverrideCountry);
     } else {
@@ -149,8 +147,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
                        *country);
     }
 
-    const std::string* version =
-        dict->FindStringPath("popular.overrideVersion");
+    const std::string* version = dict.FindStringPath("popular.overrideVersion");
     if (version->empty()) {
       prefs->ClearPref(ntp_tiles::prefs::kPopularSitesOverrideVersion);
     } else {
