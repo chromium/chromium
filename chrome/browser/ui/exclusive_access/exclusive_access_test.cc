@@ -58,10 +58,6 @@ void FullscreenNotificationObserver::Wait() {
   run_loop_.Run();
 }
 
-void FullscreenNotificationObserver::Reset() {
-  observed_change_ = false;
-}
-
 const char ExclusiveAccessTest::kFullscreenKeyboardLockHTML[] =
     "/fullscreen_keyboardlock/fullscreen_keyboardlock.html";
 
