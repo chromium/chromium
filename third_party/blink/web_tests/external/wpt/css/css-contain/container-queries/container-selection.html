@@ -29,6 +29,8 @@
   .b-size { container:  inline-size / b; }
   .b-size { container:  size / b; }
 
+  .a { container-name: a; contain: strict; }
+
 </style>
 
 <main>
@@ -66,6 +68,14 @@
 <main>
   <div class="a-size">
     <div class="a-size">
+      <span></span>
+    </div>
+  </div>
+</main>
+
+<main>
+  <div class="a-size">
+    <div class="a">
       <span></span>
     </div>
   </div>
@@ -144,6 +154,9 @@
   test_applied('b size(width: 16px)', '.a-size > .b-size > span');
   test_rejected('c size(width)', '.a-size > .b-size > span');
   test_applied('a size(width: 16px)', '.a-size > .a-size > span');
+
+  // container-name alone does not establish a container:
+  test_applied('a size(width: 32px)', '.a-size > .a > span');
 
   // The following tests have three containers:
   //
