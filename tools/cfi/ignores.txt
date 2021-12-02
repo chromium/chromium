@@ -133,6 +133,7 @@ type:sandbox::TargetServices
 ######### Cross-DSO icalls using dynamically resolved symbols crbug.com/771365
 
 # ANGLE
+src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 src:*third_party/angle/src/libANGLE/*
 src:*third_party/angle/src/libEGL/*
 src:*third_party/angle/src/third_party/libXNVCtrl/NVCtrl.c
