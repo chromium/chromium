@@ -342,7 +342,9 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* context) {
   ScopedDisallowAllocations guard{};
 #if defined(OS_APPLE)
-  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(
+                   reinterpret_cast<uintptr_t>(address)) &&
+               address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -363,7 +365,9 @@ void __real_free(void*);
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   ScopedDisallowAllocations guard{};
 #if defined(OS_APPLE)
-  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(
+                   reinterpret_cast<uintptr_t>(address)) &&
+               address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -376,7 +380,9 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   // it along. This should not have a runtime cost vs regular Android, since on
   // Android we have a PA_CHECK() rather than the branch here.
 #if defined(OS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
-  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(
+                   reinterpret_cast<uintptr_t>(address)) &&
+               address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
@@ -396,7 +402,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
     return 0;
 
 #if defined(OS_APPLE)
-  if (!base::IsManagedByPartitionAlloc(address)) {
+  if (!base::IsManagedByPartitionAlloc(reinterpret_cast<uintptr_t>(address))) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc.  The return value `0` means that the pointer does not
     // belong to this malloc zone.

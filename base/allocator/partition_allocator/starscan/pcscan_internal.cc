@@ -107,12 +107,12 @@ struct [[maybe_unused]] ReentrantScannerGuard final{};
 class QuarantineCardTable final {
  public:
   // Avoid the load of the base of the regular pool.
-  ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t ptr) {
-    PA_SCAN_DCHECK(
-        IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(ptr)));
+  ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t address) {
+    PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(address));
     constexpr uintptr_t kRegularPoolBaseMask =
         PartitionAddressSpace::RegularPoolBaseMask();
-    return *reinterpret_cast<QuarantineCardTable*>(ptr & kRegularPoolBaseMask);
+    return *reinterpret_cast<QuarantineCardTable*>(address &
+                                                   kRegularPoolBaseMask);
   }
 
   ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
@@ -149,8 +149,7 @@ class QuarantineCardTable final {
     const size_t byte = Byte(begin);
     const size_t need_bytes = (size + (kCardSize - 1)) / kCardSize;
     PA_SCAN_DCHECK(bytes_.size() >= byte + need_bytes);
-    PA_SCAN_DCHECK(
-        IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(begin)));
+    PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(begin));
     for (size_t i = byte; i < byte + need_bytes; ++i)
       bytes_[i] = value;
   }
@@ -193,17 +192,15 @@ struct GetSlotStartResult final {
 // point to guard pages or slot-span metadata.
 PA_SCAN_INLINE GetSlotStartResult
 GetSlotStartInSuperPage(uintptr_t maybe_inner_ptr) {
-  char* maybe_inner_ptr_as_char_ptr = reinterpret_cast<char*>(maybe_inner_ptr);
-  PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr_as_char_ptr));
+  PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr));
   // Don't use FromSlotInnerPtr() or FromPtr() because they expect a pointer to
   // a valid slot span.
-  char* const super_page_ptr =
-      reinterpret_cast<char*>(maybe_inner_ptr & kSuperPageBaseMask);
+  const uintptr_t super_page_base = maybe_inner_ptr & kSuperPageBaseMask;
 
   const uintptr_t partition_page_index =
       (maybe_inner_ptr & kSuperPageOffsetMask) >> PartitionPageShift();
   auto* page = reinterpret_cast<PartitionPage<ThreadSafe>*>(
-      PartitionSuperPageToMetadataArea(super_page_ptr) +
+      PartitionSuperPageToMetadataArea(super_page_base) +
       (partition_page_index << kPageMetadataShift));
   // Check if page is valid. The check also works for the guard pages and the
   // metadata page.
@@ -218,9 +215,9 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_ptr) {
   if (!slot_span->bucket)
     return {};
   PA_SCAN_DCHECK(PartitionRoot<ThreadSafe>::IsValidSlotSpan(slot_span));
-  char* const slot_span_begin = static_cast<char*>(
+  const uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
       SlotSpanMetadata<ThreadSafe>::ToSlotSpanStartPtr(slot_span));
-  const ptrdiff_t ptr_offset = maybe_inner_ptr_as_char_ptr - slot_span_begin;
+  const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_start;
   PA_SCAN_DCHECK(0 <= ptr_offset &&
                  ptr_offset < static_cast<ptrdiff_t>(
                                   slot_span->bucket->get_pages_per_slot_span() *
@@ -230,9 +227,9 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_ptr) {
   // the quarantine bit will anyway return false in this case.
   const size_t slot_size = slot_span->bucket->slot_size;
   const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
-  char* const slot_start = slot_span_begin + (slot_number * slot_size);
-  PA_SCAN_DCHECK(slot_start <= maybe_inner_ptr_as_char_ptr &&
-                 maybe_inner_ptr_as_char_ptr < slot_start + slot_size);
+  const uintptr_t slot_start = slot_span_start + (slot_number * slot_size);
+  PA_SCAN_DCHECK(slot_start <= maybe_inner_ptr &&
+                 maybe_inner_ptr < slot_start + slot_size);
   return {.slot_start = reinterpret_cast<uintptr_t>(slot_start),
           .slot_size = slot_size};
 }
@@ -392,8 +389,7 @@ SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
   using Root = PartitionRoot<ThreadSafe>;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
-  auto* extent_entry = PartitionSuperPageToExtent<ThreadSafe>(
-      reinterpret_cast<char*>(super_page));
+  auto* extent_entry = PartitionSuperPageToExtent<ThreadSafe>(super_page);
 
   typename Root::ScopedGuard lock(extent_entry->root->lock_);
 
@@ -600,8 +596,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
 
 PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
-  PA_SCAN_DCHECK(
-      IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(maybe_ptr)));
+  PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(maybe_ptr));
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -623,8 +618,7 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     return nullptr;
 #endif
 #else   // defined(PA_HAS_64_BITS_POINTERS)
-  if (LIKELY(!IsManagedByPartitionAllocRegularPool(
-          reinterpret_cast<void*>(maybe_ptr))))
+  if (LIKELY(!IsManagedByPartitionAllocRegularPool(maybe_ptr)))
     return nullptr;
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
@@ -651,7 +645,7 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
 
   // Beyond this point, we know that |maybe_ptr| is a pointer within a
   // normal-bucket super page.
-  PA_SCAN_DCHECK(IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr)));
+  PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_ptr));
 
 #if !PA_STARSCAN_USE_CARD_TABLE
   // Pointer from a normal bucket is always in the first superpage.
@@ -1400,8 +1394,8 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
          super_page != super_page_end; super_page += kSuperPageSize) {
       // Make sure the metadata is committed.
       // TODO(bikineev): Remove once this is known to work.
-      const volatile char* metadata =
-          PartitionSuperPageToMetadataArea(super_page);
+      const volatile char* metadata = PartitionSuperPageToMetadataArea(
+          reinterpret_cast<uintptr_t>(super_page));
       *metadata;
       RecommitSystemPages(internal::SuperPageStateBitmap(super_page),
                           state_bitmap_size_to_commit, PageReadWrite,
@@ -1464,8 +1458,8 @@ void PCScanInternal::RegisterNewSuperPage(Root* root,
   PA_DCHECK(!(super_page_base % kSuperPageAlignment));
   // Make sure the metadata is committed.
   // TODO(bikineev): Remove once this is known to work.
-  const volatile char* metadata = PartitionSuperPageToMetadataArea(
-      reinterpret_cast<char*>(super_page_base));
+  const volatile char* metadata =
+      PartitionSuperPageToMetadataArea(super_page_base);
   *metadata;
 
   std::lock_guard<std::mutex> lock(roots_mutex_);

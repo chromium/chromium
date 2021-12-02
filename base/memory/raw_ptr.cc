@@ -21,70 +21,44 @@ namespace base {
 
 namespace internal {
 
-void BackupRefPtrImpl::AcquireInternal(const volatile void* cv_ptr) {
-  // |const volatile| qualifiers are used only to compile with |T*| pointers
-  // passed by the caller that may have those qualifiers. From now on, the
-  // pointer value is used, but is never dereferenced.
-  //
-  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
-  void* ptr = const_cast<void*>(cv_ptr);
+void BackupRefPtrImpl::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(ptr));
+  CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
-void BackupRefPtrImpl::ReleaseInternal(const volatile void* cv_ptr) {
-  // |const volatile| qualifiers are used only to compile with |T*| pointers
-  // passed by the caller that may have those qualifiers. From now on, the
-  // pointer value is used, but is never dereferenced.
-  //
-  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
-  void* ptr = const_cast<void*>(cv_ptr);
+void BackupRefPtrImpl::ReleaseInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(ptr));
+  CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   if (PartitionRefCountPointer(slot_start)->Release())
     PartitionAllocFreeForRefCounting(slot_start);
 }
 
-bool BackupRefPtrImpl::IsPointeeAlive(const volatile void* cv_ptr) {
-  // |const volatile| qualifiers are used only to compile with |T*| pointers
-  // passed by the caller that may have those qualifiers. From now on, the
-  // pointer value is used, but is never dereferenced.
-  //
-  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
-  void* ptr = const_cast<void*>(cv_ptr);
+bool BackupRefPtrImpl::IsPointeeAlive(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(ptr));
+  CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 
-bool BackupRefPtrImpl::IsValidDelta(const volatile void* cv_ptr,
+bool BackupRefPtrImpl::IsValidDelta(uintptr_t address,
                                     ptrdiff_t delta_in_bytes) {
-  // |const volatile| qualifiers are used only to compile with |T*| pointers
-  // passed by the caller that may have those qualifiers. From now on, the
-  // pointer value is used, but is never dereferenced.
-  //
-  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
-  void* ptr = const_cast<void*>(cv_ptr);
-  return PartitionAllocIsValidPtrDelta(ptr, delta_in_bytes);
+  return PartitionAllocIsValidPtrDelta(address, delta_in_bytes);
 }
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr) {
-  if (IsManagedByDirectMap(ptr)) {
-    uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
-    CHECK(reinterpret_cast<uintptr_t>(ptr) - reservation_start >=
-          PartitionPageSize());
+void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
+  if (IsManagedByDirectMap(address)) {
+    uintptr_t reservation_start = GetDirectMapReservationStart(address);
+    CHECK(address - reservation_start >= PartitionPageSize());
   } else {
-    CHECK(IsManagedByNormalBuckets(ptr));
-    CHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
-          PartitionPageSize());
+    CHECK(IsManagedByNormalBuckets(address));
+    CHECK(address % kSuperPageSize >= PartitionPageSize());
   }
 }
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
