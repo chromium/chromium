@@ -80,6 +80,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                     SearchModel* search_model) override;
 
   // Overridden from views::View:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;

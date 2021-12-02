@@ -377,6 +377,29 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
   }
 }
 
+void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
+  // Handle keyboard navigation keys when close button is focused - move the
+  // focus to the search box text field, and ensure result selection gets
+  // updated according to the navigation key. The latter is the reason
+  // navigation is handled here instead of the focus manager - intended result
+  // selection depends on the key event that triggered the focus change.
+  if (close_button()->HasFocus() && evt->type() == ui::ET_KEY_PRESSED &&
+      (IsUnhandledArrowKeyEvent(*evt) || evt->key_code() == ui::VKEY_TAB)) {
+    search_box()->RequestFocus();
+
+    if (result_selection_controller_->MoveSelection(*evt) ==
+        ResultSelectionController::MoveResult::kResultChanged) {
+      UpdateSearchBoxTextForSelectedResult(
+          result_selection_controller_->selected_result()->result());
+    }
+
+    evt->SetHandled();
+    return;
+  }
+
+  SearchBoxViewBase::OnKeyEvent(evt);
+}
+
 bool SearchBoxView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   if (contents_view_)
     return contents_view_->OnMouseWheel(event);

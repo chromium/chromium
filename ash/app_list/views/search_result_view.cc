@@ -132,7 +132,13 @@ SearchResultView::SearchResultView(
       view_delegate_(view_delegate),
       dialog_controller_(dialog_controller),
       view_type_(view_type) {
-  SetFocusBehavior(FocusBehavior::ALWAYS);
+  // Result views are not expected to be focused - while the results UI is shown
+  // the focus is kept within the `SearchBoxView`, which manages result
+  // selection state in response to keyboard navigation keys, and forwards
+  // all relevant key events (e.g. ENTER key for result activation) to search
+  // result views as needed.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks, but this focusable View needs to
   // add a name so that the screen reader knows what to announce.

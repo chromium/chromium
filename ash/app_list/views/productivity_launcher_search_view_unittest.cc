@@ -95,6 +95,86 @@ TEST_F(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
   EXPECT_TRUE(result_containers[0]->GetVisible());
 }
 
+// Tests that key traversal correctly cycles between the list of results and
+// search box close button.
+TEST_F(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+  EXPECT_FALSE(test_helper->GetProductivityLauncherSearchView()
+                   ->CanSelectSearchResults());
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+
+  // Create categorized results and order categories as {kApps, kWeb}.
+  std::vector<AppListSearchResultCategory>* ordered_categories =
+      test_helper->GetOrderedResultCategories();
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  ordered_categories->push_back(AppListSearchResultCategory::kApps);
+  ordered_categories->push_back(AppListSearchResultCategory::kWeb);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+                     SearchResult::Category::kApps);
+  SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
+                     false, SearchResult::Category::kWeb);
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
+
+  // Press VKEY_DOWN and check if the first result view is selected.
+  EXPECT_TRUE(test_helper->GetProductivityLauncherSearchView()
+                  ->CanSelectSearchResults());
+  ResultSelectionController* controller =
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
+
+  // Traverse the first results container.
+  for (int i = 0; i < kDefaultSearchItems - 1; ++i) {
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    ASSERT_TRUE(controller->selected_result()) << i;
+    EXPECT_EQ(controller->selected_location_details()->container_index, 1) << i;
+    EXPECT_EQ(controller->selected_location_details()->result_index, i + 1);
+  }
+
+  // Traverse the second container.
+  for (int i = 0; i < kDefaultSearchItems; ++i) {
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    ASSERT_TRUE(controller->selected_result()) << i;
+    EXPECT_EQ(controller->selected_location_details()->container_index, 2) << i;
+    EXPECT_EQ(controller->selected_location_details()->result_index, i);
+  }
+
+  // Pressing down while the last result is selected moves focus to the close
+  // button.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(
+      test_helper->GetBubbleSearchBoxView()->close_button()->HasFocus());
+
+  // Move focus the the search box, and verify result selection is properly set.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(test_helper->GetBubbleSearchBoxView()->search_box()->HasFocus());
+
+  ASSERT_TRUE(controller->selected_result());
+  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+
+  // Up key should cycle focus to the close button, and then the last search
+  // result.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(
+      test_helper->GetBubbleSearchBoxView()->close_button()->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(test_helper->GetBubbleSearchBoxView()->search_box()->HasFocus());
+
+  ASSERT_TRUE(controller->selected_result());
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->result_index,
+            kDefaultSearchItems - 1);
+}
+
 // Tests that result selection controller can change between  within and between
 // result containers.
 TEST_F(ProductivityLauncherSearchViewTest, ResultSelection) {
