@@ -451,6 +451,10 @@ void FuchsiaAudioRenderer::OnError(PipelineStatus status) {
   stream_sink_.Unbind();
   sysmem_buffer_stream_.reset();
 
+  if (is_demuxer_read_pending_) {
+    drop_next_demuxer_read_result_ = true;
+  }
+
   if (init_cb_) {
     std::move(init_cb_).Run(status);
   } else if (client_) {
