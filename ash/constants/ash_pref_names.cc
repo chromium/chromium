@@ -394,6 +394,12 @@ const char kAllowMGSToStoreDisplayProperties[] =
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 const char kFullscreenAlertEnabled[] = "ash.fullscreen_alert_enabled";
+// A list of URLs that are exempt from ash's fullscreen notification. To prevent
+// fake login screens, the notification is normally shown when the device
+// returns from sleep, low brightness or the lock screen and is still in full
+// screen mode.
+const char kFullscreenNotificationUrlExemptList[] =
+    "ash.fullscreen_notification_url_exempt_list";
 
 // A boolean pref storing whether the gesture education notification has ever
 // been shown to the user, which we use to stop showing it again.

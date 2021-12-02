@@ -7801,6 +7801,35 @@
       }
     ]
   },
+  "FullscreenNotificationUrlExemptList": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.fullscreen_notification_url_exempt_list": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "FullscreenNotificationUrlExemptList": [
+            "*"
+          ]
+        },
+        "prefs": {
+          "ash.fullscreen_notification_url_exempt_list": {
+            "value": [
+              "*"
+            ]
+          }
+        }
+      }
+    ]
+  },
   "FastPairEnabled": {
     "os": [
       "chromeos_ash"

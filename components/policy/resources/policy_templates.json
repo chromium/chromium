@@ -13010,6 +13010,33 @@
       When the policy is unset or set to True, an alert will be shown to remind the users to exit fullscreen before entering password. When the policy is set to False, no alert would be shown.''',
     },
     {
+      'id': 930,
+      'name': 'FullscreenNotificationUrlExemptList',
+      'caption': '''List of URLs which are exempt from the full screen notification''',
+      'owners': ['aninak@chromium.org', 'file://ash/session/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+        },
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': [
+        '*',
+      ],
+      'tags': [],
+      'desc': '''Configure a list of URLs that are exempt from the full screen notification. The notification is shown when the device returns from sleep, low brightness or the lock screen and has a window in full screen mode. This is to make users aware that they are in full screen mode, which reduces the risk of phishing attacks.
+
+          This policy allows to disable the notification for specific URLs that will be considered trusted sources. It is set by specifying a list of URL patterns formatted according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). E.g., it is possible to disable the notifications altogether by specifying the wildcard character <ph name="WILDCARD_VALUE">*</ph> matching all URLs.
+
+          Setting this policy to an empty list or leaving it unset means no URLs are exempt from the full screen notification.''',
+    },
+    {
       'name': 'ScreenDimDelayAC',
       'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
@@ -29829,6 +29856,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 929,
+  'highest_id_currently_used': 930,
   'highest_atomic_group_id_currently_used': 41
 }

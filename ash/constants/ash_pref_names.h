@@ -194,6 +194,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowMGSToStoreDisplayProperties[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFullscreenAlertEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kFullscreenNotificationUrlExemptList[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kGestureEducationNotificationShown[];
