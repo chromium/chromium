@@ -40,6 +40,10 @@ class SystemExtensionsInstallManager {
   std::vector<SystemExtensionId> GetSystemExtensionIds();
   const SystemExtension* GetSystemExtensionById(const SystemExtensionId& id);
 
+  // Return the system extension that runs on |url|. Returns nullptr if |url|
+  // doesn't belong to any system extension.
+  const SystemExtension* GetSystemExtensionByURL(const GURL& url);
+
  private:
   // Helper class to run blocking IO operations on a separate thread.
   class IOHelper {

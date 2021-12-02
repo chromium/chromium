@@ -1409,6 +1409,13 @@ void RenderThreadImpl::SetIsDirectSocketEnabled(bool value) {
   blink::SetIsDirectSocketEnabled(value);
 }
 
+void RenderThreadImpl::EnableBlinkRuntimeFeatures(
+    const std::vector<std::string>& features) {
+  for (const auto& feature : features) {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
+  }
+}
+
 bool RenderThreadImpl::GetRendererMemoryMetrics(
     RendererMemoryMetrics* memory_metrics) const {
   DCHECK(memory_metrics);

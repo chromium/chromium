@@ -293,6 +293,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
+  void EnableBlinkRuntimeFeatures(
+      const std::vector<std::string>& features) override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif

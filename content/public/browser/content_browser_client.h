@@ -699,6 +699,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& script_url,
       BrowserContext* context);
 
+  // Called when a service worker will start on a render process. The embedder
+  // can configure process-wide features here. (e.g. enable extra blink runtime
+  // features).
+  virtual void WillStartServiceWorker(BrowserContext* context,
+                                      const GURL& script_url,
+                                      RenderProcessHost* render_process_host);
+
   // Allow the embedder to control if a Shared Worker can be connected from a
   // given tab.
   // This is called on the UI thread.

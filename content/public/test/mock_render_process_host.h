@@ -258,6 +258,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
+  void EnableBlinkRuntimeFeatures(
+      const std::vector<std::string>& features) override;
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;

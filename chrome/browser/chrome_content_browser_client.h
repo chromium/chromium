@@ -250,6 +250,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override;
+  void WillStartServiceWorker(
+      content::BrowserContext* context,
+      const GURL& script_url,
+      content::RenderProcessHost* render_process_host) override;
   bool AllowSharedWorker(const GURL& worker_url,
                          const net::SiteForCookies& site_for_cookies,
                          const absl::optional<url::Origin>& top_frame_origin,

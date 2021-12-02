@@ -13,6 +13,10 @@
 class Profile;
 class SystemExtensionsInstallManager;
 
+namespace content {
+class RenderProcessHost;
+}
+
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
  public:
@@ -28,6 +32,11 @@ class SystemExtensionsProvider : public KeyedService {
   SystemExtensionsInstallManager& install_manager() {
     return *install_manager_;
   }
+
+  // Called when a service worker will be started to enable blink runtime
+  // features based on system extension type.
+  void WillStartServiceWorker(const GURL& script_url,
+                              content::RenderProcessHost* render_process_host);
 
  private:
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;

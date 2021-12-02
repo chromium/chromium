@@ -163,3 +163,12 @@ bool SystemExtensionsInstallManager::IOHelper::CopyExtensionAssets(
 
   return true;
 }
+
+const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionByURL(
+    const GURL& url) {
+  for (const auto& id_and_system_extension : system_extensions_) {
+    if (url::IsSameOriginWith(id_and_system_extension.second.base_url, url))
+      return &id_and_system_extension.second;
+  }
+  return nullptr;
+}

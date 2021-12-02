@@ -170,4 +170,11 @@ interface Renderer {
   //
   // TODO(crbug.com/1206150): We need a specification for this restriction.
   SetIsDirectSocketEnabled(bool value);
+
+  // Enable the given blink runtime features (based on their names) for this
+  // renderer process. If this is non-empty, the embedder should ensure this
+  // renderer process is isolated to avoid exposing such features to other
+  // sites, because those features are highly privileged and shouldn't be
+  // exposed to other sites.
+  EnableBlinkRuntimeFeatures(array<string> features);
 };

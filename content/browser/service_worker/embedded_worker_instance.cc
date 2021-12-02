@@ -285,6 +285,10 @@ void EmbeddedWorkerInstance::Start(
   // crash reports agree. Consider also checking for
   // rph->IsInitializedAndNotDead().
   CHECK(rph);
+
+  GetContentClient()->browser()->WillStartServiceWorker(
+      process_manager->browser_context(), params->script_url, rph);
+
   rph->BindReceiver(client_.BindNewPipeAndPassReceiver());
   client_.set_disconnect_handler(
       base::BindOnce(&EmbeddedWorkerInstance::Detach, base::Unretained(this)));

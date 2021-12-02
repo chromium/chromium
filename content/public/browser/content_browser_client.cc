@@ -375,6 +375,11 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
   return AllowServiceWorkerResult::Yes();
 }
 
+void ContentBrowserClient::WillStartServiceWorker(
+    BrowserContext* context,
+    const GURL& script_url,
+    RenderProcessHost* render_process_host) {}
+
 bool ContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,
     const net::SiteForCookies& site_for_cookies,
