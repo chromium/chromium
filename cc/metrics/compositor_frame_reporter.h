@@ -19,6 +19,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -140,12 +141,7 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
-  enum SmoothThread {
-    kSmoothNone,
-    kSmoothCompositor,
-    kSmoothMain,
-    kSmoothBoth
-  };
+  using SmoothThread = FrameInfo::SmoothThread;
 
   // Holds a processed list of Blink breakdowns with an `Iterator` class to
   // easily iterator over them.
@@ -355,7 +351,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyHistograms() const;
-  void ReportCompositorLatencyTraceEvents() const;
+  void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
 
   void EnableReportType(FrameReportType report_type) {
@@ -373,7 +369,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   base::TimeTicks Now() const;
 
-  bool IsDroppedFrameAffectingSmoothness() const;
+  FrameInfo GenerateFrameInfo() const;
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 

@@ -9919,7 +9919,9 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     }
 
     // Mark every frame as a dropped frame affecting smoothness.
-    host_impl->dropped_frame_counter()->OnEndFrame(last_args_, true);
+    host_impl->dropped_frame_counter()->OnEndFrame(
+        last_args_, {FrameInfo::FrameFinalState::kDropped,
+                     FrameInfo::SmoothThread::kSmoothBoth});
     host_impl->SetNeedsRedraw();
     --frames_counter_;
   }
@@ -9972,7 +9974,9 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
     }
 
     // Mark every frame as a dropped frame affecting smoothness.
-    host_impl->dropped_frame_counter()->OnEndFrame(last_args_, true);
+    host_impl->dropped_frame_counter()->OnEndFrame(
+        last_args_, {FrameInfo::FrameFinalState::kDropped,
+                     FrameInfo::SmoothThread::kSmoothBoth});
     host_impl->SetNeedsRedraw();
     --frames_counter_;
   }

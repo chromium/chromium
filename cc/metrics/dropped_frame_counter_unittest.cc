@@ -19,6 +19,12 @@
 namespace cc {
 namespace {
 
+FrameInfo CreateStubFrameInfo(bool is_dropped) {
+  return {is_dropped ? FrameInfo::FrameFinalState::kDropped
+                     : FrameInfo::FrameFinalState::kPresentedAll,
+          FrameInfo::SmoothThread::kSmoothBoth};
+}
+
 class DroppedFrameCounterTestBase : public LayerTreeTest {
  public:
   DroppedFrameCounterTestBase() = default;
@@ -269,7 +275,8 @@ class DroppedFrameCounterTest : public testing::Test {
       for (auto is_dropped : frame_states) {
         viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
         dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
-        dropped_frame_counter_.OnEndFrame(args_, is_dropped);
+        dropped_frame_counter_.OnEndFrame(args_,
+                                          CreateStubFrameInfo(is_dropped));
         sequence_number_++;
         frame_time_ += interval_;
       }
@@ -302,8 +309,8 @@ class DroppedFrameCounterTest : public testing::Test {
     viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
     dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
     dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
-    dropped_frame_counter_.OnEndFrame(args_, main_dropped);
-    dropped_frame_counter_.OnEndFrame(args_, impl_dropped);
+    dropped_frame_counter_.OnEndFrame(args_, CreateStubFrameInfo(main_dropped));
+    dropped_frame_counter_.OnEndFrame(args_, CreateStubFrameInfo(impl_dropped));
     sequence_number_++;
     frame_time_ += interval_;
   }
@@ -773,7 +780,7 @@ TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
   // End each of the frames as dropped. The first three should not count for
   // smoothness, only the last two.
   for (const auto& frame : pending_frames) {
-    dropped_frame_counter_.OnEndFrame(frame, true);
+    dropped_frame_counter_.OnEndFrame(frame, CreateStubFrameInfo(true));
   }
   EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 2u);
 }
@@ -816,7 +823,7 @@ TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
   // End each of the pending frames as dropped. These shouldn't affect any of
   // the metrics.
   for (const auto& frame : pending_frames) {
-    dropped_frame_counter_.OnEndFrame(frame, true);
+    dropped_frame_counter_.OnEndFrame(frame, CreateStubFrameInfo(true));
   }
 
   // After FCP time, add a second each of 80% and 60%, and three seconds of 40%

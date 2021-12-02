@@ -6,9 +6,11 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "cc/metrics/frame_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -60,12 +62,16 @@ class FrameSorterTest : public testing::Test {
         case 'S':
           frame_sorter_.AddNewFrame(args_[id]);
           break;
-        case 'D':
-          frame_sorter_.AddFrameResult(args_[id], true);
+        case 'D': {
+          FrameInfo info = {FrameInfo::FrameFinalState::kDropped,
+                            FrameInfo::SmoothThread::kSmoothBoth};
+          frame_sorter_.AddFrameResult(args_[id], info);
           break;
-        case 'P':
-          frame_sorter_.AddFrameResult(args_[id], false);
+        }
+        case 'P': {
+          frame_sorter_.AddFrameResult(args_[id], {});
           break;
+        }
         case 'I':
           IncreaseSourceId();
           break;
@@ -89,8 +95,8 @@ class FrameSorterTest : public testing::Test {
   }
 
  private:
-  void FlushFrame(const viz::BeginFrameArgs& args, bool is_dropped) {
-    sorted_frames_.emplace_back(args, is_dropped);
+  void FlushFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame) {
+    sorted_frames_.emplace_back(args, frame.IsDroppedAffectingSmoothness());
   }
 
   FrameSorter frame_sorter_;

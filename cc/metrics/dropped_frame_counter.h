@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
+struct FrameInfo;
 class TotalFrameCounter;
 
 // This class maintains a counter for produced/dropped frames, and can be used
@@ -75,7 +76,7 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFramesForUI();
 
   void OnBeginFrame(const viz::BeginFrameArgs& args, bool is_scroll_active);
-  void OnEndFrame(const viz::BeginFrameArgs& args, bool is_dropped);
+  void OnEndFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
   void OnFcpReceived();
 
@@ -126,7 +127,8 @@ class CC_EXPORT DroppedFrameCounter {
   }
 
  private:
-  void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
+  void NotifyFrameResult(const viz::BeginFrameArgs& args,
+                         const FrameInfo& frame_info);
   base::TimeDelta ComputeCurrentWindowSize() const;
 
   void PopSlidingWindow();

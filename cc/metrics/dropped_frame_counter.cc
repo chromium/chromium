@@ -12,6 +12,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -190,7 +191,8 @@ void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args,
 }
 
 void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
-                                     bool is_dropped) {
+                                     const FrameInfo& frame_info) {
+  const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
   if (!args.interval.is_zero())
     total_frames_in_window_ = kSlidingWindowInterval / args.interval;
 
@@ -225,7 +227,7 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   }
 
   if (fcp_received_)
-    frame_sorter_.AddFrameResult(args, is_dropped);
+    frame_sorter_.AddFrameResult(args, frame_info);
 }
 
 void DroppedFrameCounter::ReportFrames() {
@@ -356,7 +358,7 @@ base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
 }
 
 void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
-                                            bool is_dropped) {
+                                            const FrameInfo& frame_info) {
   // Entirely disregard the frames with interval larger than the window --
   // these are violating the assumptions in the below code and should
   // only occur with external frame control, where dropped frame stats
@@ -364,6 +366,7 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   if (args.interval >= kSlidingWindowInterval)
     return;
 
+  const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
   sliding_window_.push({args, is_dropped});
 
   if (is_dropped)

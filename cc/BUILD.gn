@@ -184,6 +184,8 @@ cc_component("cc") {
     "metrics/event_metrics.h",
     "metrics/events_metrics_manager.cc",
     "metrics/events_metrics_manager.h",
+    "metrics/frame_info.cc",
+    "metrics/frame_info.h",
     "metrics/frame_sequence_metrics.cc",
     "metrics/frame_sequence_metrics.h",
     "metrics/frame_sequence_tracker.cc",
