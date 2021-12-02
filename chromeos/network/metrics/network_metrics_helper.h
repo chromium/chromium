@@ -15,19 +15,14 @@ namespace chromeos {
 // network types and their variants.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
  public:
-  NetworkMetricsHelper();
-  ~NetworkMetricsHelper();
-
-  void Init(NetworkStateHandler* network_state_handler);
-
   // Logs connection result for network with given |guid|. If |shill_error| has
   // no value, a connection success is logged.
-  void LogAllConnectionResult(
+  static void LogAllConnectionResult(
       const std::string& guid,
       const absl::optional<std::string>& shill_error = absl::nullopt);
 
- private:
-  NetworkStateHandler* network_state_handler_;
+  NetworkMetricsHelper();
+  ~NetworkMetricsHelper();
 };
 
 }  // namespace chromeos

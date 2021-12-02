@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/network/metrics/shill_connect_result.h"
+#include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 
 namespace chromeos {
@@ -14,6 +15,10 @@ namespace {
 
 const char kNetworkMetricsPrefix[] = "Network.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
+
+chromeos::NetworkStateHandler* GetNetworkStateHandler() {
+  return NetworkHandler::Get()->network_state_handler();
+}
 
 const std::vector<std::string> GetCellularNetworkTypeHistogams(
     const NetworkState* network_state) {
@@ -81,20 +86,13 @@ const std::vector<std::string> GetNetworkTypeHistogramNames(
 
 }  // namespace
 
-NetworkMetricsHelper::NetworkMetricsHelper() = default;
-
-NetworkMetricsHelper::~NetworkMetricsHelper() = default;
-
-void NetworkMetricsHelper::Init(NetworkStateHandler* network_state_handler) {
-  network_state_handler_ = network_state_handler;
-}
-
+// static
 void NetworkMetricsHelper::LogAllConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {
-  DCHECK(network_state_handler_);
+  DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
-      network_state_handler_->GetNetworkStateFromGuid(guid);
+      GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
 
   ShillConnectResult connect_result =
       shill_error.has_value() ? ShillErrorToConnectResult(*shill_error)
@@ -106,5 +104,9 @@ void NetworkMetricsHelper::LogAllConnectionResult(
         connect_result);
   }
 }
+
+NetworkMetricsHelper::NetworkMetricsHelper() = default;
+
+NetworkMetricsHelper::~NetworkMetricsHelper() = default;
 
 }  // namespace chromeos

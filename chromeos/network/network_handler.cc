@@ -17,7 +17,6 @@
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
-#include "chromeos/network/metrics/network_metrics_helper.h"
 #include "chromeos/network/network_activation_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_cert_migrator.h"
@@ -57,10 +56,6 @@ NetworkHandler::NetworkHandler()
   if (features::IsESimPolicyEnabled()) {
     cellular_policy_handler_.reset(new CellularPolicyHandler());
   }
-  // TODO(b/207589664): Pass |network_metrics_helper_| to ConnectionInfoLogger
-  // or instantiate |network_metrics_helper_| within ConnectionInfoLogger
-  // instead of here.
-  network_metrics_helper_.reset(new NetworkMetricsHelper());
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_migrator_.reset(new NetworkCertMigrator());
@@ -114,7 +109,6 @@ void NetworkHandler::Init() {
         cellular_esim_installer_.get(), network_profile_handler_.get(),
         managed_network_configuration_handler_.get());
   }
-  network_metrics_helper_->Init(network_state_handler_.get());
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),
                                  cellular_esim_profile_handler_.get());
