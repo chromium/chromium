@@ -103,7 +103,7 @@ def _subprocess_log_thread(pipe, prefix):
             line = pipe.readline()
             if not line:
                 return
-            _log.error('%s: %s', prefix, line)
+            _log.error('%s: %s', prefix, line.decode('utf8'))
     finally:
         pipe.close()
 
@@ -267,8 +267,11 @@ class FuchsiaPort(base.Port):
                                             self.results_directory())
 
             if self.get_option('zircon_logging'):
-                self._zircon_logger = SubprocessOutputLogger(
-                    self._target_host.run_command(['dlog', '-f']), 'Zircon')
+                klog_proc = self._target_host.run_command(['dlog', '-f'])
+                symbolized_klog_proc = symbolizer.RunSymbolizer(klog_proc.stdout,
+                    subprocess.PIPE, [self.get_build_ids_path()])
+                self._zircon_logger = SubprocessOutputLogger(symbolized_klog_proc,
+                    'Zircon')
 
             # Save fuchsia_target in _options, so it can be shared with other
             # workers.
