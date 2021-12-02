@@ -41,20 +41,26 @@ Sampler::DatumNameUnits SMCSampler::GetDatumNameUnits() {
                      {"cpu_package_cpu_power", "w"},
                      {"cpu_package_gpu_power", "w"},
                      {"gpu0_power", "w"},
-                     {"gpu1_power", "w"}};
+                     {"gpu1_power", "w"},
+                     {"cpu_temperature", "C"}};
   return ret;
 }
 
 Sampler::Sample SMCSampler::GetSample(base::TimeTicks sample_time) {
   Sample sample;
 
-  MaybeAddToSample(&sample, "total_power", smc_reader_->ReadTotalPowerW());
+  MaybeAddToSample(&sample, "total_power",
+                   smc_reader_->ReadKey(SMCKeyIdentifier::TotalPower));
   MaybeAddToSample(&sample, "cpu_package_cpu_power",
-                   smc_reader_->ReadCPUPackageCPUPowerW());
+                   smc_reader_->ReadKey(SMCKeyIdentifier::CPUPower));
   MaybeAddToSample(&sample, "cpu_package_gpu_power",
-                   smc_reader_->ReadCPUPackageGPUPowerW());
-  MaybeAddToSample(&sample, "gpu0_power", smc_reader_->ReadGPU0PowerW());
-  MaybeAddToSample(&sample, "gpu1_power", smc_reader_->ReadGPU1PowerW());
+                   smc_reader_->ReadKey(SMCKeyIdentifier::iGPUPower));
+  MaybeAddToSample(&sample, "gpu0_power",
+                   smc_reader_->ReadKey(SMCKeyIdentifier::GPU0Power));
+  MaybeAddToSample(&sample, "gpu1_power",
+                   smc_reader_->ReadKey(SMCKeyIdentifier::GPU1Power));
+  MaybeAddToSample(&sample, "cpu_temperature",
+                   smc_reader_->ReadKey(SMCKeyIdentifier::CPUTemperature));
 
   return sample;
 }

@@ -35,24 +35,14 @@ std::unique_ptr<SMCReader> SMCReader::Create() {
 
 SMCReader::~SMCReader() = default;
 
-absl::optional<double> SMCReader::ReadTotalPowerW() {
-  return total_power_key_.Read();
-}
+absl::optional<double> SMCReader::ReadKey(SMCKeyIdentifier identifier) {
+  auto it = keys_.find(identifier);
+  if (it == keys_.end()) {
+    auto result = keys_.emplace(identifier, SMCKey(connect_, identifier));
+    it = result.first;
+  }
 
-absl::optional<double> SMCReader::ReadCPUPackageCPUPowerW() {
-  return cpu_package_cpu_power_key_.Read();
-}
-
-absl::optional<double> SMCReader::ReadCPUPackageGPUPowerW() {
-  return cpu_package_gpu_power_key_.Read();
-}
-
-absl::optional<double> SMCReader::ReadGPU0PowerW() {
-  return gpu0_power_key_.Read();
-}
-
-absl::optional<double> SMCReader::ReadGPU1PowerW() {
-  return gpu1_power_key_.Read();
+  return it->second.Read();
 }
 
 SMCReader::SMCKey::SMCKey(base::mac::ScopedIOObject<io_object_t> connect,
@@ -63,6 +53,9 @@ SMCReader::SMCKey::SMCKey(base::mac::ScopedIOObject<io_object_t> connect,
   if (CallSMCFunction(kSMCGetKeyInfo, &out))
     key_info_ = out.keyInfo;
 }
+
+SMCReader::SMCKey::SMCKey(SMCKey&&) = default;
+SMCReader::SMCKey& SMCReader::SMCKey::operator=(SMCKey&&) = default;
 
 SMCReader::SMCKey::~SMCKey() = default;
 
@@ -125,10 +118,6 @@ bool SMCReader::SMCKey::CallSMCFunction(uint8_t function, SMCParamStruct* out) {
 }
 
 SMCReader::SMCReader(base::mac::ScopedIOObject<io_object_t> connect)
-    : total_power_key_(connect, SMCKeyIdentifier::TotalPower),
-      cpu_package_cpu_power_key_(connect, SMCKeyIdentifier::CPUPower),
-      cpu_package_gpu_power_key_(connect, SMCKeyIdentifier::iGPUPower),
-      gpu0_power_key_(connect, SMCKeyIdentifier::GPU0Power),
-      gpu1_power_key_(connect, SMCKeyIdentifier::GPU1Power) {}
+    : connect_(std::move(connect)) {}
 
 }  // namespace power_metrics

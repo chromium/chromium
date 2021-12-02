@@ -5,6 +5,7 @@
 #include "tools/mac/power/power_sampler/smc_sampler.h"
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/smc_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,39 +24,17 @@ class TestSMCReader : public power_metrics::SMCReader {
   TestSMCReader()
       : power_metrics::SMCReader(base::mac::ScopedIOObject<io_object_t>()) {}
 
-  void set_total_power(absl::optional<double> total_power) {
-    total_power_ = total_power;
-  }
-  void set_cpu_package_cpu_power(absl::optional<double> cpu_package_cpu_power) {
-    cpu_package_cpu_power_ = cpu_package_cpu_power;
-  }
-  void set_cpu_package_gpu_power(absl::optional<double> cpu_package_gpu_power) {
-    cpu_package_gpu_power_ = cpu_package_gpu_power;
-  }
-  void set_gpu0_power(absl::optional<double> gpu0_power) {
-    gpu0_power_ = gpu0_power;
-  }
-  void set_gpu1_power(absl::optional<double> gpu1_power) {
-    gpu1_power_ = gpu1_power;
+  void set_key(SMCKeyIdentifier key, absl::optional<double> value) {
+    keys_[key] = value;
   }
 
   // power_metrics::SMCReader:
-  absl::optional<double> ReadTotalPowerW() override { return total_power_; }
-  absl::optional<double> ReadCPUPackageCPUPowerW() override {
-    return cpu_package_cpu_power_;
+  absl::optional<double> ReadKey(SMCKeyIdentifier identifier) override {
+    return keys_[identifier];
   }
-  absl::optional<double> ReadCPUPackageGPUPowerW() override {
-    return cpu_package_gpu_power_;
-  }
-  absl::optional<double> ReadGPU0PowerW() override { return gpu0_power_; }
-  absl::optional<double> ReadGPU1PowerW() override { return gpu1_power_; }
 
  private:
-  absl::optional<double> total_power_;
-  absl::optional<double> cpu_package_cpu_power_;
-  absl::optional<double> cpu_package_gpu_power_;
-  absl::optional<double> gpu0_power_;
-  absl::optional<double> gpu1_power_;
+  base::flat_map<SMCKeyIdentifier, absl::optional<double>> keys_;
 };
 
 }  // namespace
@@ -81,15 +60,17 @@ TEST_F(SMCSamplerTest, NameAndGetDatumNameUnits) {
                                    std::make_pair("cpu_package_cpu_power", "w"),
                                    std::make_pair("cpu_package_gpu_power", "w"),
                                    std::make_pair("gpu0_power", "w"),
-                                   std::make_pair("gpu1_power", "w")));
+                                   std::make_pair("gpu1_power", "w"),
+                                   std::make_pair("cpu_temperature", "C")));
 }
 
 TEST_F(SMCSamplerTest, GetSample_AllFieldsAvailable) {
-  reader_->set_total_power(1);
-  reader_->set_cpu_package_cpu_power(2);
-  reader_->set_cpu_package_gpu_power(3);
-  reader_->set_gpu0_power(4);
-  reader_->set_gpu1_power(5);
+  reader_->set_key(SMCKeyIdentifier::TotalPower, 1);
+  reader_->set_key(SMCKeyIdentifier::CPUPower, 2);
+  reader_->set_key(SMCKeyIdentifier::iGPUPower, 3);
+  reader_->set_key(SMCKeyIdentifier::GPU0Power, 4);
+  reader_->set_key(SMCKeyIdentifier::GPU1Power, 5);
+  reader_->set_key(SMCKeyIdentifier::CPUTemperature, 6);
 
   Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
   EXPECT_THAT(sample,
@@ -97,69 +78,88 @@ TEST_F(SMCSamplerTest, GetSample_AllFieldsAvailable) {
                                    std::make_pair("cpu_package_cpu_power", 2),
                                    std::make_pair("cpu_package_gpu_power", 3),
                                    std::make_pair("gpu0_power", 4),
-                                   std::make_pair("gpu1_power", 5)));
+                                   std::make_pair("gpu1_power", 5),
+                                   std::make_pair("cpu_temperature", 6)));
 }
 
 TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
-  reader_->set_total_power(1);
-  reader_->set_cpu_package_cpu_power(2);
-  reader_->set_cpu_package_gpu_power(3);
-  reader_->set_gpu0_power(4);
-  reader_->set_gpu1_power(5);
+  reader_->set_key(SMCKeyIdentifier::TotalPower, 1);
+  reader_->set_key(SMCKeyIdentifier::CPUPower, 2);
+  reader_->set_key(SMCKeyIdentifier::iGPUPower, 3);
+  reader_->set_key(SMCKeyIdentifier::GPU0Power, 4);
+  reader_->set_key(SMCKeyIdentifier::GPU1Power, 5);
+  reader_->set_key(SMCKeyIdentifier::CPUTemperature, 6);
 
   {
-    reader_->set_total_power(absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::TotalPower, absl::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("cpu_package_cpu_power", 2),
                                      std::make_pair("cpu_package_gpu_power", 3),
                                      std::make_pair("gpu0_power", 4),
-                                     std::make_pair("gpu1_power", 5)));
-    reader_->set_total_power(1);
+                                     std::make_pair("gpu1_power", 5),
+                                     std::make_pair("cpu_temperature", 6)));
+    reader_->set_key(SMCKeyIdentifier::TotalPower, 1);
   }
 
   {
-    reader_->set_cpu_package_cpu_power(absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::CPUPower, absl::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
                                      std::make_pair("cpu_package_gpu_power", 3),
                                      std::make_pair("gpu0_power", 4),
-                                     std::make_pair("gpu1_power", 5)));
-    reader_->set_cpu_package_cpu_power(2);
+                                     std::make_pair("gpu1_power", 5),
+                                     std::make_pair("cpu_temperature", 6)));
+    reader_->set_key(SMCKeyIdentifier::CPUPower, 2);
   }
 
   {
-    reader_->set_cpu_package_gpu_power(absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::iGPUPower, absl::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
                                      std::make_pair("cpu_package_cpu_power", 2),
                                      std::make_pair("gpu0_power", 4),
-                                     std::make_pair("gpu1_power", 5)));
-    reader_->set_cpu_package_gpu_power(3);
+                                     std::make_pair("gpu1_power", 5),
+                                     std::make_pair("cpu_temperature", 6)));
+    reader_->set_key(SMCKeyIdentifier::iGPUPower, 3);
   }
 
   {
-    reader_->set_gpu0_power(absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::GPU0Power, absl::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
                                      std::make_pair("cpu_package_cpu_power", 2),
                                      std::make_pair("cpu_package_gpu_power", 3),
-                                     std::make_pair("gpu1_power", 5)));
-    reader_->set_gpu0_power(4);
+                                     std::make_pair("gpu1_power", 5),
+                                     std::make_pair("cpu_temperature", 6)));
+    reader_->set_key(SMCKeyIdentifier::GPU0Power, 4);
   }
 
   {
-    reader_->set_gpu1_power(absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::GPU1Power, absl::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
                                      std::make_pair("cpu_package_cpu_power", 2),
                                      std::make_pair("cpu_package_gpu_power", 3),
-                                     std::make_pair("gpu0_power", 4)));
-    reader_->set_gpu1_power(5);
+                                     std::make_pair("gpu0_power", 4),
+                                     std::make_pair("cpu_temperature", 6)));
+    reader_->set_key(SMCKeyIdentifier::GPU1Power, 5);
+  }
+
+  {
+    reader_->set_key(SMCKeyIdentifier::CPUTemperature, absl::nullopt);
+    Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
+    EXPECT_THAT(sample,
+                UnorderedElementsAre(std::make_pair("total_power", 1),
+                                     std::make_pair("cpu_package_cpu_power", 2),
+                                     std::make_pair("cpu_package_gpu_power", 3),
+                                     std::make_pair("gpu0_power", 4),
+                                     std::make_pair("gpu1_power", 5)));
+    reader_->set_key(SMCKeyIdentifier::CPUTemperature, 6);
   }
 }
 

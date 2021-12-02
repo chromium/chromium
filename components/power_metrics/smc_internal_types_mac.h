@@ -9,12 +9,17 @@
 #include <stdint.h>
 
 // List of known SMC key identifiers.
+//
+// This is a good reference: https://logi.wiki/index.php/SMC_Sensor_Codes
+// Additional keys can be discovered with
+// https://github.com/theopolis/smc-fuzzer
 enum class SMCKeyIdentifier : uint32_t {
-  TotalPower = 'PSTR',  // Power: System Total Rail (watts)
-  CPUPower = 'PCPC',    // Power: CPU Package CPU (watts)
-  iGPUPower = 'PCPG',   // Power: CPU Package GPU (watts)
-  GPU0Power = 'PG0R',   // Power: GPU 0 Rail (watts)
-  GPU1Power = 'PG1R',   // Power: GPU 1 Rail (watts)
+  TotalPower = 'PSTR',      // Power: System Total Rail (watts)
+  CPUPower = 'PCPC',        // Power: CPU Package CPU (watts)
+  iGPUPower = 'PCPG',       // Power: CPU Package GPU (watts)
+  GPU0Power = 'PG0R',       // Power: GPU 0 Rail (watts)
+  GPU1Power = 'PG1R',       // Power: GPU 1 Rail (watts)
+  CPUTemperature = 'TC0F',  // Temperature: CPU Die PECI (Celsius)
 };
 
 // Types from PowerManagement/pmconfigd/PrivateLib.c

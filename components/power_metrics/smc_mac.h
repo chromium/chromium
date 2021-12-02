@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/mac/scoped_ioobject.h"
 #include "components/power_metrics/smc_internal_types_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,13 +27,9 @@ class SMCReader {
 
   virtual ~SMCReader();
 
-  // Returns the power consumption of various hardware components in watts.
+  // Returns the value of a key, or nullopt if not available.
   // Virtual for testing.
-  virtual absl::optional<double> ReadTotalPowerW();
-  virtual absl::optional<double> ReadCPUPackageCPUPowerW();
-  virtual absl::optional<double> ReadCPUPackageGPUPowerW();
-  virtual absl::optional<double> ReadGPU0PowerW();
-  virtual absl::optional<double> ReadGPU1PowerW();
+  virtual absl::optional<double> ReadKey(SMCKeyIdentifier identifier);
 
  protected:
   explicit SMCReader(base::mac::ScopedIOObject<io_object_t> connect);
@@ -42,6 +39,8 @@ class SMCReader {
    public:
     SMCKey(base::mac::ScopedIOObject<io_object_t> connect,
            SMCKeyIdentifier key_identifier);
+    SMCKey(SMCKey&&);
+    SMCKey& operator=(SMCKey&&);
     ~SMCKey();
 
     bool Exists() const;
@@ -51,15 +50,12 @@ class SMCReader {
     bool CallSMCFunction(uint8_t function, SMCParamStruct* out);
 
     base::mac::ScopedIOObject<io_object_t> connect_;
-    const SMCKeyIdentifier key_identifier_;
+    SMCKeyIdentifier key_identifier_;
     SMCKeyInfoData key_info_;
   };
 
-  SMCKey total_power_key_;
-  SMCKey cpu_package_cpu_power_key_;
-  SMCKey cpu_package_gpu_power_key_;
-  SMCKey gpu0_power_key_;
-  SMCKey gpu1_power_key_;
+  base::mac::ScopedIOObject<io_object_t> connect_;
+  base::flat_map<SMCKeyIdentifier, SMCKey> keys_;
 };
 
 }  // namespace power_metrics
