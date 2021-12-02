@@ -19,13 +19,17 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 
+#if defined(OS_ANDROID)
+extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
+#endif
+
 typedef unsigned int GLenum;
+class GrBackendSurfaceMutableState;
 class SkPromiseImageTexture;
 
 namespace base {
