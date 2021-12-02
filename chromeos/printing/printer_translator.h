@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chromeos/chromeos_export.h"
+#include "base/component_export.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace base {
@@ -18,20 +18,22 @@ namespace chromeos {
 
 class CupsPrinterStatus;
 
-CHROMEOS_EXPORT extern const char kPrinterId[];
+COMPONENT_EXPORT(CHROMEOS_PRINTING) extern const char kPrinterId[];
 
 // Returns a new printer populated with the fields from |pref|.  Processes
 // dictionaries from policy.
-CHROMEOS_EXPORT std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::Value& pref);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+std::unique_ptr<Printer> RecommendedPrinterToPrinter(const base::Value& pref);
 
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
 // printer uri cannot be parsed, the relevant fields are populated with default
 // values. CupsPrinterInfo is defined in cups_printers_browser_proxy.js.
-CHROMEOS_EXPORT base::Value GetCupsPrinterInfo(const Printer& printer);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+base::Value GetCupsPrinterInfo(const Printer& printer);
 
 // Returns a JSON representation of a CupsPrinterStatus
-CHROMEOS_EXPORT base::Value CreateCupsPrinterStatusDictionary(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+base::Value CreateCupsPrinterStatusDictionary(
     const CupsPrinterStatus& cups_printer_status);
 }  // namespace chromeos
 

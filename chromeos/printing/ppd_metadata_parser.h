@@ -15,17 +15,17 @@
 // Googlers: you may consult the primary documentation for PPD metadata
 // at go/cros-printing:ppd-metadata
 
+#ifndef CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
+#define CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
+
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/version.h"
-#include "chromeos/chromeos_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#ifndef CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
-#define CHROMEOS_PRINTING_PPD_METADATA_PARSER_H_
 
 namespace chromeos {
 
@@ -40,13 +40,13 @@ struct Restrictions {
   absl::optional<base::Version> max_milestone;
 };
 
-struct CHROMEOS_EXPORT ReverseIndexLeaf {
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) ReverseIndexLeaf {
   std::string manufacturer;
   std::string model;
 };
 
 // A ParsedPrinter is a value parsed from printers metadata.
-struct CHROMEOS_EXPORT ParsedPrinter {
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) ParsedPrinter {
   ParsedPrinter();
   ~ParsedPrinter();
   ParsedPrinter(const ParsedPrinter&);
@@ -58,7 +58,7 @@ struct CHROMEOS_EXPORT ParsedPrinter {
 };
 
 // A single leaf value parsed from a forward index.
-struct CHROMEOS_EXPORT ParsedIndexLeaf {
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) ParsedIndexLeaf {
   ParsedIndexLeaf();
   ~ParsedIndexLeaf();
   ParsedIndexLeaf(const ParsedIndexLeaf&);
@@ -71,7 +71,7 @@ struct CHROMEOS_EXPORT ParsedIndexLeaf {
 
 // A collection of values parsed from a forward index.
 // Corresponds to one effective-make-and-model string.
-struct CHROMEOS_EXPORT ParsedIndexValues {
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) ParsedIndexValues {
   ParsedIndexValues();
   ~ParsedIndexValues();
   ParsedIndexValues(const ParsedIndexValues&);
@@ -102,33 +102,38 @@ using ParsedUsbVendorIdMap = base::flat_map<int, std::string>;
 using ParsedReverseIndex = base::flat_map<std::string, ReverseIndexLeaf>;
 
 // Parses |locales_json| and returns a list of locales.
-CHROMEOS_EXPORT absl::optional<std::vector<std::string>> ParseLocales(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<std::vector<std::string>> ParseLocales(
     base::StringPiece locales_json);
 
 // Parses |manufacturers_json| and returns the parsed map type.
-CHROMEOS_EXPORT absl::optional<ParsedManufacturers> ParseManufacturers(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedManufacturers> ParseManufacturers(
     base::StringPiece manufacturers_json);
 
 // Parses |printers_json| and returns the parsed map type.
-CHROMEOS_EXPORT absl::optional<ParsedPrinters> ParsePrinters(
-    base::StringPiece printers_json);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json);
 
 // Parses |forward_index_json| and returns the parsed map type.
-CHROMEOS_EXPORT absl::optional<ParsedIndex> ParseForwardIndex(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedIndex> ParseForwardIndex(
     base::StringPiece forward_index_json);
 
 // Parses |usb_index_json| and returns a map of USB product IDs to
 // effective-make-and-model strings.
-CHROMEOS_EXPORT absl::optional<ParsedUsbIndex> ParseUsbIndex(
-    base::StringPiece usb_index_json);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json);
 
 // Parses |usb_vendor_id_map_json| and returns a map of USB vendor IDs
 // to manufacturer names.
-CHROMEOS_EXPORT absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
     base::StringPiece usb_vendor_id_map_json);
 
 // Parses |reverse_index_json| and returns the parsed map type.
-CHROMEOS_EXPORT absl::optional<ParsedReverseIndex> ParseReverseIndex(
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+absl::optional<ParsedReverseIndex> ParseReverseIndex(
     base::StringPiece reverse_index_json);
 
 }  // namespace chromeos

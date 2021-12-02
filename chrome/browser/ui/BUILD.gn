@@ -2959,7 +2959,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/services/file_util/public/cpp",
-      "//chromeos",
       "//chromeos/assistant:buildflags",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",
@@ -2998,6 +2997,7 @@ static_library("ui") {
       "//chromeos/login/login_state",
       "//chromeos/login/session",
       "//chromeos/network",
+      "//chromeos/printing",
       "//chromeos/resources:resources_grit",
       "//chromeos/services/assistant:lib",
       "//chromeos/services/assistant/public/cpp",
@@ -5193,6 +5193,7 @@ static_library("ui") {
         "webui/print_preview/print_preview_handler_chromeos.cc",
         "webui/print_preview/print_preview_handler_chromeos.h",
       ]
+      deps += [ "//chromeos/printing" ]
     } else {
       sources += [
         "webui/print_preview/local_printer_handler_default.cc",

@@ -33,9 +33,9 @@ source_set("cups_proxy") {
     "//chrome/services/cups_proxy/public/mojom",
     "//chrome/services/ipp_parser/public/cpp",
     "//chrome/services/ipp_parser/public/cpp/browser",
-    "//chromeos",
     "//chromeos/dbus",
     "//chromeos/dbus/cups_proxy",
+    "//chromeos/printing",
     "//net",
     "//net/traffic_annotation",
     "//printing/backend",
@@ -51,7 +51,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//chromeos",
+    "//chromeos/printing",
   ]
 
   public_deps = [ ":cups_proxy" ]
@@ -75,7 +75,7 @@ test("libcups_unittests") {
     "//chrome/services/cups_proxy/public/cpp",
     "//chrome/services/cups_proxy/public/cpp:unit_tests",
     "//chrome/services/cups_proxy/test:test_support",
-    "//chromeos",
+    "//chromeos/printing",
     "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",

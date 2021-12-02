@@ -20,10 +20,7 @@ config("chromeos_implementation") {
 }
 
 component("chromeos") {
-  deps = [
-    "//chromeos/crosapi/mojom",
-    "//chromeos/dbus/constants",
-  ]
+  deps = [ "//chromeos/dbus/constants" ]
   sources = []
 
   if (is_chromeos_ash) {
@@ -35,41 +32,11 @@ component("chromeos") {
     deps += [
       ":chromeos_export",
       "//base",
-      "//base:i18n",
-      "//chromeos/dbus",
-      "//google_apis",
-      "//services/network/public/cpp:cpp",
+      "//net",
     ]
     sources += [
       "hugepage_text/hugepage_text.cc",
       "hugepage_text/hugepage_text.h",
-      "printing/cups_printer_status.cc",
-      "printing/cups_printer_status.h",
-      "printing/epson_driver_matching.cc",
-      "printing/epson_driver_matching.h",
-      "printing/ppd_cache.cc",
-      "printing/ppd_cache.h",
-      "printing/ppd_line_reader.cc",
-      "printing/ppd_line_reader.h",
-      "printing/ppd_metadata_manager.cc",
-      "printing/ppd_metadata_manager.h",
-      "printing/ppd_metadata_parser.cc",
-      "printing/ppd_metadata_parser.h",
-      "printing/ppd_provider.cc",
-      "printing/ppd_provider.h",
-      "printing/ppd_provider.h",
-      "printing/printer_config_cache.cc",
-      "printing/printer_config_cache.h",
-      "printing/printer_configuration.cc",
-      "printing/printer_configuration.h",
-      "printing/printer_translator.cc",
-      "printing/printer_translator.h",
-      "printing/uri.cc",
-      "printing/uri.h",
-      "printing/uri_impl.cc",
-      "printing/uri_impl.h",
-      "printing/usb_printer_id.cc",
-      "printing/usb_printer_id.h",
       "scanning/scanner.cc",
       "scanning/scanner.h",
     ]
@@ -133,8 +100,6 @@ test("chromeos_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 
   sources = [ "test/run_all_unittests.cc" ]
@@ -158,6 +123,7 @@ test("chromeos_unittests") {
       "//chromeos/memory:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
+      "//chromeos/printing:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",
       "//chromeos/startup:unit_tests",
@@ -172,28 +138,8 @@ test("chromeos_unittests") {
       "//google_apis",
       "//net",
       "//net:test_support",
-      "//services/network:test_support",
       "//services/network/public/cpp",
       "//url",
-    ]
-    sources += [
-      "printing/cups_printer_status_unittest.cc",
-      "printing/epson_driver_matching_unittest.cc",
-      "printing/fake_printer_config_cache.cc",
-      "printing/fake_printer_config_cache.h",
-      "printing/ppd_cache_unittest.cc",
-      "printing/ppd_line_reader_unittest.cc",
-      "printing/ppd_metadata_manager_unittest.cc",
-      "printing/ppd_metadata_matchers.h",
-      "printing/ppd_metadata_parser_unittest.cc",
-      "printing/ppd_provider_unittest.cc",
-      "printing/printer_config_cache_unittest.cc",
-      "printing/printer_configuration_unittest.cc",
-      "printing/printer_translator_unittest.cc",
-      "printing/uri_unittest.cc",
-      "printing/uri_unittest.h",
-      "printing/uri_unittest_consistency.cc",
-      "printing/usb_printer_id_unittest.cc",
     ]
 
     if (target_cpu == "x64") {
@@ -261,18 +207,5 @@ if (is_chromeos_ash && is_chromeos_device) {
     # TODO(bpastene): Figure out what's generating resources/chromeos/ and
     # declare it as a dep instead of adding the dir directly.
     data = [ "$root_out_dir/resources/chromeos/" ]
-  }
-}
-
-if (is_chromeos_ash) {
-  fuzzer_test("ppd_line_reader_fuzzer") {
-    sources = [ "printing/ppd_line_reader_fuzzer.cc" ]
-    deps = [ ":chromeos" ]
-  }
-
-  fuzzer_test("uri_fuzzer") {
-    sources = [ "printing/uri_fuzzer.cc" ]
-    seed_corpus = "printing/uri_fuzzer_seed_corpus"
-    deps = [ ":chromeos" ]
   }
 }

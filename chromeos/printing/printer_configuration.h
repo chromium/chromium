@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/chromeos_export.h"
+#include "base/component_export.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/uri.h"
 #include "net/base/host_port_pair.h"
@@ -20,14 +20,14 @@ namespace chromeos {
 
 // Classes of printers tracked.  See doc/cups_printer_management.md for
 // details on what these mean.
-enum class CHROMEOS_EXPORT PrinterClass {
+enum class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterClass {
   kEnterprise,
   kAutomatic,
   kDiscovered,
   kSaved
 };
 
-CHROMEOS_EXPORT std::string ToString(PrinterClass pclass);
+COMPONENT_EXPORT(CHROMEOS_PRINTING) std::string ToString(PrinterClass pclass);
 
 // This function checks if the given URI is a valid printer URI. |uri| is
 // considered to be a valid printer URI if it has one of the scheme listed in
@@ -47,10 +47,10 @@ CHROMEOS_EXPORT std::string ToString(PrinterClass pclass);
 // If the given |uri| does not meet the criteria the function returns false and
 // set an error message in |error_message| (if it is not nullptr). The message
 // has the prefix "Malformed printer URI: ".
-bool CHROMEOS_EXPORT IsValidPrinterUri(const Uri& uri,
-                                       std::string* error_message = nullptr);
+bool COMPONENT_EXPORT(CHROMEOS_PRINTING)
+    IsValidPrinterUri(const Uri& uri, std::string* error_message = nullptr);
 
-class CHROMEOS_EXPORT Printer {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
  public:
   // Information needed to find the PPD file for this printer.
   //

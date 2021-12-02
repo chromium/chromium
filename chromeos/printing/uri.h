@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/chromeos_export.h"
+#include "base/component_export.h"
 
 namespace chromeos {
 
@@ -208,7 +208,7 @@ namespace chromeos {
 // Case-sensitive      : YES
 //
 
-class CHROMEOS_EXPORT Uri {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) Uri {
  public:
   enum class ParserStatus {
     kNoErrors,

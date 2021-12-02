@@ -5,15 +5,15 @@
 // This file contains matchers useful for testing with parsed PPD
 // metadata.
 
+#ifndef CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
+#define CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
+
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-
-#ifndef CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
-#define CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
 
 namespace chromeos {
 

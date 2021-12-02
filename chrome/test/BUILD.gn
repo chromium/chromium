@@ -3621,7 +3621,10 @@ if (!is_android && !is_fuchsia) {
           "../browser/extensions/api/printing/fake_print_job_controller_ash.h",
           "../browser/extensions/api/printing/printing_apitest.cc",
         ]
-        deps += [ "//printing:test_support" ]
+        deps += [
+          "//chromeos/printing",
+          "//printing:test_support",
+        ]
       }
       if (enable_assistant_integration_tests) {
         sources += [
@@ -7190,6 +7193,7 @@ test("unit_tests") {
         "../browser/extensions/api/printing/printing_api_handler_unittest.cc",
         "../browser/extensions/api/printing/printing_api_utils_unittest.cc",
       ]
+      deps += [ "//chromeos/printing" ]
     }
 
     if (is_chromeos) {
@@ -9048,7 +9052,7 @@ source_set("sync_integration_test_support") {
     deps += [
       "//ash/app_list:test_support",
       "//ash/components/arc:arc_test_support",
-      "//chromeos",
+      "//chromeos/printing",
       "//components/desks_storage",
       "//components/user_manager:test_support",
     ]
@@ -9162,7 +9166,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
       ]
       deps += [
-        "//chromeos",
+        "//chromeos/printing",
         "//components/desks_storage",
       ]
     }

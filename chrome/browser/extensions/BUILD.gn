@@ -1001,7 +1001,10 @@ static_library("extensions") {
         "api/printing/printing_api_utils.h",
       ]
 
-      deps += [ "//printing/backend" ]
+      deps += [
+        "//chromeos/printing",
+        "//printing/backend",
+      ]
     }
     deps += [
       "//chrome/browser/chromeos/extensions/login_screen",
@@ -1130,7 +1133,6 @@ static_library("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
-      "//chromeos",
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/quick_answers/public/cpp:prefs",

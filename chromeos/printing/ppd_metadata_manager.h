@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "chromeos/chromeos_export.h"
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_config_cache.h"
@@ -22,7 +22,7 @@ namespace chromeos {
 // parsing PPD metadata to answer high-level queries about metadata.
 //
 // This class must be called from a sequenced context.
-class CHROMEOS_EXPORT PpdMetadataManager {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdMetadataManager {
  public:
   // Used by GetLocale().
   // Argument denotes success of setting metadata locale for |this|.
