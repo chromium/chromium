@@ -28,6 +28,10 @@ extern const char kCredentialsEnableService[];
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
 extern const char kCurrentMigrationVersionToGoogleMobileServices[];
+
+// Timestamps of when credentials from the GMS Core to the built in storage were
+// last time migrated, in microseconds since Windows epoch.
+extern const char kTimeOfLastMigrationAttempt[];
 #endif
 
 #if defined(OS_WIN)

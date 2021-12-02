@@ -244,6 +244,7 @@ void PasswordManager::RegisterProfilePrefs(
 #if defined(OS_ANDROID)
   registry->RegisterIntegerPref(
       prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+  registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);
 #endif
 }
 

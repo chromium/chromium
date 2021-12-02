@@ -20,6 +20,8 @@ namespace password_manager {
 
 namespace {
 
+constexpr base::TimeDelta kMigrationThreshold = base::Days(1);
+
 struct IsPasswordLess {
   bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
     return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
@@ -99,9 +101,21 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
     return;
   }
 
-  // For non-syncing users we should migrate passwords between backends.
-  // TODO:(crbug.com/1252443) Prepare for migration only if it's required.
-  PrepareForMigration();
+  // Don't try to migrate passwords if there was an attempt earlier today.
+  base::TimeDelta time_passed_since_last_migration_attempt =
+      base::Time::Now() -
+      base::Time::FromTimeT(prefs_->GetDouble(
+          password_manager::prefs::kTimeOfLastMigrationAttempt));
+  if (time_passed_since_last_migration_attempt < kMigrationThreshold)
+    return;
+
+  // Manually migrate passwords between backends if initial or rolling migration
+  // is needed. Even for syncing users we still should do rolling migration to
+  // ensure deletions aren’t resurrected.
+  if (IsInitialMigrationNeeded(prefs_) ||
+      base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid)) {
+    PrepareForMigration();
+  }
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
@@ -110,6 +124,9 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
 }
 
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
+  prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
+                    base::Time::Now().ToDoubleT());
+
   auto barrier_callback = base::BarrierCallback<BackendAndLoginsResults>(
       2, base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
                             MigratePasswordsBetweenAndroidAndBuiltInBackends,

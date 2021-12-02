@@ -46,6 +46,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+    prefs_->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
+                                           0.0);
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         &built_in_backend_, &android_backend_, prefs_.get(),
         /*is_syncing_passwords_callback=*/is_sync_enabled_callback_.Get());
@@ -68,7 +70,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   FakePasswordStoreBackend built_in_backend_;
@@ -79,9 +82,10 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
 };
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       PrefUpdatedToNewerVersionWhenMigrationIsNecessary_SyncOn) {
+       CurrentMigrationVersionIsUpdatedWhenMigrationIsNeeded_SyncOn) {
   feature_list().InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
+      {{"migration_version", "1"}});
   ExpectSyncCallbackAndSetResult(true);
 
   migrator()->StartMigrationIfNecessary();
@@ -89,20 +93,87 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  // Since for syncing users we don't manually migrate passwords
+  // |kTimeOfLastMigrationAttempt| shouldn't be updated.
+  EXPECT_EQ(0, prefs()->GetDouble(
+                   password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       PrefUnchangedWhenMigrationIsNotNecessary) {
+       AllPrefsAreUpdatedWhenMigrationIsNeeded_SyncOff) {
   feature_list().InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
+      {{"migration_version", "1"}});
   ExpectSyncCallbackAndSetResult(false);
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
 
-  EXPECT_EQ(2, prefs()->GetInteger(
+  EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(
+      base::Time::Now().ToDoubleT(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       PrefsUnchangedWhenAttemptedMigrationEarlierToday) {
+  feature_list().InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+  prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
+                     (base::Time::Now() - base::Hours(2)).ToDoubleT());
+  ExpectSyncCallbackAndSetResult(false);
+
+  migrator()->StartMigrationIfNecessary();
+  RunUntilIdle();
+
+  EXPECT_EQ(0, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(
+      (base::Time::Now() - base::Hours(2)).ToDoubleT(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       LastAttemptUnchangedWhenRollingMigrationDisabled) {
+  // Setup the pref to indicate that the initial migration has happened already.
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "1"}}}},
+      /*disabled_features=*/{features::kUnifiedPasswordManagerAndroid});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  ExpectSyncCallbackAndSetResult(false);
+
+  migrator()->StartMigrationIfNecessary();
+  RunUntilIdle();
+
+  EXPECT_EQ(1, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(0, prefs()->GetDouble(
+                   password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       LastAttemptUpdatedInPrefsWhenRollingMigrationEnabled) {
+  // Setup the pref to indicate that the initial migration has happened already.
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "1"}}},
+                            {features::kUnifiedPasswordManagerAndroid, {{}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  ExpectSyncCallbackAndSetResult(false);
+
+  migrator()->StartMigrationIfNecessary();
+  RunUntilIdle();
+
+  EXPECT_EQ(1, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(
+      base::Time::Now().ToDoubleT(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -161,7 +232,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   ExpectSyncCallbackAndSetResult(false);
 
   feature_list().InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
+      {{"migration_version", "1"}});
 
   const MigrationParam& p = GetParam();
 
@@ -189,8 +261,13 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
        RollingMigration) {
   // Setup the pref to indicate that the initial migration has happened already.
   // This implies that rolling migration will take place!
-  feature_list().InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "1"}}},
+                            {features::kUnifiedPasswordManagerAndroid, {{}}}},
+      /*disabled_features=*/{});
+  prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
+                     (base::Time::Now() - base::Days(2)).ToDoubleT());
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
 
   const MigrationParam& p = GetParam();
