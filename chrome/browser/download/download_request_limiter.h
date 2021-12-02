@@ -264,6 +264,8 @@ class DownloadRequestLimiter
                            CreateBubbleModel);
   FRIEND_TEST_ALL_PREFIXES(PrerenderDownloadTest,
                            DownloadRequestLimiterIsUnaffectedByPrerendering);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameDownloadTest,
+                           DownloadRequestLimiterIsUnaffectedByFencedFrame);
   friend class base::RefCountedThreadSafe<DownloadRequestLimiter>;
   friend class BackgroundFetchBrowserTest;
   friend class ContentSettingBubbleDialogTest;
