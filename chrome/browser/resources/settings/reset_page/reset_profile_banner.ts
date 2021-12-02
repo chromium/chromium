@@ -18,13 +18,15 @@ import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
 
-interface SettingsResetProfileBannerElement {
+export interface SettingsResetProfileBannerElement {
   $: {
     dialog: CrDialogElement,
+    ok: HTMLElement,
+    reset: HTMLElement,
   };
 }
 
-class SettingsResetProfileBannerElement extends PolymerElement {
+export class SettingsResetProfileBannerElement extends PolymerElement {
   static get is() {
     return 'settings-reset-profile-banner';
   }
@@ -50,6 +52,12 @@ class SettingsResetProfileBannerElement extends PolymerElement {
   private onResetTap_() {
     this.$.dialog.close();
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-reset-profile-banner': SettingsResetProfileBannerElement;
   }
 }
 

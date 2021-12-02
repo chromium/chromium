@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {ResetBrowserProxyImpl, Router, routes, SettingsResetProfileBannerElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
 
 // clang-format on
 
 suite('BannerTests', function() {
-  let resetBanner = null;
-  let browserProxy = null;
+  let resetBanner: SettingsResetProfileBannerElement;
+  let browserProxy: TestResetBrowserProxy;
 
   setup(function() {
     browserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     resetBanner = document.createElement('settings-reset-profile-banner');
     document.body.appendChild(resetBanner);
     assertTrue(resetBanner.$.dialog.open);

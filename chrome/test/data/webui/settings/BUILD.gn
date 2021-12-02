@@ -77,13 +77,13 @@ non_preprocessed_files = [
   "people_page_test.js",
   "prefs_test_cases.ts",
   "prefs_tests.js",
-  "pref_util_tests.js",
+  "pref_util_tests.ts",
   "privacy_review_page_test.ts",
   "privacy_sandbox_test.ts",
   "protocol_handlers_tests.ts",
   "recent_site_permissions_test.ts",
-  "reset_page_test.js",
-  "reset_profile_banner_test.js",
+  "reset_page_test.ts",
+  "reset_profile_banner_test.ts",
   "safety_check_page_test.ts",
   "search_engines_page_test.ts",
   "search_page_test.ts",
@@ -105,7 +105,7 @@ non_preprocessed_files = [
   "site_details_permission_tests.ts",
   "site_details_tests.ts",
   "site_entry_tests.ts",
-  "site_favicon_test.js",
+  "site_favicon_test.ts",
   "site_list_tests.ts",
   "site_settings_page_test.ts",
   "startup_urls_page_test.ts",
@@ -132,7 +132,7 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
   non_preprocessed_files += [
     "default_browser_test.ts",
     "import_data_dialog_test.js",
-    "system_page_tests.js",
+    "system_page_tests.ts",
   ]
 } else {
   non_preprocessed_files += [ "passwords_section_test_cros.js" ]

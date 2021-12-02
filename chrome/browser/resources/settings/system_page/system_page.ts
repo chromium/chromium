@@ -18,12 +18,20 @@ import '../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 
 
-class SettingsSystemPageElement extends PolymerElement {
+export interface SettingsSystemPageElement {
+  $: {
+    proxy: HTMLElement,
+    hardwareAcceleration: SettingsToggleButtonElement,
+  };
+}
+
+export class SettingsSystemPageElement extends PolymerElement {
   static get is() {
     return 'settings-system-page';
   }
@@ -92,6 +100,12 @@ class SettingsSystemPageElement extends PolymerElement {
   private shouldShowRestart_(enabled: boolean): boolean {
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-system-page': SettingsSystemPageElement;
   }
 }
 

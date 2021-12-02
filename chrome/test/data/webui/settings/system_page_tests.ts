@@ -5,45 +5,39 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SettingsSystemPageElement, SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
+
 // clang-format on
 
-/** @const {boolean} */
-const HARDWARE_ACCELERATION_AT_STARTUP = true;
+const HARDWARE_ACCELERATION_AT_STARTUP: boolean = true;
 
-/** @implements {SystemPageBrowserProxy} */
-class TestSystemPageBrowserProxy extends TestBrowserProxy {
+class TestSystemPageBrowserProxy extends TestBrowserProxy implements
+    SystemPageBrowserProxy {
   constructor() {
     super(['showProxySettings']);
   }
 
-  /** @override */
   showProxySettings() {
     this.methodCalled('showProxySettings');
   }
 
-  /** @override */
   wasHardwareAccelerationEnabledAtStartup() {
     return HARDWARE_ACCELERATION_AT_STARTUP;
   }
 }
 
 suite('settings system page', function() {
-  /** @type {TestSystemPageBrowserProxy} */
-  let systemBrowserProxy;
-
-  /** @type {TestLifetimeBrowserProxy} */
-  let lifetimeBrowserProxy;
-
-  /** @type {SettingsSystemPageElement} */
-  let systemPage;
+  let systemBrowserProxy: TestSystemPageBrowserProxy;
+  let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
+  let systemPage: SettingsSystemPageElement;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     systemBrowserProxy = new TestSystemPageBrowserProxy();
@@ -80,21 +74,21 @@ suite('settings system page', function() {
 
   test('restart button', function() {
     const control = systemPage.$.hardwareAcceleration;
-    expectEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
+    assertEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
     // Restart button should be hidden by default.
-    expectFalse(!!control.querySelector('cr-button'));
+    assertFalse(!!control.querySelector('cr-button'));
 
     systemPage.set(
         'prefs.hardware_acceleration_mode.enabled.value',
         !HARDWARE_ACCELERATION_AT_STARTUP);
     flush();
-    expectNotEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
+    assertNotEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
     const restart = control.querySelector('cr-button');
-    expectTrue(!!restart);  // The "RESTART" button should be showing now.
+    assertTrue(!!restart);  // The "RESTART" button should be showing now.
 
-    restart.click();
+    restart!.click();
     return lifetimeBrowserProxy.whenCalled('restart');
   });
 
@@ -105,7 +99,7 @@ suite('settings system page', function() {
 
   test('proxy row enforcement', function() {
     const control = systemPage.$.proxy;
-    const showProxyButton = control.querySelector('cr-icon-button');
+    const showProxyButton = control.querySelector('cr-icon-button')!;
     assertTrue(control.hasAttribute('actionable'));
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
     assertFalse(showProxyButton.hidden);
@@ -122,9 +116,9 @@ suite('settings system page', function() {
 
     // When managed by extensions, we disable the ability to show proxy
     // settings.
-    expectFalse(control.hasAttribute('actionable'));
-    expectEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    expectTrue(showProxyButton.hidden);
+    assertFalse(control.hasAttribute('actionable'));
+    assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
+    assertTrue(showProxyButton.hidden);
 
     systemPage.set('prefs.proxy', {
       key: 'proxy',
@@ -137,8 +131,8 @@ suite('settings system page', function() {
 
     // When managed by policy directly, we disable the ability to show proxy
     // settings.
-    expectFalse(control.hasAttribute('actionable'));
-    expectNotEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    expectTrue(showProxyButton.hidden);
+    assertFalse(control.hasAttribute('actionable'));
+    assertNotEquals(null, control.querySelector('cr-policy-pref-indicator'));
+    assertTrue(showProxyButton.hidden);
   });
 });

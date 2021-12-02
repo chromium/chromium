@@ -54,6 +54,7 @@ export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';
 export {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
+export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_banner.js';
 export {buildRouter, routes} from './route.js';
 export {MinimumRoutes, Route, Router} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
@@ -72,3 +73,4 @@ export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './sea
 export {SettingsMainElement} from './settings_main/settings_main.js';
 export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SettingsUiElement} from './settings_ui/settings_ui.js';
+export {SiteFaviconElement} from './site_favicon.js';

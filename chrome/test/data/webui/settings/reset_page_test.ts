@@ -6,13 +6,15 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement, SettingsResetPageElement, SettingsResetProfileDialogElement} from 'chrome://settings/lazy_load.js';
 import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
+
 // clang-format on
 
-/** @enum {string} */
 const TestNames = {
   ResetProfileDialogAction: 'ResetProfileDialogAction',
   ResetProfileDialogOpenClose: 'ResetProfileDialogOpenClose',
@@ -23,16 +25,14 @@ const TestNames = {
 };
 
 suite('DialogTests', function() {
-  let resetPage = null;
-
-  /** @type {!settings.ResetPageBrowserProxy} */
-  let resetPageBrowserProxy = null;
+  let resetPage: SettingsResetPageElement;
+  let resetPageBrowserProxy: TestResetBrowserProxy;
 
   setup(function() {
     resetPageBrowserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     resetPage = document.createElement('settings-reset-page');
     document.body.appendChild(resetPage);
   });
@@ -42,24 +42,25 @@ suite('DialogTests', function() {
   });
 
   /**
-   * @param {function(SettingsResetProfileDialogElement)}
-   *     closeDialogFn A function to call for closing the dialog.
+   * @param closeDialogFn A function to call for closing the dialog.
    */
-  async function testOpenCloseResetProfileDialog(closeDialogFn) {
+  async function testOpenCloseResetProfileDialog(
+      closeDialogFn: (dialog: SettingsResetProfileDialogElement) => void) {
     resetPageBrowserProxy.resetResolver('onShowResetProfileDialog');
     resetPageBrowserProxy.resetResolver('onHideResetProfileDialog');
 
     // Open reset profile dialog.
     resetPage.$.resetProfile.click();
     flush();
-    const dialog = resetPage.$$('settings-reset-profile-dialog');
+    const dialog =
+        resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
-    assertTrue(dialog.$.dialog.open);
+    assertTrue(dialog!.$.dialog.open);
 
-    const whenDialogClosed = eventToPromise('close', dialog);
+    const whenDialogClosed = eventToPromise('close', dialog!);
 
     await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
-    closeDialogFn(dialog);
+    closeDialogFn(dialog!);
     await Promise.all([
       whenDialogClosed,
       resetPageBrowserProxy.whenCalled('onHideResetProfileDialog'),
@@ -70,11 +71,11 @@ suite('DialogTests', function() {
   // resetPageBrowserProxy calls are occurring as expected.
   test(TestNames.ResetProfileDialogOpenClose, async function() {
     // Test case where the 'cancel' button is clicked.
-    await testOpenCloseResetProfileDialog((dialog) => {
+    await testOpenCloseResetProfileDialog(dialog => {
       dialog.$.cancel.click();
     });
     // Test case where the browser's 'back' button is clicked.
-    await testOpenCloseResetProfileDialog((dialog) => {
+    await testOpenCloseResetProfileDialog(_dialog => {
       resetPage.currentRouteChanged(routes.BASIC);
     });
   });
@@ -85,34 +86,36 @@ suite('DialogTests', function() {
     // Open reset profile dialog.
     resetPage.$.resetProfile.click();
     flush();
-    const dialog = resetPage.$$('settings-reset-profile-dialog');
+    const dialog =
+        resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
 
-    const checkbox =
-        dialog.shadowRoot.querySelector('[slot=footer] cr-checkbox');
+    const checkbox = dialog!.shadowRoot!.querySelector<CrCheckboxElement>(
+        '[slot=footer] cr-checkbox')!;
     assertTrue(checkbox.checked);
     const showReportedSettingsLink =
-        dialog.shadowRoot.querySelector('[slot=footer] a');
+        dialog!.shadowRoot!.querySelector<HTMLElement>('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
-    showReportedSettingsLink.click();
+    showReportedSettingsLink!.click();
 
     await resetPageBrowserProxy.whenCalled('showReportedSettings');
     // Ensure that the checkbox was not toggled as a result of
     // clicking the link.
     assertTrue(checkbox.checked);
-    assertFalse(dialog.$.reset.disabled);
-    assertFalse(dialog.$.resetSpinner.active);
-    dialog.$.reset.click();
-    assertTrue(dialog.$.reset.disabled);
-    assertTrue(dialog.$.cancel.disabled);
-    assertTrue(dialog.$.resetSpinner.active);
+    assertFalse(dialog!.$.reset.disabled);
+    assertFalse(dialog!.$.resetSpinner.active);
+    dialog!.$.reset.click();
+    assertTrue(dialog!.$.reset.disabled);
+    assertTrue(dialog!.$.cancel.disabled);
+    assertTrue(dialog!.$.resetSpinner.active);
     await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
   });
 
-  async function testResetRequestOrigin(expectedOrigin) {
-    const dialog = resetPage.$$('settings-reset-profile-dialog');
+  async function testResetRequestOrigin(expectedOrigin: string) {
+    const dialog =
+        resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
-    dialog.$.reset.click();
+    dialog!.$.reset.click();
     const resetRequest =
         await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
     assertEquals(expectedOrigin, resetRequest);

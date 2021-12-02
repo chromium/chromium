@@ -4,21 +4,24 @@
 
 import 'chrome://settings/settings.js';
 
+import {SiteFaviconElement} from 'chrome://settings/settings.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 suite('SiteFavicon', function() {
-  let siteFavicon;
+  let siteFavicon: SiteFaviconElement;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     siteFavicon = document.createElement('site-favicon');
     document.body.appendChild(siteFavicon);
   });
 
-  function assertIconEquals(expected) {
+  function assertIconEquals(expected: string) {
     const background = siteFavicon.$.favicon.style.backgroundImage;
     assertEquals(background, expected);
   }
 
-  function formExpected(url) {
+  function formExpected(url: string): string {
     return '-webkit-image-set(' +
         'url("chrome://favicon2/?size=16&scale_factor=1x&page_url=' +
         encodeURIComponent(url) + '&allow_google_server_fallback=0") 1x, ' +

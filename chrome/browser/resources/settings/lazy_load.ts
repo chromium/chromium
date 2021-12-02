@@ -59,6 +59,7 @@ import './languages_page/edit_dictionary_page.js';
 
 // </if>
 
+export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
@@ -130,6 +131,8 @@ export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagement
 export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPINDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security_keys_set_pin_dialog.js';
 export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
+export {SettingsResetPageElement} from './reset_page/reset_page.js';
+export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineDialogElement} from './search_engines_page/search_engine_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
@@ -160,6 +163,7 @@ export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
 // <if expr="not chromeos and not lacros">
-export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
+export {SettingsSystemPageElement} from './system_page/system_page.js';
+export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 
 // </if>

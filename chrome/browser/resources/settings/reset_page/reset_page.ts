@@ -29,7 +29,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 
-interface SettingsResetPageElement {
+export interface SettingsResetPageElement {
   $: {
     resetProfileDialog: CrLazyRenderElement<SettingsResetProfileDialogElement>,
     resetProfile: HTMLElement,
@@ -40,7 +40,7 @@ const SettingsResetPageElementBase =
     RouteObserverMixin(BaseMixin(PolymerElement)) as
     {new (): PolymerElement & RouteObserverMixinInterface};
 
-class SettingsResetPageElement extends SettingsResetPageElementBase {
+export class SettingsResetPageElement extends SettingsResetPageElementBase {
   static get is() {
     return 'settings-reset-page';
   }
@@ -105,6 +105,12 @@ class SettingsResetPageElement extends SettingsResetPageElementBase {
     Router.getInstance().navigateTo(routes.INCOMPATIBLE_APPLICATIONS);
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-reset-page': SettingsResetPageElement;
+  }
 }
 
 customElements.define(SettingsResetPageElement.is, SettingsResetPageElement);

@@ -4,38 +4,37 @@
 
 // clang-format off
 import {prefToString, stringToPrefValue} from 'chrome://settings/settings.js';
+import {assertEquals, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for Settings.PrefUtil. */
 suite('PrefUtil', function() {
-  const origTraceAssertionsForTesting = window.traceAssertionsForTesting;
-
   /**
-   * @param {function()} fn Function that should throw.
-   * @param {string} message Message to log if function does not throw.
+   * @param fn Function that should throw.
+   * @param message Message to log if function does not throw.
    */
-  const expectThrows = function(fn, message) {
-    // Temporarily disable printing of stack traces on assert failures.
-    window.traceAssertionsForTesting = false;
-
+  function assertThrows(fn: () => void, message: string) {
     try {
       fn();
-      // Must be expect, because assert would get caught.
-      expectNotReached(message);
+      assertNotReached(message);
     } catch (e) {
     }
-
-    window.traceAssertionsForTesting = origTraceAssertionsForTesting;
-  };
+  }
 
   // Tests that the given value is converted to the expected value, for a
   // given prefType.
-  const expectStringToPrefValue = function(value, prefType, expectedValue) {
-    const pref = /** @type {PrefObject} */ ({type: prefType});
-    expectEquals(expectedValue, stringToPrefValue(value, pref));
-  };
+  function expectStringToPrefValue(
+      value: string, prefType: chrome.settingsPrivate.PrefType,
+      expectedValue: string|boolean|number) {
+    const pref: chrome.settingsPrivate.PrefObject = {
+      type: prefType,
+      key: 'foo',
+      value: 0,  // this value is irrelevent to |stringToPrefValue|
+    };
+    assertEquals(expectedValue, stringToPrefValue(value, pref));
+  }
 
-  test('stringToPrefValue', function testStringToPrefValue() {
+  test('stringToPrefValue', function() {
     expectStringToPrefValue(
         'true', chrome.settingsPrivate.PrefType.BOOLEAN, true);
 
@@ -50,12 +49,12 @@ suite('PrefUtil', function() {
     const url = 'http://example.com';
     expectStringToPrefValue(url, chrome.settingsPrivate.PrefType.URL, url);
 
-    expectThrows(function() {
+    assertThrows(function() {
       expectStringToPrefValue(
           '[1, 2]', chrome.settingsPrivate.PrefType.LIST, '');
     }, 'List prefs should not be converted.');
 
-    expectThrows(function() {
+    assertThrows(function() {
       expectStringToPrefValue(
           '{foo: 1}', chrome.settingsPrivate.PrefType.DICTIONARY, '');
     }, 'Dictionary prefs should not be converted.');
@@ -63,31 +62,34 @@ suite('PrefUtil', function() {
 
   // Tests that the pref value is converted to the expected string, for a
   // given prefType.
-  const expectPrefToString = function(prefType, prefValue, expectedValue) {
-    const pref = /** @type {PrefObject} */ ({
+  function assertPrefToString(
+      prefType: chrome.settingsPrivate.PrefType, prefValue: any,
+      expectedValue: string|boolean|number|null) {
+    const pref = {
       type: prefType,
       value: prefValue,
-    });
-    expectEquals(expectedValue, prefToString(pref));
-  };
+      key: 'foo',
+    };
+    assertEquals(expectedValue, prefToString(pref));
+  }
 
-  test('prefToString', function testPrefToString() {
-    expectPrefToString(chrome.settingsPrivate.PrefType.BOOLEAN, false, 'false');
+  test('prefToString', function() {
+    assertPrefToString(chrome.settingsPrivate.PrefType.BOOLEAN, false, 'false');
 
-    expectPrefToString(chrome.settingsPrivate.PrefType.NUMBER, 42, '42');
+    assertPrefToString(chrome.settingsPrivate.PrefType.NUMBER, 42, '42');
 
-    expectPrefToString(
+    assertPrefToString(
         chrome.settingsPrivate.PrefType.STRING, 'Foo Bar', 'Foo Bar');
 
     const url = 'http://example.com';
-    expectPrefToString(chrome.settingsPrivate.PrefType.URL, url, url);
+    assertPrefToString(chrome.settingsPrivate.PrefType.URL, url, url);
 
-    expectThrows(function() {
-      expectPrefToString(chrome.settingsPrivate.PrefType.LIST, [1, 2], null);
+    assertThrows(function() {
+      assertPrefToString(chrome.settingsPrivate.PrefType.LIST, [1, 2], null);
     }, 'List prefs should not be handled.');
 
-    expectThrows(function() {
-      expectPrefToString(
+    assertThrows(function() {
+      assertPrefToString(
           chrome.settingsPrivate.PrefType.DICTIONARY, {foo: 1}, null);
     }, 'Dictionary prefs should not be handled.');
   });
