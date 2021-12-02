@@ -47,6 +47,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     public static class QuickActionSearchWidgetProviderSearch
             extends QuickActionSearchWidgetProvider {
+        protected static
+                @Nullable QuickActionSearchWidgetProviderDelegate sExtraSmallWidgetDelegate;
         protected static @Nullable QuickActionSearchWidgetProviderDelegate sSmallWidgetDelegate;
         protected static @Nullable QuickActionSearchWidgetProviderDelegate sMediumWidgetDelegate;
 
@@ -70,16 +72,29 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             int newWidgetHeightDp =
                     options.getInt(isLandscapeMode ? AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT
                                                    : AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+            float smallWidgetMinHeightDp = context.getResources().getDimension(
+                                                   R.dimen.quick_action_search_widget_small_height)
+                    / displayMetrics.density;
             float mediumWidgetMinHeightDp =
                     context.getResources().getDimension(
                             R.dimen.quick_action_search_widget_medium_height)
                     / displayMetrics.density;
 
-            if (newWidgetHeightDp >= mediumWidgetMinHeightDp) {
+            if (newWidgetHeightDp < smallWidgetMinHeightDp) {
+                return getExtraSmallWidgetDelegate();
+            } else if (newWidgetHeightDp < mediumWidgetMinHeightDp) {
+                return getSmallWidgetDelegate();
+            } else {
                 return getMediumWidgetDelegate();
             }
+        }
 
-            return getSmallWidgetDelegate();
+        private @NonNull QuickActionSearchWidgetProviderDelegate getExtraSmallWidgetDelegate() {
+            if (sExtraSmallWidgetDelegate == null) {
+                sExtraSmallWidgetDelegate =
+                        createDelegate(R.layout.quick_action_search_widget_xsmall_layout);
+            }
+            return sExtraSmallWidgetDelegate;
         }
 
         private @NonNull QuickActionSearchWidgetProviderDelegate getSmallWidgetDelegate() {

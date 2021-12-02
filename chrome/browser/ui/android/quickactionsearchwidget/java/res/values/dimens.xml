@@ -6,6 +6,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="quick_action_search_widget_width">264dp</dimen>
     <dimen name="quick_action_search_widget_background_radius">20dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_background_radius">8dp</dimen>
+
+    <!-- Extra Small Widget Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_height">48dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_margin">8dp</dimen>
 
     <!-- Small Widget Dimensions -->
     <!-- True margin is a combination of quick_action_search_widget_small_margin
@@ -18,6 +23,12 @@
     <dimen name="quick_action_search_widget_medium_vertical_margin">18dp</dimen>
     <dimen name="quick_action_search_widget_medium_row_vertical_margin">15dp</dimen>
     <dimen name="quick_action_search_widget_medium_height">155dp</dimen>
+
+    <!-- Extra Small Button Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_button_icon_padding">6dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_height">28dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_width">28dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_horizontal_margin">5dp</dimen>
 
     <!-- Small Button Dimensions -->
     <dimen name="quick_action_search_widget_small_button_radius">21dp</dimen>
@@ -46,6 +57,15 @@
     <dimen name="quick_action_search_widget_small_search_bar_icon_size">20dp</dimen>
     <dimen name="quick_action_search_widget_small_search_bar_icon_margin">8dp</dimen>
     <dimen name="quick_action_search_widget_small_search_bar_icon_margin_text">5dp</dimen>
+
+    <!-- Extra Small Search Bar Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_search_bar_horizontal_margin">3dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_height">32dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_corner_radius">16dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_size">16dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_margin">8dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_margin_text">5dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_text_size">11sp</dimen>
 
     <!-- Dino Widget Dimensions -->
     <dimen name="quick_action_search_widget_dino_min_size">136dp</dimen>

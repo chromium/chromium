@@ -167,8 +167,8 @@ public class QuickActionSearchWidgetProviderTest {
                 provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
 
         Assert.assertEquals(providerType, delegate1, delegate2);
-        Assert.assertEquals(providerType, delegate1, delegate3);
-        Assert.assertEquals(providerType, delegate1, delegate4);
+        Assert.assertNotEquals(providerType, delegate1, delegate3);
+        Assert.assertEquals(providerType, delegate3, delegate4);
     }
 
     /**
