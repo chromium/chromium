@@ -77,8 +77,6 @@ const KEYS = {
 
   "referrer.value"                              : "00000000-0000-0000-0000-000000000027",
   "referrer.value ACK"                          : "00000000-0000-0000-0000-000000000028",
-
-  "usb.requestDevice"                           : "00000000-0000-0000-0000-000000000029",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
@@ -128,23 +126,4 @@ async function nextValueFromServer(key) {
 async function writeValueToServer(key, value, origin = '') {
   const serverUrl = `${origin}${STORE_URL}?key=${key}&value=${value}`;
   await fetch(serverUrl, {"mode": "no-cors"});
-}
-
-// Simulates a user gesture and calls `callback` when `mouseup` happens.
-function simulateGesture(callback) {
-  // Get or create the target element.
-  let target = document.getElementById('target');
-  if (!target) {
-    target = document.createElement('button');
-    target.setAttribute('id', 'target');
-    document.body.appendChild(target);
-  }
-  target.addEventListener("mouseup", callback);
-
-  if (eventSender) {
-    eventSender.mouseMoveTo(target.getBoundingClientRect().x,
-                            target.getBoundingClientRect().y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-  }
 }
