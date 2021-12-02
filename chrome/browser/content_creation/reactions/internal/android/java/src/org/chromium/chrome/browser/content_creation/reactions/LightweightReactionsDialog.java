@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Dialog;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -31,6 +32,7 @@ public class LightweightReactionsDialog extends DialogFragment {
     private Bitmap mScreenshot;
     private SceneCoordinator mSceneCoordinator;
     private ReactionsDialogObserver mDialogObserver;
+    private int mCurrentOrientation;
 
     /**
      * Initialize the dialog outside of the constructor as fragments require default constructor.
@@ -47,6 +49,7 @@ public class LightweightReactionsDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mCurrentOrientation = getResources().getConfiguration().orientation;
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
@@ -62,6 +65,16 @@ public class LightweightReactionsDialog extends DialogFragment {
         }
 
         return builder.create();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (mCurrentOrientation != newConfig.orientation) {
+            mCurrentOrientation = newConfig.orientation;
+            LightweightReactionsMetrics.recordOrientationChange(newConfig.orientation);
+        }
     }
 
     private void setBackgroundImage() {

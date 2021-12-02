@@ -142,6 +142,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records whether the GIF was shared in the Share Sheet.</summary>
 </histogram>
 
+<histogram name="LightweightReactions.OrientationChange"
+    enum="DeviceOrientation" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records that there was an orientation change during Lightweight Reactions
+    scene editing.
+  </summary>
+</histogram>
+
 <histogram name="LightweightReactions.ShareDestination"
     enum="NoteShareDestination" expires_after="2022-07-31">
   <owner>gujen@google.com</owner>
