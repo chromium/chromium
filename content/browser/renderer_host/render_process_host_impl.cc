@@ -4949,8 +4949,10 @@ void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
 
   for (const auto& kv : context->GetRunningServiceWorkerInfos()) {
     ServiceWorkerVersion* version = context->GetLiveVersion(kv.first);
-    DCHECK(version);
-    if (version->IsControlleeProcessID(GetID())) {
+    // TODO(https://crbug.com/1271393): It appears that some times `version` is
+    // nullptr here, but we don't know why.  Once that is solved revert this
+    // runtime check back to a DCHECK.
+    if (version && version->IsControlleeProcessID(GetID())) {
       version->UpdateForegroundPriority();
       break;
     }
