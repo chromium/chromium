@@ -20,11 +20,9 @@ struct ConnectionEndpointMetadata;
 struct HostResolverEndpointResult;
 
 testing::Matcher<const HostResolverEndpointResult&> ExpectEndpointResult(
-    testing::Matcher<std::vector<IPEndPoint>> ipv4_endpoints_matcher =
+    testing::Matcher<std::vector<IPEndPoint>> ip_endpoints_matcher =
         testing::IsEmpty(),
     testing::Matcher<std::string> ipv4_alias_name_matcher = testing::_,
-    testing::Matcher<std::vector<IPEndPoint>> ipv6_endpoints_matcher =
-        testing::IsEmpty(),
     testing::Matcher<std::string> ipv6_alias_name_matcher = testing::_,
     testing::Matcher<const ConnectionEndpointMetadata&> metadata_matcher =
         ExpectConnectionEndpointMetadata());

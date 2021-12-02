@@ -26,15 +26,12 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
   HostResolverEndpointResult(HostResolverEndpointResult&&);
   HostResolverEndpointResult& operator=(HostResolverEndpointResult&&) = default;
 
-  // IPv4 endpoints at which to connect to the service.
-  std::vector<net::IPEndPoint> ipv4_endpoints;
+  // IP endpoints at which to connect to the service.
+  std::vector<net::IPEndPoint> ip_endpoints;
 
   // The final name in the alias chain (DNS CNAME or HTTPS) at which the
   // IPv4 addresses were found.
   std::string ipv4_alias_name;
-
-  // IPv6 endpoints at which to connect to the service.
-  std::vector<net::IPEndPoint> ipv6_endpoints;
 
   // The final name in the alias chain (DNS CNAME or HTTPS) at which the
   // IPv6 addresses were found.
