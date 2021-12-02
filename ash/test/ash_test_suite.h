@@ -22,6 +22,8 @@ class AshTestSuite : public base::TestSuite {
 
   ~AshTestSuite() override;
 
+  static void LoadTestResources();
+
  protected:
   // base::TestSuite:
   void Initialize() override;

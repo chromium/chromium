@@ -10,6 +10,14 @@ import("//ui/base/ui_features.gni")
 assert(is_chromeos_ash)
 assert(enable_hidpi)
 
+repack("ash_test_resources_unscaled") {
+  output = "$root_build_dir/ash_test_resources_unscaled.pak"
+  sources = [
+    "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+  ]
+  deps = [ "//ash/public/cpp/resources:ash_public_unscaled_resources" ]
+}
+
 # Repacks resources needed for ash_unittests, etc. at a given scale.
 # TODO(msw): Use ui_test.pak instead of its pieces? (no 200% support?)
 template("ash_test_resources") {
@@ -21,7 +29,6 @@ template("ash_test_resources") {
     sources = [
       "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
       "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
-      "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/resources/ui_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/views/resources/views_resources_${percent}_percent.pak",
@@ -42,7 +49,6 @@ template("ash_test_resources") {
     deps = [
       "//ash/app_list/resources",
       "//ash/login/resources",
-      "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//mojo/public/js:resources",
       "//ui/chromeos/resources",
       "//ui/resources",
@@ -69,22 +75,4 @@ ash_test_resources("100_percent") {
 
 ash_test_resources("200_percent") {
   percent = "200"
-}
-
-# There is no with_content_200_percent as content resources are only available
-# at 100%.
-ash_test_resources("with_content_100_percent") {
-  percent = "100"
-  sources = [
-    "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
-    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
-  ]
-  deps = [
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings",
-  ]
 }

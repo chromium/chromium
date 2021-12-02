@@ -3129,6 +3129,7 @@ static_library("test_support") {
   data_deps = [
     "//ash/resources:ash_test_resources_100_percent",
     "//ash/resources:ash_test_resources_200_percent",
+    "//ash/resources:ash_test_resources_unscaled",
     "//ash/strings:ash_test_strings",
   ]
 }

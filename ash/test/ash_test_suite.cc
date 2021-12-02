@@ -44,12 +44,23 @@ void AshTestSuite::Initialize() {
   ui::ResourceBundle::SetParseLottieAsStillImage(
       &lottie::ParseLottieAsStillImage);
 
+  LoadTestResources();
+
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
+  env_ = aura::Env::CreateInstance();
+}
+
+void AshTestSuite::LoadTestResources() {
   // Load ash test resources and en-US strings; not 'common' (Chrome) resources.
   base::FilePath path;
   base::PathService::Get(base::DIR_ASSETS, &path);
   base::FilePath ash_test_strings =
       path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
+
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      path.AppendASCII("ash_test_resources_unscaled.pak"),
+      ui::kScaleFactorNone);
 
   if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath ash_test_resources_100 =
@@ -63,9 +74,6 @@ void AshTestSuite::Initialize() {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         ash_test_resources_200, ui::k200Percent);
   }
-
-  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
-  env_ = aura::Env::CreateInstance();
 }
 
 void AshTestSuite::Shutdown() {
