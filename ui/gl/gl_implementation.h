@@ -70,6 +70,7 @@ struct GL_EXPORT GLImplementationParts {
 
   bool IsValid() const;
   bool IsAllowed(const std::vector<GLImplementationParts>& allowed_impls) const;
+  std::string ToString() const;
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {

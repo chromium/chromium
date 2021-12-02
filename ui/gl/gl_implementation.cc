@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <string>
 
 #include "base/at_exit.h"
@@ -74,6 +75,78 @@ bool GLImplementationParts::IsAllowed(
     }
   }
   return false;
+}
+
+std::string GLImplementationParts::ToString() const {
+  std::stringstream s;
+  s << "(gl=";
+  switch (gl) {
+    case GLImplementation::kGLImplementationNone:
+      s << "none";
+      break;
+    case GLImplementation::kGLImplementationDesktopGL:
+      s << "desktop-gl";
+      break;
+    case GLImplementation::kGLImplementationDesktopGLCoreProfile:
+      s << "desktop-gl-core-profile";
+      break;
+    case GLImplementation::kGLImplementationSwiftShaderGL:
+      s << "swiftshader-gl";
+      break;
+    case GLImplementation::kGLImplementationAppleGL:
+      s << "apple-gl";
+      break;
+    case GLImplementation::kGLImplementationEGLGLES2:
+      s << "egl-gles2";
+      break;
+    case GLImplementation::kGLImplementationMockGL:
+      s << "mock-gl";
+      break;
+    case GLImplementation::kGLImplementationStubGL:
+      s << "stub-gl";
+      break;
+    case GLImplementation::kGLImplementationDisabled:
+      s << "disabled";
+      break;
+    case GLImplementation::kGLImplementationEGLANGLE:
+      s << "egl-angle";
+      break;
+  }
+  s << ",angle=";
+  switch (angle) {
+    case ANGLEImplementation::kNone:
+      s << "none";
+      break;
+    case ANGLEImplementation::kD3D9:
+      s << "d3d9";
+      break;
+    case ANGLEImplementation::kD3D11:
+      s << "d3d11";
+      break;
+    case ANGLEImplementation::kOpenGL:
+      s << "opengl";
+      break;
+    case ANGLEImplementation::kOpenGLES:
+      s << "opengles";
+      break;
+    case ANGLEImplementation::kNull:
+      s << "null";
+      break;
+    case ANGLEImplementation::kVulkan:
+      s << "vulkan";
+      break;
+    case ANGLEImplementation::kSwiftShader:
+      s << "swiftshader";
+      break;
+    case ANGLEImplementation::kMetal:
+      s << "metal";
+      break;
+    case ANGLEImplementation::kDefault:
+      s << "default";
+      break;
+  }
+  s << ")";
+  return s.str();
 }
 
 namespace {
