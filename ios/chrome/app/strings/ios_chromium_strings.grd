@@ -289,6 +289,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRSTRUN_WELCOME_TO_CHROME" desc="Title on the Welcome to Chromium screen presented to the user on First Run. [iOS only]">
         Welcome to Chromium
       </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_SETTINGS_SYNC_HEADER" desc="Header text and link for the view in Settings for managing saved passwords when the user is signed in and syncing passwords. [Length: unlimited] [iOS only]">
+        Passwords are saved to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Password Manager<ph name="END_LINK">END_LINK</ph> so you can use them on any device.
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
         Help Improve Chromium's Features and Performance
       </message>
@@ -363,6 +366,9 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_MESSAGE_GO_TO_SETTINGS" desc="Body of the alert shown when the user tries to save an image but we lack permission to add photos. This body tells the user he'll be redirected to the Settings app. [Length: 100em] [iOS only].">
         To save images, tap on Settings to let Chromium add to your photos
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_SETTINGS_NOT_SYNC_HEADER" desc="Header text for the view in Settings for managing saved passwords when the user is not signed in, or signed in and not syncing passwords. [Length: unlimited] [iOS only]">
+        Passwords are saved to Password Manager on this device only.
       </message>
       <message name="IDS_IOS_SCANNER_CAMERA_IN_USE_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR or credit card scanner but the camera is in use by another application. [Length: 140em] [iOS only]">
         Chromium can't use your camera because it's in use by another application

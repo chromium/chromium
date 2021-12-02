@@ -23,11 +23,15 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -621,13 +625,37 @@ void RemoveFormsToBeDeleted(
 #pragma mark - Items
 
 - (TableViewLinkHeaderFooterItem*)manageAccountLinkItem {
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(_browserState);
+  syncer::ModelType kSyncPasswordsModelType =
+      syncSetupService->GetModelType(SyncSetupService::kSyncPasswords);
+  BOOL isSyncingPasswords =
+      syncSetupService->IsDataTypeActive(kSyncPasswordsModelType);
+
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
-  footerItem.text =
-      l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
-  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-      GURL(password_manager::kPasswordManagerAccountDashboardURL),
-      GetApplicationContext()->GetApplicationLocale())};
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    if (isSyncingPasswords) {
+      footerItem.text = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SETTINGS_SYNC_HEADER);
+      footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+          GURL(password_manager::kPasswordManagerAccountDashboardURL),
+          GetApplicationContext()->GetApplicationLocale())};
+    } else {
+      footerItem.text =
+          l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SETTINGS_NOT_SYNC_HEADER);
+    }
+  } else {
+    footerItem.text =
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
+
+    footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+        GURL(password_manager::kPasswordManagerAccountDashboardURL),
+        GetApplicationContext()->GetApplicationLocale())};
+  }
+
   return footerItem;
 }
 
