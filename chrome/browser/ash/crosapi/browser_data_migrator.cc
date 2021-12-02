@@ -89,6 +89,7 @@ constexpr const char* const kAshDataPaths[] = {"FullRestoreData",
 constexpr const char* const kLacrosDataPathsDeprecated[]{"Bookmarks"};
 constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
                                                "Bookmarks",
+                                               "Cookies",
                                                "Extension Cookies",
                                                "Extension Rules",
                                                "Extension State",
