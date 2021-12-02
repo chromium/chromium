@@ -19,6 +19,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
@@ -226,7 +227,8 @@ class PrefetchProxyTabHelper
   void AddObserverForTesting(Observer* observer);
   void RemoveObserverForTesting(Observer* observer);
 
-  network::mojom::NetworkContext* GetIsolatedContextForTesting() const;
+  network::mojom::NetworkContext* GetIsolatedContextForTesting(
+      const GURL& url) const;
 
   // Sets the service_worker_context_for_test_ with a FakeServiceWorkerContext
   // for the the purpose of testing.
@@ -237,7 +239,8 @@ class PrefetchProxyTabHelper
  protected:
   // Exposed for testing.
   explicit PrefetchProxyTabHelper(content::WebContents* web_contents);
-  virtual network::mojom::URLLoaderFactory* GetURLLoaderFactory();
+  virtual network::mojom::URLLoaderFactory* GetURLLoaderFactory(
+      const GURL& url);
 
  private:
   friend class PrefetchProxyPageLoadMetricsObserver;
@@ -261,6 +264,14 @@ class PrefetchProxyTabHelper
    public:
     explicit CurrentPageLoad(content::NavigationHandle* handle);
     ~CurrentPageLoad();
+
+    // Helper functions to create / get the network context for a given URL. If
+    // |PrefetchProxyUseIndividualNetworkContextsForEachPrefetch| is true, then
+    // this will use the network context for a single prefetch in
+    // |prefetch_containers_|. Otherwise this will use this instances
+    // |network_context_|.
+    void CreateNetworkContextForUrl(const GURL& url);
+    PrefetchProxyNetworkContext* GetNetworkContextForUrl(const GURL& url) const;
 
     raw_ptr<Profile> profile_;
 
@@ -316,8 +327,8 @@ class PrefetchProxyTabHelper
     // is taken from |PrefetchProxyService| and used to facilitate loading
     // of prefetched resources from cache. Note: An
     // |PrefetchProxySubresourceManager| is dependent on the
-    // |isolated_url_loader_factory_| and |isolated_network_context_| from the
-    // previous page load remaining alive.
+    // |PrefetchProxyNetworkContext|s from the previous page load remaining
+    // alive.
     std::unique_ptr<PrefetchProxySubresourceManager> subresource_manager_;
 
     // The current status of copying cookies for the next page load when the
@@ -327,12 +338,17 @@ class PrefetchProxyTabHelper
     // A callback that runs once |cookie_copy_status_| is set to copy complete.
     base::OnceClosure on_after_srp_cookie_copy_complete_;
 
-    // The cookie manager, network contextm and url loader factory that will be
-    // used for prefetches. A separate network context is used so that the
-    // prefetch proxy can be used via a custom proxy configuration.
-    mojo::Remote<network::mojom::NetworkContext> isolated_network_context_;
-    mojo::Remote<network::mojom::CookieManager> isolated_cookie_manager_;
-    scoped_refptr<network::SharedURLLoaderFactory> isolated_url_loader_factory_;
+    // If |PrefetchProxyUseIndividualNetworkContextsForEachPrefetch| is false
+    // then this network context is used for all prefetches for this page load.
+    // Otherwise each prefetch in |prefetch_containers_| will use its own
+    // network context. The main purpose of using separate network contexts is
+    // allow for a custom proxy configuration.
+    std::unique_ptr<PrefetchProxyNetworkContext> network_context_;
+
+    // This keeps the network context used to prefetch the current page load
+    // from the previous page load alive, if the current page load was
+    // prerendered, because |subresource_manager_| is dependent on it.
+    std::unique_ptr<PrefetchProxyNetworkContext> previous_network_context_;
   };
 
   // Returns true if the current profile is not incognito and meets any
@@ -426,13 +442,6 @@ class PrefetchProxyTabHelper
       bool eligible,
       absl::optional<PrefetchProxyPrefetchStatus> status);
 
-  // Creates a new URL Loader Factory on |page_|'s isolated network context.
-  // |isolation_info| may be passed if the factory will be used in the renderer
-  // for subresources.
-  void CreateNewURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      absl::optional<net::IsolationInfo> isolation_info);
-
   // Starts a query for all cookies associated with |prefetch_container|| in the
   // isolated cookie jar so that they can be copied to the normal profile. After
   // this method is called, |IsWaitingForAfterSRPCookiesCopy| returns true until
@@ -450,9 +459,6 @@ class PrefetchProxyTabHelper
   // again and the callback passed to |SetOnAfterSRPCookieCopyCompleteCallback|,
   // if any, is run.
   void OnCopiedIsolatedCookiesAfterSRPClick();
-
-  // Creates the isolated network context and url loader factory for this page.
-  void CreateIsolatedURLLoaderFactory();
 
   // Prepare to serve prefetched resources for the given |url| when a navigation
   // to that url is started. This initiates the copying of cookies from the

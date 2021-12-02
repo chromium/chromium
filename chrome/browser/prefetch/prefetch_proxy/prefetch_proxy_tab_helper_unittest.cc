@@ -84,7 +84,8 @@ class TestPrefetchProxyTabHelper : public PrefetchProxyTabHelper {
     url_loader_factory_ = url_loader_factory;
   }
 
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override {
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory(
+      const GURL& url) override {
     return url_loader_factory_.get();
   }
 
