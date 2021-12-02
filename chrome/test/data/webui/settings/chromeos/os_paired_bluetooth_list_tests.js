@@ -97,6 +97,7 @@ suite('OsPairedBluetoothListTest', function() {
         element: document.createElement('div'),
       }
     }));
+    await flushAsync();
     assertFalse(getTooltip()._showing);
   });
 });

@@ -7,6 +7,10 @@
     color: var(--cros-text-color-alert);
   }
 
+  #managedIcon {
+    flex: 8
+  }
+
   .bluetooth-middle {
     align-items: center;
     flex: auto;
@@ -47,6 +51,15 @@
         </div>
       </template>
     </div>
+    <template is="dom-if"
+        if="[[shouldShowBlockedByPolicyIcon_(device_.*)]]" restamp>
+      <div id="managedIcon">
+        <cr-tooltip-icon
+            tooltip-text="$i18n{bluetoothManaged}" icon-class="cr:domain"
+            icon-aria-label="$i18n{bluetoothManaged}">
+        </cr-tooltip-icon>
+      </div>
+    </template>
     <div id="buttonContainer" class="layout end">
       <cr-button id="forgetBtn"
           class="cancel-button"

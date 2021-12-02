@@ -10,6 +10,7 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import './os_bluetooth_change_device_name_dialog.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_battery_info.js';
 
@@ -371,6 +372,18 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
     return this.device_.deviceProperties.deviceType ===
         mojom.DeviceType.kKeyboard;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowBlockedByPolicyIcon_() {
+    if (!this.device_) {
+      return false;
+    }
+
+    return this.device_.deviceProperties.isBlockedByPolicy;
   }
 
   /**

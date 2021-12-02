@@ -67,6 +67,47 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  test('Managed by enterprise icon', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const getManagedIcon = () => {
+      return bluetoothDeviceDetailPage.$$('#managedIcon');
+    };
+
+    const navigateToDeviceDetailPage = () => {
+      const params = new URLSearchParams();
+      params.append('id', '12345/6789&');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+    };
+
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '12345/6789&',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        /*opt_isBlockedByPolicy=*/ true);
+
+    bluetoothConfig.appendToPairedDeviceList([device]);
+    await flushAsync();
+
+    navigateToDeviceDetailPage();
+
+    await flushAsync();
+    assertTrue(!!getManagedIcon());
+
+    device.deviceProperties.isBlockedByPolicy = false;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertFalse(!!getManagedIcon());
+  });
+
+
   test('Show change settings row, and navigate to subpages', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
