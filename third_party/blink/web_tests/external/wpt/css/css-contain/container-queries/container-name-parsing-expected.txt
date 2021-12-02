@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS e.style['container-name'] = "initial" should set the property value
+PASS e.style['container-name'] = "inherit" should set the property value
+PASS e.style['container-name'] = "unset" should set the property value
+PASS e.style['container-name'] = "revert" should set the property value
+PASS e.style['container-name'] = "none" should set the property value
+PASS e.style['container-name'] = "foo" should set the property value
+PASS e.style['container-name'] = "BAR" should set the property value
+FAIL e.style['container-name'] = "foo bar" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['container-name'] = "none none" should not set the property value
+PASS e.style['container-name'] = "foo, bar" should not set the property value
+PASS e.style['container-name'] = "#fff" should not set the property value
+PASS e.style['container-name'] = "1px" should not set the property value
+PASS e.style['container-name'] = "default" should not set the property value
+Harness: the test ran to completion.
+
