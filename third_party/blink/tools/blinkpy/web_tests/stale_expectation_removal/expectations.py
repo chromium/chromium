@@ -21,9 +21,9 @@ TOP_LEVEL_EXPECTATION_FILES = {
     'SlowTests',
     'TestExpectations',
     'W3CImportExpectations',
-    'WPTOverrideExpectations',
-    'WebDriverExpectations',
-    'WebGPUExpectations',
+    # WebDriver and WPTOverride omitted since we do not get ResultDB data for
+    # those suites. WebGPU omitted since that suite is currently not supported
+    # by this script.
 }
 
 

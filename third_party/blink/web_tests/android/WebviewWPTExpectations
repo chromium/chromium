@@ -84,7 +84,7 @@ crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/popup-unspecified
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/popup-unspecified-with-same-origin.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/popup-unspecified-with-same-site.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Timeout ]
-crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ CRASH Pass timeout ]
+crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Crash Pass Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro_cross-origin.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro.https.html [ Timeout ]
 crbug.com/1179201 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Timeout ]
