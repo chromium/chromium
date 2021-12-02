@@ -143,7 +143,8 @@ void DisplayMediaAccessHandler::HandleRequest(
   // which might be confusing for the users. See https://crbug.com/1407733 for
   // details.
   // TODO(emircan): Remove this once Mac UI doesn't use a window.
-  if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+  if (web_contents->GetVisibility() != content::Visibility::VISIBLE &&
+      request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
     std::move(callback).Run(
         blink::MediaStreamDevices(),
