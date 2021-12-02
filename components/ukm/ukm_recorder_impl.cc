@@ -41,13 +41,6 @@ const base::Feature kUkmSamplingRateFeature{"UkmSamplingRate",
 
 namespace {
 
-// Gets the list of whitelisted Entries as string. Format is a comma separated
-// list of Entry names (as strings).
-std::string GetWhitelistEntries() {
-  return base::GetFieldTrialParamValueByFeature(kUkmFeature,
-                                                "WhitelistEntries");
-}
-
 bool IsWhitelistedSourceId(SourceId source_id) {
   SourceIdType type = GetSourceIdType(source_id);
   return type == SourceIdType::NAVIGATION_ID || type == SourceIdType::APP_ID ||
@@ -404,8 +397,6 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         event_aggregate.dropped_due_to_limits);
     proto_aggregate->set_dropped_due_to_sampling(
         event_aggregate.dropped_due_to_sampling);
-    proto_aggregate->set_dropped_due_to_whitelist(
-        event_aggregate.dropped_due_to_whitelist);
     proto_aggregate->set_dropped_due_to_filter(
         event_aggregate.dropped_due_to_filter);
     proto_aggregate->set_dropped_due_to_unconfigured(
@@ -428,11 +419,6 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
           event_aggregate.dropped_due_to_sampling) {
         proto_metric->set_dropped_due_to_sampling(
             aggregate.dropped_due_to_sampling);
-      }
-      if (aggregate.dropped_due_to_whitelist !=
-          event_aggregate.dropped_due_to_whitelist) {
-        proto_metric->set_dropped_due_to_whitelist(
-            aggregate.dropped_due_to_whitelist);
       }
       if (aggregate.dropped_due_to_filter !=
           event_aggregate.dropped_due_to_filter) {
@@ -552,10 +538,6 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 bool UkmRecorderImpl::ShouldRestrictToWhitelistedSourceIds() const {
   return base::GetFieldTrialParamByFeatureAsBool(
       kUkmFeature, "RestrictToWhitelistedSourceIds", false);
-}
-
-bool UkmRecorderImpl::ShouldRestrictToWhitelistedEntries() const {
-  return true;
 }
 
 bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
@@ -746,15 +728,6 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
     return;
   }
 
-  if (ShouldRestrictToWhitelistedEntries() &&
-      !base::Contains(whitelisted_entry_hashes_, entry->event_hash)) {
-    RecordDroppedEntry(entry->event_hash, DroppedDataReason::NOT_WHITELISTED);
-    event_aggregate.dropped_due_to_whitelist++;
-    for (auto& metric : entry->metrics)
-      event_aggregate.metrics[metric.first].dropped_due_to_whitelist++;
-    return;
-  }
-
   if (default_sampling_rate_ < 0) {
     LoadExperimentSamplingInfo();
   }
@@ -882,13 +855,8 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   return sampled_num % sampling_rate == 0;
 }
 
-void UkmRecorderImpl::StoreWhitelistedEntries() {
+void UkmRecorderImpl::InitDecodeMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto entries =
-      base::SplitString(GetWhitelistEntries(), ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& entry_string : entries)
-    whitelisted_entry_hashes_.insert(base::HashMetricName(entry_string));
   decode_map_ = builders::CreateDecodeMap();
 }
 

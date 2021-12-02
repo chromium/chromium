@@ -115,10 +115,6 @@ class UkmService : public UkmRecorderImpl {
 
   int32_t report_count() const { return report_count_; }
 
-  void set_restrict_to_whitelist_entries_for_testing(bool value) {
-    restrict_to_whitelist_entries_ = value;
-  }
-
   // Enables adding the synced user's noised birth year and gender to the UKM
   // report. For more details, see doc of metrics::DemographicMetricsProvider in
   // components/metrics/demographics/demographic_metrics_provider.h.
@@ -163,9 +159,6 @@ class UkmService : public UkmRecorderImpl {
   // Called by log_uploader_ when the an upload is completed.
   void OnLogUploadComplete(int response_code);
 
-  // ukm::UkmRecorderImpl:
-  bool ShouldRestrictToWhitelistedEntries() const override;
-
   // Adds the user's birth year and gender to the UKM |report| only if (1) the
   // provider is registered and (2) the feature is enabled. For more details,
   // see doc of metrics::DemographicMetricsProvider in
@@ -176,9 +169,6 @@ class UkmService : public UkmRecorderImpl {
 
   // A weak pointer to the PrefService used to read and write preferences.
   raw_ptr<PrefService> pref_service_;
-
-  // If true, only whitelisted Entries should be recorded.
-  bool restrict_to_whitelist_entries_;
 
   // The UKM client id stored in prefs.
   uint64_t client_id_ = 0;

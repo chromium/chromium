@@ -113,8 +113,7 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Like above but uses a passed |sampling_rate| instead of internal config.
   bool IsSampledIn(int64_t source_id, uint64_t event_id, int sampling_rate);
 
-  // Cache the list of whitelisted entries from the field trial parameter.
-  void StoreWhitelistedEntries();
+  void InitDecodeMap();
 
   // Writes recordings into a report proto, and clears recordings.
   void StoreRecordingsInReport(Report* report);
@@ -149,8 +148,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   virtual bool ShouldRestrictToWhitelistedSourceIds() const;
 
-  virtual bool ShouldRestrictToWhitelistedEntries() const;
-
  private:
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::debug::UkmDebugDataExtractor;
@@ -168,7 +165,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     double value_square_sum = 0.0;
     uint64_t dropped_due_to_limits = 0;
     uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_whitelist = 0;
     uint64_t dropped_due_to_filter = 0;
     uint64_t dropped_due_to_unconfigured = 0;
   };
@@ -181,7 +177,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     uint64_t total_count = 0;
     uint64_t dropped_due_to_limits = 0;
     uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_whitelist = 0;
     uint64_t dropped_due_to_filter = 0;
     uint64_t dropped_due_to_unconfigured = 0;
   };
@@ -229,9 +224,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Map from hashes to entry and metric names.
   ukm::builders::DecodeMap decode_map_;
-
-  // Whitelisted Entry hashes, only the ones in this set will be recorded.
-  std::set<uint64_t> whitelisted_entry_hashes_;
 
   // Sampling configurations, loaded from a field-trial.
   int default_sampling_rate_ = -1;  // -1 == not yet loaded
