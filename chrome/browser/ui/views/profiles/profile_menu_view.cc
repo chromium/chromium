@@ -293,18 +293,19 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       chrome::ShowSettingsSubPage(browser(), chrome::kSignOutSubPage);
       break;
     case AvatarSyncErrorType::kUnrecoverableError:
-      // GetPrimaryAccountMutator() might return nullptr on some platforms.
-      if (auto* account_mutator =
-              IdentityManagerFactory::GetForProfile(browser()->profile())
-                  ->GetPrimaryAccountMutator()) {
-        account_mutator->RevokeSyncConsent(
-            signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
-        Hide();
-        browser()->signin_view_controller()->ShowSignin(
-            profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN,
-            signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
-      }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      IdentityManagerFactory::GetForProfile(browser()->profile())
+          ->GetPrimaryAccountMutator()
+          ->RevokeSyncConsent(signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+                              signin_metrics::SignoutDelete::kIgnoreMetric);
+      Hide();
+      browser()->signin_view_controller()->ShowSignin(
+          profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN,
+          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+#else
+      // TODO(https://crbug.com/1260291): Add support for Lacros.
+      NOTIMPLEMENTED();
+#endif
       break;
     case AvatarSyncErrorType::kAuthError:
       Hide();
@@ -345,7 +346,7 @@ void ProfileMenuView::OnSigninAccountButtonClicked(AccountInfo account) {
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileMenuView::OnSignoutButtonClicked() {
   RecordClick(ActionableItem::kSignoutButton);
   if (!perform_menu_actions())
@@ -356,15 +357,22 @@ void ProfileMenuView::OnSignoutButtonClicked() {
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
 }
+#endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::OnSigninButtonClicked() {
   RecordClick(ActionableItem::kSigninButton);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1260291): Add support for Lacros.
+  NOTIMPLEMENTED();
+#else
   if (!perform_menu_actions())
     return;
   Hide();
   browser()->signin_view_controller()->ShowSignin(
       profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+#endif
 }
 
 void ProfileMenuView::OnOtherProfileSelected(
@@ -610,7 +618,7 @@ void ProfileMenuView::BuildFeatureButtons() {
     }
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   const bool has_primary_account =
       !profile->IsGuestSession() &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
