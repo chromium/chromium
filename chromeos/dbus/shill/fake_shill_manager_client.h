@@ -106,12 +106,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       FakeShillSimulatedResult configuration_result) override;
   base::Value GetEnabledServiceList() const override;
   void ClearProfiles() override;
+  void SetShouldReturnNullProperties(bool value) override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
 
  private:
   void SetDefaultProperties();
+  void PassNullopt(DBusMethodCallback<base::Value> callback) const;
   void PassStubProperties(DBusMethodCallback<base::Value> callback) const;
   void PassStubGeoNetworks(DBusMethodCallback<base::Value> callback) const;
   void CallNotifyObserversPropertyChanged(const std::string& property);
@@ -171,6 +173,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   FakeShillSimulatedResult simulate_configuration_result_ =
       FakeShillSimulatedResult::kSuccess;
+
+  bool return_null_properties_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

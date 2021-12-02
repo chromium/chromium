@@ -123,6 +123,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Clears profile list.
     virtual void ClearProfiles() = 0;
 
+    // Set (or unset) stub client state to return nullopt on GetProperties().
+    virtual void SetShouldReturnNullProperties(bool value) = 0;
+
    protected:
     virtual ~TestInterface() {}
   };

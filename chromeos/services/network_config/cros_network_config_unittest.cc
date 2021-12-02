@@ -610,6 +610,20 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  std::vector<std::string> GetSupportedVpnTypes() {
+    std::vector<std::string> result;
+    base::RunLoop run_loop;
+    cros_network_config()->GetSupportedVpnTypes(base::BindOnce(
+        [](std::vector<std::string>& result, base::OnceClosure quit_closure,
+           const std::vector<std::string>& return_value) {
+          result = std::move(return_value);
+          std::move(quit_closure).Run();
+        },
+        std::ref(result), run_loop.QuitClosure()));
+    run_loop.Run();
+    return result;
+  }
+
   bool ContainsVpnDeviceState(
       std::vector<mojom::DeviceStatePropertiesPtr> devices) {
     for (auto& device : devices) {
@@ -2036,6 +2050,21 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
 
   RequestTrafficCountersAndCompareTrafficCounters(
       "wifi1_guid", traffic_counters.Clone(), ComparisonType::DOUBLE);
+}
+
+TEST_F(CrosNetworkConfigTest, GetSupportedVpnTypes) {
+  std::vector<std::string> result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 0u);
+
+  helper()->manager_test()->SetManagerProperty(
+      shill::kSupportedVPNTypesProperty, base::Value("l2tpipsec,openvpn"));
+  result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 2u);
+
+  helper()->manager_test()->SetShouldReturnNullProperties(true);
+  result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 0u);
+  helper()->manager_test()->SetShouldReturnNullProperties(false);
 }
 
 }  // namespace network_config

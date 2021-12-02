@@ -3084,6 +3084,11 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
     GetSupportedVpnTypesCallback callback,
     absl::optional<base::Value> properties) {
   std::vector<std::string> result;
+  if (!properties) {
+    NET_LOG(ERROR) << "GetSupportedVpnTypes: GetProperties failed.";
+    std::move(callback).Run(result);
+    return;
+  }
   const base::Value* value =
       properties->FindKey(shill::kSupportedVPNTypesProperty);
   if (value) {
