@@ -95,7 +95,7 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   host_impl_->BeginCommit(pending_commit_state()->source_frame_number);
   TreeSynchronizer::SynchronizeTrees(thread_unsafe_commit_state(),
                                      active_tree());
-  active_tree()->SetPropertyTrees(property_trees());
+  active_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
   mutator_host()->PushPropertiesTo(host_impl_->mutator_host());
@@ -113,7 +113,7 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
   pending_tree()->set_source_frame_number(SourceFrameNumber());
   TreeSynchronizer::SynchronizeTrees(thread_unsafe_commit_state(),
                                      pending_tree());
-  pending_tree()->SetPropertyTrees(property_trees());
+  pending_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
   mutator_host()->PushPropertiesTo(host_impl_->mutator_host());

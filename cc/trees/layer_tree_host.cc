@@ -387,7 +387,8 @@ void LayerTreeHost::FinishCommitOnImplThread(
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
 
-    PushPropertyTreesTo(commit_state, unsafe_state, sync_tree);
+    sync_tree->PullPropertyTreesFrom(unsafe_state.root_layer.get(),
+                                     unsafe_state.property_trees);
     sync_tree->lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedPropertyTrees);
 
     if (commit_state.needs_surface_ranges_sync) {
@@ -493,26 +494,6 @@ void LayerTreeHost::ImageDecodesFinished(
     std::move(it->second).Run(pair.second);
     pending_image_decodes_.erase(it);
   }
-}
-
-void LayerTreeHost::PushPropertyTreesTo(CommitState& commit_state,
-                                        ThreadUnsafeCommitState& unsafe_state,
-                                        LayerTreeImpl* tree_impl) {
-  bool property_trees_changed_on_active_tree =
-      tree_impl->IsActiveTree() && tree_impl->property_trees()->changed;
-  // Property trees may store damage status. We preserve the sync tree damage
-  // status by pushing the damage status from sync tree property trees to main
-  // thread property trees or by moving it onto the layers.
-  if (unsafe_state.root_layer.get() && property_trees_changed_on_active_tree) {
-    if (unsafe_state.property_trees.sequence_number ==
-        tree_impl->property_trees()->sequence_number)
-      tree_impl->property_trees()->PushChangeTrackingTo(
-          &unsafe_state.property_trees);
-    else
-      tree_impl->MoveChangeTrackingToLayers();
-  }
-
-  tree_impl->SetPropertyTrees(&unsafe_state.property_trees);
 }
 
 void LayerTreeHost::SetNextCommitWaitsForActivation() {

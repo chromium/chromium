@@ -519,7 +519,7 @@ OwnedLayerImplList LayerTreeImpl::DetachLayersKeepingRootLayerForTesting() {
   return layers;
 }
 
-void LayerTreeImpl::SetPropertyTrees(PropertyTrees* property_trees) {
+void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees) {
   // Updating the scroll tree shouldn't clobber the currently scrolling node so
   // stash it and restore it at the end of this method.  To maintain the
   // current scrolling node we need to use element ids which are stable across
@@ -532,13 +532,13 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees* property_trees) {
 
   std::vector<std::unique_ptr<RenderSurfaceImpl>> old_render_surfaces;
   property_trees_.effect_tree.TakeRenderSurfaces(&old_render_surfaces);
-  property_trees_ = *property_trees;
+  property_trees_ = property_trees;
   bool render_surfaces_changed =
       property_trees_.effect_tree.CreateOrReuseRenderSurfaces(
           &old_render_surfaces, this);
   if (render_surfaces_changed)
     set_needs_update_draw_properties();
-  property_trees->effect_tree.PushCopyRequestsTo(&property_trees_.effect_tree);
+  property_trees.effect_tree.PushCopyRequestsTo(&property_trees_.effect_tree);
   property_trees_.is_main_thread = false;
   property_trees_.is_active = IsActiveTree();
   // The value of some effect node properties (like is_drawn) depends on
@@ -555,6 +555,21 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees* property_trees) {
   SetCurrentlyScrollingNode(scrolling_node);
 }
 
+void LayerTreeImpl::PullPropertyTreesFrom(Layer* root_layer,
+                                          PropertyTrees& property_trees) {
+  // Property trees may store damage status. We preserve the sync tree damage
+  // status by pushing the damage status from sync tree property trees to main
+  // thread property trees or by moving it onto the layers.
+  if (root_layer && IsActiveTree() && property_trees_.changed) {
+    if (property_trees.sequence_number == property_trees_.sequence_number)
+      property_trees_.PushChangeTrackingTo(&property_trees);
+    else
+      MoveChangeTrackingToLayers();
+  }
+
+  SetPropertyTrees(property_trees);
+}
+
 void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
   TRACE_EVENT0("cc", "LayerTreeImpl::PushPropertyTreesTo");
   // Property trees may store damage status. We preserve the active tree
@@ -568,7 +583,7 @@ void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
       target_tree->MoveChangeTrackingToLayers();
   }
 
-  target_tree->SetPropertyTrees(&property_trees_);
+  target_tree->SetPropertyTrees(property_trees_);
 
   EventMetrics::List events_metrics;
   events_metrics.swap(events_metrics_from_main_thread_);

@@ -343,7 +343,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
                           host_->active_tree());
 
   host_->active_tree()->SetPropertyTrees(
-      layer_tree_root->layer_tree_host()->property_trees());
+      *layer_tree_root->layer_tree_host()->property_trees());
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
                                         host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
