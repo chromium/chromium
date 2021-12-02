@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="WebAudio.AudioBuffer.Length" units="frames"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The length (in frames) requested by createBuffer(). Recorded for every call
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintCategory" units="units"
-    expires_after="2022-01-02">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     If provided, the latencyHint option category of &quot;interactive&quot;,
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintMilliSeconds" units="ms"
-    expires_after="2022-01-02">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     If the latencyHint is provided and is a floating-point number, the value in
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.CallbackBufferSize" units="units"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The callback buffer size (in audio frames) for WebAudio rendering between
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.Autoplay" enum="WebAudioAutoplayStatus"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The autoplay status of an AudioContext when destroyed. This include all
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.UnlockType"
-    enum="WebAudioAutoplayUnlockType" expires_after="2021-12-31">
+    enum="WebAudioAutoplayUnlockType" expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     Records how an AudioContext was unlocked (if it was). This is recorded when
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.ConvolverNode.ImpulseResponseLength" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The duration in millisec of impulse responses for a ConvolverNode. Recorded
@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.IIRFilterNode.Order" units="units"
-    expires_after="2022-01-06">
+    expires_after="2022-06-30">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The order of the WebAudio IIRFilterNode. The order is one less than the
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.OfflineAudioContext.ChannelCount" units="units"
-    expires_after="2022-01-06">
+    expires_after="2022-06-30">
   <obsolete>
     Removed 2021-01-12. See crbug.com/1165240.
   </obsolete>
