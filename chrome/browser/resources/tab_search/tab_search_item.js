@@ -18,6 +18,7 @@ import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {Tab, TabGroup} from './tab_search.mojom-webui.js';
 import {highlightText} from './tab_search_utils.js';
+import {TabAlertState} from './tabs.mojom-webui.js';
 
 /**
  * @constructor
@@ -93,6 +94,61 @@ export class TabSearchItem extends TabSearchItemBase {
    */
   groupSvgDisplay_(tabData) {
     return tabData.tabGroup ? 'block' : 'none';
+  }
+
+  /**
+   *
+   * @param {!TabData} tabData
+   * @returns {boolean}
+   * @private
+   */
+  isOpenTabAndHasMediaAlert_(tabData) {
+    if (tabData.type != TabItemType.OPEN_TAB || !tabData.tab.alertStates ||
+        tabData.tab.alertStates.length == 0) {
+      return false;
+    }
+
+    /* Current UI mocks only have specs for the following media related alert
+     * states. */
+    const validAlertState = (alert) => alert == TabAlertState.kMediaRecording ||
+        alert == TabAlertState.kAudioPlaying ||
+        alert == TabAlertState.kAudioMuting;
+
+    return tabData.tab.alertStates.some(validAlertState);
+  }
+
+  /**
+   * Determines the display attribute value for the media indicator.
+   * @param {!TabData} tabData
+   * @returns {string}
+   * @private
+   */
+  mediaAlertVisibility_(tabData) {
+    return this.isOpenTabAndHasMediaAlert_(tabData) ? 'block' : 'none';
+  }
+
+  /**
+   * Returns the correct media alert indicator class name.
+   * @param {!TabData} tabData
+   * @returns {string}
+   * @private
+   */
+  getMediaAlertImageClass_(tabData) {
+    if (!this.isOpenTabAndHasMediaAlert_(tabData)) {
+      return '';
+    }
+    for (const alert of tabData.tab.alertStates) {
+      // Ordered in the same priority as GetTabAlertStatesForContents.
+      if (alert == TabAlertState.kMediaRecording) {
+        return 'media-recording';
+      } else if (alert == TabAlertState.kAudioPlaying) {
+        return 'audio-playing';
+      } else if (alert == TabAlertState.kAudioMuting) {
+        return 'audio-muting';
+      }
+    }
+
+    return '';
   }
 
   /**

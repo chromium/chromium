@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Tab, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabAlertState} from 'chrome://tab-search.top-chrome/tabs.mojom-webui.js';
 
 import {assertDeepEquals, assertEquals, assertNotEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -156,4 +157,66 @@ suite('TabSearchItemTest', () => {
     assertNotEquals(
         null, tabSearchItem.shadowRoot.querySelector('#groupTitle'));
   });
+
+  test('MediaAlertIndicatorPresence', async () => {
+    const token = sampleToken(1, 1);
+    const tab = /** @type {!Tab} */ ({
+      active: true,
+      alertStates: [TabAlertState.kMediaRecording, TabAlertState.kAudioPlaying],
+      index: 0,
+      isDefaultFavicon: true,
+      lastActiveTimeTicks: {internalValue: BigInt(0)},
+      pinned: false,
+      showIcon: true,
+      tabId: 0,
+      groupId: token,
+      url: {url: 'https://example.com'},
+      title: 'Example.com site',
+    });
+
+    await setupTest(/** @type {!TabData} */ ({
+      hostname: 'example',
+      tab,
+      type: TabItemType.OPEN_TAB,
+      highlightRanges: {},
+    }));
+
+    const recordingMediaAlert =
+        tabSearchItem.shadowRoot.querySelector('#mediaAlert');
+    assertNotEquals(null, recordingMediaAlert);
+    assertEquals('media-recording', recordingMediaAlert.getAttribute('class'));
+  });
+
+  test('MediaAlertIndicatorPresenceWithUnsupportedAlert', async () => {
+    /* Since we currently don't consider DesktopCapturing, the AudioPlaying
+     * should be displayed */
+    const token = sampleToken(1, 1);
+    const tab = /** @type {!Tab} */ ({
+      active: true,
+      alertStates:
+          [TabAlertState.kDesktopCapturing, TabAlertState.kAudioPlaying],
+      index: 0,
+      isDefaultFavicon: true,
+      lastActiveTimeTicks: {internalValue: BigInt(0)},
+      pinned: false,
+      showIcon: true,
+      tabId: 0,
+      groupId: token,
+      url: {url: 'https://example.com'},
+      title: 'Example.com site',
+    });
+
+    await setupTest(/** @type {!TabData} */ ({
+      hostname: 'example',
+      tab,
+      type: TabItemType.OPEN_TAB,
+      highlightRanges: {},
+    }));
+
+    const audioMediaAlert =
+        tabSearchItem.shadowRoot.querySelector('#mediaAlert');
+    assertNotEquals(null, audioMediaAlert);
+    assertEquals('audio-playing', audioMediaAlert.getAttribute('class'));
+  });
+
 });

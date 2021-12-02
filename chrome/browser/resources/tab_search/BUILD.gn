@@ -51,7 +51,12 @@ if (optimize_webui) {
 generate_grd("build_grd") {
   grd_prefix = "tab_search"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "tab_search.html" ]
+  input_files = [
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "tab_search.html",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
 

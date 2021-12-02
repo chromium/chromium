@@ -92,6 +92,24 @@
   #groupDot {
     fill: var(--group-dot-color);
   }
+
+  #mediaAlert[display = 'block'] {
+    height: var(--mwb-icon-size);
+    width: var(--mwb-icon-size);
+  }
+
+  #mediaAlert[class = 'media-recording'] {
+    content: url(alert_indicators/tab_media_recording.svg);
+  }
+
+  #mediaAlert[class = 'audio-playing'] {
+    content: url(alert_indicators/tab_audio_rounded.svg);
+  }
+
+  #mediaAlert[class = 'audio-muting'] {
+    content: url(alert_indicators/tab_audio_muting_rounded.svg);
+  }
+
 </style>
 
 <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
@@ -115,6 +133,8 @@
     </div>
   </div>
 </div>
+<img id="mediaAlert" display$="[[mediaAlertVisibility_(data)]]"
+  class$="[[getMediaAlertImageClass_(data)]]"></img>
 <template is="dom-if" if="[[isCloseable_(data.type)]]">
   <div class="button-container">
     <cr-icon-button id="closeButton"
