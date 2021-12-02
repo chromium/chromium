@@ -25,7 +25,7 @@ void DeleteSharedFiles(std::vector<base::FilePath> file_paths) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   for (const base::FilePath& name : file_paths) {
-    base::DeleteFile(name);
+    base::DeletePathRecursively(name);
   }
 }
 

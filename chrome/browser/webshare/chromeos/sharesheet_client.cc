@@ -79,6 +79,17 @@ blink::mojom::ShareError SharesheetResultToShareError(
   }
 }
 
+// Deletes immediate parent directories of specified |file_paths|, after waiting
+// |delay|.
+void ScheduleSharedFileDirectoryDeletion(std::vector<base::FilePath> file_paths,
+                                         base::TimeDelta delay) {
+  for (size_t i = 0; i < file_paths.size(); ++i)
+    file_paths[i] = file_paths[i].DirName();
+
+  webshare::PrepareDirectoryTask::ScheduleSharedFileDeletion(
+      std::move(file_paths), delay);
+}
+
 }  // namespace
 
 namespace webshare {
@@ -233,8 +244,8 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
 
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
-    PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(current_share_->file_paths), base::Minutes(0));
+    ScheduleSharedFileDirectoryDeletion(std::move(current_share_->file_paths),
+                                        base::Minutes(0));
     current_share_ = absl::nullopt;
     return;
   }
@@ -251,7 +262,7 @@ void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
     return;
 
   std::move(current_share_->callback).Run(SharesheetResultToShareError(result));
-  PrepareDirectoryTask::ScheduleSharedFileDeletion(
+  ScheduleSharedFileDirectoryDeletion(
       std::move(current_share_->file_paths),
       PrepareDirectoryTask::kSharedFileLifetime);
   current_share_ = absl::nullopt;
