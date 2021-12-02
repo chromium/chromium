@@ -47,12 +47,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 
 @end
 
-@implementation CRWContextMenuController {
-  // This is an ivar instead of a property. As a property, the struct gets
-  // copied whenever an inner field is to be changed. The change happens in the
-  // copy, which is then dropped right after, leaving the original intact.
-  absl::optional<web::ContextMenuParams> _contextMenuParams;
-}
+@implementation CRWContextMenuController
 
 @synthesize highlightView = _highlightView;
 @synthesize dismissView = _dismissView;
@@ -105,61 +100,11 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   CGPoint locationInWebView =
       [self.webView.scrollView convertPoint:location fromView:interaction.view];
 
-  // While traditionally using dispatch_async would be used here, we have to
-  // instead use CFRunLoop because dispatch_async blocks the thread. As this
-  // function is called by iOS when it detects the user's force touch, it is on
-  // the main thread and we cannot block that. CFRunLoop instead just loops on
-  // the main thread until the completion block is fired.
-  __block BOOL isRunLoopNested = NO;
-  __block BOOL javascriptEvaluationComplete = NO;
-  __block BOOL isRunLoopComplete = NO;
+  absl::optional<web::ContextMenuParams> params =
+      [self fetchContextMenuParamsAtLocation:locationInWebView];
 
-  // Clear params in case elementFetcher fails, which would lead to a popping
-  // a context menu with the previous context menu params.
-  _contextMenuParams.reset();
-
-  __weak __typeof(self) weakSelf = self;
-  [self.elementFetcher
-      fetchDOMElementAtPoint:locationInWebView
-           completionHandler:^(const web::ContextMenuParams& params) {
-             __typeof(self) strongSelf = weakSelf;
-             javascriptEvaluationComplete = YES;
-             if (!strongSelf)
-               return;
-             strongSelf->_contextMenuParams = params;
-             if (isRunLoopNested) {
-               CFRunLoopStop(CFRunLoopGetCurrent());
-             }
-           }];
-
-  // Make sure to timeout in case the JavaScript doesn't return in a timely
-  // manner. While this is executing, the scrolling on the page is frozen.
-  // Interacting with the page will force this method to return even before any
-  // of this code is called.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                               (int64_t)(kJavaScriptTimeout * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   if (!isRunLoopComplete) {
-                     // JavaScript didn't complete. Cancel the JavaScript and
-                     // return.
-                     CFRunLoopStop(CFRunLoopGetCurrent());
-                     __typeof(self) strongSelf = weakSelf;
-                     [strongSelf.elementFetcher cancelFetches];
-                   }
-                 });
-
-  // CFRunLoopRun isn't necessary if javascript evaluation is completed by the
-  // time we reach this line.
-  if (!javascriptEvaluationComplete) {
-    isRunLoopNested = YES;
-    ContextMenuNestedCFRunLoop();
-    isRunLoopNested = NO;
-  }
-
-  isRunLoopComplete = YES;
-
-  if (!_contextMenuParams.has_value() ||
-      !web::CanShowContextMenuForParams(_contextMenuParams.value())) {
+  if (!params.has_value() ||
+      !web::CanShowContextMenuForParams(params.value())) {
     return nil;
   }
 
@@ -174,13 +119,12 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   self.highlightView.center = location;
   self.dismissView.center = location;
 
-  _contextMenuParams.value().location =
-      [self.webView convertPoint:location fromView:interaction.view];
+  params.value().location = [self.webView convertPoint:location
+                                              fromView:interaction.view];
 
   __block UIContextMenuConfiguration* configuration;
   self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, _contextMenuParams.value(),
-      ^(UIContextMenuConfiguration* conf) {
+      self.webState, params.value(), ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });
 
@@ -228,6 +172,61 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
       }
     }
   }
+}
+
+// Fetches the context menu params for the element at |locationInWebView|. The
+// returned params can be empty.
+- (absl::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
+    (CGPoint)locationInWebView {
+  // While traditionally using dispatch_async would be used here, we have to
+  // instead use CFRunLoop because dispatch_async blocks the thread. As this
+  // function is called by iOS when it detects the user's force touch, it is on
+  // the main thread and we cannot block that. CFRunLoop instead just loops on
+  // the main thread until the completion block is fired.
+  __block BOOL isRunLoopNested = NO;
+  __block BOOL javascriptEvaluationComplete = NO;
+  __block BOOL isRunLoopComplete = NO;
+
+  __block absl::optional<web::ContextMenuParams> resultParams;
+
+  __weak __typeof(self) weakSelf = self;
+  [self.elementFetcher
+      fetchDOMElementAtPoint:locationInWebView
+           completionHandler:^(const web::ContextMenuParams& params) {
+             javascriptEvaluationComplete = YES;
+             resultParams = params;
+             if (isRunLoopNested) {
+               CFRunLoopStop(CFRunLoopGetCurrent());
+             }
+           }];
+
+  // Make sure to timeout in case the JavaScript doesn't return in a timely
+  // manner. While this is executing, the scrolling on the page is frozen.
+  // Interacting with the page will force this method to return even before any
+  // of this code is called.
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                               (int64_t)(kJavaScriptTimeout * NSEC_PER_SEC)),
+                 dispatch_get_main_queue(), ^{
+                   if (!isRunLoopComplete) {
+                     // JavaScript didn't complete. Cancel the JavaScript and
+                     // return.
+                     CFRunLoopStop(CFRunLoopGetCurrent());
+                     __typeof(self) strongSelf = weakSelf;
+                     [strongSelf.elementFetcher cancelFetches];
+                   }
+                 });
+
+  // CFRunLoopRun isn't necessary if javascript evaluation is completed by the
+  // time we reach this line.
+  if (!javascriptEvaluationComplete) {
+    isRunLoopNested = YES;
+    ContextMenuNestedCFRunLoop();
+    isRunLoopNested = NO;
+  }
+
+  isRunLoopComplete = YES;
+
+  return resultParams;
 }
 
 @end
