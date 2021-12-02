@@ -1016,7 +1016,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
     auto found = _ntpCoordinatorsForWebStates.find(webState);
-    if (found != _ntpCoordinatorsForWebStates.end()) {
+    if (found != _ntpCoordinatorsForWebStates.end() &&
+        [found->second isStarted]) {
       count++;
     }
   }
