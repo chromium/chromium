@@ -668,41 +668,12 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
 }
 
-TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserAction) {
-  base::UserActionTester user_action_tester;
-  InstallExtensionAndLayout("Test Extension");
-
-  ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
-  ASSERT_TRUE(menu_item);
-
-  constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kPinButtonUserAction));
-  ClickPinButton(menu_item);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kPinButtonUserAction));
-  ClickPinButton(menu_item);  // Unpin.
-  EXPECT_EQ(2, user_action_tester.GetActionCount(kPinButtonUserAction));
-}
-
 TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
   InstallExtensionAndLayout("Test Extension");
 
   ExtensionsMenuView* const menu_view = extensions_menu();
   EXPECT_FALSE(menu_view->GetWindowTitle().empty());
   EXPECT_TRUE(menu_view->GetAccessibleWindowTitle().empty());
-}
-
-TEST_F(ExtensionsMenuViewUnitTest, ContextMenuButtonUserAction) {
-  base::UserActionTester user_action_tester;
-  InstallExtensionAndLayout("Test Extension");
-
-  ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
-  ASSERT_TRUE(menu_item);
-
-  constexpr char kContextMenuButtonUserAction[] =
-      "Extensions.Toolbar.MoreActionsButtonPressedFromMenu";
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kContextMenuButtonUserAction));
-  ClickContextMenuButton(menu_item);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kContextMenuButtonUserAction));
 }
 
 // TODO(crbug.com/984654): When supported, add a test to verify the
