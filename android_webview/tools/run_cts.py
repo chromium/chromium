@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -143,7 +143,7 @@ def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):
 
 def MergeTestResults(existing_results_json, additional_results_json):
   """Appends results in additional_results_json to existing_results_json."""
-  for k, v in additional_results_json.iteritems():
+  for k, v in additional_results_json.items():
     if k not in existing_results_json:
       existing_results_json[k] = v
     else:
