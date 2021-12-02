@@ -11,6 +11,7 @@
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
 namespace base {
@@ -27,13 +28,14 @@ namespace remoting {
 // ChromotingHostServices interface. Note that each process should have only one
 // ChromotingHostServicesClient instance. Making multiple connections to the
 // ChromotingHostServices server is not supported.
-class ChromotingHostServicesClient final {
+class ChromotingHostServicesClient final
+    : public ChromotingHostServicesProvider {
  public:
   ChromotingHostServicesClient();
   ChromotingHostServicesClient(const ChromotingHostServicesClient&) = delete;
   ChromotingHostServicesClient& operator=(const ChromotingHostServicesClient&) =
       delete;
-  ~ChromotingHostServicesClient();
+  ~ChromotingHostServicesClient() override;
 
   // Configures the current process to allow it to communicate with the
   // ChromotingHostServices server. Must be called once before using any
@@ -46,7 +48,7 @@ class ChromotingHostServicesClient final {
   // Note that when the session is not remoted, you will still get a callable
   // interface, but all outgoing IPCs will be silently dropped, and any pending
   // receivers/remotes/message pipes sent will be closed.
-  mojom::ChromotingSessionServices* GetSessionServices() const;
+  mojom::ChromotingSessionServices* GetSessionServices() const override;
 
  private:
   // Attempts to connect to the IPC server if the connection has not been

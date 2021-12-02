@@ -24,9 +24,6 @@ namespace remoting {
 
 namespace {
 
-constexpr char kChromeRemoteDesktopSessionEnvVar[] =
-    "CHROME_REMOTE_DESKTOP_SESSION";
-
 constexpr char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
 
 void ShowMessageDialog(const std::string& message) {
@@ -111,10 +108,6 @@ RemoteOpenUrlClientDelegateLinux::RemoteOpenUrlClientDelegateLinux()
 }
 
 RemoteOpenUrlClientDelegateLinux::~RemoteOpenUrlClientDelegateLinux() = default;
-
-bool RemoteOpenUrlClientDelegateLinux::IsInRemoteDesktopSession() {
-  return environment_->HasVar(kChromeRemoteDesktopSessionEnvVar);
-}
 
 void RemoteOpenUrlClientDelegateLinux::OpenUrlOnFallbackBrowser(
     const GURL& url) {

@@ -5,6 +5,7 @@
 module remoting.mojom;
 
 import "remoting/host/mojom/webauthn_proxy.mojom";
+import "remoting/host/mojom/remote_url_opener.mojom";
 
 // ChromotingHostServices defines the APIs that live in the Chromoting host
 // process and are accessed from isolated client applications (such as the
@@ -36,4 +37,8 @@ interface ChromotingSessionServices {
   // Binds the WebAuthnProxy interface which allows the WebAuthn native
   // messaging host to send remote WebAuthn requests to the remote client.
   BindWebAuthnProxy(pending_receiver<WebAuthnProxy> receiver);
+
+  // Binds the RemoteUrlOpener interface which allows applications on the host
+  // side to open links on the remote client's browser.
+  BindRemoteUrlOpener(pending_receiver<RemoteUrlOpener> receiver);
 };

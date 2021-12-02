@@ -57,6 +57,7 @@ class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class MouseShapePump;
+class RemoteOpenUrlMessageHandler;
 class RemoteWebAuthnMessageHandler;
 class ScreenControls;
 
@@ -176,6 +177,8 @@ class ClientSession : public protocol::HostStub,
   // mojom::ChromotingSessionServices implementation.
   void BindWebAuthnProxy(
       mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+  void BindRemoteUrlOpener(
+      mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) override;
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
@@ -379,6 +382,7 @@ class ClientSession : public protocol::HostStub,
       desktop_and_cursor_composer_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
+  base::WeakPtr<RemoteOpenUrlMessageHandler> remote_open_url_message_handler_;
 
   mojo::ReceiverSet<mojom::ChromotingSessionServices>
       session_services_receivers_;

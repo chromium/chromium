@@ -6,22 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_util.h"
 
 namespace remoting {
 
-namespace {
-constexpr char kRemoteOpenUrlIpcChannelName[] = "crd_remote_open_url_ipc";
-}  // namespace
-
 const char kRemoteOpenUrlDataChannelName[] = "remote-open-url";
-
-const mojo::NamedPlatformChannel::ServerName& GetRemoteOpenUrlIpcChannelName() {
-  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
-      server_name(WorkingDirectoryIndependentServerNameFromUTF8(
-          kRemoteOpenUrlIpcChannelName));
-  return *server_name;
-}
 
 #if defined(OS_WIN)
 

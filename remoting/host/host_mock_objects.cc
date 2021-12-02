@@ -124,4 +124,14 @@ MockUrlForwarderConfigurator::MockUrlForwarderConfigurator() = default;
 
 MockUrlForwarderConfigurator::~MockUrlForwarderConfigurator() = default;
 
+MockChromotingSessionServices::MockChromotingSessionServices() = default;
+
+MockChromotingSessionServices::~MockChromotingSessionServices() = default;
+
+MockChromotingHostServicesProvider::MockChromotingHostServicesProvider() =
+    default;
+
+MockChromotingHostServicesProvider::~MockChromotingHostServicesProvider() =
+    default;
+
 }  // namespace remoting

@@ -22,7 +22,6 @@ class RemoteOpenUrlClientDelegateLinux final
   RemoteOpenUrlClientDelegateLinux();
   ~RemoteOpenUrlClientDelegateLinux() override;
 
-  bool IsInRemoteDesktopSession() override;
   void OpenUrlOnFallbackBrowser(const GURL& url) override;
   void ShowOpenUrlError(const GURL& url) override;
 

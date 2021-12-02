@@ -10,9 +10,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/remote_open_url/remote_open_url_constants.h"
+#include "remoting/host/chromoting_host_services_client.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/mojom/remote_url_opener.mojom.h"
 
 #if defined(OS_LINUX)
 #include "remoting/host/remote_open_url/remote_open_url_client_delegate_linux.h"
@@ -41,15 +42,15 @@ std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
 
 RemoteOpenUrlClient::RemoteOpenUrlClient()
     : RemoteOpenUrlClient(CreateDelegate(),
-                          GetRemoteOpenUrlIpcChannelName(),
+                          std::make_unique<ChromotingHostServicesClient>(),
                           kRequestTimeout) {}
 
 RemoteOpenUrlClient::RemoteOpenUrlClient(
     std::unique_ptr<Delegate> delegate,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    std::unique_ptr<ChromotingHostServicesProvider> api_provider,
     base::TimeDelta request_timeout)
     : delegate_(std::move(delegate)),
-      server_name_(server_name),
+      api_provider_(std::move(api_provider)),
       request_timeout_(request_timeout) {}
 
 RemoteOpenUrlClient::~RemoteOpenUrlClient() {
@@ -83,30 +84,15 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
     return;
   }
 
-  if (!delegate_->IsInRemoteDesktopSession()) {
-    LOG(WARNING) << "The program is not run on a remote session. "
-                 << "Falling back to the previous default browser...";
+  auto* api = api_provider_->GetSessionServices();
+  if (!api) {
+    HOST_LOG << "Can't make IPC connection. The host is probably not running.";
     OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
     return;
   }
-
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name_);
-  if (!endpoint.is_valid()) {
-    HOST_LOG << "Can't make IPC connection. URL forwarding is probably "
-             << "disabled by the client.";
-    OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
-    return;
-  }
-
-  mojo::PendingRemote<mojom::RemoteUrlOpener> pending_remote(
-      connection_.Connect(std::move(endpoint)), /* version= */ 0);
-  if (!pending_remote.is_valid()) {
-    LOG(WARNING) << "Invalid message pipe.";
-    OnOpenUrlResponse(mojom::OpenUrlResult::FAILURE);
-    return;
-  }
-
-  remote_.Bind(std::move(pending_remote));
+  api->BindRemoteUrlOpener(remote_.BindNewPipeAndPassReceiver());
+  remote_.set_disconnect_handler(base::BindOnce(
+      &RemoteOpenUrlClient::OnIpcDisconnected, base::Unretained(this)));
   timeout_timer_.Start(FROM_HERE, request_timeout_, this,
                        &RemoteOpenUrlClient::OnRequestTimeout);
   remote_->OpenUrl(url_, base::BindOnce(&RemoteOpenUrlClient::OnOpenUrlResponse,
@@ -130,10 +116,18 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
       NOTREACHED();
   }
   std::move(done_).Run();
+  remote_.reset();
 }
 
 void RemoteOpenUrlClient::OnRequestTimeout() {
   LOG(ERROR) << "Timed out waiting for OpenUrl response.";
+  OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
+}
+
+void RemoteOpenUrlClient::OnIpcDisconnected() {
+  LOG(WARNING) << "IPC disconnected.";
+  // This generally happens either because the session is not remoted, or the
+  // client hasn't enabled URL forwarding, so we fallback locally.
   OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
 }
 

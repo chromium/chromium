@@ -168,6 +168,7 @@ source_set("chromoting_host_services_client") {
   sources = [
     "chromoting_host_services_client.cc",
     "chromoting_host_services_client.h",
+    "chromoting_host_services_provider.h",
   ]
   deps = [
     ":ipc_constants",
@@ -658,9 +659,11 @@ static_library("test_support") {
 
   deps = [
     ":base",
+    ":chromoting_host_services_client",
     ":client_session_control",
     "//remoting/codec:encoder",
     "//remoting/host/file_transfer:common",
+    "//remoting/host/mojom",
     "//remoting/host/remote_open_url:common",
     "//remoting/host/remote_open_url:test_support",
     "//remoting/host/security_key:security_key",

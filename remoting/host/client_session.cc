@@ -652,6 +652,18 @@ void ClientSession::BindWebAuthnProxy(
   remote_webauthn_message_handler_->AddReceiver(std::move(receiver));
 }
 
+void ClientSession::BindRemoteUrlOpener(
+    mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!remote_open_url_message_handler_) {
+    LOG(WARNING) << "No RemoteOpenUrl message handler is found. Binding "
+                 << "request rejected.";
+    return;
+  }
+  remote_open_url_message_handler_->AddReceiver(std::move(receiver));
+}
+
 void ClientSession::RegisterCreateHandlerCallbackForTesting(
     const std::string& prefix,
     protocol::DataChannelManager::CreateHandlerCallback constructor) {
@@ -936,7 +948,9 @@ void ClientSession::CreateRemoteOpenUrlMessageHandler(
   // RemoteOpenUrlMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
-  new RemoteOpenUrlMessageHandler(channel_name, std::move(pipe));
+  auto* unowned_handler =
+      new RemoteOpenUrlMessageHandler(channel_name, std::move(pipe));
+  remote_open_url_message_handler_ = unowned_handler->GetWeakPtr();
 }
 
 void ClientSession::CreateUrlForwarderControlMessageHandler(

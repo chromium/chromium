@@ -12,12 +12,14 @@
 #include "net/base/ip_endpoint.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
@@ -243,6 +245,33 @@ class MockUrlForwarderConfigurator final : public UrlForwarderConfigurator {
               SetUpUrlForwarder,
               (const SetUpUrlForwarderCallback& callback),
               (override));
+};
+
+class MockChromotingSessionServices : public mojom::ChromotingSessionServices {
+ public:
+  MockChromotingSessionServices();
+  ~MockChromotingSessionServices() override;
+
+  MOCK_METHOD(void,
+              BindRemoteUrlOpener,
+              (mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver),
+              (override));
+  MOCK_METHOD(void,
+              BindWebAuthnProxy,
+              (mojo::PendingReceiver<mojom::WebAuthnProxy> receiver),
+              (override));
+};
+
+class MockChromotingHostServicesProvider
+    : public ChromotingHostServicesProvider {
+ public:
+  MockChromotingHostServicesProvider();
+  ~MockChromotingHostServicesProvider() override;
+
+  MOCK_METHOD(mojom::ChromotingSessionServices*,
+              GetSessionServices,
+              (),
+              (const, override));
 };
 
 }  // namespace remoting

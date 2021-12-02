@@ -6,13 +6,10 @@
 #define REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CONSTANTS_H_
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace remoting {
 
 extern const char kRemoteOpenUrlDataChannelName[];
-
-const mojo::NamedPlatformChannel::ServerName& GetRemoteOpenUrlIpcChannelName();
 
 #if defined(OS_WIN)
 

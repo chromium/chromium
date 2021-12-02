@@ -27,9 +27,9 @@ source_set("common") {
     "//mojo/public/cpp/system",
     "//remoting/base",
     "//remoting/host:base",
+    "//remoting/host:chromoting_host_services_client",
     "//remoting/host:resources",
     "//remoting/host:settings",
-    "//remoting/host/mojo_ipc",
     "//remoting/host/mojom",
     "//remoting/protocol",
     "//remoting/resources",
@@ -78,6 +78,8 @@ source_set("main") {
     "//base:i18n",
     "//mojo/core/embedder",
     "//remoting/host",
+    "//remoting/host:base",
+    "//remoting/host:chromoting_host_services_client",
     "//remoting/host:logging",
     "//remoting/host:resources",
     "//remoting/host:settings",
@@ -101,14 +103,10 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "remote_open_url_message_handler_unittest.cc" ]
-
-  # Temporarily disable RemoteOpenUrlClientTest on unsupported platforms due to
-  # dependency on MojoIpcServer.
-  # TODO(yuweih): Undo once https://crrev.com/c/3271578 is checked in.
-  if (is_linux || is_win) {
-    sources += [ "remote_open_url_client_unittest.cc" ]
-  }
+  sources = [
+    "remote_open_url_client_unittest.cc",
+    "remote_open_url_message_handler_unittest.cc",
+  ]
 
   deps = [
     ":common",
@@ -117,8 +115,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/platform",
     "//net",
     "//remoting/base",
-    "//remoting/host/mojo_ipc",
-    "//remoting/host/mojo_ipc:test_support",
+    "//remoting/host:test_support",
     "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/protocol:test_support",
