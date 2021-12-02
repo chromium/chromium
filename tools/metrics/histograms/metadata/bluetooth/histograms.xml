@@ -91,9 +91,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Availability.v2" enum="BluetoothAvailability"
-    expires_after="2021-12-31">
+    expires_after="2022-12-31">
   <owner>kenrb@chromium.org</owner>
-  <owner>kpaulhamus@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
   <summary>
     Determines the availability and capabilities of the Bluetooth driver. This
     metric is logged on startup.
