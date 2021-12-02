@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/default_tick_clock.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
@@ -48,6 +49,25 @@ namespace blink {
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:
+  class VectorBufferPool {
+   public:
+    VectorBufferPool();
+    ~VectorBufferPool() = default;
+    // Allocate will return any available buffer and the vector buffer size
+    // needs to be resized manually by the user.
+    std::unique_ptr<std::vector<uint8_t>> Allocate();
+    void Return(std::unique_ptr<std::vector<uint8_t>> buffer);
+
+   private:
+    struct BufferEntry {
+      base::TimeTicks last_use_time;
+      std::unique_ptr<std::vector<uint8_t>> buffer;
+    };
+    base::Lock buffer_lock_;
+    std::vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
+    const base::TickClock* tick_clock_;
+  };
+
   class PLATFORM_EXPORT SharedResources
       : public base::RefCountedThreadSafe<SharedResources> {
    public:
@@ -62,16 +82,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         const gfx::Size& natural_size,
         base::TimeDelta timestamp);
 
-    // Temporary frames may have a different format or size than scaled frames.
-    // However, VideoFramePool doesn't work nicely if the requested frame size
-    // or format changes on the fly. Therefore a separate pool is used for
-    // temporary frames.
-    virtual scoped_refptr<media::VideoFrame> CreateTemporaryFrame(
-        media::VideoPixelFormat format,
-        const gfx::Size& coded_size,
-        const gfx::Rect& visible_rect,
-        const gfx::Size& natural_size,
-        base::TimeDelta timestamp);
+    // Temporary vector buffers used in the video pre-processing for the input
+    // frame before encoding, e.g. scaling the input frame to natural size for
+    // encoding. Buffer needs manually release after using.
+    virtual std::unique_ptr<std::vector<uint8_t>> CreateTemporaryVectorBuffer();
+    virtual void ReleaseTemporaryVectorBuffer(
+        std::unique_ptr<std::vector<uint8_t>> buffer);
 
     virtual scoped_refptr<viz::RasterContextProvider>
     GetRasterContextProvider();
@@ -103,7 +119,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
    private:
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
-    media::VideoFramePool pool_for_tmp_frames_;
+    VectorBufferPool pool_for_tmp_vectors_;
 
     std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
         accelerated_frame_pool_;

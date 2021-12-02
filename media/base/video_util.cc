@@ -695,6 +695,12 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
     return Status(StatusCode::kUnsupportedFrameFormatError);
 
+  // I420A can only be produced from I420A.
+  if (dst_frame.format() == PIXEL_FORMAT_I420A &&
+      src_frame.format() != PIXEL_FORMAT_I420A) {
+    return Status(StatusCode::kUnsupportedFrameFormatError);
+  }
+
   if ((dst_frame.format() == PIXEL_FORMAT_I420 ||
        dst_frame.format() == PIXEL_FORMAT_NV12) &&
       (src_frame.format() == PIXEL_FORMAT_XBGR ||
@@ -706,7 +712,7 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
 
     size_t src_stride = src_frame.stride(VideoFrame::kARGBPlane);
     const uint8_t* src_data = src_frame.visible_data(VideoFrame::kARGBPlane);
-    if (src_frame.visible_rect() != dst_frame.visible_rect()) {
+    if (src_frame.visible_rect().size() != dst_frame.visible_rect().size()) {
       size_t tmp_buffer_size = VideoFrame::AllocationSize(
           src_frame.format(), dst_frame.coded_size());
       if (tmp_buf.size() < tmp_buffer_size)
@@ -758,9 +764,21 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
   // Converting between YUV formats doesn't change the color space.
   dst_frame.set_color_space(src_frame.ColorSpace());
 
-  // Both frames are I420, only scaling is required.
-  if (dst_frame.format() == PIXEL_FORMAT_I420 &&
-      src_frame.format() == PIXEL_FORMAT_I420) {
+  // Both frames are I420 or I420A, only scaling is required.
+  if ((dst_frame.format() == PIXEL_FORMAT_I420 ||
+       dst_frame.format() == PIXEL_FORMAT_I420A) &&
+      (src_frame.format() == PIXEL_FORMAT_I420 ||
+       src_frame.format() == PIXEL_FORMAT_I420A)) {
+    if (dst_frame.format() == PIXEL_FORMAT_I420A) {
+      libyuv::ScalePlane(src_frame.visible_data(media::VideoFrame::kAPlane),
+                         src_frame.stride(media::VideoFrame::kAPlane),
+                         src_frame.visible_rect().width(),
+                         src_frame.visible_rect().height(),
+                         dst_frame.data(media::VideoFrame::kAPlane),
+                         dst_frame.stride(media::VideoFrame::kAPlane),
+                         dst_frame.coded_size().width(),
+                         dst_frame.coded_size().height(), kDefaultFiltering);
+    }
     int error = libyuv::I420Scale(
         src_frame.visible_data(VideoFrame::kYPlane),
         src_frame.stride(VideoFrame::kYPlane),

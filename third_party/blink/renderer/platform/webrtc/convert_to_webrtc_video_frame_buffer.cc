@@ -187,142 +187,57 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
   }
 }
 
-scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
+scoped_refptr<media::VideoFrame> MakeScaledVideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
     scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
-        shared_resources) {
-  // ARGB pixel format may be produced by readback of texture backed frames.
-  DCHECK(source_frame->format() == media::PIXEL_FORMAT_I420 ||
-         source_frame->format() == media::PIXEL_FORMAT_I420A ||
-         source_frame->format() == media::PIXEL_FORMAT_ARGB ||
-         source_frame->format() == media::PIXEL_FORMAT_XRGB ||
-         source_frame->format() == media::PIXEL_FORMAT_ABGR ||
-         source_frame->format() == media::PIXEL_FORMAT_XBGR);
-  const bool has_alpha = source_frame->format() == media::PIXEL_FORMAT_I420A;
-  // Convert to I420 and scale to the natural size specified in
+        shared_resources,
+    bool source_is_nv12) {
+  media::VideoPixelFormat dst_format = media::PIXEL_FORMAT_UNKNOWN;
+  bool tmp_buffer_needed = false;
+  if (source_is_nv12) {
+    DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
+    dst_format = media::PIXEL_FORMAT_NV12;
+  } else {
+    // ARGB pixel format may be produced by readback of texture backed frames.
+    if (source_frame->format() != media::PIXEL_FORMAT_I420 &&
+        source_frame->format() != media::PIXEL_FORMAT_I420A) {
+      DCHECK(source_frame->format() == media::PIXEL_FORMAT_ARGB ||
+             source_frame->format() == media::PIXEL_FORMAT_XRGB ||
+             source_frame->format() == media::PIXEL_FORMAT_ABGR ||
+             source_frame->format() == media::PIXEL_FORMAT_XBGR);
+      tmp_buffer_needed = true;
+    }
+
+    const bool has_alpha = source_frame->format() == media::PIXEL_FORMAT_I420A;
+    dst_format =
+        has_alpha ? media::PIXEL_FORMAT_I420A : media::PIXEL_FORMAT_I420;
+  }
+
+  // Convert to dst format and scale to the natural size specified in
   // |source_frame|.
   auto dst_frame = shared_resources->CreateFrame(
-      has_alpha ? media::PIXEL_FORMAT_I420A : media::PIXEL_FORMAT_I420,
-      source_frame->natural_size(), gfx::Rect(source_frame->natural_size()),
-      source_frame->natural_size(), source_frame->timestamp());
+      dst_format, source_frame->natural_size(),
+      gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
+      source_frame->timestamp());
   if (!dst_frame) {
-    LOG(ERROR) << "Failed to create I420 frame from pool.";
+    LOG(ERROR) << "Failed to create dst frame from pool.";
     return nullptr;
   }
   dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
 
-  switch (source_frame->format()) {
-    case media::PIXEL_FORMAT_I420A:
-      libyuv::ScalePlane(source_frame->visible_data(media::VideoFrame::kAPlane),
-                         source_frame->stride(media::VideoFrame::kAPlane),
-                         source_frame->visible_rect().width(),
-                         source_frame->visible_rect().height(),
-                         dst_frame->data(media::VideoFrame::kAPlane),
-                         dst_frame->stride(media::VideoFrame::kAPlane),
-                         dst_frame->coded_size().width(),
-                         dst_frame->coded_size().height(), libyuv::kFilterBox);
-      // Fallthrough to I420 in order to scale the YUV planes as well.
-      ABSL_FALLTHROUGH_INTENDED;
-    case media::PIXEL_FORMAT_I420:
-      libyuv::I420Scale(source_frame->visible_data(media::VideoFrame::kYPlane),
-                        source_frame->stride(media::VideoFrame::kYPlane),
-                        source_frame->visible_data(media::VideoFrame::kUPlane),
-                        source_frame->stride(media::VideoFrame::kUPlane),
-                        source_frame->visible_data(media::VideoFrame::kVPlane),
-                        source_frame->stride(media::VideoFrame::kVPlane),
-                        source_frame->visible_rect().width(),
-                        source_frame->visible_rect().height(),
-                        dst_frame->data(media::VideoFrame::kYPlane),
-                        dst_frame->stride(media::VideoFrame::kYPlane),
-                        dst_frame->data(media::VideoFrame::kUPlane),
-                        dst_frame->stride(media::VideoFrame::kUPlane),
-                        dst_frame->data(media::VideoFrame::kVPlane),
-                        dst_frame->stride(media::VideoFrame::kVPlane),
-                        dst_frame->coded_size().width(),
-                        dst_frame->coded_size().height(), libyuv::kFilterBox);
-      break;
-    case media::PIXEL_FORMAT_XRGB:
-    case media::PIXEL_FORMAT_ARGB:
-    case media::PIXEL_FORMAT_XBGR:
-    case media::PIXEL_FORMAT_ABGR: {
-      auto convert_func = (source_frame->format() == media::PIXEL_FORMAT_XRGB ||
-                           source_frame->format() == media::PIXEL_FORMAT_ARGB)
-                              ? libyuv::ARGBToI420
-                              : libyuv::ABGRToI420;
-
-      auto visible_size = source_frame->visible_rect().size();
-      if (visible_size == dst_frame->coded_size()) {
-        // Direct conversion to dst_frame with no scaling.
-        convert_func(source_frame->visible_data(media::VideoFrame::kARGBPlane),
-                     source_frame->stride(media::VideoFrame::kARGBPlane),
-                     dst_frame->data(media::VideoFrame::kYPlane),
-                     dst_frame->stride(media::VideoFrame::kYPlane),
-                     dst_frame->data(media::VideoFrame::kUPlane),
-                     dst_frame->stride(media::VideoFrame::kUPlane),
-                     dst_frame->data(media::VideoFrame::kVPlane),
-                     dst_frame->stride(media::VideoFrame::kVPlane),
-                     visible_size.width(), visible_size.height());
-      } else {
-        // Convert to I420 tmp image and then scale to the dst_frame.
-        auto tmp_frame = shared_resources->CreateTemporaryFrame(
-            media::PIXEL_FORMAT_I420, visible_size, gfx::Rect(visible_size),
-            visible_size, source_frame->timestamp());
-        convert_func(source_frame->visible_data(media::VideoFrame::kARGBPlane),
-                     source_frame->stride(media::VideoFrame::kARGBPlane),
-                     tmp_frame->data(media::VideoFrame::kYPlane),
-                     tmp_frame->stride(media::VideoFrame::kYPlane),
-                     tmp_frame->data(media::VideoFrame::kUPlane),
-                     tmp_frame->stride(media::VideoFrame::kUPlane),
-                     tmp_frame->data(media::VideoFrame::kVPlane),
-                     tmp_frame->stride(media::VideoFrame::kVPlane),
-                     visible_size.width(), visible_size.height());
-        libyuv::I420Scale(tmp_frame->data(media::VideoFrame::kYPlane),
-                          tmp_frame->stride(media::VideoFrame::kYPlane),
-                          tmp_frame->data(media::VideoFrame::kUPlane),
-                          tmp_frame->stride(media::VideoFrame::kUPlane),
-                          tmp_frame->data(media::VideoFrame::kVPlane),
-                          tmp_frame->stride(media::VideoFrame::kVPlane),
-                          visible_size.width(), visible_size.height(),
-                          dst_frame->data(media::VideoFrame::kYPlane),
-                          dst_frame->stride(media::VideoFrame::kYPlane),
-                          dst_frame->data(media::VideoFrame::kUPlane),
-                          dst_frame->stride(media::VideoFrame::kUPlane),
-                          dst_frame->data(media::VideoFrame::kVPlane),
-                          dst_frame->stride(media::VideoFrame::kVPlane),
-                          dst_frame->coded_size().width(),
-                          dst_frame->coded_size().height(), libyuv::kFilterBox);
-      }
-    } break;
-    default:
-      NOTREACHED();
+  if (tmp_buffer_needed) {
+    std::unique_ptr<std::vector<uint8_t>> tmp_buffer =
+        shared_resources->CreateTemporaryVectorBuffer();
+    media::Status status =
+        media::ConvertAndScaleFrame(*source_frame, *dst_frame, *tmp_buffer);
+    shared_resources->ReleaseTemporaryVectorBuffer(std::move(tmp_buffer));
+    return status == media::StatusCode::kOk ? dst_frame : nullptr;
   }
-  return dst_frame;
-}
 
-scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
-    scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
-        shared_resources) {
-  DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
-  auto dst_frame = shared_resources->CreateFrame(
-      media::PIXEL_FORMAT_NV12, source_frame->natural_size(),
-      gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
-      source_frame->timestamp());
-  dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
-  const auto& nv12_planes = dst_frame->layout().planes();
-  libyuv::NV12Scale(source_frame->visible_data(media::VideoFrame::kYPlane),
-                    source_frame->stride(media::VideoFrame::kYPlane),
-                    source_frame->visible_data(media::VideoFrame::kUVPlane),
-                    source_frame->stride(media::VideoFrame::kUVPlane),
-                    source_frame->visible_rect().width(),
-                    source_frame->visible_rect().height(),
-                    dst_frame->data(media::VideoFrame::kYPlane),
-                    nv12_planes[media::VideoFrame::kYPlane].stride,
-                    dst_frame->data(media::VideoFrame::kUVPlane),
-                    nv12_planes[media::VideoFrame::kUVPlane].stride,
-                    dst_frame->coded_size().width(),
-                    dst_frame->coded_size().height(), libyuv::kFilterBox);
-  return dst_frame;
+  std::vector<uint8_t> tmp_buffer;
+  media::Status status =
+      media::ConvertAndScaleFrame(*source_frame, *dst_frame, tmp_buffer);
+  return status == media::StatusCode::kOk ? dst_frame : nullptr;
 }
 
 scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
@@ -352,13 +267,9 @@ scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
   if ((source_is_nv12 || source_is_i420) && no_scaling_needed) {
     // |source_frame| already has correct pixel format and resolution.
     return source_frame;
-  } else if (source_is_nv12) {
-    // Output NV12 only if no conversion is needed.
-    return MakeScaledNV12VideoFrame(std::move(source_frame),
-                                    std::move(shared_resources));
   }
-  return MakeScaledI420VideoFrame(std::move(source_frame),
-                                  std::move(shared_resources));
+  return MakeScaledVideoFrame(std::move(source_frame),
+                              std::move(shared_resources), source_is_nv12);
 }
 
 }  // anonymous namespace
