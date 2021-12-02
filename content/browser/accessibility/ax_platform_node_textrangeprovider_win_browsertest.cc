@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   }
 
   // Now remove all children from the DOM and verify the text range created from
-  // "Node 1" returns UIA_E_ELEMENTNOTAVAILABLE.
+  // "Node 1" is still valid (it got moved to a non-deleted ancestor node).
   {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -1112,10 +1112,17 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
     waiter.WaitForNotification();
 
-    int result_count = 0;
-    ASSERT_UIA_ELEMENTNOTAVAILABLE(text_range_provider->MoveEndpointByUnit(
-        TextPatternRangeEndpoint_End, TextUnit_Character, 1, &result_count));
-    EXPECT_EQ(result_count, 0);
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+        /*count*/ 1,
+        /*expected_text*/ L"",
+        /*expected_count*/ 0);
+
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+        /*count*/ -1,
+        /*expected_text*/ L"",
+        /*expected_count*/ 0);
   }
 }
 

@@ -1307,7 +1307,7 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
 // static
 void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredPosition(
     AXPositionInstance& position) {
-  if (!position->IsValid())
+  if (position->IsNullPosition() || !position->IsValid())
     return;
 
   if (position->IsIgnored()) {
@@ -1590,52 +1590,97 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
     ax_tree_manager->RemoveObserver(this);
 }
 
+// Ensures that our endpoints are located on non-deleted nodes (step 1, case A
+// and B). See comment in header file for more details.
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
-    OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
-  // If an endpoint is on a node that will be deleted, move endpoint up to a
-  // parent since we want to ensure that the endpoints of a text range provider
-  // are always valid positions. Otherwise, the range will be stuck on nodes
-  // that don't exist anymore.
+    OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) {
+  // If an endpoint is on a node that is included in a subtree that is about to
+  // be deleted, move endpoint up to the parent of the deleted subtree's root
+  // since we want to ensure that the endpoints of a text range provider are
+  // always valid positions. Otherwise, the range will be stuck on nodes that
+  // don't exist anymore.
   DCHECK(tree);
   DCHECK(node);
   DCHECK_EQ(tree->GetAXTreeID(), node->tree()->GetAXTreeID());
-  if (tree->GetAXTreeID() == start_->tree_id() &&
-      node->id() == start_->anchor_id()) {
-    AXPositionInstance new_start = start_->CreateParentPosition();
-    AXPositionInstance end_for_comparison = end_->Clone();
 
-    // Convert |new_start| and |end_for_comparison| to unignored positions to
-    // avoid AXPosition::SlowCompareTo in the < operator below.
-    NormalizeAsUnignoredPosition(new_start);
-    NormalizeAsUnignoredPosition(end_for_comparison);
-    DCHECK(!new_start->IsIgnored());
-    DCHECK(!end_for_comparison->IsIgnored());
+  AdjustEndpointForSubtreeDeletion(tree, node, true /* is_start_endpoint */);
+  AdjustEndpointForSubtreeDeletion(tree, node, false /* is_start_endpoint */);
+}
 
-    // Create a degenerate range at |end_| if we have an inverted range -
-    // which occurs when the |end_| comes before the |start_|. However, if the
-    // |end_| is positioned on the deleted node, don't create a degenerate range
-    // yet as that position will be updated below.
-    if (node->id() != end_->anchor_id() && *end_for_comparison < *new_start)
-      new_start = end_->Clone();
-    SetStart(std::move(new_start));
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    AdjustEndpointForSubtreeDeletion(AXTree* tree,
+                                     AXNode* node,
+                                     bool is_start_endpoint) {
+  AXPositionInstance endpoint =
+      is_start_endpoint ? start_->Clone() : end_->Clone();
+  if (tree->GetAXTreeID() != endpoint->tree_id())
+    return;
+
+  // When the subtree of the root node will be deleted, we can be certain that
+  // our endpoint should be invalidated. We know it's the root node when the
+  // node doesn't have a parent.
+  if (!node->GetParent()) {
+    is_start_endpoint ? SetStart(AXNodePosition::CreateNullPosition())
+                      : SetEnd(AXNodePosition::CreateNullPosition());
+    return;
   }
-  if (tree->GetAXTreeID() == end_->tree_id() &&
-      node->id() == end_->anchor_id()) {
-    AXPositionInstance new_end = end_->CreateParentPosition();
-    AXPositionInstance start_for_comparison = start_->Clone();
 
-    // Convert |new_end| and |start_for_comparison| to unignored positions to
-    // avoid AXPosition::SlowCompareTo in the < operator below.
-    NormalizeAsUnignoredPosition(new_end);
-    NormalizeAsUnignoredPosition(start_for_comparison);
-    DCHECK(!new_end->IsIgnored());
-    DCHECK(!start_for_comparison->IsIgnored());
+  AXPositionInstance new_endpoint = endpoint->CreateAncestorPosition(
+      node, ax::mojom::MoveDirection::kForward);
+  // When a null position is created from CreateAncestorPosition, it means that
+  // |node| wasn't an ancestor of |new_endpoint| or the anchor it's on. This
+  // means that endpoint is unaffected by the node deletion.
+  if (new_endpoint->IsNullPosition())
+    return;
 
-    // Create a degenerate range at |start_| if we have an inverted range -
-    // which occurs when the |end_| comes before the |start_|.
-    if (*new_end < *start_for_comparison)
-      new_end = start_->Clone();
-    SetEnd(std::move(new_end));
+  // Obviously, we want the position to be on the parent of |node| and not on
+  // |node| itself since it's about to be deleted.
+  new_endpoint = new_endpoint->CreateParentPosition();
+  AXPositionInstance other_endpoint =
+      is_start_endpoint ? end_->Clone() : start_->Clone();
+
+  // Convert |new_endpoint| and |other_endpoint| to unignored positions to avoid
+  // AXPosition::SlowCompareTo in the < operator below.
+  NormalizeAsUnignoredPosition(new_endpoint);
+  NormalizeAsUnignoredPosition(other_endpoint);
+  DCHECK(!new_endpoint->IsIgnored());
+  DCHECK(!other_endpoint->IsIgnored());
+
+  // Create a degenerate range at |end_| if we have an inverted range - which
+  // occurs when the |end_| comes before the |start_|.
+  if (is_start_endpoint) {
+    if (*other_endpoint < *new_endpoint)
+      new_endpoint = other_endpoint->Clone();
+
+    SetStart(std::move(new_endpoint));
+    validation_necessary_for_start_ = {tree->GetAXTreeID(), node->id()};
+  } else {
+    if (*new_endpoint < *other_endpoint)
+      new_endpoint = other_endpoint->Clone();
+
+    SetEnd(std::move(new_endpoint));
+    validation_necessary_for_end_ = {tree->GetAXTreeID(), node->id()};
+  }
+}
+
+// Ensures that our endpoints are always valid (step 2, all scenarios). See
+// comment in header file for more details.
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
+    AXTree* tree,
+    AXNodeID node_id) {
+  DCHECK(tree);
+
+  if (validation_necessary_for_start_.has_value() &&
+      validation_necessary_for_start_->tree_id == tree->GetAXTreeID() &&
+      validation_necessary_for_start_->node_id == node_id) {
+    SetStart(start_->AsValidPosition());
+    validation_necessary_for_start_ = absl::nullopt;
+  }
+  if (validation_necessary_for_end_.has_value() &&
+      validation_necessary_for_end_->tree_id == tree->GetAXTreeID() &&
+      validation_necessary_for_end_->node_id == node_id) {
+    SetEnd(end_->AsValidPosition());
+    validation_necessary_for_end_ = absl::nullopt;
   }
 }
 
