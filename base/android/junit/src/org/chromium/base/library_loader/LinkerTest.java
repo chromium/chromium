@@ -200,8 +200,6 @@ public class LinkerTest {
         // Set a fake RELRO FD so that it is not silently ignored when taking the LibInfo from the
         // (simulated) outside.
         libInfo.mRelroFd = 1023;
-        // Ignore closing the fake FD.
-        Mockito.doNothing().when(libInfo).close();
         // Create the bundle following the _internal_ format of the Linker. Not great, but shorter
         // than factoring out this logic from the Linker only for testing.
         Bundle relros = libInfo.toBundle();
