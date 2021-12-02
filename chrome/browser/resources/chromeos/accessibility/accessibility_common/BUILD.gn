@@ -43,17 +43,17 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/earcons/audio_initiate.wav",
     "dictation/earcons/null_selection.wav",
     "dictation/input_controller.js",
-    "dictation/input_text_strategy.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
     "dictation/metrics_utils.js",
-    "dictation/parse_strategy.js",
-    "dictation/pumpkin_parse_strategy.js",
-    "dictation/simple_parse_strategy.js",
-    "dictation/speech_parser.js",
+    "dictation/parse/input_text_strategy.js",
+    "dictation/parse/parse_strategy.js",
+    "dictation/parse/pumpkin_parse_strategy.js",
+    "dictation/parse/simple_parse_strategy.js",
+    "dictation/parse/speech_parser.js",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -63,14 +63,14 @@ run_jsbundler("accessibility_common_copied_files") {
 }
 
 if (enable_pumpkin_for_dictation) {
-  pumpkin_output_dir = "$accessibility_common_dir/dictation/pumpkin"
+  pumpkin_output_dir = "$accessibility_common_dir/dictation/parse/pumpkin"
 
   action("unzip_pumpkin_files") {
-    script = "dictation/pumpkin/unzip_pumpkin.py"
-    sources = [ "dictation/pumpkin/pumpkin_files.zip" ]
+    script = "dictation/parse/pumpkin/unzip_pumpkin.py"
+    sources = [ "dictation/parse/pumpkin/pumpkin_files.zip" ]
     args = [
-      "--output-dir=resources/chromeos/accessibility/accessibility_common/dictation/pumpkin",
-      rebase_path("dictation/pumpkin/pumpkin_files.zip", root_build_dir),
+      "--output-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",
+      rebase_path("dictation/parse/pumpkin/pumpkin_files.zip", root_build_dir),
     ]
     outputs = [
       "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
@@ -84,12 +84,13 @@ if (enable_pumpkin_for_dictation) {
 
 copy("pumpkin_availability_files") {
   if (enable_pumpkin_for_dictation) {
-    sources = [ "dictation/pumpkin/include_pumpkin.js" ]
+    sources = [ "dictation/parse/pumpkin/include_pumpkin.js" ]
   } else {
-    sources = [ "dictation/pumpkin/exclude_pumpkin.js" ]
+    sources = [ "dictation/parse/pumpkin/exclude_pumpkin.js" ]
   }
-  outputs =
-      [ "$accessibility_common_dir/dictation/pumpkin/pumpkin_availability.js" ]
+  outputs = [
+    "$accessibility_common_dir/dictation/parse/pumpkin/pumpkin_availability.js",
+  ]
 }
 
 source_set("browser_tests") {
@@ -194,14 +195,14 @@ js_library("magnifier") {
 js_library("dictation") {
   sources = [ "dictation/dictation.js" ]
   deps = [
-    ":dictation_commands",
     ":dictation_input_controller",
     ":dictation_metrics",
+    ":speech_parsing",
   ]
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/speech_recognition_private.js",
-    "dictation/pumpkin/pumpkin_tagger_externs.js",
+    "dictation/parse/pumpkin/pumpkin_tagger_externs.js",
   ]
 }
 
@@ -228,18 +229,18 @@ js_library("dictation_macros") {
   ]
 }
 
-js_library("dictation_commands") {
+js_library("speech_parsing") {
   sources = [
-    "dictation/input_text_strategy.js",
-    "dictation/parse_strategy.js",
-    "dictation/pumpkin_parse_strategy.js",
-    "dictation/simple_parse_strategy.js",
-    "dictation/speech_parser.js",
+    "dictation/parse/input_text_strategy.js",
+    "dictation/parse/parse_strategy.js",
+    "dictation/parse/pumpkin_parse_strategy.js",
+    "dictation/parse/simple_parse_strategy.js",
+    "dictation/parse/speech_parser.js",
   ]
   if (enable_pumpkin_for_dictation) {
-    sources += [ "dictation/pumpkin/include_pumpkin.js" ]
+    sources += [ "dictation/parse/pumpkin/include_pumpkin.js" ]
   } else {
-    sources += [ "dictation/pumpkin/exclude_pumpkin.js" ]
+    sources += [ "dictation/parse/pumpkin/exclude_pumpkin.js" ]
   }
   deps = [
     ":dictation_input_controller",

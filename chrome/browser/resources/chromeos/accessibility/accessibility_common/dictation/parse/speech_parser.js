@@ -6,9 +6,9 @@
  * @fileoverview Handles speech parsing for dictation.
  */
 
-import {InputController} from './input_controller.js';
+import {InputController} from './../input_controller.js';
+import {Macro} from './../macros/macro.js';
 import {InputTextStrategy} from './input_text_strategy.js';
-import {Macro} from './macros/macro.js';
 import {ParseStrategy} from './parse_strategy.js';
 // PumpkinAvailability is based on the gn argument enable_pumpkin_for_dictation,
 // and pumpkin_availability.js is copied from either include_pumpkin.js

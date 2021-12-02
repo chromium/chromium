@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InputController} from './input_controller.js';
-import {InputTextViewMacro} from './macros/input_text_view_macro.js';
+import {InputController} from './../input_controller.js';
+import {InputTextViewMacro} from './../macros/input_text_view_macro.js';
 import {ParseStrategy} from './parse_strategy.js';
 
 /** A parsing strategy that tells text to be input as-is. */

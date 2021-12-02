@@ -6,7 +6,7 @@ import {InputController} from './input_controller.js';
 import {Macro} from './macros/macro.js';
 import {MacroName} from './macros/macro_names.js';
 import {MetricsUtils} from './metrics_utils.js';
-import {SpeechParser} from './speech_parser.js';
+import {SpeechParser} from './parse/speech_parser.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
 const ResultEvent =

@@ -7,12 +7,12 @@
  * semantic parser.
  */
 
-import {InputController} from './input_controller.js';
-import {InputTextViewMacro} from './macros/input_text_view_macro.js';
-import {ListCommandsMacro} from './macros/list_commands_macro.js';
-import {Macro} from './macros/macro.js';
-import {MacroName} from './macros/macro_names.js';
-import * as RepeatableKeyPressMacro from './macros/repeatable_key_press_macro.js';
+import {InputController} from './../input_controller.js';
+import {InputTextViewMacro} from './../macros/input_text_view_macro.js';
+import {ListCommandsMacro} from './../macros/list_commands_macro.js';
+import {Macro} from './../macros/macro.js';
+import {MacroName} from './../macros/macro_names.js';
+import * as RepeatableKeyPressMacro from './../macros/repeatable_key_press_macro.js';
 import {ParseStrategy} from './parse_strategy.js';
 // PumpkinAvailability is based on the gn argument enable_pumpkin_for_dictation,
 // and pumpkin_availability.js is copied from either include_pumpkin.js
