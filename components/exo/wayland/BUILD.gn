@@ -127,7 +127,6 @@ source_set("wayland") {
     deps += [
       "//build/config/linux/libdrm",
       "//third_party/wayland-protocols:linux_dmabuf_protocol",
-      "//ui/gfx/linux:drm",
       "//ui/ozone",
     ]
 
