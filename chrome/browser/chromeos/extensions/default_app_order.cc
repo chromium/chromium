@@ -239,11 +239,11 @@ void ExternalLoader::Load() {
         std::string app_id = i.GetString();
         app_ids_.push_back(app_id);
       } else if (i.GetAsDictionary(&dict)) {
-        bool flag = false;
-        if (dict->GetBoolean(kOemAppsFolderAttr, &flag) && flag) {
+        if (dict->FindBoolPath(kOemAppsFolderAttr).value_or(false)) {
           oem_apps_folder_name_ = GetLocaleSpecificStringImpl(
               dict, locale, kLocalizedContentAttr, kNameAttr);
-        } else if (dict->GetBoolean(kImportDefaultOrderAttr, &flag) && flag) {
+        } else if (dict->FindBoolPath(kImportDefaultOrderAttr)
+                       .value_or(false)) {
           GetDefault(&app_ids_);
         } else {
           LOG(ERROR) << "Invalid syntax in default_app_order.json";
