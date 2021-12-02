@@ -23,6 +23,10 @@
 
 namespace exo {
 
+namespace {
+WaylandServerController* g_instance = nullptr;
+}
+
 // static
 std::unique_ptr<WaylandServerController>
 WaylandServerController::CreateIfNecessary(
@@ -35,6 +39,12 @@ WaylandServerController::CreateIfNecessary(
       std::move(notification_surface_manager),
       std::move(input_method_surface_manager),
       std::move(toast_surface_manager));
+}
+
+// static
+WaylandServerController* WaylandServerController::Get() {
+  DCHECK(g_instance);
+  return g_instance;
 }
 
 WaylandServerController::~WaylandServerController() {}
@@ -50,6 +60,8 @@ WaylandServerController::WaylandServerController(
                                     std::move(input_method_surface_manager),
                                     std::move(toast_surface_manager),
                                     std::move(data_exchange_delegate))) {
+  DCHECK(!g_instance);
+  g_instance = this;
   CreateServer(
       /*capabilities=*/nullptr,
       base::BindOnce([](bool success, const base::FilePath& path) {
@@ -93,7 +105,8 @@ void WaylandServerController::OnStarted(std::unique_ptr<wayland::Server> server,
 }
 
 void WaylandServerController::DeleteServer(const base::FilePath& path) {
-  // Maybe delete async.
+  DCHECK(servers_.contains(path));
+  wayland::Server::DestroyAsync(std::move(servers_.at(path)));
   servers_.erase(path);
 }
 

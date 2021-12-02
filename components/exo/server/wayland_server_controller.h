@@ -39,6 +39,10 @@ class WaylandServerController {
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
 
+  // Returns a handle to the global-singletone instance of the server
+  // controller.
+  static WaylandServerController* Get();
+
   WaylandServerController(const WaylandServerController&) = delete;
   WaylandServerController& operator=(const WaylandServerController&) = delete;
 

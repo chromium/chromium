@@ -64,6 +64,10 @@ class Server : public display::DisplayObserver {
       Display* display,
       std::unique_ptr<Capabilities> capabilities);
 
+  // In cases where the server was started asynchronously, this helper can be
+  // used to delete it asynchronously as well.
+  static void DestroyAsync(std::unique_ptr<Server> server);
+
   void StartAsync(StartCallback callback);
   void StartWithDefaultPath(StartCallback callback);
 

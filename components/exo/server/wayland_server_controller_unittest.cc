@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/exo/capabilities.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
@@ -48,21 +49,29 @@ class WaylandServerControllerTest : public ash::AshTestBase {
 TEST_F(WaylandServerControllerTest, RequestServer) {
   WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
 
+  ASSERT_EQ(WaylandServerController::Get(), &wsc);
+
   base::RunLoop loop;
   base::FilePath socket_path;
-  wsc.CreateServer(
-      std::make_unique<TestCapabilities>(),
-      base::BindLambdaForTesting(
-          [&loop, &socket_path](bool success, const base::FilePath& new_path) {
-            socket_path = std::move(new_path);
-            loop.Quit();
-          }));
-
+  {
+    base::ScopedDisallowBlocking no_blocking;
+    WaylandServerController::Get()->CreateServer(
+        std::make_unique<TestCapabilities>(),
+        base::BindLambdaForTesting(
+            [&loop, &socket_path](bool success,
+                                  const base::FilePath& new_path) {
+              socket_path = std::move(new_path);
+              loop.Quit();
+            }));
+  }
   loop.Run();
   EXPECT_FALSE(socket_path.empty());
   EXPECT_TRUE(base::PathExists(socket_path));
 
-  wsc.DeleteServer(socket_path);
+  {
+    base::ScopedDisallowBlocking no_blocking;
+    WaylandServerController::Get()->DeleteServer(socket_path);
+  }
   EXPECT_FALSE(base::PathExists(socket_path));
 }
 

@@ -456,6 +456,25 @@ std::unique_ptr<Server> Server::Create(
   return server;
 }
 
+// static
+void Server::DestroyAsync(std::unique_ptr<Server> server) {
+  // We must delete the actual server on the same thread as it was created on,
+  // so we defer deleting its temporary directory by moving it out of the server
+  // first and deleting it on a blocking thread.
+  base::ScopedTempDir socket_dir = std::move(server->socket_dir_);
+  server.reset();
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(
+          [](base::ScopedTempDir socket_dir) {
+            if (socket_dir.IsValid() && !socket_dir.Delete()) {
+              LOG(ERROR) << "Failed to remove server directory: "
+                         << socket_dir.GetPath();
+            }
+          },
+          std::move(socket_dir)));
+}
+
 void Server::StartAsync(StartCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
