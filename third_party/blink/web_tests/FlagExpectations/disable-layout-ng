@@ -1414,6 +1414,7 @@ crbug.com/591099 svg/dom/viewspec-zoomandpanparams.html [ Failure ]
 crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
 
 crbug.com/674631 external/wpt/css/css-color/inline-opacity-float-child.html [ Failure ]
+crbug.com/1275215 external/wpt/svg/text/scripted/getstartpositionofchar-dominant-baseline.html [ Failure ]
 
 # Off by one errors cause by SwiftShader update
 crbug.com/1266821 compositing/gestures/gesture-tapHighlight-pixel-rotated-div.html [ Failure ]

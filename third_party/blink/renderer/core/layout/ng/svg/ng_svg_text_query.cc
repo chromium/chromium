@@ -203,7 +203,7 @@ gfx::PointF NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
     return gfx::PointF();
   const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
   const float ascent =
-      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
+      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
           item->Style().GetFontBaseline());
   const bool is_ltr = IsLtr(item->ResolvedDirection());
   gfx::PointF point;
@@ -231,7 +231,7 @@ gfx::PointF NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
     return gfx::PointF();
   const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
   const float ascent =
-      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FloatAscent(
+      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
           item->Style().GetFontBaseline());
   const bool is_ltr = IsLtr(item->ResolvedDirection());
   gfx::PointF point;
