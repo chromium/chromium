@@ -222,7 +222,7 @@ constexpr char kCheckingAuctionScript[] = R"(
         !== "https://adstuff.publisher1.com/auction.js") {
       throw new Error("wrong auctionConfig");
     }
-    if (auctionConfig.perBuyerSignals['adplatform.com'].signalsFor
+    if (auctionConfig.perBuyerSignals['https://adplatform.com'].signalsFor
         !== 'Ad Platform') {
       throw new Error("Wrong perBuyerSignals in auctionConfig");
     }

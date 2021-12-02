@@ -48,18 +48,16 @@ namespace {
 //  'seller': 'https://www.example-ssp.com/',
 //  'decisionLogicUrl': 'https://www.example-ssp.com/seller.js',
 //  'trustedScoringSignalsUrl': ...,
-//  'interestGroupBuyers': ['www.example-dsp.com', 'buyer2.com', ...],
-//  'auctionSignals': {...},
-//  'sellerSignals': {...},
-//  'perBuyerSignals': {'www.example-dsp.com': {...},
-//                      'www.another-buyer.com': {...},
+//  'interestGroupBuyers': ['https://www.example-dsp.com', 'https://buyer2.com',
+//  ...], 'auctionSignals': {...}, 'sellerSignals': {...}, 'perBuyerSignals':
+//  {'https://www.example-dsp.com': {...},
+//                      'https://www.another-buyer.com': {...},
 //                       ...}
 // }
 bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                          v8::Local<v8::Context> context,
                          const blink::mojom::AuctionAdConfig& auction_config,
                          std::vector<v8::Local<v8::Value>>* args) {
-  // TODO(morlovich): Unclear on .Serialize vs .host() conventions.
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
@@ -78,7 +76,7 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
       for (const url::Origin& buyer :
            auction_config.interest_group_buyers->get_buyers()) {
         v8::Local<v8::String> v8_buyer;
-        if (!v8_helper->CreateUtf8String(buyer.host()).ToLocal(&v8_buyer))
+        if (!v8_helper->CreateUtf8String(buyer.Serialize()).ToLocal(&v8_buyer))
           return false;
         interest_group_buyers.push_back(v8_buyer);
       }
@@ -103,7 +101,7 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   if (auction_config.per_buyer_signals.has_value()) {
     v8::Local<v8::Object> per_buyer_value = v8::Object::New(isolate);
     for (const auto& kv : auction_config.per_buyer_signals.value()) {
-      if (!v8_helper->InsertJsonValue(context, kv.first.host(), kv.second,
+      if (!v8_helper->InsertJsonValue(context, kv.first.Serialize(), kv.second,
                                       per_buyer_value)) {
         return false;
       }

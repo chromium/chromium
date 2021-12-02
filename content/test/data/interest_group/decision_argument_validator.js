@@ -32,8 +32,8 @@ function validateAuctionConfig(auctionConfig) {
   // auctionConfig.decisionLogicUrl once we decide what to do about URL
   // normalization.
   if (auctionConfig.interestGroupBuyers.length !== 2 ||
-      auctionConfig.interestGroupBuyers[0] !== 'a.test' ||
-      auctionConfig.interestGroupBuyers[1] !== 'd.test') {
+      !auctionConfig.interestGroupBuyers[0].startsWith('https://a.test') ||
+      !auctionConfig.interestGroupBuyers[1].startsWith('https://d.test')) {
     throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
   }
   // If auctionSignals is passed as a JSON string instead of an object,

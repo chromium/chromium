@@ -842,8 +842,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("interestGroupBuyers":"*",)"
       R"("auctionSignals":{"is_auction_signals":true},)"
       R"("sellerSignals":{"is_seller_signals":true},)"
-      R"("perBuyerSignals":{"a.com":{"signals_a":"A"},)"
-      R"("b.com":{"signals_b":"B"}}})";
+      R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
+      R"("https://b.com":{"signals_b":"B"}}})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", std::string() /* extra_code */, kExpectedJson,
       absl::nullopt /* expected_report_url */);
@@ -861,7 +861,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   const char kExpectedJson2[] =
       R"({"seller":"https://example.com",)"
       R"("decisionLogicUrl":"https://example.com/auction.js",)"
-      R"("interestGroupBuyers":["buyer1.com","another-buyer.com"]})";
+      R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"]})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", std::string() /* extra_code */, kExpectedJson2,
       absl::nullopt /* expected_report_url */);
