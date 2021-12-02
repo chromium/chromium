@@ -183,35 +183,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 #  display-lock
 # Some additional bugs that are caused by painting problems are also within this section.
 
-# --- Begin CompositeAfterPaint Tests --
-# Only whitelisted tests run under the virtual suite.
-# More tests run with CompositeAfterPaint on the flag-specific try bot.
-virtual/composite-after-paint/* [ Skip ]
-virtual/composite-after-paint/compositing/backface-visibility/* [ Pass ]
-virtual/composite-after-paint/compositing/backgrounds/* [ Pass ]
-virtual/composite-after-paint/compositing/geometry/abs-position-inside-opacity.html [ Pass ]
-virtual/composite-after-paint/compositing/geometry/composited-html-size.html [ Pass ]
-virtual/composite-after-paint/compositing/geometry/outline-change.html [ Pass ]
-virtual/composite-after-paint/compositing/geometry/tall-page-composited.html [ Pass ]
-virtual/composite-after-paint/compositing/gestures/gesture-tapHighlight-img.html [ Pass ]
-virtual/composite-after-paint/compositing/gestures/gesture-tapHighlight-simple-scaledY.html [ Pass ]
-virtual/composite-after-paint/compositing/iframes/iframe-in-composited-layer.html [ Pass ]
-virtual/composite-after-paint/compositing/masks/mask-of-clipped-layer.html [ Pass ]
-virtual/composite-after-paint/compositing/overflow/clip-rotate-opacity-fixed.html [ Pass ]
-virtual/composite-after-paint/compositing/overlap-blending/children-opacity-huge.html [ Pass ]
-virtual/composite-after-paint/compositing/plugins/* [ Pass ]
-virtual/composite-after-paint/compositing/reflections/reflection-ordering.html [ Pass ]
-virtual/composite-after-paint/compositing/rtl/rtl-overflow-scrolling.html [ Pass ]
-virtual/composite-after-paint/compositing/squashing/squash-composited-input.html [ Pass ]
-virtual/composite-after-paint/compositing/transitions/opacity-on-inline.html [ Pass ]
-virtual/composite-after-paint/compositing/will-change/stacking-context-creation.html [ Pass ]
-virtual/composite-after-paint/compositing/z-order/* [ Pass ]
-virtual/composite-after-paint/paint/background/* [ Pass ]
-virtual/composite-after-paint/paint/filters/* [ Pass ]
-virtual/composite-after-paint/paint/frames/* [ Pass ]
-virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
-# --- End CompositeAfterPaint Tests --
-
 # --- CanvasFormattedText tests ---
 # Fails on linux-rel even though actual and expected appear the same.
 crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
@@ -6720,11 +6691,6 @@ crbug.com/1231699 [ Linux ] fast/reflections/opacity-reflection-transform.html [
 crbug.com/1231699 [ Linux ] svg/custom/focus-ring.svg [ Failure Pass ]
 crbug.com/1231699 [ Linux ] svg/custom/transformed-outlines.svg [ Failure Pass ]
 crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
-
-# linux_layout_tests_composite_after_paint failures.
-crbug.com/1257251 [ Linux ] compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
-crbug.com/1257251 [ Linux ] compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
-crbug.com/1257251 [ Linux ] css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
 
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Crash Failure Pass Skip Timeout ]

@@ -883,7 +883,6 @@ virtual/text-antialias/international/shape-across-elements-simple.html [ Failure
 paint/invalidation/overflow/float-overflow.html [ Failure ]
 scrollingcoordinator/non-fast-scrollable-transform-changed.html [ Crash ]
 svg/zoom/text/zoom-svg-float-border-padding.xml [ Failure ]
-virtual/composite-after-paint/scrollingcoordinator/non-fast-scrollable-transform-changed.html [ Crash ]
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/backplate/forced-colors-mode-backplate-07.html [ Failure ]
 
@@ -930,7 +929,6 @@ crbug.com/1035582 paint/invalidation/table/caret-contenteditable-content-after.h
 crbug.com/1035582 external/wpt/css/css-text-decor/text-decoration-subelements-001.html [ Failure ]
 crbug.com/1035582 paint/background/background-clip-text-descendants.html [ Failure ]
 crbug.com/1035582 tables/mozilla/bugs/bug2479-3.html [ Failure ]
-crbug.com/1035582 virtual/composite-after-paint/paint/background/background-clip-text-descendants.html [ Failure ]
 crbug.com/1035582 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-appearance.html [ Failure ]
 crbug.com/1035582 fast/hidpi/scrollbar-appearance-increase-device-scale-factor.html [ Failure ]
 crbug.com/1035582 paint/invalidation/overflow/float-overflow-right.html [ Failure ]
