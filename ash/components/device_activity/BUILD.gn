@@ -16,9 +16,12 @@ component("device_activity") {
     "//chromeos/network",
     "//components/prefs:prefs",
     "//crypto:crypto",
+    "//google_apis",
+    "//services/network/public/cpp",
     "//third_party/icu",
     "//third_party/private_membership:private_membership",
     "//third_party/private_membership:private_membership_proto",
+    "//url",
   ]
 
   sources = [
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//dbus",
     "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/private_membership:private_membership",
   ]

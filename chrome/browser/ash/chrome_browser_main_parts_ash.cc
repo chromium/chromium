@@ -1165,8 +1165,10 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     device_activity_controller_ =
         std::make_unique<device_activity::DeviceActivityController>();
-    device_activity_controller_->Start(device_activity::Trigger::kNetwork,
-                                       g_browser_process->local_state());
+    device_activity_controller_->Start(
+        device_activity::Trigger::kNetwork, g_browser_process->local_state(),
+        g_browser_process->system_network_context_manager()
+            ->GetSharedURLLoaderFactory());
   }
 
   // Construct a delegate to connect the accessibility component extensions and

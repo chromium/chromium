@@ -8,12 +8,21 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
+#include "url/gurl.h"
+
+namespace network {
+class SimpleURLLoader;
+class SharedURLLoaderFactory;
+}  // namespace network
 
 class PrefService;
 
@@ -37,9 +46,11 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     kHealthCheck,              // Query to perform server health check.
   };
 
-  // Constructor fires device active pings while the device network is
-  // connected.
-  DeviceActivityClient(NetworkStateHandler* handler, PrefService* local_state);
+  // Fires device active pings while the device network is connected.
+  DeviceActivityClient(
+      NetworkStateHandler* handler,
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
@@ -59,6 +70,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Handles device network connecting successfully.
   void OnNetworkOnline();
 
+  // Return Fresnel server network request endpoints determined by the |state_|.
+  GURL GetFresnelURL() const;
+
   // Called when device network comes online as well as by |report_timer_|.
   void TransitionOutOfIdle();
 
@@ -68,7 +82,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   void TransitionToHealthCheck();
 
   // Callback from asynchronous method |TransitionToHealthCheck|.
-  void OnHealthCheckDone();
+  void OnHealthCheckDone(std::unique_ptr<std::string> response_body);
 
   // Send Oprf network request and update |state_|.
   // Before method: |state_| set to |kIdle|.
@@ -104,6 +118,10 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   // Keep track of whether the device is connected to the network.
   bool network_connected_ = false;
+
+  // API key used to authenticate with the Fresnel server. This key is read from
+  // the chrome-internal repository and is not publicly exposed in Chromium.
+  const std::string api_key_;
 
   // TODO(https://crbug.com/1262151): Retrieve the derived secret from VPD.
   // The ChromeOS platform code will provide a derived stable device secret.
@@ -141,6 +159,17 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // |local_state_| outlives the lifetime of this class.
   // Used local state prefs are initialized by |DeviceActivityController|.
   PrefService* const local_state_;
+
+  // Shared |url_loader_| object used to handle ongoing network requests.
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+
+  // The URLLoaderFactory we use to issue network requests.
+  // |url_loader_factory_| outlives |url_loader_|.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Automatically cancels callbacks when the referent of weakptr gets
+  // destroyed.
+  base::WeakPtrFactory<DeviceActivityClient> weak_factory_{this};
 };
 
 }  // namespace device_activity

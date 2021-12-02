@@ -45,10 +45,14 @@ DeviceActivityController::~DeviceActivityController() {
   g_ash_device_activity_controller = nullptr;
 }
 
-void DeviceActivityController::Start(Trigger t, PrefService* local_state) {
+void DeviceActivityController::Start(
+    Trigger t,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (t == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
-        chromeos::NetworkHandler::Get()->network_state_handler(), local_state);
+        chromeos::NetworkHandler::Get()->network_state_handler(), local_state,
+        url_loader_factory);
   }
 }
 

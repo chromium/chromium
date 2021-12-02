@@ -1,4 +1,11 @@
 include_rules = [
   "+crypto",
+  "+google_apis",
   "+third_party/private_membership",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+testing",
+  ],
+}

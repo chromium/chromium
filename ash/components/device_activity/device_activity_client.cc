@@ -11,6 +11,10 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/hmac.h"
+#include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace psm_rlwe = private_membership::rlwe;
@@ -24,7 +28,40 @@ namespace {
 // device active reporting.
 constexpr base::TimeDelta kTimeToRepeat = base::Hours(5);
 
+// General upper bound of expected Fresnel response size in bytes.
+constexpr size_t kMaxFresnelResponseSizeBytes = 1 << 20;  // 1MB;
+
+// Timeout for each Fresnel request.
+constexpr base::TimeDelta kHealthCheckRequestTimeout = base::Seconds(10);
+
+// Default response code to use before retrieving the response code from the
+// actual response body.
+constexpr int32_t kDefaultResponseCode = -1;
+
+// TODO(https://crbug.com/1268095): Refactor to pass base url via. constructor.
+const char kFresnelBaseUrl[] =
+    "https://autopush-crosfresnel-pa.sandbox.googleapis.com";
+
+const char kFresnelHealthCheckEndpoint[] = "/v1/fresnel/healthCheck";
+const char kFresnelImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
+const char kFresnelOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
+const char kFresnelQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
+
 const size_t kHmacDigestLength = 32;
+
+std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
+    const std::string& request_method,
+    const GURL& url,
+    const std::string& api_key) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = url;
+  resource_request->method = request_method;
+  resource_request->headers.SetHeader("x-goog-api-key", api_key);
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      "application/x-protobuf");
+
+  return resource_request;
+}
 
 // TODO(https://crbug.com/1262177): currently the PSM use cases are not synced
 // with google3. Update to retrieve from synced RlweUseCase in file:
@@ -86,13 +123,18 @@ bool IsDailyDeviceActivePingRequired(base::Time prev_ping_ts,
 
 }  // namespace
 
-DeviceActivityClient::DeviceActivityClient(NetworkStateHandler* handler,
-                                           PrefService* local_state)
-    : report_timer_(ConstructReportTimer()),
+DeviceActivityClient::DeviceActivityClient(
+    NetworkStateHandler* handler,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : api_key_(google_apis::GetFresnelAPIKey()),
+      report_timer_(ConstructReportTimer()),
       network_state_handler_(handler),
-      local_state_(local_state) {
+      local_state_(local_state),
+      url_loader_factory_(url_loader_factory) {
   DCHECK(network_state_handler_);
   DCHECK(local_state_);
+  DCHECK(url_loader_factory_);
 
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
                        &DeviceActivityClient::TransitionOutOfIdle);
@@ -134,6 +176,30 @@ void DeviceActivityClient::OnNetworkOnline() {
   TransitionOutOfIdle();
 }
 
+GURL DeviceActivityClient::GetFresnelURL() const {
+  GURL base_url(kFresnelBaseUrl);
+  GURL::Replacements replacements;
+
+  switch (state_) {
+    case State::kHealthCheck:
+      replacements.SetPathStr(kFresnelHealthCheckEndpoint);
+      break;
+    case State::kCheckingMembershipOprf:
+      replacements.SetPathStr(kFresnelOprfRequestEndpoint);
+      break;
+    case State::kCheckingMembershipQuery:
+      replacements.SetPathStr(kFresnelQueryRequestEndpoint);
+      break;
+    case State::kCheckingIn:
+      replacements.SetPathStr(kFresnelImportRequestEndpoint);
+      break;
+    case State::kIdle:
+      NOTREACHED();
+  }
+
+  return base_url.ReplaceComponents(replacements);
+}
+
 // TODO(https://crbug.com/1262189): Add callback to report actives only after
 // synchronizing the system clock.
 void DeviceActivityClient::TransitionOutOfIdle() {
@@ -168,13 +234,43 @@ void DeviceActivityClient::TransitionOutOfIdle() {
 
 void DeviceActivityClient::TransitionToHealthCheck() {
   DCHECK_EQ(state_, State::kIdle);
+  DCHECK(!url_loader_);
+
   state_ = State::kHealthCheck;
 
-  // TODO(https://crbug.com/1262201): Add Health Check network request with
-  // callback to OnHealthCheckDone with response.
+  auto resource_request = GenerateResourceRequest(
+      net::HttpRequestHeaders::kGetMethod, GetFresnelURL(), api_key_);
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 MISSING_TRAFFIC_ANNOTATION);
+
+  url_loader_->SetTimeoutDuration(kHealthCheckRequestTimeout);
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&DeviceActivityClient::OnHealthCheckDone,
+                     weak_factory_.GetWeakPtr()),
+      kMaxFresnelResponseSizeBytes);
 }
 
-void DeviceActivityClient::OnHealthCheckDone() {
+void DeviceActivityClient::OnHealthCheckDone(
+    std::unique_ptr<std::string> response_body) {
+  DCHECK_EQ(state_, State::kHealthCheck);
+
+  int32_t response_code = kDefaultResponseCode;
+  const network::mojom::URLResponseHead* response_info =
+      url_loader_->ResponseInfo();
+
+  if (response_info && response_info->headers) {
+    response_code = response_info->headers->response_code();
+  }
+
+  // TODO(https://crbug.com/1262216): Add UMA histogram for response code by
+  // request type.
+  VLOG(1) << "Health Check Request returned response code " << response_code;
+
+  url_loader_.reset();
+
+  // Transition back to kIdle state after performing a health check on servers.
   TransitionToIdle();
 }
 

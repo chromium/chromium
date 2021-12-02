@@ -9,6 +9,7 @@
 
 #include "ash/components/device_activity/trigger.h"
 #include "base/component_export.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -33,7 +34,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   ~DeviceActivityController();
 
   // Start Device Activity reporting for a trigger.
-  void Start(Trigger t, PrefService* local_state);
+  void Start(Trigger t,
+             PrefService* local_state,
+             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Stop Device Activity reporting for a trigger.
   void Stop(Trigger t);

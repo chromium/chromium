@@ -9,6 +9,7 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -22,9 +23,11 @@ constexpr char kWifiServiceGuid[] = "wifi_guid";
 
 class MockDeviceActivityClient : public DeviceActivityClient {
  public:
-  MockDeviceActivityClient(NetworkStateHandler* handler,
-                           PrefService* local_state)
-      : DeviceActivityClient(handler, local_state) {}
+  MockDeviceActivityClient(
+      NetworkStateHandler* handler,
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : DeviceActivityClient(handler, local_state, url_loader_factory) {}
 };
 
 class DeviceActivityClientTest : public testing::Test {
@@ -45,8 +48,12 @@ class DeviceActivityClientTest : public testing::Test {
     // Initialize local state prefs used by device_activity_client class.
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
+    shared_url_loader_factory_ =
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+
     device_activity_client_ = std::make_unique<MockDeviceActivityClient>(
-        network_state_test_helper_->network_state_handler(), &local_state_);
+        network_state_test_helper_->network_state_handler(), &local_state_,
+        shared_url_loader_factory_);
   }
 
   void TearDown() override {}
@@ -76,6 +83,7 @@ class DeviceActivityClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
   TestingPrefServiceSimple local_state_;
+  scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
 };
