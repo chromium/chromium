@@ -274,6 +274,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-turboprop");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
+  SetV8FlagsIfOverridden(features::kV8ConcurrentSparkplug,
+                         "--concurrent-sparkplug", "--no-concurrent-sparkplug");
   SetV8FlagsIfOverridden(features::kV8SparkplugNeedsShortBuiltinCalls,
                          "--sparkplug-needs-short-builtins",
                          "--no-sparkplug-needs-short-builtins");
@@ -284,6 +286,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-write-protect-code-memory");
   SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
                          "--no-slow-histograms");
+
+  if (base::FeatureList::IsEnabled(features::kV8ConcurrentSparkplug)) {
+    if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
+      SetV8FlagsFormatted("--concurrent-sparkplug-max-threads=%i", max_threads);
+    }
+  }
 
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
     if (int delay = features::kV8ScriptDelayMs.Get()) {

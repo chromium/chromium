@@ -74,6 +74,12 @@ const base::Feature kV8Turboprop{"V8Turboprop",
 const base::Feature kV8Sparkplug{"V8Sparkplug",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the concurrent Sparkplug compiler.
+const base::Feature kV8ConcurrentSparkplug{"V8ConcurrentSparkplug",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kV8ConcurrentSparkplugMaxThreads{
+    &kV8ConcurrentSparkplug, "V8ConcurrentSparkplugMaxThreads", 0};
+
 // Makes sure the experimental Sparkplug compiler is only enabled if short
 // builtin calls are enabled too.
 const base::Feature kV8SparkplugNeedsShortBuiltinCalls{
