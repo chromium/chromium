@@ -117,7 +117,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           params->account_manager_facade, params->is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
           params->delete_signin_cookies_on_exit, params->token_web_data,
 #endif
 #if defined(OS_IOS)

@@ -19,12 +19,13 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "content/public/browser/network_service_instance.h"
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -58,7 +59,7 @@ IdentityManagerFactory::IdentityManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "IdentityManager",
           BrowserContextDependencyManager::GetInstance()) {
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -123,7 +124,7 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   params.profile_path = profile->GetPath();
   params.signin_client = ChromeSigninClientFactory::GetForProfile(profile);
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   params.delete_signin_cookies_on_exit =
       signin::SettingsDeleteSigninCookiesOnExit(
           CookieSettingsFactory::GetForProfile(profile).get());

@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 #if !defined(OS_ANDROID)
 #include "base/memory/scoped_refptr.h"
@@ -35,7 +37,7 @@ namespace network {
 class NetworkConnectionTracker;
 }
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class TokenWebData;
 #endif
 
@@ -54,7 +56,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
 #endif

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 #if !defined(OS_ANDROID)
@@ -24,7 +25,7 @@
 class PrefService;
 class SigninClient;
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class TokenWebData;
 #endif
 
@@ -62,7 +63,7 @@ struct IdentityManagerBuildParams {
   base::FilePath profile_path;
   raw_ptr<SigninClient> signin_client = nullptr;
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool delete_signin_cookies_on_exit = false;
   scoped_refptr<TokenWebData> token_web_data;
 #endif
