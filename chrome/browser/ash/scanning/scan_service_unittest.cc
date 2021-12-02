@@ -92,6 +92,9 @@ lorgnette::DocumentSource CreateLorgnetteDocumentSource() {
   lorgnette::DocumentSource source;
   source.set_type(lorgnette::SOURCE_PLATEN);
   source.set_name(kDocumentSourceName);
+  source.add_color_modes(lorgnette::MODE_COLOR);
+  source.add_resolutions(kFirstResolution);
+  source.add_resolutions(kSecondResolution);
   return source;
 }
 
@@ -107,9 +110,6 @@ lorgnette::DocumentSource CreateAdfDuplexDocumentSource() {
 lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
   lorgnette::ScannerCapabilities caps;
   *caps.add_sources() = CreateLorgnetteDocumentSource();
-  caps.add_color_modes(lorgnette::MODE_COLOR);
-  caps.add_resolutions(kFirstResolution);
-  caps.add_resolutions(kSecondResolution);
   return caps;
 }
 
@@ -458,8 +458,6 @@ TEST_F(ScanServiceTest, RecordNumDetectedScanners) {
 TEST_F(ScanServiceTest, BadScannerId) {
   auto caps = GetScannerCapabilities(base::UnguessableToken::Create());
   EXPECT_TRUE(caps->sources.empty());
-  EXPECT_TRUE(caps->color_modes.empty());
-  EXPECT_TRUE(caps->resolutions.empty());
 }
 
 // Test that failing to obtain capabilities from the LorgnetteScannerManager
@@ -473,8 +471,6 @@ TEST_F(ScanServiceTest, NoCapabilities) {
   ASSERT_EQ(scanners.size(), 1u);
   auto caps = GetScannerCapabilities(scanners[0]->id);
   EXPECT_TRUE(caps->sources.empty());
-  EXPECT_TRUE(caps->color_modes.empty());
-  EXPECT_TRUE(caps->resolutions.empty());
 }
 
 // Test that scanner capabilities can be obtained successfully.
@@ -489,11 +485,11 @@ TEST_F(ScanServiceTest, GetScannerCapabilities) {
   ASSERT_EQ(caps->sources.size(), 1u);
   EXPECT_EQ(caps->sources[0]->type, mojo_ipc::SourceType::kFlatbed);
   EXPECT_EQ(caps->sources[0]->name, kDocumentSourceName);
-  ASSERT_EQ(caps->color_modes.size(), 1u);
-  EXPECT_EQ(caps->color_modes[0], mojo_ipc::ColorMode::kColor);
-  ASSERT_EQ(caps->resolutions.size(), 2u);
-  EXPECT_EQ(caps->resolutions[0], kFirstResolution);
-  EXPECT_EQ(caps->resolutions[1], kSecondResolution);
+  ASSERT_EQ(caps->sources[0]->color_modes.size(), 1u);
+  EXPECT_EQ(caps->sources[0]->color_modes[0], mojo_ipc::ColorMode::kColor);
+  ASSERT_EQ(caps->sources[0]->resolutions.size(), 2u);
+  EXPECT_EQ(caps->sources[0]->resolutions[0], kFirstResolution);
+  EXPECT_EQ(caps->sources[0]->resolutions[1], kSecondResolution);
 }
 
 // Test that attempting to scan with a scanner ID that doesn't correspond to a

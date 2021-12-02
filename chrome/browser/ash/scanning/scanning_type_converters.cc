@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
+#include <utility>
+
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -237,20 +239,23 @@ StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
   mojo_ipc::ScannerCapabilities mojo_caps;
   mojo_caps.sources.reserve(lorgnette_caps.sources().size());
   for (const auto& source : lorgnette_caps.sources()) {
-    mojo_caps.sources.push_back(mojo_ipc::ScanSource::New(
-        mojo::ConvertTo<mojo_ipc::SourceType>(source.type()), source.name(),
-        GetSupportedPageSizes(source.area())));
-  }
+    mojo_ipc::ScanSourcePtr mojo_source = mojo_ipc::ScanSource::New();
+    mojo_source->type = mojo::ConvertTo<mojo_ipc::SourceType>(source.type());
+    mojo_source->name = source.name();
+    mojo_source->page_sizes = GetSupportedPageSizes(source.area());
 
-  mojo_caps.color_modes.reserve(lorgnette_caps.color_modes().size());
-  for (const auto& mode : lorgnette_caps.color_modes()) {
-    mojo_caps.color_modes.push_back(mojo::ConvertTo<mojo_ipc::ColorMode>(
-        static_cast<lorgnette::ColorMode>(mode)));
-  }
+    mojo_source->color_modes.reserve(source.color_modes().size());
+    for (const auto& mode : source.color_modes()) {
+      mojo_source->color_modes.push_back(mojo::ConvertTo<mojo_ipc::ColorMode>(
+          static_cast<lorgnette::ColorMode>(mode)));
+    }
 
-  mojo_caps.resolutions.reserve(lorgnette_caps.resolutions().size());
-  for (const auto& res : lorgnette_caps.resolutions())
-    mojo_caps.resolutions.push_back(res);
+    mojo_source->resolutions.reserve(source.resolutions().size());
+    for (const auto& res : source.resolutions())
+      mojo_source->resolutions.push_back(res);
+
+    mojo_caps.sources.push_back(std::move(mojo_source));
+  }
 
   return mojo_caps.Clone();
 }

@@ -202,7 +202,7 @@
           </cr-button>
           <iron-collapse id="collapse" opened="{{opened_}}">
             <color-mode-select id="colorModeSelect"
-                options="[[capabilities_.colorModes]]"
+                options="[[selectedSourceColorModes_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-option="{{selectedColorMode}}">
             </color-mode-select>
@@ -212,7 +212,7 @@
                 selected-option="{{selectedPageSize}}">
             </page-size-select>
             <resolution-select id="resolutionSelect"
-                options="[[capabilities_.resolutions]]"
+                options="[[selectedSourceResolutions_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-option="{{selectedResolution}}">
             </resolution-select>

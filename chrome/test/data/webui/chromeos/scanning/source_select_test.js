@@ -11,6 +11,12 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
 
+const ColorMode = {
+  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
+  COLOR: ash.scanning.mojom.ColorMode.kColor,
+};
+
 const FileType = {
   JPG: ash.scanning.mojom.FileType.kJpg,
   PDF: ash.scanning.mojom.FileType.kPdf,
@@ -30,6 +36,9 @@ const SourceType = {
 };
 
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+const colorModes =
+    [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE, ColorMode.COLOR];
+const resolutions = [75, 150, 300];
 
 export function sourceSelectTest() {
   /** @type {?SourceSelectElement} */
@@ -55,10 +64,11 @@ export function sourceSelectTest() {
     assertTrue(!!select);
     assertFalse(select.disabled);
 
-    const firstSource =
-        createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
-    const secondSource =
-        createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
+    const firstSource = createScannerSource(
+        SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes, colorModes,
+        resolutions);
+    const secondSource = createScannerSource(
+        SourceType.FLATBED, 'platen', pageSizes, colorModes, resolutions);
     const sourceArr = [firstSource, secondSource];
     sourceSelect.options = sourceArr;
     flush();
@@ -77,10 +87,14 @@ export function sourceSelectTest() {
   // Verify the sources are sorted alphabetically.
   test('sourcesSortedAlphabetically', () => {
     const sources = [
-      createScannerSource(SourceType.FLATBED, 'C', pageSizes),
-      createScannerSource(SourceType.ADF_DUPLEX, 'B', pageSizes),
-      createScannerSource(SourceType.FLATBED, 'D', pageSizes),
-      createScannerSource(SourceType.ADF_DUPLEX, 'A', pageSizes),
+      createScannerSource(
+          SourceType.FLATBED, 'C', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.ADF_DUPLEX, 'B', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.FLATBED, 'D', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.ADF_DUPLEX, 'A', pageSizes, colorModes, resolutions),
     ];
     sourceSelect.options = sources;
     flush();
@@ -91,9 +105,12 @@ export function sourceSelectTest() {
   // Verify the default option is selected when available.
   test('flatbedSelectedByDefaultIfProvided', () => {
     const sources = [
-      createScannerSource(SourceType.FLATBED, 'C', pageSizes),
-      createScannerSource(SourceType.ADF_SIMPLEX, 'B', pageSizes),
-      createScannerSource(SourceType.ADF_DUPLEX, 'A', pageSizes),
+      createScannerSource(
+          SourceType.FLATBED, 'C', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.ADF_SIMPLEX, 'B', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.ADF_DUPLEX, 'A', pageSizes, colorModes, resolutions),
     ];
     sourceSelect.options = sources;
     flush();
@@ -106,8 +123,10 @@ export function sourceSelectTest() {
   // available.
   test('firstSourceUsedWhenFlatbedNotProvided', () => {
     const sources = [
-      createScannerSource(SourceType.ADF_SIMPLEX, 'C', pageSizes),
-      createScannerSource(SourceType.ADF_DUPLEX, 'B', pageSizes),
+      createScannerSource(
+          SourceType.ADF_SIMPLEX, 'C', pageSizes, colorModes, resolutions),
+      createScannerSource(
+          SourceType.ADF_DUPLEX, 'B', pageSizes, colorModes, resolutions),
     ];
     sourceSelect.options = sources;
     flush();

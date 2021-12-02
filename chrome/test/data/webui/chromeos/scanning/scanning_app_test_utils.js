@@ -34,11 +34,14 @@ export function createScanner(id, displayName) {
  * @param {number} type
  * @param {string} name
  * @param {!Array<ash.scanning.mojom.PageSize>} pageSizes
+ * @param {!Array<ash.scanning.mojom.ColorMode>} colorModes
+ * @param {!Array<number>} resolutions
  * @return {!ash.scanning.mojom.ScanSource}
  */
-export function createScannerSource(type, name, pageSizes) {
+export function createScannerSource(
+    type, name, pageSizes, colorModes, resolutions) {
   return /** @type {!ash.scanning.mojom.ScanSource} */ (
-      {type, name, pageSizes});
+      {type, name, pageSizes, colorModes, resolutions});
 }
 
 /**
