@@ -16,30 +16,24 @@ void BluetoothDeviceStatusNotifier::ObserveDeviceStatusChanges(
   observers_.Add(std::move(observer));
 }
 
-void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyPaired(
-    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyPaired(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
   for (auto& observer : observers_) {
-    for (auto& device : devices) {
-      observer->OnDevicePaired(mojo::Clone(device));
-    }
+    observer->OnDevicePaired(mojo::Clone(device));
   }
 }
 
-void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyConnected(
-    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyConnected(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
   for (auto& observer : observers_) {
-    for (auto& device : devices) {
-      observer->OnDeviceConnected(mojo::Clone(device));
-    }
+    observer->OnDeviceConnected(mojo::Clone(device));
   }
 }
 
-void BluetoothDeviceStatusNotifier::NotifyDevicesNewlyDisconnected(
-    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
+void BluetoothDeviceStatusNotifier::NotifyDeviceNewlyDisconnected(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
   for (auto& observer : observers_) {
-    for (auto& device : devices) {
-      observer->OnDeviceDisconnected(mojo::Clone(device));
-    }
+    observer->OnDeviceDisconnected(mojo::Clone(device));
   }
 }
 

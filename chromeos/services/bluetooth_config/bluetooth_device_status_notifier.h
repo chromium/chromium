@@ -29,20 +29,20 @@ class BluetoothDeviceStatusNotifier {
  protected:
   BluetoothDeviceStatusNotifier();
 
-  // Notifies all observers for each device that is newly paired. Should be
+  // Notifies all observers for a device that is newly paired. Should be
   // called by derived types to notify observers of device pairings.
-  void NotifyDevicesNewlyPaired(
-      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices);
+  void NotifyDeviceNewlyPaired(
+      const mojom::PairedBluetoothDevicePropertiesPtr& device);
 
-  // Notifies all observers for each device that is connected. Should be
+  // Notifies all observers for a device that is connected. Should be
   // called by derived types to notify observers of device connection.
-  void NotifyDevicesNewlyConnected(
-      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& properties);
+  void NotifyDeviceNewlyConnected(
+      const mojom::PairedBluetoothDevicePropertiesPtr& device);
 
-  // Notifies all observers for each device that is disconnected. Should be
+  // Notifies all observers for a device that is disconnected. Should be
   // called by derived types to notify observers of device disconnection.
-  void NotifyDevicesNewlyDisconnected(
-      const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& properties);
+  void NotifyDeviceNewlyDisconnected(
+      const mojom::PairedBluetoothDevicePropertiesPtr& device);
 
  private:
   friend class BluetoothDeviceStatusNotifierImplTest;
