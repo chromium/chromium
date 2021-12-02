@@ -291,7 +291,7 @@ if __name__ == "__main__":
   parser.add_argument("--stack_dir",
                       help="Collapsed stack file.",
                       required=True)
-  parser.add_argument("--output_filename",
+  parser.add_argument("--output",
                       help="The file to write the collapsed stacks into.",
                       required=True)
   parser.add_argument('--format',

@@ -32,7 +32,7 @@ class BrowserDriver(abc.ABC):
   def TearDown(self):
     """Terminates the browser and ensures it's cleaned up before returning.
     """
-    logging.info(f"Tearing down {self.process_name}")
+    logging.debug(f"Tearing down {self.process_name}")
     if self.browser_process:
       utils.TerminateProcess(self.browser_process)
 
@@ -64,8 +64,8 @@ class BrowserDriver(abc.ABC):
     while not self.browser_process:
       self.browser_process = utils.FindProcess(self.process_name)
       time.sleep(0.100)
-      logging.info(f"Waiting for {self.process_name} to start")
-    logging.info(f"{self.process_name} started")
+      logging.debug(f"Waiting for {self.process_name} to start")
+    logging.debug(f"{self.process_name} started")
 
 
 class SafariDriver(BrowserDriver):

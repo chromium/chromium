@@ -14,6 +14,10 @@ Create the venv. Only needs to be done once.
 ```
 python3 -m venv ./env
 ```
+Or using a specific python binary, e.g. from depot_tools
+```
+~/src/chromium/depot_tools/python-bin/python3 -m venv ./env
+```
 Activate the venv.
 ```
 source ./env/bin/activate
@@ -69,25 +73,25 @@ A tool that allow you to run different browsers under specific usage scenarios a
 * Profile the code that runs and/or is causing wake-ups. (chromium only)
 
 ```
-./benchmark.py ./results --measure
-./benchmark.py ./profile --profile_mode cpu_time
+./benchmark.py --scenarios idle_on_wiki:chrome
+./benchmark.py --profile_mode cpu_time --scenarios idle_on_wiki:chromium
 ```
 
-## collapse_profile.py
+## export_dtrace.py
 
-A tool that converts the DTrace results created by benchmark.py into a format suitable for
-FlameGraph generation and analysis. It also applies some Chromium specific filtering and enhancements.
+A tool that converts the DTrace results created by benchmark.py into a format
+suitable for FlameGraph generation and analysis.
 
 ```
-./export_dtrace.py --stack_dir ./output/samples/ --output_filename ./samples/samples.collapsed
+./export_dtrace.py --stack_dir ./output/idle_on_wiki_chromium_dtraces_cpu_time --output ./output/idle_on_wiki_cpu_profile.pb
 ```
 
-This command will produce a file at `./samples/samples.collapsed`.
+This command will produce a file at `./output/idle_on_wiki_cpu_profile.pb`.
 
-This file can be used with tools such as:
-
-* [FlameGraph](https://github.com/brendangregg/FlameGraph)
-* [SpeedScope](https://www.speedscope.app/)
+The script can produce a pprof profile that can be used with
+[pprof](https://github.com/google/pprof) or a collapsed profile that can be used
+with tools such as [FlameGraph](https://github.com/brendangregg/FlameGraph) and
+[SpeedScope](https://www.speedscope.app/)
 
 ## Usage scenario scripts
 
@@ -106,30 +110,6 @@ For example:
 
 It's interesting to gather power metrics, profiles and traces for specific
 scenarios to understand their performance characteristics.
-
-### Usage
-
-First `generate_scripts.py` needs to be used to convert the templates in `driver_script_templates/` into
-working AppleScript. The templating allows for the generation of scripts that work with many different
-browsers in the same way without having to modify each file by hand which is error
-prone.
-
-Once generated the driver scripts are found in `driver_scripts/` and can be invoked directly like this:
-```
-osascript ./driver_scripts/chrome_navigation.scpt
-```
-
-Once the scenario has run its course the script will exit. If the desired the
-browser can be opened by hand before running the scenario to modify the starting
-state.
-
-# Formats
-
-Files in `driver_script_templates/` directory that do not end in .scpt are
-jinja2 templates that need to be rendered into usable Applescript.
-
-Files in `driver_script_templates/` that end in .scpt are already working
-Applescript and will be copied as is to `driver_script/`.
 
 # Tests
 

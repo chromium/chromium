@@ -16,7 +16,7 @@ def TerminateProcess(process: subprocess.Popen):
       RuntimeError: When failed to terminate the process after a timeout.
   """
 
-  logging.info(f"Terminating PID:{process.pid}")
+  logging.debug(f"Terminating PID:{process.pid}")
 
   try:
     process.terminate()
@@ -48,7 +48,7 @@ def TerminateRootProcess(process: subprocess.Popen):
       RuntimeError: When failed to terminate the process after a timeout.
   """
 
-  logging.info(f"Terminating PID:{process.pid}")
+  logging.debug(f"Terminating PID:{process.pid}")
 
   try:
     SendSignalToRootProcess(process, signal.SIGTERM)

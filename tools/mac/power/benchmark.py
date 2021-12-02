@@ -45,13 +45,14 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
-  parser.add_argument('--scenarios',
-                      dest='scenarios',
-                      action='store',
-                      required=True,
-                      nargs='+',
-                      help="List of scenarios and browsers to run in the format"
-                      "<scenario_name>:<browser_name>.")
+  parser.add_argument(
+      '--scenarios',
+      dest='scenarios',
+      action='store',
+      required=True,
+      nargs='+',
+      help="List of scenarios and browsers to run in the format"
+      "<scenario_name>:<browser_name>, e.g. idle_on_wiki:safari")
   parser.add_argument('--meet-meeting-id',
                       dest='meet_meeting_id',
                       action='store',
@@ -74,9 +75,9 @@ def main():
   args = parser.parse_args()
 
   if args.verbose:
-    log_level = logging.INFO
+    log_level = logging.DEBUG
   else:
-    log_level = logging.WARNING
+    log_level = logging.INFO
   logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
   output_dir = args.output_dir

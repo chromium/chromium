@@ -89,7 +89,10 @@ class DriverContext:
     sudo_check.wait()
 
     try:
-      check_env = subprocess.run(['zsh', '-c', './check_env.sh'],
+      check_env = subprocess.run([
+          'zsh', '-c',
+          os.path.join(os.path.dirname(__file__), 'check_env.sh')
+      ],
                                  check=throw_on_bad_env,
                                  capture_output=True)
       logging_function(check_env.stdout.decode('ascii'))
@@ -185,7 +188,7 @@ class DriverContext:
 
           # Let some time pass to limit the overhead of this script.
           time.sleep(0.100)
-          logging.info("Looking for child processes")
+          logging.debug("Looking for child processes")
 
           # Watch for new processes and follow those too.
           for process in browser_process.children(
@@ -205,7 +208,7 @@ class DriverContext:
             ]
 
             if pid not in pid_to_subprocess:
-              logging.info(f"Found new child!:{pid}")
+              logging.debug(f"Found new child!:{pid}")
               # No need to add |process| to |self._started_processeds| as it's
               # explicitly waited on later.
               process = subprocess.Popen(dtrace_args,
@@ -220,7 +223,7 @@ class DriverContext:
       scenario_driver.TearDown()
 
       for pid, dtrace_process in pid_to_subprocess.items():
-        logging.info(f"Waiting for dtrace hooked on {pid} to exit")
+        logging.debug(f"Waiting for dtrace hooked on {pid} to exit")
         dtrace_process.wait(30)
 
   def WriteScenarioSummary(

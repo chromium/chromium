@@ -37,21 +37,21 @@ class ScenarioOSADriver(abc.ABC):
     """Starts the driver script.
     """
     assert self.osa_script is not None
-    logging.info(f"Starting scenario {self.name}")
+    logging.debug(f"Starting scenario {self.name}")
     self.script_process = subprocess.Popen(['osascript', self.osa_script.name])
 
   def Wait(self):
     """Waits for the script to complete.
     """
     assert self.script_process is not None, "Driver wasn't launched."
-    logging.info(f"Waiting for scenario {self.name}")
+    logging.debug(f"Waiting for scenario {self.name}")
     self.script_process.wait()
 
   def TearDown(self):
     """Terminates the script if currently running and ensures related processes
        are cleaned up.
     """
-    logging.info(f"Tearing down scenario {self.name}")
+    logging.debug(f"Tearing down scenario {self.name}")
     if self.script_process:
       utils.TerminateProcess(self.script_process)
     self.osa_script.close()
