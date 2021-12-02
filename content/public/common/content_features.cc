@@ -345,6 +345,13 @@ const base::Feature kForwardMemoryPressureEventsToGpuProcess {
 };
 #endif
 
+// Enables JavaScript API to intermediate federated identity requests.
+const base::Feature kFedCm{"FedCm", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Field trial boolean parameter which indicates whether FedCM HTTP filtering is
+// enabled.
+const char kFedCmInterceptionFieldTrialParamName[] = "Interception";
+
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
 const base::Feature kFractionalScrollOffsets{"FractionalScrollOffsets",
@@ -1023,9 +1030,6 @@ const base::Feature kWebBundlesFromNetwork{"WebBundlesFromNetwork",
 // enabled.
 const base::Feature kWebGLImageChromium{"WebGLImageChromium",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable browser mediation API for federated identity interactions.
-const base::Feature kWebID{"WebID", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the browser process components of the Web MIDI API. This flag does not
 // control whether the API is exposed in Blink.

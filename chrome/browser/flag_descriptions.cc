@@ -1333,6 +1333,10 @@ const char kEffectiveConnectionType2GDescription[] = "2G";
 const char kEffectiveConnectionType3GDescription[] = "3G";
 const char kEffectiveConnectionType4GDescription[] = "4G";
 
+const char kFedCmName[] = "FedCM";
+const char kFedCmDescription[] =
+    "Enables JavaScript API to intermediate federated identity requests.";
+
 const char kFileHandlingAPIName[] = "File Handling API";
 const char kFileHandlingAPIDescription[] =
     "Enables the file handling API, allowing websites to register as file "
@@ -2682,11 +2686,6 @@ const char kWebBundlesName[] = "Web Bundles";
 const char kWebBundlesDescription[] =
     "Enables experimental supports for Web Bundles (Bundled HTTP Exchanges) "
     "navigation.";
-
-const char kWebIdName[] = "WebID";
-const char kWebIdDescription[] =
-    "Enables WebID HTTP filtering and JavaScript "
-    "API to intermediate federated identity requests.";
 
 const char kWebMidiName[] = "Web MIDI";
 const char kWebMidiDescription[] =

@@ -54,7 +54,7 @@ bool AreCookieIsolatedPrincipals(url::Origin src_origin,
 std::unique_ptr<NavigationThrottle>
 FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  if (!IsWebIDEnabled() || !handle->IsInMainFrame())
+  if (!IsFedCmInterceptionEnabled() || !handle->IsInMainFrame())
     return nullptr;
 
   return std::make_unique<FederatedAuthNavigationThrottle>(handle);

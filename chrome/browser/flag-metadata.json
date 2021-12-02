@@ -3073,6 +3073,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "fedcm",
+    "owners": [ "goto", "webid-core@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "feed-back-to-top",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 101
@@ -5644,11 +5649,6 @@
     "name": "web-view-native-context-menu",
     "owners": ["gambard","bling-flags@google.com"],
     "expiry_milestone": 100
-  },
-  {
-    "name": "webid",
-    "owners": [ "goto", "webid-core@google.com"],
-    "expiry_milestone": 110
   },
   {
     "name": "webnotes-publish",

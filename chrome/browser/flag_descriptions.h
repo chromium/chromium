@@ -766,6 +766,9 @@ extern const char kEffectiveConnectionType2GDescription[];
 extern const char kEffectiveConnectionType3GDescription[];
 extern const char kEffectiveConnectionType4GDescription[];
 
+extern const char kFedCmName[];
+extern const char kFedCmDescription[];
+
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];
 
@@ -1534,9 +1537,6 @@ extern const char kWebBluetoothNewPermissionsBackendDescription[];
 
 extern const char kWebBundlesName[];
 extern const char kWebBundlesDescription[];
-
-extern const char kWebIdName[];
-extern const char kWebIdDescription[];
 
 extern const char kWebMidiName[];
 extern const char kWebMidiDescription[];

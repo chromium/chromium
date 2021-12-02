@@ -303,7 +303,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableVideoPlaybackQuality, features::kVideoPlaybackQuality},
     {wf::EnableVideoWakeLockOptimisationHiddenMuted,
      media::kWakeLockOptimisationHiddenMuted},
-    {wf::EnableWebID, features::kWebID},
+    {wf::EnableWebID, features::kFedCm},
 #if defined(OS_ANDROID)
     {wf::EnableWebNfc, features::kWebNfc, kSetOnlyIfOverridden},
 #endif

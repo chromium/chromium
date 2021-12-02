@@ -183,7 +183,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     // that the network shard for fetching the .well-known file is different
     // from that used for other IdP transactions, to prevent data leakage.
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    features.push_back(features::kWebID);
+    features.push_back(features::kFedCm);
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);

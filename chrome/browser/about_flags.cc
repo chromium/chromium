@@ -2325,6 +2325,13 @@ const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
      kDrawPredictedPointExperiment2Points3Ms,
      base::size(kDrawPredictedPointExperiment2Points3Ms), nullptr}};
 
+const FeatureEntry::FeatureParam kFedCmVariationInterception[] = {
+    {features::kFedCmInterceptionFieldTrialParamName, "true"}};
+const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
+    {"- with FedCM HTTP filtering (very experimental)",
+     kFedCmVariationInterception, base::size(kFedCmVariationInterception),
+     nullptr}};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Default", "", ""},
@@ -7112,9 +7119,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaSessionWebRTCDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kMediaSessionWebRTC)},
 
-    {"webid", flag_descriptions::kWebIdName,
-     flag_descriptions::kWebIdDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebID)},
+    {"fedcm", flag_descriptions::kFedCmName,
+     flag_descriptions::kFedCmDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,
+                                    kFedCmFeatureVariations,
+                                    "FedCmFeatureVariations")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"bluetooth-sessionized-metrics",

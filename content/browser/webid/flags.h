@@ -9,8 +9,11 @@
 
 namespace content {
 
-// Whether WebID is enabled or not.
-bool IsWebIDEnabled();
+// Whether the FedCM JavaScript API is enabled.
+bool IsFedCmEnabled();
+
+// Whether FedCM HTTP filtering is enabled.
+bool IsFedCmInterceptionEnabled();
 
 }  // namespace content
 

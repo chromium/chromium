@@ -26,6 +26,8 @@ namespace content {
 
 namespace {
 
+typedef std::unique_ptr<base::test::ScopedFeatureList> MovableScopedFeatureList;
+
 constexpr char kOauthRequestParams[] =
     "?client_id=12345&scope=67890&"
     "redirect_uri=https%3A%2F%2Frp.example%2F";
@@ -63,6 +65,14 @@ static const CrossSiteTestCase kCrossSiteTests[]{
     {"Same domain with different scheme", "http://idp.example/",
      "https://idp.example", NavigationThrottle::DEFER},
 };
+
+MovableScopedFeatureList InitScopedFeatureList() {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmInterceptionFieldTrialParamName, "true"}});
+  return scoped_feature_list;
+}
 
 }  // namespace
 
@@ -106,20 +116,19 @@ TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
   MockNavigationHandle top_frame_handle(url, main_rfh());
   MockNavigationHandle child_frame_handle(url_child, child_rfh);
 
-  // Attempt to create throttle for the main frame without features::kWebID set.
+  // Attempt to create throttle for the main frame without features::kFedCm set.
   auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &top_frame_handle);
   ASSERT_FALSE(throttle);
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
+  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
 
-  // Attempt to create throttle for a child frame with features::kWebID set.
+  // Attempt to create throttle for a child frame with features::kFedCm set.
   throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &child_frame_handle);
   ASSERT_FALSE(throttle);
 
-  // Attempt to create throttle for the main frame with features::kWebID set.
+  // Attempt to create throttle for the main frame with features::kFedCm set.
   throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &top_frame_handle);
   ASSERT_TRUE(throttle);
@@ -134,8 +143,7 @@ TEST_F(FederatedAuthNavigationThrottleTest, ThrottleAuthRequest) {
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL("https://rp.example")));
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
+  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
 
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);
@@ -161,8 +169,7 @@ TEST_P(CrossSiteFederatedAuthNavigationThrottleTest, SameSiteAuthRequest) {
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL(test_case.rp_origin)));
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
+  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
 
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);

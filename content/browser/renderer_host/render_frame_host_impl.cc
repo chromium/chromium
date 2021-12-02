@@ -9610,13 +9610,13 @@ void RenderFrameHostImpl::BindWebOTPServiceReceiver(
 
 void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  DCHECK(IsWebIDEnabled());
+  DCHECK(IsFedCmEnabled());
   FederatedAuthRequestService::Create(this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindFederatedAuthResponseReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthResponse> receiver) {
-  DCHECK(IsWebIDEnabled());
+  DCHECK(IsFedCmEnabled());
   FederatedAuthResponseImpl::Create(this, std::move(receiver));
 }
 
