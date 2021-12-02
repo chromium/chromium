@@ -28,10 +28,10 @@ TEST(CableV2Encoding, TunnelServerURLs) {
 
   // The hash function shouldn't change across releases, so test a hashed
   // domain.
-  const tunnelserver::KnownDomainID kHashedDomain(512);
+  const tunnelserver::KnownDomainID kHashedDomain(266);
   const GURL hashed_url =
       tunnelserver::GetNewTunnelURL(kHashedDomain, tunnel_id);
-  EXPECT_TRUE(hashed_url.spec().find("//cable.snorzvaajskg.org/") !=
+  EXPECT_TRUE(hashed_url.spec().find("//cable.wufkweyy3uaxb.com/") !=
               std::string::npos)
       << url;
 }

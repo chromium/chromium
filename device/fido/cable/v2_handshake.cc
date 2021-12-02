@@ -124,8 +124,10 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   }
 
   char templ[] = "caBLEv2 tunnel server domain\x00\x00";
-  memcpy(&templ[sizeof(templ) - 2], &domain, sizeof(domain));
+  memcpy(&templ[sizeof(templ) - 1 - sizeof(domain)], &domain, sizeof(domain));
   uint8_t digest[SHA256_DIGEST_LENGTH];
+  // The input should be NUL-terminated, thus the trailing NUL in |templ| is
+  // included here.
   SHA256(reinterpret_cast<const uint8_t*>(templ), sizeof(templ), digest);
   uint64_t result;
   static_assert(sizeof(result) <= sizeof(digest), "");
