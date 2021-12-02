@@ -4,7 +4,7 @@
 
 (async function(testRunner) {
   const {page, dp} = await testRunner.startBlank(
-      `Test that clicking an attribution link in insecure contexts triggers an issue.`);
+      `Test that an attribution redirect with invalid trigger data triggers an issue.`);
 
   await dp.Audits.enable();
   await page.navigate('https://devtools.test:8443/inspector-protocol/resources/empty.html');
