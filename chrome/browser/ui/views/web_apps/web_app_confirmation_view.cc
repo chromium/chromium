@@ -108,7 +108,7 @@ WebAppConfirmationView::WebAppConfirmationView(
   const auto display_mode = web_app_info_->user_display_mode;
   // Build the content child views.
   if (ShowRadioButtons()) {
-    constexpr int kRadioGroupId = 1;
+    constexpr int kRadioGroupId = 0;
     builder.AddChildren(
         views::Builder<views::View>(),  // Skip the first column.
         views::Builder<views::RadioButton>()
