@@ -1,0 +1,99 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
+#define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
+
+#import <Foundation/Foundation.h>
+#import <memory>
+
+#import "base/scoped_observation.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+
+// Objective-C version of DependencyInstaller; see docs for that class.
+@protocol DependencyInstalling <NSObject>
+@optional
+
+- (void)installDependencyForWebState:(web::WebState*)web_state;
+- (void)uninstallDependencyForWebState:(web::WebState*)web_state;
+
+@end
+
+// Interface for classes wishing to install and/or uninstall dependencies
+// (delegates, etc) for each WebState using
+// WebStateDependencyInstallationObserver (below).
+class DependencyInstaller {
+ public:
+  // Serves as a hook for any installation work needed to set up a per-WebState
+  // dependency.
+  virtual void InstallDependency(web::WebState* web_state) {}
+  // Serves as a hook for any cleanup work needed to remove a dependency when it
+  // is no longer needed.
+  virtual void UninstallDependency(web::WebState* web_state) {}
+  virtual ~DependencyInstaller() {}
+};
+
+// Bridge allowing Objective-C classes to act as DependencyInstaller for a
+// WebStateDependencyInstallationObserver.
+class DependencyInstallerBridge : public DependencyInstaller {
+ public:
+  DependencyInstallerBridge(id<DependencyInstalling> installing);
+  ~DependencyInstallerBridge() override {}
+  void InstallDependency(web::WebState* web_state) override;
+  void UninstallDependency(web::WebState* web_state) override;
+
+  DependencyInstallerBridge(const DependencyInstallerBridge&) = delete;
+  DependencyInstallerBridge& operator=(const DependencyInstallerBridge&) =
+      delete;
+
+ private:
+  // The Objective-C class which installs/uninstalls dependencies in response to
+  // forwarded messages.
+  id<DependencyInstalling> installing_;
+};
+
+// Classes wishing to install/uninstall dependencies (such as delegates) for
+// each WebState can create an instance and pass a DependencyInstaller
+// configured to do the installing/uninstalling work. This class acts as a
+// forwarder, listening for changes in the WebStateList and invoking the
+// installation/uninstallation methods as necessary.
+class WebStateDependencyInstallationObserver : public WebStateListObserver {
+ public:
+  WebStateDependencyInstallationObserver(
+      WebStateList* web_state_list,
+      DependencyInstaller* dependency_installer);
+  ~WebStateDependencyInstallationObserver() override;
+
+  // WebStateListObserver:
+  void WebStateInsertedAt(WebStateList* web_state_list,
+                          web::WebState* web_state,
+                          int index,
+                          bool activating) override;
+  void WebStateReplacedAt(WebStateList* web_state_list,
+                          web::WebState* old_web_state,
+                          web::WebState* new_web_state,
+                          int index) override;
+  void WebStateDetachedAt(WebStateList* web_state_list,
+                          web::WebState* web_state,
+                          int index) override;
+
+  WebStateDependencyInstallationObserver(
+      const WebStateDependencyInstallationObserver&) = delete;
+  WebStateDependencyInstallationObserver& operator=(
+      const WebStateDependencyInstallationObserver&) = delete;
+
+ private:
+  // The WebStateList being observed for addition, replacement, and detachment
+  // of WebStates
+  WebStateList* web_state_list_;
+  // The class which installs/uninstalls dependencies in response to changes to
+  // the WebStateList
+  DependencyInstaller* dependency_installer_;
+  // Automatically detaches |this| from the WebStateList when destroyed
+  base::ScopedObservation<WebStateList, WebStateListObserver> observation_{
+      this};
+};
+
+#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
