@@ -199,10 +199,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// TODO(crbug.com/1273603): Test is flaky.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
+    DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
@@ -244,9 +243,10 @@ IN_PROC_BROWSER_TEST_F(
       {}, {}, {}, FROM_HERE);
 }
 
+// TODO(crbug.com/1273603): Test is flaky.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
+    DISABLED_DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
