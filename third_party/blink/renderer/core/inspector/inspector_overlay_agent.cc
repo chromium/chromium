@@ -1286,8 +1286,7 @@ void InspectorOverlayAgent::Reset(
     const DoubleSize& viewport_size_for_media_queries) {
   std::unique_ptr<protocol::DictionaryValue> reset_data =
       protocol::DictionaryValue::create();
-  reset_data->setDouble("deviceScaleFactor",
-                        GetFrame()->GetPage()->DeviceScaleFactorDeprecated());
+  reset_data->setDouble("deviceScaleFactor", WindowToViewportScale());
   reset_data->setDouble(
       "emulationScaleFactor",
       GetFrame()->GetPage()->GetChromeClient().InputEventsScaleForEmulation());
