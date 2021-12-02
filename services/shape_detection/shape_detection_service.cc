@@ -10,24 +10,31 @@
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#if defined(OS_WIN)
-#include "services/shape_detection/barcode_detection_provider_impl.h"
-#include "services/shape_detection/face_detection_provider_win.h"
-#elif defined(OS_MAC)
-#include "services/shape_detection/barcode_detection_provider_mac.h"
-#include "services/shape_detection/face_detection_provider_mac.h"
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "services/shape_detection/barcode_detection_provider_barhopper.h"
-#include "services/shape_detection/face_detection_provider_impl.h"
-#else
-#include "services/shape_detection/barcode_detection_provider_impl.h"
-#include "services/shape_detection/face_detection_provider_impl.h"
-#endif
 #include "services/shape_detection/text_detection_impl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
 #include "services/shape_detection/shape_detection_jni_headers/InterfaceRegistrar_jni.h"
+#endif
+
+#if defined(OS_MAC)
+#include "services/shape_detection/barcode_detection_provider_mac.h"
+#elif defined(OS_ANDROID)
+// Barcode detection comes from Java.
+#elif !defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "services/shape_detection/barcode_detection_provider_barhopper.h"
+#else
+#include "services/shape_detection/barcode_detection_provider_impl.h"
+#endif
+
+#if defined(OS_WIN)
+#include "services/shape_detection/face_detection_provider_win.h"
+#elif defined(OS_MAC)
+#include "services/shape_detection/face_detection_provider_mac.h"
+#elif defined(OS_ANDROID)
+// Face detection comes from Java.
+#else
+#include "services/shape_detection/face_detection_provider_impl.h"
 #endif
 
 namespace shape_detection {
@@ -47,7 +54,7 @@ void ShapeDetectionService::BindBarcodeDetectionProvider(
       receiver.PassPipe().release().value());
 #elif defined(OS_MAC)
   BarcodeDetectionProviderMac::Create(std::move(receiver));
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   BarcodeDetectionProviderBarhopper::Create(std::move(receiver));
 #else
   BarcodeDetectionProviderImpl::Create(std::move(receiver));
