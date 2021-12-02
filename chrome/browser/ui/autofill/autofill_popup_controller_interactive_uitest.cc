@@ -32,13 +32,14 @@ namespace autofill {
 class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
                                            public content::WebContentsObserver {
  public:
-  AutofillPopupControllerBrowserTest() {}
-  ~AutofillPopupControllerBrowserTest() override {}
+  AutofillPopupControllerBrowserTest() = default;
+  ~AutofillPopupControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents != NULL);
+    web_contents->Focus();
     Observe(web_contents);
 
     autofill_driver_ =

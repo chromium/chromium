@@ -1815,6 +1815,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        MAYBE_TestDispatchKeyEventShowsAutoFill) {
   OpenDevToolsWindow(kDispatchKeyEventShowsAutoFill, false);
+  GetInspectedTab()->Focus();
 
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
