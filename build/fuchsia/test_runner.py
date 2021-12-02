@@ -41,6 +41,10 @@ def AddTestExecutionArgs(arg_parser):
       '--test-launcher-retry-limit',
       help='Number of times that test suite will retry failing '
       'tests. This is multiplicative with --gtest_repeat.')
+  test_args.add_argument('--test-launcher-print-test-stdio',
+                         choices=['auto', 'always', 'never'],
+                         help='Controls when full test output is printed.'
+                         'auto means to print it when the test failed.')
   test_args.add_argument('--test-launcher-shard-index',
                          type=int,
                          default=os.environ.get('GTEST_SHARD_INDEX'),
@@ -166,6 +170,9 @@ def main():
       test_concurrency = args.cpu_cores
   if test_concurrency:
     child_args.append('--test-launcher-jobs=%d' % test_concurrency)
+  if args.test_launcher_print_test_stdio:
+    child_args.append('--test-launcher-print-test-stdio=%s' %
+                      args.test_launcher_print_test_stdio)
 
   if args.gtest_filter:
     child_args.append('--gtest_filter=' + args.gtest_filter)

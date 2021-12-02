@@ -245,13 +245,9 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-                '-d',
-                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested',
-                '--os-check=update',
-            ],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.ASTRO_EXEC_FLAGS,
             'type':
             TEST_TYPES.TELEMETRY,
         }],
@@ -268,13 +264,9 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-                '-d',
-                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested',
-                '--os-check=update',
-            ],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.SHERLOCK_EXEC_FLAGS,
             'type':
             TEST_TYPES.TELEMETRY,
         }],
@@ -341,7 +333,7 @@ FYI_BUILDERS = {
     'fuchsia-builder-perf-fyi': {
         'additional_compile_targets': [
             'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
-            'chromedriver', 'chromium_builder_perf'
+            'chromedriver', 'chromium_builder_perf', 'base_perftests'
         ],
     },
 }

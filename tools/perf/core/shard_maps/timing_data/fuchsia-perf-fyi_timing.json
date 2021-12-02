@@ -52,7 +52,7 @@
         "name": "media.mobile/video.html?src=tulip2.ogg&type=audio&seek"
     },
     {
-        "duration": "35.0",
+        "duration": "36.0",
         "name": "media.mobile/video.html?src=tulip2.vp9.webm"
     },
     {
@@ -80,7 +80,7 @@
         "name": "system_health.memory_desktop/browse:media:tumblr:2018"
     },
     {
-        "duration": "116.0",
+        "duration": "115.0",
         "name": "system_health.memory_desktop/browse:media:youtube:2019"
     },
     {
@@ -92,7 +92,7 @@
         "name": "system_health.memory_desktop/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "91.0",
+        "duration": "93.0",
         "name": "system_health.memory_desktop/browse:news:hackernews:2020"
     },
     {
@@ -160,7 +160,7 @@
         "name": "system_health.memory_desktop/load:media:facebook_feed:desktop:2020"
     },
     {
-        "duration": "27.0",
+        "duration": "26.0",
         "name": "system_health.memory_desktop/load:media:facebook_photos:2018"
     },
     {
@@ -184,7 +184,7 @@
         "name": "system_health.memory_desktop/load:media:soundcloud:2018"
     },
     {
-        "duration": "39.0",
+        "duration": "38.0",
         "name": "system_health.memory_desktop/load:media:youtube:2018"
     },
     {
@@ -192,7 +192,7 @@
         "name": "system_health.memory_desktop/load:media:youtubelivingroom:2020"
     },
     {
-        "duration": "48.0",
+        "duration": "47.0",
         "name": "system_health.memory_desktop/load:news:bbc:2018"
     },
     {
@@ -208,7 +208,7 @@
         "name": "system_health.memory_desktop/load:news:hackernews:2018"
     },
     {
-        "duration": "73.0",
+        "duration": "72.0",
         "name": "system_health.memory_desktop/load:news:nytimes:2018"
     },
     {
@@ -236,7 +236,7 @@
         "name": "system_health.memory_desktop/load:search:ebay:2018"
     },
     {
-        "duration": "35.0",
+        "duration": "36.0",
         "name": "system_health.memory_desktop/load:search:flipkart:2018"
     },
     {
@@ -314,5 +314,9 @@
     {
         "duration": "61.0",
         "name": "system_health.memory_desktop/play:media:soundcloud:2018"
+    },
+    {
+        "duration": "900.0",
+        "name": "base_perftests/_gtest_"
     }
 ]

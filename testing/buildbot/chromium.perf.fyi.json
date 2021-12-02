@@ -239,7 +239,8 @@
       "cast_runner_pkg",
       "web_runner_pkg",
       "chromedriver",
-      "chromium_builder_perf"
+      "chromium_builder_perf",
+      "base_perftests"
     ]
   },
   "fuchsia-perf-fyi": {
@@ -253,8 +254,8 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested",
-          "--os-check=update"
+          "--os-check=update",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
         "merge": {
@@ -306,8 +307,8 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
           "-d",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested",
-          "--os-check=update"
+          "--os-check=update",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
         ],
         "isolate_name": "performance_web_engine_test_suite",
         "merge": {

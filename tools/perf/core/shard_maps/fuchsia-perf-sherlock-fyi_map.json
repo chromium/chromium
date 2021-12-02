@@ -2,19 +2,31 @@
     "0": {
         "benchmarks": {
             "media.mobile": {
+                "end": 14,
                 "abridged": false
-            },
-            "rendering.mobile": {
-                "end": 73,
-                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "path": "bin/run_base_perftests",
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=update",
+                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
+                ]
             }
         }
     },
     "1": {
         "benchmarks": {
+            "media.mobile": {
+                "begin": 14,
+                "abridged": false
+            },
             "rendering.mobile": {
-                "begin": 73,
-                "end": 161,
+                "end": 101,
                 "abridged": false
             }
         }
@@ -22,8 +34,8 @@
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 161,
-                "end": 250,
+                "begin": 101,
+                "end": 205,
                 "abridged": false
             }
         }
@@ -31,8 +43,8 @@
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 250,
-                "end": 338,
+                "begin": 205,
+                "end": 308,
                 "abridged": false
             }
         }
@@ -40,8 +52,8 @@
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 338,
-                "end": 427,
+                "begin": 308,
+                "end": 412,
                 "abridged": false
             }
         }
@@ -49,7 +61,7 @@
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 427,
+                "begin": 412,
                 "abridged": false
             },
             "system_health.memory_desktop": {
@@ -58,16 +70,16 @@
         }
     },
     "extra_infos": {
-        "num_stories": 531,
-        "predicted_min_shard_time": 880,
+        "num_stories": 532,
+        "predicted_min_shard_time": 1030,
         "predicted_min_shard_index": 1,
-        "predicted_max_shard_time": 890,
+        "predicted_max_shard_time": 1040.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 890,
-        "shard #1": 880,
-        "shard #2": 890,
-        "shard #3": 880,
-        "shard #4": 890,
-        "shard #5": 880
+        "shard #0": 1040.0,
+        "shard #1": 1030,
+        "shard #2": 1040,
+        "shard #3": 1030,
+        "shard #4": 1040,
+        "shard #5": 1030
     }
 }
