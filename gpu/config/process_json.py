@@ -73,7 +73,7 @@ def check_nvidia_driver_version(version):
   ver_list = version.split('.')
   # Allow "456" to match "456.*", so allow a single-entry list.
   if len(ver_list) == 0 or len(ver_list) > 2:
-    return False;
+    return False
   elif len(ver_list) == 2 and len(ver_list[1]) != 2:
     return False
   # Must start with three digits, whether it's "456.*" or "456.78".
@@ -745,7 +745,7 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
   if 'driver_update_url' in entry:
     description += (' Please update your graphics driver via this link: ' +
                     entry['driver_update_url'])
-  data_file.write('"%s",\n' % description);
+  data_file.write('"%s",\n' % description)
   # Features
   if 'features' in entry:
     var_name = 'kFeatureListFor%sEntry%d' % (unique_symbol_id, entry_id)
