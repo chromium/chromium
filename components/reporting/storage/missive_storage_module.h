@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/storage/missive_storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 
