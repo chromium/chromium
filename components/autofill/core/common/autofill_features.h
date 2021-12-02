@@ -118,6 +118,8 @@ extern const base::Feature kAutofillParsingPatternsNegativeMatching;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternsLanguageDependent;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillPreventOverridingPrefilledValues;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProfileClientValidation;

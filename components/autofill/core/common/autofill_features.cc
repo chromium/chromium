@@ -281,6 +281,13 @@ extern const base::FeatureParam<int>
         "fields",
         50};
 
+// When enabled, Autofill would not override the field values that were either
+// filled by Autofill or on page load.
+// TODO(crbug/1275649): Remove once experiment is finished.
+extern const base::Feature kAutofillPreventOverridingPrefilledValues{
+    "AutofillPreventOverridingPrefilledValues",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will load remote patterns via the component updater.
 // TODO(crbug/1121990): Remove once launched.
 extern const base::Feature kAutofillParsingPatternsFromRemote{

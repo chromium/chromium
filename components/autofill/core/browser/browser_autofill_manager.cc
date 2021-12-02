@@ -1724,6 +1724,14 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       continue;
     }
 
+    // Do not override prefilled field values.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillPreventOverridingPrefilledValues) &&
+        !form_structure->field(i)->value.empty()) {
+      buffer << Tr{} << field_number << "Skipped: value is prefilled";
+      continue;
+    }
+
     if (form_structure->field(i)->only_fill_when_focused() &&
         !form_structure->field(i)->SameFieldAs(field)) {
       buffer << Tr{} << field_number << "Skipped: only fill when focused";
