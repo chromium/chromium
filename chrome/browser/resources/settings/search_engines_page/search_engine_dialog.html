@@ -11,6 +11,13 @@
         </cr-input>
         <cr-input id="keyword"
             label="$i18n{searchEnginesKeyword}"
+            hidden="[[isActiveSearchEnginesFlagEnabled_]]"
+            error-message="$i18n{notValid}"
+            value="{{keyword_}}" on-focus="validate_" on-input="validate_">
+        </cr-input>
+        <cr-input id="keyword"
+            label="$i18n{searchEnginesShortcut}"
+            hidden="[[!isActiveSearchEnginesFlagEnabled_]]"
             error-message="$i18n{notValid}"
             value="{{keyword_}}" on-focus="validate_" on-input="validate_">
         </cr-input>

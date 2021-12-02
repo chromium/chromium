@@ -57,6 +57,12 @@ export class SettingsSearchEngineDialogElement extends
       queryUrl_: String,
       dialogTitle_: String,
       actionButtonText_: String,
+
+      isActiveSearchEnginesFlagEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
+      },
     };
   }
 
@@ -69,6 +75,7 @@ export class SettingsSearchEngineDialogElement extends
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
   DEFAULT_MODEL_INDEX: number;
+  private isActiveSearchEnginesFlagEnabled_: boolean;
 
   constructor() {
     super();
