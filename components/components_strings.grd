@@ -386,10 +386,10 @@
       <message name="IDS_MENU" desc="The accessible name for the Menu. This is used as the aria-roledescription for context menus.">
         Menu
       </message>
-      <message name="IDS_INSTALL" desc="Text to be displayed when an action will trigger an installation (of a component, app from the Play Store, etc.)." formatter_data="android_java">
+      <message name="IDS_INSTALL" desc="Text to be displayed when an action will trigger an installation (of a component, app from the Play Store, etc.).">
         Install
       </message>
-      <message name="IDS_UPDATE" desc="Text to be displayed when an action will trigger an update of an existing item (e.g. a component, app from the Play Store, etc.)." formatter_data="android_java">
+      <message name="IDS_UPDATE" desc="Text to be displayed when an action will trigger an update of an existing item (e.g. a component, app from the Play Store, etc.).">
         Update
       </message>
       <if expr="is_android">

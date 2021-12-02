@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -18,16 +17,10 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.vr.R;
-import org.chromium.components.messages.DismissReason;
-import org.chromium.components.messages.MessageBannerProperties;
-import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
+import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
+import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Manages logic around VrCore Installation and Versioning
@@ -185,52 +178,50 @@ public class VrCoreInstallUtils {
         @VrCoreVersionChecker.VrCoreCompatibility
         int vrCoreCompatibility = getVrCoreVersionChecker().getVrCoreCompatibility();
 
-        String messageTitle;
+        String infobarText;
         String buttonText;
-        Context context = ContextUtils.getApplicationContext();
 
         if (vrCoreCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE) {
             // Supported, but not installed. Ask user to install instead of upgrade.
-            messageTitle = context.getString(R.string.vr_services_check_message_install_title);
-            buttonText = context.getString(org.chromium.chrome.R.string.install);
+            infobarText = ContextUtils.getApplicationContext().getString(
+                    org.chromium.chrome.vr.R.string.vr_services_check_infobar_install_text);
+            buttonText = ContextUtils.getApplicationContext().getString(
+                    org.chromium.chrome.vr.R.string.vr_services_check_infobar_install_button);
         } else if (vrCoreCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE) {
-            messageTitle = context.getString(R.string.vr_services_check_message_update_title);
-            buttonText = context.getString(org.chromium.chrome.R.string.update);
+            infobarText = ContextUtils.getApplicationContext().getString(
+                    org.chromium.chrome.vr.R.string.vr_services_check_infobar_update_text);
+            buttonText = ContextUtils.getApplicationContext().getString(
+                    org.chromium.chrome.vr.R.string.vr_services_check_infobar_update_button);
         } else {
             Log.e(TAG, "Unknown VrCore compatibility: " + vrCoreCompatibility);
             return;
         }
 
-        MessageDispatcher messageDispatcher =
-                MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
-        if (messageDispatcher == null) return;
-        PropertyModel message =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.VR_SERVICES_UPGRADE)
-                        .with(MessageBannerProperties.TITLE, messageTitle)
-                        .with(MessageBannerProperties.DESCRIPTION,
-                                context.getString(org.chromium.chrome.vr.R.string
-                                                          .vr_services_check_message_description))
-                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
-                                org.chromium.chrome.vr.R.drawable.vr_services)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    assert sRequestInstallInstance == null;
-                                    sRequestInstallInstance = VrCoreInstallUtils.this;
-                                    activity.startActivityForResult(
-                                            new Intent(Intent.ACTION_VIEW,
-                                                    Uri.parse(VR_CORE_MARKET_URI)),
-                                            VR_SERVICES_UPDATE_RESULT);
-                                })
-                        .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
-                        .build();
-        messageDispatcher.enqueueMessage(message, webContents, MessageScopeType.NAVIGATION, false);
-    }
+        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
+            @Override
+            public void onInfoBarDismissed() {
+                maybeNotifyNativeOnInstallResult(false);
+            }
 
-    private void onMessageDismissed(@DismissReason int dismissReason) {
-        maybeNotifyNativeOnInstallResult(false);
+            @Override
+            public boolean onInfoBarButtonClicked(boolean isPrimary) {
+                assert sRequestInstallInstance == null;
+                sRequestInstallInstance = VrCoreInstallUtils.this;
+                activity.startActivityForResult(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(VR_CORE_MARKET_URI)),
+                        VR_SERVICES_UPDATE_RESULT);
+                return false;
+            }
+
+            @Override
+            public boolean onInfoBarLinkClicked() {
+                return false;
+            }
+        };
+        SimpleConfirmInfoBarBuilder.create(webContents, listener,
+                InfoBarIdentifier.VR_SERVICES_UPGRADE_ANDROID, activity,
+                org.chromium.chrome.vr.R.drawable.vr_services, infobarText, buttonText, null, null,
+                true);
     }
 
     private void onVrCoreMaybeUpdated() {
