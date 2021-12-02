@@ -592,7 +592,7 @@ device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void BluetoothAdapterFloss::SetServiceAllowList(const UUIDList& uuids,
                                                 base::OnceClosure callback,
                                                 ErrorCallback error_callback) {
@@ -612,7 +612,7 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
   NOTIMPLEMENTED();
   return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {

@@ -4124,13 +4124,6 @@ const char kAudioUrlDescription[] =
     "Enable chrome://audio that is designed for debugging ChromeOS audio "
     "issues";
 
-const char kBluetoothAdvertisementMonitoringName[] =
-    "Bluetooth Advertisement Monitoring";
-const char kBluetoothAdvertisementMonitoringDescription[] =
-    "Advertisement monitoring allows applications to register low energy "
-    "scanners that filter low energy advertisements in a power-efficient "
-    "manner.";
-
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
@@ -5246,6 +5239,13 @@ const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
     "(chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-gsuite and "
     "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
     "are ignored for managed Chrome OS users unless this feature is enabled.";
+
+const char kBluetoothAdvertisementMonitoringName[] =
+    "Bluetooth Advertisement Monitoring";
+const char kBluetoothAdvertisementMonitoringDescription[] =
+    "Advertisement monitoring allows applications to register low energy "
+    "scanners that filter low energy advertisements in a power-efficient "
+    "manner.";
 
 const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
 const char kDefaultCalculatorWebAppDescription[] =

@@ -4,10 +4,14 @@
 
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 
+#include "base/feature_list.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace chromeos {
 
@@ -26,8 +30,23 @@ void LacrosInitializeDBus() {
   InitializeDBusClient<MissiveClient>(bus);
 }
 
+void LacrosInitializeFeatureListDependentDBus() {
+  dbus::Bus* bus = LacrosDBusThreadManager::Get()->GetSystemBus();
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    InitializeDBusClient<floss::FlossDBusManager>(bus);
+  } else {
+    InitializeDBusClient<bluez::BluezDBusManager>(bus);
+  }
+}
+
 void LacrosShutdownDBus() {
   // Shut down D-Bus clients in reverse order of initialization.
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    floss::FlossDBusManager::Shutdown();
+  } else {
+    bluez::BluezDBusManager::Shutdown();
+  }
+
   MissiveClient::Shutdown();
 
   PermissionBrokerClient::Shutdown();

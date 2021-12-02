@@ -70,7 +70,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
                          const std::vector<uint8_t>& value,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void StartNotify(
       const dbus::ObjectPath& object_path,
       device::BluetoothGattCharacteristic::NotificationType notification_type,
@@ -80,7 +80,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   void StartNotify(const dbus::ObjectPath& object_path,
                    base::OnceClosure callback,
                    ErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void StopNotify(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,

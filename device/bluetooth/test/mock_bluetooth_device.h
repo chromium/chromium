@@ -119,14 +119,14 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_METHOD1(CreateGattConnectionImpl,
                void(absl::optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD2(ExecuteWrite,
                void(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback));
   MOCK_METHOD2(AbortWrite,
                void(base::OnceClosure callback,
                     AbortWriteErrorCallback error_callback));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // BluetoothDevice manages the lifetime of its BluetoothGATTServices.
   // This method takes ownership of the MockBluetoothGATTServices. This is only

@@ -28,9 +28,9 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -42,9 +42,9 @@ class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
 class BluetoothLocalGattService;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 class BluetoothLowEnergyScanFilter;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 class BluetoothRemoteGattCharacteristic;
 class BluetoothRemoteGattDescriptor;
 class BluetoothRemoteGattService;
@@ -680,7 +680,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       BluetoothRemoteGattDescriptor* descriptor,
       const std::vector<uint8_t>& value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Set a service allowlist by specifying services UUIDs. When this is called,
   // existing connections will be disconnected and services not in the allowlist
   // will be blocked. Device property |IsBlockedByPolicy| will be True if some
@@ -726,7 +726,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The timeout in seconds used by RemoveTimedOutDevices.
   static const base::TimeDelta timeoutSec;

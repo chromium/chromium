@@ -5670,6 +5670,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSkiaRendererDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kUseSkiaRenderer)},
 
+#if defined(OS_CHROMEOS)
+    {"bluetooth-advertisement-monitoring",
+     flag_descriptions::kBluetoothAdvertisementMonitoringName,
+     flag_descriptions::kBluetoothAdvertisementMonitoringDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothAdvertisementMonitoring)},
+#endif  // defined(OS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"allow-disable-mouse-acceleration",
      flag_descriptions::kAllowDisableMouseAccelerationName,
@@ -5693,11 +5700,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowTouchpadHapticClickSettingsName,
      flag_descriptions::kAllowTouchpadHapticClickSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAllowTouchpadHapticClickSettings)},
-
-    {"bluetooth-advertisement-monitoring",
-     flag_descriptions::kBluetoothAdvertisementMonitoringName,
-     flag_descriptions::kBluetoothAdvertisementMonitoringDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothAdvertisementMonitoring)},
 
     {"enable-neural-stylus-palm-rejection",
      flag_descriptions::kEnableNeuralStylusPalmRejectionName,

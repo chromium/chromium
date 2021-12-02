@@ -2377,9 +2377,6 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kAudioUrlName[];
 extern const char kAudioUrlDescription[];
 
-extern const char kBluetoothAdvertisementMonitoringName[];
-extern const char kBluetoothAdvertisementMonitoringDescription[];
-
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 
@@ -3034,6 +3031,9 @@ extern const char kLauncherNudgeShortIntervalDescription[];
 extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
 extern const char
     kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[];
+
+extern const char kBluetoothAdvertisementMonitoringName[];
+extern const char kBluetoothAdvertisementMonitoringDescription[];
 
 extern const char kDefaultCalculatorWebAppName[];
 extern const char kDefaultCalculatorWebAppDescription[];

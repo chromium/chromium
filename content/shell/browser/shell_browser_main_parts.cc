@@ -53,12 +53,12 @@
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
-#endif  // #elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
@@ -117,12 +117,14 @@ ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::DBusThreadManager::Initialize();
-  bluez::BluezDBusManager::InitializeFake();
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  bluez::DBusBluezManagerWrapperLinux::Initialize();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosDBusThreadManager::Initialize();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  bluez::BluezDBusManager::InitializeFake();
+#elif defined(OS_LINUX)
+  bluez::DBusBluezManagerWrapperLinux::Initialize();
 #endif
 }
 
@@ -205,16 +207,18 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 }
 
 void ShellBrowserMainParts::PostDestroyThreads() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Shutdown();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::BluezDBusManager::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::DBusBluezManagerWrapperLinux::Shutdown();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::DBusThreadManager::Shutdown();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Shutdown();
 #endif
 }
 

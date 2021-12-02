@@ -30,6 +30,10 @@
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
+#endif
+
 #if defined(USE_DBUS) && !defined(OS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
@@ -82,9 +86,12 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
 }
 
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // No-op: Ash and Lacros Bluetooth DBusManager initialization depend on
+  // FeatureList, and is done elsewhere.
+#else
   bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
@@ -105,13 +112,15 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
 
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif
+#endif  // defined(USE_DBUS) && !defined(OS_CHROMEOS)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // No-op; per PostBrowserStart() comment, this is done elsewhere.
+#else
   bluez::BluezDBusManager::Shutdown();
   bluez::BluezDBusThreadManager::Shutdown();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ChromeBrowserMainPartsPosix::PostDestroyThreads();
 }

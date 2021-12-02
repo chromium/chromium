@@ -614,6 +614,11 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   ash::InitializeFeatureListDependentDBus();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Initialize D-Bus clients that depend on feature list.
+  chromeos::LacrosInitializeFeatureListDependentDBus();
+#endif
+
 #if defined(OS_ANDROID)
   chrome_content_browser_client_->startup_data()->CreateProfilePrefService();
   net::NetworkChangeNotifier::SetFactory(

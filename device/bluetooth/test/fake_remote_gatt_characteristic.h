@@ -98,14 +98,14 @@ class FakeRemoteGattCharacteristic
       const std::vector<uint8_t>& value,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // device::BluetoothRemoteGattCharacteristic overrides:
   void SubscribeToNotifications(
       device::BluetoothRemoteGattDescriptor* ccc_descriptor,
@@ -118,7 +118,7 @@ class FakeRemoteGattCharacteristic
       device::BluetoothRemoteGattDescriptor* ccc_descriptor,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void UnsubscribeFromNotifications(
       device::BluetoothRemoteGattDescriptor* ccc_descriptor,
       base::OnceClosure callback,

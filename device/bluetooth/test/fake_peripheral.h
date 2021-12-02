@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_central.h"
@@ -123,12 +124,12 @@ class FakePeripheral : public device::BluetoothDevice {
       GattConnectionCallback callback,
       absl::optional<device::BluetoothUUID> service_uuid) override;
   bool IsGattServicesDiscoveryComplete() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
                   AbortWriteErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
   void CreateGattConnectionImpl(absl::optional<device::BluetoothUUID>) override;

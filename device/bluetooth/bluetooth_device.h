@@ -630,7 +630,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   std::vector<BluetoothRemoteGattService*> GetPrimaryServicesByUUID(
       const BluetoothUUID& service_uuid);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   using ExecuteWriteErrorCallback =
       base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>;
   using AbortWriteErrorCallback =
@@ -641,7 +641,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Aborts all the previous prepare writes in a reliable write session.
   virtual void AbortWrite(base::OnceClosure callback,
                           AbortWriteErrorCallback error_callback) = 0;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   // Set the battery information for the battery type |info.type|. Overrides

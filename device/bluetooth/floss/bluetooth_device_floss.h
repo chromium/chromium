@@ -87,12 +87,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
                   AbortWriteErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   FlossDeviceId AsFlossDeviceId() const;
   void SetName(const std::string& name);

@@ -2226,7 +2226,7 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   EXPECT_TRUE(update_sessions_[0]->IsActive());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(BluetoothGattBlueZTest, ReliableWrite) {
   fake_bluetooth_device_client_->CreateDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
@@ -2373,7 +2373,7 @@ TEST_F(BluetoothGattBlueZTest, NotificationType) {
   base::RunLoop().Run();
   EXPECT_EQ(2, observer.gatt_characteristic_value_changed_count());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(BluetoothGattBlueZTest, MultipleDevices) {
   fake_bluetooth_device_client_->CreateDevice(

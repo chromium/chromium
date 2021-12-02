@@ -117,14 +117,26 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   // D-Bus objects.
   chromeos::DBusThreadManager::Initialize();
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Initialize();
+  dbus::Bus* bus = chromeos::LacrosDBusThreadManager::Get()->GetSystemBus();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (bus) {
+    bluez::BluezDBusManager::Initialize(bus);
+  } else {
+    bluez::BluezDBusManager::InitializeFake();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (bus) {
     chromeos::hermes_clients::Initialize(bus);
-    bluez::BluezDBusManager::Initialize(bus);
     chromeos::CrasAudioClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
     chromeos::hermes_clients::InitializeFakes();
-    bluez::BluezDBusManager::InitializeFake();
     chromeos::CrasAudioClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }
@@ -145,13 +157,12 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   // See crbug.com/381852 and revision fb69f142.
   // TODO(michaelpg): Verify this works for target environments.
   ui::InitializeInputMethodForTesting();
-
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #else
   ui::InitializeInputMethodForTesting();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Initialize();
+
+#if defined(OS_LINUX)
+  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #endif
 }
 
@@ -291,23 +302,27 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 void ShellBrowserMainParts::PostDestroyThreads() {
   extensions_browser_client_.reset();
   ExtensionsBrowserClient::Set(nullptr);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Shutdown();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  device::BluetoothAdapterFactory::Shutdown();
+  bluez::BluezDBusManager::Shutdown();
+#elif defined(OS_LINUX)
+  device::BluetoothAdapterFactory::Shutdown();
+  bluez::BluezDBusManager::Shutdown();
+  bluez::BluezDBusThreadManager::Shutdown();
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   network_controller_.reset();
   chromeos::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
-  device::BluetoothAdapterFactory::Shutdown();
-  bluez::BluezDBusManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::DBusThreadManager::Shutdown();
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  device::BluetoothAdapterFactory::Shutdown();
-  bluez::BluezDBusManager::Shutdown();
-  bluez::BluezDBusThreadManager::Shutdown();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Shutdown();
 #endif
 }
 

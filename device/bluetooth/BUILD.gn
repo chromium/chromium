@@ -8,7 +8,7 @@ import("//device/bluetooth/cast_bluetooth.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
-if (is_chromeos_ash) {
+if (is_chromeos_ash || is_chromeos_lacros) {
   import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 } else if (use_bluez) {
   use_real_dbus_clients = false
@@ -201,6 +201,10 @@ component("bluetooth") {
       ":jni_headers",
       "//services/device/public/cpp:device_feature_list",
     ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chromeos/constants" ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
@@ -453,7 +457,7 @@ component("bluetooth") {
         "floss/floss_manager_client.cc",
         "floss/floss_manager_client.h",
       ]
-      if (is_chromeos_ash) {
+      if (is_chromeos_ash || is_chromeos_lacros) {
         configs += [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
         sources += [
           "chromeos/bluetooth_connection_logger.cc",
@@ -462,6 +466,9 @@ component("bluetooth") {
           "chromeos/bluetooth_utils.h",
         ]
         deps += [ "//services/data_decoder/public/mojom" ]
+        if (is_chromeos_lacros) {
+          deps += [ "//chromeos/lacros" ]
+        }
       }
       if (!use_real_dbus_clients) {
         sources += [
@@ -581,7 +588,7 @@ static_library("mocks") {
     "test/mock_bluetooth_socket.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
       "test/mock_bluetooth_low_energy_scan_session.cc",
       "test/mock_bluetooth_low_energy_scan_session.h",

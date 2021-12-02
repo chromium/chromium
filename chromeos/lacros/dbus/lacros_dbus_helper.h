@@ -12,6 +12,11 @@ namespace chromeos {
 // Initializes the D-Bus thread manager and Chrome DBus services for Lacros.
 COMPONENT_EXPORT(CHROMEOS_LACROS) void LacrosInitializeDBus();
 
+// D-Bus clients may depend on feature list. This initializes only those clients
+// in Lacros, and must be called after feature list initialization.
+COMPONENT_EXPORT(CHROMEOS_LACROS)
+void LacrosInitializeFeatureListDependentDBus();
+
 // Shuts down the D-Bus thread manager and Chrome DBus services for Lacros.
 COMPONENT_EXPORT(CHROMEOS_LACROS) void LacrosShutdownDBus();
 
