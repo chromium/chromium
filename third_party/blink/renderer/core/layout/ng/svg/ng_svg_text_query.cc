@@ -149,6 +149,37 @@ std::tuple<const NGFragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
   return {item, char_rect};
 }
 
+enum class QueryPosition { kStart, kEnd };
+gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
+                               unsigned index,
+                               QueryPosition pos) {
+  const NGFragmentItem* item;
+  gfx::RectF char_rect;
+  std::tie(item, char_rect) = ScaledCharacterRectInContainer(query_root, index);
+  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  if (item->IsHiddenForPaint())
+    return gfx::PointF();
+  const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
+  const float ascent =
+      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
+          item->Style().GetFontBaseline());
+  const bool left_or_top =
+      IsLtr(item->ResolvedDirection()) == (pos == QueryPosition::kStart);
+  gfx::PointF point;
+  if (item->IsHorizontal()) {
+    point = left_or_top ? char_rect.origin() : char_rect.top_right();
+    point.Offset(0.0f, ascent);
+  } else {
+    point = left_or_top ? char_rect.top_right() : char_rect.bottom_right();
+    point.Offset(-ascent, 0.0f);
+  }
+  if (item->HasSvgTransformForPaint())
+    point = item->BuildSvgTransformForPaint().MapPoint(point);
+  const float scaling_factor = inline_text.ScalingFactor();
+  point.Scale(1 / scaling_factor, 1 / scaling_factor);
+  return point;
+}
+
 }  // namespace
 
 unsigned NGSvgTextQuery::NumberOfCharacters() const {
@@ -194,59 +225,11 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
 }
 
 gfx::PointF NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
-  const NGFragmentItem* item;
-  gfx::RectF char_rect;
-  std::tie(item, char_rect) =
-      ScaledCharacterRectInContainer(query_root_, index);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
-    return gfx::PointF();
-  const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
-  const float ascent =
-      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
-          item->Style().GetFontBaseline());
-  const bool is_ltr = IsLtr(item->ResolvedDirection());
-  gfx::PointF point;
-  if (item->IsHorizontal()) {
-    point = is_ltr ? char_rect.origin() : char_rect.top_right();
-    point.Offset(0.0f, ascent);
-  } else {
-    point = is_ltr ? char_rect.top_right() : char_rect.bottom_right();
-    point.Offset(-ascent, 0.0f);
-  }
-  if (item->HasSvgTransformForPaint())
-    point = item->BuildSvgTransformForPaint().MapPoint(point);
-  const float scaling_factor = inline_text.ScalingFactor();
-  point.Scale(1 / scaling_factor, 1 / scaling_factor);
-  return point;
+  return StartOrEndPosition(query_root_, index, QueryPosition::kStart);
 }
 
 gfx::PointF NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
-  const NGFragmentItem* item;
-  gfx::RectF char_rect;
-  std::tie(item, char_rect) =
-      ScaledCharacterRectInContainer(query_root_, index);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
-  if (item->IsHiddenForPaint())
-    return gfx::PointF();
-  const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
-  const float ascent =
-      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
-          item->Style().GetFontBaseline());
-  const bool is_ltr = IsLtr(item->ResolvedDirection());
-  gfx::PointF point;
-  if (item->IsHorizontal()) {
-    point = is_ltr ? char_rect.top_right() : char_rect.origin();
-    point.Offset(0.0f, ascent);
-  } else {
-    point = is_ltr ? char_rect.bottom_right() : char_rect.top_right();
-    point.Offset(-ascent, 0.0f);
-  }
-  if (item->HasSvgTransformForPaint())
-    point = item->BuildSvgTransformForPaint().MapPoint(point);
-  const float scaling_factor = inline_text.ScalingFactor();
-  point.Scale(1 / scaling_factor, 1 / scaling_factor);
-  return point;
+  return StartOrEndPosition(query_root_, index, QueryPosition::kEnd);
 }
 
 gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
