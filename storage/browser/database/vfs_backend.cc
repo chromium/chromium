@@ -91,7 +91,7 @@ base::File VfsBackend::OpenFile(const base::FilePath& file_path,
   }
 
   if (desired_flags & SQLITE_OPEN_DELETEONCLOSE) {
-    flags |= base::File::FLAG_TEMPORARY | base::File::FLAG_WIN_HIDDEN |
+    flags |= base::File::FLAG_WIN_TEMPORARY | base::File::FLAG_WIN_HIDDEN |
              base::File::FLAG_DELETE_ON_CLOSE;
   }
 
