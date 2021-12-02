@@ -20,10 +20,8 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
@@ -73,7 +71,6 @@ class ChromeConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -215,10 +212,6 @@ bool ChromeConfigurator::EnabledDeltas() const {
   return configurator_impl_.EnabledDeltas();
 }
 
-bool ChromeConfigurator::EnabledComponentUpdates() const {
-  return pref_service_->GetBoolean(prefs::kComponentUpdatesEnabled);
-}
-
 bool ChromeConfigurator::EnabledBackgroundDownloader() const {
   return configurator_impl_.EnabledBackgroundDownloader();
 }
@@ -246,12 +239,6 @@ ChromeConfigurator::GetProtocolHandlerFactory() const {
 }
 
 }  // namespace
-
-void RegisterPrefsForChromeComponentUpdaterConfigurator(
-    PrefRegistrySimple* registry) {
-  // The component updates are enabled by default, if the preference is not set.
-  registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled, true);
-}
 
 scoped_refptr<update_client::Configurator>
 MakeChromeComponentUpdaterConfigurator(

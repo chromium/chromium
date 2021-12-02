@@ -2929,10 +2929,6 @@ const char kCommerceMerchantViewerMessagesShownTime[] =
     "commerce_merchant_viewer_messages_shown_time";
 #endif
 
-// Policy that indicates the state of updates for the binary components.
-const char kComponentUpdatesEnabled[] =
-    "component_updates.component_updates_enabled";
-
 #if defined(OS_ANDROID)
 // Whether the search geolocation disclosure has been dismissed by the user.
 const char kSearchGeolocationDisclosureDismissed[] =

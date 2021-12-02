@@ -27,6 +27,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/patcher.h"
@@ -213,8 +214,10 @@ class ComponentInstallerTest : public testing::Test {
       base::ThreadTaskRunnerHandle::Get();
   base::RunLoop runloop_;
 
+  std::unique_ptr<TestingPrefServiceSimple> pref_ =
+      std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<TestConfigurator> config_ =
-      base::MakeRefCounted<TestConfigurator>();
+      base::MakeRefCounted<TestConfigurator>(pref_.get());
   raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
@@ -230,6 +233,7 @@ ComponentInstallerTest::ComponentInstallerTest() {
       .WillByDefault(Invoke(this, &ComponentInstallerTest::Schedule));
   component_updater_ = std::make_unique<CrxUpdateService>(
       config_, std::move(scheduler), update_client_, "");
+  RegisterComponentUpdateServicePrefs(pref_->registry());
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {
@@ -331,7 +335,6 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
   EXPECT_STREQ("fake name", component.name.c_str());
   EXPECT_EQ(expected_attrs, component.installer_attributes);
   EXPECT_TRUE(component.requires_network_encryption);
-  EXPECT_TRUE(component.supports_group_policy_enable_component_updates);
 }
 
 // Tests that the unpack path is removed when the install succeeded.

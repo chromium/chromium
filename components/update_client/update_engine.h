@@ -132,9 +132,6 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;
 
-  // True if the component updates are enabled in this context.
-  const bool enabled_component_updates;
-
   // Contains the ids of all CRXs in this context in the order specified
   // by the caller of |UpdateClient::Update| or |UpdateClient:Install|.
   const std::vector<std::string> ids;

@@ -26,6 +26,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"

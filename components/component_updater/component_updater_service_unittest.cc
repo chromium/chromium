@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_updater_service.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/component_updater/component_updater_service_internal.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/update_client.h"
@@ -177,8 +179,10 @@ class ComponentUpdaterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::RunLoop runloop_;
 
+  std::unique_ptr<TestingPrefServiceSimple> pref_ =
+      std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<TestConfigurator> config_ =
-      base::MakeRefCounted<TestConfigurator>();
+      base::MakeRefCounted<TestConfigurator>(pref_.get());
   raw_ptr<MockUpdateScheduler> scheduler_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
@@ -227,6 +231,7 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
       .WillByDefault(Invoke(this, &ComponentUpdaterTest::Schedule));
   component_updater_ = std::make_unique<CrxUpdateService>(
       config_, std::move(scheduler), update_client_, "");
+  RegisterComponentUpdateServicePrefs(pref_->registry());
 }
 
 ComponentUpdaterTest::~ComponentUpdaterTest() {
@@ -297,17 +302,14 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   ids.push_back(id1);
   ids.push_back(id2);
 
-  CrxComponent crx_component1;
-  crx_component1.app_id = id1;
-  crx_component1.pk_hash.assign(abag_hash, abag_hash + base::size(abag_hash));
-  crx_component1.version = base::Version("1.0");
-  crx_component1.installer = installer;
+  std::vector<uint8_t> hash;
+  hash.assign(std::begin(abag_hash), std::end(abag_hash));
+  ComponentRegistration component1(id1, {}, hash, base::Version("1.0"), {}, {},
+                                   nullptr, installer, false, true);
 
-  CrxComponent crx_component2;
-  crx_component2.app_id = id2;
-  crx_component2.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
-  crx_component2.version = base::Version("0.9");
-  crx_component2.installer = installer;
+  hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
+  ComponentRegistration component2(id2, {}, hash, base::Version("0.9"), {}, {},
+                                   nullptr, installer, false, true);
 
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
@@ -319,8 +321,8 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
   EXPECT_CALL(scheduler(), Stop()).Times(1);
 
-  EXPECT_TRUE(component_updater().RegisterComponent(crx_component1));
-  EXPECT_TRUE(component_updater().RegisterComponent(crx_component2));
+  EXPECT_TRUE(component_updater().RegisterComponent(component1));
+  EXPECT_TRUE(component_updater().RegisterComponent(component2));
 
   RunThreads();
   EXPECT_TRUE(component_updater().UnregisterComponent(id1));
@@ -363,21 +365,19 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
 
   {
     using update_client::jebg_hash;
-    CrxComponent crx_component;
-    crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
-    crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
-    crx_component.version = base::Version("0.9");
-    crx_component.installer = base::MakeRefCounted<MockInstaller>();
-    EXPECT_TRUE(cus.RegisterComponent(crx_component));
+    std::vector<uint8_t> hash;
+    hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
+    EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
+        "jebgalgnebhfojomionfpkfelancnnkf", {}, hash, base::Version("0.9"), {},
+        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
   }
   {
     using update_client::abag_hash;
-    CrxComponent crx_component;
-    crx_component.app_id = "abagagagagagagagagagagagagagagag";
-    crx_component.pk_hash.assign(abag_hash, abag_hash + base::size(abag_hash));
-    crx_component.version = base::Version("0.9");
-    crx_component.installer = base::MakeRefCounted<MockInstaller>();
-    EXPECT_TRUE(cus.RegisterComponent(crx_component));
+    std::vector<uint8_t> hash;
+    hash.assign(std::begin(abag_hash), std::end(abag_hash));
+    EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
+        "abagagagagagagagagagagagagagagag", {}, hash, base::Version("0.9"), {},
+        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
   }
 
   OnDemandTester ondemand_tester;
@@ -403,15 +403,9 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   // Don't run periodic update task.
   ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
 
-  scoped_refptr<MockInstaller> installer =
-      base::MakeRefCounted<MockInstaller>();
-
   using update_client::jebg_hash;
-  CrxComponent crx_component;
-  crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
-  crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
-  crx_component.version = base::Version("0.9");
-  crx_component.installer = installer;
+  std::vector<uint8_t> hash;
+  hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
 
   LoopHandler loop_handler(1, quit_closure());
   EXPECT_CALL(update_client(), Install(_, _, _, _))
@@ -420,7 +414,9 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
   EXPECT_CALL(scheduler(), Stop()).Times(1);
 
-  EXPECT_TRUE(component_updater().RegisterComponent(crx_component));
+  EXPECT_TRUE(component_updater().RegisterComponent(ComponentRegistration(
+      "jebgalgnebhfojomionfpkfelancnnkf", {}, hash, base::Version("0.9"), {},
+      {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
   component_updater().MaybeThrottle("jebgalgnebhfojomionfpkfelancnnkf",
                                     base::DoNothing());
 

@@ -152,11 +152,6 @@ bool AwComponentUpdaterConfigurator::EnabledDeltas() const {
   return configurator_impl_.EnabledDeltas();
 }
 
-bool AwComponentUpdaterConfigurator::EnabledComponentUpdates() const {
-  // Always enabled.
-  return configurator_impl_.EnabledComponentUpdates();
-}
-
 bool AwComponentUpdaterConfigurator::EnabledBackgroundDownloader() const {
   return configurator_impl_.EnabledBackgroundDownloader();
 }

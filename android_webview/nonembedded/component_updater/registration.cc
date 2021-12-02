@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 
@@ -26,7 +27,8 @@ constexpr int kNumWebViewComponents = 3;
 
 void RegisterComponentInstallerPolicyShim(
     std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_,
-    base::OnceCallback<bool(update_client::CrxComponent)> register_callback,
+    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
+        register_callback,
     base::OnceClosure registration_finished) {
   base::MakeRefCounted<component_updater::ComponentInstaller>(
       std::make_unique<AwComponentInstallerPolicyShim>(std::move(policy_)))
@@ -37,8 +39,8 @@ void RegisterComponentInstallerPolicyShim(
 }  // namespace
 
 void RegisterComponentsForUpdate(
-    base::RepeatingCallback<bool(update_client::CrxComponent)>
-        register_callback,
+    base::RepeatingCallback<bool(
+        const component_updater::ComponentRegistration&)> register_callback,
     base::OnceClosure on_finished) {
   // TODO(crbug.com/1174022): remove command line flag once launched.
   bool package_names_allowlist_enabled =

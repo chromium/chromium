@@ -7,6 +7,10 @@
 
 namespace prefs {
 
+// Policy that indicates the state of updates for the binary components.
+const char kComponentUpdatesEnabled[] =
+    "component_updates.component_updates_enabled";
+
 // String that represents the recovery component last downloaded version. This
 // takes the usual 'a.b.c.d' notation.
 const char kRecoveryComponentVersion[] = "recovery_component.version";
@@ -42,6 +46,7 @@ const char kSwReporterPromptVersion[] = "software_reporter.prompt_version";
 // have been prompted with this seed before won't be prompted again until a new
 // seed comes in.
 const char kSwReporterPromptSeed[] = "software_reporter.prompt_seed";
+
 #endif
 
 }  // namespace prefs

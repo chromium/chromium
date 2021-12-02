@@ -304,18 +304,13 @@ void RecoveryRegisterHelper(ComponentUpdateService* cus, PrefService* prefs) {
     NOTREACHED();
     return;
   }
-  update_client::CrxComponent recovery;
-  recovery.name = "recovery";
-  recovery.installer = new RecoveryComponentInstaller(version, prefs);
-  recovery.version = version;
-  recovery.pk_hash.assign(kRecoverySha2Hash,
-                          &kRecoverySha2Hash[sizeof(kRecoverySha2Hash)]);
-  recovery.app_id = update_client::GetCrxIdFromPublicKeyHash(recovery.pk_hash);
-  recovery.supports_group_policy_enable_component_updates = true;
-  recovery.requires_network_encryption = false;
-  recovery.crx_format_requirement =
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
-  if (!cus->RegisterComponent(recovery)) {
+  std::vector<uint8_t> public_key_hash;
+  public_key_hash.assign(std::begin(kRecoverySha2Hash),
+                         std::end(kRecoverySha2Hash));
+  if (!cus->RegisterComponent(ComponentRegistration(
+          update_client::GetCrxIdFromPublicKeyHash(public_key_hash), "recovery",
+          public_key_hash, version, {}, {}, nullptr,
+          new RecoveryComponentInstaller(version, prefs), false, true))) {
     NOTREACHED() << "Recovery component registration failed.";
   }
 }

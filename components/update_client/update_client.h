@@ -316,11 +316,8 @@ struct CrxComponent {
   crx_file::VerifierFormat crx_format_requirement =
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
 
-  // True if the component allows enabling or disabling updates by group policy.
-  // This member should be set to |false| for data, non-binary components, such
-  // as CRLSet, Supervised User Whitelists, STH Set, Origin Trials, and File
-  // Type Policies.
-  bool supports_group_policy_enable_component_updates = false;
+  // True if and only if this item may be updated.
+  bool updates_enabled = true;
 
   // Reasons why this component/extension is disabled.
   std::vector<int> disabled_reasons;
