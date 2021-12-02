@@ -289,6 +289,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"onboardingUpdateDisabled", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DISABLED},
       {"onboardingUpdatePermission",
        IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION},
+      // Critical error
+      {"criticalErrorTitleText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE},
+      {"criticalErrorMessageText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE},
+      {"criticalErrorExitToLoginText",
+       IDS_SHIMLESS_RMA_CRITICAL_EXIT_TO_LOGIN_BUTTON},
+      {"criticalErrorRebootText", IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

@@ -2418,7 +2418,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING" translateable="false" desc="The text warning explaining when the device's SKU should be changed.">
         The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
       </message>
-      <!-- Firmware reimaging page -->
+      <!-- RO firmware reimaging page -->
       <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_REQUIRED" translateable="false" desc="The title for the page when reimaging is required.">
         Select an option for firmware reimaging
       </message>
@@ -2489,8 +2489,21 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION" translateable="false" desc="The update permission required operation name.">
         need permission to update
       </message>
+      <!-- Critical error page -->
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" translateable="false" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
+        Critical Error
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
+        Repair finalization is in an unexpected state. You can exit to the login screen to investigate or backup data or reboot the device to attempt to resolve the issue. If you continue to see this message you should use the recovery shim.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_TO_LOGIN_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and exit to the login screen.">
+        Exit to login
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and reboot the device.">
+        Reboot
+      </message>
 
-      <!-- Firmware Update -->
+      <!-- Peripheral Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
         Update peripherals
       </message>

@@ -96,10 +96,14 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
 }
 
 rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
-                                     rmad::RmadErrorCode error) {
+                                     rmad::RmadErrorCode error,
+                                     bool can_go_back = true,
+                                     bool can_abort = true) {
   rmad::GetStateReply reply;
   reply.set_allocated_state(CreateState(state));
   reply.set_error(error);
+  reply.set_can_go_back(can_go_back);
+  reply.set_can_abort(can_abort);
   return reply;
 }
 }  // namespace
@@ -201,6 +205,7 @@ void FakeRmadClient::CreateWithState() {
         CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
     };
     fake->SetFakeStateReplies(fake_states);
+    fake->SetAbortable(true);
   }
 }
 
