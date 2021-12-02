@@ -27,7 +27,7 @@ base::File CreateTempFile() {
 
   int flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
-              base::File::FLAG_TEMPORARY;
+              base::File::FLAG_WIN_TEMPORARY;
   return base::File(path, flags);
 }
 
