@@ -16,49 +16,32 @@
 #endif  // defined(OS_CHROMEOS)
 
 namespace media {
-namespace {
-
-bool ShouldUseChromeOSDirectVideoDecoder(
-    const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GPUInfo& gpu_info) {
-#if defined(OS_CHROMEOS)
-  return gpu_preferences.enable_chromeos_direct_video_decoder;
-#elif BUILDFLAG(ENABLE_VULKAN)
-  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
-    return false;
-  for (const auto& device : gpu_info.vulkan_info->physical_devices) {
-    if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5))
-      return false;
-  }
-  // CL note: Should this be a "return true if any device is >21.1.5" or
-  //                           "return false if any device is <21.1.5".
-  // It's the later right now, but I'm not sure that's right.
-  return true;
-#else
-  return false;
-#endif
-}
-
-}  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
-  if (ShouldUseChromeOSDirectVideoDecoder(traits.gpu_preferences,
-                                          traits.gpu_info)) {
-    auto frame_pool = std::make_unique<PlatformVideoFramePool>(
-        traits.gpu_memory_buffer_factory);
-    auto frame_converter = MailboxVideoFrameConverter::Create(
-        base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
-                            base::Unretained(frame_pool.get())),
-        traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
-    return VideoDecoderPipeline::Create(
-        traits.task_runner, std::move(frame_pool), std::move(frame_converter),
-        traits.media_log->Clone());
+  switch (GetPlatformDecoderImplementationType(
+      *traits.gpu_workarounds, traits.gpu_preferences, traits.gpu_info)) {
+    case VideoDecoderType::kVaapi: {
+      auto frame_pool = std::make_unique<PlatformVideoFramePool>(
+          traits.gpu_memory_buffer_factory);
+      auto frame_converter = MailboxVideoFrameConverter::Create(
+          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+                              base::Unretained(frame_pool.get())),
+          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
+      return VideoDecoderPipeline::Create(
+          traits.task_runner, std::move(frame_pool), std::move(frame_converter),
+          traits.media_log->Clone());
+    }
+    case VideoDecoderType::kVda: {
+      return VdaVideoDecoder::Create(
+          traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
+          *traits.target_color_space, traits.gpu_preferences,
+          *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
+    }
+    default: {
+      return nullptr;
+    }
   }
-  return VdaVideoDecoder::Create(
-      traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-      *traits.target_color_space, traits.gpu_preferences,
-      *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
 }
 
 absl::optional<SupportedVideoDecoderConfigs>
@@ -68,18 +51,39 @@ GetPlatformSupportedVideoDecoderConfigs(
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
-  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences, gpu_info))
-    return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
-  return std::move(get_vda_configs).Run();
+  switch (GetPlatformDecoderImplementationType(gpu_workarounds, gpu_preferences,
+                                               gpu_info)) {
+    case VideoDecoderType::kVda:
+      return std::move(get_vda_configs).Run();
+    case VideoDecoderType::kVaapi:
+      return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
+    default:
+      return absl::nullopt;
+  }
 }
 
 VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences, gpu_info))
+#if defined(OS_CHROMEOS)
+  if (gpu_preferences.enable_chromeos_direct_video_decoder)
     return VideoDecoderType::kVaapi;
   return VideoDecoderType::kVda;
+#elif BUILDFLAG(ENABLE_VULKAN)
+  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
+    return VideoDecoderType::kUnknown;
+  if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
+    return VideoDecoderType::kUnknown;
+  for (const auto& device : gpu_info.vulkan_info->physical_devices) {
+    if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5))
+      return VideoDecoderType::kUnknown;
+  }
+  return VideoDecoderType::kVaapi;
+#else
+  NOTREACHED();
+  return VideoDecoderType::kUnknown;
+#endif
 }
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
