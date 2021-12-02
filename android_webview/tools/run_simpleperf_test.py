@@ -98,7 +98,7 @@ class _RunSimpleperfTest(unittest.TestCase):
     # saved as [(str1 + '\n'), (str2 + '\n'), ...].
     actual_lines = [args[0][:-1] for (args, _) in
                     handle.write.call_args_list]
-    self.assertEquals(expected_lines, actual_lines)
+    self.assertEqual(expected_lines, actual_lines)
 
   def setUp(self):
     self.tmp_dir = '/tmp' # the actual directory won't be used in this test.
@@ -116,9 +116,9 @@ class _RunSimpleperfTest(unittest.TestCase):
   def testStackAddressInterpreter(self, mock_open):
     StackAddressInterpreter.RunStackScript = mock.Mock(
         return_value=_EXAMPLE_STACK_SCRIPT_OUTPUT)
-    self.assertEquals(_EXAMPLE_INTERPRETER_OUTPUT,
-                      self.stack_address_interpreter.Interpret(
-                          _ADDRESSES, _WEBVIEW_LIB_PATH))
+    self.assertEqual(
+        _EXAMPLE_INTERPRETER_OUTPUT,
+        self.stack_address_interpreter.Interpret(_ADDRESSES, _WEBVIEW_LIB_PATH))
     self._AssertFileLines(mock_open, _EXAMPLE_STACK_SCRIPT_INPUT)
 
   @mock.patch('run_simpleperf.open', new_callable=mock.mock_open)
@@ -126,22 +126,22 @@ class _RunSimpleperfTest(unittest.TestCase):
     self.args.show_file_line = True
     StackAddressInterpreter.RunStackScript = mock.Mock(
         return_value=_EXAMPLE_STACK_SCRIPT_OUTPUT)
-    self.assertEquals(_EXAMPLE_INTERPRETER_OUTPUT_WITH_FILE_NAME_LINE,
-                      self.stack_address_interpreter.Interpret(
-                          _ADDRESSES, _WEBVIEW_LIB_PATH))
+    self.assertEqual(
+        _EXAMPLE_INTERPRETER_OUTPUT_WITH_FILE_NAME_LINE,
+        self.stack_address_interpreter.Interpret(_ADDRESSES, _WEBVIEW_LIB_PATH))
     self._AssertFileLines(mock_open, _EXAMPLE_STACK_SCRIPT_INPUT)
 
   def testSimplePerfRunner_CollectAddresses(self):
     addresses = self.simple_perf_runner.CollectAddresses(
         _MOCK_ORIGINAL_REPORT, 'libwebviewchromium.so')
-    self.assertEquals(set(_MOCK_ADDRESSES), addresses)
+    self.assertEqual(set(_MOCK_ADDRESSES), addresses)
 
   def testSimplePerfRunner_ReplaceAddresses(self):
     postprocessed_report = (
         self.simple_perf_runner.ReplaceAddressesWithFunctionInfos(
             _MOCK_ORIGINAL_REPORT, _MOCK_ADDRESS_FUNCTION_NAME_PAIRS,
             'libwebviewchromium.so'))
-    self.assertEquals(_MOCK_FINAL_REPORT, postprocessed_report)
+    self.assertEqual(_MOCK_FINAL_REPORT, postprocessed_report)
 
   @mock.patch('run_simpleperf.open', new_callable=mock.mock_open)
   def testSimplePerfRunner_Run(self, mock_open):
