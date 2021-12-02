@@ -299,14 +299,6 @@ FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
-  if (base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)) {
-    // The shadow backend (PasswordStoreAndroidBackend) creates a controller
-    // delegate that prevents sync from actually communicating with the sync
-    // server using the built in SyncEngine.
-    return shadow_backend_->CreateSyncControllerDelegate();
-  }
-
   return main_backend_->CreateSyncControllerDelegate();
 }
 
