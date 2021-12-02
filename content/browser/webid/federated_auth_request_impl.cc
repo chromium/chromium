@@ -305,10 +305,19 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
           ? RevokeStatus::kSuccess
           : RevokeStatus::kError;
   if (status == RevokeStatus::kSuccess) {
+    url::Origin idp_origin{url::Origin::Create(provider_)};
     // Since the account is now deleted, revoke the permission.
     if (GetRequestPermissionContext()) {
-      GetRequestPermissionContext()->RevokeRequestPermission(
-          origin_, url::Origin::Create(provider_));
+      GetRequestPermissionContext()->RevokeRequestPermission(origin_,
+                                                             idp_origin);
+    }
+    if (GetSharingPermissionContext()) {
+      GetSharingPermissionContext()->RevokeSharingPermissionForAccount(
+          idp_origin, origin_, account_id_);
+    }
+    if (GetActiveSessionPermissionContext()) {
+      GetActiveSessionPermissionContext()->RevokeActiveSession(
+          origin_, idp_origin, account_id_);
     }
   }
   CompleteRevokeRequest(status);
