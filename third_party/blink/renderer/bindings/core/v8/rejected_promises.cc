@@ -97,6 +97,11 @@ class RejectedPromises::Message final {
   }
 
   void Revoke() {
+    if (!script_state_->ContextIsValid()) {
+      // If the context is not valid, the frame is removed for example, then do
+      // nothing.
+      return;
+    }
     ExecutionContext* execution_context = ExecutionContext::From(script_state_);
     if (!execution_context)
       return;
