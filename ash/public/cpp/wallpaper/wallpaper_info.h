@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
@@ -20,13 +21,6 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo();
 
   explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params);
-
-  WallpaperInfo(const std::string& in_location,
-                const absl::optional<uint64_t>& in_asset_id,
-                const std::string& in_collection_id,
-                WallpaperLayout in_layout,
-                WallpaperType in_type,
-                const base::Time& in_date);
 
   WallpaperInfo(const std::string& in_location,
                 WallpaperLayout in_layout,
@@ -48,11 +42,16 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // Either file name of migrated wallpaper including first directory level
   // (corresponding to user wallpaper_files_id) or online wallpaper URL.
   std::string location;
-  absl::optional<uint64_t> asset_id;
-  std::string collection_id;
   WallpaperLayout layout;
   WallpaperType type;
   base::Time date;
+
+  // These fields are applicable if |type| == WallpaperType::kOnline or
+  // WallpaperType::kDaily.
+  absl::optional<uint64_t> asset_id;
+  std::string collection_id;
+  absl::optional<uint64_t> unit_id;
+  std::vector<OnlineWallpaperVariant> variants;
 
   // Not empty if type == WallpaperType::kOneShot.
   // This field is filled in by ShowWallpaperImage when image is already

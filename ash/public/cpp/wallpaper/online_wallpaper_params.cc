@@ -22,6 +22,7 @@ OnlineWallpaperParams::OnlineWallpaperParams(
     bool in_preview_mode,
     bool in_from_user,
     bool in_daily_refresh_enabled,
+    const absl::optional<uint64_t>& in_unit_id,
     const std::vector<OnlineWallpaperVariant>& in_variants)
     : account_id(in_account_id),
       asset_id(in_asset_id),
@@ -31,6 +32,7 @@ OnlineWallpaperParams::OnlineWallpaperParams(
       preview_mode(in_preview_mode),
       from_user(in_from_user),
       daily_refresh_enabled(in_daily_refresh_enabled),
+      unit_id(in_unit_id),
       variants(in_variants) {}
 
 OnlineWallpaperParams::OnlineWallpaperParams(

@@ -5,7 +5,6 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -103,6 +102,12 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kNewWallpaperLayoutNodeName[];
   static const char kNewWallpaperLocationNodeName[];
   static const char kNewWallpaperTypeNodeName[];
+  static const char kNewWallpaperUnitIdNodeName[];
+  static const char kNewWallpaperVariantListNodeName[];
+
+  // Names of nodes for the online wallpaper variant dictionary.
+  static const char kOnlineWallpaperTypeNodeName[];
+  static const char kOnlineWallpaperUrlNodeName[];
 
   explicit WallpaperControllerImpl(PrefService* local_state);
 

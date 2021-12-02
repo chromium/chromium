@@ -351,7 +351,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
-          /*daily_refresh_enabled=*/false, variants),
+          /*daily_refresh_enabled=*/false, it->second.unit_id, variants),
       base::BindOnce(
           &ChromePersonalizationAppUiDelegate::OnOnlineWallpaperSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));

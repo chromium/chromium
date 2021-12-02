@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -202,10 +203,17 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
 
   const uint64_t asset_id = 1;
   const GURL image_url("http://test_url");
+  const uint64_t unit_id = 1;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(ash::OnlineWallpaperVariant(
+      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
 
   AddWallpaperImage(asset_id, /*image_info=*/{
                         image_url,
                         "collection_id",
+                        asset_id,
+                        unit_id,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
                     });
 
   base::RunLoop loop;
@@ -224,8 +232,7 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
                  absl::make_optional(asset_id), image_url, "collection_id",
                  ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                  /*preview_mode=*/false, /*from_user=*/true,
-                 /*daily_refresh_enabled=*/false,
-                 /*variants=*/std::vector<ash::OnlineWallpaperVariant>()}),
+                 /*daily_refresh_enabled=*/false, unit_id, variants}),
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
@@ -234,10 +241,17 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, PreviewWallpaper) {
 
   const uint64_t asset_id = 1;
   const GURL image_url("http://test_url");
+  const uint64_t unit_id = 1;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(ash::OnlineWallpaperVariant(
+      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
 
   AddWallpaperImage(asset_id, /*image_info=*/{
                         image_url,
                         "collection_id",
+                        asset_id,
+                        unit_id,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
                     });
 
   base::RunLoop loop;
@@ -256,8 +270,7 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, PreviewWallpaper) {
                  absl::make_optional(asset_id), image_url, "collection_id",
                  ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                  /*preview_mode=*/true, /*from_user=*/true,
-                 /*daily_refresh_enabled=*/false,
-                 /*variants=*/std::vector<ash::OnlineWallpaperVariant>()}),
+                 /*daily_refresh_enabled=*/false, unit_id, variants}),
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
@@ -267,14 +280,26 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
       CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorBLACK));
 
   const uint64_t asset_id = 1;
+  const GURL image_url("http://test_url");
+  const uint64_t unit_id = 1;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(ash::OnlineWallpaperVariant(
+      asset_id, image_url, backdrop::Image::IMAGE_TYPE_UNKNOWN));
+
+  AddWallpaperImage(asset_id, /*image_info=*/{
+                        image_url,
+                        "collection_id",
+                        asset_id,
+                        unit_id,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN,
+                    });
 
   test_wallpaper_controller()->SetOnlineWallpaper(
       {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-       absl::make_optional(asset_id), GURL("test_url"), "collection_id",
+       absl::make_optional(asset_id), image_url, "collection_id",
        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
-       /*daily_refresh_enabled=*/false,
-       /*variants=*/std::vector<ash::OnlineWallpaperVariant>()},
+       /*daily_refresh_enabled=*/false, unit_id, variants},
       base::DoNothing());
 
   EXPECT_EQ(nullptr, current_wallpaper());

@@ -38,6 +38,9 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // If the `WallpaperInfo` generated from these params should have type
   // `WallpaperType::kDaily`.
   bool daily_refresh_enabled = false;
+  // The unique identifier for a unit of wallpapers e.g. D/L wallpaper variants.
+  // TODO(b/193788853): Make this required after deprecating old wallpaper app.
+  absl::optional<uint64_t> unit_id;
   // The variants related to the wallpaper. This vector also contains the
   // wallpaper itself.
   std::vector<OnlineWallpaperVariant> variants;
@@ -50,6 +53,7 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
                         bool preview_mode,
                         bool from_user,
                         bool daily_refresh_enabled,
+                        const absl::optional<uint64_t>& unit_id,
                         const std::vector<OnlineWallpaperVariant>& variants);
 
   OnlineWallpaperParams(const OnlineWallpaperParams& other);
