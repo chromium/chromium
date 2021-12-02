@@ -1060,6 +1060,71 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
             browser_window->parent());
 }
 
+// Tests that launching a template that contains a system web app works as
+// expected.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       NativeUILaunchTemplateWithSystemWebApp) {
+  // Create the settings app, which is a system web app.
+  CreateSettingsSystemWebApp(browser()->profile());
+
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  const std::u16string settings_title = settings_window->GetTitle();
+
+  // Enter overview and save the current desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  views::Button* save_desk_as_template_button =
+      ash::GetSaveDeskAsTemplateButton();
+  ASSERT_TRUE(save_desk_as_template_button);
+  ClickButton(save_desk_as_template_button);
+
+  // Exit overview and close the settings window. We'll need to verify if it
+  // reopens later.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  views::Widget* settings_widget =
+      views::Widget::GetWidgetForNativeWindow(settings_window);
+  settings_widget->CloseNow();
+  ASSERT_FALSE(FindBrowserWindow(kSettingsWindowId));
+
+  // Enter overview, head over to the desks templates grid and launch the
+  // template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  views::Button* zero_state_templates_button =
+      ash::GetZeroStateDesksTemplatesButton();
+  ASSERT_TRUE(zero_state_templates_button);
+  ClickButton(zero_state_templates_button);
+
+  ash::WaitForDesksTemplatesUI();
+  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  ASSERT_TRUE(template_item);
+  ClickButton(template_item);
+
+  // Clicking the button is a two part, both async process. We need to wait for
+  // the template to be fetched from the model, and then wait for the desk
+  // animation to be launched.
+  // TODO(dandersson): Remove this when the desk is no longer activated on
+  // template launch.
+  ash::WaitForDesksTemplatesUI();
+  ash::DeskSwitchAnimationWaiter waiter;
+  waiter.Wait();
+
+  for (auto* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    if (window->GetTitle() == settings_title) {
+      settings_window = window;
+      break;
+    }
+  }
+  ASSERT_TRUE(settings_window);
+  EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerB),
+            settings_window->parent());
+}
+
 // TODO(crbug.com/1273532): Add more tests:
 // - Deleting templates.
 // - Launching templates with uninstalled apps.
