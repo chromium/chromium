@@ -354,6 +354,10 @@ BASE_EXPORT NSString* FilePathToNSString(const FilePath& path);
 // Converts |str| to a FilePath. Returns an empty path if |str| is nil.
 BASE_EXPORT FilePath NSStringToFilePath(NSString* str);
 
+// Converts |url| to a FilePath. Returns an empty path if |url| is nil or if
+// |url| is not of scheme "file".
+BASE_EXPORT FilePath NSURLToFilePath(NSURL* url);
+
 // Converts a non-null |path| to a CFURLRef. |path| must not be empty.
 //
 // This function only uses manually-owned resources, so it does not depend on an

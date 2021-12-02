@@ -55,11 +55,22 @@ absl::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
 }  // namespace
 
 bool FindBundleById(NSString* bundle_id, base::FilePath* out_bundle) {
+  // Prefer running instances to non-running instances found in the filesystem.
+  // https://crbug.com/1273666#c18
+  NSArray<NSRunningApplication*>* runningApplications =
+      [NSRunningApplication runningApplicationsWithBundleIdentifier:bundle_id];
+  if ([runningApplications count] > 0) {
+    NSRunningApplication* runningApplication =
+        [runningApplications objectAtIndex:0];
+    *out_bundle = base::mac::NSURLToFilePath([runningApplication bundleURL]);
+    DCHECK(!out_bundle->empty());
+    return true;
+  }
+
   NSWorkspace* ws = [NSWorkspace sharedWorkspace];
   NSString *bundlePath = [ws absolutePathForAppBundleWithIdentifier:bundle_id];
   if (!bundlePath)
     return false;
-
   *out_bundle = base::mac::NSStringToFilePath(bundlePath);
   return true;
 }
