@@ -169,8 +169,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the price drop notification channel is blocked by users.
-    Recorded when we try to initialize commerce subscriptions. Implemented for
-    Android.
+    Recorded when we initialize commerce subscriptions (For eligible users, we
+    initialize subscriptions when Chrome becomes foreground app but at most once
+    in a one-day moving window). Implemented for Android.
   </summary>
 </histogram>
 
@@ -180,7 +181,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the price drop notification channel is created. Recorded
-    when we try to initialize commerce subscriptions. Implemented for Android.
+    when we initialize commerce subscriptions (For eligible users, we initialize
+    subscriptions when Chrome becomes foreground app but at most once in a
+    one-day moving window). Implemented for Android.
   </summary>
 </histogram>
 
@@ -190,7 +193,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the system notification is enabled by users. Recorded when
-    we try to initialize commerce subscriptions. Implemented for Android.
+    we initialize commerce subscriptions (For eligible users, we initialize
+    subscriptions when Chrome becomes foreground app but at most once in a
+    one-day moving window). Implemented for Android.
   </summary>
 </histogram>
 
@@ -241,6 +246,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
   <token key="LocationIdentifier" variants="LocationIdentifiers"/>
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+<histogram name="Commerce.Subscriptions.TabEligible" enum="Boolean"
+    expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether a tab is eligible for commerce subscriptions. True when the
+    tab has offer and the tab is stale (Last opened time between 1 and 90 days).
+    Recorded when we initialize commerce subscriptions (For eligible users, we
+    initialize subscriptions when Chrome becomes foreground app but at most once
+    in a one-day moving window). Implemented for Android.
+  </summary>
 </histogram>
 
 </histograms>
