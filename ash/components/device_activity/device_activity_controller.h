@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 namespace device_activity {
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   ~DeviceActivityController();
 
   // Start Device Activity reporting for a trigger.
-  void Start(Trigger t);
+  void Start(Trigger t, PrefService* local_state);
 
   // Stop Device Activity reporting for a trigger.
   void Stop(Trigger t);

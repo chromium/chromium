@@ -9,7 +9,7 @@ namespace ash {
 namespace device_activity {
 
 // Device actives are measured according to trigger enums.
-// TODO(hirthanan): Add another trigger for when sign-in occurs.
+// TODO(https://crbug.com/1262178): Add another trigger for when sign-in occurs.
 enum class Trigger {
   kNetwork  // Network state becomes connected.
 };

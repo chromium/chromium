@@ -12,8 +12,13 @@ component("device_activity") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//chromeos/network",
     "//components/prefs:prefs",
+    "//crypto:crypto",
+    "//third_party/icu",
+    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership:private_membership_proto",
   ]
 
   sources = [
@@ -44,5 +49,6 @@ source_set("unit_tests") {
     "//dbus",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
+    "//third_party/private_membership:private_membership",
   ]
 }
