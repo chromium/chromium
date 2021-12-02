@@ -17,6 +17,7 @@ per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
 per-file content_creation_strings.grdp=file://components/content_creation/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
+per-file enterprise_strings.grdp=file://components/enterprise/OWNERS
 per-file error_page_strings.grdp=file://components/error_page/OWNERS
 per-file fullscreen_control_strings.grdp=file://components/fullscreen_control/OWNERS
 per-file heavy_ad_intervention_strings.grdp=file://components/heavy_ad_intervention/OWNERS
