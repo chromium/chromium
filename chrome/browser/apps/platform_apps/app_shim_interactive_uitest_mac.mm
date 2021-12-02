@@ -27,8 +27,8 @@
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
-#include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -83,7 +83,8 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
 class WindowedAppShimLaunchObserver : public apps::AppShimManager {
  public:
   WindowedAppShimLaunchObserver(const std::string& app_id)
-      : AppShimManager(std::make_unique<web_app::WebAppShimManagerDelegate>()),
+      : AppShimManager(
+            std::make_unique<apps::ExtensionAppShimManagerDelegate>()),
         app_mode_id_(app_id) {
     StartObserving();
   }

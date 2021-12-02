@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -24,6 +25,59 @@
 namespace web_app {
 
 namespace {
+
+class MockDelegate : public apps::AppShimManager::Delegate {
+ public:
+  MockDelegate() {}
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD(bool, ShowAppWindows, (Profile*, const std::string&), (override));
+  MOCK_METHOD(void,
+              CloseAppWindows,
+              (Profile*, const std::string&),
+              (override));
+  MOCK_METHOD(bool, AppIsInstalled, (Profile*, const std::string&), (override));
+  MOCK_METHOD(bool,
+              AppCanCreateHost,
+              (Profile*, const std::string&),
+              (override));
+  MOCK_METHOD(bool,
+              AppUsesRemoteCocoa,
+              (Profile*, const std::string&),
+              (override));
+  MOCK_METHOD(bool,
+              AppIsMultiProfile,
+              (Profile*, const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              EnableExtension,
+              (Profile*, const std::string&, base::OnceCallback<void()>),
+              (override));
+  MOCK_METHOD(void,
+              LaunchApp,
+              (Profile*,
+               const std::string&,
+               const std::vector<base::FilePath>&,
+               const std::vector<GURL>&,
+               const GURL&,
+               chrome::mojom::AppShimLoginItemRestoreState),
+              (override));
+  MOCK_METHOD(void,
+              LaunchShim,
+              (Profile*,
+               const std::string&,
+               bool,
+               apps::ShimLaunchedCallback,
+               apps::ShimTerminatedCallback),
+              (override));
+  MOCK_METHOD(bool, HasNonBookmarkAppWindowsOpen, (), (override));
+  MOCK_METHOD(std::vector<chrome::mojom::ApplicationDockMenuItemPtr>,
+              GetAppShortcutsMenuItemInfos,
+              (Profile*, const std::string&),
+              (override));
+};
 
 class WebAppShimManagerDelegateTest : public WebAppTest {
  public:
@@ -104,7 +158,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp) {
   apps::AppLaunchParams expected_results = CreateLaunchParams(
       std::vector<base::FilePath>(), absl::nullopt, absl::nullopt, GURL());
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -126,7 +181,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolWebPrefix) {
   expected_results.launch_source =
       apps::mojom::LaunchSource::kFromProtocolHandler;
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -148,7 +204,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
   expected_results.launch_source =
       apps::mojom::LaunchSource::kFromProtocolHandler;
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -168,7 +225,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolFile) {
       CreateLaunchParams({base::FilePath("/test_app_path/test_app_file.txt")},
                          absl::nullopt, absl::nullopt, GURL());
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -187,7 +245,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolDisallowed) {
   apps::AppLaunchParams expected_results = CreateLaunchParams(
       std::vector<base::FilePath>(), absl::nullopt, absl::nullopt, GURL());
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -208,7 +267,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileFullPath) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt, GURL());
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -229,7 +289,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileRelativePath) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt, GURL());
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -253,7 +314,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolAndFileHandlerMixed) {
   expected_results.launch_source =
       apps::mojom::LaunchSource::kFromProtocolHandler;
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -280,7 +342,8 @@ TEST_F(WebAppShimManagerDelegateTest,
   expected_results.launch_source =
       apps::mojom::LaunchSource::kFromProtocolHandler;
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -300,7 +363,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_OverrideUrl) {
       CreateLaunchParams(std::vector<base::FilePath>(), absl::nullopt,
                          absl::nullopt, override_url);
 
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
       [&](const apps::AppLaunchParams& results) -> content::WebContents* {
@@ -314,7 +378,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_OverrideUrl) {
 }
 
 TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
-  WebAppShimManagerDelegate shim_manager;
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
   // Validate empty array when feature flag is off.
   {

@@ -10,6 +10,7 @@
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
+#include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager_impl_mac.h"
 
@@ -52,8 +53,17 @@ void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
 }
 
 void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
+  // Create two AppShimManager::Delegates -- one for extensions-based apps
+  // (which will be deprecatedin 2020), and one for web apps (PWAs and
+  // bookmark apps). The WebAppShimManagerDelegate will defer to the
+  // ExtensionAppShimManagerDelegate passed to it for extension-based apps.
+  // When extension-based apps are deprecated, the
+  // ExtensionAppShimManagerDelegate may be changed to nullptr here.
   std::unique_ptr<apps::AppShimManager::Delegate> app_shim_manager_delegate =
-      std::make_unique<web_app::WebAppShimManagerDelegate>();
+      std::make_unique<apps::ExtensionAppShimManagerDelegate>();
+  app_shim_manager_delegate =
+      std::make_unique<web_app::WebAppShimManagerDelegate>(
+          std::move(app_shim_manager_delegate));
   app_shim_manager_ = std::make_unique<apps::AppShimManager>(
       std::move(app_shim_manager_delegate));
 

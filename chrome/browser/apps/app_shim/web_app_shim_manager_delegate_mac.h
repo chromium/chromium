@@ -29,7 +29,8 @@ void SetBrowserAppLauncherForTesting(
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:
   // AppShimManager::Delegate:
-  WebAppShimManagerDelegate();
+  WebAppShimManagerDelegate(
+      std::unique_ptr<apps::AppShimManager::Delegate> fallback_delegate);
   ~WebAppShimManagerDelegate() override;
   bool ShowAppWindows(Profile* profile, const AppId& app_id) override;
   void CloseAppWindows(Profile* profile, const AppId& app_id) override;
@@ -55,6 +56,14 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   bool HasNonBookmarkAppWindowsOpen() override;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
   GetAppShortcutsMenuItemInfos(Profile* profile, const AppId& app_id) override;
+
+ private:
+  // Return true if |fallback_delegate_| should be used instead of |this|.
+  bool UseFallback(Profile* profile, const AppId& app_id) const;
+
+  // This is the delegate used by extension-based applications. When they are
+  // removed, then this may be deleted.
+  std::unique_ptr<apps::AppShimManager::Delegate> fallback_delegate_;
 };
 
 }  // namespace web_app
