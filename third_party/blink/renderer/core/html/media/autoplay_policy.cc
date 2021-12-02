@@ -338,22 +338,37 @@ void AutoplayPolicy::EnsureAutoplayInitiatedSet() {
 void AutoplayPolicy::OnIntersectionChangedForAutoplay(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   bool is_visible = (entries.back()->intersectionRatio() > 0);
+
   if (!is_visible) {
-    if (element_->can_autoplay_ && element_->Autoplay()) {
-      element_->PauseInternal();
-      element_->can_autoplay_ = true;
-    }
+    auto pause_and_preserve_autoplay = [](AutoplayPolicy* self) {
+      if (self->element_->can_autoplay_ && self->element_->Autoplay()) {
+        self->element_->PauseInternal();
+        self->element_->can_autoplay_ = true;
+      }
+    };
+
+    element_->GetDocument()
+        .GetTaskRunner(TaskType::kInternalMedia)
+        ->PostTask(FROM_HERE, WTF::Bind(pause_and_preserve_autoplay,
+                                        WrapWeakPersistent(this)));
     return;
   }
 
-  if (ShouldAutoplay()) {
-    element_->paused_ = false;
-    element_->SetShowPosterFlag(false);
-    element_->ScheduleEvent(event_type_names::kPlay);
-    element_->ScheduleNotifyPlaying();
+  auto maybe_autoplay = [](AutoplayPolicy* self) {
+    if (self->ShouldAutoplay()) {
+      self->element_->paused_ = false;
+      self->element_->SetShowPosterFlag(false);
+      self->element_->ScheduleEvent(event_type_names::kPlay);
+      self->element_->ScheduleNotifyPlaying();
 
-    element_->UpdatePlayState();
-  }
+      self->element_->UpdatePlayState();
+    }
+  };
+
+  element_->GetDocument()
+      .GetTaskRunner(TaskType::kInternalMedia)
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(maybe_autoplay, WrapWeakPersistent(this)));
 }
 
 bool AutoplayPolicy::IsUsingDocumentUserActivationRequiredPolicy() const {
