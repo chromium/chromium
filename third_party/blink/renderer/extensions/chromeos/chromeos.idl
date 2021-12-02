@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 interface ChromeOS {
+  [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement]
   readonly attribute CrosWindowManagement windowManagement;
 };

@@ -46,7 +46,7 @@ declare_args() {
   use_webaudio_ffmpeg = !is_mac && !is_android && !use_webaudio_pffft
 
   # If true, the experimental renderer extensions library will be used.
-  use_blink_extensions_chromeos = false
+  use_blink_extensions_chromeos = is_chromeos
 }
 
 # feature_defines_list ---------------------------------------------------------

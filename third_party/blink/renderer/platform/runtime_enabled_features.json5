@@ -306,6 +306,13 @@
       name: "BidiCaretAffinity",
     },
     {
+      name: "BlinkExtensionChromeOS",
+    },
+    {
+      name: "BlinkExtensionChromeOSWindowManagement",
+      depends_on: ["BlinkExtensionChromeOS"],
+    },
+    {
       name: "BlinkRuntimeCallStats",
     },
     {

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 class DOMPoint;

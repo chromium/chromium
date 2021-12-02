@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -24,6 +25,13 @@ void ChromeOSDataPropertyGetCallback(
 }
 
 void InstallChromeOSExtensions(ScriptState* script_state) {
+  auto* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context ||
+      !ExecutionContext::From(script_state)->IsServiceWorkerGlobalScope() ||
+      !RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled()) {
+    return;
+  }
+
   auto global_proxy = script_state->GetContext()->Global();
 
   global_proxy
