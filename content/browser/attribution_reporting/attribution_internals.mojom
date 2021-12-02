@@ -64,6 +64,14 @@ struct WebUIAttributionSource {
 
 // Observer for events relevant to the attribution internals WebUI.
 interface AttributionInternalsObserver {
+  // Called when the sources in storage changed, indicating that the observer
+  // should call `AttributionInternalsHandler::GetActiveSources()`.
+  OnSourcesChanged();
+
+  // Called when the reports in storage changed, indicating that the observer
+  // should call `AttributionInternalsHandler::GetReports()`.
+  OnReportsChanged();
+
   // Called when a source is deactivated.
   OnSourceDeactivated(WebUIAttributionSource source);
 

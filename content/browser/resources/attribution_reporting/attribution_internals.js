@@ -363,7 +363,7 @@ class SourceTableModel extends TableModel {
     }
 
     this.deactivatedSources.push(source);
-    updatePageData();
+    this.table.updateTbody();
   }
 
   clear() {
@@ -465,7 +465,7 @@ class ReportTableModel extends TableModel {
     }
 
     this.sentOrDroppedReports.push(report);
-    updatePageData();
+    this.table.updateTbody();
   }
 
   clear() {
@@ -564,11 +564,18 @@ function updatePageData() {
     }
   });
 
+  updateSources();
+  updateReports();
+}
+
+function updateSources() {
   pageHandler.getActiveSources().then((response) => {
     sourceTableModel.setStoredSources(
         response.sources.map((mojo) => new Source(mojo)));
   });
+}
 
+function updateReports() {
   pageHandler.getReports().then((response) => {
     reportTableModel.setStoredReports(
         response.reports.map((mojo) => new Report(mojo)));
@@ -576,19 +583,22 @@ function updatePageData() {
 }
 
 /**
- * Deletes all data stored by the conversions backend, and refreshes
- * page data once this operation has finished.
+ * Deletes all data stored by the conversions backend.
+ * Observer.onReportsChanged and Observer.onSourcesChanged will be called
+ * automatically as reports are deleted, so there's no need to manually refresh
+ * the data on completion.
  */
 function clearStorage() {
   reportTableModel.clear();
-  pageHandler.clearStorage().then(() => {
-    updatePageData();
-  });
+  pageHandler.clearStorage();
 }
 
 /**
- * Sends all conversion reports, and updates the page once they are sent.
+ * Sends all conversion reports.
  * Disables the button while the reports are still being sent.
+ * Observer.onReportsChanged and Observer.onSourcesChanged will be called
+ * automatically as reports are deleted, so there's no need to manually refresh
+ * the data on completion.
  */
 function sendReports() {
   const button = $('send-reports');
@@ -597,7 +607,6 @@ function sendReports() {
   button.disabled = true;
   button.innerText = 'Sending...';
   pageHandler.sendPendingReports().then(() => {
-    updatePageData();
     button.disabled = false;
     button.innerText = previousText;
   });
@@ -605,6 +614,16 @@ function sendReports() {
 
 /** @implements {AttributionInternalsObserverInterface} */
 class Observer {
+  /** @override */
+  onSourcesChanged() {
+    updateSources();
+  }
+
+  /** @override */
+  onReportsChanged() {
+    updateReports();
+  }
+
   /** @override */
   onSourceDeactivated(mojo) {
     sourceTableModel.addDeactivatedSource(new Source(mojo));
@@ -638,7 +657,5 @@ document.addEventListener('DOMContentLoaded', function() {
   const receiver = new AttributionInternalsObserverReceiver(new Observer());
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());
 
-  // Automatically refresh every 2 minutes.
-  setInterval(updatePageData, 2 * 60 * 1000);
   updatePageData();
 });

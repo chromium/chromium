@@ -166,6 +166,8 @@ class TestAttributionManager : public AttributionManager {
   void SetActiveSourcesForWebUI(std::vector<StorableSource> sources);
   void SetReportsForWebUI(std::vector<AttributionReport> reports);
 
+  void NotifySourcesChanged();
+  void NotifyReportsChanged();
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
   void NotifyReportSent(const SentReportInfo& info);

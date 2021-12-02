@@ -51,6 +51,10 @@ class AttributionManager {
    public:
     ~Observer() override = default;
 
+    virtual void OnSourcesChanged() {}
+
+    virtual void OnReportsChanged() {}
+
     virtual void OnSourceDeactivated(
         const AttributionStorage::DeactivatedSource& source) {}
 

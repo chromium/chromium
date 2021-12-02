@@ -200,6 +200,16 @@ void AttributionInternalsHandlerImpl::AddObserver(
   }
 }
 
+void AttributionInternalsHandlerImpl::OnSourcesChanged() {
+  for (auto& observer : observers_)
+    observer->OnSourcesChanged();
+}
+
+void AttributionInternalsHandlerImpl::OnReportsChanged() {
+  for (auto& observer : observers_)
+    observer->OnReportsChanged();
+}
+
 void AttributionInternalsHandlerImpl::OnSourceDeactivated(
     const AttributionStorage::DeactivatedSource& deactivated_source) {
   auto source = WebUIAttributionSource(deactivated_source.source,

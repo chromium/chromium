@@ -163,6 +163,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void AddReportsToReporter(std::vector<AttributionReport> reports);
 
+  void NotifySourcesChanged();
+  void NotifyReportsChanged();
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
 

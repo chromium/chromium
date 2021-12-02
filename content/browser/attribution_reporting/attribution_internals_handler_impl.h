@@ -64,6 +64,8 @@ class AttributionInternalsHandlerImpl
 
  private:
   // AttributionManager::Observer:
+  void OnSourcesChanged() override;
+  void OnReportsChanged() override;
   void OnSourceDeactivated(
       const AttributionStorage::DeactivatedSource& deactivated_source) override;
   void OnReportSent(const SentReportInfo& info) override;

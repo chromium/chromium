@@ -70,6 +70,10 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
   TestAttributionManagerObserver() = default;
   ~TestAttributionManagerObserver() override = default;
 
+  size_t sources_changed() const { return sources_changed_; }
+
+  size_t reports_changed() const { return reports_changed_; }
+
   const std::vector<DeactivatedSource>& deactivated_sources() const {
     return deactivated_sources_;
   }
@@ -86,6 +90,10 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
  private:
   // AttributionManager::Observer:
 
+  void OnSourcesChanged() override { sources_changed_++; }
+
+  void OnReportsChanged() override { reports_changed_++; }
+
   void OnSourceDeactivated(const DeactivatedSource& source) override {
     deactivated_sources_.push_back(source);
   }
@@ -98,6 +106,9 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
       const AttributionStorage::CreateReportResult& result) override {
     dropped_reports_.push_back(result);
   }
+
+  size_t sources_changed_ = 0;
+  size_t reports_changed_ = 0;
 
   std::vector<DeactivatedSource> deactivated_sources_;
   std::vector<SentReportInfo> sent_reports_;
@@ -354,10 +365,20 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  TestAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
   EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
+
+  // Ensure that observers are notified after the report is deleted.
+  EXPECT_EQ(0u, observer.sources_changed());
+  EXPECT_EQ(1u, observer.reports_changed());
 
   // If the report indicated retry, it should be added to the queue again.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
@@ -876,9 +897,19 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
   attribution_manager_->HandleSource(SourceBuilder(clock().Now()).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  TestAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
   EXPECT_THAT(StoredReports(), IsEmpty());
+
+  // Ensure that deleting a report notifies observers.
+  EXPECT_EQ(0u, observer.sources_changed());
+  EXPECT_EQ(1u, observer.reports_changed());
 
   static constexpr char kMetric[] = "Conversions.DeleteSentReportOperation";
   histograms.ExpectTotalCount(kMetric, 2);
@@ -966,10 +997,14 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
   attribution_manager_->HandleSource(source1);
   EXPECT_THAT(StoredSources(), SizeIs(1));
   EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+  EXPECT_EQ(1u, observer.sources_changed());
+  EXPECT_EQ(0u, observer.reports_changed());
 
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
   EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+  EXPECT_EQ(2u, observer.sources_changed());
+  EXPECT_EQ(1u, observer.reports_changed());
 
   auto source2 = SourceBuilder(clock().Now())
                      .SetExpiry(kImpressionExpiry)
@@ -980,9 +1015,11 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
   EXPECT_THAT(observer.deactivated_sources(),
               ElementsAre(DeactivatedSource{
                   source1, DeactivatedSource::Reason::kReplacedByNewerSource}));
+  EXPECT_EQ(3u, observer.sources_changed());
+  EXPECT_EQ(1u, observer.reports_changed());
 }
 
-TEST_F(AttributionManagerImplTest, HandleTrigger_StoresDeactivatedSources) {
+TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
   TestAttributionManagerObserver observer;
   base::ScopedObservation<AttributionManager, AttributionManager::Observer>
       observation(&observer);
@@ -997,6 +1034,8 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_StoresDeactivatedSources) {
   attribution_manager_->HandleSource(source1);
   EXPECT_THAT(StoredSources(), SizeIs(1));
   EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+  EXPECT_EQ(1u, observer.sources_changed());
+  EXPECT_EQ(0u, observer.reports_changed());
 
   // Store the maximum number of reports for the source.
   for (size_t i = 1; i <= 3; i++) {
@@ -1004,6 +1043,10 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_StoresDeactivatedSources) {
     EXPECT_THAT(StoredReports(), SizeIs(i));
     EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
   }
+
+  // Each stored report should notify sources changed one time.
+  EXPECT_EQ(4u, observer.sources_changed());
+  EXPECT_EQ(3u, observer.reports_changed());
 
   // Simulate the reports being sent and removed from storage.
   task_environment_.FastForwardBy(kFirstReportingWindow -
@@ -1019,6 +1062,23 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_StoresDeactivatedSources) {
       observer.deactivated_sources(),
       ElementsAre(DeactivatedSource{
           source1, DeactivatedSource::Reason::kReachedAttributionLimit}));
+}
+
+TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
+  TestAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  base::RunLoop run_loop;
+  attribution_manager_->ClearData(
+      base::Time::Min(), base::Time::Max(),
+      base::BindRepeating([](const url::Origin& _) { return false; }),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(1u, observer.sources_changed());
+  EXPECT_EQ(1u, observer.reports_changed());
 }
 
 }  // namespace content

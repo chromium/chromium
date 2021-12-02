@@ -163,6 +163,16 @@ void TestAttributionManager::SetReportsForWebUI(
   reports_ = std::move(reports);
 }
 
+void TestAttributionManager::NotifySourcesChanged() {
+  for (Observer& observer : observers_)
+    observer.OnSourcesChanged();
+}
+
+void TestAttributionManager::NotifyReportsChanged() {
+  for (Observer& observer : observers_)
+    observer.OnReportsChanged();
+}
+
 void TestAttributionManager::NotifySourceDeactivated(
     const DeactivatedSource& source) {
   for (Observer& observer : observers_)

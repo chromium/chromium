@@ -539,6 +539,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(
       ExecJsInWebUI("document.getElementById('send-reports').click();"));
+
+  // The real manager would do this itself, but the test manager requires manual
+  // triggering.
+  manager_.NotifyReportsChanged();
+
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
 

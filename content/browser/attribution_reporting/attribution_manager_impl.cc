@@ -33,6 +33,8 @@ namespace content {
 
 namespace {
 
+using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ConversionReportSendOutcome {
@@ -69,8 +71,7 @@ bool IsOriginSessionOnly(
   return false;
 }
 
-void RecordCreateReportStatus(
-    AttributionStorage::CreateReportResult::Status status) {
+void RecordCreateReportStatus(CreateReportResult::Status status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
@@ -221,6 +222,8 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
             if (!manager)
               return;
 
+            manager->NotifySourcesChanged();
+
             for (const auto& source : deactivated_sources) {
               manager->NotifySourceDeactivated(source);
             }
@@ -240,9 +243,16 @@ void AttributionManagerImpl::HandleTrigger(StorableTrigger trigger) {
     GetAndQueueReportsForNextInterval();
 }
 
-void AttributionManagerImpl::OnReportStored(
-    AttributionStorage::CreateReportResult result) {
+void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
   RecordCreateReportStatus(result.status());
+
+  if (result.status() != CreateReportResult::Status::kInternalError) {
+    // Sources are changed here because storing a report can cause sources to be
+    // deleted or become associated with a dedup key.
+    NotifySourcesChanged();
+    NotifyReportsChanged();
+  }
+
   if (!result.dropped_report().has_value())
     return;
 
@@ -292,9 +302,12 @@ void AttributionManagerImpl::ClearData(
       .Then(base::BindOnce(
           [](base::OnceClosure done,
              base::WeakPtr<AttributionManagerImpl> manager) {
-            std::move(done).Run();
-            if (manager)
+            if (manager) {
               manager->GetAndQueueReportsForNextInterval();
+              manager->NotifySourcesChanged();
+              manager->NotifyReportsChanged();
+            }
+            std::move(done).Run();
           },
           std::move(done), weak_factory_.GetWeakPtr()));
 }
@@ -433,6 +446,8 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
               // using `AddReportsToReporter()` to avoid having to remove and
               // then immediately re-add the report ID to the set.
               manager->reporter_->AddReportsToQueue({std::move(report)});
+
+              manager->NotifyReportsChanged();
             },
             weak_factory_.GetWeakPtr(), info.report));
   } else if (info.status == SentReportInfo::Status::kOffline ||
@@ -456,6 +471,8 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
                 // in order to avoid duplicates.
                 size_t num_removed = manager->queued_reports_.erase(report_id);
                 DCHECK_EQ(num_removed, 1u);
+
+                manager->NotifyReportsChanged();
               }
             },
             weak_factory_.GetWeakPtr(), *info.report.conversion_id));
@@ -487,6 +504,16 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
 
   for (Observer& observer : observers_)
     observer.OnReportSent(info);
+}
+
+void AttributionManagerImpl::NotifySourcesChanged() {
+  for (Observer& observer : observers_)
+    observer.OnSourcesChanged();
+}
+
+void AttributionManagerImpl::NotifyReportsChanged() {
+  for (Observer& observer : observers_)
+    observer.OnReportsChanged();
 }
 
 void AttributionManagerImpl::NotifySourceDeactivated(
