@@ -434,7 +434,7 @@ export class PrintPreviewPreviewAreaElement extends
     if (!this.pluginProxy_.pluginReady() ||
         !['PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp',
           'ArrowDown']
-             .includes(e.code) ||
+             .includes(e.key) ||
         hasKeyModifiers(e)) {
       return;
     }
@@ -450,7 +450,7 @@ export class PrintPreviewPreviewAreaElement extends
     // element, and work up the DOM tree to see if any element has a
     // scrollbar. If there exists a scrollbar, do not handle the key event
     // here.
-    const isEventHorizontal = ['ArrowLeft', 'ArrowRight'].includes(e.code);
+    const isEventHorizontal = ['ArrowLeft', 'ArrowRight'].includes(e.key);
     for (let i = 0; i < e.composedPath().length; i++) {
       const element = e.composedPath()[i] as HTMLElement;
       if (element.scrollHeight > element.clientHeight && !isEventHorizontal ||

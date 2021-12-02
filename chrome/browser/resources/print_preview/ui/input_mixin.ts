@@ -63,7 +63,7 @@ export const InputMixin = dedupingMixin(
          * Called when a key is pressed on the input.
          */
         private onKeyDown_(event: KeyboardEvent) {
-          if (event.code !== 'Enter' && event.code !== 'Tab') {
+          if (event.key !== 'Enter' && event.key !== 'Tab') {
             return;
           }
 
