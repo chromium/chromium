@@ -708,7 +708,8 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   view.VisitConcurrently([clear_type](uintptr_t super_page_base) {
     auto* bitmap =
         StateBitmapFromPointer(reinterpret_cast<char*>(super_page_base));
-    auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page_base));
+    auto* root =
+        Root::FromFirstSuperPage(reinterpret_cast<char*>(super_page_base));
     bitmap->IterateQuarantined([root, clear_type](uintptr_t ptr) {
       auto* object = memory::RemaskPtr(reinterpret_cast<void*>(ptr));
       auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
@@ -939,7 +940,7 @@ void UnmarkInCardTable(void* object, SlotSpanMetadata<ThreadSafe>* slot_span) {
                                      size_t epoch,
                                      SweepStat& stat) {
   auto* bitmap = StateBitmapFromPointer(super_page);
-  ThreadSafePartitionRoot::FromSuperPage(static_cast<char*>(super_page));
+  ThreadSafePartitionRoot::FromFirstSuperPage(static_cast<char*>(super_page));
   bitmap->IterateUnmarkedQuarantined(epoch, [root, &stat](uintptr_t ptr) {
     auto* object = reinterpret_cast<void*>(ptr);
     auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(object);
@@ -1051,7 +1052,7 @@ void PCScanTask::SweepQuarantine() {
   sweeping_view.VisitNonConcurrently(
       [this, &stat, should_discard](uintptr_t super_page) {
         void* super_page_as_void = reinterpret_cast<void*>(super_page);
-        auto* root = ThreadSafePartitionRoot::FromSuperPage(
+        auto* root = ThreadSafePartitionRoot::FromFirstSuperPage(
             static_cast<char*>(super_page_as_void));
 
 #if PA_STARSCAN_BATCHED_FREE

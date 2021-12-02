@@ -1059,6 +1059,82 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+TEST_F(PartitionAllocTest, IsValidPtrDelta) {
+  const size_t kSizes[] = {base::kAlignment + kExtraAllocSize,
+                           256,
+                           SystemPageSize(),
+                           PartitionPageSize(),
+                           MaxRegularSlotSpanSize(),
+                           MaxRegularSlotSpanSize() + 1,
+                           MaxRegularSlotSpanSize() + SystemPageSize(),
+                           MaxRegularSlotSpanSize() + PartitionPageSize(),
+                           kMaxBucketed,
+                           kMaxBucketed + 1,
+                           kMaxBucketed + SystemPageSize(),
+                           kMaxBucketed + PartitionPageSize(),
+                           kSuperPageSize};
+#if defined(PA_HAS_64_BITS_POINTERS)
+  constexpr size_t kFarFarAwayDelta = 512 * kGiB;
+#else
+  constexpr size_t kFarFarAwayDelta = kGiB;
+#endif
+  for (size_t size : kSizes) {
+    size_t requested_size = size - kExtraAllocSize;
+    // For regular slot-span allocations, confirm the size fills the entire
+    // slot. Otherwise the test would be ineffective, as Partition Alloc has no
+    // ability to check against the actual allocated size.
+    // Single-slot slot-spans and direct map don't have that problem.
+    if (size <= MaxRegularSlotSpanSize()) {
+      ASSERT_EQ(requested_size,
+                allocator.root()->AllocationCapacityFromRequestedSize(
+                    requested_size));
+    }
+
+    constexpr size_t kNumRepeats = 3;
+    char* ptrs[kNumRepeats];
+    for (char*& ptr : ptrs) {
+      ptr = static_cast<char*>(
+          allocator.root()->Alloc(requested_size, type_name));
+      // Double check.
+      if (size <= MaxRegularSlotSpanSize()) {
+        EXPECT_EQ(requested_size,
+                  allocator.root()->AllocationCapacityFromPtr(ptr));
+      }
+
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr, -kFarFarAwayDelta));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr, -kSuperPageSize));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr, -1));
+      EXPECT_TRUE(PartitionAllocIsValidPtrDelta(ptr, 0));
+      EXPECT_TRUE(PartitionAllocIsValidPtrDelta(ptr, requested_size / 2));
+      EXPECT_TRUE(PartitionAllocIsValidPtrDelta(ptr, requested_size));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr, requested_size + 1));
+      EXPECT_FALSE(
+          PartitionAllocIsValidPtrDelta(ptr, requested_size + kSuperPageSize));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(
+          ptr, requested_size + kFarFarAwayDelta));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr + requested_size,
+                                                 kFarFarAwayDelta));
+      EXPECT_FALSE(
+          PartitionAllocIsValidPtrDelta(ptr + requested_size, kSuperPageSize));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr + requested_size, 1));
+      EXPECT_TRUE(PartitionAllocIsValidPtrDelta(ptr + requested_size, 0));
+      EXPECT_TRUE(PartitionAllocIsValidPtrDelta(ptr + requested_size,
+                                                -(requested_size / 2)));
+      EXPECT_TRUE(
+          PartitionAllocIsValidPtrDelta(ptr + requested_size, -requested_size));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(ptr + requested_size,
+                                                 -requested_size - 1));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(
+          ptr + requested_size, -requested_size - kSuperPageSize));
+      EXPECT_FALSE(PartitionAllocIsValidPtrDelta(
+          ptr + requested_size, -requested_size - kFarFarAwayDelta));
+    }
+
+    for (char* ptr : ptrs)
+      allocator.root()->Free(ptr);
+  }
+}
+
 TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
   const size_t real_size = 80;
   const size_t requested_size = real_size - kExtraAllocSize;

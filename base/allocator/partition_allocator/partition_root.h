@@ -371,14 +371,13 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
-  ALWAYS_INLINE static PartitionRoot* FromSuperPage(char* super_page);
-  // Works for any pointer inside a normal bucket allocation.
-  //
-  // For direct-mapped allocations, only works for a pointer which is inside the
-  // first SuperPage of a given allocation, that is the first "2MiB minus a
-  // bit". In particular always works for a pointer at the start of an
-  // allocation.  See partition_alloc_constants.h to see the layout of a
-  // direct-mapped allocation.
+  // These two functions work unconditionally for normal buckets.
+  // For direct map, they only work for the first SuperPage of an allocation,
+  // that is the first "2MiB minus a bit" (see partition_alloc_constants.h for
+  // the direct map allocation layout).
+  // In particular, the functions always work for a pointer to the start of an
+  // allocation.
+  ALWAYS_INLINE static PartitionRoot* FromFirstSuperPage(char* super_page);
   ALWAYS_INLINE static PartitionRoot* FromPointerInFirstSuperpage(char* ptr);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
@@ -801,7 +800,6 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStartInBRPPool(void* ptr) {
   // a risk of going down to the previous slot). Either way,
   // kPartitionPastAllocationAdjustment takes care of that detail.
   ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
-
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(ptr));
   DCheckIfManagedByPartitionAllocBRPPool(ptr);
 
@@ -845,29 +843,26 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr,
   // |PartitionAllocGetSlotStartInBRPPool()|.
   void* adjusted_ptr =
       reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
+  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(adjusted_ptr));
+  DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
 
-  internal::DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
-
-  void* directmap_old_slot_start =
-      PartitionAllocGetDirectMapSlotStartInBRPPool(adjusted_ptr);
-  if (UNLIKELY(directmap_old_slot_start)) {
-    void* new_slot_start = PartitionAllocGetDirectMapSlotStartInBRPPool(
-        reinterpret_cast<char*>(ptr) + delta_in_bytes);
-    return directmap_old_slot_start == new_slot_start;
-  }
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(adjusted_ptr);
+  // Get |slot_span| from |slot_start| instead of |adjusted_ptr|, because for
+  // direct map, PartitionAllocGetSlotSpanForSizeQuery() only works on the first
+  // partition page of the allocation.
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
-          adjusted_ptr);
+          slot_start);
   auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
+  // No longer use |adjusted_ptr| beyond this point. It was needed to pick the
+  // right slot, but now we're dealing with very concrete addresses.
   uintptr_t user_data_start =
-      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(
-          PartitionAllocGetSlotStartInBRPPool(ptr)));
+      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(slot_start));
   size_t user_data_size = slot_span->GetUsableSize(root);
   uintptr_t new_ptr = reinterpret_cast<uintptr_t>(ptr) + delta_in_bytes;
-
   return user_data_start <= new_ptr &&
          // We use "greater then or equal" below because we want to include
          // pointers right past the end of an allocation.
@@ -1304,7 +1299,8 @@ PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
 
 template <bool thread_safe>
 ALWAYS_INLINE PartitionRoot<thread_safe>*
-PartitionRoot<thread_safe>::FromSuperPage(char* super_page) {
+PartitionRoot<thread_safe>::FromFirstSuperPage(char* super_page) {
+  PA_DCHECK(internal::IsReservationStart(super_page));
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
       internal::PartitionSuperPageToMetadataArea(super_page));
   PartitionRoot* root = extent_entry->root;
@@ -1318,7 +1314,7 @@ PartitionRoot<thread_safe>::FromPointerInFirstSuperpage(char* ptr) {
   char* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
                                              kSuperPageBaseMask);
   PA_DCHECK(internal::IsReservationStart(super_page));
-  return FromSuperPage(super_page);
+  return FromFirstSuperPage(super_page);
 }
 
 template <bool thread_safe>
