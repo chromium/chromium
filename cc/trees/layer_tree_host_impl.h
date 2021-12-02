@@ -351,6 +351,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   virtual void BeginCommit(int source_frame_number);
   virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
+  void PullLayerTreeHostPropertiesFrom(const CommitState&);
+  void RecordGpuRasterizationHistogram();
   bool Mutate(base::TimeTicks monotonic_time);
   void ActivateAnimations();
   void Animate();

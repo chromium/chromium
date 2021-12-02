@@ -602,6 +602,39 @@ void LayerTreeHostImpl::BeginCommit(int source_frame_number) {
   sync_tree()->set_source_frame_number(source_frame_number);
 }
 
+void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
+    const CommitState& commit_state) {
+  // TODO(bokan): The |external_pinch_gesture_active| should not be going
+  // through the LayerTreeHost but directly from InputHandler to InputHandler.
+  SetExternalPinchGestureActive(commit_state.is_external_pinch_gesture_active);
+  if (commit_state.needs_gpu_rasterization_histogram)
+    RecordGpuRasterizationHistogram();
+  SetDebugState(commit_state.debug_state);
+  SetVisualDeviceViewportSize(commit_state.visual_device_viewport_size);
+  set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
+  SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
+  SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
+}
+
+void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
+  bool gpu_rasterization_enabled = false;
+  if (layer_tree_frame_sink()) {
+    viz::ContextProvider* compositor_context_provider =
+        layer_tree_frame_sink()->context_provider();
+    if (compositor_context_provider) {
+      gpu_rasterization_enabled =
+          compositor_context_provider->ContextCapabilities().gpu_rasterization;
+    }
+  }
+
+  // Record how widely gpu rasterization is enabled.
+  // This number takes device/gpu allowlist/denylist into account.
+  // Note that we do not consider the forced gpu rasterization mode, which is
+  // mostly used for debugging purposes.
+  UMA_HISTOGRAM_BOOLEAN("Renderer4.GpuRasterizationEnabled",
+                        gpu_rasterization_enabled);
+}
+
 void LayerTreeHostImpl::CommitComplete() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::CommitComplete");
 

@@ -95,11 +95,10 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
     return host_impl_->pending_tree();
   }
 
+  using LayerTreeHost::InitializeForTesting;
+  using LayerTreeHost::InitializeSingleThreaded;
   using LayerTreeHost::ScheduleMicroBenchmark;
   using LayerTreeHost::SendMessageToMicroBenchmark;
-  using LayerTreeHost::InitializeSingleThreaded;
-  using LayerTreeHost::InitializeForTesting;
-  using LayerTreeHost::RecordGpuRasterizationHistogram;
   using LayerTreeHost::SetUIResourceManagerForTesting;
 
   void UpdateLayers() { LayerTreeHost::UpdateLayers(); }
