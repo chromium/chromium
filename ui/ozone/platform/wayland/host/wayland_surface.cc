@@ -187,7 +187,6 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
 }
 
 void WaylandSurface::SetSurfaceBufferScale(float scale) {
-  DCHECK_GE(scale, 1.0f);
   if (SurfaceSubmissionInPixelCoordinates())
     return;
 
