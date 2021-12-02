@@ -543,6 +543,7 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
 }
 
 .dialog-header.files-ng button[menu-shown] {
+  /* TODO(crbug.com/1275388): use blend() instead */
   background: linear-gradient(var(--cros-ripple-color),
                               var(--cros-ripple-color)),
               var(--cros-ripple-color);
@@ -558,6 +559,7 @@ html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active
 }
 
 .dialog-header.files-ng button:active {
+  /* TODO(crbug.com/1275388): use blend() instead */
   background: linear-gradient(var(--cros-ripple-color),
                               var(--cros-ripple-color)),
               var(--cros-ripple-color);

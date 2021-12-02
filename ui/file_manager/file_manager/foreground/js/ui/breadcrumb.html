@@ -126,12 +126,14 @@
   }
 
   :host([checked]) button[elider] {
+    /* TODO(crbug.com/1275388): use blend() instead */
     background: linear-gradient(var(--cros-ripple-color),
                                 var(--cros-ripple-color)),
                 var(--cros-ripple-color);
   }
 
   button:active {
+    /* TODO(crbug.com/1275388): use blend() instead */
     background: linear-gradient(var(--cros-ripple-color),
                                 var(--cros-ripple-color)),
                 var(--cros-ripple-color);

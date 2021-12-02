@@ -178,6 +178,7 @@ cr-menu.chrome-menu > [checked]::before {
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
+  /* TODO(crbug.com/1275388): use blend() instead */
   background: linear-gradient(rgba(0 0 0 / 8%), rgba(0 0 0 / 8%)),
                               var(--cros-button-background-color-primary);
 }
