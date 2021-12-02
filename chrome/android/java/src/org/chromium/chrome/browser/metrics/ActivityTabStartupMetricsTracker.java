@@ -89,8 +89,10 @@ public class ActivityTabStartupMetricsTracker {
             // Only notify observers of the initial navigation in the case where we will also record
             // first contentful paint for this navigation.
             if (!mInvokedOnFirstNavigationStart && mShouldRecordHistograms) {
-                for (Observer observer : sObservers) {
-                    observer.onFirstNavigationStart();
+                if (sObservers != null) {
+                    for (Observer observer : sObservers) {
+                        observer.onFirstNavigationStart();
+                    }
                 }
                 mInvokedOnFirstNavigationStart = true;
             }
@@ -313,8 +315,10 @@ public class ActivityTabStartupMetricsTracker {
             RecordHistogram.recordBooleanHistogram(
                     FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
 
-            for (Observer observer : sObservers) {
-                observer.onFirstNavigationCommit();
+            if (sObservers != null) {
+                for (Observer observer : sObservers) {
+                    observer.onFirstNavigationCommit();
+                }
             }
         } else if (isTrackedPage && !UmaUtils.hasComeToForeground()
                 && !UmaUtils.hasComeToBackground()) {
@@ -343,8 +347,10 @@ public class ActivityTabStartupMetricsTracker {
                 recordVisibleContent(durationMs);
             }
 
-            for (Observer observer : sObservers) {
-                observer.onFirstContentfulPaint();
+            if (sObservers != null) {
+                for (Observer observer : sObservers) {
+                    observer.onFirstContentfulPaint();
+                }
             }
         }
         // This is the last navigation-related event we track, so clean up related state.
@@ -367,8 +373,10 @@ public class ActivityTabStartupMetricsTracker {
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
 
-        for (Observer observer : sObservers) {
-            observer.onFirstVisibleContent();
+        if (sObservers != null) {
+            for (Observer observer : sObservers) {
+                observer.onFirstVisibleContent();
+            }
         }
     }
 
