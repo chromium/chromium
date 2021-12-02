@@ -57,6 +57,21 @@ suite('OsBluetoothPageTest', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.BLUETOOTH_DEVICES, null);
 
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    await flushAsync();
+    assertTrue(!!getPairNewDevice());
+
+    // Simulate Bluetooth disabled
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
+    await flushAsync();
+    assertFalse(!!getPairNewDevice());
+
+    // Simulate Bluetooth enabled
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    await flushAsync();
     assertTrue(!!getPairNewDevice());
     getPairNewDevice().click();
 

@@ -99,6 +99,19 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   onClosePairingDialog_() {
     this.shouldShowPairingDialog_ = false;
   }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPairNewDevice_() {
+    if (!this.systemProperties_) {
+      return false;
+    }
+
+    return this.systemProperties_.systemState ===
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled;
+  }
 }
 
 customElements.define(
