@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_VIDEO_TEXTURE_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace media {
 class VideoFrame;
