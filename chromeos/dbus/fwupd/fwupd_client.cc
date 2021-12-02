@@ -238,16 +238,11 @@ class FwupdClientImpl : public FwupdClient {
 
   void InstallUpdateCallback(dbus::Response* response,
                              dbus::ErrorResponse* error_response) {
-    if (!response) {
-      LOG(ERROR) << "No Dbus response received from fwupd.";
-      return;
-    }
-
-    bool success;
-    dbus::MessageReader reader(response);
-    if (!reader.PopBool(&success)) {
-      LOG(ERROR) << "Failed to parse bool from DBus Signal";
-      return;
+    bool success = true;
+    if (error_response) {
+      LOG(ERROR) << "Firmware install failed with error: "
+                 << error_response->GetErrorName();
+      success = false;
     }
 
     for (auto& observer : observers_)
