@@ -50,7 +50,8 @@ void GpuServiceFactory::RunMediaService(
   // hence "user blocking".
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
 #if defined(OS_WIN)
-  // Run everything on the gpu main thread, since that's where the CDM runs.
+  // Run everything on the gpu main thread, since it's required for decode swap
+  // chains. See SwapChainPresenter::TryPresentToDecodeSwapChain().
   task_runner = task_runner_;
 #else
   // TODO(crbug.com/786169): Check whether this needs to be single threaded.
