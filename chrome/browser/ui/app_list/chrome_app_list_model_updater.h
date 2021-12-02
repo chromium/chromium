@@ -33,7 +33,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
  public:
   ChromeAppListModelUpdater(
       Profile* profile,
-      app_list::reorder::AppListReorderDelegate* order_delegate);
+      app_list::reorder::AppListReorderDelegate* order_delegate,
+      app_list::AppListSyncModelSanitizer* sync_model_sanitizer);
   ChromeAppListModelUpdater(const ChromeAppListModelUpdater&) = delete;
   ChromeAppListModelUpdater& operator=(const ChromeAppListModelUpdater&) =
       delete;
@@ -80,6 +81,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;
   std::vector<const ChromeAppListItem*> GetItems() const override;
+  std::set<std::string> GetTopLevelItemIds() const override;
   size_t ItemCount() override;
   std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;
@@ -127,6 +129,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   // Returns true if the app list is under temporary sort.
   bool is_under_temporary_sort() const { return !!temporary_sort_manager_; }
+
+  ash::AppListModel* model_for_test() { return &model_; }
 
  private:
   friend class TemporaryAppListSortTest;
@@ -177,6 +181,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   // Provides the access to the methods for ordering app list items.
   app_list::reorder::AppListReorderDelegate* const order_delegate_;
+  app_list::AppListSyncModelSanitizer* const sync_model_sanitizer_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;

@@ -9,12 +9,14 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/app_list_sync_model_sanitizer.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
@@ -126,9 +128,11 @@ class ChromeAppListModelUpdater::TemporarySortManager {
 
 ChromeAppListModelUpdater::ChromeAppListModelUpdater(
     Profile* profile,
-    app_list::reorder::AppListReorderDelegate* order_delegate)
+    app_list::reorder::AppListReorderDelegate* order_delegate,
+    app_list::AppListSyncModelSanitizer* sync_model_sanitizer)
     : profile_(profile),
       order_delegate_(order_delegate),
+      sync_model_sanitizer_(sync_model_sanitizer),
       item_manager_(std::make_unique<ChromeAppListItemManager>()),
       model_(this) {
   DCHECK_EQ(ash::features::IsLauncherAppSortEnabled(),
@@ -229,11 +233,23 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
     item->SetDefaultIcon(item_added->icon());
   }
 
-  // If the app list is under temporary sort and the new app is installed from
-  // the local device (i.e. the device on which temporary sorting is initiated),
-  // commit the temporary sorting order.
-  if (is_under_temporary_sort() && add_from_local)
-    EndTemporarySortAndTakeAction(EndAction::kCommit);
+  if (add_from_local) {
+    // If the app list is under temporary sort and the new app is installed from
+    // the local device (i.e. the device on which temporary sorting is
+    // initiated), commit the temporary sorting order.
+    if (is_under_temporary_sort()) {
+      EndTemporarySortAndTakeAction(EndAction::kCommit);
+    } else if (folder_id.empty()) {
+      // If an app is a new install, sanitize the page breaks if productivity
+      // launcher is enabled.
+      // No need to sanitize page breaks after committing temporary sort, as
+      // page breaks get sanitized when the sorted order is set.
+      // Adding an item to a folder is not expected for new items, but also does
+      // not impact the top level grid pagination structure.
+      sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+          GetTopLevelItemIds(), /*reset_page_breaks=*/false);
+    }
+  }
 }
 
 void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
@@ -252,10 +268,18 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
   // uninstallation rather than sync.
   model_.DeleteItem(id_copy, is_uninstall);
 
-  // When item deletion is triggered by local app uninstallation instead of
-  // sync, commits the temporary order if any.
-  if (is_under_temporary_sort() && is_uninstall)
-    EndTemporarySortAndTakeAction(EndAction::kCommit);
+  if (is_uninstall) {
+    // When item deletion is triggered by local app uninstallation instead of
+    // sync, commits the temporary order if any.
+    if (is_under_temporary_sort()) {
+      EndTemporarySortAndTakeAction(EndAction::kCommit);
+    } else {
+      // NOTE: Committing temporary sort will also reset page breaks, so they
+      // don't have to be sanitized again in that case.
+      sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+          GetTopLevelItemIds(), /*reset_page_breaks=*/false);
+    }
+  }
 }
 
 void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {
@@ -417,6 +441,14 @@ std::vector<const ChromeAppListItem*> ChromeAppListModelUpdater::GetItems()
   for (auto& entry : items)
     item_pointers.push_back(entry.second.get());
   return item_pointers;
+}
+
+std::set<std::string> ChromeAppListModelUpdater::GetTopLevelItemIds() const {
+  std::set<std::string> item_ids;
+  ash::AppListItemList* item_list = model_.top_level_item_list();
+  for (size_t i = 0; i < item_list->item_count(); ++i)
+    item_ids.insert(item_list->item_at(i)->id());
+  return item_ids;
 }
 
 std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
@@ -723,11 +755,6 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
     model_.SetItemMetadata(id, std::move(data));
   }
 
-  if (!is_under_temporary_sort())
-    return;
-
-  DCHECK(temporary_sort_manager_->is_active());
-
   // When user moves a local item to a folder, the user is believed to accept
   // the item layout after reordering. Therefore local positions are
   // committed.
@@ -735,11 +762,25 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
     // Clear the sort order. Note that the folder that is created by merging
     // may not be placed following the temporary sort order. Therefore the
     // sort order is cleared.
-    EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
+    if (is_under_temporary_sort()) {
+      EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
+    } else {
+      // NOTE: Committing temporary sort will also reset page breaks, so they
+      // don't have to be sanitized again in that case.
+      sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+          GetTopLevelItemIds(), /*reset_page_breaks=*/false);
+    }
   } else if (reason == ash::RequestMoveToFolderReason::kMoveItem) {
     // When an item is moved to an existing folder, the sorting order is still
     // maintained. Therefore commit the temporary order in this scenario.
-    EndTemporarySortAndTakeAction(EndAction::kCommit);
+    if (is_under_temporary_sort()) {
+      EndTemporarySortAndTakeAction(EndAction::kCommit);
+    } else {
+      // NOTE: Committing temporary sort will also reset page breaks, so they
+      // don't have to be sanitized again in that case.
+      sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+          GetTopLevelItemIds(), /*reset_page_breaks=*/false);
+    }
   }
 }
 
@@ -754,6 +795,9 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   data->folder_id = "";
   data->position = target_position;
   model_.SetItemMetadata(id, std::move(data));
+
+  sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+      GetTopLevelItemIds(), /*reset_page_breaks=*/false);
 }
 
 void ChromeAppListModelUpdater::RequestAppListSort(
@@ -809,13 +853,17 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
   DCHECK(FindItem(id));
   SetItemPosition(id, new_position);
 
-  // Return early if there is no uncommitted sort orders.
-  if (!temporary_sort_manager_)
-    return;
-
   // Commit positions and clear the sort order if a local item is moved.
-  if (reason == ash::RequestPositionUpdateReason::kMoveItem)
-    EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
+  if (reason == ash::RequestPositionUpdateReason::kMoveItem) {
+    if (temporary_sort_manager_) {
+      EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
+    } else {
+      // NOTE: Committing temporary sort will also reset page breaks, so they
+      // don't have to be sanitized again in that case.
+      sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+          GetTopLevelItemIds(), /*reset_page_breaks=*/false);
+    }
+  }
 }
 
 void ChromeAppListModelUpdater::OnAppListHidden() {

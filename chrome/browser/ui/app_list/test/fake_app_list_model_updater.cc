@@ -129,6 +129,15 @@ std::vector<ChromeAppListItem*> FakeAppListModelUpdater::GetTopLevelItems()
   return top_level_items;
 }
 
+std::set<std::string> FakeAppListModelUpdater::GetTopLevelItemIds() const {
+  std::set<std::string> item_ids;
+  for (auto& item : items_) {
+    if (item->folder_id().empty())
+      item_ids.insert(item->id());
+  }
+  return item_ids;
+}
+
 ChromeAppListItem* FakeAppListModelUpdater::ItemAtForTest(size_t index) {
   return index < items_.size() ? items_[index].get() : nullptr;
 }

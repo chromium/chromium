@@ -53,6 +53,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   // For AppListModel:
   ChromeAppListItem* FindItem(const std::string& id) override;
   std::vector<const ChromeAppListItem*> GetItems() const override;
+  std::set<std::string> GetTopLevelItemIds() const override;
   size_t ItemCount() override;
   std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;

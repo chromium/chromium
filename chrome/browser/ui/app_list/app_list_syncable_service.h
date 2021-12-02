@@ -52,6 +52,7 @@ class PrefRegistrySyncable;
 
 namespace app_list {
 class AppListReorderDelegate;
+class AppListSyncModelSanitizer;
 
 // Keyed Service that owns, stores, and syncs an AppListModel for a profile.
 class AppListSyncableService : public syncer::SyncableService,
@@ -155,6 +156,10 @@ class AppListSyncableService : public syncer::SyncableService,
   // Returns the existing sync item matching |id| or NULL.
   virtual const SyncItem* GetSyncItem(const std::string& id) const;
 
+  // Adds a page break item with the provided ID at the provided position.
+  void AddPageBreakItem(const std::string& page_break_id,
+                        const syncer::StringOrdinal& position);
+
   // Transfers app attributes, such as parent folder id, position in App
   // Launcher and pin position on the shelf from one app to another app. Target
   // app defined by |to_app_id| is not required to be present at call time. In
@@ -235,6 +240,7 @@ class AppListSyncableService : public syncer::SyncableService,
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
  private:
+  friend class AppListSyncModelSanitizer;
   class ModelUpdaterObserver;
 
   // Builds the model once ExtensionService is ready.
@@ -394,6 +400,7 @@ class AppListSyncableService : public syncer::SyncableService,
   extensions::ExtensionRegistry* extension_registry_;
   std::unique_ptr<AppListModelUpdater> model_updater_;
   std::unique_ptr<ModelUpdaterObserver> model_updater_observer_;
+  std::unique_ptr<AppListSyncModelSanitizer> sync_model_sanitizer_;
 
   std::unique_ptr<AppServiceAppModelBuilder> app_service_apps_builder_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;

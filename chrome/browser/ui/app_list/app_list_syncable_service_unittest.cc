@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/test/app_list_syncable_service_test_base.h"
@@ -193,22 +195,7 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
   }
 
  private:
-  // test::AppListSyncableServiceTestBase:
-  void SetUpFakeModelUpdaterFactoryIfNecessary() override {
-    model_updater_factory_scope_ = std::make_unique<
-        app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-        base::BindRepeating(
-            [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
-                -> std::unique_ptr<AppListModelUpdater> {
-              return std::make_unique<FakeAppListModelUpdater>(
-                  /*profile=*/nullptr, reorder_delegate);
-            }));
-  }
-
   std::unique_ptr<AppListModelUpdater::TestApi> model_updater_test_api_;
-  std::unique_ptr<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
-      model_updater_factory_scope_;
 };
 
 TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
@@ -1470,22 +1457,29 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
       AreAllAppAtributesEqualInSync(webstore_sync_item, youtube_sync_item));
 }
 
-class AppListSortUnitTest : public AppListSyncableServiceTest {
+class ProductivityLauncherAppListSyncableServiceTest
+    : public AppListSyncableServiceTest {
  public:
-  AppListSortUnitTest() {
+  ProductivityLauncherAppListSyncableServiceTest() {
     feature_list_.InitWithFeatures(
         {ash::features::kLauncherAppSort, ash::features::kProductivityLauncher},
         {});
   }
-  AppListSortUnitTest(const AppListSortUnitTest&) = delete;
-  AppListSortUnitTest& operator=(const AppListSortUnitTest&) = delete;
-  ~AppListSortUnitTest() override = default;
+  ProductivityLauncherAppListSyncableServiceTest(
+      const ProductivityLauncherAppListSyncableServiceTest&) = delete;
+  ProductivityLauncherAppListSyncableServiceTest& operator=(
+      const ProductivityLauncherAppListSyncableServiceTest&) = delete;
+  ~ProductivityLauncherAppListSyncableServiceTest() override = default;
 
   // Returns the app list order stored as preference.
   ash::AppListSortOrder GetSortOrderFromPrefs() {
     return static_cast<ash::AppListSortOrder>(
         app_list_syncable_service()->profile()->GetPrefs()->GetInteger(
             prefs::kAppListPreferredOrder));
+  }
+
+  ash::AppListItem* FindItemForApp(extensions::Extension* app) {
+    return GetModelUpdater()->model_for_test()->FindItem(app->id());
   }
 
   // A hacky way to change an item's name.
@@ -1499,8 +1493,734 @@ class AppListSortUnitTest : public AppListSyncableServiceTest {
   base::test::ScopedFeatureList feature_lists_;
 };
 
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SanitizePagesOnItemAdditionAndRemoval) {
+  RemoveAllExistingItems();
+
+  // Add enough items to fill up a legacy app list page.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i < 20; ++i) {
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name,
+                                            /*folder_id=*/"",
+                                            GetLastPositionString(), kUnset));
+    initial_apps.push_back(
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0",  "Item 1",  "Item 2",  "Item 3",  "Item 4",
+                  "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9",
+                  "Item 10", "Item 11", "Item 12", "Item 13", "Item 14",
+                  "Item 15", "Item 16", "Item 17", "Item 18", "Item 19"}}));
+
+  // Install another app - with productivity launcher enabled, the app gets
+  // added to front.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_1 =
+      MakeApp("Test app 1", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_1.get());
+
+  // Verify a page break was added to sync data.
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 1", "Item 0",  "Item 1",  "Item 2",  "Item 3",
+                  "Item 4",     "Item 5",  "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10", "Item 11", "Item 12", "Item 13",
+                  "Item 14",    "Item 15", "Item 16", "Item 17", "Item 18"},
+                 {"Item 19"}}));
+
+  // Installing another app will not create a new page - the last item from
+  // first page will instead be moved to the second page.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_2 =
+      MakeApp("Test app 2", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_2.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 2",
+                  "Item 3",     "Item 4",     "Item 5",  "Item 6",  "Item 7",
+                  "Item 8",     "Item 9",     "Item 10", "Item 11", "Item 12",
+                  "Item 13",    "Item 14",    "Item 15", "Item 16", "Item 17"},
+                 {"Item 18", "Item 19"}}));
+
+  // Remove an app from the first page and verify first app from second page is
+  // moved back to the first page.
+  RemoveExtension(initial_apps[2]->id());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 3",
+                  "Item 4",     "Item 5",     "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10",    "Item 11", "Item 12", "Item 13",
+                  "Item 14",    "Item 15",    "Item 16", "Item 17", "Item 18"},
+                 {"Item 19"}}));
+
+  // Removing another extension from the first page removes the second page.
+  RemoveExtension(initial_apps[11]->id());
+
+  EXPECT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 3",
+            "Item 4",     "Item 5",     "Item 6",  "Item 7",  "Item 8",
+            "Item 9",     "Item 10",    "Item 12", "Item 13", "Item 14",
+            "Item 15",    "Item 16",    "Item 17", "Item 18", "Item 19"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SanitizationKeepsUserAddedPageBreaks) {
+  RemoveAllExistingItems();
+
+  // Add enough items to have two pages with legacy max app list page size,
+  // and add a page break, which is treated as a user added page break after the
+  // first page.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i < 21; ++i) {
+    if (i == 20) {
+      sync_list.push_back(CreateAppRemoteData(
+          "page_break", "page_break", "", GetLastPositionString(), kUnset,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+    }
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name,
+                                            /*folder_id=*/"",
+                                            GetLastPositionString(), kUnset));
+    initial_apps.push_back(
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0",  "Item 1",  "Item 2",  "Item 3",  "Item 4",
+                  "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9",
+                  "Item 10", "Item 11", "Item 12", "Item 13", "Item 14",
+                  "Item 15", "Item 16", "Item 17", "Item 18", "Item 19"},
+                 {"Item 20"}}));
+
+  // Install another app - with productivity launcher enabled, the app gets
+  // added to front.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_1 =
+      MakeApp("Test app 1", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_1.get());
+
+  // Verify a page break was added to sync data.
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 1", "Item 0",  "Item 1",  "Item 2",  "Item 3",
+                  "Item 4",     "Item 5",  "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10", "Item 11", "Item 12", "Item 13",
+                  "Item 14",    "Item 15", "Item 16", "Item 17", "Item 18"},
+                 {"Item 19"},
+                 {"Item 20"}}));
+
+  // Installing another app will not create a new page - the last item from
+  // first page will instead be moved to the second page.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_2 =
+      MakeApp("Test app 2", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_2.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 2",
+                  "Item 3",     "Item 4",     "Item 5",  "Item 6",  "Item 7",
+                  "Item 8",     "Item 9",     "Item 10", "Item 11", "Item 12",
+                  "Item 13",    "Item 14",    "Item 15", "Item 16", "Item 17"},
+                 {"Item 18", "Item 19"},
+                 {"Item 20"}}));
+
+  // Remove an app from the first page and verify first app from second page is
+  // moved back to the first page.
+  RemoveExtension(initial_apps[2]->id());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 3",
+                  "Item 4",     "Item 5",     "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10",    "Item 11", "Item 12", "Item 13",
+                  "Item 14",    "Item 15",    "Item 16", "Item 17", "Item 18"},
+                 {"Item 19"},
+                 {"Item 20"}}));
+
+  // Removing another extension from the first page removes the second page.
+  RemoveExtension(initial_apps[11]->id());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 3",
+                  "Item 4",     "Item 5",     "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10",    "Item 12", "Item 13", "Item 14",
+                  "Item 15",    "Item 16",    "Item 17", "Item 18", "Item 19"},
+                 {"Item 20"}}));
+
+  // Remove another app, and verify the app from the second page remains on the
+  // second page.
+  RemoveExtension(initial_apps[12]->id());
+
+  EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0", "Item 1", "Item 3",
+                  "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9",
+                  "Item 10", "Item 13", "Item 14", "Item 15", "Item 16",
+                  "Item 17", "Item 18", "Item 19"},
+                 {"Item 20"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SanitizePageSizesWhenMovingApps) {
+  RemoveAllExistingItems();
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, {}, std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Add enough items to have two pages with legacy max app list page size.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i < 21; ++i) {
+    last_item_id = CreateNextAppId(last_item_id);
+    initial_apps.push_back(MakeApp(base::StringPrintf("Item %d", i),
+                                   last_item_id,
+                                   extensions::Extension::NO_FLAGS));
+  }
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16",
+                  "Item 15", "Item 14", "Item 13", "Item 12", "Item 11",
+                  "Item 10", "Item 9",  "Item 8",  "Item 7",  "Item 6",
+                  "Item 5",  "Item 4",  "Item 3",  "Item 2",  "Item 1"},
+                 {"Item 0"}}));
+
+  // Move the item from the second page to the first page, and verify the number
+  // of the pages remains the same (and the last item on the first page moves to
+  // the second page).
+  ash::AppListItem* item_5 = FindItemForApp(initial_apps[5].get());
+  ASSERT_TRUE(item_5);
+  ash::AppListItem* item_6 = FindItemForApp(initial_apps[6].get());
+  ASSERT_TRUE(item_6);
+  syncer::StringOrdinal target_position =
+      item_5->position().CreateBetween(item_6->position());
+
+  GetModelUpdater()->RequestPositionUpdate(
+      initial_apps[0]->id(), target_position,
+      ash::RequestPositionUpdateReason::kMoveItem);
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16",
+                  "Item 15", "Item 14", "Item 13", "Item 12", "Item 11",
+                  "Item 10", "Item 9",  "Item 8",  "Item 7",  "Item 6",
+                  "Item 0",  "Item 5",  "Item 4",  "Item 3",  "Item 2"},
+                 {"Item 1"}}));
+
+  // Install another app, and verify this does not add an extra page.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_1 =
+      MakeApp("Test app 1", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_1.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 1", "Item 20", "Item 19", "Item 18", "Item 17",
+                  "Item 16",    "Item 15", "Item 14", "Item 13", "Item 12",
+                  "Item 11",    "Item 10", "Item 9",  "Item 8",  "Item 7",
+                  "Item 6",     "Item 0",  "Item 5",  "Item 4",  "Item 3"},
+                 {"Item 2", "Item 1"}}));
+
+  // Move an app from the first page to the second page, and verify no extra
+  // pages are created.
+  ash::AppListItem* item_2 = FindItemForApp(initial_apps[2].get());
+  ASSERT_TRUE(item_2);
+  ash::AppListItem* item_1 = FindItemForApp(initial_apps[1].get());
+  ASSERT_TRUE(item_1);
+  target_position = item_2->position().CreateBetween(item_1->position());
+
+  GetModelUpdater()->RequestPositionUpdate(
+      initial_apps[10]->id(), target_position,
+      ash::RequestPositionUpdateReason::kMoveItem);
+
+  EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 1", "Item 20", "Item 19", "Item 18", "Item 17",
+                  "Item 16",    "Item 15", "Item 14", "Item 13", "Item 12",
+                  "Item 11",    "Item 9",  "Item 8",  "Item 7",  "Item 6",
+                  "Item 0",     "Item 5",  "Item 4",  "Item 3",  "Item 2"},
+                 {"Item 10", "Item 1"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SanitizePageSizesWhenCreatingAndRemovingFolders) {
+  RemoveAllExistingItems();
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, {}, std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Add enough items to have two pages with legacy max app list page size.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i < 21; ++i) {
+    last_item_id = CreateNextAppId(last_item_id);
+    initial_apps.push_back(MakeApp(base::StringPrintf("Item %d", i),
+                                   last_item_id,
+                                   extensions::Extension::NO_FLAGS));
+  }
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16",
+                  "Item 15", "Item 14", "Item 13", "Item 12", "Item 11",
+                  "Item 10", "Item 9",  "Item 8",  "Item 7",  "Item 6",
+                  "Item 5",  "Item 4",  "Item 3",  "Item 2",  "Item 1"},
+                 {"Item 0"}}));
+
+  // Merge 2 items on the first page, and verify the second page gets removed.
+  const std::string folder_id = GetModelUpdater()->model_for_test()->MergeItems(
+      initial_apps[5]->id(), initial_apps[6]->id());
+  ASSERT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16",
+            "Item 15", "Item 14", "Item 13", "Item 12", "Item 11",
+            "Item 10", "Item 9",  "Item 8",  "Item 7",  "" /*unnamed folder*/,
+            "Item 4",  "Item 3",  "Item 2",  "Item 1",  "Item 0"}}));
+
+  // Move an item from the created folder, and verify another page gets
+  // created.
+  ash::AppListItem* item_2 = FindItemForApp(initial_apps[2].get());
+  ASSERT_TRUE(item_2);
+  ash::AppListItem* item_1 = FindItemForApp(initial_apps[1].get());
+  ASSERT_TRUE(item_1);
+  syncer::StringOrdinal target_position =
+      item_2->position().CreateBetween(item_1->position());
+
+  ash::AppListItem* item_6 = FindItemForApp(initial_apps[6].get());
+  ASSERT_TRUE(item_6);
+
+  GetModelUpdater()->model_for_test()->MoveItemToRootAt(item_6,
+                                                        target_position);
+
+  EXPECT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16", "Item 15",
+            "Item 14", "Item 13", "Item 12", "Item 11", "Item 10", "Item 9",
+            "Item 8",  "Item 7",  "",        "Item 5",  "Item 4",  "Item 3",
+            "Item 2",  "Item 6",  "Item 1"},
+           {"Item 0"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SanitizePageSizesWhenReparentingItems) {
+  RemoveAllExistingItems();
+
+  // Create two pages of apps, where the first page is partial, and the second
+  // page is full and contains a folder.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  const std::string kFolderId = GenerateId("folder_id");
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i <= 33; ++i) {
+    if (i == 10) {
+      sync_list.push_back(CreateAppRemoteData(
+          "page_break_1", "page_break_1", "", GetLastPositionString(), kUnset,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+    }
+
+    if (i == 15) {
+      sync_list.push_back(CreateAppRemoteData(
+          kFolderId, "Folder", "", GetLastPositionString(), "",
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+    }
+
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name,
+                                            i >= 15 && i < 20 ? kFolderId : "",
+                                            GetLastPositionString(), kUnset));
+    initial_apps.push_back(
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  // Note that items Item 15 - Item 19 are in the folder.
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5",
+                  "Item 6", "Item 7", "Item 8", "Item 9"},
+                 {"Item 10", "Item 11", "Item 12", "Item 13", "Item 14",
+                  "Folder",  "Item 20", "Item 21", "Item 22", "Item 23",
+                  "Item 24", "Item 25", "Item 26", "Item 27", "Item 28",
+                  "Item 29", "Item 30", "Item 31", "Item 32", "Item 33"}}));
+
+  // Move an item from the folder to second page.
+  ash::AppListItem* item_12 = FindItemForApp(initial_apps[12].get());
+  ASSERT_TRUE(item_12);
+  ash::AppListItem* item_11 = FindItemForApp(initial_apps[11].get());
+  ASSERT_TRUE(item_11);
+  syncer::StringOrdinal target_position =
+      item_12->position().CreateBetween(item_11->position());
+
+  ash::AppListItem* item_15 = FindItemForApp(initial_apps[15].get());
+  ASSERT_TRUE(item_15);
+
+  GetModelUpdater()->model_for_test()->MoveItemToRootAt(item_15,
+                                                        target_position);
+
+  // Verify that the last item from the second page moves to a new page.
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5",
+                  "Item 6", "Item 7", "Item 8", "Item 9"},
+                 {"Item 10", "Item 11", "Item 15", "Item 12", "Item 13",
+                  "Item 14", "Folder",  "Item 20", "Item 21", "Item 22",
+                  "Item 23", "Item 24", "Item 25", "Item 26", "Item 27",
+                  "Item 28", "Item 29", "Item 30", "Item 31", "Item 32"},
+                 {"Item 33"}}));
+
+  // Move an item from the folder to the first page, and verify the page count
+  // remains the same.
+  ash::AppListItem* item_1 = FindItemForApp(initial_apps[1].get());
+  ASSERT_TRUE(item_1);
+  ash::AppListItem* item_2 = FindItemForApp(initial_apps[2].get());
+  ASSERT_TRUE(item_2);
+  target_position = item_2->position().CreateBetween(item_1->position());
+
+  ash::AppListItem* item_16 = FindItemForApp(initial_apps[16].get());
+  ASSERT_TRUE(item_16);
+
+  GetModelUpdater()->model_for_test()->MoveItemToRootAt(item_16,
+                                                        target_position);
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0", "Item 1", "Item 16", "Item 2", "Item 3", "Item 4",
+                  "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"},
+                 {"Item 10", "Item 11", "Item 15", "Item 12", "Item 13",
+                  "Item 14", "Folder",  "Item 20", "Item 21", "Item 22",
+                  "Item 23", "Item 24", "Item 25", "Item 26", "Item 27",
+                  "Item 28", "Item 29", "Item 30", "Item 31", "Item 32"},
+                 {"Item 33"}}));
+
+  // Move an item from second page to the folder, and verify the item from the
+  // last page moves back to the second page.
+  GetModelUpdater()->model_for_test()->MergeItems(kFolderId,
+                                                  initial_apps[20]->id());
+  EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0", "Item 1", "Item 16", "Item 2", "Item 3", "Item 4",
+                  "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"},
+                 {"Item 10", "Item 11", "Item 15", "Item 12", "Item 13",
+                  "Item 14", "Folder",  "Item 21", "Item 22", "Item 23",
+                  "Item 24", "Item 25", "Item 26", "Item 27", "Item 28",
+                  "Item 29", "Item 30", "Item 31", "Item 32", "Item 33"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       NonInstalledItemsIgnoredWhenSanitizingPageSizes) {
+  RemoveAllExistingItems();
+
+  // Create two pages of apps, where the first page is partial, and the second
+  // page contains items not installed locally and enough installed apps to just
+  // fill out the second page.
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  const std::string kFolderId = GenerateId("folder_id");
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i <= 41; ++i) {
+    if (i == 10) {
+      sync_list.push_back(CreateAppRemoteData(
+          "page_break_1", "page_break_1", "", GetLastPositionString(), kUnset,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+    }
+
+    if (i == 15) {
+      sync_list.push_back(CreateAppRemoteData(
+          kFolderId, "Folder", "", GetLastPositionString(), "",
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+    }
+
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name,
+                                            i >= 15 && i < 20 ? kFolderId : "",
+                                            GetLastPositionString(), kUnset));
+    if (i % 3) {
+      initial_apps.push_back(
+          MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
+    }
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  // Note that items Item 15 - Item 19 are in the folder. And items with index
+  // divisible by 3 are not installed, and don't count towards the total page
+  // size.
+  ASSERT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5",
+            "Item 6", "Item 7", "Item 8", "Item 9"},
+           {"Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Folder",
+            "Item 20", "Item 21", "Item 22", "Item 23", "Item 24", "Item 25",
+            "Item 26", "Item 27", "Item 28", "Item 29", "Item 30", "Item 31",
+            "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37",
+            "Item 38", "Item 39", "Item 40", "Item 41"}}));
+
+  auto get_app_for_item_index =
+      [&initial_apps](int i) -> extensions::Extension* {
+    DCHECK(i % 3);
+    // Assumes that `initial_apps` contains items whose index is not
+    // divisible by 3.
+    return initial_apps[i - i / 3 - 1].get();
+  };
+
+  // Move an item from first page to the second page - verify the page break is
+  // added so the second page contains only 20 installed items.
+  ash::AppListItem* item_10 = FindItemForApp(get_app_for_item_index(10));
+  ASSERT_TRUE(item_10);
+  ash::AppListItem* item_11 = FindItemForApp(get_app_for_item_index(11));
+  ASSERT_TRUE(item_11);
+  syncer::StringOrdinal target_position =
+      item_10->position().CreateBetween(item_11->position());
+
+  GetModelUpdater()->RequestPositionUpdate(
+      get_app_for_item_index(2)->id(), target_position,
+      ash::RequestPositionUpdateReason::kMoveItem);
+
+  ASSERT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0", "Item 1", "Item 3", "Item 4", "Item 5", "Item 6",
+            "Item 7", "Item 8", "Item 9"},
+           {"Item 10", "Item 2",  "Item 11", "Item 12", "Item 13", "Item 14",
+            "Folder",  "Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+            "Item 25", "Item 26", "Item 27", "Item 28", "Item 29", "Item 30",
+            "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36",
+            "Item 37", "Item 38", "Item 39", "Item 40"},
+           {"Item 41"}}));
+
+  // Move an app from the folder to the second page.
+  ash::AppListItem* item_2 = FindItemForApp(get_app_for_item_index(2));
+  ASSERT_TRUE(item_2);
+  target_position = item_10->position().CreateBetween(item_2->position());
+  ash::AppListItem* item_16 = FindItemForApp(get_app_for_item_index(16));
+  ASSERT_TRUE(item_16);
+
+  GetModelUpdater()->model_for_test()->MoveItemToRootAt(item_16,
+                                                        target_position);
+
+  ASSERT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0", "Item 1", "Item 3", "Item 4", "Item 5", "Item 6",
+            "Item 7", "Item 8", "Item 9"},
+           {"Item 10", "Item 16", "Item 2",  "Item 11", "Item 12", "Item 13",
+            "Item 14", "Folder",  "Item 20", "Item 21", "Item 22", "Item 23",
+            "Item 24", "Item 25", "Item 26", "Item 27", "Item 28", "Item 29",
+            "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35",
+            "Item 36", "Item 37", "Item 38", "Item 39"},
+           {"Item 40", "Item 41"}}));
+
+  // Move another app to the second page.
+  target_position = item_10->position().CreateBetween(item_16->position());
+  GetModelUpdater()->RequestPositionUpdate(
+      get_app_for_item_index(4)->id(), target_position,
+      ash::RequestPositionUpdateReason::kMoveItem);
+
+  EXPECT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0", "Item 1", "Item 3", "Item 5", "Item 6", "Item 7",
+            "Item 8", "Item 9"},
+           {"Item 10", "Item 4",  "Item 16", "Item 2",  "Item 11", "Item 12",
+            "Item 13", "Item 14", "Folder",  "Item 20", "Item 21", "Item 22",
+            "Item 23", "Item 24", "Item 25", "Item 26", "Item 27", "Item 28",
+            "Item 29", "Item 30", "Item 31", "Item 32", "Item 33", "Item 34",
+            "Item 35", "Item 36", "Item 37"},
+           {"Item 38", "Item 39", "Item 40", "Item 41"}}));
+
+  // Remove three items from the second page, and verify items from the third
+  // page get moved to the second page.
+  GetModelUpdater()->model_for_test()->MergeItems(
+      kFolderId, get_app_for_item_index(20)->id());
+  RemoveExtension(get_app_for_item_index(22)->id());
+  RemoveExtension(get_app_for_item_index(28)->id());
+
+  EXPECT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0", "Item 1", "Item 3", "Item 5", "Item 6", "Item 7",
+            "Item 8", "Item 9"},
+           {"Item 10", "Item 4",  "Item 16", "Item 2",  "Item 11", "Item 12",
+            "Item 13", "Item 14", "Folder",  "Item 21", "Item 23", "Item 24",
+            "Item 25", "Item 26", "Item 27", "Item 29", "Item 30", "Item 31",
+            "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37",
+            "Item 38", "Item 39", "Item 40", "Item 41"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       DontDuplicatePageBreakBetweenUninstalledItems) {
+  RemoveAllExistingItems();
+
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 0; i <= 25; ++i) {
+    if (i == 20) {
+      sync_list.push_back(CreateAppRemoteData(
+          "page_break_1", "page_break_1", "", GetLastPositionString(), kUnset,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+    }
+
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name, "",
+                                            GetLastPositionString(), kUnset));
+    if (i < 19 || i > 22) {
+      initial_apps.push_back(
+          MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
+    }
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 0",  "Item 1",  "Item 2",  "Item 3",  "Item 4",
+                  "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9",
+                  "Item 10", "Item 11", "Item 12", "Item 13", "Item 14",
+                  "Item 15", "Item 16", "Item 17", "Item 18", "Item 19"},
+                 {"Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+                  "Item 25"}}));
+
+  // Install an app, and verify Item 19, which is not installed locally does not
+  // get moved to a new page.
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_1 =
+      MakeApp("Test app 1", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_1.get());
+
+  ASSERT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Test app 1", "Item 0",  "Item 1",  "Item 2",  "Item 3",  "Item 4",
+            "Item 5",     "Item 6",  "Item 7",  "Item 8",  "Item 9",  "Item 10",
+            "Item 11",    "Item 12", "Item 13", "Item 14", "Item 15", "Item 16",
+            "Item 17",    "Item 18", "Item 19"},
+           {"Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+            "Item 25"}}));
+
+  // Install another app, and verify that Items 18 and 19 get moved to a new
+  // page (as number of installed apps on the first page would otherwise
+  // overflow legacy max page size).
+  last_item_id = CreateNextAppId(last_item_id);
+  scoped_refptr<extensions::Extension> test_app_2 =
+      MakeApp("Test app 2", last_item_id, extensions::Extension::NO_FLAGS);
+  InstallExtension(test_app_2.get());
+
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 2",
+                  "Item 3",     "Item 4",     "Item 5",  "Item 6",  "Item 7",
+                  "Item 8",     "Item 9",     "Item 10", "Item 11", "Item 12",
+                  "Item 13",    "Item 14",    "Item 15", "Item 16", "Item 17"},
+                 {"Item 18", "Item 19"},
+                 {"Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+                  "Item 25"}}));
+
+  // Remove an app from the first page, and verify page brake before Item 18 is
+  // removed, as it can fit into the first page again.
+  RemoveExtension(initial_apps[3]->id());
+  ASSERT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0",  "Item 1",  "Item 2",
+                  "Item 4",     "Item 5",     "Item 6",  "Item 7",  "Item 8",
+                  "Item 9",     "Item 10",    "Item 11", "Item 12", "Item 13",
+                  "Item 14",    "Item 15",    "Item 16", "Item 17", "Item 18",
+                  "Item 19"},
+                 {"Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+                  "Item 25"}}));
+
+  // Remove enough apps so Item 20 can fit into the first page, and verify the
+  // page break before Item 20 does not get removed, as it's treated as a page
+  // brake added via explicit user action in pre-productivity launcher app list.
+  RemoveExtension(initial_apps[4]->id());
+  RemoveExtension(initial_apps[5]->id());
+
+  EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Test app 2", "Test app 1", "Item 0", "Item 1", "Item 2",
+                  "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11",
+                  "Item 12", "Item 13", "Item 14", "Item 15", "Item 16",
+                  "Item 17", "Item 18", "Item 19"},
+                 {"Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+                  "Item 25"}}));
+}
+
 // Verifies that sorting works for the mixture of valid and invalid positions.
-TEST_F(AppListSortUnitTest, SortMixedPositionValidityItems) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SortMixedPositionValidityItems) {
   RemoveAllExistingItems();
 
   using SyncItem = app_list::AppListSyncableService::SyncItem;
@@ -1550,7 +2270,8 @@ TEST_F(AppListSortUnitTest, SortMixedPositionValidityItems) {
 }
 
 // Verifies that sorting works if all item positions are invalid.
-TEST_F(AppListSortUnitTest, SortInvalidPositionItems) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       SortInvalidPositionItems) {
   RemoveAllExistingItems();
 
   using SyncItem = app_list::AppListSyncableService::SyncItem;
@@ -1599,7 +2320,8 @@ TEST_F(AppListSortUnitTest, SortInvalidPositionItems) {
 
 // Verifies that sorting with alphateical order works as expected for both
 // folder items and app items.
-TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderForFolderItems) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       VerifyAlphabeticalOrderForFolderItems) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
 
@@ -1669,7 +2391,8 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderForFolderItems) {
 
 // Verifies that sorting app items with the alphabetical order should work as
 // expected. Meanwhile, sorting should incur the minimum orinal changes.
-TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       VerifyAlphabeticalOrderSort) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
@@ -1762,7 +2485,8 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
 
 // Verifies that sorting app items with the alphabetical order should work for
 // the apps with the duplicate names.
-TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       VerifyAlphabeticalSortWithDuplicateNames) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
@@ -1803,7 +2527,7 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
 
 // Verifies that a new app is placed at the correct place when the launcher is
 // in (reverse) alphabetical order.
-TEST_F(AppListSortUnitTest, NewAppPlacement) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest, NewAppPlacement) {
   RemoveAllExistingItems();
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
 
@@ -1915,7 +2639,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
 
 // Verifies that a new app is placed at the correct place when initially all of
 // top level items are folders.
-TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       NewAppPlacementInitiallyOnlyFolders) {
   RemoveAllExistingItems();
 
   // Add three folders.
@@ -2016,7 +2741,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
 
 // Verifies that the new app's position maintains the launcher sort order among
 // sync items (including the apps not enabled on the local device).
-TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       VerifyNewAppPositionInGlobalScope) {
   RemoveAllExistingItems();
 
   const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
@@ -2080,7 +2806,8 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
             std::vector<std::string>({"A", "B", "C", "D", "E", "F"}));
 }
 
-TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppsDontFillUpAPage) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       RemovePageBreaksIfAppsDontFillUpAPage) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
@@ -2123,7 +2850,8 @@ TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppsDontFillUpAPage) {
             std::vector<std::string>({"A", "B", "C", "D"}));
 }
 
-TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppCountMatchesLegacyPageSize) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       RemovePageBreaksIfAppCountMatchesLegacyPageSize) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   std::string last_item_id = extensions::kWebStoreAppId;
@@ -2161,7 +2889,8 @@ TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppCountMatchesLegacyPageSize) {
                   "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9"}}));
 }
 
-TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesInSync) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       PageBreaksAfterSortWithTwoPagesInSync) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   std::string last_item_id = extensions::kWebStoreAppId;
@@ -2176,11 +2905,9 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesInSync) {
     const std::string item_name = base::StringPrintf("Item %d", i);
     sync_list.push_back(CreateAppRemoteData(last_item_id, item_name, "",
                                             GetLastPositionString(), kUnset));
-    if (i % 2) {
-      scoped_refptr<extensions::Extension> app =
-          MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS);
-      InstallExtension(app.get());
-    }
+    scoped_refptr<extensions::Extension> app =
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS);
+    InstallExtension(app.get());
   }
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
@@ -2201,11 +2928,58 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesInSync) {
                  {"Item 5", "Item 6", "Item 7", "Item 8", "Item 9"}}));
 }
 
-TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       PageBreaksAfterSortWithTwoPagesAndNonInstalledItemsInSync) {
+  RemoveAllExistingItems();
+  syncer::SyncDataList sync_list;
+  std::string last_item_id = extensions::kWebStoreAppId;
+  for (int i = 33; i >= 0; --i) {
+    if (i == 10) {
+      sync_list.push_back(CreateAppRemoteData(
+          "page_break_1", "page_break_1", "", GetLastPositionString(), kUnset,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+    }
+
+    last_item_id = CreateNextAppId(last_item_id);
+    const std::string item_name = base::StringPrintf("Item %d", i);
+    sync_list.push_back(CreateAppRemoteData(last_item_id, item_name, "",
+                                            GetLastPositionString(), kUnset));
+    scoped_refptr<extensions::Extension> app =
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS);
+
+    // Leave subset of apps non-installed.
+    if (i % 3)
+      InstallExtension(app.get());
+  }
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  app_list_syncable_service()->SetAppListPreferredOrder(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  EXPECT_EQ(
+      GetNamesOfSortedItemsPerPageFromSyncableService(),
+      std::vector<std::vector<std::string>>(
+          {{"Item 0",  "Item 1",  "Item 10", "Item 11", "Item 12", "Item 13",
+            "Item 14", "Item 15", "Item 16", "Item 17", "Item 18", "Item 19",
+            "Item 2",  "Item 20", "Item 21", "Item 22", "Item 23", "Item 24",
+            "Item 25", "Item 26", "Item 27", "Item 28", "Item 29", "Item 3",
+            "Item 30", "Item 31", "Item 32", "Item 33", "Item 4",  "Item 5",
+            "Item 6"},
+           {"Item 7", "Item 8", "Item 9"}}));
+}
+
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
   RemoveAllExistingItems();
 
   const std::string kFolderId = GenerateId("folder_id");
 
+  std::vector<scoped_refptr<extensions::Extension>> initial_apps;
   syncer::SyncDataList sync_list;
   std::string last_item_id = extensions::kWebStoreAppId;
   for (int i = 24; i >= 0; --i) {
@@ -2215,7 +2989,7 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
           sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
     }
 
-    if (i == 15) {
+    if (i == 20) {
       sync_list.push_back(CreateAppRemoteData(
           kFolderId, "Folder", "", GetLastPositionString(), "",
           sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
@@ -2226,10 +3000,12 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
     sync_list.push_back(CreateAppRemoteData(last_item_id, item_name,
                                             i >= 15 && i < 20 ? kFolderId : "",
                                             GetLastPositionString(), kUnset));
-    scoped_refptr<extensions::Extension> app =
-        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS);
-    InstallExtension(app.get());
+    initial_apps.push_back(
+        MakeApp(item_name, last_item_id, extensions::Extension::NO_FLAGS));
   }
+
+  for (auto app : initial_apps)
+    InstallExtension(app.get());
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -2250,7 +3026,8 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
                  {"Item 9"}}));
 }
 
-TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoFullPagesInSync) {
+TEST_F(ProductivityLauncherAppListSyncableServiceTest,
+       PageBreaksAfterSortWithTwoFullPagesInSync) {
   RemoveAllExistingItems();
   syncer::SyncDataList sync_list;
   std::string last_item_id = extensions::kWebStoreAppId;

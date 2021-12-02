@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 
+class ChromeAppListModelUpdater;
+
 namespace test {
 
 class AppListSyncableServiceTestBase : public AppListTestBase {
@@ -26,14 +28,12 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   void SetUp() override;
 
  protected:
-  // Used by subclasses to set up the fake model updater. If this method is not
-  // overridden, `ChromeAppListModelUpdater` is used.
-  virtual void SetUpFakeModelUpdaterFactoryIfNecessary() {}
-
   // Remove all existing sync items.
   void RemoveAllExistingItems();
 
   void InstallExtension(extensions::Extension* extension);
+
+  void RemoveExtension(const std::string& id);
 
   // Gets the ids of the items in model updater ordered by item's ordinal
   // position.
@@ -60,7 +60,7 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   // Gets the specified item's position from sync data.
   syncer::StringOrdinal GetPositionFromSyncData(const std::string& id) const;
 
-  AppListModelUpdater* GetModelUpdater();
+  ChromeAppListModelUpdater* GetModelUpdater();
 
   const app_list::AppListSyncableService::SyncItem* GetSyncItem(
       const std::string& id) const;

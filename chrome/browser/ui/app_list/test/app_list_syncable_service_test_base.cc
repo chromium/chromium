@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,7 +27,6 @@ void AppListSyncableServiceTestBase::SetUp() {
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
       std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
 
-  SetUpFakeModelUpdaterFactoryIfNecessary();
   app_list_syncable_service_ =
       std::make_unique<app_list::AppListSyncableService>(profile_.get());
   content::RunAllTasksUntilIdle();
@@ -58,6 +58,14 @@ void AppListSyncableServiceTestBase::InstallExtension(
       syncer::StringOrdinal::CreateInitialOrdinal();
   service()->OnExtensionInstalled(extension, page_ordinal,
                                   extensions::kInstallFlagNone);
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+}
+
+void AppListSyncableServiceTestBase::RemoveExtension(const std::string& id) {
+  service()->UninstallExtension(id, extensions::UNINSTALL_REASON_FOR_TESTING,
+                                nullptr);
+
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 }
@@ -144,8 +152,9 @@ syncer::StringOrdinal AppListSyncableServiceTestBase::GetPositionFromSyncData(
   return app_list_syncable_service_->GetSyncItem(id)->item_ordinal;
 }
 
-AppListModelUpdater* AppListSyncableServiceTestBase::GetModelUpdater() {
-  return app_list_syncable_service_->GetModelUpdater();
+ChromeAppListModelUpdater* AppListSyncableServiceTestBase::GetModelUpdater() {
+  return static_cast<ChromeAppListModelUpdater*>(
+      app_list_syncable_service_->GetModelUpdater());
 }
 
 const app_list::AppListSyncableService::SyncItem*

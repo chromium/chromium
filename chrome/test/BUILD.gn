@@ -6683,6 +6683,7 @@ test("unit_tests") {
     deps += [
       "//ash:test_support",
       "//ash/app_list:test_support",
+      "//ash/app_list/model:app_list_model",
       "//ash/components/arc:arc_test_support",
       "//ash/public/cpp/assistant/test_support",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",

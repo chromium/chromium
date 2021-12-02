@@ -31,6 +31,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_sync_model_sanitizer.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -352,14 +353,15 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
       extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
+  sync_model_sanitizer_ = std::make_unique<AppListSyncModelSanitizer>(this);
   reorder::AppListReorderDelegate* reorder_delegate =
       ash::features::IsLauncherAppSortEnabled() ? this : nullptr;
   if (g_model_updater_factory_callback_for_test_) {
     model_updater_ =
         g_model_updater_factory_callback_for_test_->Run(reorder_delegate);
   } else {
-    model_updater_ =
-        std::make_unique<ChromeAppListModelUpdater>(profile, reorder_delegate);
+    model_updater_ = std::make_unique<ChromeAppListModelUpdater>(
+        profile, reorder_delegate, sync_model_sanitizer_.get());
   }
 
   model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
@@ -503,6 +505,17 @@ const AppListSyncableService::SyncItem* AppListSyncableService::GetSyncItem(
   if (iter != sync_items_.end())
     return iter->second.get();
   return NULL;
+}
+
+void AppListSyncableService::AppListSyncableService::AddPageBreakItem(
+    const std::string& id,
+    const syncer::StringOrdinal& position) {
+  SyncItem* page_break =
+      CreateSyncItem(id, sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+  page_break->item_ordinal = position;
+  ProcessNewSyncItem(page_break);
+  UpdateSyncItemInLocalStorage(profile_, page_break);
+  SendSyncChange(page_break, SyncChange::ACTION_ADD);
 }
 
 bool AppListSyncableService::TransferItemAttributes(
@@ -1251,44 +1264,8 @@ void AppListSyncableService::SetAppListPreferredOrder(
                    SyncChange::ACTION_UPDATE);
   }
 
-  // Delete all the page breakers so that empty spaces are removed on the
-  // devices with the old OS version.
-  std::vector<std::string> page_breaker_ids;
-  for (const auto& id_item_pair : sync_items_) {
-    if (id_item_pair.second->item_type ==
-        sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
-      page_breaker_ids.push_back(id_item_pair.first);
-    }
-  }
-  for (const auto& page_break_id : page_breaker_ids)
-    DeleteSyncItem(page_break_id);
-
-  // Launcher pre kProductivityLauncher launch (early 2022), had restriction on
-  // the app list page size - update the page structure among sync items to
-  // respect the lagacy page size (as items may get synced to devices that do
-  // not have kProductivityLauncher feature disabled). The page breaks are
-  // ignored with kProductivityLauncher feature enabled.
-  std::vector<SyncItem*> items = GetSortedTopLevelSyncItems();
-  const size_t kLegacyItemsPerPage =
-      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-  std::vector<syncer::StringOrdinal> required_page_breaks;
-  for (size_t i = kLegacyItemsPerPage; i < items.size();
-       i += kLegacyItemsPerPage) {
-    const SyncItem* item_after_page_break = items[i];
-    const SyncItem* item_before_page_break = items[i - 1];
-    required_page_breaks.push_back(
-        item_before_page_break->item_ordinal.CreateBetween(
-            item_after_page_break->item_ordinal));
-  }
-
-  for (const auto& page_break_position : required_page_breaks) {
-    SyncItem* page_break_item = CreateSyncItem(
-        base::GenerateGUID(), sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
-    page_break_item->item_ordinal = page_break_position;
-    ProcessNewSyncItem(page_break_item);
-    UpdateSyncItemInLocalStorage(profile_, page_break_item);
-    SendSyncChange(page_break_item, SyncChange::ACTION_ADD);
-  }
+  sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+      model_updater_->GetTopLevelItemIds(), /*reset_page_breaks=*/true);
 }
 
 syncer::StringOrdinal AppListSyncableService::CalculateGlobalFrontPosition()

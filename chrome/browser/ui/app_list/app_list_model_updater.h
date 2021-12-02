@@ -94,6 +94,7 @@ class AppListModelUpdater {
   // For AppListModel:
   virtual ChromeAppListItem* FindItem(const std::string& id) = 0;
   virtual std::vector<const ChromeAppListItem*> GetItems() const = 0;
+  virtual std::set<std::string> GetTopLevelItemIds() const = 0;
   virtual size_t ItemCount() = 0;
   virtual std::vector<ChromeAppListItem*> GetTopLevelItems() const = 0;
   virtual ChromeAppListItem* ItemAtForTest(size_t index) = 0;
