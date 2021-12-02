@@ -19,6 +19,7 @@ import os
 import pytest
 import websockets
 
+
 @pytest.fixture
 async def websocket():
     port = os.getenv('PORT', 8080)
@@ -26,29 +27,32 @@ async def websocket():
     async with websockets.connect(url) as connection:
         yield connection
 
+
 @pytest.fixture(autouse=True)
 async def before_each_test(websocket):
     # Read initial event `browsingContext.contextCreated`
     resp = await read_JSON_message(websocket)
     assert resp['method'] == 'browsingContext.contextCreated'
 
+
 # Compares 2 objects recursively ignoring values of specific attributes.
-def recursiveCompare(expected, actual, ignoreAttributes):
+def recursiveCompare(expected, actual, ignore_attributes):
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, val in enumerate(expected):
-            recursiveCompare(expected[index], actual[index], ignoreAttributes)
+            recursiveCompare(expected[index], actual[index], ignore_attributes)
         return
 
     if type(expected) is dict:
         assert expected.keys() == actual.keys()
         for index, val in enumerate(expected):
-            if val not in ignoreAttributes:
-                recursiveCompare(expected[val], actual[val], ignoreAttributes)
+            if val not in ignore_attributes:
+                recursiveCompare(expected[val], actual[val], ignore_attributes)
         return
 
     assert expected == actual
+
 
 # Returns the only open contextID.
 # Throws an exception the context is not unique.
@@ -60,34 +64,34 @@ async def get_open_context_id(websocket):
     resp = await read_JSON_message(websocket)
     assert resp['id'] == 9999
     [context] = resp['result']['contexts']
-    contextID = context['context']
-    return contextID
+    context_id = context['context']
+    return context_id
+
 
 async def send_JSON_command(websocket, command):
     await websocket.send(json.dumps(command))
 
+
 async def read_JSON_message(websocket):
     return json.loads(await websocket.recv())
 
+
 # Open given URL in the given context.
-async def goto_url(websocket, contextID, url):
+async def goto_url(websocket, context_id, url):
     # Send "browsingContext.navigate" command.
     command = {
         "id": 9998,
         "method": "browsingContext.navigate",
         "params": {
             "url": url,
-            "context": contextID}}
+            "context": context_id}}
     await send_JSON_command(websocket, command)
-
-    # Assert "DEBUG.Page.load" event emitted.
-    resp = await read_JSON_message(websocket)
-    assert resp["method"] == "DEBUG.Page.load"
 
     # Assert "browsingContext.navigate" command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
-    return contextID
+    return context_id
+
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
@@ -112,6 +116,7 @@ async def test_binary(websocket):
         "error": "invalid argument",
         "message": "not supported type (binary)"}
 
+
 @pytest.mark.asyncio
 async def test_invalid_json(websocket):
     message = 'this is not json'
@@ -120,6 +125,7 @@ async def test_invalid_json(websocket):
     assert resp == {
         "error": "invalid argument",
         "message": "Cannot parse data as JSON"}
+
 
 @pytest.mark.asyncio
 async def test_empty_object(websocket):
@@ -130,12 +136,14 @@ async def test_empty_object(websocket):
         "error": "invalid argument",
         "message": "Expected unsigned integer but got undefined"}
 
+
 @pytest.mark.asyncio
 async def test_session_status(websocket):
     command = {"id": 5, "method": "session.status", "params": {}}
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
     assert resp == {"id": 5, "result": {"ready": True, "message": "ready"}}
+
 
 @pytest.mark.asyncio
 async def test_getTree_contextReturned(websocket):
@@ -145,32 +153,36 @@ async def test_getTree_contextReturned(websocket):
     # Assert "browsingContext.getTree" command done.
     resp = await read_JSON_message(websocket)
     [context] = resp['result']['contexts']
-    contextID = context['context']
-    assert isinstance(contextID, str)
-    assert len(contextID) > 1
+    context_id = context['context']
+    assert isinstance(context_id, str)
+    assert len(context_id) > 1
     assert resp == {
         "id": 8,
         "result": {
             "contexts": [{
-                    "context": contextID,
-                    "children": [],
-                    "url": "about:blank"}]}}
+                "context": context_id,
+                "children": [],
+                "url": "about:blank"}]}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def ignore_test_getTreeWithGivenParent_contextReturned(websocket):
+async def _ignore_test_getTreeWithGivenParent_contextReturned(websocket):
     ignore = True
     # TODO sadym: implement
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
+async def _ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
     ignore = True
     # TODO sadym: implement
 
+
 @pytest.mark.asyncio
-async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(websocket):
-    initialContextID = await get_open_context_id(websocket)
+async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(
+      websocket):
+    initial_context_id = await get_open_context_id(websocket)
 
     command = {
         "id": 9,
@@ -180,11 +192,11 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
-    newContextID = resp['params']['context']
+    new_context_id = resp['params']['context']
     assert resp == {
         "method": "browsingContext.contextCreated",
         "params": {
-            "context": newContextID,
+            "context": new_context_id,
             "children": [],
             "url": ""}}
 
@@ -193,7 +205,7 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
     assert resp == {
         "id": 9,
         "result": {
-            "context": newContextID,
+            "context": new_context_id,
             "children": [],
             "url": ""}}
 
@@ -208,21 +220,24 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
         "id": 10,
         "result": {
             "contexts": [{
-                "context": newContextID,
+                "context": new_context_id,
                 "url": "about:blank",
                 "children": []
             }, {
-                "context": initialContextID,
+                "context": initial_context_id,
                 "url": "about:blank",
-                "children": [] }]}}
+                "children": []}]}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocket):
-    contextID = await get_open_context_id(websocket)
+async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
-    command = {"id": 12, "method": "DEBUG.Page.close", "params": {"context": contextID}}
+    command = {"id": 12, "method": "DEBUG.Page.close",
+               "params": {"context": context_id}}
     await send_JSON_command(websocket, command)
 
     # Assert command done.
@@ -234,13 +249,14 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
     assert resp == {
         "method": "browsingContext.contextDestroyed",
         "params": {
-            "context": contextID,
+            "context": context_id,
             "parent": None,
             "url": "about:blank"}}
 
+
 @pytest.mark.asyncio
 async def test_navigateWaitNone_navigated(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {
@@ -249,7 +265,7 @@ async def test_navigateWaitNone_navigated(websocket):
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "none",
-            "context": contextID}}
+            "context": context_id}}
     await send_JSON_command(websocket, command)
 
     # Assert command done.
@@ -263,16 +279,12 @@ async def test_navigateWaitNone_navigated(websocket):
                 "url": "data:text/html,<h2>test</h2>"}},
         ["navigation"])
 
-@pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_navigateWaitInteractive_navigated(websocket):
-    ignore = True
 
 @pytest.mark.asyncio
 # TODO sadym: find a way to test if the command ended only after the DOM
 # actually loaded.
 async def test_navigateWaitInteractive_navigated(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {
@@ -281,7 +293,7 @@ async def test_navigateWaitInteractive_navigated(websocket):
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "interactive",
-            "context": contextID}}
+            "context": context_id}}
     await send_JSON_command(websocket, command)
 
     # Assert command done.
@@ -295,20 +307,18 @@ async def test_navigateWaitInteractive_navigated(websocket):
                 "url": "data:text/html,<h2>test</h2>"}},
         ["navigation"])
 
-@pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_navigateWaitInteractive_navigated(websocket):
-    ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_navigateWaitComplete_navigated(websocket):
     ignore = True
 
+
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
-    contextID = await get_open_context_id(websocket)
+async def _ignore_test_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {
@@ -316,9 +326,10 @@ async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEm
         "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
-            "context": contextID,
-            "waitUntil": ["load", "domcontentloaded", "networkidle0", "networkidle2"],
-            "timeout":"1"}}
+            "context": context_id,
+            "waitUntil": ["load", "domcontentloaded", "networkidle0",
+                          "networkidle2"],
+            "timeout": "1"}}
 
     await send_JSON_command(websocket, command)
 
@@ -333,14 +344,15 @@ async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEm
     assert resp == {
         "method": "DEBUG.Page.load",
         "params": {
-            "context": contextID}}
+            "context": context_id}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_waitForSelector_success(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -348,7 +360,7 @@ async def _ignore_test_waitForSelector_success(websocket):
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > h2",
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -358,59 +370,61 @@ async def _ignore_test_waitForSelector_success(websocket):
             "id": 17,
             "result": {
                 "type": "node",
-                "objectId": "__any_value__" }},
+                "objectId": "__any_value__"}},
         ["objectId"])
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_waitForSelector_success_slow(websocket):
-# 1. Wait for element which is not on the page.
-# 2. Assert element not found.
-# 3. Add element to the page.
-# 4. Wait for newly created element.
-# 5. Assert element found.
+    # 1. Wait for element which is not on the page.
+    # 2. Assert element not found.
+    # 3. Add element to the page.
+    # 4. Wait for newly created element.
+    # 5. Assert element found.
 
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
-# 1. Wait for element which is not on the page.
+    # 1. Wait for element which is not on the page.
     await send_JSON_command(websocket, {
         "id": 18,
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > h2",
             "timeout": 1000,
-            "context": contextID}})
+            "context": context_id}})
 
-# 2. Assert element not found.
+    # 2. Assert element not found.
     resp = await read_JSON_message(websocket)
-    assert resp == {"id":18,"error":"unknown error","message":"waiting for selector `body > h2` failed: timeout 1000ms exceeded"}
+    assert resp == {"id": 18, "error": "unknown error",
+                    "message": "waiting for selector `body > h2` failed: timeout 1000ms exceeded"}
 
-# 3. Add element to the page.
+    # 3. Add element to the page.
     await send_JSON_command(websocket, {
         "id": 19,
         "method": "script.evaluate",
         "params": {
             "expression": "document.documentElement.innerHTML='<h2 />'",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":19,
-        "result":{
-            "type":"string",
-            "value":"<h2 />"}}
+        "id": 19,
+        "result": {
+            "type": "string",
+            "value": "<h2 />"}}
 
-# 4. Wait for newly created element.
+    # 4. Wait for newly created element.
     await send_JSON_command(websocket, {
         "id": 20,
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > h2",
             "timeout": 1000,
-            "context": contextID}})
+            "context": context_id}})
 
-# 5. Assert element found.
+    # 5. Assert element found.
     resp = await read_JSON_message(websocket)
     recursiveCompare(
         resp,
@@ -418,15 +432,16 @@ async def _ignore_test_waitForSelector_success_slow(websocket):
             "id": 20,
             "result": {
                 "type": "node",
-                "objectId": "__any_value__" }},
+                "objectId": "__any_value__"}},
         ["objectId"])
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_waitForHiddenSelector_success(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -434,19 +449,21 @@ async def _ignore_test_waitForHiddenSelector_success(websocket):
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > h3",
-            "context": contextID,
+            "context": context_id,
             "hidden": True}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {"id": 21, "result": {}}
 
+
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_waitForSelectorWithMinimumTimeout_failedWithTimeout(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
+async def _ignore_test_waitForSelectorWithMinimumTimeout_failedWithTimeout(
+      websocket):
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -455,7 +472,7 @@ async def _ignore_test_waitForSelectorWithMinimumTimeout_failedWithTimeout(webso
         "params": {
             "selector": "body > h2",
             "timeout": 1,
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -464,12 +481,14 @@ async def _ignore_test_waitForSelectorWithMinimumTimeout_failedWithTimeout(webso
         "error": "unknown error",
         "message": "waiting for selector `body > h2` failed: timeout 1ms exceeded"}
 
+
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_waitForSelectorWithMissingElement_failedWithTimeout_slow(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
+async def _ignore_test_waitForSelectorWithMissingElement_failedWithTimeout_slow(
+      websocket):
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -478,7 +497,7 @@ async def _ignore_test_waitForSelectorWithMissingElement_failedWithTimeout_slow(
         "params": {
             "selector": "body > h3",
             "timeout": 1000,
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -487,145 +506,103 @@ async def _ignore_test_waitForSelectorWithMissingElement_failedWithTimeout_slow(
         "error": "unknown error",
         "message": "waiting for selector `body > h3` failed: timeout 1000ms exceeded"}
 
+
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_clickElement_clickProcessed(websocket):
-# 1. Open page with button and click handler. Button click logs message.
-# 2. Get the button.
-# 3. Click the button.
-# 4. Assert console log event emmited.
-# 5. Assert click command done.
+    # 1. Open page with button and click handler. Button click logs message.
+    # 2. Get the button.
+    # 3. Click the button.
+    # 4. Assert console log event emitted.
+    # 5. Assert click command done.
 
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
-# 1. Open page with button and click handler. Button click logs message.
-    await goto_url(websocket, contextID,
-        "data:text/html,<button onclick=\"console.log('button clicked')\">button</button>")
+    # 1. Open page with button and click handler. Button click logs message.
+    await goto_url(websocket, context_id,
+                   "data:text/html,<button onclick=\"console.log('button clicked')\">button</button>")
 
-# 2. Get the button.
+    # 2. Get the button.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 25,
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > button",
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 25
-    objectID = resp["result"]["objectId"]
+    object_id = resp["result"]["objectId"]
 
-# 3. Click the button.
+    # 3. Click the button.
     await send_JSON_command(websocket, {
         "id": 26,
         "method": "PROTO.browsingContext.click",
         "params": {
-            "objectId": objectID,
-            "context": contextID}})
+            "objectId": object_id,
+            "context": context_id}})
 
-# 4. Assert console log event emmited.
+    # 4. Assert console log event emitted.
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "log.entryAdded"
     assert resp["params"]["text"] == "button clicked"
 
-# 5. Assert click command done.
+    # 5. Assert click command done.
     resp = await read_JSON_message(websocket)
-    assert resp ==  {"id": 26, "result": {}}
+    assert resp == {"id": 26, "result": {}}
 
-@pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_selectElement_success(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 28,
-        "method": "PROTO.browsingContext.selectElement",
-        "params": {
-            "selector": "body > h2",
-            "context": contextID}})
-
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    recursiveCompare(
-        resp,
-        {
-            "id": 28,
-                "result": {
-                    "type": "node",
-                    "objectId": "__any_value__" }},
-        ["objectId"])
-
-@pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_selectElementMissingElement_missingElement(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 29,
-        "method": "PROTO.browsingContext.selectElement",
-        "params": {
-            "selector": "body > h3",
-            "context": contextID}})
-
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {"id":29, "result": {}}
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
-# 1. Get element.
-# 2. Evaluate script on it.
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<h2>test</h2>")
+    # 1. Get element.
+    # 2. Evaluate script on it.
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
 
-# 1. Get element.
+    # 1. Get element.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 30,
         "method": "PROTO.browsingContext.selectElement",
         "params": {
             "selector": "body > h2",
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 30
-    objectID = resp["result"]["objectId"]
+    object_id = resp["result"]["objectId"]
 
-# 2. Evaluate script on it.
+    # 2. Evaluate script on it.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 31,
         "method": "script.evaluate",
         "params": {
             "expression": "element => '!!@@##, ' + element.innerHTML",
-    # TODO: send properly serialized element according to
-    # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
+            # TODO: send properly serialized element according to
+            # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
-                "objectId": objectID}],
-            "target": {"context": contextID}}})
+                "objectId": object_id}],
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":31,
-        "result":{
-            "type":"string",
-            "value":"!!@@##, test"}}
+        "id": 31,
+        "result": {
+            "type": "string",
+            "value": "!!@@##, test"}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -633,44 +610,46 @@ async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "'!!@@##, ' + window.location.href",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":32,
-        "result":{
-            "type":"string",
-            "value":"!!@@##, about:blank"}}
+        "id": 32,
+        "result": {
+            "type": "string",
+            "value": "!!@@##, about:blank"}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_pageEvaluateWithScalarArgs_resultReceived(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 45,
         "method": "script.evaluate",
         "params": {
-    # TODO: send properly serialized scalars according to
-    # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
+            # TODO: send properly serialized scalars according to
+            # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [1, 2],
             "expression": "(a,b) => a+b",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":45,
-        "result":{
-            "type":"number",
-            "value":3}}
+        "id": 45,
+        "result": {
+            "type": "number",
+            "value": 3}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleLog_logEntryAddedEventEmmited(websocket):
-    contextID = await get_open_context_id(websocket)
+async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -678,103 +657,105 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmmited(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "console.log('some log message')",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert "log.entryAdded" event emitted.
     resp = await read_JSON_message(websocket)
     recursiveCompare(
         resp,
         {
-            "method":"log.entryAdded",
-            "params":{
+            "method": "log.entryAdded",
+            "params": {
                 # BaseLogEntry
-                "level":"info",
-                "text":"some log message",
-                "timestamp":"__any_value__",
-                "stackTrace":[{
-                    "url":"__any_value__",
-                    "functionName":"",
-                    "lineNumber":0,
-                    "columnNumber":8}],
+                "level": "info",
+                "text": "some log message",
+                "timestamp": "__any_value__",
+                "stackTrace": [{
+                    "url": "__any_value__",
+                    "functionName": "",
+                    "lineNumber": 0,
+                    "columnNumber": 8}],
                 # ConsoleLogEntry
                 "type": "console",
                 "method": "log",
                 # TODO: replace `PROTO.context` with `realm`.
-                "PROTO.context":contextID,
-                "args":[{
-                    "type":"string",
-                    "value":"some log message"}]}},
+                "PROTO.context": context_id,
+                "args": [{
+                    "type": "string",
+                    "value": "some log message"}]}},
         ["timestamp", "url"])
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":33,
-        "result":{"type":"undefined"}}
+        "id": 33,
+        "result": {"type": "undefined"}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContextType_textTyped(websocket):
-# 1. Get input element.
-# 2. Type `!!@@## test text` in.
-# 3. Assert input.value is `!!@@## test text`.
+    # 1. Get input element.
+    # 2. Type `!!@@## test text` in.
+    # 3. Assert input.value is `!!@@## test text`.
 
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<input>")
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<input>")
 
-# 1. Get input element.
+    # 1. Get input element.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 34,
         "method": "PROTO.browsingContext.selectElement",
         "params": {
             "selector": "body > input",
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 34
-    objectID = resp["result"]["objectId"]
+    object_id = resp["result"]["objectId"]
 
-# 2. Type `!!@@## test text` in.
+    # 2. Type `!!@@## test text` in.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 35,
         "method": "PROTO.browsingContext.type",
         "params": {
             "text": "!!@@## test text",
-            "objectId": objectID,
-            "context": contextID}})
+            "objectId": object_id,
+            "context": context_id}})
 
     resp = await read_JSON_message(websocket)
-    assert resp ==  {"id": 35, "result": {}}
+    assert resp == {"id": 35, "result": {}}
 
-# 3. Assert input.value is `!!@@## test text`.
+    # 3. Assert input.value is `!!@@## test text`.
     # Send command.
     await send_JSON_command(websocket, {
         "id": 36,
         "method": "script.evaluate",
         "params": {
             "expression": "element => element.value",
-    # TODO: send properly serialized element according to
-    # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
+            # TODO: send properly serialized element according to
+            # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
-                "objectId": objectID}],
-            "target": {"context": contextID}}})
+                "objectId": object_id}],
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":36,
-        "result":{
-            "type":"string",
-            "value":"!!@@## test text"}}
+        "id": 36,
+        "result": {
+            "type": "string",
+            "value": "!!@@## test text"}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
-    contextID = await get_open_context_id(websocket)
+async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -782,7 +763,7 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "console.info('some log message')",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert method "info".
     resp = await read_JSON_message(websocket)
@@ -793,13 +774,14 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":43,
-        "result":{"type":"undefined"}}
+        "id": 43,
+        "result": {"type": "undefined"}}
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
-    contextID = await get_open_context_id(websocket)
+async def _ignore_test_consoleError_logEntryWithMethodErrorEmitted(websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -807,7 +789,7 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "console.error('some log message')",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert method "error".
     resp = await read_JSON_message(websocket)
@@ -818,12 +800,13 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id":44,
-        "result":{"type":"undefined"}}
+        "id": 44,
+        "result": {"type": "undefined"}}
+
 
 @pytest.mark.asyncio
 async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -831,7 +814,7 @@ async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -839,44 +822,45 @@ async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
 
     # Compare ignoring `objectId`.
     recursiveCompare({
-        "exceptionDetails":{
-            "text":"Uncaught",
-            "columnNumber":19,
-            "lineNumber":0,
-            "exception":{
-                "type":"number",
-                "value":1},
-            "stackTrace":{
-                "callFrames":[{
-                    "url":"",
-                    "functionName":"a",
-                    "lineNumber":0,
-                    "columnNumber":19
-                },{
-                    "url":"",
-                    "functionName":"b",
-                    "lineNumber":0,
-                    "columnNumber":43
-                },{
-                    "url":"",
-                    "functionName":"c",
-                    "lineNumber":1,
-                    "columnNumber":13
-                },{
-                    "url":"",
-                    "functionName":"",
-                    "lineNumber":1,
-                    "columnNumber":19
-                },{
-                    "url":"",
-                    "functionName":"",
-                    "lineNumber":1,
-                    "columnNumber":25}]}}},
+        "exceptionDetails": {
+            "text": "Uncaught",
+            "columnNumber": 19,
+            "lineNumber": 0,
+            "exception": {
+                "type": "number",
+                "value": 1},
+            "stackTrace": {
+                "callFrames": [{
+                    "url": "",
+                    "functionName": "a",
+                    "lineNumber": 0,
+                    "columnNumber": 19
+                }, {
+                    "url": "",
+                    "functionName": "b",
+                    "lineNumber": 0,
+                    "columnNumber": 43
+                }, {
+                    "url": "",
+                    "functionName": "c",
+                    "lineNumber": 1,
+                    "columnNumber": 13
+                }, {
+                    "url": "",
+                    "functionName": "",
+                    "lineNumber": 1,
+                    "columnNumber": 19
+                }, {
+                    "url": "",
+                    "functionName": "",
+                    "lineNumber": 1,
+                    "columnNumber": 25}]}}},
         resp["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
 async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -885,7 +869,7 @@ async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": False,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -893,13 +877,14 @@ async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
 
     # Compare ignoring `objectId`.
     recursiveCompare({
-            "type":"promise",
-            "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+        "type": "promise",
+        "objectId": "__any_value__"
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
 async def test_scriptEvaluateThenableAndWaitPromise_thenableReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -908,7 +893,7 @@ async def test_scriptEvaluateThenableAndWaitPromise_thenableReturned(websocket):
         "params": {
             "expression": "{then: (r)=>{r('SOME_RESULT');}}",
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -919,18 +904,19 @@ async def test_scriptEvaluateThenableAndWaitPromise_thenableReturned(websocket):
         "id": 460,
         "result": {
             "result": {
-            "objectId": "6648989764296027.141631980526024.9376085393313653",
-            "type": "object",
-            "value": [[
-                "then", {
-                    "objectId": "02303443180265008.08175681580349026.8281562053772789",
-                    "type": "function"}]]}}},
+                "objectId": "6648989764296027.141631980526024.9376085393313653",
+                "type": "object",
+                "value": [[
+                    "then", {
+                        "objectId": "02303443180265008.08175681580349026.8281562053772789",
+                        "type": "function"}]]}}},
         resp,
         ["objectId"])
 
+
 @pytest.mark.asyncio
 async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -939,7 +925,7 @@ async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -947,13 +933,14 @@ async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
 
     # Compare ignoring `objectId`.
     recursiveCompare({
-        "type":"string",
-        "value":"SOME_RESULT"
-        }, resp["result"]["result"], ["objectId"])
+        "type": "string",
+        "value": "SOME_RESULT"
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
 async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -973,7 +960,7 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
                 changeObjectAfterCurrentJsThread();
                 return someObject; })()""",
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -984,15 +971,16 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
         "type": "object",
         "value": [[
             "i", {
-            "type": "number",
-            "value": 0
+                "type": "number",
+                "value": 0
             }]],
         "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
 async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1003,11 +991,11 @@ async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
             "args": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
-            },{
+            }, {
                 "type": "number",
                 "value": 42
             }],
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -1022,11 +1010,13 @@ async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
             'type': 'number',
             'value': 42}],
         "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableReturn(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableReturn(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1037,12 +1027,12 @@ async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableRet
             "args": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
-            },{
+            }, {
                 "type": "number",
                 "value": 42
             }],
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -1052,18 +1042,20 @@ async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableRet
         "id": 49,
         "result": {
             "result": {
-            "objectId": "0017540866018586065.8588900581845549.5556004446288361",
-            "type": "object",
-            "value": [[
-                "then", {
-                    "objectId": "27880276111744884.36134691065868907.6435355839204784",
-                    "type": "function" }]]}}},
+                "objectId": "0017540866018586065.8588900581845549.5556004446288361",
+                "type": "object",
+                "value": [[
+                    "then", {
+                        "objectId": "27880276111744884.36134691065868907.6435355839204784",
+                        "type": "function"}]]}}},
         resp,
         ["objectId"])
 
+
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1074,25 +1066,27 @@ async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseRetur
             "args": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
-            },{
+            }, {
                 "type": "number",
                 "value": 42
             }],
             "awaitPromise": False,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 49
 
     recursiveCompare({
-            "type":"promise",
-            "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+        "type": "promise",
+        "objectId": "__any_value__"
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1101,13 +1095,13 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(webs
         "params": {
             "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 50
 
-    objectId = resp["result"]["result"]["objectId"]
+    object_id = resp["result"]["result"]["objectId"]
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1116,9 +1110,9 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(webs
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
             "args": [{
-                "objectId": objectId
+                "objectId": object_id
             }],
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     resp = await read_JSON_message(websocket)
     assert resp == {
@@ -1128,9 +1122,11 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(webs
                 "type": "string",
                 "value": "SOME_VALUE"}}}
 
+
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1143,7 +1139,7 @@ async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_res
                 "value": 1
             },
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     resp = await read_JSON_message(websocket)
     assert resp == {
@@ -1153,9 +1149,11 @@ async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_res
                 "type": "string",
                 "value": "SOME_VALUE"}}}
 
+
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1168,20 +1166,22 @@ async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFals
                 "value": 1
             },
             "awaitPromise": False,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 53
 
     recursiveCompare({
-            "type":"promise",
-            "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+        "type": "promise",
+        "objectId": "__any_value__"
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1194,7 +1194,7 @@ async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_r
                 "value": 1
             },
             "awaitPromise": True,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     resp = await read_JSON_message(websocket)
     assert resp == {
@@ -1204,9 +1204,10 @@ async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_r
                 "type": "string",
                 "value": "SOME_VALUE"}}}
 
+
 @pytest.mark.asyncio
 async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1219,20 +1220,22 @@ async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFa
                 "value": 1
             },
             "awaitPromise": False,
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 55
 
     recursiveCompare({
-            "type":"promise",
-            "objectId": "__any_value__"
-        }, resp["result"]["result"], ["objectId"])
+        "type": "promise",
+        "objectId": "__any_value__"
+    }, resp["result"]["result"], ["objectId"])
+
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1244,7 +1247,7 @@ async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsI
                 "type": "number",
                 "value": 1
             },
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     resp = await read_JSON_message(websocket)
     assert resp == {
@@ -1254,9 +1257,11 @@ async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsI
                 "type": "string",
                 "value": "Window"}}}
 
+
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisIsUsed(websocket):
-    contextID = await get_open_context_id(websocket)
+async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
+      websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1268,7 +1273,7 @@ async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisI
                 "type": "number",
                 "value": 1
             },
-            "target": {"context": contextID}}})
+            "target": {"context": context_id}}})
 
     resp = await read_JSON_message(websocket)
     assert resp == {
@@ -1278,9 +1283,10 @@ async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisI
                 "type": "string",
                 "value": "Number"}}}
 
+
 @pytest.mark.asyncio
 async def test_PROTO_browsingContextFindElement_findsElement(websocket):
-    contextID = await get_open_context_id(websocket)
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     command = {
@@ -1289,7 +1295,7 @@ async def test_PROTO_browsingContextFindElement_findsElement(websocket):
         "params": {
             "url": "data:text/html,<div class='container'>test<h2 class='child_1'>child 1</h2><h2 class='child_2'>child 2</h2></div>",
             "wait": "none",
-            "context": contextID}}
+            "context": context_id}}
     await send_JSON_command(websocket, command)
 
     # Assert command done.
@@ -1303,8 +1309,8 @@ async def test_PROTO_browsingContextFindElement_findsElement(websocket):
         "id": 59,
         "method": "PROTO.browsingContext.findElement",
         "params": {
-            "selector": ".container",
-            "context": contextID}})
+            "selector": "body > .container",
+            "context": context_id}})
 
     resp = await read_JSON_message(websocket)
     recursiveCompare({
@@ -1328,30 +1334,53 @@ async def test_PROTO_browsingContextFindElement_findsElement(websocket):
                 "attributes": {"class": "container"}}}},
         resp, ["objectId"])
 
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def test_selectElementMissingElement_missingElement(websocket):
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<h2>test</h2>")
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 60,
+        "method": "PROTO.browsingContext.findElement",
+        "params": {
+            "selector": "body > h3",
+            "context": context_id}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {"id": 60, "result": {"result": {"type": "null"}}}
+
+
 # Testing serialization.
-async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
-    contextID = await get_open_context_id(websocket)
+async def assertSerialization(js_str_object, expected_serialized_object, websocket):
+    context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 9997,
         "method": "script.evaluate",
         "params": {
-            "expression": f"({jsStrObject})",
-            "target": {"context": contextID}}})
+            "expression": f"({js_str_object})",
+            "target": {"context": context_id}}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9997
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expectedSerializedObject, resp["result"]["result"], ["objectId"])
+    recursiveCompare(expected_serialized_object, resp["result"]["result"],
+                     ["objectId"])
+
 
 @pytest.mark.asyncio
 async def test_serialization_undefined(websocket):
     await assertSerialization(
         "undefined",
-        {"type":"undefined"},
+        {"type": "undefined"},
         websocket)
 
 
@@ -1359,8 +1388,9 @@ async def test_serialization_undefined(websocket):
 async def test_serialization_null(websocket):
     await assertSerialization(
         "null",
-        {"type":"null"},
+        {"type": "null"},
         websocket)
+
 
 # TODO: test escaping, null bytes string, lone surrogates.
 @pytest.mark.asyncio
@@ -1368,91 +1398,96 @@ async def test_serialization_string(websocket):
     await assertSerialization(
         "'someStr'",
         {
-            "type":"string",
-            "value":"someStr"},
+            "type": "string",
+            "value": "someStr"},
         websocket)
+
 
 @pytest.mark.asyncio
 async def test_serialization_number(websocket):
     await assertSerialization(
         "123",
         {
-            "type":"number",
-            "value":123},
+            "type": "number",
+            "value": 123},
         websocket)
     await assertSerialization(
         "0.56",
         {
-            "type":"number",
-            "value":0.56},
+            "type": "number",
+            "value": 0.56},
         websocket)
+
 
 @pytest.mark.asyncio
 async def test_serialization_specialNumber(websocket):
     await assertSerialization(
         "+Infinity",
         {
-            "type":"number",
-            "value":"+Infinity"},
+            "type": "number",
+            "value": "+Infinity"},
         websocket)
     await assertSerialization(
         "-Infinity",
         {
-            "type":"number",
-            "value":"-Infinity"},
+            "type": "number",
+            "value": "-Infinity"},
         websocket)
     await assertSerialization(
         "-0",
         {
-            "type":"number",
-            "value":"-0"},
+            "type": "number",
+            "value": "-0"},
         websocket)
     await assertSerialization(
         "NaN",
         {
-            "type":"number",
-            "value":"NaN"},
+            "type": "number",
+            "value": "NaN"},
         websocket)
+
 
 @pytest.mark.asyncio
 async def test_serialization_bool(websocket):
     await assertSerialization(
         "true",
         {
-            "type":"boolean",
-            "value":True},
+            "type": "boolean",
+            "value": True},
         websocket)
     await assertSerialization(
         "false",
         {
-            "type":"boolean",
-            "value":False},
+            "type": "boolean",
+            "value": False},
         websocket)
+
 
 @pytest.mark.asyncio
 async def test_serialization_function(websocket):
     await assertSerialization(
         "function(){}",
         {
-            "type":"function",
-            "objectId":"__any_value__"
+            "type": "function",
+            "objectId": "__any_value__"
         },
         websocket)
+
 
 @pytest.mark.asyncio
 async def test_serialization_object(websocket):
     await assertSerialization(
         "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
         {
-            "type":"object",
-            "objectId":"__any_value__",
-            "value":[[
+            "type": "object",
+            "objectId": "__any_value__",
+            "value": [[
                 "foo", {
-                    "type":"object",
-                    "objectId":"__any_value__"}],[
+                    "type": "object",
+                    "objectId": "__any_value__"}], [
                 "qux", {
-                    "type":"string",
-                    "value":"quux"}]]},
+                    "type": "string",
+                    "value": "quux"}]]},
         websocket)
 
 
@@ -1461,21 +1496,22 @@ async def test_serialization_array(websocket):
     await assertSerialization(
         "[1, 'a', {foo: 'bar'}, [2,[3,4]]]",
         {
-            "type":"array",
-            "objectId":"__any_value__",
-            "value":[{
-                "type":"number",
-                "value":1
-            },{
-                "type":"string",
-                "value":"a"
-            },{
-                "type":"object",
-                "objectId":"__any_value__"
-            },{
-                "type":"array",
-                "objectId":"__any_value__"}]},
+            "type": "array",
+            "objectId": "__any_value__",
+            "value": [{
+                "type": "number",
+                "value": 1
+            }, {
+                "type": "string",
+                "value": "a"
+            }, {
+                "type": "object",
+                "objectId": "__any_value__"
+            }, {
+                "type": "array",
+                "objectId": "__any_value__"}]},
         websocket)
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -1483,9 +1519,10 @@ async def _ignore_test_serialization_bigint(websocket):
     await assertSerialization(
         "BigInt('12345678901234567890')",
         {
-            "type":"bigint",
-            "value":"12345678901234567890"},
+            "type": "bigint",
+            "value": "12345678901234567890"},
         websocket)
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -1493,11 +1530,12 @@ async def _ignore_test_serialization_symbol(websocket):
     await assertSerialization(
         "Symbol('foo')",
         {
-            "type":"symbol",
-            "PROTO.description":"foo",
-            "objectId":"__any_value__"
+            "type": "symbol",
+            "PROTO.description": "foo",
+            "objectId": "__any_value__"
         },
         websocket)
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -1505,11 +1543,12 @@ async def _ignore_test_serialization_regExp(websocket):
     await assertSerialization(
         "new RegExp('ab+c')",
         {
-            "type":"regexp",
-            "value":"/ab+c/",
-            "objectId":"__any_value__"
+            "type": "regexp",
+            "value": "/ab+c/",
+            "objectId": "__any_value__"
         },
         websocket)
+
 
 # TODO: check timezone serialization.
 @pytest.mark.asyncio
@@ -1518,10 +1557,11 @@ async def _ignore_test_serialization_date(websocket):
     await assertSerialization(
         "new Date('2021-02-18T13:53:00+0200')",
         {
-            "type":"date",
-            "value":"Thu Feb 18 2021 11:53:00 GMT+0000 (Coordinated Universal Time)",
-            "objectId":"__any_value__"},
+            "type": "date",
+            "value": "Thu Feb 18 2021 11:53:00 GMT+0000 (Coordinated Universal Time)",
+            "objectId": "__any_value__"},
         websocket)
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -1529,10 +1569,11 @@ async def _ignore_test_serialization_windowProxy(websocket):
     await assertSerialization(
         "this.window",
         {
-            "type":"window",
-            "objectId":"__any_value__"
+            "type": "window",
+            "objectId": "__any_value__"
         },
         websocket)
+
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -1540,19 +1581,20 @@ async def _ignore_test_serialization_error(websocket):
     await assertSerialization(
         "new Error('Woops!')",
         {
-            "type":"error",
-            "objectId":"__any_value__"
+            "type": "error",
+            "objectId": "__any_value__"
         },
         websocket)
+
 
 # TODO: add `NodeProperties` after serialization MaxDepth logic specified:
 # https://github.com/w3c/webdriver-bidi/issues/86.
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_serialization_node(websocket):
-    contextID = await get_open_context_id(websocket)
-    await goto_url(websocket, contextID,
-        "data:text/html,<div some_attr_name='some_attr_value' ><h2>test</h2></div>")
+    context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, context_id,
+                   "data:text/html,<div some_attr_name='some_attr_value' ><h2>test</h2></div>")
 
     # Send command.
     await send_JSON_command(websocket, {
@@ -1560,45 +1602,44 @@ async def _ignore_test_serialization_node(websocket):
         "method": "PROTO.browsingContext.waitForSelector",
         "params": {
             "selector": "body > div",
-            "context": contextID}})
+            "context": context_id}})
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    assert resp["id"]==47
-    objectId=resp["result"]["objectId"]
+    assert resp["id"] == 47
+    object_id = resp["result"]["objectId"]
 
     await send_JSON_command(websocket, {
         "id": 48,
         "method": "script.evaluate",
         "params": {
             "expression": "element => element",
-    # TODO: send properly serialized element according to
-    # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
+            # TODO: send properly serialized element according to
+            # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
-                "objectId": objectId}],
-            "target": {"context":contextID}}})
+                "objectId": object_id}],
+            "target": {"context": context_id}}})
 
     # Assert result.
     resp = await read_JSON_message(websocket)
     recursiveCompare({
-        "id":48,
-        "result":{
-            "type":"node",
-            "objectId":"__any_value__",
-            "value":{
-                "nodeType":1,
-                "nodeValue":None,
-                "localName":"div",
-                "namespaceURI":"http://www.w3.org/1999/xhtml",
-                "childNodeCount":1,
-                "children":[{
-                    "type":"node",
-                    "objectId":"__any_value__"}],
-                "attributes":[{
-                    "name":"some_attr_name",
-                    "value":"some_attr_value"}]}}},
-    resp, ["objectId"])
-
+        "id": 48,
+        "result": {
+            "type": "node",
+            "objectId": "__any_value__",
+            "value": {
+                "nodeType": 1,
+                "nodeValue": None,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 1,
+                "children": [{
+                    "type": "node",
+                    "objectId": "__any_value__"}],
+                "attributes": [{
+                    "name": "some_attr_name",
+                    "value": "some_attr_value"}]}}},
+        resp, ["objectId"])
 
 # TODO: implement proper serialization according to
 # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
