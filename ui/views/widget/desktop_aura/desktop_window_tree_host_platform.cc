@@ -147,7 +147,6 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
 
 #if defined(OS_FUCHSIA)
   properties.enable_keyboard = true;
-  properties.enable_virtual_keyboard = true;
 #endif
 
   return properties;
