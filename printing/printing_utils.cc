@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "printing/units.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/geometry/size.h"
@@ -105,5 +106,22 @@ bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
   return std::abs(lhs.width() - rhs.width()) <= epsilon &&
          std::abs(lhs.height() - rhs.height()) <= epsilon;
 }
+
+#if defined(OS_WIN)
+gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
+                                     const gfx::Size& page_size,
+                                     const gfx::Rect& page_content_rect) {
+  gfx::Rect content_rect = page_content_rect;
+  if (paper_size.width() > page_size.width()) {
+    int diff = paper_size.width() - page_size.width();
+    content_rect.set_x(content_rect.x() + diff / 2);
+  }
+  if (paper_size.height() > page_size.height()) {
+    int diff = paper_size.height() - page_size.height();
+    content_rect.set_y(content_rect.y() + diff / 2);
+  }
+  return content_rect;
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace printing

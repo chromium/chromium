@@ -10,6 +10,7 @@
 #include "printing/page_number.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_context_win.h"
+#include "printing/printing_utils.h"
 #include "printing/units.h"
 #include "skia/ext/skia_utils_win.h"
 

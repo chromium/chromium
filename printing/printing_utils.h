@@ -11,6 +11,11 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include "ui/gfx/geometry/rect.h"
+#endif
 
 namespace gfx {
 class Size;
@@ -47,6 +52,15 @@ COMPONENT_EXPORT(PRINTING_BASE)
 bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
                              const gfx::Size& rhs,
                              int epsilon);
+
+#if defined(OS_WIN)
+// Get page content rect adjusted based on
+// http://dev.w3.org/csswg/css3-page/#positioning-page-box
+COMPONENT_EXPORT(PRINTING_BASE)
+gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
+                                     const gfx::Size& page_size,
+                                     const gfx::Rect& page_content_rect);
+#endif
 
 }  // namespace printing
 

@@ -361,7 +361,6 @@ test("printing_unittests") {
   if (is_win) {
     sources += [
       "emf_win_unittest.cc",
-      "printed_document_unittest.cc",
       "printed_page_win_unittest.cc",
       "printing_context_win_unittest.cc",
     ]

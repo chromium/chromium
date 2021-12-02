@@ -277,25 +277,6 @@ void PrintedDocument::DebugDumpData(
                      base::RetainedRef(data)));
 }
 
-#if defined(OS_WIN)
-// static
-gfx::Rect PrintedDocument::GetCenteredPageContentRect(
-    const gfx::Size& paper_size,
-    const gfx::Size& page_size,
-    const gfx::Rect& page_content_rect) {
-  gfx::Rect content_rect = page_content_rect;
-  if (paper_size.width() > page_size.width()) {
-    int diff = paper_size.width() - page_size.width();
-    content_rect.set_x(content_rect.x() + diff / 2);
-  }
-  if (paper_size.height() > page_size.height()) {
-    int diff = paper_size.height() - page_size.height();
-    content_rect.set_y(content_rect.y() + diff / 2);
-  }
-  return content_rect;
-}
-#endif
-
 PrintedDocument::Mutable::Mutable() = default;
 
 PrintedDocument::Mutable::~Mutable() = default;
