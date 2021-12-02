@@ -196,6 +196,10 @@ class JSChecker {
   void ExpectElementValue(const std::string& value,
                           std::initializer_list<base::StringPiece> element_ids);
 
+  // Expects that the indicated modal dialog is open or closed.
+  void ExpectDialogOpen(std::initializer_list<base::StringPiece> element_ids);
+  void ExpectDialogClosed(std::initializer_list<base::StringPiece> element_ids);
+
   // Fires a native 'click' event on the indicated UI element. Prefer using
   // native 'click' event as it works on both polymer and native UI elements.
   void ClickOnPath(std::initializer_list<base::StringPiece> element_ids);

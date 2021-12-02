@@ -435,6 +435,16 @@ void JSChecker::ExpectElementContainsText(
   EXPECT_TRUE(std::string::npos != message.find(content));
 }
 
+void JSChecker::ExpectDialogOpen(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, true);
+}
+
+void JSChecker::ExpectDialogClosed(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, false);
+}
+
 void JSChecker::ExpectElementValue(
     const std::string& value,
     std::initializer_list<base::StringPiece> element_ids) {

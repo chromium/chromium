@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/grit/chromium_strings.h"
@@ -107,6 +109,13 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_ARC_TITLE);
   builder->Add("consolidatedConsentPrivacyTitle",
                IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kArcTosHostForTests)) {
+    builder->Add("consolidatedConsentArcTosHostNameForTesting",
+                 base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                     switches::kArcTosHostForTests));
+  }
 }
 
 void ConsolidatedConsentScreenHandler::Initialize() {}
