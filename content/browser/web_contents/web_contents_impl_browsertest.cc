@@ -72,6 +72,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -5119,6 +5120,84 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanBrowserTest,
   // Wait for navigation to finish and check that PCScan is disabled.
   navigation_manager.WaitForNavigationFinished();
   EXPECT_FALSE(base::internal::PCScan::IsEnabled());
+
+  // Complete load and check that PCScan is enabled again.
+  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+}
+
+namespace {
+
+class PCScanReadyToCommitObserver : public content::WebContentsObserver {
+ public:
+  explicit PCScanReadyToCommitObserver(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    was_enabled_ = base::internal::PCScan::IsEnabled();
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  bool WasPCScanEnabled() const { return was_enabled_; }
+
+ private:
+  bool was_enabled_ = false;
+  base::RunLoop run_loop_;
+};
+
+class WebContentsImplStarScanPrerenderBrowserTest
+    : public WebContentsImplStarScanBrowserTest {
+ public:
+  WebContentsImplStarScanPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &WebContentsImplStarScanPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() { return shell()->web_contents(); }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
+                       DontAffectStarScanDuringPrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Check that PCScan is initially enabled.
+  EXPECT_TRUE(base::internal::PCScan::IsEnabled());
+
+  // Wait for the prerendering navigation to finish and check that PCScan is
+  // still enabled.
+  const GURL prendering_url =
+      embedded_test_server()->GetURL("/title1.html?prerendering");
+  {
+    PCScanReadyToCommitObserver observer(shell()->web_contents());
+    prerender_helper().AddPrerenderAsync(prendering_url);
+    observer.Wait();
+    EXPECT_TRUE(observer.WasPCScanEnabled());
+  }
+
+  // Wait for the prerendering navigation to activate and check that PCScan is
+  // now disabled.
+  {
+    PCScanReadyToCommitObserver observer(shell()->web_contents());
+    ignore_result(ExecJs(shell()->web_contents()->GetMainFrame(),
+                         JsReplace("location = $1", prendering_url)));
+    observer.Wait();
+    EXPECT_FALSE(observer.WasPCScanEnabled());
+  }
 
   // Complete load and check that PCScan is enabled again.
   WaitForLoadStop(shell()->web_contents());
