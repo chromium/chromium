@@ -445,6 +445,42 @@ void ExtractUnderlines(NSAttributedString* string,
   [NSSpellChecker.sharedSpellChecker.substitutionsPanel orderFront:sender];
 }
 
+- (bool)canTransformText {
+  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE)
+    return NO;
+  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD)
+    return NO;
+
+  return YES;
+}
+
+- (void)uppercaseWord:(id)sender {
+  NSString *text = base::SysUTF16ToNSString([self selectedText]);
+  if (!text)
+    return;
+
+  [self insertText:text.localizedUppercaseString
+      replacementRange:_textSelectionRange.ToNSRange()];
+}
+
+- (void)lowercaseWord:(id)sender {
+  NSString *text = base::SysUTF16ToNSString([self selectedText]);
+  if (!text)
+    return;
+
+  [self insertText:text.localizedLowercaseString
+      replacementRange:_textSelectionRange.ToNSRange()];
+}
+
+- (void)capitalizeWord:(id)sender {
+  NSString *text = base::SysUTF16ToNSString([self selectedText]);
+  if (!text)
+    return;
+
+  [self insertText:text.localizedCapitalizedString
+      replacementRange:_textSelectionRange.ToNSRange()];
+}
+
 - (void)setTextSelectionText:(std::u16string)text
                       offset:(size_t)offset
                        range:(gfx::Range)range {
@@ -1565,6 +1601,12 @@ void ExtractUnderlines(NSAttributedString* string,
     } else if (item.action == @selector(toggleAutomaticTextReplacement:)) {
       menuItem.state = self.automaticTextReplacementEnabled;
       return !!(self.allowedTextCheckingTypes & NSTextCheckingTypeReplacement);
+    } else if (item.action == @selector(uppercaseWord:)) {
+      return self.canTransformText;
+    } else if (item.action == @selector(lowercaseWord:)) {
+      return self.canTransformText;
+    } else if (item.action == @selector(capitalizeWord:)) {
+      return self.canTransformText;
     }
   }
 

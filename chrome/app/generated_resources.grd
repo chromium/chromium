@@ -9668,6 +9668,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_EDIT_TEXT_REPLACEMENT_MAC" desc="The Mac menu item for toggling text replacement in the edit menu.">
           Text Replacement
         </message>
+        <!-- Edit::Transformations submenu -->
+        <message name="IDS_EDIT_TRANSFORMATIONS_MAC" desc="The Mac menu item for the transformations submenu in the edit menu.">
+          Transformations
+        </message>
+        <message name="IDS_EDIT_MAKE_UPPERCASE_MAC" desc="The Mac menu item for making the selected text uppercase in the edit menu.">
+          Make Uppercase
+        </message>
+        <message name="IDS_EDIT_MAKE_LOWERCASE_MAC" desc="The Mac menu item for making the selected text lowercase in the edit menu.">
+          Make Lowercase
+        </message>
+        <message name="IDS_EDIT_CAPITALIZE_MAC" desc="The Mac menu item for capitalizing the selected text in the edit menu.">
+          Capitalize
+        </message>
         <!-- View menu -->
         <message name="IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC" desc="The Mac menu item for having bookmark bar always visible in the view menu.">
           Always Show Bookmarks Bar

@@ -219,6 +219,14 @@ base::scoped_nsobject<NSMenuItem> BuildEditMenu(
                       Item(IDS_EDIT_TEXT_REPLACEMENT_MAC)
                           .action(@selector(toggleAutomaticTextReplacement:)),
                 }),
+                Item(IDS_EDIT_TRANSFORMATIONS_MAC).submenu({
+                  Item(IDS_EDIT_MAKE_UPPERCASE_MAC)
+                      .action(@selector(uppercaseWord:)),
+                  Item(IDS_EDIT_MAKE_LOWERCASE_MAC)
+                      .action(@selector(lowercaseWord:)),
+                  Item(IDS_EDIT_CAPITALIZE_MAC)
+                      .action(@selector(capitalizeWord:)),
+                }),
                 Item(IDS_SPEECH_MAC).tag(50158).submenu({
                   Item(IDS_SPEECH_START_SPEAKING_MAC)
                       .action(@selector(startSpeaking:)),
