@@ -128,8 +128,10 @@ bool GetBlockdevmodeFromPolicy(
     }
   }
 
-  VLOG(1) << (block_devmode ? "Blocking" : "Allowing")
-          << " dev mode by device policy";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << (block_devmode ? "Blocking" : "Allowing")
+               << " dev mode by device policy";
 
   return block_devmode;
 }
@@ -287,7 +289,9 @@ void EnrollmentHandler::StartEnrollment() {
   CHECK_EQ(STEP_PENDING, enrollment_step_);
 
   if (enrollment_config_.skip_state_keys_request()) {
-    VLOG(1) << "Skipping state keys request.";
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "Skipping state keys request.";
     SetStep(STEP_LOADING_STORE);
     StartRegistration();
     return;
@@ -308,7 +312,7 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  VLOG(1) << "Requesting state keys.";
+  LOG(WARNING) << "Requesting state keys.";
   state_keys_broker_->RequestStateKeys(
       base::BindOnce(&EnrollmentHandler::HandleStateKeysResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -449,7 +453,9 @@ void EnrollmentHandler::HandleStateKeysResult(
     }
   }
 
-  VLOG(1) << "State keys generated.";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "State keys generated.";
   SetStep(STEP_LOADING_STORE);
   StartRegistration();
 }
@@ -461,7 +467,12 @@ void EnrollmentHandler::StartRegistration() {
     // after the CloudPolicyStore has initialized.
     return;
   }
-  VLOG(1) << "Start registration, config mode = " << enrollment_config_.mode;
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Start registration, config mode = "
+               << enrollment_config_.mode;
+
   SetStep(STEP_REGISTRATION);
   if (enrollment_config_.is_mode_attestation()) {
     StartAttestationBasedEnrollmentFlow();
@@ -844,7 +855,11 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
 
 void EnrollmentHandler::SetStep(EnrollmentStep step) {
   DCHECK_LE(enrollment_step_, step);
-  VLOG(1) << "Step: " << step;
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Step: " << step;
+
   enrollment_step_ = step;
 }
 

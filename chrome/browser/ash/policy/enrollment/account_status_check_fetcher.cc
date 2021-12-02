@@ -541,7 +541,10 @@ void AccountStatusCheckFetcher::OnAccountStatusCheckReceived(
     DeviceManagementStatus dm_status,
     int net_error,
     const em::DeviceManagementResponse& response) {
-  VLOG(1) << "Account check response received. DM Status: " << dm_status;
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Account check response received. DM Status: " << dm_status;
+
   fetch_request_job_.reset();
   std::string user_id;
   bool fetch_succeeded = false;
