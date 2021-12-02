@@ -403,12 +403,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                  const storage::FileSystemURL& filesystem_url);
   bool CanDeleteFileSystemFile(int child_id,
                                const storage::FileSystemURL& filesystem_url);
-  bool CanMoveFileSystemFile(int child_id,
-                             const storage::FileSystemURL& src_url,
-                             const storage::FileSystemURL& dest_url);
-  bool CanCopyFileSystemFile(int child_id,
-                             const storage::FileSystemURL& src_url,
-                             const storage::FileSystemURL& dest_url);
 
   // Returns true if the specified child_id has been granted ReadRawCookies.
   bool CanReadRawCookies(int child_id);
@@ -782,10 +776,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const SecurityState* security_state);
 
   // Helper for public CanAccessDataForOrigin overloads.
-  bool CanAccessDataForMaybeOpaqueOrigin(
-      int child_id,
-      const GURL& url,
-      bool url_is_precursor_of_opaque_origin);
+  bool CanAccessDataForOrigin(int child_id,
+                              const GURL& url,
+                              bool url_is_precursor_of_opaque_origin);
 
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.
