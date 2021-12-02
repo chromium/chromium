@@ -104,7 +104,12 @@ config("memory_tagging") {
     # but they're not backwards compatible. Use base::CPU::has_mte()
     # beforehand to confirm or use indirect functions (ifuncs) to select
     # an MTE-specific implementation at dynamic link-time.
-    cflags = [ "-march=armv8-a+memtag" ]
+    cflags = [
+      "-Xclang",
+      "-target-feature",
+      "-Xclang",
+      "+mte",
+    ]
   }
 }
 
