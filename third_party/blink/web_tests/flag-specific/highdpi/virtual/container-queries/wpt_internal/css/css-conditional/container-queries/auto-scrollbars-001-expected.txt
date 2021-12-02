@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Initial layout - expecting a scrollbar without overflowing content instead of overflowing content without a scrollbar
-PASS Same result after a reflow
-Harness: the test ran to completion.
-

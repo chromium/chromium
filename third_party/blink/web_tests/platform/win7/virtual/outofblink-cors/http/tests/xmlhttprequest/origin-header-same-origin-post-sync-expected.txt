@@ -1,5 +1,0 @@
-CONSOLE WARNING: line 13: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-PASS: Cross-domain access allowed.
-HTTP_ORIGIN: http://127.0.0.1:8000
-
-
