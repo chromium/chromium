@@ -29,9 +29,9 @@ export interface BackdropState {
  */
 export interface GooglePhotosState {
   count: bigint|null|undefined;
-  albums: Array<WallpaperCollection>|null|undefined;
-  photos: Array<undefined>|null|undefined;
-  photosByAlbumId: Record<string, Array<undefined>|null|undefined>;
+  albums: WallpaperCollection[]|null|undefined;
+  photos: unknown[]|null|undefined;
+  photosByAlbumId: Record<string, unknown[]|null|undefined>;
 }
 
 /**
@@ -77,6 +77,10 @@ export interface LocalState {
 export interface DailyRefreshState {
   collectionId: string|null;
 }
+
+export type States =
+    BackdropState|GooglePhotosState|LoadingState|LocalState|DailyRefreshState|
+    CurrentWallpaper|WallpaperImage|FilePath|string|boolean|null;
 
 export interface PersonalizationState {
   backdrop: BackdropState;

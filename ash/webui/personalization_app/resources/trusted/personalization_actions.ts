@@ -40,6 +40,19 @@ export enum ActionName {
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
 }
 
+export type Actions =
+    BeginLoadGooglePhotosAlbumAction|BeginLoadGooglePhotosAlbumsAction|
+    BeginLoadGooglePhotosCountAction|BeginLoadGooglePhotosPhotosAction|
+    BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
+    BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
+    BeginLoadSelectedImageAction|BeginSelectImageAction|EndSelectImageAction|
+    SetCollectionsAction|SetDailyRefreshCollectionIdAction|
+    SetGooglePhotosAlbumAction|SetGooglePhotosAlbumsAction|
+    SetGooglePhotosCountAction|SetGooglePhotosPhotosAction|
+    SetImagesForCollectionAction|SetLocalImageDataAction|SetLocalImagesAction|
+    SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|DismissErrorAction|
+    SetFullscreenEnabledAction;
+
 export type BeginLoadGooglePhotosAlbumAction = Action&{
   name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM;
   albumId: string;
@@ -66,7 +79,7 @@ export function beginLoadGooglePhotosAlbumsAction():
   return {name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS};
 }
 
-export type BeginLoadGooglePhotsCountAction = Action&{
+export type BeginLoadGooglePhotosCountAction = Action&{
   name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT;
 };
 
@@ -74,7 +87,7 @@ export type BeginLoadGooglePhotsCountAction = Action&{
  * Notify that the app is loading the count of Google Photos photos.
  */
 export function beginLoadGooglePhotosCountAction():
-    BeginLoadGooglePhotsCountAction {
+    BeginLoadGooglePhotosCountAction {
   return {name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT};
 }
 
