@@ -1697,6 +1697,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.Response.VerdictType.{UserPopulation}"
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2022-11-30">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the verdict type of the response from real time URL check from an
+    {UserPopulation} user. This histogram tells us whether EnhancedProtection
+    users are more likely to get dangerous verdicts as well as the average
+    number of Protego pings for EnhancedProtection users and
+    non-EnhancedProtection users.
+  </summary>
+  <token key="UserPopulation">
+    <variant name="EnhancedProtection" summary="Enhanced Protection"/>
+    <variant name="NotEnhancedProtection"
+        summary="Any Non-Enhanced Protection"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
     expires_after="2022-04-17">
   <owner>xinghuilu@chromium.org</owner>
