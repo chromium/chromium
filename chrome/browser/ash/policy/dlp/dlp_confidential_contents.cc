@@ -4,13 +4,27 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
 namespace policy {
+
+// The maximum number of entries that can be kept in the
+// DlpConfidentialContentsCache.
+// TODO(crbug.com/1275926): determine the value to use
+static constexpr int kDefaultCacheSizeLimit = 100;
+
+// The default timeout after which the entries are evicted from the
+// DlpConfidentialContentsCache.
+static constexpr base::TimeDelta kDefaultCacheTimeout = base::Days(7);
 
 DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
@@ -73,6 +87,10 @@ void DlpConfidentialContents::Add(content::WebContents* web_contents) {
   contents_.insert(DlpConfidentialContent(web_contents));
 }
 
+void DlpConfidentialContents::Add(const DlpConfidentialContent& content) {
+  contents_.insert(content);
+}
+
 void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {
   contents_.clear();
   Add(web_contents);
@@ -105,6 +123,104 @@ void DlpConfidentialContents::DifferenceWith(
     const DlpConfidentialContents& other) {
   base::EraseIf(contents_, [&other](const DlpConfidentialContent& content) {
     return other.contents_.contains(content);
+  });
+}
+
+DlpConfidentialContentsCache::Entry::Entry(
+    const DlpConfidentialContent& content,
+    DlpRulesManager::Restriction restriction,
+    base::TimeTicks timestamp)
+    : content(content), restriction(restriction), created_at(timestamp) {}
+
+DlpConfidentialContentsCache::Entry::~Entry() = default;
+
+DlpConfidentialContentsCache::DlpConfidentialContentsCache()
+    : cache_size_limit_(kDefaultCacheSizeLimit),
+      task_runner_(
+          content::GetUIThreadTaskRunner(content::BrowserTaskTraits())) {}
+
+DlpConfidentialContentsCache::~DlpConfidentialContentsCache() = default;
+
+void DlpConfidentialContentsCache::Cache(
+    const DlpConfidentialContent& content,
+    DlpRulesManager::Restriction restriction) {
+  if (Contains(content, restriction)) {
+    return;
+  }
+
+  auto entry =
+      std::make_unique<Entry>(content, restriction, base::TimeTicks::Now());
+  StartEvictionTimer(entry.get());
+  entries_.push_front(std::move(entry));
+
+  if (entries_.size() > cache_size_limit_) {
+    entries_.pop_back();
+  }
+}
+
+bool DlpConfidentialContentsCache::Contains(
+    content::WebContents* web_contents,
+    DlpRulesManager::Restriction restriction) const {
+  const GURL url = web_contents->GetLastCommittedURL();
+  return std::find_if(entries_.begin(), entries_.end(),
+                      [&](const std::unique_ptr<Entry>& entry) {
+                        return entry->restriction == restriction &&
+                               entry->content.url.EqualsIgnoringRef(url);
+                      }) != entries_.end();
+}
+
+bool DlpConfidentialContentsCache::Contains(
+    const DlpConfidentialContent& content,
+    DlpRulesManager::Restriction restriction) const {
+  return std::find_if(
+             entries_.begin(), entries_.end(),
+             [&](const std::unique_ptr<Entry>& entry) {
+               return entry->restriction == restriction &&
+                      entry->content.url.EqualsIgnoringRef(content.url);
+             }) != entries_.end();
+}
+
+int DlpConfidentialContentsCache::GetSizeForTesting() const {
+  return entries_.size();
+}
+
+DlpConfidentialContents
+DlpConfidentialContentsCache::GetDlpConfidentialContentsForRestriction(
+    DlpRulesManager::Restriction restriction) {
+  DlpConfidentialContents contents;
+  for (auto& entry : entries_) {
+    if (entry->restriction == restriction)
+      contents.Add(entry->content);
+  }
+  return contents;
+}
+
+// static
+base::TimeDelta DlpConfidentialContentsCache::GetCacheTimeout() {
+  return kDefaultCacheTimeout;
+}
+
+void DlpConfidentialContentsCache::SetCacheSizeLimitForTesting(int limit) {
+  cache_size_limit_ = limit;
+}
+
+void DlpConfidentialContentsCache::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  task_runner_ = task_runner;
+}
+
+void DlpConfidentialContentsCache::StartEvictionTimer(Entry* entry) {
+  entry->eviction_timer.SetTaskRunner(task_runner_);
+  entry->eviction_timer.Start(
+      FROM_HERE, GetCacheTimeout(),
+      base::BindOnce(&DlpConfidentialContentsCache::OnEvictionTimerUp,
+                     base::Unretained(this), entry->content));
+}
+
+void DlpConfidentialContentsCache::OnEvictionTimerUp(
+    const DlpConfidentialContent& content) {
+  entries_.remove_if([&](const std::unique_ptr<Entry>& entry) {
+    return entry.get()->content == content;
   });
 }
 

@@ -187,7 +187,7 @@ void DlpContentManager::CheckPrintingRestriction(
 
   if (IsWarn(restriction_info)) {
     // Check if the contents were already allowed and don't warn in that case.
-    if (user_allowed_contents_[DlpRulesManager::Restriction::kPrinting]
+    if (GetUserAllowedContents(DlpRulesManager::Restriction::kPrinting)
             .Contains(web_contents)) {
       ReportWarningProceededEvent(restriction_info.url,
                                   DlpRulesManager::Restriction::kPrinting,
@@ -247,7 +247,7 @@ void DlpContentManager::CheckScreenShareRestriction(
     // Check which of the contents were already allowed and don't warn for
     // those.
     info.confidential_contents.DifferenceWith(
-        user_allowed_contents_[DlpRulesManager::Restriction::kScreenShare]);
+        GetUserAllowedContents(DlpRulesManager::Restriction::kScreenShare));
     if (info.confidential_contents.IsEmpty()) {
       // The user already allowed all the visible content.
       std::move(callback).Run(true);
@@ -284,8 +284,7 @@ void DlpContentManager::CheckStoppedVideoCapture(
       !running_video_capture_info_->confidential_contents.IsEmpty()) {
     warn_notifier_->ShowDlpVideoCaptureWarningDialog(
         std::move(callback),
-        DlpConfidentialContents(
-            running_video_capture_info_->confidential_contents));
+        running_video_capture_info_->confidential_contents);
   } else {
     std::move(callback).Run(/*proceed=*/true);
   }
@@ -731,7 +730,7 @@ void DlpContentManager::CheckRunningVideoCapture() {
     // those that the user was already warned about and has allowed the screen
     // capture to proceed.
     info.confidential_contents.DifferenceWith(
-        user_allowed_contents_[DlpRulesManager::Restriction::kScreenshot]);
+        GetUserAllowedContents(DlpRulesManager::Restriction::kScreenshot));
     running_video_capture_info_->confidential_contents.UnionWith(
         info.confidential_contents);
     return;
@@ -756,7 +755,7 @@ void DlpContentManager::CheckRunningScreenShares() {
       // Check which of the contents were already allowed and don't warn for
       // those.
       info.confidential_contents.DifferenceWith(
-          user_allowed_contents_[DlpRulesManager::Restriction::kScreenShare]);
+          GetUserAllowedContents(DlpRulesManager::Restriction::kScreenShare));
       if (info.confidential_contents.IsEmpty()) {
         // The user already allowed all the visible content.
         if (!screen_share.IsRunning()) {
@@ -832,7 +831,7 @@ void DlpContentManager::CheckScreenCaptureRestriction(
     // Check which of the contents were already allowed and don't warn for
     // those.
     info.confidential_contents.DifferenceWith(
-        user_allowed_contents_[DlpRulesManager::Restriction::kScreenshot]);
+        GetUserAllowedContents(DlpRulesManager::Restriction::kScreenshot));
     if (info.confidential_contents.IsEmpty()) {
       // The user already allowed all the visible content.
       std::move(callback).Run(true);
@@ -858,7 +857,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
     bool should_proceed) {
   if (should_proceed) {
     screen_share.Resume();
-    user_allowed_contents_[DlpRulesManager::Restriction::kScreenShare]
+    GetUserAllowedContents(DlpRulesManager::Restriction::kScreenShare)
         .UnionWith(confidential_contents);
   } else {
     // TODO(crbug.com/1259605): stop instead of pause.
@@ -873,7 +872,7 @@ void DlpContentManager::OnDlpWarnDialogReply(
     OnDlpRestrictionCheckedCallback callback,
     bool should_proceed) {
   if (should_proceed) {
-    user_allowed_contents_[restriction].UnionWith(confidential_contents);
+    GetUserAllowedContents(restriction).UnionWith(confidential_contents);
   }
   std::move(callback).Run(should_proceed);
 }
@@ -896,6 +895,11 @@ void DlpContentManager::ReportWarningEvent(
     ReportEvent(restriction_info.url, restriction,
                 DlpRulesManager::Level::kWarn, reporting_manager_);
   }
+}
+
+DlpConfidentialContents& DlpContentManager::GetUserAllowedContents(
+    DlpRulesManager::Restriction restriction) {
+  return user_allowed_contents_[restriction];
 }
 
 // ScopedDlpContentManagerForTesting

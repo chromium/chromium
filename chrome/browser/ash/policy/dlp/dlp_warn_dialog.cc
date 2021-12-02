@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/public/cpp/style/color_provider.h"
+#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"

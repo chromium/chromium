@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
+#include <list>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -45,8 +50,8 @@ struct DlpConfidentialContent {
   GURL url;
 };
 
-// Provides basic functions for storing and working with confidential contents.
-// TODO(crbug.com/1264803): Limit the size
+// Provides basic functions for storing and working with DLP confidential
+// contents.
 class DlpConfidentialContents {
  public:
   DlpConfidentialContents();
@@ -62,6 +67,8 @@ class DlpConfidentialContents {
   // Converts |web_contents| to a DlpConfidentialContent and adds it to the
   // underlying container.
   void Add(content::WebContents* web_contents);
+
+  void Add(const DlpConfidentialContent& content);
 
   // Removes all stored confidential content, if there was any, and adds
   // |web_contents| converted to a DlpConfidentialContent.
@@ -87,6 +94,83 @@ class DlpConfidentialContents {
 
  private:
   base::flat_set<DlpConfidentialContent> contents_;
+};
+
+// Used to avoid warning the user for an action and content that they already
+// acknowledged and bypassed a warning for, by caching these contents for a
+// certain amount of time.
+//
+// Automatically evicts entries after a timeout.
+// If the number of cached entries exceeds a predefined limits, evicts the
+// oldest entry from the cache.
+class DlpConfidentialContentsCache {
+ public:
+  DlpConfidentialContentsCache();
+  DlpConfidentialContentsCache(const DlpConfidentialContentsCache& other) =
+      delete;
+  DlpConfidentialContentsCache& operator=(
+      const DlpConfidentialContentsCache& other) = delete;
+  ~DlpConfidentialContentsCache();
+
+  // Creates and stores an entry from |web_contents| and |restriction|.
+  void Cache(const DlpConfidentialContent& content,
+             DlpRulesManager::Restriction restriction);
+
+  // Returns true if there is a cached entry corresponding to |web_contents| and
+  // |restriction|.
+  bool Contains(content::WebContents* web_contents,
+                DlpRulesManager::Restriction restriction) const;
+
+  // Returns true if there is a cached entry corresponding to |content| and
+  // |restriction|.
+  bool Contains(const DlpConfidentialContent& content,
+                DlpRulesManager::Restriction restriction) const;
+
+  // Returns the number of cached entries, useful for testing.
+  int GetSizeForTesting() const;
+
+  // Returns DlpConfidentialContents for the given |restriction|.
+  // Used to pass the list of allowed contents when creating a warning dialog.
+  DlpConfidentialContents GetDlpConfidentialContentsForRestriction(
+      DlpRulesManager::Restriction restriction);
+
+  // Returns the duration for which the entries are kept in the cache.
+  static base::TimeDelta GetCacheTimeout();
+
+  // Used only in tests to set a different size limit.
+  void SetCacheSizeLimitForTesting(int limit);
+
+  // Used only in tests to inject a task runner for time control.
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+ private:
+  struct Entry {
+    Entry() = delete;
+    Entry(const DlpConfidentialContent& content,
+          DlpRulesManager::Restriction restriction,
+          base::TimeTicks timestamp);
+    Entry(const Entry& other) = delete;
+    Entry& operator=(const Entry& other) = delete;
+    ~Entry();
+
+    DlpConfidentialContent content;
+    DlpRulesManager::Restriction restriction;
+    base::TimeTicks created_at;
+    base::OneShotTimer eviction_timer;
+  };
+
+  // Starts the |entry|'s eviction timer.
+  void StartEvictionTimer(Entry* entry);
+
+  // Evicts an entry corresponding to |content| if it exists, no-op otherwise.
+  void OnEvictionTimerUp(const DlpConfidentialContent& content);
+
+  std::list<std::unique_ptr<Entry>> entries_;
+  int cache_size_limit_;
+
+  // Used to evict cache entries after the timeout.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace policy

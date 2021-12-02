@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -15,6 +17,9 @@
 #include "url/gurl.h"
 
 namespace policy {
+
+constexpr DlpRulesManager::Restriction kRestriction =
+    DlpRulesManager::Restriction::kPrinting;
 
 class DlpConfidentialContentsTest : public testing::Test {
  public:
@@ -43,6 +48,11 @@ class DlpConfidentialContentsTest : public testing::Test {
     tester->SetTitle(title);
     tester->SetLastCommittedURL(url);
     return web_contents;
+  }
+
+  DlpConfidentialContent CreateConfidentialContent(const std::u16string& title,
+                                                   const GURL& url) {
+    return DlpConfidentialContent(CreateWebContents(title, url).get());
   }
 
  private:
@@ -159,6 +169,50 @@ TEST_F(DlpConfidentialContentsTest, RemoveNonexistingContents) {
   contents.Remove(CreateWebContents(title3, url3).get());
 
   EXPECT_EQ(contents.GetContents().size(), 2);
+}
+
+TEST_F(DlpConfidentialContentsTest, CacheEvictsAfterTimeout) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  DlpConfidentialContentsCache cache;
+  cache.SetTaskRunnerForTesting(task_runner);
+
+  DlpConfidentialContent content = CreateConfidentialContent(title1, url1);
+
+  cache.Cache(content, kRestriction);
+  EXPECT_TRUE(cache.Contains(content, kRestriction));
+  task_runner->FastForwardBy(DlpConfidentialContentsCache::GetCacheTimeout());
+  EXPECT_FALSE(cache.Contains(content, kRestriction));
+}
+
+TEST_F(DlpConfidentialContentsTest, CacheEvictsWhenFull) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  DlpConfidentialContentsCache cache;
+  cache.SetTaskRunnerForTesting(task_runner);
+  cache.SetCacheSizeLimitForTesting(1);
+
+  DlpConfidentialContent content1 = CreateConfidentialContent(title1, url1);
+  DlpConfidentialContent content2 = CreateConfidentialContent(title2, url2);
+
+  cache.Cache(content1, kRestriction);
+  EXPECT_TRUE(cache.Contains(content1, kRestriction));
+  cache.Cache(content2, kRestriction);
+  EXPECT_FALSE(cache.Contains(content1, kRestriction));
+  EXPECT_TRUE(cache.Contains(content2, kRestriction));
+}
+
+TEST_F(DlpConfidentialContentsTest, CacheRemovesDuplicates) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  DlpConfidentialContentsCache cache;
+  cache.SetTaskRunnerForTesting(task_runner);
+
+  DlpConfidentialContent content = CreateConfidentialContent(title1, url1);
+
+  cache.Cache(content, kRestriction);
+  cache.Cache(content, kRestriction);
+  EXPECT_EQ(cache.GetSizeForTesting(), 1);
 }
 
 }  // namespace policy
