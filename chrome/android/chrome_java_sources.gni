@@ -184,6 +184,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkTagChipList.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtils.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ReadingListFeatures.java",
   "java/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeader.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bottomsheet/BookmarkBottomSheetContent.java",

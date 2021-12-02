@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -84,6 +85,8 @@ public class TabbedAppMenuTest {
 
     @Before
     public void setUp() {
+        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
+
         // We need list selection; ensure we are not in touch mode.
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
 

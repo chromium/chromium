@@ -216,12 +216,16 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             case ViewType.BOOKMARK:
                 return createViewHolderHelper(parent, R.layout.bookmark_item_row);
             case ViewType.SHOPPING_POWER_BOOKMARK:
-                ViewHolder vh =
-                        createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
-                ((PowerBookmarkShoppingItemRow) vh.itemView)
-                        .init(mImageFetcher, mDelegate.getModel(),
-                                mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
-                                        .getSubscriptionsManager());
+                ViewHolder vh = null;
+                if (BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
+                    vh = createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
+                    ((PowerBookmarkShoppingItemRow) vh.itemView)
+                            .init(mImageFetcher, mDelegate.getModel(),
+                                    mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
+                                            .getSubscriptionsManager());
+                } else {
+                    vh = createViewHolderHelper(parent, R.layout.bookmark_item_row);
+                }
                 return vh;
             case ViewType.DIVIDER:
                 return new ViewHolder(

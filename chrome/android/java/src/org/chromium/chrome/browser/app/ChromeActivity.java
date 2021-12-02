@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -155,6 +156,8 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.share.ShareRegistrationCoordinator;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -390,6 +393,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // {@link onPictureInPictureModeChanged} from the platform.  This might disagree with the value
     // returned by {@link isInPictureInPictureMode}.
     private boolean mLastPictureInPictureModeForTesting;
+    private SubscriptionsManager mSubscriptionsManager;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -1744,6 +1748,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 }
             };
             display.addObserver(mDisplayAndroidObserver);
+
+            CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
+            mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
         }
 
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
@@ -1862,9 +1869,23 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @param tabToBookmark The tab that needs to be bookmarked.
      */
     public void addOrEditBookmark(final Tab tabToBookmark) {
-        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
-        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL);
+        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL, /*fromExplicitTrackUi=*/false);
+    }
+
+    /**
+     * Add the specified tab to bookmarks or allows to edit the bookmark if the specified tab is
+     * already bookmarked. If a new bookmark is added, a snackbar will be shown.
+     *
+     * @param tabToBookmark The tab that needs to be bookmarked.
+     * @param fromExplicitTrackUi Whether the addOrEditAction was taken from an explicit tracking
+     *         UI.
+     */
+    public void addOrEditBookmark(final Tab tabToBookmark, boolean fromExplicitTrackUi) {
+        if (!fromExplicitTrackUi) {
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
+        }
+        addOrEditBookmark(tabToBookmark, BookmarkType.NORMAL, fromExplicitTrackUi);
     }
 
     /**
@@ -1874,10 +1895,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @param tabToAdd The tab that to add to the Reading List.
      */
     public void addToReadingList(final Tab tabToAdd) {
-        addOrEditBookmark(tabToAdd, BookmarkType.READING_LIST);
+        addOrEditBookmark(tabToAdd, BookmarkType.READING_LIST, /*fromExplicitTrackUi=*/false);
     }
 
-    private void addOrEditBookmark(final Tab tabToBookmark, @BookmarkType int bookmarkType) {
+    private void addOrEditBookmark(
+            final Tab tabToBookmark, @BookmarkType int bookmarkType, boolean fromExplicitTrackUi) {
         if (tabToBookmark == null || tabToBookmark.isFrozen()) {
             return;
         }
@@ -1917,13 +1939,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 }
             }
 
-            onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType);
+            onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType,
+                    fromExplicitTrackUi);
         });
     }
 
     private void onBookmarkModelLoaded(final Tab tabToBookmark,
             @Nullable final BookmarkItem currentBookmarkItem, final BookmarkModel bookmarkModel,
-            @BookmarkType int bookmarkType) {
+            @BookmarkType int bookmarkType, boolean fromExplicitTrackUi) {
         // The BookmarkModel will be destroyed by BookmarkUtils#addOrEditBookmark() when
         // done.
         BookmarkUtils.addOrEditBookmark(currentBookmarkItem, bookmarkModel, tabToBookmark,
@@ -1936,7 +1959,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         OfflinePageUtils.saveBookmarkOffline(newBookmarkId, tabToBookmark);
                     }
                     bookmarkModel.destroy();
-                });
+                }, fromExplicitTrackUi);
     }
 
     /**
@@ -2512,6 +2535,35 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.delete_from_reading_list_menu_id) {
             ReadingListUtils.deleteFromReadingList(mSnackbarManager, /*activity=*/this, currentTab);
             RecordUserAction.record("MobileMenuDeleteFromReadingList");
+            return true;
+        }
+
+        if (id == R.id.enable_price_tracking_menu_id) {
+            // TODO(crbug.com/1266881): Add event here to support IPH.
+            // TODO(crbug.com/1268976): Extract this code into a one-liner.
+            BookmarkId bookmarkId =
+                    mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+            if (bookmarkId == null) {
+                addOrEditBookmark(currentTab, /* fromExplicitTrackUi=*/true);
+            } else {
+                PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager,
+                        mBookmarkBridgeSupplier.get(), bookmarkId, /*enabled=*/true,
+                        (status) -> {});
+            }
+            RecordUserAction.record("MobileMenuEnablePriceTracking");
+            return true;
+        }
+
+        if (id == R.id.disable_price_tracking_menu_id) {
+            // TODO(crbug.com/1266881): Add event here to support IPH.
+            // TODO(crbug.com/1266191): Add a snackbar for this case.
+            // TODO(crbug.com/1268976): Extract this code into a one-liner.
+            BookmarkId bookmarkId =
+                    mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+            PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager,
+                    mBookmarkBridgeSupplier.get(), bookmarkId,
+                    /*enabled=*/false, (status) -> {});
+            RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }
 

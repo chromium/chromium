@@ -91,6 +91,12 @@
         <item android:id="@+id/delete_from_reading_list_menu_id"
             android:title="@string/menu_delete_from_reading_list"
             android:icon="@drawable/ic_reading_list_folder_24dp" />
+        <item android:id="@+id/enable_price_tracking_menu_id"
+            android:title="@string/enable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_disabled" />
+        <item android:id="@+id/disable_price_tracking_menu_id"
+            android:title="@string/disable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_enabled_filled" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />
