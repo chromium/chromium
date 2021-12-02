@@ -523,6 +523,7 @@ component("base") {
     "process/process_iterator.h",
     "process/process_metrics.cc",
     "process/process_metrics.h",
+    "process/process_metrics_iocounters.h",
     "profiler/arm_cfi_table.cc",
     "profiler/arm_cfi_table.h",
     "profiler/frame.cc",
