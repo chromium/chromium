@@ -4,13 +4,10 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <set>
 #include <vector>
 
 #include "base/base_switches.h"
-#include "base/callback.h"
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -19,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -66,7 +62,6 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -92,11 +87,12 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -298,52 +294,42 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
 // Activates the smart restore behaviour and tracks the loading of tabs.
 class SmartSessionRestoreTest : public SessionRestoreTest,
-                                public TabStripModelObserver,
-                                public BrowserListObserver {
+                                public content::NotificationObserver {
  public:
-  SmartSessionRestoreTest() { BrowserList::AddObserver(this); }
-
-  ~SmartSessionRestoreTest() override { BrowserList::RemoveObserver(this); }
+  SmartSessionRestoreTest() = default;
 
   SmartSessionRestoreTest(const SmartSessionRestoreTest&) = delete;
   SmartSessionRestoreTest& operator=(const SmartSessionRestoreTest&) = delete;
 
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
-      return;
-
-    for (const auto& contents_with_index : change.GetInsert()->contents) {
-      observers_.push_back(
-          std::make_unique<LoadObserver>(*this, contents_with_index.contents));
-    }
-  }
-
-  void OnBrowserAdded(Browser* browser) override {
-    browser->tab_strip_model()->AddObserver(this);
-  }
-
   void StartObserving(size_t num_tabs) {
     // Start by clearing everything so it can be reused in the same test.
     web_contents_.clear();
-    observers_.clear();
+    registrar_.RemoveAll();
     num_tabs_ = num_tabs;
+    registrar_.Add(this, content::NOTIFICATION_LOAD_START,
+                   content::NotificationService::AllSources());
   }
-
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override {
+    switch (type) {
+      case content::NOTIFICATION_LOAD_START: {
+        content::NavigationController* controller =
+            content::Source<content::NavigationController>(source).ptr();
+        web_contents_.push_back(controller->DeprecatedGetWebContents());
+        if (web_contents_.size() == num_tabs_)
+          message_loop_runner_->Quit();
+        break;
+      }
+    }
+  }
   const std::vector<content::WebContents*>& web_contents() const {
     return web_contents_;
   }
 
   void WaitForAllTabsToStartLoading() {
-    if (web_contents_.size() >= num_tabs_)
-      return;
-
-    base::RunLoop run_loop;
-    DCHECK(!quit_);
-    quit_ = run_loop.QuitClosure();
-    run_loop.Run();
+    message_loop_runner_ = new content::MessageLoopRunner;
+    message_loop_runner_->Run();
   }
 
  protected:
@@ -351,31 +337,10 @@ class SmartSessionRestoreTest : public SessionRestoreTest,
   static const char* const kUrls[];
 
  private:
-  class LoadObserver : public content::WebContentsObserver {
-   public:
-    explicit LoadObserver(SmartSessionRestoreTest& outer,
-                          content::WebContents* web_contents)
-        : content::WebContentsObserver(web_contents), outer_(outer) {}
-
-    ~LoadObserver() override = default;
-
-    void DidStartLoading() override { outer_.DidStartLoading(web_contents()); }
-
-   private:
-    SmartSessionRestoreTest& outer_;
-  };
-
-  void DidStartLoading(content::WebContents* web_contents) {
-    web_contents_.push_back(web_contents);
-    if (web_contents_.size() == num_tabs_ && quit_) {
-      std::move(quit_).Run();
-    }
-  }
-
+  content::NotificationRegistrar registrar_;
   // Ordered by load start order.
   std::vector<content::WebContents*> web_contents_;
-  std::vector<std::unique_ptr<LoadObserver>> observers_;
-  base::OnceCallback<void()> quit_;
+  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   size_t num_tabs_;
   testing::ScopedAlwaysLoadSessionRestoreTestPolicy test_policy_;
 };
@@ -637,10 +602,20 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreIndividualTabFromWindow) {
 
   // Add and navigate three tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  content::WaitForLoadStopWithoutSuccessCheck(
-      chrome::AddSelectedTabWithURL(browser(), url2, ui::PAGE_TRANSITION_LINK));
-  content::WaitForLoadStopWithoutSuccessCheck(
-      chrome::AddSelectedTabWithURL(browser(), url3, ui::PAGE_TRANSITION_LINK));
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::AddSelectedTabWithURL(browser(), url2, ui::PAGE_TRANSITION_LINK);
+    observer.Wait();
+  }
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::AddSelectedTabWithURL(browser(), url3, ui::PAGE_TRANSITION_LINK);
+    observer.Wait();
+  }
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
@@ -657,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreIndividualTabFromWindow) {
   EXPECT_EQ(3U, window->tabs.size());
 
   // Find the SessionID for entry2. Since the session service was destroyed,
-  // there is no guarantee that the SessionID for the tab has remained the
-  // same.
+  // there is no guarantee that the SessionID for the tab has remained the same.
   base::Time timestamp;
   int http_status_code = 0;
   for (const auto& tab_ptr : window->tabs) {
@@ -814,11 +788,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Restore in the current tab.
-  content::WebContents* tab_content = SessionRestore::RestoreForeignSessionTab(
-      browser()->tab_strip_model()->GetActiveWebContents(), tab,
-      WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStopWithoutSuccessCheck(tab_content);
-
+  content::WebContents* tab_content = nullptr;
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    tab_content = SessionRestore::RestoreForeignSessionTab(
+        browser()->tab_strip_model()->GetActiveWebContents(), tab,
+        WindowOpenDisposition::CURRENT_TAB);
+    observer.Wait();
+  }
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -828,11 +807,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   ASSERT_EQ(url2, tab_content->GetURL());
 
   // Restore in a new tab.
-  tab_content = SessionRestore::RestoreForeignSessionTab(
-      browser()->tab_strip_model()->GetActiveWebContents(), tab,
-      WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  content::WaitForLoadStopWithoutSuccessCheck(tab_content);
-
+  tab_content = nullptr;
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    tab_content = SessionRestore::RestoreForeignSessionTab(
+        browser()->tab_strip_model()->GetActiveWebContents(), tab,
+        WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    observer.Wait();
+  }
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
@@ -843,12 +827,18 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
 
   // Restore in a new window.
   Browser* new_browser = nullptr;
-  tab_content = SessionRestore::RestoreForeignSessionTab(
-      browser()->tab_strip_model()->GetActiveWebContents(), tab,
-      WindowOpenDisposition::NEW_WINDOW);
-  content::WaitForLoadStopWithoutSuccessCheck(tab_content);
-  new_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_NE(new_browser, browser());
+  tab_content = nullptr;
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    tab_content = SessionRestore::RestoreForeignSessionTab(
+        browser()->tab_strip_model()->GetActiveWebContents(), tab,
+        WindowOpenDisposition::NEW_WINDOW);
+    observer.Wait();
+    new_browser = BrowserList::GetInstance()->GetLastActive();
+    EXPECT_NE(new_browser, browser());
+  }
 
   ASSERT_EQ(1, new_browser->tab_strip_model()->count());
   web_contents = new_browser->tab_strip_model()->GetWebContentsAt(0);
