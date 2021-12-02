@@ -941,6 +941,7 @@
   {
     "prefix": "partitioned-cookies",
     "bases": ["external/wpt/cookies/partitioned-cookies/",
+              "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/",
               "http/tests/cookies/partitioned-cookies",
               "http/tests/inspector-protocol/network/"],
     "args": ["--enable-features=PartitionedCookies"]
