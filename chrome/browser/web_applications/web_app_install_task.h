@@ -152,6 +152,12 @@ class WebAppInstallTask : content::WebContentsObserver {
   static std::unique_ptr<content::WebContents> CreateWebContents(
       Profile* profile);
 
+  // Returns the pre-existing web contents the installation was
+  // initiated with.
+  // This is different to web_contents which is created
+  // specifically for the install task.
+  content::WebContents* GetInstallingWebContents();
+
   base::WeakPtr<WebAppInstallTask> GetWeakPtr();
 
   // WebContentsObserver:
@@ -298,6 +304,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebApplicationInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
+  content::WebContents* installing_web_contents_ = nullptr;
 
   raw_ptr<OsIntegrationManager> os_integration_manager_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;

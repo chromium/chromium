@@ -102,6 +102,9 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
+  if (provider->install_manager().IsInstallingForWebContents(web_contents))
+    return;
+
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
           web_contents, force_shortcut_app

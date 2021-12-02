@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,6 +78,18 @@ void WebAppInstallManager::Shutdown() {
     task_queue_.swap(empty);
   }
   web_contents_.reset();
+}
+
+bool WebAppInstallManager::IsInstallingForWebContents(
+    const content::WebContents* web_contents) const {
+  return base::ranges::any_of(
+      tasks_, [web_contents](const std::unique_ptr<WebAppInstallTask>& task) {
+        return task->GetInstallingWebContents() == web_contents;
+      });
+}
+
+std::size_t WebAppInstallManager::GetInstallTaskCountForTesting() const {
+  return tasks_.size();
 }
 
 void WebAppInstallManager::SetSubsystems(

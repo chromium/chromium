@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -234,11 +235,31 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
   // Shortcut apps to PWAs should launch in a tab.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id), DisplayMode::kBrowser);
+  // TODO(crbug.com/1275945): We need to wait a bit longer for the
+  // WebAppInstallTask to complete before starting another install.
+  // Move the install/update/uninstall events out of
+  // AppRegistrarObserver and into a WebAppInstallManagerObserver
+  // interface so they can be guaranteed to fire after the
+  // WebAppInstallTask's lifetime has ended.
+  base::RunLoop().RunUntilIdle();
 
   InstallShortcutAppForCurrentUrl(/*open_as_window=*/true);
   // Re-install with enabling open_as_window should update user display mode.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
             DisplayMode::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, OpenShortcutWindowOnlyOnce) {
+  base::UserActionTester user_action_tester;
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  WebAppTestInstallObserver observer(profile());
+  // The "Create shortcut" call is executed twice, but the dialog
+  // must be shown only once.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+
+  EXPECT_EQ(1u, provider().install_manager().GetInstallTaskCountForTesting());
 }
 
 }  // namespace web_app

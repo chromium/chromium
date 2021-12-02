@@ -118,6 +118,14 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
+  // Returns whether the an installation is already running with the
+  // same web contents.
+  bool IsInstallingForWebContents(
+      const content::WebContents* web_contents) const;
+
+  // Returns the number of running web app installations.
+  std::size_t GetInstallTaskCountForTesting() const;
+
   // For the new USS-based system only. SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
