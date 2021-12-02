@@ -52,7 +52,7 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
       signin_client, std::move(device_accounts_provider),
       account_tracker_service);
 }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
@@ -63,18 +63,6 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
       account_manager_facade, is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
-    AccountTrackerService* account_tracker_service,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    account_manager::AccountManagerFacade* account_manager_facade,
-    bool is_regular_profile) {
-  return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-      account_tracker_service, network_connection_tracker,
-      account_manager_facade, is_regular_profile);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
 CreateMutableProfileOAuthDelegate(
@@ -133,25 +121,10 @@ CreateOAuth2TokenServiceDelegate(
   return CreateIOSOAuthDelegate(signin_client,
                                 std::move(device_accounts_provider),
                                 account_tracker_service);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return CreateCrOsOAuthDelegate(account_tracker_service,
                                  network_connection_tracker,
                                  account_manager_facade, is_regular_profile);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For the time being, Mirror is enabled only in the first / "Main" Profile in
-  // Lacros.
-  if (account_consistency == signin::AccountConsistencyMethod::kMirror) {
-    return CreateCrOsOAuthDelegate(account_tracker_service,
-                                   network_connection_tracker,
-                                   account_manager_facade, is_regular_profile);
-  } else {
-    // TODO(crbug.com/1198490): Remove this when we don't need DICE and
-    // `MutableProfileOAuth2TokenServiceDelegate` on Lacros anymore.
-    return CreateMutableProfileOAuthDelegate(
-        account_tracker_service, account_consistency,
-        delete_signin_cookies_on_exit, token_web_data, signin_client,
-        network_connection_tracker);
-  }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
   // other than Android, iOS, and Chrome OS (Ash and Lacros).

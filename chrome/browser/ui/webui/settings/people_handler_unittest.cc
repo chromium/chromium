@@ -1247,9 +1247,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   handler_->OnDidClosePage(&did_abort);
 }
 
-// TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
-// Lacros.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
 
@@ -1291,7 +1289,7 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   EXPECT_EQ("a@gmail.com", accounts_list[0].FindKey("email")->GetString());
   EXPECT_EQ("b@gmail.com", accounts_list[1].FindKey("email")->GetString());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test for crash in guest mode. https://crbug.com/1040476

@@ -33,6 +33,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -201,7 +202,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
+#else
+                          true);
+#endif
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));

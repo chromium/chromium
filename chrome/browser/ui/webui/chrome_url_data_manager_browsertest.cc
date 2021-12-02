@@ -149,7 +149,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::Feature> enabled_features;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
@@ -331,10 +331,10 @@ static constexpr const char* const kChromeUrls[] = {
 #if !defined(OS_CHROMEOS)
     "chrome://apps",
     "chrome://browser-switch",
+    "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://signin-email-confirmation",
-    "chrome://welcome",
 #endif
 #if !defined(OS_MAC)
     "chrome://sandbox",

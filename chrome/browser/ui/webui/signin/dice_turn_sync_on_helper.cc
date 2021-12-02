@@ -717,6 +717,7 @@ void DiceTurnSyncOnHelper::AbortAndDelete() {
             kDiceTurnOnSyncHelper_Abort);
   }
 #else
+  // TODO(https://crbug.com/1260291): Implement on Lacros.
   NOTIMPLEMENTED()
       << "Profiles without accounts are not yet supported on lacros.";
 #endif

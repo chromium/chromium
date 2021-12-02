@@ -340,7 +340,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
 }
 #endif  // !defined(OS_MAC)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(https://crbug.com/1260291): Add support for Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Regression test: crbug.com/438979.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
                        SettingsZoomAfterSigninWorks) {
@@ -394,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   zoom_controller->SetZoomLevel(new_zoom_level);
   zoom_change_watcher.Wait();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
                                           public zoom::ZoomObserver {
