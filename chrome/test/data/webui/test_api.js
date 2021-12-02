@@ -853,7 +853,7 @@ function TEST_F(testFixture, testName, testBody, opt_preamble) {
   if (!fixtureConstructor.prototype.name) {
     fixtureConstructor.prototype.name = testFixture;
   }
-  if (fixtureConstructor['testCaseBodies'] === undefined) {
+  if (!fixtureConstructor.hasOwnProperty('testCaseBodies')) {
     fixtureConstructor.testCaseBodies = {};
   }
   fixtureConstructor.testCaseBodies[testName] = testBody;

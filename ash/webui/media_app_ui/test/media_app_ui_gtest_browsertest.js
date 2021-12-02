@@ -107,9 +107,13 @@ function runTestInGuest(name) {
 // Ensure every test body has a TEST_F call in this file.
 TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
   const MediaAppUIBrowserTest = await GetTestHarness();
-  const bodies =
-      /** @type {{testCaseBodies: Object}} */ (MediaAppUIGtestBrowserTest)
-          .testCaseBodies;
+  const bodies = {
+    ...(/** @type {{testCaseBodies: Object}} */ (MediaAppUIGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
+            MediaAppUIWithAudioGtestBrowserTest))
+        .testCaseBodies,
+  };
   for (const f in MediaAppUIBrowserTest) {
     if (f === 'runTestInGuest') {
       continue;
