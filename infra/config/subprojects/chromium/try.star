@@ -1524,6 +1524,7 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux_chromium_msan_rel_ng",
+    execution_timeout = 6 * time.hour,
     goma_jobs = goma.jobs.J150,
 )
 
