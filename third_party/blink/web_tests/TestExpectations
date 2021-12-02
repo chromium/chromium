@@ -3681,7 +3681,6 @@ crbug.com/626703 external/wpt/screen-capture/feature-policy.https.html [ Timeout
 crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/t422-rgba-a0.6-a.xht [ Failure ]
@@ -3725,7 +3724,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/preload/download-resources.html [ Tim
 crbug.com/626703 external/wpt/workers/shared-worker-parse-error-failure.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Timeout ]
 crbug.com/626703 external/wpt/content-dpr/content-dpr-various-elements.html [ Failure ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/workers/abrupt-completion.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/eventsource/eventsource-constructor-url-bogus.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Timeout ]
@@ -7339,3 +7337,6 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 # Sheriff 2021-12-01
 crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Failure Pass ]
 crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failure Pass ]
+
+# Sheriff 2021-12-02
+crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Failure Pass ]
