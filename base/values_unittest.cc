@@ -2293,6 +2293,15 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_list.Get(6, nullptr));
   EXPECT_FALSE(main_list.Get(7, nullptr));
 
+  EXPECT_TRUE(main_list.GetBoolean(0, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(1, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(2, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(3, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(4, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(5, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(6, nullptr));
+  EXPECT_FALSE(main_list.GetBoolean(7, nullptr));
+
   EXPECT_FALSE(main_list.GetString(0, static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_list.GetString(1, static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_list.GetString(2, static_cast<std::string*>(nullptr)));

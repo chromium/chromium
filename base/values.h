@@ -813,6 +813,8 @@ class BASE_EXPORT ListValue : public Value {
   // only if the index is valid and the Value at that index can be returned
   // in the specified form.
   // `out_value` is optional and will only be set if non-NULL.
+  // DEPRECATED, use `GetList()::operator[]::GetBool()` instead.
+  bool GetBoolean(size_t index, bool* out_value) const;
   // DEPRECATED, use `GetList()::operator[]::GetString()` instead.
   bool GetString(size_t index, std::string* out_value) const;
   bool GetString(size_t index, std::u16string* out_value) const;

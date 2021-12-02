@@ -1399,6 +1399,18 @@ bool ListValue::Get(size_t index, Value** out_value) {
   return as_const(*this).Get(index, const_cast<const Value**>(out_value));
 }
 
+bool ListValue::GetBoolean(size_t index, bool* bool_value) const {
+  const Value* value;
+  if (!Get(index, &value))
+    return false;
+
+  if (bool_value && value->is_bool()) {
+    *bool_value = value->GetBool();
+    return true;
+  }
+  return value->is_bool();
+}
+
 bool ListValue::GetString(size_t index, std::string* out_value) const {
   const Value* value;
   if (!Get(index, &value))
