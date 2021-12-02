@@ -2753,7 +2753,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.Utility.PrivateMemoryFootprint" units="MB"
     expires_after="never">
-<!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
+<!-- expires-never: useful diagnostic metric for changes in
+     Memory.Total.PrivateMemoryFootprint, which never expires. -->
 
   <owner>jam@chromium.org</owner>
   <summary>
