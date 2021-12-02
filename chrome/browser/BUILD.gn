@@ -1966,6 +1966,8 @@ static_library("browser") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/commerce:feature_list",
     "//chrome/browser/devtools",
+    "//chrome/browser/feature_guide/notifications:factory",
+    "//chrome/browser/feature_guide/notifications:public",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media:media_engagement_preload_proto",
     "//chrome/browser/media:mojo_bindings",

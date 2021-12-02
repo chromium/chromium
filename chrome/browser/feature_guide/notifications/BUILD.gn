@@ -1,0 +1,41 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//chrome/android/features/android_library_factory_tmpl.gni")
+}
+
+source_set("public") {
+  sources = [
+    "feature_notification_guide_service.cc",
+    "feature_notification_guide_service.h",
+  ]
+
+  deps = []
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("factory") {
+  sources = [
+    "feature_notification_guide_service_factory.cc",
+    "feature_notification_guide_service_factory.h",
+  ]
+
+  deps = [
+    ":public",
+    "internal:internal",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [ "internal:unit_tests" ]
+}

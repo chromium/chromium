@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+
+#include "base/feature_list.h"
+
+namespace feature_guide {
+namespace features {
+
+const base::Feature kFeatureNotificationGuide{
+    "FeatureNotificationGuide", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace features
+
+FeatureNotificationGuideService::FeatureNotificationGuideService() = default;
+
+FeatureNotificationGuideService::~FeatureNotificationGuideService() = default;
+
+}  // namespace feature_guide
