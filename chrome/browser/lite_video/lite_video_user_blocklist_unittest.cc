@@ -141,7 +141,13 @@ class LiteVideoUserBlocklistTest : public ChromeRenderViewHostTestHarness {
 class LiteVideoUserBlocklistWithParamsTest : public LiteVideoUserBlocklistTest {
  public:
   void SetUp() override {
+    SetUpParams();
+    // This creates threads and must be called after all `scoped_feature_list_`
+    // setup.
     content::RenderViewHostTestHarness::SetUp();
+  }
+
+  void SetUpParams() {
     int max_user_blocklist_hosts = 1;
     int user_blocklist_opt_out_history_threshold = 1;
     ConfigBlocklistWithParams(
