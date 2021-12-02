@@ -378,23 +378,27 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     // non-fragmented |PlaceGridItems| pass.
     Vector<GridItemOffsets> offsets;
     Vector<LayoutUnit> row_offset_adjustments;
+    Vector<EBreakBetween> row_break_between;
     if (IsResumingLayout(BreakToken())) {
       offsets = BreakToken()->GridData().offsets;
       row_offset_adjustments = BreakToken()->GridData().row_offset_adjustments;
+      row_break_between = BreakToken()->GridData().row_break_between;
     } else {
-      PlaceGridItems(grid_items, grid_geometry, &offsets);
       row_offset_adjustments =
           Vector<LayoutUnit>(grid_geometry.row_geometry.sets.size());
+      row_break_between = Vector<EBreakBetween>(
+          grid_geometry.row_geometry.sets.size(), EBreakBetween::kAuto);
+      PlaceGridItems(grid_items, grid_geometry, &offsets, &row_break_between);
     }
 
-    PlaceGridItemsForFragmentation(grid_items, &grid_geometry, &offsets,
-                                   &row_offset_adjustments,
-                                   &intrinsic_block_size);
+    PlaceGridItemsForFragmentation(
+        grid_items, row_break_between, &grid_geometry, &offsets,
+        &row_offset_adjustments, &intrinsic_block_size);
 
     container_builder_.SetGridBreakTokenData(
-        std::make_unique<NGGridBreakTokenData>(grid_geometry, offsets,
-                                               row_offset_adjustments,
-                                               intrinsic_block_size));
+        std::make_unique<NGGridBreakTokenData>(
+            grid_geometry, offsets, row_offset_adjustments, row_break_between,
+            intrinsic_block_size));
   } else {
     PlaceGridItems(grid_items, grid_geometry);
   }
@@ -3523,7 +3527,8 @@ class BaselineAccumulator {
 void NGGridLayoutAlgorithm::PlaceGridItems(
     const GridItems& grid_items,
     const NGGridGeometry& grid_geometry,
-    Vector<GridItemOffsets>* out_offsets) {
+    Vector<GridItemOffsets>* out_offsets,
+    Vector<EBreakBetween>* out_row_break_between) {
   const auto& container_space = ConstraintSpace();
   const auto container_writing_direction =
       container_space.GetWritingDirection();
@@ -3603,6 +3608,20 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       containing_grid_area.offset.block_offset);
     }
+
+    if (out_row_break_between) {
+      auto item_break_before = JoinFragmentainerBreakValues(
+          item_style.BreakBefore(), result->InitialBreakBefore());
+      auto item_break_after = JoinFragmentainerBreakValues(
+          item_style.BreakAfter(), result->FinalBreakAfter());
+
+      const auto& set_indices = grid_item.SetIndices(kForRows);
+      (*out_row_break_between)[set_indices.begin] =
+          JoinFragmentainerBreakValues(
+              (*out_row_break_between)[set_indices.begin], item_break_before);
+      (*out_row_break_between)[set_indices.end] = JoinFragmentainerBreakValues(
+          (*out_row_break_between)[set_indices.end], item_break_after);
+    }
   }
 
   // Propagate the baseline from the appropriate child.
@@ -3612,6 +3631,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
 void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
+    const Vector<EBreakBetween>& row_break_between,
     NGGridGeometry* grid_geometry,
     Vector<GridItemOffsets>* offsets,
     Vector<LayoutUnit>* row_offset_adjustments,
@@ -3756,18 +3776,27 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       const bool row_has_container_separation =
           grid_area.offset.block_offset > LayoutUnit();
 
-      // TODO(ikilpatrick): When we support break-before/break-after, and if we
-      // shouldn't move past the current breakpoint, we should search for the
-      // row (with container separation) with the highest break appeal. The
-      // current row's break-appeal should also be used instead of
-      // |kBreakAppealPerfect| in the call below.
       if (row_has_container_separation &&
-          item_row_set_index < breakpoint_row_set_index &&
-          !MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
-                              fragment_relative_block_offset,
-                              kBreakAppealPerfect, /* builder */ nullptr)) {
-        breakpoint_row_set_index = item_row_set_index;
-        continue;
+          item_row_set_index < breakpoint_row_set_index) {
+        // The row may have a forced break, move it to the next fragmentainer.
+        if (IsForcedBreakValue(ConstraintSpace(),
+                               row_break_between[item_row_set_index])) {
+          container_builder_.SetHasForcedBreak();
+          breakpoint_row_set_index = item_row_set_index;
+          continue;
+        }
+
+        // TODO(ikilpatrick): Implement a grid specific version of
+        // |CalculateBreakAppealBefore| to pass into |MovePastBreakpoint|.
+        if (!MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
+                                fragment_relative_block_offset,
+                                kBreakAppealPerfect, /* builder */ nullptr)) {
+          // TODO(ikilpatrick): We may have break-before:avoid on this row, we
+          // should search upwards (ensuring that we are still in this
+          // fragmentainer), for the first row with the highest break appeal.
+          breakpoint_row_set_index = item_row_set_index;
+          continue;
+        }
       }
 
       // This item may want to expand due to fragmentation. Record how much we

@@ -1493,6 +1493,9 @@ virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentat
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-029.html [ Pass ]
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-030.html [ Pass ]
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-031.html [ Pass ]
+virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-032.html [ Pass ]
+virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-033.html [ Pass ]
+virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-034.html [ Pass ]
 
 ### With LayoutNGPrinting enabled:
 
@@ -4036,6 +4039,9 @@ crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-028.htm
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-029.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-030.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-031.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-032.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-033.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-034.html [ Failure ]
 crbug.com/1066629 external/wpt/css/css-break/hit-test-transformed.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/monolithic-with-overflow-lr.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/monolithic-with-overflow-rl.html [ Failure ]

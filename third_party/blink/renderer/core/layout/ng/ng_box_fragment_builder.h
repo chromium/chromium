@@ -584,16 +584,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   LayoutUnit BlockOffsetAdjustmentForFragmentainer(
       LayoutUnit fragmentainer_consumed_block_size = LayoutUnit()) const;
 
+  void SetHasForcedBreak() {
+    has_forced_break_ = true;
+    minimal_space_shortage_ = LayoutUnit::Max();
+  }
+
  private:
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column
   // balancing hints.
   void PropagateBreakInfo(const NGLayoutResult&, LogicalOffset);
-
-  void SetHasForcedBreak() {
-    has_forced_break_ = true;
-    minimal_space_shortage_ = LayoutUnit::Max();
-  }
 
   scoped_refptr<const NGLayoutResult> ToBoxFragment(WritingMode);
 

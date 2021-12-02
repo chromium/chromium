@@ -378,7 +378,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // of each item before fragmentation occurs.
   void PlaceGridItems(const GridItems& grid_items,
                       const NGGridGeometry& grid_geometry,
-                      Vector<GridItemOffsets>* out_offsets = nullptr);
+                      Vector<GridItemOffsets>* out_offsets = nullptr,
+                      Vector<EBreakBetween>* out_row_break_between = nullptr);
 
   // Layout the |grid_items| for fragmentation (when there is a known
   // fragmentainer size).
@@ -387,6 +388,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // within this fragmentainer.
   void PlaceGridItemsForFragmentation(
       const GridItems& grid_items,
+      const Vector<EBreakBetween>& row_break_between,
       NGGridGeometry* grid_geometry,
       Vector<GridItemOffsets>* offsets,
       Vector<LayoutUnit>* row_offset_adjustments,
