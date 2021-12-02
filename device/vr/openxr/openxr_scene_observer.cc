@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_scene_observer.h"
-#include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_util.h"
 
 namespace device {

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <list>
 
-#include "base/containers/contains.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"

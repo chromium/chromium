@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/half_float.h"

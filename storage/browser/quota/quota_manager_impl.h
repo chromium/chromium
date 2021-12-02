@@ -18,7 +18,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"

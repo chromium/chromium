@@ -7,7 +7,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/site_isolation/site_details.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"

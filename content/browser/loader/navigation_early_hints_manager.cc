@@ -4,7 +4,6 @@
 
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/public/browser/browser_context.h"

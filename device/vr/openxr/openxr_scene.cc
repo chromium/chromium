@@ -4,7 +4,6 @@
 
 #include "device/vr/openxr/openxr_scene.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 
 namespace device {
 

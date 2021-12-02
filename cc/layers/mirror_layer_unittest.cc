@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/mirror_layer_impl.h"

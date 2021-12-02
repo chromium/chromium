@@ -8,7 +8,6 @@
 #include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"

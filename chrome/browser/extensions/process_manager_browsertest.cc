@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

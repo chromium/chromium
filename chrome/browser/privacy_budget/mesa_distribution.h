@@ -9,8 +9,6 @@
 #include <set>
 #include <type_traits>
 
-#include "base/containers/contains.h"
-
 // Generates a set of integers drawn from a mesa shaped probability distribution
 // with replacement.
 //

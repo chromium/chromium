@@ -7,7 +7,6 @@
 #include <inttypes.h>
 #include <cstdint>
 
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
