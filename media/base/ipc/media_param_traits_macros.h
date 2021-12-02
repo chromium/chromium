@@ -170,6 +170,7 @@ IPC_ENUM_TRAITS_VALIDATE(
 // Struct traits.
 
 IPC_STRUCT_TRAITS_BEGIN(media::CdmConfig)
+  IPC_STRUCT_TRAITS_MEMBER(key_system)
   IPC_STRUCT_TRAITS_MEMBER(allow_distinctive_identifier)
   IPC_STRUCT_TRAITS_MEMBER(allow_persistent_state)
   IPC_STRUCT_TRAITS_MEMBER(use_hw_secure_codecs)

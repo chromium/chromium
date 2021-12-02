@@ -793,13 +793,13 @@ class WebMediaPlayerImplTest
 
   void CreateCdm() {
     // Must use a supported key system on a secure context.
-    std::u16string key_system = u"org.w3.clearkey";
+    media::CdmConfig cdm_config = {"org.w3.clearkey", false, false, false};
     auto test_origin = WebSecurityOrigin::CreateFromString(
         WebString::FromUTF8("https://test.origin"));
 
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
-        &mock_cdm_factory_, key_system, test_origin, media::CdmConfig(),
+        &mock_cdm_factory_, test_origin, cdm_config,
         base::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();

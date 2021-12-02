@@ -266,8 +266,6 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
           std::string());
     } else if (GetParam() == TestType::kCdmAdapter) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-      CdmConfig cdm_config;  // default settings of false are sufficient.
-
       // Enable use of External Clear Key CDM.
       scoped_feature_list_.InitWithFeatures(
           {media::kExternalClearKeyForTesting}, {});
@@ -287,8 +285,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
       std::unique_ptr<CdmAuxiliaryHelper> cdm_helper(
           new MockCdmAuxiliaryHelper(std::move(allocator)));
       CdmAdapter::Create(
-          helper_->KeySystemName(), cdm_config, create_cdm_func,
-          std::move(cdm_helper),
+          helper_->CdmConfig(), create_cdm_func, std::move(cdm_helper),
           base::BindRepeating(&MockCdmClient::OnSessionMessage,
                               base::Unretained(&cdm_client_)),
           base::BindRepeating(&MockCdmClient::OnSessionClosed,

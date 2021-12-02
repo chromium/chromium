@@ -474,12 +474,10 @@ class KeySystemConfigSelectorTest : public testing::Test {
   }
 
   void OnConfigSelected(KeySystemConfigSelector::Status status,
-                        const std::string& key_system,
                         WebMediaKeySystemConfiguration* config,
                         media::CdmConfig* cdm_config) {
     if (status == KeySystemConfigSelector::Status::kSupported) {
       succeeded_count_++;
-      returned_key_system_ = key_system;
       config_ = *config;
       cdm_config_ = *cdm_config;
     } else {
@@ -496,7 +494,6 @@ class KeySystemConfigSelectorTest : public testing::Test {
   std::vector<WebMediaKeySystemConfiguration> configs_;
 
   // Holds the selected key system, configuration and CdmConfig.
-  std::string returned_key_system_;
   WebMediaKeySystemConfiguration config_;
   media::CdmConfig cdm_config_;
 
@@ -607,14 +604,14 @@ TEST_F(KeySystemConfigSelectorTest, KeySystem_ClearKey) {
   key_system_ = kClearKeyKeySystem;
   configs_.push_back(UsableConfiguration());
   SelectConfigReturnsConfig();
-  DCHECK_EQ(returned_key_system_, kClearKeyKeySystem);
+  DCHECK_EQ(cdm_config_.key_system, kClearKeyKeySystem);
 }
 
 TEST_F(KeySystemConfigSelectorTest, KeySystem_SubKeySystem) {
   key_system_ = kSupportedSubKeySystem;
   configs_.push_back(UsableConfiguration());
   SelectConfigReturnsConfig();
-  DCHECK_EQ(returned_key_system_, kSupportedKeySystem);
+  DCHECK_EQ(cdm_config_.key_system, kSupportedKeySystem);
 }
 
 // --- Disable EncryptedMedia ---

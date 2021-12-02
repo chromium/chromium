@@ -78,14 +78,13 @@ ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver() {
 }
 
 void ChromeOsCdmFactory::Create(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
     const media::SessionKeysChangeCB& session_keys_change_cb,
     const media::SessionExpirationUpdateCB& session_expiration_update_cb,
     media::CdmCreatedCB cdm_created_cb) {
-  DVLOG(1) << __func__ << " key system=" << key_system;
+  DVLOG(1) << __func__ << " cdm_config=" << cdm_config;
   // Check that the user has Verified Access enabled in their Chrome settings
   // and if they do not then block this connection since OEMCrypto utilizes
   // remote attestation as part of verification.
@@ -98,9 +97,8 @@ void ChromeOsCdmFactory::Create(
   }
   cdm_document_service_->IsVerifiedAccessEnabled(base::BindOnce(
       &ChromeOsCdmFactory::OnVerifiedAccessEnabled, weak_factory_.GetWeakPtr(),
-      key_system, cdm_config, session_message_cb, session_closed_cb,
-      session_keys_change_cb, session_expiration_update_cb,
-      std::move(cdm_created_cb)));
+      cdm_config, session_message_cb, session_closed_cb, session_keys_change_cb,
+      session_expiration_update_cb, std::move(cdm_created_cb)));
 }
 
 // static
@@ -126,7 +124,6 @@ void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
 }
 
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
@@ -151,7 +148,7 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &CreateFactoryOnTaskRunner, key_system,
+            &CreateFactoryOnTaskRunner, cdm_config.key_system,
             base::BindOnce(
                 &CreateFactoryCallback, base::ThreadTaskRunnerHandle::Get(),
                 base::BindOnce(

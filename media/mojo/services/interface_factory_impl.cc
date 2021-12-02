@@ -157,8 +157,7 @@ void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
 }
 #endif  // defined (OS_WIN)
 
-void InterfaceFactoryImpl::CreateCdm(const std::string& key_system,
-                                     const CdmConfig& cdm_config,
+void InterfaceFactoryImpl::CreateCdm(const CdmConfig& cdm_config,
                                      CreateCdmCallback callback) {
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_CDM)
@@ -176,7 +175,7 @@ void InterfaceFactoryImpl::CreateCdm(const std::string& key_system,
   pending_mojo_cdm_services_[raw_mojo_cdm_service] =
       std::move(mojo_cdm_service);
   raw_mojo_cdm_service->Initialize(
-      cdm_factory, key_system, cdm_config,
+      cdm_factory, cdm_config,
       base::BindOnce(&InterfaceFactoryImpl::OnCdmServiceInitialized,
                      weak_ptr_factory_.GetWeakPtr(), raw_mojo_cdm_service,
                      std::move(callback)));

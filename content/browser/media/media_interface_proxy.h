@@ -84,8 +84,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
 #endif  // defined(OS_WIN)
-  void CreateCdm(const std::string& key_system,
-                 const media::CdmConfig& cdm_config,
+  void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback create_cdm_cb) final;
 
  private:
@@ -124,7 +123,6 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   // library CDM if the daemon is unavailable or other settings prevent usage of
   // it.
   void OnChromeOsCdmCreated(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config,
       CreateCdmCallback callback,
       mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
@@ -140,7 +138,6 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
 
   void ConnectToMediaFoundationService(const base::FilePath& cdm_path);
   bool ShouldUseMediaFoundationServiceForCdm(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;

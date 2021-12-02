@@ -53,7 +53,6 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // `cdm_factory`, which must not be null. The MojoCdmService should NOT be
   // used before the `init_cb` is returned.
   void Initialize(CdmFactory* cdm_factory,
-                  const std::string& key_system,
                   const CdmConfig& cdm_config,
                   InitializeCB init_cb);
 

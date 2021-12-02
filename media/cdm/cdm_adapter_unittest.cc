@@ -131,7 +131,7 @@ class CdmAdapterTestBase : public testing::Test,
   ~CdmAdapterTestBase() override { CdmModule::ResetInstanceForTesting(); }
 
  protected:
-  virtual std::string GetKeySystemName() = 0;
+  virtual CdmConfig GetCdmConfig() = 0;
   virtual CdmAdapter::CreateCdmFunc GetCreateCdmFunc() = 0;
 
   int GetCdmInterfaceVersion() { return GetParam(); }
@@ -145,8 +145,7 @@ class CdmAdapterTestBase : public testing::Test,
         new StrictMock<MockCdmAuxiliaryHelper>(std::move(allocator)));
     cdm_helper_ = cdm_helper.get();
     CdmAdapter::Create(
-        GetKeySystemName(), cdm_config, GetCreateCdmFunc(),
-        std::move(cdm_helper),
+        cdm_config, GetCreateCdmFunc(), std::move(cdm_helper),
         base::BindRepeating(&MockCdmClient::OnSessionMessage,
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -162,9 +161,8 @@ class CdmAdapterTestBase : public testing::Test,
   }
 
   void InitializeAndExpect(ExpectedResult expected_result) {
-    // Default settings of false are sufficient for most tests.
-    CdmConfig cdm_config;
-    InitializeWithCdmConfigAndExpect(cdm_config, expected_result);
+    // Default CdmConfig is sufficient for most tests.
+    InitializeWithCdmConfigAndExpect(GetCdmConfig(), expected_result);
   }
 
   void OnCdmCreated(ExpectedResult expected_result,
@@ -211,7 +209,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
   }
 
   // CdmAdapterTestBase implementation.
-  std::string GetKeySystemName() override { return helper_.KeySystemName(); }
+  CdmConfig GetCdmConfig() override { return helper_.CdmConfig(); }
   CdmAdapter::CreateCdmFunc GetCreateCdmFunc() override {
     return CdmModule::GetInstance()->GetCreateCdmFunc();
   }
@@ -340,7 +338,9 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
   }
 
   // CdmAdapterTestBase implementation.
-  std::string GetKeySystemName() override { return "x-com.mock"; }
+  CdmConfig GetCdmConfig() override {
+    return {"x-com.mock", false, false, false};
+  }
   CdmAdapter::CreateCdmFunc GetCreateCdmFunc() override {
     return CreateMockLibraryCdm;
   }
@@ -450,7 +450,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSessionWithBadData) {
 
 // ChallengePlatform() will ask the helper to send platform challenge.
 TEST_P(CdmAdapterTestWithMockCdm, ChallengePlatform) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_distinctive_identifier = true;
   InitializeWithCdmConfig(cdm_config);
 
@@ -468,7 +468,8 @@ TEST_P(CdmAdapterTestWithMockCdm, ChallengePlatform) {
 // false.
 TEST_P(CdmAdapterTestWithMockCdm,
        ChallengePlatform_DistinctiveIdentifierNotAllowed) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
+  cdm_config.allow_distinctive_identifier = false;
   InitializeWithCdmConfig(cdm_config);
 
   EXPECT_CALL(*mock_library_cdm_,
@@ -482,7 +483,7 @@ TEST_P(CdmAdapterTestWithMockCdm,
 
 // CreateFileIO() will ask helper to create FileIO.
 TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
 
@@ -494,7 +495,7 @@ TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO) {
 
 // CreateFileIO() will always fail if |allow_persistent_state| is false.
 TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO_PersistentStateNotAllowed) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 
   // When |allow_persistent_state| is false, should return null immediately
@@ -506,7 +507,7 @@ TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO_PersistentStateNotAllowed) {
 
 // RequestStorageId() with version 0 (latest) is supported.
 TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_0) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
 
@@ -519,7 +520,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_0) {
 
 // RequestStorageId() with version 1 is supported.
 TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_1) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
 
@@ -532,7 +533,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_1) {
 
 // RequestStorageId() with version 2 is not supported.
 TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_2) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
 
@@ -543,7 +544,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_2) {
 
 // RequestStorageId() will always fail if |allow_persistent_state| is false.
 TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_PersistentStateNotAllowed) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 
   EXPECT_CALL(*mock_library_cdm_, OnStorageId(1, IsNull(), 0));
@@ -552,7 +553,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_PersistentStateNotAllowed) {
 }
 
 TEST_P(CdmAdapterTestWithMockCdm, GetDecryptor) {
-  CdmConfig cdm_config;
+  CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
   auto* cdm_context = cdm_->GetCdmContext();
   ASSERT_TRUE(cdm_context);

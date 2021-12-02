@@ -349,11 +349,10 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
 }
 #endif  // defined(OS_WIN)
 
-void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
-                                    const media::CdmConfig& cdm_config,
+void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                     CreateCdmCallback create_cdm_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DVLOG(1) << __func__ << ": key_system=" << key_system;
+  DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
 
   // The remote process may drop the callback (e.g. in case of crash, or CDM
   // loading/initialization failure). Doing it here instead of in the renderer
@@ -378,17 +377,16 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       // We need to intercept the callback in this case so we can fallback to
       // the library CDM in case of failure.
       factory->CreateCdm(
-          key_system, cdm_config,
-          base::BindOnce(&MediaInterfaceProxy::OnChromeOsCdmCreated,
-                         weak_factory_.GetWeakPtr(), key_system, cdm_config,
-                         std::move(callback)));
+          cdm_config, base::BindOnce(&MediaInterfaceProxy::OnChromeOsCdmCreated,
+                                     weak_factory_.GetWeakPtr(), key_system,
+                                     cdm_config, std::move(callback)));
       return;
     }
   }
   // Fallback to use library CDM below.
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
 #elif defined(OS_WIN)
-  if (ShouldUseMediaFoundationServiceForCdm(key_system, cdm_config)) {
+  if (ShouldUseMediaFoundationServiceForCdm(cdm_config)) {
     if (!cdm_config.allow_distinctive_identifier ||
         !cdm_config.allow_persistent_state) {
       DVLOG(2) << "MediaFoundationService requires both distinctive identifier "
@@ -398,12 +396,12 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
     }
 
     auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
-        key_system, CdmInfo::Robustness::kHardwareSecure);
+        cdm_config.key_system, CdmInfo::Robustness::kHardwareSecure);
     if (cdm_info) {
       DVLOG(2) << "Get MediaFoundationService with CDM path " << cdm_info->path;
       auto* factory = GetMediaFoundationServiceInterfaceFactory(cdm_info->path);
       if (factory) {
-        factory->CreateCdm(key_system, cdm_config, std::move(callback));
+        factory->CreateCdm(cdm_config, std::move(callback));
         return;
       }
     }
@@ -413,7 +411,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Fallback to use CdmFactory even if `use_hw_secure_codecs` is true.
-  auto* factory = GetCdmFactory(key_system);
+  auto* factory = GetCdmFactory(cdm_config.key_system);
 #elif BUILDFLAG(ENABLE_CAST_RENDERER)
   // CDM service lives together with renderer service if cast renderer is
   // enabled, because cast renderer creates its own audio/video decoder. Note
@@ -431,7 +429,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
     return;
   }
 
-  factory->CreateCdm(key_system, cdm_config, std::move(callback));
+  factory->CreateCdm(cdm_config, std::move(callback));
 }
 
 mojo::PendingRemote<media::mojom::FrameInterfaceFactory>
@@ -484,12 +482,11 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
 }
 
 bool MediaInterfaceProxy::ShouldUseMediaFoundationServiceForCdm(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config) {
-  DVLOG(1) << __func__ << ": this=" << this << ", key_system=" << key_system;
+  DVLOG(1) << __func__ << ": this=" << this << ", cdm_config=" << cdm_config;
 
   // TODO(xhwang): Refine this after we populate support info during EME
-  // requestMediaKeySystemAccess() query, e.g. to check both `key_system` and
+  // requestMediaKeySystemAccess() query, e.g. to check the `key_system` in
   // `cdm_config`.
   return cdm_config.use_hw_secure_codecs;
 }
@@ -565,7 +562,6 @@ void MediaInterfaceProxy::OnCdmServiceConnectionError(
 
 #if defined(OS_CHROMEOS)
 void MediaInterfaceProxy::OnChromeOsCdmCreated(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     CreateCdmCallback callback,
     mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
@@ -582,14 +578,14 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
   // We failed creating a CDM with the Chrome OS daemon, fallback to the library
   // CDM interface.
   VLOG(1) << "Failed creating Chrome OS CDM, will use library CDM";
-  auto* factory = GetCdmFactory(key_system);
+  auto* factory = GetCdmFactory(cdm_config.key_system);
   if (!factory) {
     std::move(callback).Run(mojo::NullRemote(), nullptr,
                             "Unable to find a CDM factory");
     return;
   }
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
-  factory->CreateCdm(key_system, cdm_config, std::move(callback));
+  factory->CreateCdm(cdm_config, std::move(callback));
 }
 #endif  // defined(OS_CHROMEOS)
 

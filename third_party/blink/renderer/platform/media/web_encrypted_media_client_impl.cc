@@ -119,12 +119,11 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
-    const WebString& key_system,
     const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
     std::unique_ptr<WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
-      cdm_factory_, key_system.Utf16(), security_origin, cdm_config,
+      cdm_factory_, security_origin, cdm_config,
       base::BindOnce(&CompleteWebContentDecryptionModuleResult,
                      std::move(result)));
 }
@@ -132,7 +131,6 @@ void WebEncryptedMediaClientImpl::CreateCdm(
 void WebEncryptedMediaClientImpl::OnConfigSelected(
     WebEncryptedMediaRequest request,
     KeySystemConfigSelector::Status status,
-    const std::string& key_system,
     WebMediaKeySystemConfiguration* accumulated_configuration,
     media::CdmConfig* cdm_config) {
   // Update encrypted_media_supported_types_browsertest.cc if updating these
@@ -170,8 +168,8 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
 
   // Use the returned key system which should be used for CDM creation.
   request.RequestSucceeded(WebContentDecryptionModuleAccessImpl::Create(
-      WebString::FromUTF8(key_system), origin, *accumulated_configuration,
-      *cdm_config, weak_factory_.GetWeakPtr()));
+      origin, *accumulated_configuration, *cdm_config,
+      weak_factory_.GetWeakPtr()));
 }
 
 WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(

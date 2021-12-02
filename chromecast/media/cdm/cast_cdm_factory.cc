@@ -32,7 +32,6 @@ CastCdmFactory::CastCdmFactory(
 CastCdmFactory::~CastCdmFactory() {}
 
 void CastCdmFactory::Create(
-    const std::string& key_system,
     const ::media::CdmConfig& cdm_config,
     const ::media::SessionMessageCB& session_message_cb,
     const ::media::SessionClosedCB& session_closed_cb,
@@ -43,7 +42,7 @@ void CastCdmFactory::Create(
   ::media::CdmCreatedCB bound_cdm_created_cb =
       ::media::BindToCurrentLoop(std::move(cdm_created_cb));
 
-  CastKeySystem cast_key_system(GetKeySystemByName(key_system));
+  CastKeySystem cast_key_system(GetKeySystemByName(cdm_config.key_system));
 
   DCHECK((cast_key_system == chromecast::media::KEY_SYSTEM_PLAYREADY) ||
          (cast_key_system == chromecast::media::KEY_SYSTEM_WIDEVINE));
@@ -62,7 +61,7 @@ void CastCdmFactory::Create(
                                 (cdm_config.allow_persistent_state << 1) |
                                 cdm_config.use_hw_secure_codecs;
   metrics::CastMetricsHelper::GetInstance()->RecordApplicationEventWithValue(
-      "Cast.Platform.CreateCdm." + key_system, packed_cdm_config);
+      "Cast.Platform.CreateCdm." + cdm_config.key_system, packed_cdm_config);
 
   task_runner_->PostTask(
       FROM_HERE,

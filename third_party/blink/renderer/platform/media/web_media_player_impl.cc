@@ -1615,15 +1615,14 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
     return;
   }
 
-  // Arrival of `cdm_config_` and `key_system_` unblocks recording of encrypted
-  // stats. Attempt to create the stats reporter. Note, we do NOT guard this
-  // within !was_encypted above because often the CDM arrives after the call to
+  // Arrival of `cdm_config_` unblocks recording of encrypted stats. Attempt to
+  // create the stats reporter. Note, we do NOT guard this within !was_encypted
+  // above because often the CDM arrives after the call to
   // OnEncryptedMediaInitData().
   cdm_config_ = web_cdm->GetCdmConfig();
-  key_system_ = web_cdm->GetKeySystem();
-  DCHECK(!key_system_.empty());
+  DCHECK(!cdm_config_->key_system.empty());
 
-  media_metrics_provider_->SetKeySystem(key_system_);
+  media_metrics_provider_->SetKeySystem(cdm_config_->key_system);
   if (cdm_config_->use_hw_secure_codecs)
     media_metrics_provider_->SetIsHardwareSecure();
   CreateVideoDecodeStatsReporter();
@@ -2135,7 +2134,7 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
   if (is_encrypted_ && !cdm_config_) {
     return;
   } else if (cdm_config_) {
-    DCHECK(!key_system_.empty());
+    DCHECK(!cdm_config_->key_system.empty());
   }
 
   mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder;
@@ -2148,7 +2147,7 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
       base::BindRepeating(&WebMediaPlayerImpl::GetPipelineStatistics,
                           base::Unretained(this)),
       pipeline_metadata_.video_decoder_config.profile(),
-      pipeline_metadata_.natural_size, key_system_, cdm_config_,
+      pipeline_metadata_.natural_size, cdm_config_,
       frame_->GetTaskRunner(TaskType::kInternalMedia));
 
   if (delegate_->IsFrameHidden())

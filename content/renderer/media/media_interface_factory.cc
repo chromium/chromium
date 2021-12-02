@@ -161,19 +161,17 @@ void MediaInterfaceFactory::CreateMediaFoundationRenderer(
 }
 #endif  // defined(OS_WIN)
 
-void MediaInterfaceFactory::CreateCdm(const std::string& key_system,
-                                      const media::CdmConfig& cdm_config,
+void MediaInterfaceFactory::CreateCdm(const media::CdmConfig& cdm_config,
                                       CreateCdmCallback callback) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateCdm, weak_this_,
-                                  key_system, cdm_config, std::move(callback)));
+                                  cdm_config, std::move(callback)));
     return;
   }
 
-  DVLOG(1) << __func__ << ": key_system = " << key_system;
-  GetMediaInterfaceFactory()->CreateCdm(key_system, cdm_config,
-                                        std::move(callback));
+  DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
+  GetMediaInterfaceFactory()->CreateCdm(cdm_config, std::move(callback));
 }
 
 media::mojom::InterfaceFactory*

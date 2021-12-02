@@ -32,7 +32,8 @@ using ::testing::StrictMock;
 namespace media {
 
 const char kClearKeyKeySystem[] = "org.w3.clearkey";
-const CdmConfig kHardwareSecureCdmConfig = {true, true, true};
+const CdmConfig kClearKeyHardwareSecureCdmConfig = {kClearKeyKeySystem, true,
+                                                    true, true};
 
 using Microsoft::WRL::ComPtr;
 
@@ -71,7 +72,7 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
  protected:
   void Create() {
     cdm_factory_->Create(
-        kClearKeyKeySystem, kHardwareSecureCdmConfig,
+        kClearKeyHardwareSecureCdmConfig,
         base::BindRepeating(&MockCdmClient::OnSessionMessage,
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionClosed,

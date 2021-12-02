@@ -34,7 +34,6 @@ CdmSessionAdapter::CdmSessionAdapter() : trace_id_(0) {}
 CdmSessionAdapter::~CdmSessionAdapter() = default;
 
 void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
-                                  const std::string& key_system,
                                   const media::CdmConfig& cdm_config,
                                   WebCdmCreatedCB web_cdm_created_cb) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "CdmSessionAdapter::CreateCdm",
@@ -51,14 +50,14 @@ void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
   web_cdm_created_cb_ = std::move(web_cdm_created_cb);
 
   cdm_factory->Create(
-      key_system, cdm_config,
+      cdm_config,
       base::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
       base::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
       base::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
       base::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
                           weak_this),
-      base::BindOnce(&CdmSessionAdapter::OnCdmCreated, this, key_system,
-                     cdm_config, start_time));
+      base::BindOnce(&CdmSessionAdapter::OnCdmCreated, this, cdm_config,
+                     start_time));
 }
 
 void CdmSessionAdapter::SetServerCertificate(
@@ -146,7 +145,7 @@ std::unique_ptr<media::CdmContextRef> CdmSessionAdapter::GetCdmContextRef() {
 }
 
 const std::string& CdmSessionAdapter::GetKeySystem() const {
-  return key_system_;
+  return cdm_config_.key_system;
 }
 
 const std::string& CdmSessionAdapter::GetKeySystemUMAPrefix() const {
@@ -160,7 +159,6 @@ const media::CdmConfig& CdmSessionAdapter::GetCdmConfig() const {
 }
 
 void CdmSessionAdapter::OnCdmCreated(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     base::TimeTicks start_time,
     const scoped_refptr<media::ContentDecryptionModule>& cdm,
@@ -174,7 +172,7 @@ void CdmSessionAdapter::OnCdmCreated(
       (cdm ? "true" : "false"), "error_message", error_message);
 
   auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
-      key_system, cdm_config.use_hw_secure_codecs);
+      cdm_config.key_system, cdm_config.use_hw_secure_codecs);
   auto key_system_uma_prefix = kMediaEME + key_system_name_for_uma + kDot;
   base::UmaHistogramBoolean(key_system_uma_prefix + kCreateCdmUMAName,
                             cdm ? true : false);
@@ -184,7 +182,6 @@ void CdmSessionAdapter::OnCdmCreated(
     return;
   }
 
-  key_system_ = key_system;
   key_system_uma_prefix_ = std::move(key_system_uma_prefix);
 
   // Only report time for successful CDM creation.

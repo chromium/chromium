@@ -77,8 +77,7 @@ class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
 #endif  // defined(OS_WIN)
-  void CreateCdm(const std::string& key_system,
-                 const media::CdmConfig& cdm_config,
+  void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) final;
 
  private:

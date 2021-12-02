@@ -27,13 +27,11 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
       WebContentDecryptionModuleAccess* cdm_access);
 
   static std::unique_ptr<WebContentDecryptionModuleAccessImpl> Create(
-      const WebString& key_system,
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
-      const WebString& key_system,
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
@@ -53,7 +51,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   bool UseHardwareSecureCodecs() const override;
 
  private:
-  const WebString key_system_;
   const WebSecurityOrigin security_origin_;
   const WebMediaKeySystemConfiguration configuration_;
   const media::CdmConfig cdm_config_;

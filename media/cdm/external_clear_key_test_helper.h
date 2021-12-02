@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
+#include "media/base/cdm_config.h"
 
 namespace media {
 
@@ -24,7 +25,10 @@ class ExternalClearKeyTestHelper {
 
   ~ExternalClearKeyTestHelper();
 
-  std::string KeySystemName() { return "org.chromium.externalclearkey"; }
+  CdmConfig CdmConfig() {
+    return {"org.chromium.externalclearkey", false, false, false};
+  }
+
   base::FilePath LibraryPath() { return library_path_; }
 
  private:

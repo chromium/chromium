@@ -725,7 +725,7 @@ class MockCdmKeyStatusPromise : public KeyStatusCdmPromise {
 class MockCdm : public ContentDecryptionModule {
  public:
   MockCdm();
-  MockCdm(const std::string& key_system,
+  MockCdm(const CdmConfig& cdm_config,
           const SessionMessageCB& session_message_cb,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
@@ -735,7 +735,7 @@ class MockCdm : public ContentDecryptionModule {
   MockCdm& operator=(const MockCdm&) = delete;
 
   void Initialize(
-      const std::string& key_system,
+      const CdmConfig& cdm_config,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
@@ -804,8 +804,7 @@ class MockCdmFactory : public CdmFactory {
   // This creates a StrictMock<MockCdm> when called. Although ownership of the
   // created CDM is passed to |cdm_created_cb|, a copy is kept (and available
   // using Cdm()). If |key_system| is empty, no CDM will be created.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,

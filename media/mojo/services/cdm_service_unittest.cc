@@ -49,16 +49,14 @@ class CdmFactoryWrapper : public CdmFactory {
       : cdm_factory_(cdm_factory) {}
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
               CdmCreatedCB cdm_created_cb) override {
-    cdm_factory_->Create(key_system, cdm_config, session_message_cb,
-                         session_closed_cb, session_keys_change_cb,
-                         session_expiration_update_cb,
+    cdm_factory_->Create(cdm_config, session_message_cb, session_closed_cb,
+                         session_keys_change_cb, session_expiration_update_cb,
                          std::move(cdm_created_cb));
   }
 
@@ -131,7 +129,7 @@ class CdmServiceTest : public testing::Test {
 
   void InitializeCdm(const std::string& key_system, bool expected_result) {
     cdm_factory_remote_->CreateCdm(
-        key_system, CdmConfig(),
+        {key_system, false, false, false},
         base::BindOnce(&CdmServiceTest::OnCdmCreated, base::Unretained(this),
                        expected_result));
     cdm_factory_remote_.FlushForTesting();

@@ -803,10 +803,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // |video_decode_stats_reporter_|.
   absl::optional<media::CdmConfig> cdm_config_;
 
-  // String identifying the KeySystem described by |cdm_config_|. Empty until a
-  // CDM has been attached. Used in creation |video_decode_stats_reporter_|.
-  std::string key_system_;
-
   // Tracks if we are currently flinging a video (e.g. in a RemotePlayback
   // session). Used to prevent videos from being paused when hidden.
   // TODO(https://crbug.com/839651): remove or rename this flag, when removing

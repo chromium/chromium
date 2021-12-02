@@ -60,21 +60,20 @@ MojoCdmFactory::MojoCdmFactory(
 MojoCdmFactory::~MojoCdmFactory() = default;
 
 void MojoCdmFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
-  DVLOG(2) << __func__ << ": " << key_system;
+  DVLOG(2) << __func__ << ": cdm_config=" << cdm_config;
 
   // If AesDecryptor can be used, always use it here in the local process.
   // Note: We should not run AesDecryptor in the browser process except for
   // testing. See http://crbug.com/441957.
   // Note: Previously MojoRenderer doesn't work with local CDMs, this has
   // been solved by using DecryptingRenderer. See http://crbug.com/913775.
-  if (CanUseAesDecryptor(key_system)) {
+  if (CanUseAesDecryptor(cdm_config.key_system)) {
     scoped_refptr<ContentDecryptionModule> cdm(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));
@@ -84,7 +83,7 @@ void MojoCdmFactory::Create(
   }
 
   interface_factory_->CreateCdm(
-      key_system, cdm_config,
+      cdm_config,
       base::BindOnce(&OnCdmCreated, session_message_cb, session_closed_cb,
                      session_keys_change_cb, session_expiration_update_cb,
                      std::move(cdm_created_cb)));

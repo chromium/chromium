@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
@@ -33,14 +34,13 @@ static bool ShouldCreateAesDecryptor(const std::string& key_system) {
 }
 
 void DefaultCdmFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
-  if (!ShouldCreateAesDecryptor(key_system)) {
+  if (!ShouldCreateAesDecryptor(cdm_config.key_system)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
                                   "Unsupported key system."));

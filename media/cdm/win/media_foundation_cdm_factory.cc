@@ -198,14 +198,13 @@ void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
 }
 
 void MediaFoundationCdmFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
-  DVLOG_FUNC(1) << "key_system=" << key_system;
+  DVLOG_FUNC(1) << "cdm_config=" << cdm_config;
 
   // IMFContentDecryptionModule CDMs typically require persistent storage and
   // distinctive identifier and this should be guaranteed by key system support
@@ -214,15 +213,14 @@ void MediaFoundationCdmFactory::Create(
   DCHECK(cdm_config.allow_distinctive_identifier);
 
   // Don't cache `cdm_origin_id` in this class since user can clear it any time.
-  helper_->GetMediaFoundationCdmData(base::BindOnce(
-      &MediaFoundationCdmFactory::OnCdmOriginIdObtained,
-      weak_factory_.GetWeakPtr(), key_system, cdm_config, session_message_cb,
-      session_closed_cb, session_keys_change_cb, session_expiration_update_cb,
-      std::move(cdm_created_cb)));
+  helper_->GetMediaFoundationCdmData(
+      base::BindOnce(&MediaFoundationCdmFactory::OnCdmOriginIdObtained,
+                     weak_factory_.GetWeakPtr(), cdm_config, session_message_cb,
+                     session_closed_cb, session_keys_change_cb,
+                     session_expiration_update_cb, std::move(cdm_created_cb)));
 }
 
 void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
@@ -243,19 +241,20 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
 
   // This will construct a UMA prefix to be something like (with trailing dot):
   // "Media.EME.MediaFoundationCdm.FooKeySystem.HardwareSecure.".
-  auto uma_prefix =
-      kMediaFoundationCdmUmaPrefix +
-      GetKeySystemNameForUMA(key_system, cdm_config.use_hw_secure_codecs) + ".";
+  auto uma_prefix = kMediaFoundationCdmUmaPrefix +
+                    GetKeySystemNameForUMA(cdm_config.key_system,
+                                           cdm_config.use_hw_secure_codecs) +
+                    ".";
 
   auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
       uma_prefix,
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
-                          weak_factory_.GetWeakPtr(), key_system, cdm_config,
+                          weak_factory_.GetWeakPtr(), cdm_config,
                           media_foundation_cdm_data->origin_id,
                           media_foundation_cdm_data->client_token,
                           media_foundation_cdm_data->cdm_store_path_root),
       base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
-                          weak_factory_.GetWeakPtr(), key_system),
+                          weak_factory_.GetWeakPtr(), cdm_config.key_system),
       base::BindRepeating(&MediaFoundationCdmFactory::StoreClientToken,
                           weak_factory_.GetWeakPtr()),
       session_message_cb, session_closed_cb, session_keys_change_cb,
@@ -319,12 +318,12 @@ void MediaFoundationCdmFactory::StoreClientToken(
 }
 
 HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
     const absl::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
+  const auto key_system = cdm_config.key_system;
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   RETURN_IF_FAILED(GetCdmFactory(key_system, cdm_factory));
 
@@ -369,15 +368,14 @@ HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
 }
 
 void MediaFoundationCdmFactory::CreateMfCdm(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
     const absl::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     HRESULT& hresult,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
-  hresult = CreateMfCdmInternal(key_system, cdm_config, cdm_origin_id,
-                                cdm_client_token, cdm_store_path_root, mf_cdm);
+  hresult = CreateMfCdmInternal(cdm_config, cdm_origin_id, cdm_client_token,
+                                cdm_store_path_root, mf_cdm);
 }
 
 }  // namespace media

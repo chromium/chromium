@@ -37,7 +37,6 @@ class CastCdmFactory : public ::media::CdmFactory {
 
   // ::media::CdmFactory implementation:
   void Create(
-      const std::string& key_system,
       const ::media::CdmConfig& cdm_config,
       const ::media::SessionMessageCB& session_message_cb,
       const ::media::SessionClosedCB& session_closed_cb,

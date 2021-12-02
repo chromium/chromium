@@ -82,9 +82,7 @@ class InterfaceFactoryImpl final
           renderer_extension_receiver) final;
 #endif  // defined(OS_WIN)
 
-  void CreateCdm(const std::string& key_system,
-                 const CdmConfig& cdm_config,
-                 CreateCdmCallback callback) final;
+  void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;
 
   // DeferredDestroy<mojom::InterfaceFactory> implemenation.
   void OnDestroyPending(base::OnceClosure destroy_cb) final;

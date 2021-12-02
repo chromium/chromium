@@ -125,7 +125,7 @@ class MediaServiceTest : public testing::Test {
 
   void InitializeCdm(const std::string& key_system, bool expected_result) {
     interface_factory_->CreateCdm(
-        key_system, CdmConfig(),
+        {key_system, false, false, false},
         base::BindOnce(&MediaServiceTest::OnCdmCreated, base::Unretained(this),
                        expected_result));
     // Run this to idle to complete the CreateCdm call.

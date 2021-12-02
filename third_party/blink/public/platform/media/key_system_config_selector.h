@@ -75,11 +75,8 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   // Callback for the result of `SelectConfig()`. The returned configs must be
   // non-null iff `status` is `kSupported`.
-  using SelectConfigCB =
-      base::OnceCallback<void(Status status,
-                              const std::string& key_system,
-                              WebMediaKeySystemConfiguration*,
-                              media::CdmConfig*)>;
+  using SelectConfigCB = base::OnceCallback<
+      void(Status status, WebMediaKeySystemConfiguration*, media::CdmConfig*)>;
 
   void SelectConfig(
       const WebString& key_system,

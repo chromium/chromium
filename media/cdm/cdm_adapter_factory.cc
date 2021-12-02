@@ -21,14 +21,13 @@ CdmAdapterFactory::CdmAdapterFactory(HelperCreationCB helper_creation_cb)
 CdmAdapterFactory::~CdmAdapterFactory() = default;
 
 void CdmAdapterFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
-  DVLOG(1) << __func__ << ": key_system=" << key_system;
+  DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
 
   CdmAdapter::CreateCdmFunc create_cdm_func =
       CdmModule::GetInstance()->GetCreateCdmFunc();
@@ -47,10 +46,10 @@ void CdmAdapterFactory::Create(
     return;
   }
 
-  CdmAdapter::Create(key_system, cdm_config, create_cdm_func,
-                     std::move(cdm_helper), session_message_cb,
-                     session_closed_cb, session_keys_change_cb,
-                     session_expiration_update_cb, std::move(cdm_created_cb));
+  CdmAdapter::Create(cdm_config, create_cdm_func, std::move(cdm_helper),
+                     session_message_cb, session_closed_cb,
+                     session_keys_change_cb, session_expiration_update_cb,
+                     std::move(cdm_created_cb));
 }
 
 }  // namespace media

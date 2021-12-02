@@ -227,24 +227,24 @@ MockCdmKeyStatusPromise::~MockCdmKeyStatusPromise() {
 MockCdm::MockCdm() = default;
 
 MockCdm::MockCdm(
-    const std::string& key_system,
+    const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb) {
-  Initialize(key_system, session_message_cb, session_closed_cb,
+  Initialize(cdm_config, session_message_cb, session_closed_cb,
              session_keys_change_cb, session_expiration_update_cb);
 }
 
 MockCdm::~MockCdm() = default;
 
 void MockCdm::Initialize(
-    const std::string& key_system,
+    const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb) {
-  key_system_ = key_system;
+  key_system_ = cdm_config.key_system;
   session_message_cb_ = session_message_cb;
   session_closed_cb_ = session_closed_cb;
   session_keys_change_cb_ = session_keys_change_cb;
@@ -280,15 +280,14 @@ MockCdmFactory::MockCdmFactory(scoped_refptr<MockCdm> mock_cdm)
 MockCdmFactory::~MockCdmFactory() = default;
 
 void MockCdmFactory::Create(
-    const std::string& key_system,
-    const CdmConfig& /* cdm_config */,
+    const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
   // If no key system specified, notify that Create() failed.
-  if (key_system.empty()) {
+  if (cdm_config.key_system.empty()) {
     std::move(cdm_created_cb).Run(nullptr, "CDM creation failed");
     return;
   }
@@ -297,7 +296,7 @@ void MockCdmFactory::Create(
   if (before_creation_cb_)
     before_creation_cb_.Run();
 
-  mock_cdm_->Initialize(key_system, session_message_cb, session_closed_cb,
+  mock_cdm_->Initialize(cdm_config, session_message_cb, session_closed_cb,
                         session_keys_change_cb, session_expiration_update_cb);
   std::move(cdm_created_cb).Run(mock_cdm_, "");
 }

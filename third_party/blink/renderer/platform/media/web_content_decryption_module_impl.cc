@@ -70,11 +70,12 @@ bool ConvertHdcpVersion(const WebString& hdcp_version_string,
 
 void WebContentDecryptionModuleImpl::Create(
     media::CdmFactory* cdm_factory,
-    const std::u16string& key_system,
     const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
     WebCdmCreatedCB web_cdm_created_cb) {
   DCHECK(!security_origin.IsNull());
+
+  const auto key_system = cdm_config.key_system;
   DCHECK(!key_system.empty());
 
   // TODO(ddorwin): Guard against this in supported types check and remove this.
@@ -86,11 +87,8 @@ void WebContentDecryptionModuleImpl::Create(
   }
 
   // TODO(ddorwin): This should be a DCHECK.
-  std::string key_system_ascii = base::UTF16ToASCII(key_system);
-  if (!media::KeySystems::GetInstance()->IsSupportedKeySystem(
-          key_system_ascii)) {
-    std::string message =
-        "Keysystem '" + key_system_ascii + "' is not supported.";
+  if (!media::KeySystems::GetInstance()->IsSupportedKeySystem(key_system)) {
+    std::string message = "Keysystem '" + key_system + "' is not supported.";
     std::move(web_cdm_created_cb).Run(nullptr, message);
     return;
   }
@@ -107,8 +105,7 @@ void WebContentDecryptionModuleImpl::Create(
   // |web_cdm_created_cb|), it will keep a reference to |adapter|. Otherwise,
   // |adapter| will be destructed.
   scoped_refptr<CdmSessionAdapter> adapter(new CdmSessionAdapter());
-  adapter->CreateCdm(cdm_factory, key_system_ascii, cdm_config,
-                     std::move(web_cdm_created_cb));
+  adapter->CreateCdm(cdm_factory, cdm_config, std::move(web_cdm_created_cb));
 }
 
 WebContentDecryptionModuleImpl::WebContentDecryptionModuleImpl(
@@ -160,10 +157,6 @@ void WebContentDecryptionModuleImpl::GetStatusForPolicy(
 std::unique_ptr<media::CdmContextRef>
 WebContentDecryptionModuleImpl::GetCdmContextRef() {
   return adapter_->GetCdmContextRef();
-}
-
-std::string WebContentDecryptionModuleImpl::GetKeySystem() const {
-  return adapter_->GetKeySystem();
 }
 
 media::CdmConfig WebContentDecryptionModuleImpl::GetCdmConfig() const {

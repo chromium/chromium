@@ -171,7 +171,6 @@ using crash_reporter::ScopedCrashKeyString;
 
 // static
 void CdmAdapter::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     CreateCdmFunc create_cdm_func,
     std::unique_ptr<CdmAuxiliaryHelper> helper,
@@ -180,16 +179,15 @@ void CdmAdapter::Create(
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
-  DCHECK(!key_system.empty());
+  DCHECK(!cdm_config.key_system.empty());
   DCHECK(session_message_cb);
   DCHECK(session_closed_cb);
   DCHECK(session_keys_change_cb);
   DCHECK(session_expiration_update_cb);
 
-  scoped_refptr<CdmAdapter> cdm =
-      new CdmAdapter(key_system, cdm_config, create_cdm_func, std::move(helper),
-                     session_message_cb, session_closed_cb,
-                     session_keys_change_cb, session_expiration_update_cb);
+  scoped_refptr<CdmAdapter> cdm = new CdmAdapter(
+      cdm_config, create_cdm_func, std::move(helper), session_message_cb,
+      session_closed_cb, session_keys_change_cb, session_expiration_update_cb);
 
   // |cdm| ownership passed to the promise.
   cdm->Initialize(
@@ -197,7 +195,6 @@ void CdmAdapter::Create(
 }
 
 CdmAdapter::CdmAdapter(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     CreateCdmFunc create_cdm_func,
     std::unique_ptr<CdmAuxiliaryHelper> helper,
@@ -205,8 +202,7 @@ CdmAdapter::CdmAdapter(
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb)
-    : key_system_(key_system),
-      cdm_config_(cdm_config),
+    : cdm_config_(cdm_config),
       create_cdm_func_(create_cdm_func),
       helper_(std::move(helper)),
       session_message_cb_(session_message_cb),
@@ -219,7 +215,7 @@ CdmAdapter::CdmAdapter(
       pool_(new AudioBufferMemoryPool()) {
   DVLOG(1) << __func__;
 
-  DCHECK(!key_system_.empty());
+  DCHECK(!cdm_config.key_system.empty());
   DCHECK(create_cdm_func_);
   DCHECK(helper_);
   DCHECK(session_message_cb_);
@@ -267,7 +263,7 @@ void CdmAdapter::Initialize(std::unique_ptr<media::SimpleCdmPromise> promise) {
   DVLOG(1) << __func__;
   TRACE_EVENT0("media", "CdmAdapter::Initialize");
 
-  cdm_.reset(CreateCdmInstance(key_system_));
+  cdm_.reset(CreateCdmInstance(cdm_config_.key_system));
   if (!cdm_) {
     promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR, 0,
                     "Unable to create CDM.");
@@ -735,7 +731,7 @@ void CdmAdapter::OnRejectPromise(uint32_t promise_id,
   // This is the central place for library CDM promise rejection. Cannot report
   // this in more generic classes like CdmPromise or CdmPromiseAdapter because
   // they may be used multiple times in one promise chain that involves IPC.
-  ReportSystemCodeUMA(key_system_, system_code);
+  ReportSystemCodeUMA(cdm_config_.key_system, system_code);
 
   // UMA to help track file related errors. See http://crbug.com/410630
   if (system_code == 0x27) {

@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
 
   // media::CdmFactory implementation.
   void Create(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config,
       const media::SessionMessageCB& session_message_cb,
       const media::SessionClosedCB& session_closed_cb,
@@ -68,7 +67,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
 
  private:
   void OnVerifiedAccessEnabled(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config,
       const media::SessionMessageCB& session_message_cb,
       const media::SessionClosedCB& session_closed_cb,
