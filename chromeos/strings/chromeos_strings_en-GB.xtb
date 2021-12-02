@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
-<translation id="1857850044054738019">Select this option if the device is being restocked or refurbished for
-        distribution to a new customer.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">metered Wi-Fi</translation>
 <translation id="3583278742022654445">Weak signal strength. Try moving closer to the Wi-Fi signal source.</translation>
 <translation id="3595596368722241419">Battery full</translation>
-<translation id="360089215033199597">Connecting to Wi-Fi is recommended to make the repair process easier.
-        Your network will be saved.</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
@@ -436,9 +432,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
-<translation id="7451112128070628323">Select this option if the ownership of the device isn't changing.
-        For example, the device is being transferred to a different person
-        within an organisation.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7487067081878637334">Technology</translation>
 <translation id="7490813197707563893">MAC address</translation>

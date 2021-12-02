@@ -1612,7 +1612,6 @@
 <translation id="2627424346328942291">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2628770867680720336">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ Chromebook ಅನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android ಆ್ಯಪ್‌ ಅನ್ನು ಡೆವಲಪ್ ಮಾಡಿ</translation>
-<translation id="2630681426381349926">ಪ್ರಾರಂಭಿಸಲು ವೈ-ಫೈ ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2631498379019108537">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಇನ್‌ಪುಟ್‌ ಆಯ್ಕೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ಸ್ಥಾಪನೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ, ಆದರೆ ಇದರ ಡಿಸ್ಕ್ ಇಮೇಜ್‌ನಿಂದ ಚಾಲನೆಗೊಳ್ಳುವುದನ್ನು ಮುಂದುವರಿಸುತ್ತದೆ.</translation>
@@ -1772,7 +1771,6 @@
 <translation id="2783321960289401138">ಶಾರ್ಟ್‌ಕಟ್‌ ರಚಿಸಿ....</translation>
 <translation id="2783829359200813069">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಪ್ರಕಾರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀ ಬಳಸಿ</translation>
-<translation id="2784407158394623927">ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2785873697295365461">ಫೈಲ್ ವಿವರಣೆಗಳು</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1991,7 +1989,6 @@
 <translation id="3003623123441819449">CSS ಕ್ಯಾಷ್</translation>
 <translation id="3003828226041301643">ಡೊಮೇನ್‌ಗೆ ಸಾಧನವನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಾಧನಗಳನ್ನು ಸೇರಿಸಲು ನೀವು ಸವಲತ್ತುಗಳನ್ನು ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3003967365858406397">ಖಾಸಗಿ ವೈ-ಫೈ ಸಂಪರ್ಕವನ್ನು ನಿಮ್ಮ <ph name="PHONE_NAME" /> ರಚಿಸುತ್ತದೆ.</translation>
-<translation id="3004391367407090544">ದಯವಿಟ್ಟು ನಂತರ ಮರಳಿ ಬನ್ನಿ</translation>
 <translation id="3006881078666935414">ಯಾವುದೇ ಬಳಕೆ ಡೇಟಾ ಇಲ್ಲ</translation>
 <translation id="3007771295016901659">ನಕಲಿ ಟ್ಯಾಬ್‌</translation>
 <translation id="3008232374986381779">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಪರಿಕರಗಳು, ಎಡಿಟರ್‌ಗಳು ಮತ್ತು IDE ಗಳನ್ನು ರನ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -2411,7 +2408,6 @@
 <translation id="3451753556629288767">ಫೈಲ್‌ಗಳ ಪ್ರಕಾರಗಳನ್ನು ತೆರೆಯಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3452999110156026232">ಪೋಷಕ ಪ್ರವೇಶ</translation>
 <translation id="3453612417627951340">ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ</translation>
-<translation id="3454157711543303649">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3454213325559396544">ಈ <ph name="DEVICE_TYPE" /> ಗಾಗಿ, ಇದು ಕೊನೆಯ ಸಾಫ್ಟ್‌ವೇರ್ ಹಾಗೂ ಸುರಕ್ಷತಾ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ. ಭವಿಷ್ಯದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ಹೊಸ ಮಾಡೆಲ್‌ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
 <translation id="3455436146814891176">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="345693547134384690">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ &amp;ಇಮೇಜ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -3727,7 +3723,6 @@
 <translation id="4853020600495124913">&amp;ಹೊಸ ವಿಂಡೋನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4854317507773910281">ಅನುಮೋದನೆ ಪಡೆಯಲು, ಪೋಷಕರ ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="485480310608090163">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಅನುಮತಿಗಳು</translation>
-<translation id="4856478137399998590">ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಮತ್ತು ಬಳಕೆಗೆ ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="4858792381671956233">ಈ ಸೈಟ್ ಅನ್ನು ಭೇಟಿ ಮಾಡಬಹುದು ಎಂದು ನಿಮ್ಮ ಪೋಷಕರಿಗೆ ನೀವು ಕೇಳಿರುವಿರಿ.</translation>
 <translation id="4858913220355269194">ಫ್ರಿಟ್ಜ್</translation>
 <translation id="4862642413395066333">OCSP ಪ್ರತಿಕ್ರಿಯೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -4447,7 +4442,6 @@
 <translation id="5614553682702429503">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸುವುದೇ?</translation>
 <translation id="5616726534702877126">ಗಾತ್ರವನ್ನು ಕಾಯ್ದಿರಿಸಿ</translation>
 <translation id="561698261642843490">Firefox ಅನ್ನು ಮುಚ್ಚಿ</translation>
-<translation id="5618333180342767515">(ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು)</translation>
 <translation id="56197088284879152">ರಿಮೋಟ್ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕವು ದಟ್ಟಣೆಯಿಂದ ಕೂಡಿದೆ: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" /> ಗೆ DevTools ಪೂರ್ಣ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.
@@ -6940,7 +6934,6 @@
 <translation id="8188389033983459049">ನಿಮ್ಮ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="8189306097519446565">ಶಾಲಾ ಖಾತೆಗಳು</translation>
 <translation id="8189750580333936930">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8191230140820435481">ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ವಿಸ್ತರಣೆಗಳು, ಮತ್ತು ಥೀಮ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8192944472786724289">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು <ph name="APP_NAME" /> ಬಯಸುತ್ತದೆ.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

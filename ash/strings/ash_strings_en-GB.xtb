@@ -606,7 +606,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" />isn't on this device.</translation>
 <translation id="495046168593986294">Scroll up</translation>
 <translation id="4952936045814352993">Locate phone is not available when alarm sounds are disabled</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requires you to roll back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
@@ -955,7 +954,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="7430878839542012341">Delete this search from your history?</translation>
 <translation id="7434543979546293336">Marked as a key idea</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
-<translation id="7456049842111127849">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>

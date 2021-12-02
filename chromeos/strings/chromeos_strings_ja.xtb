@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
-<translation id="1857850044054738019">デバイスを保管または修理して新しい顧客に配布する場合は、このオプションを選択します。</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
-<translation id="360089215033199597">修理手続きをスムーズに進めるため、Wi-Fi に接続することをおすすめします。
-        ネットワークは保存されます。</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
-<translation id="7451112128070628323">デバイスの所有者が変わらない場合は、このオプションを選択します。
-        たとえば、組織内の他の人がデバイスを使う場合などです。</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7487067081878637334">テクノロジー</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>

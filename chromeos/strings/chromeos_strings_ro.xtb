@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
-<translation id="1857850044054738019">Selectează această opțiune dacă dispozitivul este înlocuit sau recondiționat pentru distribuirea către un client nou.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3583278742022654445">Semnal slab. Apropie-te de sursa semnalului Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
-<translation id="360089215033199597">Conectarea la Wi-Fi este recomandată pentru a simplifica procesul de reparare.
-        Rețeaua se va salva.</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
-<translation id="7451112128070628323">Selectează această opțiune dacă nu se schimbă calitatea de proprietar al dispozitivului.
-        De exemplu, dispozitivul este transferat unei alte persoane din organizație.</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7487067081878637334">Tehnologie</translation>
 <translation id="7490813197707563893">Adresă MAC</translation>

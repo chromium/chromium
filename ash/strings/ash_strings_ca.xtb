@@ -606,7 +606,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4925542575807923399">L'administrador d'aquest compte requereix que sigui el primer compte que iniciï la sessió en una sessió amb inici de sessió múltiple.</translation>
 <translation id="4945196315133970626">Desactiva les notificacions</translation>
 <translation id="4946376291507881335">Captura</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> no està disponible en aquest dispositiu.</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
 <translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requereix que el dispositiu <ph name="DEVICE_TYPE" /> torni a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
@@ -955,7 +954,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7430878839542012341">Vols suprimir aquesta cerca de l'historial?</translation>
 <translation id="7434543979546293336">S'ha marcat com a idea clau</translation>
 <translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
-<translation id="7456049842111127849">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
@@ -1017,6 +1015,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7868900307798234037">Has desbloquejat el dispositiu amb empremta digital</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Canvia el dispositiu a la versió anterior ara}=1{Canvia el dispositiu a la versió anterior en el termini d’1 segon}other{Canvia el dispositiu a la versió anterior en el termini de # segons}}</translation>
 <translation id="7886169021410746335">Ajustar la configuració de privadesa</translation>
 <translation id="7886277072580235377">Les dades de la sessió a Internet s'esborraran en tancar-la. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envia un correu electrònic</translation>

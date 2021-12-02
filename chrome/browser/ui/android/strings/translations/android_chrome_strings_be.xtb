@@ -813,6 +813,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="5810864297166300463">Дапамога пры рабоце ў інтэрнэце</translation>
+<translation id="5813552293717797987">Гэтым браўзерам кіруюць карыстальнікі <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Увядзіце тэкст тут або націсніце на значок мікрафона, каб пачаць пошук</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="583281660410589416">Невядома</translation>
@@ -1077,6 +1078,7 @@
 <translation id="727288900855680735">Адправіць код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблакіраваны сайт</translation>
 <translation id="7286572596625053347">Змяніць мову (<ph name="LANGUAGE" />)?</translation>
+<translation id="7286703216224610554">Абагульваць толькі рэакцыю</translation>
 <translation id="7290209999329137901">Перайменаванне недаступнае</translation>
 <translation id="7291910923717764901">Дададзены апісанні відарысаў на гэтай старонцы</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
@@ -1157,6 +1159,7 @@
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="7655900163790317559">Уключаецца Bluetooth…</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7663313374500954251">Гэтым браўзерам кіруе карыстальнік <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Дадаць уліковы запіс</translation>
 <translation id="766587987807204883">Тут паказваюцца артыкулы, якія можна чытаць нават па-за сеткай</translation>
 <translation id="7682724950699840886">Паспрабуйце наступнае: праверце, ці дастаткова месца на прыладзе, затым паўтарыце экспарт.</translation>

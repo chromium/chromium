@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
 <translation id="1851218745569890714">የቪዲዮ ጉባዔ</translation>
-<translation id="1857850044054738019">መሣሪያው ወደ አዲስ ደንበኛ ለማሰራጨት
-        ዳግም እየተከማቸ ወይም እየታደሰ ከሆነ ይህንን አማራጭ ይምረጡ።</translation>
 <translation id="1874612839560830905">ኤምቲዩ</translation>
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3583278742022654445">ደካማ የሲግናል ጥንካሬ። ወደ Wi-Fi ሲግናል ምንጭ ለመቅረብ ይሞክሩ።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
-<translation id="360089215033199597">የጥገና ሂደቱን ቀላል ለማድረግ ከWi-Fi ጋር መገናኘት ይመከራል።
-        አውታረ መረብዎ ይቀመጣል።</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
-<translation id="7451112128070628323">የመሳሪያው ባለቤትነት ካልተቀየረ ይህን አማራጭ ይምረጡ።
-        ለምሳሌ፣ መሣሪያው በድርጅቱ ውስጥ
-        ወደ ሌላ ሰው እየተላለፈ ነው።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7487067081878637334">ቴክኖሎጂ</translation>
 <translation id="7490813197707563893">የማክ አድራሻ</translation>

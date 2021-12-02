@@ -1619,7 +1619,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2627424346328942291">Det går inte att dela</translation>
 <translation id="2628770867680720336">Du måste återställa denna Chromebook till standardinställningarna om du vill aktivera felsökning med ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Utveckla Android-appar</translation>
-<translation id="2630681426381349926">Anslut till wifi om du vill börja</translation>
 <translation id="2631498379019108537">Visa inmatningsalternativ på hyllan</translation>
 <translation id="2633212996805280240">Vill du ta bort <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101">Installationen av <ph name="PRODUCT_NAME" /> kunde inte slutföras, men programmet kommer att fortsätta köras från diskavbildningen.</translation>
@@ -1712,6 +1711,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2721037002783622288">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Kontrollerade användare har inaktiverats av administratören.</translation>
+<translation id="2722540561488096675">Enheten stängs av om <ph name="TIME_LEFT" />. Ta bort USB-minnet innan du startar om enheten. Sedan kan du börja använda <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">WebRTC-loggar</translation>
 <translation id="272488616838512378">Enhetskonvertering</translation>
 <translation id="2725200716980197196">Nätverksanslutning har återställts</translation>
@@ -1779,7 +1779,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2783321960289401138">Skapa genväg ...</translation>
 <translation id="2783829359200813069">Välj krypteringstyper</translation>
 <translation id="2783952358106015700">Använd säkerhetsnyckeln med <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Den mobila datatjänsten aktiveras</translation>
 <translation id="2785873697295365461">Filbeskrivningar</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1998,7 +1997,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3003623123441819449">CSS-cacheminne</translation>
 <translation id="3003828226041301643">Det gick inte att ansluta enheten till domänen. Kontrollera att du använder ett konto med behörighet att lägga till enheter.</translation>
 <translation id="3003967365858406397">En privat wifi-anslutning skapas i <ph name="PHONE_NAME" />.</translation>
-<translation id="3004391367407090544">Kom tillbaka senare</translation>
 <translation id="3006881078666935414">Ingen användningsdata tillgänglig</translation>
 <translation id="3007771295016901659">Duplicera flik</translation>
 <translation id="3008232374986381779">Kör verktyg, redigerare och IDE:er för Linux på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -2418,7 +2416,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3451753556629288767">Får öppna vissa filtyper</translation>
 <translation id="3452999110156026232">Föräldraåtkomst</translation>
 <translation id="3453612417627951340">Auktorisering behövs</translation>
-<translation id="3454157711543303649">Aktiveringen har slutförts</translation>
 <translation id="3454213325559396544">Detta är den sista automatiska programvaru- och säkerhetsuppdateringen för <ph name="DEVICE_TYPE" />. Uppgradera till en nyare modell om du vill få uppdateringar i framtiden.</translation>
 <translation id="3455436146814891176">Lösenord för synkroniseringskryptering</translation>
 <translation id="345693547134384690">Öppna &amp;bild i ny flik</translation>
@@ -3733,7 +3730,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4853020600495124913">Öppna i &amp;nytt fönster</translation>
 <translation id="4854317507773910281">Välj vilket föräldrakonto som ska godkänna</translation>
 <translation id="485480310608090163">Fler inställningar och behörigheter</translation>
-<translation id="4856478137399998590">Datatjänsten har aktiverats och är klar att användas</translation>
 <translation id="4858792381671956233">Du har frågat dina föräldrar om lov att besöka den här webbplatsen.</translation>
 <translation id="4858913220355269194">Fotboll</translation>
 <translation id="4862642413395066333">Signera OCSP-svar</translation>
@@ -4453,7 +4449,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5616726534702877126">Reservera storlek</translation>
 <translation id="561698261642843490">Stäng Firefox</translation>
-<translation id="5618333180342767515">(det kan ta några minuter)</translation>
 <translation id="56197088284879152">Anslutningen till fjärrenheten <ph name="DEVICE_NAME" /> är överbelastad.</translation>
 <translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
 <translation id="5620568081365989559">DevTools kräver fullständig åtkomst till <ph name="FOLDER_PATH" />. Lämna inte ut känsliga uppgifter.</translation>
@@ -4569,6 +4564,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5739235828260127894">Väntar på verifiering. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Mycket stor</translation>
 <translation id="5740328398383587084">Närdelning</translation>
+<translation id="5740709157181662145">Maskinvarustöd och stabilitet för <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Skärmspegling</translation>
 <translation id="574209121243317957">Ton</translation>
 <translation id="5746169159649715125">Spara som PDF</translation>
@@ -6947,7 +6943,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8188389033983459049">Kontrollera enhetsinställningarna och aktivera Bluetooth om du vill fortsätta</translation>
 <translation id="8189306097519446565">Skolkonton</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Ansluter till <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Hantera dina appar, tillägg och teman</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> vill dela det som visas på skärmen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

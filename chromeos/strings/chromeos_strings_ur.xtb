@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
-<translation id="1857850044054738019">اگر آلہ کو نئے کسٹمر میں تقسیم کے لیے دوبارہ اسٹاک کیا جا رہا ہے یا اس کے لیے
-        استعمال کیا جا رہا ہے تو اس اختیار کو منتخب کریں۔</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3583278742022654445">‏کمزور سگنل کی مضبوطی۔ Wi-Fi سگنل ماخذ کے قریب منتقل کرنے کی کوشش کریں۔</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
-<translation id="360089215033199597">‏مرمت کے عمل کو آسان بنانے کے لیے Wi-Fi سے منسلک ہونے کی تجویز کی جاتی ہے۔
-        آپ کے نیٹ ورک کو محفوظ کیا جائے گا۔</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
@@ -435,9 +431,6 @@
 <translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
-<translation id="7451112128070628323">اگر آلہ کی ملکیت تبدیل نہیں ہو رہی ہے تو اس اختیار کو منتخب کریں۔
-        مثال کے طور پر، آلہ تنظیم کے اندر موجود
-        کسی دوسرے شخص کو منتقل کیا جا رہا ہے۔</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
 <translation id="7487067081878637334">ٹیکنالوجی</translation>
 <translation id="7490813197707563893">‏MAC پتہ</translation>

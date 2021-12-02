@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканіраванне скасоўваецца</translation>
 <translation id="1851218745569890714">Відэаканферэнцыі</translation>
-<translation id="1857850044054738019">Выберыце гэты параметр, калі прылада адпраўляецца на склад або на аднаўленне для продажу новаму кліенту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
@@ -160,8 +159,6 @@
 <translation id="357889014807611375">Wi-Fi з улікам трафіка</translation>
 <translation id="3583278742022654445">Нізкая магутнасць сігналу. Перамясціцеся бліжэй да крыніцы сігналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
-<translation id="360089215033199597">Для спрашчэння працэсу рамонту рэкамендуем падключыцца да Wi-Fi.
-        Ваша сетка будзе захавана.</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3606583719724308068">Высокая затрымка на вэб-сайтах HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (праверка)</translation>
@@ -434,8 +431,6 @@
 <translation id="7415801143053185905">Вельмі вялікая затрымка HTTP-запытаў</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}}</translation>
-<translation id="7451112128070628323">Выберыце гэты параметр, калі права ўласнасці на прыладу не зменіцца
-        (напрыклад, калі прылада перадаецца іншай асобе ўнутры арганізацыі).</translation>
 <translation id="7469648432129124067">Выяўлены партал</translation>
 <translation id="7487067081878637334">Тэхналогія</translation>
 <translation id="7490813197707563893">MAC-адрас</translation>

@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
-<translation id="1857850044054738019">Zgjidh këtë opsion nëse pajisja do të jetë sërish në gjendje ose do të rinovohet
-        për t'u dërguar te një klient i ri.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
@@ -431,9 +429,6 @@
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
-<translation id="7451112128070628323">Zgjidh këtë opsion nëse zotërimi i pajisjes nuk do të ndryshojë.
-        Për shembull, pajisja po transferohet te një person tjetër
-        brenda një organizate.</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7487067081878637334">Teknologjia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>

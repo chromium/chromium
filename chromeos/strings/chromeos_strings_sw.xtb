@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
 <translation id="1851218745569890714">Mikutano ya Video</translation>
-<translation id="1857850044054738019">Teua chaguo hili ikiwa kifaa kinaletwa dukani baada ya kuisha au kinarekebishwa
-        ili kisambazwe kwa mteja mpya.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Sahihisho la maunzi</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi inayopima data</translation>
 <translation id="3583278742022654445">Muunganisho wa mtandao ni dhaifu. Jaribu kusogea karibu na chanzo cha mawimbi ya Wi-Fi.</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
-<translation id="360089215033199597">Tunapendekeza uunganishe kwenye Wi-Fi ili urahisishe mchakato wa kurekebisha.
-        Mtandao wako utahifadhiwa.</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
 <translation id="3606583719724308068">Muda mwingi wa kusubiri maombi ya tovuti za HTTPS</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
@@ -435,9 +431,6 @@
 <translation id="7415801143053185905">Muda mwingi sana wa kusubiri maombi ya HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Imemaliza kuchanganua. Ukurasa mmoja umechanganuliwa}other{Imemaliza kuchanganua. Kurasa {NUMBER_OF_PAGES} zimechanganuliwa}}</translation>
-<translation id="7451112128070628323">Teua chaguo hili ikiwa umiliki wa kifaa haubadiliki.
-        Kwa mfano, ikiwa kifaa kinapewa mtu tofauti
-         ndani ya shirika.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7487067081878637334">Teknolojia</translation>
 <translation id="7490813197707563893">Anwani ya MAC</translation>

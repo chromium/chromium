@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканерлеу тоқтатылуда</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
-<translation id="1857850044054738019">Жаңа клиентке сату үшін құрылғы қоймаға қайтарылған немесе жөнделген болса, осы опцияны таңдаңыз.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
@@ -159,8 +158,6 @@
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
-<translation id="360089215033199597">Жөндеу жұмысын жеңілдету үшін Wi-Fi желісіне қосылған жөн.
-        Желі сақталады.</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
@@ -428,7 +425,6 @@
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
-<translation id="7451112128070628323">Бұл құрылғының иесі өзгермесе (мысалы, құрылғы ұйымдағы басқа адамға берілсе), осы опцияны таңдаңыз.</translation>
 <translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>

@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1851218745569890714">화상 회의</translation>
-<translation id="1857850044054738019">기기가 새 고객에게 제공되는 절차 중에 재입고되거나 리퍼 처리되는 경우 이 옵션을 선택하세요.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3583278742022654445">신호 강도가 약합니다. Wi-Fi 신호 소스 가까이 이동해 보세요.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
-<translation id="360089215033199597">수리 과정을 간편하게 진행하려면 Wi-Fi에 연결하는 것이 좋습니다.
-        네트워크가 저장됩니다.</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
-<translation id="7451112128070628323">기기 소유자가 변경되지 않으면 이 옵션을 선택하세요.
-        예를 들어 기기가 조직 내 다른 사용자에게 이전되는 경우입니다.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7487067081878637334">테크놀로지</translation>
 <translation id="7490813197707563893">MAC 주소</translation>

@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skannimise tühistamine</translation>
 <translation id="1851218745569890714">Videokonverents</translation>
-<translation id="1857850044054738019">Tehke see valik, kui seade läheb uuesti lattu või see taastatakse, et anda edasi uuele kliendile.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">mahupõhine WiFi</translation>
 <translation id="3583278742022654445">Signaal on nõrk. Liikuge WiFi-signaali allikale lähemale.</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
-<translation id="360089215033199597">Paranduse lihtsustamiseks on soovitatav luua WiFi-ühendus.
-        Teie võrk salvestatakse.</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7415801143053185905">Väga pikk HTTP latentsusaeg</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti üks leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte}}</translation>
-<translation id="7451112128070628323">Tehke see valik, kui seadme omandiline kuuluvus ei muutu.
-        Näiteks antakse seade organisatsioonis edasi teisele inimesele.</translation>
 <translation id="7469648432129124067">Tuvastati portaal</translation>
 <translation id="7487067081878637334">Tehnoloogia</translation>
 <translation id="7490813197707563893">MAC-aadress</translation>

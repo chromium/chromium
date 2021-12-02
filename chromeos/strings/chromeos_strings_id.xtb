@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
-<translation id="1857850044054738019">Pilih opsi ini jika perangkat sedang di-stok ulang atau di-refurbished untuk
-        distribusi kepada pelanggan baru.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
-<translation id="360089215033199597">Sebaiknya hubungkan ke Wi-Fi untuk mempermudah proses perbaikan.
-        Jaringan Anda akan disimpan.</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
-<translation id="7451112128070628323">Pilih opsi ini jika kepemilikan perangkat tidak berubah.
-        Misalnya, perangkat sedang ditransfer kepada pengguna lain
-        dalam organisasi.</translation>
 <translation id="7469648432129124067">Portal terdeteksi</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>

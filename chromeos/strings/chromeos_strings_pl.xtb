@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1851218745569890714">Rozmowy wideo</translation>
-<translation id="1857850044054738019">Wybierz tę opcję, jeśli urządzenie zostało przywrócone do użytku lub odnowione w celu przekazania nowemu klientowi.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3583278742022654445">Słaby sygnał. Zbliż się do źródła sygnału Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
-<translation id="360089215033199597">Aby ułatwić proces naprawy, zalecamy połączenie się przez Wi-Fi.
-        Oszczędzisz dane sieciowe.</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
@@ -435,8 +432,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
-<translation id="7451112128070628323">Wybierz tę opcję, jeśli nie zmienia się właściciel urządzenia.
-        Na przykład: kiedy urządzenie zostaje przekazane innemu członkowi organizacji.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7487067081878637334">Technologia</translation>
 <translation id="7490813197707563893">Adres MAC</translation>

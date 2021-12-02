@@ -1594,7 +1594,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2627424346328942291">No se puede compartir</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
-<translation id="2630681426381349926">Conéctate a una red Wi-Fi para comenzar</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la biblioteca</translation>
 <translation id="2633212996805280240">¿Quieres eliminar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no pudo completar la instalación, pero se continuará ejecutando desde la imagen de disco.</translation>
@@ -1687,6 +1686,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2721037002783622288">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">El administrador inhabilitó a los usuarios supervisados.</translation>
+<translation id="2722540561488096675">El dispositivo se apagará en <ph name="TIME_LEFT" />. Quita el USB antes de volver a prender el dispositivo. Luego, podrás empezar a usar <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
@@ -1754,7 +1754,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2783321960289401138">Crear acceso directo…</translation>
 <translation id="2783829359200813069">Seleccionar tipos de encriptación</translation>
 <translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Activando el servicio de datos para celulares</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1973,7 +1972,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3003623123441819449">Caché CSS</translation>
 <translation id="3003828226041301643">No se puede unir el dispositivo al dominio. Asegúrate de que tu cuenta tenga privilegios para agregarlos.</translation>
 <translation id="3003967365858406397">Tu número <ph name="PHONE_NAME" /> creará una conexión de Wi-Fi privada.</translation>
-<translation id="3004391367407090544">Regresa más tarde</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
 <translation id="3008232374986381779">Ejecuta las herramientas, los editores de código y los IDE de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -2392,7 +2390,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3451753556629288767">Puede abrir determinados tipos de archivos</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453612417627951340">Autorización requerida</translation>
-<translation id="3454157711543303649">Activación completa</translation>
 <translation id="3454213325559396544">Esta es la última actualización automática de software y seguridad para el dispositivo <ph name="DEVICE_TYPE" />. Para recibir futuras actualizaciones, obtén un modelo más nuevo.</translation>
 <translation id="3455436146814891176">Contraseña de encriptación para los datos sincronizados</translation>
 <translation id="345693547134384690">Abrir &amp;imagen en una pestaña nueva</translation>
@@ -3692,7 +3689,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
-<translation id="4856478137399998590">Tu servicio de datos para celulares está activado y listo para ser utilizado</translation>
 <translation id="4858792381671956233">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
@@ -4407,7 +4403,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5616726534702877126">Reservar espacio</translation>
 <translation id="561698261642843490">Cerrar Firefox</translation>
-<translation id="5618333180342767515">(esto puede llevar algunos minutos)</translation>
 <translation id="56197088284879152">La conexión está congestionada en un dispositivo remoto: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita el modo de captura de pantalla.</translation>
 <translation id="5620568081365989559">DevTools solicita acceso completo a <ph name="FOLDER_PATH" />. Asegúrate de no revelar información confidencial.</translation>
@@ -4519,6 +4514,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5739235828260127894">La verificación está pendiente. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Muy grande</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
+<translation id="5740709157181662145">Asistencia y estabilidad del hardware de <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Duplicación de pantalla</translation>
 <translation id="574209121243317957">Tono</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
@@ -6884,7 +6880,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8188389033983459049">Revisa la configuración del dispositivo y activa la conexión Bluetooth para continuar</translation>
 <translation id="8189306097519446565">Cuentas de instituciones educativas</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Estableciendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrar tus aplicaciones, extensiones y temas</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

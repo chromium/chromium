@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
-<translation id="4947229553198882488">이 기기에 <ph name="UNAVAILABLE_APPS" /> 앱이 없습니다.</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백할 것을 요구합니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
@@ -955,7 +954,6 @@
 <translation id="7430878839542012341">기록에서 검색어를 삭제하시겠습니까?</translation>
 <translation id="7434543979546293336">핵심 아이디어로 표시됨</translation>
 <translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
-<translation id="7456049842111127849">캡처 모드, 기본값은 <ph name="SOURCE" /> <ph name="TYPE" />입니다.</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>

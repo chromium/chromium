@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
-<translation id="1857850044054738019">Ορίστε αυτήν την επιλογή εάν η συσκευή ανεφοδιάζεται ή ανακατασκευάζεται για
-        διανομή σε νέο πελάτη.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="3583278742022654445">Ασθενές σήμα. Δοκιμάστε να πλησιάσετε περισσότερο την πηγή του σήματος Wi-Fi.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
-<translation id="360089215033199597">Συνιστάται η σύνδεση σε Wi-Fi για να διευκολύνετε τη διαδικασία επισκευής.
-        Το δίκτυό σας θα αποθηκευτεί.</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
-<translation id="7451112128070628323">Ορίστε αυτήν την επιλογή εάν δεν αλλάζει η ιδιοκτησία της συσκευής.
-        Για παράδειγμα, η συσκευή μεταβιβάζεται σε ένα άλλο άτομο
-        εντός ενός οργανισμού.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7487067081878637334">Τεχνολογία</translation>
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>

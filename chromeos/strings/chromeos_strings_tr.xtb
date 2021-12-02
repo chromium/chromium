@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
-<translation id="1857850044054738019">Cihaz yeni bir müşteriye dağıtılmak üzere yenileniyor veya tekrar stoklara ekleniyorsa bu seçeneği belirleyin.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3583278742022654445">Düşük sinyal gücü. Kablosuz sinyal kaynağına yaklaşmayı deneyin.</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
-<translation id="360089215033199597">Onarım sürecini kolaylaştırmak için kablosuz ağa bağlanmanız önerilir.
-        Ağınız kaydedilir.</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
@@ -435,7 +432,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
-<translation id="7451112128070628323">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7487067081878637334">Teknoloji</translation>
 <translation id="7490813197707563893">MAC adresi</translation>

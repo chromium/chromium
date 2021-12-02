@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
-<translation id="1857850044054738019">Wählen Sie diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird,
-        damit es an einen neuen Kunden weitergegeben werden kann.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3583278742022654445">Schwaches Signal. Gehen Sie näher an die Quelle des WLAN-Signals heran.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
-<translation id="360089215033199597">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen.
-        Ihr Netzwerk wird gespeichert.</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
@@ -436,9 +432,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scan abgeschlossen. 1 Seite gescannt.}other{Scan abgeschlossen. {NUMBER_OF_PAGES} Seiten gescannt.}}</translation>
-<translation id="7451112128070628323">Wählen Sie diese Option aus, wenn der Eigentümer des Geräts gleich bleibt.
-        Beispielsweise, wenn das Gerät an eine andere Person
-        innerhalb desselben Unternehmens weitergegeben wird.</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
 <translation id="7487067081878637334">Technik</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>

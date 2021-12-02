@@ -606,7 +606,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> finns inte på enheten.</translation>
 <translation id="495046168593986294">Rulla upp</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>
@@ -955,7 +954,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7430878839542012341">Vill du radera den här sökningen från historiken?</translation>
 <translation id="7434543979546293336">Markerat som nyckelbegrepp</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
-<translation id="7456049842111127849">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>

@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
-<translation id="1857850044054738019">Виберіть цей варіант, якщо пристрій знову в наявності або відновлений для
-        надання новому клієнту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
-<translation id="360089215033199597">Щоб спростити ремонт, рекомендовано підключитися до Wi-Fi.
-        Мережу буде збережено.</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
-<translation id="7451112128070628323">Виберіть цей варіант, якщо власник пристрою не змінюється.
-        Наприклад, якщо пристрій передається іншій особі
-        в межах організації.</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7487067081878637334">Технології</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>

@@ -606,7 +606,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
 <translation id="4945196315133970626">Wyłącz powiadomienia</translation>
 <translation id="4946376291507881335">Zapis</translation>
-<translation id="4947229553198882488">Aplikacji <ph name="UNAVAILABLE_APPS" /> nie ma na tym urządzeniu.</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
 <translation id="4952936045814352993">Funkcja Znajdź telefon jest niedostępna, kiedy dźwięki alarmu są wyłączone</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> wymaga przywrócenia wcześniejszej wersji systemu operacyjnego na urządzeniu <ph name="DEVICE_TYPE" />. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
@@ -955,7 +954,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7430878839542012341">Usunąć to hasło z historii wyszukiwania?</translation>
 <translation id="7434543979546293336">Oznaczono jako kluczowy pomysł</translation>
 <translation id="7452560014878697800">Aplikacja używa kamery</translation>
-<translation id="7456049842111127849">Tryb przechwytywania, domyślny to <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>

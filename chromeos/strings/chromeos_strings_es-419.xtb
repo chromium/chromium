@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
-<translation id="1857850044054738019">Selecciona esta opción si el dispositivo es parte de una reposición o se reacondicionó para
-        distribuirse a un cliente nuevo.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
 <translation id="3583278742022654445">La intensidad de la señal es débil. Intenta acercarte a la fuente de la señal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
-<translation id="360089215033199597">Para facilitar el proceso de reparación, se recomienda que te conectes a una red Wi-Fi.
-        Se guardará tu red.</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3606583719724308068">Alta latencia de los sitios web HTTPS</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
@@ -436,8 +432,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
-<translation id="7451112128070628323">Selecciona esta opción si el propietario del dispositivo es el mismo.
-        Por ejemplo, cuando se transfiere el dispositivo a otra persona dentro de una organización.</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>

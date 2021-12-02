@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Hættir við að skanna</translation>
 <translation id="1851218745569890714">Myndfundur</translation>
-<translation id="1857850044054738019">Veldu þennan valkost ef tækið er skráð aftur í birgðir eða ef endurnýja á tækið
-        og afhenda það nýjum viðskiptavini.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Útgáfa vélbúnaðar</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi net með mælda notkun</translation>
 <translation id="3583278742022654445">Lítill sendistyrkur. Prófaðu að færa þig nær WiFi-sendibúnaðinum.</translation>
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
-<translation id="360089215033199597">Ráðlagt er að tengjast Wi-Fi til að einfalda viðgerðarferlið.
-        Netkerfið þitt verður vistað.</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
@@ -436,9 +432,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skönnun lokið. 1 síða skönnuð}one{Skönnun lokið. {NUMBER_OF_PAGES} síða skönnuð}other{Skönnun lokið. {NUMBER_OF_PAGES} síður skannaðar}}</translation>
-<translation id="7451112128070628323">Veldu þennan valkost ef eignarhald tækisins breytist ekki.
-        Þegar tækið er t.d. flutt yfir til annars notanda
-        innan sama fyrirtækis.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7487067081878637334">Tækni</translation>
 <translation id="7490813197707563893">MAC-vistfang</translation>

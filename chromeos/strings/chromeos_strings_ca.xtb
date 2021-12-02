@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
 <translation id="1851218745569890714">Videoconferències</translation>
-<translation id="1857850044054738019">Selecciona aquesta opció si el dispositiu es tornarà a posar a la venda o es restaurarà
-        per enviar-lo a un client nou.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisió de maquinari</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="3583278742022654445">Intensitat del senyal fluixa. Prova d'apropar-te a la font de senyal de la Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
-<translation id="360089215033199597">Es recomana connectar-se a la Wi-Fi per facilitar el procés de reparació.
-        La teva xarxa es desarà.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
-<translation id="7451112128070628323">Selecciona aquesta opció si la propietat del dispositiu no canvia.
-        Per exemple, si el dispositiu s'està transferint a una altra persona
-        dins d'una organització.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Adreça MAC</translation>

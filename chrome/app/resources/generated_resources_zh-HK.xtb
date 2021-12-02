@@ -1618,7 +1618,6 @@
 <translation id="2627424346328942291">無法分享</translation>
 <translation id="2628770867680720336">必須將 Chromebook 回復原廠設定才能啟用 ADB 偵錯。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
-<translation id="2630681426381349926">連線至 Wi-Fi 即可開始</translation>
 <translation id="2631498379019108537">在捷徑列中顯示輸入法選項</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟影像執行。</translation>
@@ -1779,7 +1778,6 @@
 <translation id="2783321960289401138">建立捷徑…</translation>
 <translation id="2783829359200813069">選取加密類型</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
-<translation id="2784407158394623927">正在啟用流動數據服務</translation>
 <translation id="2785873697295365461">檔案描述符</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1998,7 +1996,6 @@
 <translation id="3003623123441819449">CSS 快取</translation>
 <translation id="3003828226041301643">無法將裝置加入網域。請檢查您的帳戶並確認您有權限新增裝置。</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 將會建立私人 Wi-Fi 連線。</translation>
-<translation id="3004391367407090544">請稍後再返回查看</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3007771295016901659">複製標籤</translation>
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和整合開發環境 (IDE)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -2418,7 +2415,6 @@
 <translation id="3451753556629288767">已允許開啟的檔案類型</translation>
 <translation id="3452999110156026232">家長存取權</translation>
 <translation id="3453612417627951340">需要授權</translation>
-<translation id="3454157711543303649">啟用完成</translation>
 <translation id="3454213325559396544">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。</translation>
 <translation id="3455436146814891176">同步加密密碼</translation>
 <translation id="345693547134384690">在新分頁中開啟圖片(&amp;I)</translation>
@@ -3733,7 +3729,6 @@
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇執行審核的家長帳戶</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
-<translation id="4856478137399998590">已啟用您的流動數據服務，您隨時可以使用</translation>
 <translation id="4858792381671956233">您已詢問家長是否同意瀏覽此網站</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
@@ -4454,7 +4449,6 @@
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5616726534702877126">預留空間大小</translation>
 <translation id="561698261642843490">關閉 Firefox</translation>
-<translation id="5618333180342767515">(這可能需要幾分鐘的時間)</translation>
 <translation id="56197088284879152">以下遠端裝置的連線擠塞：「<ph name="DEVICE_NAME" />」。</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
 <translation id="5620568081365989559">DevTools 要求全權存取 <ph name="FOLDER_PATH" />。請務必小心，不要透露任何敏感資料。</translation>
@@ -6949,7 +6943,6 @@
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8189306097519446565">學校帳戶</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的應用程式、擴充功能和主題</translation>
 <translation id="8192944472786724289">「<ph name="APP_NAME" />」要求分享螢幕內容。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

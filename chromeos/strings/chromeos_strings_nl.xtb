@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
-<translation id="1857850044054738019">Selecteer deze optie als het apparaat weer aan de voorraad wordt toegevoegd of wordt refurbished voor distributie naar een nieuwe klant.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3583278742022654445">Zwak signaal. Ga dichter bij de wifi-signaalbron staan.</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
-<translation id="360089215033199597">Verbinding met wifi wordt aanbevolen om het reparatieproces makkelijker te maken.
-        Je netwerk wordt opgeslagen.</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
-<translation id="7451112128070628323">Selecteer deze optie als het eigendom van het apparaat niet verandert.
-        Het apparaat wordt bijvoorbeeld overgedragen aan een andere persoon binnen een organisatie.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>

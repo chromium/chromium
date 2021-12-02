@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Avbryter skanningen</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
-<translation id="1857850044054738019">Velg dette alternativet hvis enheten skal lagerføres på nytt eller overhales for 
-        distribusjon til en ny kunde.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi med datamåling</translation>
 <translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wi-Fi-signalkilden.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
-<translation id="360089215033199597">Det anbefales at du kobler til Wi-Fi for å gjøre reparasjonsprosessen enklere.
-        Nettverket ditt blir lagret.</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
@@ -436,9 +432,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
-<translation id="7451112128070628323">Velg dette alternativet hvis enheten ikke skal få ny eier.
-        Eksempel: Enheten skal overføres til en annen person
-        i samme organisasjon.</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>

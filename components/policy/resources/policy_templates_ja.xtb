@@ -2866,6 +2866,7 @@
 <translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
 <translation id="450080746522343150">すべてのダウンロードをブロックする</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
+<translation id="4512407512989846472">指定された URL 上のクリップボードへのコピーをブロックすることを許可します</translation>
 <translation id="4513691822411041977">Google 検索または YouTube の制限付きモードでセーフサーチを強制的に適用しない</translation>
 <translation id="4515404363392014383">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="4518251772179446575">サイトがユーザーの物理的な現在地を追跡しようとしたときに毎回確認する</translation>
@@ -5677,6 +5678,8 @@
 <translation id="8028814157747157754">デフォルトの検索プロバイダを有効にし、ユーザーに検索プロバイダ リストの変更を許可</translation>
 <translation id="8029201909194194377">リモート アクセス接続で許可する最長セッション継続時間</translation>
 <translation id="8029607810986641704">アイドルまたは停止の状態になったときにデバイスをロック</translation>
+<translation id="8032201191311129122">このポリシーによって、特定の URL 上のクリップボードにデータをコピーすることがブロックされます。<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> と <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> の URL リストは、クリップボードへの書き込みを許可するサイトを管理します。クリップボードへの書き込みは、URL が「enable」のパターンに一致し、「disable」のパターンとは一致しない場合にブロックされます。URL がいずれのパターンとも一致しない場合、コピーはブロックされません。提供元の一致パターンは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーと同様の形式で指定します。詳しくは、http://www.chromium.org/administrators/url-blocklist-filter-format をご覧ください。<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> は、パターンのチェックをトリガーする最小データ量（単位: バイト）を示します。つまり、ブロック対象の URL からのクリップボードへの書き込みは、コピーするデータのサイズがこのフィールドで指定された値未満である場合に許可されます。このフィールドが未設定の場合のデフォルト値は 100 バイトです。
+      </translation>
 <translation id="8044493735196713914">デバイス起動モードを報告する</translation>
 <translation id="80453040817068401"><ph name="LACROS_NAME" /> ブラウザを使用可能にする</translation>
 <translation id="804619600634661088">リモート デバッグの使用を許可する</translation>

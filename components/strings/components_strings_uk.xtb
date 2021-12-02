@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">Якщо параметр DnsOverHttpsMode має значення <ph name="SECURE_DNS_MODE_SECURE" />, потрібно вказати правило, яке має бути дійсним рядком.</translation>
 <translation id="1745880797583122200">Вашим веб-переглядачем керує адміністратор</translation>
 <translation id="1746113442205726301">Вертикальне зображення</translation>
+<translation id="1747819498338037826">Змінити автоматично</translation>
 <translation id="17513872634828108">Відкриті вкладки</translation>
 <translation id="1752021286346845558">Поштова скринька 8</translation>
 <translation id="1753706481035618306">Номер сторінки</translation>
@@ -1687,6 +1688,7 @@
 <translation id="643051589346665201">Змінити пароль Google</translation>
 <translation id="6433490469411711332">Змінити контактні дані</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> відхилив запит на з’єднання.</translation>
+<translation id="6438025220577812695">Змінити вручну</translation>
 <translation id="6440503408713884761">Ігнорується</translation>
 <translation id="6443406338865242315">встановлені розширення та плагіни;</translation>
 <translation id="6446163441502663861">Kahu (конверт)</translation>

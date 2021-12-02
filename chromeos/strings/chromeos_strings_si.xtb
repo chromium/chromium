@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ස්කෑන් කිරීම අවලංගු කරමින්</translation>
 <translation id="1851218745569890714">වීඩියෝ සම්මන්ත්‍රණය</translation>
-<translation id="1857850044054738019">උපාංගය නව පාරිභෝගිකයකුට බෙදා හැරීමට නැවත පුරවමින් හෝ නැවත සකස් කරමින් පවතී නම්
-        මෙම විකල්පය තෝරන්න.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">මනුගත Wi-Fi</translation>
 <translation id="3583278742022654445">දුර්වල සංඥා ප්‍රබලතාව. Wi-Fi සංඥා මූලාශ්‍රය වෙත වඩාත් සමීප වීමට උත්සාහ කරන්න.</translation>
 <translation id="3595596368722241419">බැටරිය ආරෝපිතයි</translation>
-<translation id="360089215033199597">අලුත්වැඩියා කිරීමේ ක්‍රියාවලිය වඩා පහසු කිරීමට Wi-Fi වෙත සම්බන්ධ කිරීම නිර්දේශ කෙරේ.
-        ඔබගේ ජාලය සුරකිනු ඇත.</translation>
 <translation id="360565022852130722">WiFi ජාලය දුර්වල ප්‍රොටොකෝලයකින් ආරක්ෂිතයි WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS වෙබ් අඩවිවලට ඉහළ පමාව</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> පරීක්ෂණය</translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">ඉතා ඉහළ HTTP පමාව</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු 1ක් ස්කෑන් කරන ලදි}one{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}other{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}}</translation>
-<translation id="7451112128070628323">උපාංගයේ හිමිකාරිත්වය වෙනස් නොවන්නේ නම් මෙම විකල්පය තෝරන්න.
-        උදාහරණණයක් ලෙස, උපාංගය
-        සංවිධානයක වෙනත් පුද්ගලයෙකුට මාරු කරමින් පවතී.</translation>
 <translation id="7469648432129124067">ද්වාරය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="7487067081878637334">තාක්ෂණය</translation>
 <translation id="7490813197707563893">MAC ලිපිනය</translation>

@@ -1622,7 +1622,6 @@
 <translation id="2627424346328942291">Не вдалося надіслати</translation>
 <translation id="2628770867680720336">Щоб увімкнути налагодження ADB, потрібно скинути цей пристрій Chromebook до заводських налаштувань. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Розробка додатків для Android</translation>
-<translation id="2630681426381349926">Під’єднайтеся до Wi-Fi, щоб почати</translation>
 <translation id="2631498379019108537">Показувати на полиці опції введення</translation>
 <translation id="2633212996805280240">Видалити "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> не вдалося завершити встановлення, але він продовжить працювати, використовуючи своє зображення диска.</translation>
@@ -1715,6 +1714,7 @@
 <translation id="2721037002783622288">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Ваш адміністратор вимкнув контрольованих користувачів.</translation>
+<translation id="2722540561488096675">Пристрій завершить роботу через <ph name="TIME_LEFT" />. Перш ніж знову ввімкнути пристрій, вийміть носій USB. Тоді ви зможете почати користуватися <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Журнали WebRTC</translation>
 <translation id="272488616838512378">Конвертування одиниць</translation>
 <translation id="2725200716980197196">З’єднання з мережею відновлено</translation>
@@ -1782,7 +1782,6 @@
 <translation id="2783321960289401138">Створити ярлик…</translation>
 <translation id="2783829359200813069">Виберіть тип шифрування</translation>
 <translation id="2783952358106015700">Використовуйте ключ безпеки з додатком <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Активація служби пересилання мобільних даних</translation>
 <translation id="2785873697295365461">Опис файлу</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2001,7 +2000,6 @@
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003828226041301643">Не вдається приєднати пристрій до домену. Перевірте обліковий запис, щоб переконатися, що ви можете додавати пристрої.</translation>
 <translation id="3003967365858406397">Пристрій <ph name="PHONE_NAME" /> створить приватне з’єднання Wi-Fi.</translation>
-<translation id="3004391367407090544">Поверніться пізніше</translation>
 <translation id="3006881078666935414">Немає даних про використання</translation>
 <translation id="3007771295016901659">Ідентична вкладка</translation>
 <translation id="3008232374986381779">Запускайте інструменти, редактори й ІСР Linux на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -2421,7 +2419,6 @@
 <translation id="3451753556629288767">Дозволено відкривати певні типи файлів</translation>
 <translation id="3452999110156026232">Батьківський доступ</translation>
 <translation id="3453612417627951340">Потрібна авторизація</translation>
-<translation id="3454157711543303649">Активацію завершено</translation>
 <translation id="3454213325559396544">Це останнє автоматичне оновлення програмного забезпечення й системи безпеки на пристрої <ph name="DEVICE_TYPE" />. Щоб отримувати оновлення надалі, придбайте новішу модель.</translation>
 <translation id="3455436146814891176">Шифрування синхронізації за допомогою пароля</translation>
 <translation id="345693547134384690">Відкрити &amp;зображення в новій вкладці</translation>
@@ -3736,7 +3733,6 @@
 <translation id="4853020600495124913">Відкрити в &amp;новому вікні</translation>
 <translation id="4854317507773910281">Вибери батьківський обліковий запис, який має надати дозвіл</translation>
 <translation id="485480310608090163">Додаткові налаштування та дозволи</translation>
-<translation id="4856478137399998590">Службу пересилання мобільних даних активовано. Нею можна користуватися</translation>
 <translation id="4858792381671956233">Ви надіслали батькам запит на перегляд цього сайту</translation>
 <translation id="4858913220355269194">Футбол</translation>
 <translation id="4862642413395066333">Підписування відповідей OCSP</translation>
@@ -4456,7 +4452,6 @@
 <translation id="5614553682702429503">Зберегти пароль?</translation>
 <translation id="5616726534702877126">Зарезервувати розмір</translation>
 <translation id="561698261642843490">Закрити Firefox</translation>
-<translation id="5618333180342767515">(може тривати декілька хвилин)</translation>
 <translation id="56197088284879152">З’єднання з віддаленим пристроєм <ph name="DEVICE_NAME" /> перевантажене.</translation>
 <translation id="5619862035903135339">Адміністратор заборонив запис екрана</translation>
 <translation id="5620568081365989559">Інструментам розробника потрібен повний доступ до папки <ph name="FOLDER_PATH" />. Переконайтеся, що ви не оприлюдните приватну інформацію.</translation>
@@ -4572,6 +4567,7 @@
 <translation id="5739235828260127894">Очікується підтвердження. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Дуже великий</translation>
 <translation id="5740328398383587084">Передавання поблизу</translation>
+<translation id="5740709157181662145">Технічна підтримка апаратного забезпечення та стабільність роботи <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дзеркалювання дисплея</translation>
 <translation id="574209121243317957">Тон</translation>
 <translation id="5746169159649715125">Зберегти у форматі PDF</translation>
@@ -6950,7 +6946,6 @@
 <translation id="8188389033983459049">Щоб продовжити, перегляньте налаштування пристрою й увімкніть Bluetooth</translation>
 <translation id="8189306097519446565">Облікові записи закладів освіти</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">З'єднання з <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Керувати вашими програмами, розширеннями та темами</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

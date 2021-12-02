@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">กำลังยกเลิกการสแกน</translation>
 <translation id="1851218745569890714">การประชุมทางวิดีโอ</translation>
-<translation id="1857850044054738019">เลือกตัวเลือกนี้หากอุปกรณ์อยู่ระหว่างเติมสต็อกหรือซ่อมแซมใหม่สำหรับจัดจำหน่ายไปยังลูกค้าใหม่</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
-<translation id="360089215033199597">ขอแนะนำให้เชื่อมต่อ Wi-Fi เพื่อให้ขั้นตอนการซ่อมง่ายขึ้น
-        ระบบจะบันทึกเครือข่ายของคุณ</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
-<translation id="7451112128070628323">เลือกตัวเลือกนี้หากไม่ได้เปลี่ยนแปลงการเป็นเจ้าของอุปกรณ์
-        เช่น โอนอุปกรณ์ไปให้บุคคลอื่นภายในองค์กร</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>

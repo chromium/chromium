@@ -1620,7 +1620,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2627424346328942291">Não foi possível compartilhar</translation>
 <translation id="2628770867680720336">É necessário redefinir este Chromebook para a configuração original para ativar a depuração do adb. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desenvolver apps Android</translation>
-<translation id="2630681426381349926">Conecte-se ao Wi-Fi para começar</translation>
 <translation id="2631498379019108537">Mostrar opções de entrada na estante</translation>
 <translation id="2633212996805280240">Remover "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">O <ph name="PRODUCT_NAME" /> não conseguiu completar a instalação, mas continuará a ser executado a partir da sua imagem de disco.</translation>
@@ -1781,7 +1780,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2783321960289401138">Criar atalho...</translation>
 <translation id="2783829359200813069">Selecionar tipos de criptografia</translation>
 <translation id="2783952358106015700">Usar sua chave de segurança com <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Ativando seu serviço de dados móveis</translation>
 <translation id="2785873697295365461">Descritores de arquivos</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2000,7 +1998,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3003623123441819449">Cache do CSS</translation>
 <translation id="3003828226041301643">Não é possível vincular o dispositivo ao domínio. Confira na sua conta se você tem privilégios para adicionar dispositivos.</translation>
 <translation id="3003967365858406397">Seu <ph name="PHONE_NAME" /> criará uma conexão Wi-Fi particular.</translation>
-<translation id="3004391367407090544">Volte mais tarde</translation>
 <translation id="3006881078666935414">Nenhum dado de uso</translation>
 <translation id="3007771295016901659">Duplicar guia</translation>
 <translation id="3008232374986381779">Execute ferramentas, editores e ambientes de desenvolvimento integrado do Linux no seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -2367,6 +2364,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3413122095806433232">Emissores de autoridades de certificação: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="3414966631182382431">Seu <ph name="BEGIN_LINK" />navegador é gerenciado<ph name="END_LINK" /> por <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Legenda instantânea (<ph name="LANGUAGE" />)</translation>
 <translation id="3416468988018290825">Sempre mostrar URLs completos</translation>
 <translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3417836307470882032">Relógio de 24 horas</translation>
@@ -2420,7 +2418,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3451753556629288767">Com permissão para abrir tipos de arquivo</translation>
 <translation id="3452999110156026232">Acesso do familiar responsável</translation>
 <translation id="3453612417627951340">Requer autorização</translation>
-<translation id="3454157711543303649">Ativação concluída</translation>
 <translation id="3454213325559396544">Esta é a última atualização automática de software e segurança deste <ph name="DEVICE_TYPE" />. Para receber atualizações futuras, faça upgrade para um modelo mais novo.</translation>
 <translation id="3455436146814891176">Sincronizar senha de criptografia</translation>
 <translation id="345693547134384690">Abrir &amp;imagem em uma nova guia</translation>
@@ -3735,7 +3732,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4853020600495124913">Abrir em &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolha uma conta de pai/mãe para aprovação</translation>
 <translation id="485480310608090163">Mais configurações e permissões</translation>
-<translation id="4856478137399998590">Seu serviço de dados móveis foi ativado e está pronto para ser usado</translation>
 <translation id="4858792381671956233">Você perguntou aos seus responsáveis se pode visitar este site</translation>
 <translation id="4858913220355269194">Pelé</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
@@ -4455,7 +4451,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5616726534702877126">Reservar tamanho</translation>
 <translation id="561698261642843490">Fechar o Firefox</translation>
-<translation id="5618333180342767515">Isso pode demorar alguns minutos</translation>
 <translation id="56197088284879152">A conexão está congestionada para o dispositivo remoto "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
 <translation id="5620568081365989559">A Chrome DevTools API solicita acesso total a <ph name="FOLDER_PATH" />.
@@ -6951,7 +6946,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8188389033983459049">Verifique as configurações do seu dispositivo e ative-o para continuar</translation>
 <translation id="8189306097519446565">Contas escolares</translation>
 <translation id="8189750580333936930">Sandbox de privacidade</translation>
-<translation id="8190193592390505034">Conectando-se a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gerenciar seus aplicativos, extensões e temas</translation>
 <translation id="8192944472786724289">O app <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -7249,6 +7243,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
 <translation id="8540503336857689453">Por motivos de segurança, não é recomendado usar uma rede oculta.</translation>
 <translation id="854071720451629801">Marcar como "Lida"</translation>
+<translation id="8540942859441851323">Roaming exigido pelo provedor</translation>
 <translation id="8541462173655894684">Não foram encontradas impressoras no servidor</translation>
 <translation id="8541838361296720865">Pressione um interruptor ou uma tecla para atribuí-los à ação de "<ph name="ACTION" />"</translation>
 <translation id="8542618328173222274">Perguntar quando um site quiser usar seus dispositivos e dados de realidade virtual</translation>

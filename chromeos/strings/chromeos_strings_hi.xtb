@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
-<translation id="1857850044054738019">अगर डिवाइस को किसी नए ग्राहक को बेचने के लिए,
-        रीस्टॉक किया गया हो या उसे नए जैसा किया गया हो, तो यह विकल्प चुनें.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेयर पुनरीक्षण</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
@@ -119,6 +117,7 @@
 <translation id="2783010256799387990">जांच में पास</translation>
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
+<translation id="2859243502336719778">अहम अपडेट</translation>
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
@@ -153,6 +152,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> में से <ph name="PRINTED_PAGES" /> पेज प्रिंट किए गए.</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> को स्कैन किया जा रहा है. <ph name="PERCENTAGE_VALUE" />% पूरा हो गया.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट हो रहा है</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
@@ -160,8 +160,6 @@
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
-<translation id="360089215033199597">रिपेयर की प्रोसेस को और आसान करने के लिए वाई-फ़ाई से कनेक्ट करें.
-        आपका नेटवर्क सेव कर लिया जाएगा.</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
@@ -210,6 +208,7 @@
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
+<translation id="4418498623216225764">सहायक डिवाइस, जैसे- कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह को अपडेट करें</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद है</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
@@ -262,6 +261,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
@@ -403,6 +403,7 @@
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
+<translation id="7068619307603204412">अपने डिवाइस को तैयार करें</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
@@ -416,6 +417,7 @@
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
+<translation id="7240035910874241640">सभी सहायक डिवाइस- जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह अप-टू-डेट हैं</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
@@ -430,9 +432,6 @@
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
-<translation id="7451112128070628323">अगर डिवाइस के मालिकाना हक में बदलाव नहीं हो रहा है, तो इस विकल्प को चुनें.
-        उदाहरण के लिए, जब डिवाइस को
-        संगठन के ही किसी दूसरे व्यक्ति को ट्रांसफ़र किया जा रहा हो.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>
@@ -457,6 +456,7 @@
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7784116172884276937">कोई भी डीएनएस सर्वर सेट अप नहीं है</translation>
+<translation id="7786540085520432425">अपडेट करते समय, विंडो को छोटा किया जा सकता है, लेकिन डिवाइस को अनप्लग न करें. इसमें कुछ समय लग सकता है. साथ ही, हो सकता है कि अपडेट होते समय आपका डिवाइस काम न करे</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>
 <translation id="7835501727204647447">CloudReady इंस्टॉल करें</translation>
@@ -515,6 +515,7 @@
 <translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
+<translation id="8520963233738002436">आपका <ph name="DEVICE_NAME" /> अप टू डेट है</translation>
 <translation id="8521021929829989041">निजी डिवाइस की तरह इस्तेमाल करें</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
@@ -554,6 +555,7 @@
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
+<translation id="8994273342647807496">इंस्टॉल हो रहा है - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">डीएनएस रिज़ॉल्यूशन के इंतज़ार का समय ज़्यादा है</translation>

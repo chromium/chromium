@@ -373,6 +373,15 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3509391053705095206">Não foi possível encontrar o smartphone. Confira se o Bluetooth está ativado.</translation>
 <translation id="3510164367642747937">Destacar cursor do mouse</translation>
 <translation id="3513798432020909783">Conta gerenciada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3518604429872942239">Bandeja de status, horário <ph name="TIME" />,
+        <ph name="BATTERY" />,
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo em 1 minuto}one{Atualize o dispositivo em # minuto}other{Atualize o dispositivo em # minutos}}</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
@@ -597,7 +606,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
-<translation id="4947229553198882488">O app <ph name="UNAVAILABLE_APPS" /> não está no dispositivo.</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
 <translation id="4952936045814352993">O recurso "Localizar smartphone" fica indisponível quando os sons do alarme estão desativados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requer que você reverta seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
@@ -946,7 +954,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7430878839542012341">Excluir essa pesquisa do seu histórico?</translation>
 <translation id="7434543979546293336">Marcado como ideia importante</translation>
 <translation id="7452560014878697800">Um aplicativo está usando a câmera</translation>
-<translation id="7456049842111127849">O padrão do modo de captura é <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de tela</translation>
 <translation id="7466449121337984263">Toque no sensor</translation>

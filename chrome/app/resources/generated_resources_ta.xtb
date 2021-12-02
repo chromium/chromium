@@ -1619,7 +1619,6 @@
 <translation id="2627424346328942291">பகிர முடியவில்லை</translation>
 <translation id="2628770867680720336">ADB பிழைதிருத்தத்தை இயக்க இந்த Chromebookகை ஆரம்ப நிலைக்கு மீட்டமைக்க வேண்டும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android ஆப்ஸை உருவாக்குதல்</translation>
-<translation id="2630681426381349926">தொடங்குவதற்கு வைஃபை உடன் இணைக்கவும்</translation>
 <translation id="2631498379019108537">ஷெல்ஃபில் உள்ளீட்டு விருப்பங்களைக் காட்டு</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" நீட்டிப்பை அகற்ற வேண்டுமா?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ஆல் நிறுவலை நிறைவுசெய்ய முடியவில்லை, ஆனால் அதன் வட்டுப் படிமத்திலிருந்து இயக்குவதைத் தொடரும்.</translation>
@@ -1780,7 +1779,6 @@
 <translation id="2783321960289401138">ஷார்ட்கட்டை உருவாக்கு...</translation>
 <translation id="2783829359200813069">என்க்ரிப்ஷன் வகைகளைத் தேர்வுசெய்யவும்</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> உடன் உங்கள் பாதுகாப்பு விசையைப் பயன்படுத்துதல்</translation>
-<translation id="2784407158394623927">மொபைல் டேட்டா சேவை இயக்கப்படுகிறது</translation>
 <translation id="2785873697295365461">ஃபைல் விளக்கிகள்</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1999,7 +1997,6 @@
 <translation id="3003623123441819449">CSS தற்காலிக சேமிப்பு</translation>
 <translation id="3003828226041301643">சாதனத்தை டொமைனுடன் இணைக்க முடியவில்லை. சாதனங்களைச் சேர்ப்பதற்கு உங்களுக்குச் சிறப்புரிமைகள் இருப்பதை உறுதிசெய்ய, உங்கள் கணக்கைச் சரிபார்க்கவும்.</translation>
 <translation id="3003967365858406397">உங்கள் <ph name="PHONE_NAME" /> தனிப்பட்ட வைஃபை இணைப்பை உருவாக்கும்.</translation>
-<translation id="3004391367407090544">பின்னர் முயற்சிக்கவும்</translation>
 <translation id="3006881078666935414">பயன்பாட்டுத் தரவு இல்லை</translation>
 <translation id="3007771295016901659">தாவலை நகலெடு</translation>
 <translation id="3008232374986381779">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் Linux கருவிகள், திருத்திகள், IDEகள் ஆகியவற்றை இயக்கும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -2419,7 +2416,6 @@
 <translation id="3451753556629288767">ஃபைல்களின் வகைகளைத் திறக்க அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3452999110156026232">பெற்றோர் அணுகல்</translation>
 <translation id="3453612417627951340">அங்கீகாரம் தேவை</translation>
-<translation id="3454157711543303649">செயலாக்கம் நிறைவுற்றது</translation>
 <translation id="3454213325559396544"><ph name="DEVICE_TYPE" /> சாதனத்தின் மென்பொருளுக்கும் பாதுகாப்பிற்கும் தானாக செய்யப்படும் கடைசிப் புதுப்பிப்பு இது தான். எதிர்வரும் புதுப்பிப்புகளைப் பெற புதிய வகை சாதனங்களுக்கு மாறவும்.</translation>
 <translation id="3455436146814891176">ஒத்திசைவு என்க்ரிப்ஷன் கடவுச்சொல்</translation>
 <translation id="345693547134384690">&amp;படத்தை புதிய தாவலில் திற</translation>
@@ -3734,7 +3730,6 @@
 <translation id="4853020600495124913">&amp;புதிய சாளரத்தில் திற</translation>
 <translation id="4854317507773910281">அனுமதி பெற பெற்றோர் கணக்கைத் தேர்வுசெய்யவும்</translation>
 <translation id="485480310608090163">கூடுதல் அமைப்புகளும் அனுமதிகளும்</translation>
-<translation id="4856478137399998590">உங்கள் மொபைல் டேட்டா சேவை செயல்படுத்தப்பட்டது மற்றும் பயன்படுத்தத் தயாராக உள்ளது</translation>
 <translation id="4858792381671956233">இந்தத் தளத்தைப் பார்வையிடலாமா என, நீங்கள் பெற்றோரிடம் கேட்டுள்ளீர்கள்</translation>
 <translation id="4858913220355269194">ஃபிரிட்ஸ்</translation>
 <translation id="4862642413395066333">OCSP மறுமொழிகளை கையொப்பமிடல்</translation>
@@ -4454,7 +4449,6 @@
 <translation id="5614553682702429503">கடவுச்சொல்லைச் சேமிக்கவா?</translation>
 <translation id="5616726534702877126">அளவை ரிசர்வ் செய்</translation>
 <translation id="561698261642843490">Firefoxஐ மூடு</translation>
-<translation id="5618333180342767515">(இதற்கு சில நிமிடங்கள் ஆகக்கூடும்)</translation>
 <translation id="56197088284879152">பின்வரும் தொலைநிலைச் சாதனத்திற்கான இணைப்பு நெரிசலாக உள்ளது: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" />க்கான முழு அணுகலை DevTools கோருகிறது.
@@ -6950,7 +6944,6 @@
 <translation id="8188389033983459049">தொடர்வதற்கு, சாதன அமைப்புகளைச் சரிபார்த்து, புளூடூத்தை இயக்கவும்</translation>
 <translation id="8189306097519446565">பள்ளிக் கணக்குகள்</translation>
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> உடன் இணைக்கிறது</translation>
 <translation id="8191230140820435481">உங்கள் ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிர்வகிக்கலாம்</translation>
 <translation id="8192944472786724289">உங்கள் திரையில் உள்ளவற்றை <ph name="APP_NAME" /> பகிர விரும்புகிறது.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

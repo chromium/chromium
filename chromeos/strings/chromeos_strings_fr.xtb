@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annulation de la numérisation…</translation>
 <translation id="1851218745569890714">Visioconférence</translation>
-<translation id="1857850044054738019">Sélectionnez cette option si l'appareil est remis en stock ou reconditionné pour être distribué à un nouveau client.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi facturé à l'usage</translation>
 <translation id="3583278742022654445">Signal faible. Rapprochez-vous de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
-<translation id="360089215033199597">Il est recommandé de se connecter au Wi-Fi pour faciliter le processus de réparation.
-        Votre réseau sera enregistré.</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages numérisées}}</translation>
-<translation id="7451112128070628323">Sélectionnez cette option si l'appareil ne change pas de propriétaire,
-        par exemple s'il est transféré à une autre personne d'une même organisation.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>

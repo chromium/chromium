@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
 <translation id="4946376291507881335">Снимок</translation>
-<translation id="4947229553198882488">Приложение "<ph name="UNAVAILABLE_APPS" />" не установлено на этом устройстве.</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
 <translation id="4960324571663582548">Согласно требованиям <ph name="MANAGER" /> вам нужно выполнить откат на устройстве <ph name="DEVICE_TYPE" />. Настройки устройства будут сброшены, а все данные – удалены.</translation>
@@ -955,7 +954,6 @@
 <translation id="7430878839542012341">Удалить этот запрос из истории поиска?</translation>
 <translation id="7434543979546293336">Помечено как основная идея.</translation>
 <translation id="7452560014878697800">Приложение использует вашу камеру</translation>
-<translation id="7456049842111127849">Режим съемки. По умолчанию: <ph name="SOURCE" />, <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746232733191930409">Режим записи видео с экрана</translation>
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>

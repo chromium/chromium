@@ -270,6 +270,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">O teu navegador está xestionado</translation>
 <translation id="1746113442205726301">Desprazamento da imaxe no eixe Y</translation>
+<translation id="1747819498338037826">Cambiar automaticamente</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1752021286346845558">Caixa de correo 8</translation>
 <translation id="1753706481035618306">Número de páxina</translation>
@@ -1686,6 +1687,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="643051589346665201">Cambiar contrasinal de Google</translation>
 <translation id="6433490469411711332">Editar información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rexeitou a conexión.</translation>
+<translation id="6438025220577812695">Cambiar manualmente</translation>
 <translation id="6440503408713884761">Política ignorada</translation>
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6446163441502663861">Kahu (sobre)</translation>

@@ -1615,7 +1615,6 @@
 <translation id="2627424346328942291">Хуваалцах боломжгүй</translation>
 <translation id="2628770867680720336">ADB алдаа засахыг идэвхжүүлэхийн тулд энэ Chromebook-г үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Андройд аппыг хөгжүүлэх</translation>
-<translation id="2630681426381349926">Эхлэхэд утасгүй интернетэд холбогдох</translation>
 <translation id="2631498379019108537">Тавиурт байгаа оролтын сонголтыг харуулах</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />"-ыг устгах уу?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> нь суулгах ажиллагааг бүрэн гүйцэтгэж чадсангүй, гэхдээ энэ нь дискний дүрснээс үргэлжлүүлэн ажиллах болно.</translation>
@@ -1776,7 +1775,6 @@
 <translation id="2783321960289401138">Богино холболт үүсгэх</translation>
 <translation id="2783829359200813069">Шифрлэлтийн төрлийг сонгоно уу</translation>
 <translation id="2783952358106015700">Аюулгүй байдлын түлхүүрээ <ph name="APP_NAME" />-д ашиглах</translation>
-<translation id="2784407158394623927">Таны хөдөлгөөнт мэдээллийн үйлчилгээг идэвхжүүлж байна</translation>
 <translation id="2785873697295365461">Файл тодорхойлогч</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1995,7 +1993,6 @@
 <translation id="3003623123441819449">CSS кэш</translation>
 <translation id="3003828226041301643">Домайнд төхөөрөмжийг оруулах боломжгүй байна. Таны бүртгэл төхөөрөмж нэмэх эрхтэй эсэхийг шалгана уу.</translation>
 <translation id="3003967365858406397">Таны <ph name="PHONE_NAME" /> хувийн Wi-Fi холболт үүсгэнэ.</translation>
-<translation id="3004391367407090544">Дараа дахин хандана уу</translation>
 <translation id="3006881078666935414">Хэрэглээний дата алга</translation>
 <translation id="3007771295016901659">Табыг хуулбарлах</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> дээрээ Linux-н хэрэгсэл, засварлагч болон IDE-г ажиллуулах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -2415,7 +2412,6 @@
 <translation id="3451753556629288767">Файлуудын төрлийг нээхийг зөвшөөрсөн</translation>
 <translation id="3452999110156026232">Эцэг эхийн хандалт</translation>
 <translation id="3453612417627951340">Зөвшөөрөл хэрэгтэй</translation>
-<translation id="3454157711543303649">Идэвхжүүлэлт дууслаа</translation>
 <translation id="3454213325559396544">Энэ бол энэ <ph name="DEVICE_TYPE" />-н программ хангамж болон аюулгүй байдлын сүүлийн автомат шинэчлэлт. Ирээдүйд шинэчлэлт хийхийн тулд, шинэ загварт дэвшүүлнэ үү.</translation>
 <translation id="3455436146814891176">Шифрлэлтийн нууц үгийг синк хийх</translation>
 <translation id="345693547134384690">Зургийг шинэ цонхонд нээ</translation>
@@ -3729,7 +3725,6 @@
 <translation id="4853020600495124913">&amp; Шинэ цонхонд нээх</translation>
 <translation id="4854317507773910281">Зөвшөөрөл хүсэх эцэг эхийн бүртгэлийг сонгоно уу</translation>
 <translation id="485480310608090163">Бусад тохиргоо болон зөвшөөрөл</translation>
-<translation id="4856478137399998590">Таны хөдөлгөөнт өгөгдлийн үйлчилгээ идэвхжсэн бөгөөд ашиглахад бэлэн болсон байна</translation>
 <translation id="4858792381671956233">Та эцэг эхээсээ энэ сайтад нэвтрэх зөвшөөрөл хүссэн байна</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP хариултууд руу нэвтэрч байна</translation>
@@ -4449,7 +4444,6 @@
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
 <translation id="5616726534702877126">Хэмжээг хадгалах</translation>
 <translation id="561698261642843490">Firefox-г хаах</translation>
-<translation id="5618333180342767515">(Энэ нь цөөн хэдhэн минут л болно)</translation>
 <translation id="56197088284879152">Алсын төхөөрөмж холбогдож байна: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="5620568081365989559">DevTools нь <ph name="FOLDER_PATH" /> руу бүрэн нэвтрэхийг хүсч байна.
@@ -6941,7 +6935,6 @@
 <translation id="8188389033983459049">Төхөөрөмжийнхөө тохиргоог шалгаад үргэлжлүүлэх бол асаана уу</translation>
 <translation id="8189306097519446565">Сургуулийн бүртгэлүүд</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> руу холбогдож байна</translation>
 <translation id="8191230140820435481">Програм, өргөтгөл, theme-дээ тохиргоо хийх</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> таны дэлгэцийн контентыг хуваалцахыг хүсэж байна.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

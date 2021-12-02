@@ -606,7 +606,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
@@ -955,7 +954,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7430878839542012341">Supprimer cette recherche de votre historique ?</translation>
 <translation id="7434543979546293336">Indiquée comme idée principale</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
-<translation id="7456049842111127849">Mode de capture, la valeur par défaut est : <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>

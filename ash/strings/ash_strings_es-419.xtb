@@ -607,7 +607,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> no está disponible en este dispositivo.</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="4952936045814352993">La opción Ubicar teléfono no está disponible cuando se inhabilitan los sonidos de las alarmas</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requiere que reviertas tu <ph name="DEVICE_TYPE" />. Se restablecerá tu dispositivo y se borrarán todos los datos.</translation>
@@ -956,7 +955,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7430878839542012341">¿Deseas borrar esta búsqueda de tu Historial?</translation>
 <translation id="7434543979546293336">Se marcó como idea clave</translation>
 <translation id="7452560014878697800">Una aplicación está usando la cámara.</translation>
-<translation id="7456049842111127849">Modo de captura, la configuración predeterminada es <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>

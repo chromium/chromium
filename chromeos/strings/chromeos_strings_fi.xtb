@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1851218745569890714">Videokonferenssit</translation>
-<translation id="1857850044054738019">Valitse tämä vaihtoehto, jos laite varastoidaan uudelleen tai
-        kunnostetaan uutta asiakasta varten.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3583278742022654445">Heikko signaalin voimakkuus. Kokeile siirtyä lähemmäs Wi-Fi-signaalin lähdettä.</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
-<translation id="360089215033199597">Korjaus sujuu helpommin, jos muodostat yhteyden Wi-Fi-verkkoon.
-        Verkkosi tallennetaan.</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
-<translation id="7451112128070628323">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu,
-        esimerkiksi jos laite siirretään toiselle henkilölle
-        organisaation sisällä.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>

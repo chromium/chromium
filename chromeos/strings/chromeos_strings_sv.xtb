@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanningen avbryts</translation>
 <translation id="1851218745569890714">Videokonferenser</translation>
-<translation id="1857850044054738019">Välj det här alternativet om enheten ska åter till lagret eller restaureras
-        så att den kan skickas till en ny kund senare.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
-<translation id="360089215033199597">Vi rekommenderar att du ansluter till wifi för att göra reparationsprocessen enklare.
-        Nätverket sparas.</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
-<translation id="7451112128070628323">Använd det här alternativet om enheten inte ska byta ägare,
-        till exempel om någon annan inom samma organisation övertar
-        enheten.</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
 <translation id="7487067081878637334">Teknik</translation>
 <translation id="7490813197707563893">MAC-adress</translation>

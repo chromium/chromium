@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annullamento scansione…</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
-<translation id="1857850044054738019">Seleziona questa opzione se il dispositivo viene rifornito o ricondizionato per la
-        distribuzione a un nuovo cliente.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="3583278742022654445">Intensità segnale debole. Prova ad avvicinarti alla fonte del segnale Wi-Fi.</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
-<translation id="360089215033199597">Si consiglia di connettersi al Wi-Fi per semplificare il processo di riparazione.
-        La rete verrà salvata.</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3606583719724308068">Alta latenza a siti web HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}one{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
-<translation id="7451112128070628323">Seleziona questa opzione se la proprietà del dispositivo non cambierà.
-        Ad esempio, il dispositivo viene assegnato a un'altra persona
-        all'interno di un'organizzazione.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>

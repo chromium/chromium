@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
-<translation id="1857850044054738019">Odaberite ovu opciju ako se obnavljaju zalihe uređaja ili se obnavlja za distribuciju novom korisniku.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi s ograničenim prometom</translation>
 <translation id="3583278742022654445">Signal je slab. Pokušajte se približiti izvoru Wi-Fi signala.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
-<translation id="360089215033199597">Preporučuje se povezivanje s Wi-Fijem radi lakšeg popravka.
-        Mreža će se spremiti.</translation>
 <translation id="360565022852130722">Wi-Fi mreža zaštićena je slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latencija do HTTPS web-lokacija</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7415801143053185905">Vrlo visoka latencija HTTP-a</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
-<translation id="7451112128070628323">Odaberite ovu opciju ako se vlasništvo uređaja ne mijenja.
-        Na primjer, uređaj se prebacuje na drugu osobu u organizaciji.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>

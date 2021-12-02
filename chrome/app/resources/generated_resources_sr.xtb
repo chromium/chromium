@@ -1603,7 +1603,6 @@
 <translation id="2627424346328942291">Дељење није успело</translation>
 <translation id="2628770867680720336">Chromebook мора да се врати на фабричка подешавања да би се омогућило ADB отклањање грешака <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Програмирајте Android апликације</translation>
-<translation id="2630681426381349926">Повежите са WiFi-ем да бисте започели</translation>
 <translation id="2631498379019108537">Приказуј опције уноса у полици</translation>
 <translation id="2633212996805280240">Желите ли да уклоните „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> није могао да доврши инсталацију, али ће наставити да се покреће са слике диска.</translation>
@@ -1764,7 +1763,6 @@
 <translation id="2783321960289401138">Направи пречицу...</translation>
 <translation id="2783829359200813069">Изаберите типове шифровања</translation>
 <translation id="2783952358106015700">Користите безбедносни кључ у апликацији <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Активирање услуге мобилног преноса података</translation>
 <translation id="2785873697295365461">Дескриптори датотека</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1983,7 +1981,6 @@
 <translation id="3003623123441819449">CSS кеш</translation>
 <translation id="3003828226041301643">Придруживање уређаја домену није успело. Проверите налог да бисте се уверили да имате привилегије за додавање уређаја.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> ће направити приватну WiFi везу.</translation>
-<translation id="3004391367407090544">Вратите се касније</translation>
 <translation id="3006881078666935414">Нема података о коришћењу</translation>
 <translation id="3007771295016901659">Направи дупликат картице</translation>
 <translation id="3008232374986381779">Покрећите Linux алатке, уређиваче и IDE-ове на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -2403,7 +2400,6 @@
 <translation id="3451753556629288767">Отварање типова фајлова је дозвољено</translation>
 <translation id="3452999110156026232">Родитељски приступ</translation>
 <translation id="3453612417627951340">Потребно је овлашћење</translation>
-<translation id="3454157711543303649">Активација је довршена</translation>
 <translation id="3454213325559396544">Ово је последње аутоматско безбедносно ажурирање и ажурирање софтвера за <ph name="DEVICE_TYPE" />. Надоградите на новији модел да бисте добијали будућа ажурирања.</translation>
 <translation id="3455436146814891176">Лозинка за шифровање синхронизованих података</translation>
 <translation id="345693547134384690">Отвори &amp;слику на новој картици</translation>
@@ -3717,7 +3713,6 @@
 <translation id="4853020600495124913">Отвори у &amp;новом прозору</translation>
 <translation id="4854317507773910281">Одабери налог родитеља за одобрење</translation>
 <translation id="485480310608090163">Још подешавања и дозвола</translation>
-<translation id="4856478137399998590">Услуга мобилног преноса података је активирана и спремна за употребу</translation>
 <translation id="4858792381671956233">Питао/ла си родитеље да ли смеш да посетиш овај сајт</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="4862642413395066333">Потписивање OCSP одговора</translation>
@@ -4436,7 +4431,6 @@
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5616726534702877126">Резервиши величину</translation>
 <translation id="561698261642843490">Затворите Firefox</translation>
-<translation id="5618333180342767515">(ово може да потраје пар минута)</translation>
 <translation id="56197088284879152">Веза је закрчена за удаљени уређај: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="5619862035903135339">Смернице администратора онемогућавају снимање екрана</translation>
 <translation id="5620568081365989559">DevTools захтевају потпун приступ за <ph name="FOLDER_PATH" />.
@@ -6931,7 +6925,6 @@
 <translation id="8188389033983459049">Проверите подешавања уређаја и укључите га да бисте наставили</translation>
 <translation id="8189306097519446565">Школски налози</translation>
 <translation id="8189750580333936930">Заштићено окружење приватности</translation>
-<translation id="8190193592390505034">Повезивање са мрежом <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управљање апликацијама, додацима и темама</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> жели да дели садржај екрана.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
 <translation id="1851218745569890714">ການປະຊຸມຜ່ານວິດີໂອ</translation>
-<translation id="1857850044054738019">ເລືອກຕົວເລືອກນີ້ຫາກອຸປະກອນກຳລັງຖືກເກັບເຂົ້າສະຕັອກຄືນໃໝ່ ຫຼື ຣີເຟີບິດ
-        ເພື່ອການແຈກຈ່າຍໄປໃຫ້ລູກຄ້າໃໝ່.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3583278742022654445">ຄວາມແຮງສັນຍານອ່ອນ. ໃຫ້ລອງຍ້າຍໄປໃກ້ແຫຼ່ງສັນຍານ Wi-Fi ຫຼາຍຂຶ້ນ.</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
-<translation id="360089215033199597">ແນະນຳໃຫ້ເຊື່ອມຕໍ່ຫາ Wi-Fi ເພື່ອເຮັດໃຫ້ຂັ້ນຕອນການສ້ອມແປງງ່າຍຂຶ້ນ.
-        ລະບົບຈະບັນທຶກເຄືອຂ່າຍຂອງທ່ານໄວ້.</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
@@ -437,9 +433,6 @@
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
-<translation id="7451112128070628323">ເລືອກຕົວເລືອກນີ້ຫາກຄວາມເປັນເຈົ້າຂອງອຸປະກອນບໍ່ມີການປ່ຽນແປງ.
-        ຕົວຢ່າງ: ອຸປະກອນກຳລັງຖືກໂອນຍ້າຍໄປໃຫ້ຄົນອື່ນ
-        ພາຍໃນອົງການດຽວກັນ.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>

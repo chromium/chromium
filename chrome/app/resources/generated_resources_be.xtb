@@ -1605,7 +1605,6 @@
 <translation id="2627424346328942291">Збой абагульвання</translation>
 <translation id="2628770867680720336">Уключэнне адладкі ADB патрабуе скіду налад Chromebook да заводскіх значэнняў. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Распрацоўка праграм для Android</translation>
-<translation id="2630681426381349926">Каб пачаць, падключыцеся да Wi-Fi</translation>
 <translation id="2631498379019108537">Паказваць параметры ўводу на паліцы</translation>
 <translation id="2633212996805280240">Выдаліць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">Браўзеру <ph name="PRODUCT_NAME" /> не ўдалося завяршыць усталяванне, але ён працягне працу з вобраза дыска.</translation>
@@ -1697,6 +1696,7 @@
 <translation id="2721037002783622288">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Профілі падкантрольных карыстальнікаў выключаны адміністратарам.</translation>
+<translation id="2722540561488096675">Прылада завершыць працу праз <ph name="TIME_LEFT" /> Перш чым уключаць яе паўторна, выміце USB-прыладу. Пасля гэтага вы можаце пачаць працаваць з <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Перавод адзінак вымярэння</translation>
 <translation id="2725200716980197196">Падключэнне да сеткі адноўлена</translation>
@@ -1764,7 +1764,6 @@
 <translation id="2783321960289401138">Стварыць ярлык...</translation>
 <translation id="2783829359200813069">Выберыце тыпы шыфравання</translation>
 <translation id="2783952358106015700">Выкарыстоўвайце свой ключ бяспекі, уваходзячы на <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Актывацыя сэрвісу мабільнай перадачы даных</translation>
 <translation id="2785873697295365461">Дэскрыптары файлаў</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1983,7 +1982,6 @@
 <translation id="3003623123441819449">Кэш CSS</translation>
 <translation id="3003828226041301643">Не ўдалося далучыць прыладу да дамена. Праверце, ці мае ваш уліковы запіс паўнамоцтвы дадаваць прылады.</translation>
 <translation id="3003967365858406397">Ваш тэлефон <ph name="PHONE_NAME" /> створыць прыватнае падключэнне Wi-Fi.</translation>
-<translation id="3004391367407090544">Вярніцеся пазней</translation>
 <translation id="3006881078666935414">Няма даных аб выкарыстанні</translation>
 <translation id="3007771295016901659">Дубліраваць укладку</translation>
 <translation id="3008232374986381779">Выкарыстоўвайце інструменты Linux, рэдактары і IDE на сваёй прыладзе <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -2403,7 +2401,6 @@
 <translation id="3451753556629288767">Маюць дазвол адкрываць файлы пэўных тыпаў</translation>
 <translation id="3452999110156026232">Бацькоўскі доступ</translation>
 <translation id="3453612417627951340">Патрабуецца аўтарызацыя</translation>
-<translation id="3454157711543303649">Актывацыя завершана</translation>
 <translation id="3454213325559396544">Гэта апошняе аўтаматычнае абнаўленне праграмнага забеспячэння і сістэмы бяспекі для гэтай прылады "<ph name="DEVICE_TYPE" />". Каб атрымліваць наступныя абнаўленні, перайдзіце на новую мадэль.</translation>
 <translation id="3455436146814891176">Пароль шыфравання для сінхранізацыі</translation>
 <translation id="345693547134384690">Адкрыць &amp;відарыс у новай укладцы</translation>
@@ -3715,7 +3712,6 @@
 <translation id="4853020600495124913">Адкрыць у &amp;новым акне</translation>
 <translation id="4854317507773910281">Для ўхвалення выберыце бацькоўскі ўліковы запіс</translation>
 <translation id="485480310608090163">Іншыя налады і дазволы</translation>
-<translation id="4856478137399998590">Сэрвіс мабільнай перадачы даных уключаны і гатовы для выкарыстання</translation>
 <translation id="4858792381671956233">Вы спыталі сваіх бацькоў, ці можна наведваць гэты сайт</translation>
 <translation id="4858913220355269194">Бац</translation>
 <translation id="4862642413395066333">Падпісванне адказаў OCSP</translation>
@@ -4432,7 +4428,6 @@
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5616726534702877126">Зарэзерваваць памер</translation>
 <translation id="561698261642843490">Закрыць Firefox</translation>
-<translation id="5618333180342767515">(гэта можа заняць некалькі хвілін)</translation>
 <translation id="56197088284879152">Падключэнне да аддаленай прылады перагружанае: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Згодна з палітыкай, зададзенай адміністратарам, здыманне экрана адключана</translation>
 <translation id="5620568081365989559">Інструменты распрацоўшчыка запытваюць поўны доступ да папкі "<ph name="FOLDER_PATH" />". Упэўніцеся, што канфідэнцыяльная інфармацыя не будзе раскрыта.</translation>
@@ -4548,6 +4543,7 @@
 <translation id="5739235828260127894">Чаканне спраўджання. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Вельмі вялікі</translation>
 <translation id="5740328398383587084">Абагульванне паблізу</translation>
+<translation id="5740709157181662145">Дапамагаць павышаць стабільнасць работы і паляпшаць падтрымку апаратнага забеспячэння ў <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Адлюстраванне дысплэя</translation>
 <translation id="574209121243317957">Вышыня голасу</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
@@ -6914,7 +6910,6 @@
 <translation id="8188389033983459049">Каб працягнуць, праверце налады прылады і ўключыце яе</translation>
 <translation id="8189306097519446565">Навучальныя ўліковыя запісы</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Ідзе падключэнне да правайдара <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Кіраваць праграмамі, пашырэннямі і тэмамі</translation>
 <translation id="8192944472786724289">Праграма "<ph name="APP_NAME" />" запытвае дазвол на абагульванне змесціва экрана.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

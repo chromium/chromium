@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
 <translation id="1851218745569890714">Видео конференције</translation>
-<translation id="1857850044054738019">Изаберите ову опцију ако се обнављају залихе уређаја или се он ремонтује за
-        дистрибуцију новом клијенту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3583278742022654445">Сигнал је слаб. Пробајте да приђете ближе извору WiFi сигнала.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
-<translation id="360089215033199597">Повезивање на WiFi се препоручује да би процес поправке био лакши.
-        Мрежа ће бити сачувана.</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
 <translation id="3689839747745352263">Тест <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">Веома велико HTTP кашњење</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
-<translation id="7451112128070628323">Изаберите ову опцију ако се власништво над уређајем не мења.
-        На пример, ако се уређај пребацује другој особи
-        унутар организације.</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC адреса</translation>

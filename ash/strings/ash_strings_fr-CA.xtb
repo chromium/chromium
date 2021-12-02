@@ -606,7 +606,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vous demande de restaurer votre <ph name="DEVICE_TYPE" />. Votre appareil sera réinitialisé, et toutes les données seront supprimées.</translation>
@@ -955,7 +954,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7430878839542012341">Supprimer cette recherche de votre historique?</translation>
 <translation id="7434543979546293336">Indiquée comme idée clé</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
-<translation id="7456049842111127849">Mode de capture, la valeur par défaut est <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>

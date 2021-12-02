@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
-<translation id="1857850044054738019">Изберете тази опция, ако устройството се връща за продажба или ремонтира за предоставяне на нов клиент.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
-<translation id="360089215033199597">Свързването с Wi-Fi се препоръчва, тъй като ще улесни поправката.
-        Мрежата ви ще бъде запазена.</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирането завърши. Сканирана бе 1 страница}other{Сканирането завърши. Сканирани бяха {NUMBER_OF_PAGES} страници}}</translation>
-<translation id="7451112128070628323">Изберете тази опция, ако собствеността върху устройството не се променя.
-        Например то се предава на друг човек в рамките на същата организация.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC адрес</translation>

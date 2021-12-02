@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
-<translation id="1857850044054738019">Kies hierdie opsie as die toestel teruggeplaas word in voorraad of opgeknap word om
-        na 'n nuwe klant versprei te word.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">betaalde Wi-Fi</translation>
 <translation id="3583278742022654445">Swak seinsterkte. Probeer om nader aan die wi-fi-seinbron te kom.</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
-<translation id="360089215033199597">Daar word aanbeveel dat jy aan wi-fi koppel om die herstelproses makliker te maak.
-        Jou netwerk sal gestoor word.</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3606583719724308068">Hoë traagheid na HTTPS-webwerwe</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
@@ -436,9 +432,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7415801143053185905">Baie hoë HTTP-traagheid</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
-<translation id="7451112128070628323">Kies hierdie opsie as die eienaarskap van die toestel nie verander nie.
-        Byvoorbeeld, die toestel word oorgedra na 'n ander persoon
-        binne 'n organisasie.</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7487067081878637334">Tegnologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>

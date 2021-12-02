@@ -270,6 +270,7 @@
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο</translation>
 <translation id="1746113442205726301">Μετατόπιση εικόνας στον άξονα Y</translation>
+<translation id="1747819498338037826">Αυτόματη αλλαγή</translation>
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
 <translation id="1752021286346845558">Γραμματοκιβώτιο 8</translation>
 <translation id="1753706481035618306">Αριθμός σελίδας</translation>
@@ -1691,6 +1692,7 @@
 <translation id="643051589346665201">Αλλαγή κωδικού πρόσβασης Google</translation>
 <translation id="6433490469411711332">Επεξεργασία στοιχείων επαφής</translation>
 <translation id="6433595998831338502">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> απέρριψε τη σύνδεση.</translation>
+<translation id="6438025220577812695">Μη αυτόματη αλλαγή</translation>
 <translation id="6440503408713884761">Αγνοείται</translation>
 <translation id="6443406338865242315">Ποιες επεκτάσεις και προσθήκες έχετε εγκαταστήσει</translation>
 <translation id="6446163441502663861">Kahu (Φάκελος)</translation>

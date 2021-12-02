@@ -1606,7 +1606,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2627424346328942291">Sdílení se nezdařilo</translation>
 <translation id="2628770867680720336">K aktivaci ladění ADB je tento Chromebook potřeba resetovat do továrního nastavení. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Vývoj aplikací pro Android</translation>
-<translation id="2630681426381349926">Chcete-li začít, připojte se k síti Wi-Fi</translation>
 <translation id="2631498379019108537">Zobrazovat na poličce možnosti vstupu</translation>
 <translation id="2633212996805280240">Odstranit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101">Aplikace <ph name="PRODUCT_NAME" /> nemůže dokončit svou instalaci, ale bude se i nadále spouštět z bitové kopie disku.</translation>
@@ -1766,7 +1765,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2783321960289401138">Vytvořit zástupce...</translation>
 <translation id="2783829359200813069">Vyberte typy šifrování</translation>
 <translation id="2783952358106015700">Použijte pro aplikaci <ph name="APP_NAME" /> svůj bezpečnostní klíč</translation>
-<translation id="2784407158394623927">Aktivace mobilní datové služby</translation>
 <translation id="2785873697295365461">Deskriptory souborů</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1985,7 +1983,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3003623123441819449">Mezipaměť CSS</translation>
 <translation id="3003828226041301643">Zařízení do domény nelze přidat. Zkontrolujte, zda váš účet má oprávnění přidávat zařízení.</translation>
 <translation id="3003967365858406397">Telefon <ph name="PHONE_NAME" /> vytvoří soukromé připojení Wi-Fi.</translation>
-<translation id="3004391367407090544">Zkuste to prosím později</translation>
 <translation id="3006881078666935414">Žádné údaje o využití</translation>
 <translation id="3007771295016901659">Duplikovat kartu</translation>
 <translation id="3008232374986381779">Spouštějte na svém zařízení <ph name="DEVICE_TYPE" /> nástroje, editory a prostředí IDE pro Linux. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -2405,7 +2402,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3451753556629288767">Povolení otevírat typy souborů</translation>
 <translation id="3452999110156026232">Rodičovský přístup</translation>
 <translation id="3453612417627951340">Vyžaduje oprávnění</translation>
-<translation id="3454157711543303649">Aktivace dokončena</translation>
 <translation id="3454213325559396544">Toto je poslední automatická aktualizace softwaru a zabezpečení pro toto zařízení typu <ph name="DEVICE_TYPE" />. Chcete-li dostávat budoucí aktualizace, upgradujte na novější model.</translation>
 <translation id="3455436146814891176">Heslo k šifrování synchronizovaných údajů</translation>
 <translation id="345693547134384690">Otevřít o&amp;brázek na nové kartě</translation>
@@ -3718,7 +3714,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4853020600495124913">Otevřít v &amp;novém okně</translation>
 <translation id="4854317507773910281">Vyber účet rodiče, který to schválí</translation>
 <translation id="485480310608090163">Další nastavení a oprávnění</translation>
-<translation id="4856478137399998590">Datové služby jsou aktivovány a můžete je začít používat</translation>
 <translation id="4858792381671956233">Požádal(a) jsi rodiče o povolení návštěvy tohoto webu.</translation>
 <translation id="4858913220355269194">Fotbal</translation>
 <translation id="4862642413395066333">Podepisování odpovědí OCSP</translation>
@@ -4438,7 +4433,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5616726534702877126">Rezervovat</translation>
 <translation id="561698261642843490">Zavřete Firefox</translation>
-<translation id="5618333180342767515">(Může to trvat i několik minut.)</translation>
 <translation id="56197088284879152">Připojení ke vzdálenému zařízení <ph name="DEVICE_NAME" /> je přetížené.</translation>
 <translation id="5619862035903135339">Zásady administrátora záznam obrazovky zakazují</translation>
 <translation id="5620568081365989559">Nástroj DevTools požaduje úplný přístup ke složce <ph name="FOLDER_PATH" />. Dejte pozor, abyste mu nezpřístupnili žádné citlivé informace.</translation>
@@ -6932,7 +6926,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8188389033983459049">Chcete-li pokračovat, zkontrolujte nastavení zařízení a zapněte Bluetooth</translation>
 <translation id="8189306097519446565">Školní účty</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Připojování k síti poskytovatele <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Spravovat aplikace, rozšíření a motivy</translation>
 <translation id="8192944472786724289">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

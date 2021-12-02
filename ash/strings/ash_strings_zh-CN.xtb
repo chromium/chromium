@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
-<translation id="4947229553198882488">无法在此设备上使用<ph name="UNAVAILABLE_APPS" />。</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4952936045814352993">当闹钟提示音处于停用状态时，无法使用“定位手机”功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求您回滚 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
@@ -955,7 +954,6 @@
 <translation id="7430878839542012341">要将这项搜索从您的历史记录中删除吗？</translation>
 <translation id="7434543979546293336">已标记为核心观点</translation>
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
-<translation id="7456049842111127849">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>

@@ -606,7 +606,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4925542575807923399">Administrator ovog računa traži da se prvi prijavi na račun u sesiji višestruke prijave.</translation>
 <translation id="4945196315133970626">Isključi obavještenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> nije na ovom uređaju.</translation>
 <translation id="495046168593986294">Klizni prema gore</translation>
 <translation id="4952936045814352993">Lociranje telefona nije dostupno kada su isključeni zvukovi alarma</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahtijeva da vratite uređaj <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se vratiti na zadano i svi podaci će se izbrisati.</translation>
@@ -955,7 +954,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7430878839542012341">Izbrisati ovo pretraživanje iz historije?</translation>
 <translation id="7434543979546293336">Označeno kao ključna ideja</translation>
 <translation id="7452560014878697800">Aplikacija koristi vašu kameru</translation>
-<translation id="7456049842111127849">Način rada za snimanje, zadano je <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">PIN</translation>
 <translation id="746232733191930409">Način rada snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>

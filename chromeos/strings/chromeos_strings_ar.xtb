@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
-<translation id="1857850044054738019">حدِّد هذا الخيار في حالة ما إذا كان ستتم إعادة توفير الجهاز أو تجديده
-        لتوزيعه على عميل جديد.</translation>
 <translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
 <translation id="3583278742022654445">‏قوة الإشارة ضعيفة. يُرجى الاقتراب من مصدر إشارة شبكة Wi-Fi.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
-<translation id="360089215033199597">‏لتنفيذ عملية الإصلاح بسهولة، ننصح بالاتصال بشبكة Wi-Fi.
-        سيتم حفظ بيانات شبكتك.</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
-<translation id="7451112128070628323">حدِّد هذا الخيار في حال عدم تغيُّر ملكية الجهاز.
-        على سبيل المثال، عندما يتم نقل الجهاز إلى مستخدم آخر
-        داخل المؤسسة.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>

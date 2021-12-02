@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Скандоо токтотулууда</translation>
 <translation id="1851218745569890714">Видео конференция</translation>
-<translation id="1857850044054738019">Эгер түзмөк кайтарылып же жаңы кардарга берүү үчүн калыбына келтирилсе, ушул
-        параметрди тандаңыз.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Жабдыкты оңдоо</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Cигнал начар. Wi-Fi сигналынын булагына жакыныраак жылып көрүңүз.</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
-<translation id="360089215033199597">Оңдоо процессин жеңилдетүү үчүн Wi-Fi'га туташуу сунушталат.
-        Тармагыңыз сакталат.</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
 <translation id="3606583719724308068">HTTPS вебсайттары үчүн күтүү убакыты жогору</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
-<translation id="7451112128070628323">Түзмөктүн ээси өзгөрбөсө, ушул параметрди тандаңыз.
-        Мисалы, түзмөк уюмдагы башка адамга өткөрүлүп
-         жатат.</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC дареги</translation>

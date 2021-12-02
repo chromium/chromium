@@ -1601,7 +1601,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2627424346328942291">Teilen nicht möglich</translation>
 <translation id="2628770867680720336">Zur Aktivierung der ADB-Fehlerbehebung muss dieses Chromebook auf die Werkseinstellungen zurückgesetzt werden. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android-Apps entwickeln</translation>
-<translation id="2630681426381349926">Verbindung zu WLAN herstellen</translation>
 <translation id="2631498379019108537">Eingabeoptionen in der Ablage anzeigen</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" entfernen?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> konnte die Installation nicht abschließen, wird jedoch weiterhin über das Datenträgerabbild ausgeführt.</translation>
@@ -1762,7 +1761,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2783321960289401138">Verknüpfung erstellen...</translation>
 <translation id="2783829359200813069">Verschlüsselungstypen auswählen</translation>
 <translation id="2783952358106015700">Sicherheitsschlüssel mit <ph name="APP_NAME" /> verwenden</translation>
-<translation id="2784407158394623927">Ihr mobiler Datendienst wird aktiviert.</translation>
 <translation id="2785873697295365461">Dateideskriptoren</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1981,7 +1979,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3003623123441819449">CSS-Cache</translation>
 <translation id="3003828226041301643">Das Gerät konnte der Domain nicht beitreten. Prüfen Sie, ob mit Ihrem Konto Geräte hinzugefügt werden dürfen.</translation>
 <translation id="3003967365858406397">Ihr <ph name="PHONE_NAME" /> stellt eine private WLAN-Verbindung her.</translation>
-<translation id="3004391367407090544">Bitte versuchen Sie es später erneut.</translation>
 <translation id="3006881078666935414">Keine Nutzungsdaten</translation>
 <translation id="3007771295016901659">Tab duplizieren</translation>
 <translation id="3008232374986381779">Linux-Tools, ‑Editoren und ‑IDEs auf <ph name="DEVICE_TYPE" /> ausführen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -2401,7 +2398,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3451753556629288767">Öffnen von Dateitypen erlauben</translation>
 <translation id="3452999110156026232">Elternfreigabe</translation>
 <translation id="3453612417627951340">Autorisierung erforderlich</translation>
-<translation id="3454157711543303649">Aktivierung abgeschlossen</translation>
 <translation id="3454213325559396544">Das ist das letzte automatische Software- und Sicherheitsupdate für dieses <ph name="DEVICE_TYPE" />. Um weiter Updates zu erhalten, ist ein neueres Modell erforderlich.</translation>
 <translation id="3455436146814891176">Verschlüsselungspasswort synchronisieren</translation>
 <translation id="345693547134384690">Bil&amp;d in neuem Tab öffnen</translation>
@@ -3715,7 +3711,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
 <translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
-<translation id="4856478137399998590">Ihr mobiler Datendienst ist aktiviert und einsatzbereit.</translation>
 <translation id="4858792381671956233">Du hast deine Eltern gefragt, ob du diese Website besuchen darfst</translation>
 <translation id="4858913220355269194">Fußball</translation>
 <translation id="4862642413395066333">Signatur von OCSP-Antworten</translation>
@@ -4433,7 +4428,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5616726534702877126">Speicherplatz reservieren</translation>
 <translation id="561698261642843490">Firefox schließen</translation>
-<translation id="5618333180342767515">(dies kann einige Minuten dauern)</translation>
 <translation id="56197088284879152">Die Verbindung mit folgendem Remote-Gerät ist überlastet: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Die Administratorrichtlinie blockiert die Bildschirmaufnahme</translation>
 <translation id="5620568081365989559">DevTools erfordert Vollzugriff auf <ph name="FOLDER_PATH" />. Achten Sie darauf, dass dadurch keine vertraulichen Informationen offengelegt werden.</translation>
@@ -6927,7 +6921,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8188389033983459049">Überprüfen Sie Ihre Geräteeinstellungen und aktivieren Sie Bluetooth, um fortzufahren</translation>
 <translation id="8189306097519446565">Konten von Bildungseinrichtungen</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
 <translation id="8191230140820435481">Apps, Erweiterungen und Designs verwalten</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

@@ -606,7 +606,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4925542575807923399">Tämän tilin järjestelmänvalvoja edellyttää, että tämä tili on ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> puuttuu laitteelta.</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
 <translation id="4952936045814352993">Paikanna puhelin ei ole käytettävissä, kun hälytysäänet on poistettu käytöstä</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> edellyttää, että <ph name="DEVICE_TYPE" /> päivitetään aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
@@ -955,7 +954,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7430878839542012341">Poistetaanko tämä haku historiastasi?</translation>
 <translation id="7434543979546293336">Merkitty pääideaksi</translation>
 <translation id="7452560014878697800">Sovellus käyttää kameraasi</translation>
-<translation id="7456049842111127849">Tallennustila, oletuksena on <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Kiinnitä</translation>
 <translation id="746232733191930409">Näytön tallentajatila</translation>
 <translation id="7466449121337984263">Kosketa tunnistinta</translation>

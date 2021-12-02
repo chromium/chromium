@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
-<translation id="4947229553198882488">這部裝置未安裝「<ph name="UNAVAILABLE_APPS" />」。</translation>
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="4952936045814352993">停用鬧鐘音效後無法使用尋找手機的功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求你復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
@@ -955,7 +954,6 @@
 <translation id="7430878839542012341">要將這個搜尋從你的記錄中刪除嗎？</translation>
 <translation id="7434543979546293336">已標示為重要提案</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝影機</translation>
-<translation id="7456049842111127849">擷取模式，預設為<ph name="SOURCE" /><ph name="TYPE" />。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>

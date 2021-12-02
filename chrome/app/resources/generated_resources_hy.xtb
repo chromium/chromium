@@ -1606,7 +1606,6 @@
 <translation id="2627424346328942291">Սխալ առաջացավ</translation>
 <translation id="2628770867680720336">ADB վրիպազերծումը միացնելու համար վերականգնեք Chromebook-ի գործարանային կարգավորումները։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android հավելվածների մշակում</translation>
-<translation id="2630681426381349926">Սկսելու համար կապակցվեք Wi-Fi-ին</translation>
 <translation id="2631498379019108537">Ցուցադրել ներածման ընտրանքները դարակում</translation>
 <translation id="2633212996805280240">Հեռացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />-ը չավարտեց տեղադրումը, բայց կշարունակի աշխատեցնել այն իր սկավառակի պատկերից:</translation>
@@ -1766,7 +1765,6 @@
 <translation id="2783321960289401138">Ստեղծել դյուրանցում…</translation>
 <translation id="2783829359200813069">Ընտրեք գաղտնագրման տեսակը</translation>
 <translation id="2783952358106015700">Մուտք «<ph name="APP_NAME" />» հավելված անվտանգության բանալու օգնությամբ</translation>
-<translation id="2784407158394623927">Բջջային ցանցերում տվյալների փոխանցման ծառայության ակտիվացում</translation>
 <translation id="2785873697295365461">Ֆայլի նկարագրություն</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1985,7 +1983,6 @@
 <translation id="3003623123441819449">CSS քեշ</translation>
 <translation id="3003828226041301643">Չհաջողվեց միացնել սարքը տիրույթին: Ստուգեք ձեր հաշիվը՝ համոզվելու, որ սարքեր ավելացնելու արտոնություններ ունեք:</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> սարքը փակ Wi-Fi կապ կստեղծի։</translation>
-<translation id="3004391367407090544">Վերադարձեք ավելի ուշ</translation>
 <translation id="3006881078666935414">Օգտագործման տվյալներ չկան</translation>
 <translation id="3007771295016901659">Կրկնօրինակել ներդիրը</translation>
 <translation id="3008232374986381779">Աշխատեցրեք Լինուքսի գործիքներ, խմբագրիչներ ու IDE-ներ ձեր <ph name="DEVICE_TYPE" />-ում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -2405,7 +2402,6 @@
 <translation id="3451753556629288767">Վեբ հավելվածներ, որոնց թույլատրված է բացել որոշակի տեսակի ֆայլեր</translation>
 <translation id="3452999110156026232">Ծնողի մուտք</translation>
 <translation id="3453612417627951340">Անհրաժեշտ է լիազորում</translation>
-<translation id="3454157711543303649">Ակտիվացումն ավարտված է</translation>
 <translation id="3454213325559396544">Սա ծրագրային և անվտանգության կարգավորումների վերջին ավտոմատ թարմացումն է այս <ph name="DEVICE_TYPE" /> սարքի համար: Հետագա թարմացումները ստանալու համար անցեք ավելի նոր մոդելի:</translation>
 <translation id="3455436146814891176">Համաժամացնել գաղտնագրման գաղտնաբառը</translation>
 <translation id="345693547134384690">Բացել պատ&amp;կերը նոր ներդիրով</translation>
@@ -3719,7 +3715,6 @@
 <translation id="4853020600495124913">Բացել &amp;նոր պատուհանում</translation>
 <translation id="4854317507773910281">Հաստատման համար ընտրեք ծնողի հաշիվը</translation>
 <translation id="485480310608090163">Այլ կարգավորումներ և թույլտվություններ</translation>
-<translation id="4856478137399998590">Բջջային ցանցերում տվյալների փոխանցման ծառայությունն ակտիվացված է և պատրաստ օգտագործման</translation>
 <translation id="4858792381671956233">Դուք խնդրել եք ձեր ծնողին հաստատել, որ այս կայք կարելի է մտնել։</translation>
 <translation id="4858913220355269194">Ֆուտբոլ</translation>
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
@@ -4442,7 +4437,6 @@
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5616726534702877126">Պահպանել չափը</translation>
 <translation id="561698261642843490">Փակեք Firefox-ը</translation>
-<translation id="5618333180342767515">(սա կարող է մի քանի րոպե տևել)</translation>
 <translation id="56197088284879152">Կապուղին զբաղեցված է հետևյալ հեռակա սարքի կողմից՝ «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="5619862035903135339">Ադմինիստրատորի կանոններով արգելված է էկրանի տեսագրումը</translation>
 <translation id="5620568081365989559">Մշակողի գործիքները պահանջում են ամբողջական մուտք <ph name="FOLDER_PATH" /> գրացուցակ: Համոզվեք, որ նրանում գաղտնի տվյալներ չկան:</translation>
@@ -6934,7 +6928,6 @@
 <translation id="8188389033983459049">Շարունակելու համար ստուգեք սարքի կարգավորումները և միացրեք Bluetooth-ը</translation>
 <translation id="8189306097519446565">Ուսումնական հաշիվներ</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Կապակցվում է <ph name="PROVIDER_NAME" />-ին</translation>
 <translation id="8191230140820435481">Կառավարել հավելվածները, ընդլայնումները և թեմաները</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> հավելվածն ուզում է կիսվել ձեր էկրանի բովանդակությամբ։</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

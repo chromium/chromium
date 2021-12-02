@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Rušení skenování</translation>
 <translation id="1851218745569890714">Videokonference</translation>
-<translation id="1857850044054738019">Tuto možnost vyberte, pokud toto zařízení bude znovu nabídnuto k prodeji nebo je repasováno k distribuci novému zákazníkovi.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revize hardwaru</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">měřená Wi-Fi</translation>
 <translation id="3583278742022654445">Signál je slabý. Zkuste se přesunout blíže ke zdroji signálu Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
-<translation id="360089215033199597">K usnadnění procesu opravy doporučujeme připojení k Wi-Fi.
-        Síť bude uložena.</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
-<translation id="7451112128070628323">Tuto možnost vyberte v případě, že se nemění vlastník zařízení.
-        Jako příklad lze uvést předání jiné osobě v rámci organizace.</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>

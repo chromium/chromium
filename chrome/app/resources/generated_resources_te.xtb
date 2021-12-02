@@ -1618,7 +1618,6 @@
 <translation id="2627424346328942291">షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2628770867680720336">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయడానికి ఈ Chromebookను ఫ్యాక్టరీ రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android యాప్‌లను డెవలప్ చేయండి</translation>
-<translation id="2630681426381349926">ప్రారంభించడానికి Wi-Fiకి కనెక్ట్ చేయండి</translation>
 <translation id="2631498379019108537">అరలో ఇన్‌పుట్ ఎంపికలను చూపు</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />"ను తీసివేయాలా?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ఇన‌స్ట‌లేష‌న్‌ పూర్తి కాలేదు, కానీ డిస్క్ ఇమేజ్‌ నుండి రన్ అవడం కొనసాగుతుంది.</translation>
@@ -1779,7 +1778,6 @@
 <translation id="2783321960289401138">షార్ట్‌కట్‌ను సృష్టించు...</translation>
 <translation id="2783829359200813069">ఎన్‌క్రిప్షన్ రకాలను ఎంచుకోండి</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />తో మీ భద్రతా కీని ఉపయోగించండి</translation>
-<translation id="2784407158394623927">మీ మొబైల్ డేటా సేవ యాక్టివేట్ చేయబడుతోంది</translation>
 <translation id="2785873697295365461">ఫైల్ వివరణలు</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1998,7 +1996,6 @@
 <translation id="3003623123441819449">CSS క్యాష్</translation>
 <translation id="3003828226041301643">పరికరాన్ని డొమైన్‌కు చేర్చడం సాధ్యపడలేదు. పరికరాలను జోడించగల అధికారాలు మీకు ఉన్నాయో లేదో మీ ఖాతాలో తనిఖీ చేయండి.</translation>
 <translation id="3003967365858406397">మీ <ph name="PHONE_NAME" /> ప్రైవేట్ Wi-Fi కనెక్షన్‌ని సృష్టిస్తుంది.</translation>
-<translation id="3004391367407090544">దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి</translation>
 <translation id="3006881078666935414">వినియోగ డేటా లేదు</translation>
 <translation id="3007771295016901659">ట్యాబ్ యొక్క నకిలీని రూపొందించు</translation>
 <translation id="3008232374986381779">మీ <ph name="DEVICE_TYPE" />లో Linux టూల్‌లు, ఎడిటర్‌లు, IDEలను రన్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -2418,7 +2415,6 @@
 <translation id="3451753556629288767">ఫైళ్ల రకాలను తెరవడానికి అనుమతించబడింది</translation>
 <translation id="3452999110156026232">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="3453612417627951340">ప్రామాణీకరణ అవసరం</translation>
-<translation id="3454157711543303649">సక్రియం చేయడం పూర్తయింది</translation>
 <translation id="3454213325559396544">ఈ <ph name="DEVICE_TYPE" />కు ఇదే చివరి ఆటోమేటిక్ సాఫ్ట్‌వేర్ మరియు భద్రతాపరమైన అప్‌డేట్. భవిష్యత్తు అప్‌డేట్‌లను పొందడానికి, సరికొత్త మోడల్‌కు అప్‌గ్రేడ్ చేయండి.</translation>
 <translation id="3455436146814891176">ఎన్‌క్రిప్షన్ పాస్‌వర్డ్‌‌ను సింక్ చేయండి</translation>
 <translation id="345693547134384690">కొత్త‌ టాబ్‌లో &amp;చిత్రాన్ని తెరువు</translation>
@@ -3733,7 +3729,6 @@
 <translation id="4853020600495124913">&amp;కొత్త విండోలో తెరువు</translation>
 <translation id="4854317507773910281">ఆమోదం కోసం తల్లి/తండ్రి ఖాతాను ఎంచుకోండి</translation>
 <translation id="485480310608090163">మరిన్ని సెట్టింగ్‌లు మరియు అనుమతులు</translation>
-<translation id="4856478137399998590">మీ మొబైల్ డేటా సేవ యాక్టివేట్ చేయబడింది, ఉపయోగించడానికి సిద్ధంగా ఉంది</translation>
 <translation id="4858792381671956233">ఈ సైట్‌ను సందర్శించడానికి అనుమతించమని కోరుతూ మీ తల్లిదండ్రులకు రిక్వెస్ట్‌ పంపారు</translation>
 <translation id="4858913220355269194">ఫ్రిట్జ్</translation>
 <translation id="4862642413395066333">OCSP ప్రతిస్పందనలను సైన్ చేస్తోంది</translation>
@@ -4453,7 +4448,6 @@
 <translation id="5614553682702429503">పాస్‌వర్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5616726534702877126">పరిమాణాన్ని రిజర్వ్ చేయండి</translation>
 <translation id="561698261642843490">Firefoxని మూసివేయండి</translation>
-<translation id="5618333180342767515">(దీనికి కొన్ని నిమిషాల సమయం పట్టవచ్చు)</translation>
 <translation id="56197088284879152">ఈ రిమోట్ పరికరానికి ఉన్న కనెక్షన్ రద్దీగా ఉంది: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తోంది</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" />కు పూర్తి యాక్సెస్‌ను అభ్యర్థిస్తున్నాయి. మీరు ఎటువంటి ముఖ్యమైన సమాచారాన్ని బహిర్గతం చేయలేదని నిర్ధారించుకోండి.</translation>
@@ -6944,7 +6938,6 @@
 <translation id="8188389033983459049">మీ పరికర సెట్టింగ్‌లను తనిఖీ చేసి, కొనసాగించడానికి దాన్ని ఆన్ చేయండి</translation>
 <translation id="8189306097519446565">స్కూల్ ఖాతాలు</translation>
 <translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" />కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="8191230140820435481">మీ యాప్‌లను, ఎక్స్‌టెన్షన్‌లను మరియు థీమ్‌లను నిర్వహించండి</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
-<translation id="1857850044054738019">यो डिभाइस नयाँ ग्राहकलाई वितरण गर्ने प्रयोजनका लागि फेरि ल्याइँदै वा मर्मत गरी बिक्रीका लागि तयार गरिँदै छ भने यो विकल्प चयन गर्नुहोस्।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
-<translation id="360089215033199597">सजिलैसँग मर्मत गर्न सकियोस् भन्नाका खातिर Wi-Fi मा कनेक्ट गर्न सिफारिस गरिन्छ।
-        तपाईंको नेटवर्क सेभ गरिने छ।</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
@@ -434,8 +431,6 @@
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
-<translation id="7451112128070628323">यो डिभाइसको स्वामित्व हस्तान्तरण गर्न लागिएको छैन भने यो विकल्प चयन गर्नुहोस्।
-        जस्तै, यो डिभाइसको स्वामित्व संस्थाका विभिन्न व्यक्तिलाई हस्तान्तरण गरिँदै छ।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC एड्रेस</translation>

@@ -1619,7 +1619,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2627424346328942291">Kan nie deel nie</translation>
 <translation id="2628770867680720336">Hierdie Chromebook moet na fabriekinstellings terugstel word om ADB-ontfouting te aktiveer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Ontwikkel Android-programme</translation>
-<translation id="2630681426381349926">Koppel aan Wi-Fi om te begin</translation>
 <translation id="2631498379019108537">Wys invoeropsies op die rak</translation>
 <translation id="2633212996805280240">Verwyder "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> kon nie installering voltooi nie, maar sal steeds van sy skyfweergawe af werk.</translation>
@@ -1780,7 +1779,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2783321960289401138">Skep kortpad …</translation>
 <translation id="2783829359200813069">Kies enkripsiesoorte</translation>
 <translation id="2783952358106015700">Gebruik jou sekuriteitsleutel met <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Aktiveer jou mobieledatadiens</translation>
 <translation id="2785873697295365461">Lêerbeskrywers</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1999,7 +1997,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3003623123441819449">CSS-kas</translation>
 <translation id="3003828226041301643">Kan nie die toestel aan die domein koppel nie. Gaan jou rekening na om seker te maak dat jy voorregte het om toestelle by te voeg.</translation>
 <translation id="3003967365858406397">Jou <ph name="PHONE_NAME" /> sal 'n privaat Wi-Fi-verbinding skep.</translation>
-<translation id="3004391367407090544">Kom asseblief later terug</translation>
 <translation id="3006881078666935414">Geen gebruikdata nie</translation>
 <translation id="3007771295016901659">Dupliseer oortjie</translation>
 <translation id="3008232374986381779">Gebruik Linux-nutsgoed, -redigeerders en -IDE's op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -2419,7 +2416,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3451753556629288767">Word toegelaat om sekere tipes lêers oop te maak</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453612417627951340">Benodig magtiging</translation>
-<translation id="3454157711543303649">Aktivering afgehandel</translation>
 <translation id="3454213325559396544">Dit is die laaste outomatiese sagteware- en sekuriteitopdatering vir hierdie <ph name="DEVICE_TYPE" />. Gradeer na 'n nuwer model toe op om toekomstige opdaterings te kry.</translation>
 <translation id="3455436146814891176">Sinkroniseringenkripsiewagwoord</translation>
 <translation id="345693547134384690">Maak prent in nuwe oortjie oop</translation>
@@ -3734,7 +3730,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4853020600495124913">Maak in nuwe venster oop</translation>
 <translation id="4854317507773910281">Kies ouerrekening vir goedkeuring</translation>
 <translation id="485480310608090163">Meer instellings en toestemmings</translation>
-<translation id="4856478137399998590">Jou mobieledatadiens is geaktiveer en gereed om te gebruik</translation>
 <translation id="4858792381671956233">Jy het jou ouers gevra of dit OK is om hierdie werf te besoek</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Onderteken tans OCSP-reaksies</translation>
@@ -4454,7 +4449,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
 <translation id="5616726534702877126">Reserveer grootte</translation>
 <translation id="561698261642843490">Maak Firefox toe</translation>
-<translation id="5618333180342767515">(dit kan 'n paar minute neem)</translation>
 <translation id="56197088284879152">Verbinding met afgeleë toestel is verstop: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Administrateursbeleid deaktiveer skermskote</translation>
 <translation id="5620568081365989559">Ontwikkelingnutsgoed versoek volle toegang tot <ph name="FOLDER_PATH" />.
@@ -6949,7 +6943,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8188389033983459049">Gaan jou toestelinstellings na en skakel dit aan om voort te gaan</translation>
 <translation id="8189306097519446565">Skoolrekeninge</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Koppel tans aan <ph name="PROVIDER_NAME" /> …</translation>
 <translation id="8191230140820435481">Bestuur jou programme, uitbreidings en temas</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> wil jou skerm se inhoud deel.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

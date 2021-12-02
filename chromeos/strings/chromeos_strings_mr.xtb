@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
-<translation id="1857850044054738019">डिव्हाइस हे पुन्हा स्टॉक केले जात असल्यास किंवा नवीन ग्राहकाला देण्यासाठी
-        त्याचे नूतनीकरण केले जात असल्यास, हा पर्याय निवडा.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3583278742022654445">सिग्नलची क्षमता कमकुवत आहे. वाय-फाय सिग्नल स्रोताच्या जवळ जाण्याचा प्रयत्न करा.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
-<translation id="360089215033199597">दुरुस्तीची प्रक्रिया सोपी करण्यासाठी, वाय-फायशी कनेक्ट करण्याची शिफारस केली जाते.
-        तुमचे नेटवर्क सेव्ह केले जाईल.</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
-<translation id="7451112128070628323">डिव्हाइसची मालकी बदलत नसल्यास, हा पर्याय निवडा.
-        उदाहरणार्थ, डिव्हाइस हे संस्थेमधील दुसऱ्या व्यक्तीकडे
-        ट्रान्सफर केले जात आहे.</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
 <translation id="7487067081878637334">तंत्रज्ञान</translation>
 <translation id="7490813197707563893">MAC पत्ता</translation>

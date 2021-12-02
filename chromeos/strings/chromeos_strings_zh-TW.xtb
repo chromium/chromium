@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1851218745569890714">視訊會議</translation>
-<translation id="1857850044054738019">如果要將裝置重新上架或整新以發布給新客戶，請選取這個選項。</translation>
 <translation id="1874612839560830905">最大傳輸單元</translation>
 <translation id="1887850431809612466">硬體版本</translation>
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度偏弱，建議你移動到較靠近 Wi-Fi 訊號來源的位置。</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
-<translation id="360089215033199597">建議連線至 Wi-Fi，這樣可簡化維修程序。
-        系統將儲存你的網路。</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站時延遲時間過長</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
-<translation id="7451112128070628323">如果裝置的擁有權未變更，請選取這個選項。
-        比方說，將裝置轉移給機構中的其他人。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 位址</translation>

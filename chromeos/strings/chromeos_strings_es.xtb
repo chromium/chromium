@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando análisis</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
-<translation id="1857850044054738019">Selecciona esta opción si el dispositivo se va a aprovisionar o reacondicionar para
-        distribuirlo después a un cliente nuevo.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3583278742022654445">Intensidad de la señal débil. Acércate a la fuente de la señal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
-<translation id="360089215033199597">Se recomienda conectarse a la red Wi‑Fi para facilitar el proceso de reparación.
-        Tu red se guardará.</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
@@ -435,9 +431,6 @@
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Escaneo completado. 1 página escaneada}other{Escaneo completado. {NUMBER_OF_PAGES} páginas escaneadas}}</translation>
-<translation id="7451112128070628323">Selecciona esta opción si el dispositivo no va cambiar de propietario.
-        Por ejemplo, el dispositivo se va a transferir a una persona diferente
-        dentro de una misma organización.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>

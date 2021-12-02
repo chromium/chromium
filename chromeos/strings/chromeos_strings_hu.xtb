@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
-<translation id="1857850044054738019">Akkor válassza ezt a lehetőséget, ha az eszközt újraértékesítik vagy felújítják
-        új ügyfél számára történő értékesítéshez.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
-<translation id="360089215033199597">A javítási folyamat leegyszerűsítéséhez javasoljuk, hogy csatlakozzon a Wi-Fi-hálózathoz.
-        A hálózatát menteni fogja a rendszer.</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva}}</translation>
-<translation id="7451112128070628323">Akkor válassza ezt a lehetőséget, ha az eszköz tulajdonosa nem változik.
-        Ha például az eszközt másik személynek adják át
-        a szervezeten belül.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">MAC-cím</translation>

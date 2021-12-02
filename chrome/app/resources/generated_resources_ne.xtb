@@ -1601,7 +1601,6 @@
 <translation id="2627424346328942291">सेयर गर्न सकिएन</translation>
 <translation id="2628770867680720336">ADB डिबग प्रक्रिया सक्षम पार्न यो Chromebook को सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android एपहरू बनाउनुहोस्</translation>
-<translation id="2630681426381349926">सुरु गर्नको लागि Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="2631498379019108537">सेल्फमा इनपुटका विकल्पहरू देखाउनुहोस्</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" हटाउने?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ले स्थापना पूरा गर्न सकेन, तर यसको डिस्क छविबाट चालउन जारी राख्नेछ।</translation>
@@ -1762,7 +1761,6 @@
 <translation id="2783321960289401138">सर्टकट सिर्जना गर्नुहोस्...</translation>
 <translation id="2783829359200813069">इन्क्रिप्सनका प्रकारहरू चयन गर्नुहोस्</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> मार्फत आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
-<translation id="2784407158394623927">तपाइँको मोबाइल लगत सेवा सक्रिय गर्दै</translation>
 <translation id="2785873697295365461">फाइल डेस्क्रिप्टरहरू</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1982,7 +1980,6 @@
 <translation id="3003623123441819449">CSS क्यास</translation>
 <translation id="3003828226041301643">यन्त्रलाई उक्त डोमेनसँग जोड्न सकिँदैन। तपाईंसँग यन्त्रहरू थप्न सक्ने विशेषाधिकारहरू छ वा छैन भनेर आफ्नो खाताको जाँच गर्नुहोस्‌।</translation>
 <translation id="3003967365858406397">तपाईंको <ph name="PHONE_NAME" /> ले कुनै निजी Wi-Fi जडान सिर्जना गर्दछ।</translation>
-<translation id="3004391367407090544">कृपया पछि फर्केर आउनुहोस्</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
 <translation id="3007771295016901659">प्रतिलिपि गरिएको ट्याब</translation>
 <translation id="3008232374986381779">आफ्नो <ph name="DEVICE_TYPE" /> मा Linux का टुल, एडिटर र IDE हरू चलाउनुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -2402,7 +2399,6 @@
 <translation id="3451753556629288767">निश्चित प्रकारका फाइलहरू खोल्ने अनुमति दिइएको छ</translation>
 <translation id="3452999110156026232">अभिभावकको पहुँच</translation>
 <translation id="3453612417627951340">प्राधिकरण आवश्यकता</translation>
-<translation id="3454157711543303649">सक्रिय गर्ने काम पूरा भयो</translation>
 <translation id="3454213325559396544">यो <ph name="DEVICE_TYPE" /> का लागि यो नै सफ्टवेयर र सुरक्षासम्बन्धी अन्तिम स्वचालित अद्यावधिक हो। भावी अपडेट प्राप्त गर्न  स्तरवृद्धि गरी नयाँ मोडेल प्रयोग गर्न थाल्नुहोस्।</translation>
 <translation id="3455436146814891176">इन्क्रिप्सन पासवर्ड सिंक गर्नुहोस्</translation>
 <translation id="345693547134384690">&amp;छविलाई नयाँ ट्याबमा खोल्ननुहोस्</translation>
@@ -3715,7 +3711,6 @@
 <translation id="4853020600495124913">&amp;नयाँ विण्डो खोल्नुहोस्</translation>
 <translation id="4854317507773910281">अनुमोदनका लागि अभिभावकको खाता चयन गर्नुहोस्</translation>
 <translation id="485480310608090163">थप सेटिङ तथा अनुमति</translation>
-<translation id="4856478137399998590">तपाइँको मोबाइल सेवा सक्रिय गरिएको छ र प्रयोगको लागि तैयार छ</translation>
 <translation id="4858792381671956233">तपाईंले यो पृष्ठमा जानु ठिक हुन्छ वा हुँदैन भनेर आफ्ना अभिभावकहरूलाई सोध्नुभएको थियो</translation>
 <translation id="4858913220355269194">फ्रिट्ज</translation>
 <translation id="4862642413395066333">OCSP प्रतिक्रियाहरू साइन गर्दै</translation>
@@ -4435,7 +4430,6 @@
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5616726534702877126">आकार रिजर्भ गर्नुहोस्</translation>
 <translation id="561698261642843490">Firefox बन्द गर्नुहोस्</translation>
-<translation id="5618333180342767515">(यसले केही मिनेट लिन सक्छ)</translation>
 <translation id="56197088284879152">जडान रिमोट यन्त्र: "<ph name="DEVICE_NAME" />" मा संकुचित छ</translation>
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" />} को पूर्ण पहुँचको लागि अनुरोध गर्छ। तपाईंले कुनैपनि संवेदनशील जानकारी खुलासा गर्नुहुने छैन भनि सुनिश्चित गर्नुहोस्।।</translation>
@@ -6928,7 +6922,6 @@
 <translation id="8188389033983459049">आफ्नो यन्त्रको सेटिङको जाँच गर्नुहोस् र जारी राख्न यसलाई सक्रिय गर्नुहोस्</translation>
 <translation id="8189306097519446565">विद्यालयका खाताहरू</translation>
 <translation id="8189750580333936930">प्राइभेसी स्यान्डबक्स</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> मा जोडिदैं</translation>
 <translation id="8191230140820435481">आफ्नो एप्स, एक्स्टेन्सनहरू, र थिमहरूलाई व्यवस्थित गर्नुहोस्</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> तपाईंको डिभाइसको स्क्रिनमा भएको सामग्री सेयर गर्न चाहन्छ।</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

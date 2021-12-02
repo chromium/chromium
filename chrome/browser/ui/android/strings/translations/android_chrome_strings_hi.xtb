@@ -611,6 +611,7 @@
 <translation id="4696983787092045100">अपने डिवाइस पर मैसेज भेजें</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4714588616299687897">अपना 60% तक डेटा बचाएं</translation>
+<translation id="471759387343966120">जारी रखने का मतलब है कि आप Google की <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" />और <ph name="BEGIN_PRIVACY_LINK" />निजता\u00A0नीति<ph name="END_PRIVACY_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> में खोलें</translation>
 <translation id="4720982865791209136">Chrome को बेहतर बनाने में सहायता करें. <ph name="BEGIN_LINK" />सर्वे में भाग लें<ph name="END_LINK" /></translation>
@@ -1044,6 +1045,7 @@
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
 <translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7138678301420049075">अन्य</translation>
+<translation id="7143462160780459030">स्क्रीनशॉट नहीं लिया जा सकता. फिर से कोशिश करें.</translation>
 <translation id="7146622961999026732">शायद ये साइटें और ऐप्लिकेशन आपके लिए अहम हैं:</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
 <translation id="7155317020660659215">क्यूआर कोड को स्कैन करने के लिए, अपनी सेटिंग बदलें, ताकि Chrome आपके कैमरे का इस्तेमाल कर सके</translation>
@@ -1226,6 +1228,7 @@
 <translation id="808747664143081553">डिवाइस से कनेक्ट किया गया</translation>
 <translation id="8088176524274673045">आस-पास के लोगों से शेयर करने के लिए, उन्हें यह क्यूआर कोड स्कैन करने दें</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
+<translation id="8105613260829665809">जारी रखने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="8110024788458304985">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
@@ -1263,6 +1266,7 @@
 <translation id="831192587911042850">यह मौजूदा वेबसाइट को उन वेबसाइटों की सूची से जोड़ता है जिन्हें आप फ़ॉलो कर रहे हैं.</translation>
 <translation id="834313815369870491">साइटों का अनुवाद कभी न करें</translation>
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
+<translation id="8352996530981010042">प्रतिक्रियाओं को डाउनलोड नहीं किया जा सकता. फिर से कोशिश करें.</translation>
 <translation id="8354977102499939946">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>

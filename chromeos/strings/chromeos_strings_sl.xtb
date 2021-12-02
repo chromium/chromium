@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Preklic optičnega branja</translation>
 <translation id="1851218745569890714">Videokonference</translation>
-<translation id="1857850044054738019">Izberite to možnost, če bo ta naprava vrnjena med zaloge ali obnovljena za
-        distribucijo novi stranki.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
-<translation id="360089215033199597">Če želite olajšati postopek popravila, priporočamo, da se povežete v omrežje Wi-Fi.
-        Omrežje bo shranjeno.</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka zakasnitev do spletnih mest HTTPS.</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
-<translation id="7451112128070628323">Izberite to možnost, če se lastništvo naprave na spreminja.
-        Ta naprava se na primer prenaša na drugo osebo
-        v organizaciji.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>

@@ -1620,7 +1620,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2627424346328942291">Ekki er hægt að deila</translation>
 <translation id="2628770867680720336">Núllstilla þarf þetta Chromebook tæki til að kveikja á ADB-villuleit. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Þróa Android forrit</translation>
-<translation id="2630681426381349926">Tengstu við Wi-Fi til að byrja</translation>
 <translation id="2631498379019108537">Sýna innsláttarvalkosti á hillunni</translation>
 <translation id="2633212996805280240">Fjarlægja „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101">Ekki var hægt að ljúka uppsetningu <ph name="PRODUCT_NAME" /> en það verður keyrt af diskmyndinni.</translation>
@@ -1712,6 +1711,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2721037002783622288">&amp;Leita að mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Kerfisstjóri hefur gert stýrða notendur óvirka.</translation>
+<translation id="2722540561488096675">Tækið slekkur á sér eftir <ph name="TIME_LEFT" />. Fjarlægðu USB-tækið áður en þú kveikir aftur á tækinu. Síðan geturðu byrjað að nota <ph name="DEVICE_OS" />.</translation>
 <translation id="2724841811573117416">WebRTC-annálar</translation>
 <translation id="272488616838512378">Umreiknuð mæligildi</translation>
 <translation id="2725200716980197196">Nettengingu komið á aftur</translation>
@@ -1779,7 +1779,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2783321960289401138">Búa til flýtileið...</translation>
 <translation id="2783829359200813069">Velja dulkóðunargerðir</translation>
 <translation id="2783952358106015700">Notaðu öryggislykilinn þinn með <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">Virkjar farsímagagnaþjónustu</translation>
 <translation id="2785873697295365461">Skráarlýsendur</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1998,7 +1997,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3003623123441819449">CSS-skyndiminni</translation>
 <translation id="3003828226041301643">Ekki tókst að tengja tækið við lénið. Athugaðu reikninginn þinn til að ganga úr skugga um að þú hafir réttindi til að bæta við tækjum.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> mun stofna lokaða Wi-Fi tengingu.</translation>
-<translation id="3004391367407090544">Komdu aftur síðar</translation>
 <translation id="3006881078666935414">Engin notkunargögn</translation>
 <translation id="3007771295016901659">Afrita flipa</translation>
 <translation id="3008232374986381779">Keyra verkfæri, ritla og IDE úr Linux í <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -2418,7 +2416,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3451753556629288767">Leyft að opna skráargerðir</translation>
 <translation id="3452999110156026232">Foreldraaðgangur</translation>
 <translation id="3453612417627951340">Krefst heimildar</translation>
-<translation id="3454157711543303649">Virkjun lokið</translation>
 <translation id="3454213325559396544">Þetta er síðasta sjálfvirka hugbúnaðar- og öryggisuppfærslan fyrir þetta <ph name="DEVICE_TYPE" /> tæki. Uppfærðu í nýrri útgáfu til að fá frekari uppfærslur.</translation>
 <translation id="3455436146814891176">Aðgangsorð fyrir dulkóðun samstillingar</translation>
 <translation id="345693547134384690">Opna mynd í nýjum fl&amp;ipa</translation>
@@ -3733,7 +3730,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4853020600495124913">Opna í &amp;nýjum glugga</translation>
 <translation id="4854317507773910281">Veldu reikning foreldris sem á að samþykkja</translation>
 <translation id="485480310608090163">Fleiri stillingar og heimildir</translation>
-<translation id="4856478137399998590">Farsímagagnaþjónustan þín hefur verið virkjuð og er tilbúin til notkunar</translation>
 <translation id="4858792381671956233">Þú baðst foreldra þína um leyfi til að fara á þetta vefsvæði</translation>
 <translation id="4858913220355269194">Falur</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>
@@ -4453,7 +4449,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
 <translation id="5616726534702877126">Taka frá stærð</translation>
 <translation id="561698261642843490">Loka Firefox</translation>
-<translation id="5618333180342767515">(þetta gæti tekið nokkrar mínútur)</translation>
 <translation id="56197088284879152">Tenging við fjartengt tæki er teppt: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="5619862035903135339">Slökkt er á skjáupptöku vegna reglu kerfisstjóra</translation>
 <translation id="5620568081365989559">DevTools óskar eftir fullum aðgangi að <ph name="FOLDER_PATH" />. Gættu þess að gefa ekki upp viðkvæmar upplýsingar.</translation>
@@ -4569,6 +4564,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5739235828260127894">Bíður eftir staðfestingu. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Mjög stórt</translation>
 <translation id="5740328398383587084">Nærdeiling</translation>
+<translation id="5740709157181662145">Stuðningur við vélbúnað <ph name="DEVICE_OS" /> og aukinn stöðugleiki</translation>
 <translation id="574104302965107104">Skjáspeglun</translation>
 <translation id="574209121243317957">Tónhæð</translation>
 <translation id="5746169159649715125">Vista sem PDF</translation>
@@ -6946,7 +6942,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8188389033983459049">Athugaðu tækjastillingar þínar og kveiktu á Bluetooth til að halda áfram</translation>
 <translation id="8189306097519446565">Skólareikningar</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
-<translation id="8190193592390505034">Tengist <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Stjórna forritunum þínum, viðbótum og þemum</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> vill deila því sem er á skjánum hjá þér.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

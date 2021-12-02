@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Սկանավորումը չեղարկվում է</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
-<translation id="1857850044054738019">Ընտրեք այս տարբերակը, եթե սարքը վերանորոգվում կամ վերականգնվում է՝ նոր հաճախորդի փոխանցելու համար։</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
-<translation id="360089215033199597">Վերականգնման գործընթացը հեշտացնելու համար խորհուրդ է տրվում միանալ Wi-Fi-ին։
-        Ձեր ցանցի տվյալները կպահվեն։</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
-<translation id="7451112128070628323">Ընտրեք այս տարբերակը, եթե սարքի նկատմամբ սեփականության իրավունքը չի փոխվում։
-        Օրինակ՝ սարքը փոխանցվում է այլ անձի՝ կազմակերպության ներսում։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
 <translation id="7487067081878637334">Տեխնոլոգիա</translation>
 <translation id="7490813197707563893">MAC հասցե</translation>

@@ -1617,7 +1617,6 @@
 <translation id="2627424346328942291">শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="2628770867680720336">ADB ডিবাগিং সক্ষম কৰিবলৈ এই Chromebookটো এবাৰ ফেক্টৰী ৰিছেট কৰা আৱশ্যক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android এপ্‌সমূহ বিকাশ কৰক</translation>
-<translation id="2630681426381349926">আৰম্ভ কৰিবলৈ ৱাই-ফাইৰ সৈতে সংযোগ কৰক</translation>
 <translation id="2631498379019108537">শ্বেল্‌ফত ইনপুটৰ বিকল্প দেখুৱাওক</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" আঁতৰাবনে?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ইনষ্টলেশ্বন সম্পূর্ণ কৰিব নোৱাৰিলে কিন্তু ইয়াৰ ডিক্স প্ৰতিচ্ছবিৰ পৰা ই চলি থাকিব।</translation>
@@ -1777,7 +1776,6 @@
 <translation id="2783321960289401138">শ্বৰ্টকাট সৃষ্টি কৰক...</translation>
 <translation id="2783829359200813069">এনক্ৰিপশ্বনৰ প্ৰকাৰ বাছনি কৰক</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />ৰ জৰিয়তে আপোনাৰ নিৰাপত্তা চাবি ব্যৱহাৰ কৰক</translation>
-<translation id="2784407158394623927">আপোনাৰ ম’বাইল ডেটা সেৱা সক্ৰিয় কৰি থকা হৈছে</translation>
 <translation id="2785873697295365461">ফাইলৰ বিৱৰণ কৰোতা</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1996,7 +1994,6 @@
 <translation id="3003623123441819449">CSS কেশ্ব</translation>
 <translation id="3003828226041301643">ড’মেইনত ডিভাইচটো যোৰা লগাব নোৱাৰি। ডিভাইচ যোগ কৰিব পৰাকৈ আপোনাৰ পৰ্যাপ্ত বিশেষাধিকাৰ আছেনে সেয়া জানিবলৈ নিজৰ একাউণ্টটো চাই লওক।</translation>
 <translation id="3003967365858406397">আপোনাৰ <ph name="PHONE_NAME" />এ এক ব্যক্তিগত ৱাই-ফাই সংযোগৰ সৃষ্টি কৰিব।</translation>
-<translation id="3004391367407090544">অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত চেষ্টা কৰক</translation>
 <translation id="3006881078666935414">ব্যৱহাৰৰ কোনো ডেটা নাই</translation>
 <translation id="3007771295016901659">ডুপ্লিকেট টেব</translation>
 <translation id="3008232374986381779">আপোনাৰ <ph name="DEVICE_TYPE" />ত Linux সঁজুলি, সম্পাদক আৰু IDEসমূহ চলাওক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -2416,7 +2413,6 @@
 <translation id="3451753556629288767">ফাইলৰ প্ৰকাৰসমূহ খুলিবলৈ অনুমতি আছে</translation>
 <translation id="3452999110156026232">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="3453612417627951340">কৰ্তৃত্ব প্ৰদান কৰা প্ৰয়োজন</translation>
-<translation id="3454157711543303649">সক্ৰিয়কৰণ প্ৰক্ৰিয়া সম্পূৰ্ণ হ’ল</translation>
 <translation id="3454213325559396544">এইটো <ph name="DEVICE_TYPE" />ৰ বাবে শেহতীয়া স্বয়ংক্ৰিয় ছফ্টৱেৰ আৰু সুৰক্ষাৰ আপডে'ট। পৰৱর্তী আপডে'টসমূহ পাবলৈ, এটা নতুন ম'ডেললৈ আপগ্ৰেড কৰক।</translation>
 <translation id="3455436146814891176">এনক্ৰিপশ্বনৰ পাছৱৰ্ড ছিংক কৰক</translation>
 <translation id="345693547134384690">&amp;প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
@@ -3730,7 +3726,6 @@
 <translation id="4853020600495124913">&amp;নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="4854317507773910281">অনুমোদনৰ বাবে অভিভাৱকৰ একাউণ্ট বাছনি কৰক</translation>
 <translation id="485480310608090163">অধিক ছেটিং আৰু অনুমতিসমূহ</translation>
-<translation id="4856478137399998590">আপোনাৰ ম’বাইল ডেটাৰ সেৱা সক্রিয় কৰা হৈছে আৰু সেয়া ব্যৱহাৰ কৰিবলৈ সাজু</translation>
 <translation id="4858792381671956233">আপুনি আপোনাৰ অভিভাৱকক এই ছাইটটোলৈ যোৱাটো ঠিক হ’বনে নহয় সুধিছে</translation>
 <translation id="4858913220355269194">ফ্ৰিটজ</translation>
 <translation id="4862642413395066333">OCSP সঁহাৰিত চহী কৰা</translation>
@@ -4450,7 +4445,6 @@
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5616726534702877126">সংৰক্ষণৰ আকাৰ</translation>
 <translation id="561698261642843490">Firefox বন্ধ কৰক</translation>
-<translation id="5618333180342767515">(ইয়াৰ বাবে কেইমিনিটমান লাগিব পাৰে)</translation>
 <translation id="56197088284879152">দূৰৱৰ্তী ডিভাইচৰ কাৰণে সংযোগ অত্যন্ত লেহেমীয়া: "<ph name="DEVICE_NAME" />"৷</translation>
 <translation id="5619862035903135339">স্ক্ৰীন কেপচাৰ কৰাটো প্ৰশাসকৰ নীতিয়ে অক্ষম কৰে</translation>
 <translation id="5620568081365989559">DevToolsএ <ph name="FOLDER_PATH" />লৈ সম্পূর্ণ এক্সেছ বিচাৰিছে। আপুনি কোনো স্পর্শকাতৰ তথ্য ফাদিল নকৰাটো নিশ্চিত কৰক।</translation>
@@ -6943,7 +6937,6 @@
 <translation id="8188389033983459049">আপোনাৰ ডিভাইচৰ ছেটিংসমূহ পৰীক্ষা কৰক আৰু অব্যাহত ৰাখিবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="8189306097519446565">বিদ্যালয়ৰ একাউণ্ট</translation>
 <translation id="8189750580333936930">প্ৰাইভেচি ছেণ্ডবক্স</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="8191230140820435481">আপোনাৰ এপ্‌, এক্সটেনশ্বন ,আৰু থীম পৰিচালনা কৰক</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" />এ আপোনাৰ স্ক্ৰীনত থকা সমল শ্বেয়াৰ কৰিবলৈ বিচাৰিছে।</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপোনাৰ ডিভাইচ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

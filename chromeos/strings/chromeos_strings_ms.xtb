@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
-<translation id="1857850044054738019">Buat pilihan ini jika peranti sedang distok semula atau diperbaharui untuk pengedaran kepada pelanggan baharu.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3583278742022654445">Kekuatan isyarat lemah. Cuba bergerak lebih rapat ke sumber isyarat Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
-<translation id="360089215033199597">Anda disyorkan supaya menyambung kepada Wi-Fi untuk memudahkan lagi proses pembaikan.
-        Rangkaian anda akan disimpan.</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
-<translation id="7451112128070628323">Buat pilihan ini jika pemilikan peranti tidak berubah.
-        Contohnya, peranti sedang dipindahkan kepada orang lain dalam organisasi.</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>

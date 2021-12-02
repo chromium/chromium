@@ -1608,7 +1608,6 @@
 <translation id="2627424346328942291">لا يمكن المشاركة</translation>
 <translation id="2628770867680720336">‏يجب إعادة ضبط جهاز Chromebook على الإعدادات الأصلية لتفعيل خيار "تصحيح الأخطاء عبر ADB". <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">‏تطوير تطبيقات متوافقة مع Android</translation>
-<translation id="2630681426381349926">‏الاتصال بشبكة Wi-Fi للبدء</translation>
 <translation id="2631498379019108537">إظهار خيارات الإدخال في الرف</translation>
 <translation id="2633212996805280240">هل تريد إزالة "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="263325223718984101">تعذر على <ph name="PRODUCT_NAME" /> إكمال التثبيت، ولكن ستتم متابعة تشغيله من صورته على القرص.</translation>
@@ -1770,7 +1769,6 @@
 <translation id="2783321960289401138">جارٍ إنشاء اختصار...</translation>
 <translation id="2783829359200813069">اختيار أنواع التشفير</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
-<translation id="2784407158394623927">جارٍ تفعيل خدمة بيانات الجوال.</translation>
 <translation id="2785873697295365461">أدوات وصف الملفات</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1989,7 +1987,6 @@
 <translation id="3003623123441819449">‏ذاكرة التخزين المؤقت للغة CSS</translation>
 <translation id="3003828226041301643">يتعذَّر ضم الجهاز إلى النطاق. يُرجى التحقُّق من حسابك للتأكُّد من حصولك على امتيازات لإضافة الأجهزة.</translation>
 <translation id="3003967365858406397">‏سينشئ هاتف <ph name="PHONE_NAME" /> اتصالاً خاصًا بشبكة Wi-Fi.</translation>
-<translation id="3004391367407090544">يُرجى معاودة الزيارة لاحقًا</translation>
 <translation id="3006881078666935414">لا تتوفر بيانات استخدام</translation>
 <translation id="3007771295016901659">تكرار علامة التبويب</translation>
 <translation id="3008232374986381779">‏يمكنك تشغيل أدوات Linux وأدوات التعديل وبرامج IDE على <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -2410,7 +2407,6 @@
 <translation id="3451753556629288767">المواقع الإلكترونية التي تم السماح لها بفتح أنواع معيّنة من الملفات</translation>
 <translation id="3452999110156026232">وصول أحد الوالدين</translation>
 <translation id="3453612417627951340">يتطلب تخويل</translation>
-<translation id="3454157711543303649">اكتمل التفعيل</translation>
 <translation id="3454213325559396544">هذا هو آخر تحديث تلقائي للبرنامج والأمان للجهاز <ph name="DEVICE_TYPE" />. وللحصول على التحديثات المستقبلية، يمكنك الترقية إلى طراز أحدث.</translation>
 <translation id="3455436146814891176">كلمة مرور تشفير المزامنة</translation>
 <translation id="345693547134384690">فتح &amp;الصورة في علامة تبويب جديدة</translation>
@@ -3721,7 +3717,6 @@
 <translation id="4853020600495124913">فتح في &amp;نافذة جديدة</translation>
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
-<translation id="4856478137399998590">تم تفعيل خدمة بيانات الجوال وهي جاهزة للاستخدام.</translation>
 <translation id="4858792381671956233">لقد سألت والديك ما إذا كانت زيارة هذا الموقع مناسبةً لك</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="4862642413395066333">‏توقيع استجابات OCSP</translation>
@@ -3805,7 +3800,7 @@
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4933484234309072027">مضمن في <ph name="URL" /></translation>
 <translation id="4936042273057045735">ميزة "مزامنة الإشعارات" غير متاحة للهواتف التي تحتوي على ملف شخصي للعمل.</translation>
-<translation id="4938788218358929252">وصفات طعام</translation>
+<translation id="4938788218358929252">وصفات الطعام</translation>
 <translation id="4939805055470675027">تعذَّر الاتصال بمشغّل شبكة الجوّال <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">تتوفّر <ph name="PRINTER_COUNT" /> طابعة للحفظ.</translation>
 <translation id="4940448324259979830">تتم إدارة هذا الحساب من قِبل <ph name="PROFILE_NAME" />.</translation>
@@ -4441,7 +4436,6 @@
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5616726534702877126">حجز الحجم</translation>
 <translation id="561698261642843490">‏إغلاق Firefox</translation>
-<translation id="5618333180342767515">(قد يستغرق ذلك بضع دقائق)</translation>
 <translation id="56197088284879152">الاتصال مزدحم بالنسبة للجهاز البعيد: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">تحظر سياسة المشرف تصوير الشاشة.</translation>
 <translation id="5620568081365989559">‏تطلب DevTools الدخول الكامل إلى <ph name="FOLDER_PATH" />. احرص على عدم كشف أي معلومات حساسة.</translation>
@@ -6936,7 +6930,6 @@
 <translation id="8188389033983459049">التحقُّق من إعدادات جهازك وتفعيلها للاستمرار</translation>
 <translation id="8189306097519446565">حسابات المؤسسات التعليمية</translation>
 <translation id="8189750580333936930">مبادرة حماية الخصوصية</translation>
-<translation id="8190193592390505034">جارٍ الاتصال بـ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">إدارة التطبيقات والإضافات والمظاهر</translation>
 <translation id="8192944472786724289">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

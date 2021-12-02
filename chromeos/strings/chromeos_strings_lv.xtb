@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
-<translation id="1857850044054738019">Atlasiet šo opciju, ja ierīce tiek padarīta atkal pieejama vai atjaunota izplatīšanai jaunam klientam.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Aparatūras pārskatījums</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3583278742022654445">Vājš signāls. Pārvietojieties tuvāk Wi-Fi signāla avotam.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
-<translation id="360089215033199597">Ieteicams izveidot savienojumu ar Wi-Fi tīklu, lai atvieglotu labošanu.
-        Jūsu tīkls tiks saglabāts.</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
@@ -435,8 +432,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7415801143053185905">Ļoti liels HTTP latentums</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pārbaude pabeigta. Pārbaudīta 1 lapa.}zero{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}one{Pārbaude pabeigta. Pārbaudīta {NUMBER_OF_PAGES} lapa.}other{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}}</translation>
-<translation id="7451112128070628323">Atlasiet šo opciju, ja ierīces īpašumtiesības netiek mainītas,
-        piemēram, ja ierīce tiek nodota citai personai tajā pašā organizācijā.</translation>
 <translation id="7469648432129124067">Konstatēts portāls</translation>
 <translation id="7487067081878637334">Tehnoloģijas</translation>
 <translation id="7490813197707563893">MAC adrese</translation>

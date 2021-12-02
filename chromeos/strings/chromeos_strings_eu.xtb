@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1851218745569890714">Bideo-konferentziak</translation>
-<translation id="1857850044054738019">Hautatu aukera hau gailua guztiz eraberritu behar bada beste bezero batek bana dezan.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarearen berrikuspena</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3583278742022654445">Seinalearen indarra ahula da. Saiatu wifi-seinalearen iturburura hurbiltzen.</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
-<translation id="360089215033199597">Konponketa-prozesua errazteko, wifira konektatzea gomendatzen da.
-        Sarea gorde egingo da.</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3606583719724308068">Latentzia handia HTTPS darabilten webguneak kargatzeko</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
@@ -435,8 +432,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
-<translation id="7451112128070628323">Hautatu aukera hau gailuak jabe bera izaten jarraituko badu.
-        Esate baterako, hemendik uarrera erakunde bereko beste norbaitek erabili behar badu.</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>

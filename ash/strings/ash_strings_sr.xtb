@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">Администратор за овај налог захтева да овај налог буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
 <translation id="4945196315133970626">Искључи обавештења</translation>
 <translation id="4946376291507881335">Сними</translation>
-<translation id="4947229553198882488">Апликација <ph name="UNAVAILABLE_APPS" />није на овом уређају.</translation>
 <translation id="495046168593986294">Помери нагоре</translation>
 <translation id="4952936045814352993">Функција Пронађи телефон није доступна када су звукови аларма онемогућени</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> захтева да вратите <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
@@ -955,7 +954,6 @@
 <translation id="7430878839542012341">Желите ли да избришете ову претрагу из историје?</translation>
 <translation id="7434543979546293336">Означено као кључна идеја</translation>
 <translation id="7452560014878697800">Апликација користи камеру</translation>
-<translation id="7456049842111127849">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746232733191930409">Режим снимања екрана</translation>
 <translation id="7466449121337984263">Додирните сензор</translation>

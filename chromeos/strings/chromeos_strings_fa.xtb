@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
-<translation id="1857850044054738019">اگر دستگاه در انبار دوباره موجود می‌شود یا برای توزیع به مشتری جدید
-        مرمت می‌شود، این گزینه را انتخاب کنید.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3583278742022654445">‏سیگنال ضعیف است. به منبع سیگنال Wi-Fi نزدیک‌تر شوید.</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
-<translation id="360089215033199597">‏برای آسان‌تر شدن فرایند تعمیر، توصیه می‌شود به Wi-Fi متصل شوید.
-        شبکه‌تان ذخیره خواهد شد.</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">‏تأخیر خیلی زیاد HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
-<translation id="7451112128070628323">اگر مالکیت دستگاه تغییر نمی‌کد، این گزینه را انتخاب کنید.
-        برای مثال، دستگاه به شخص دیگری 
-        در همان سازمان انتقال می‌یابد.</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7487067081878637334">فناوری</translation>
 <translation id="7490813197707563893">نشانی واد</translation>

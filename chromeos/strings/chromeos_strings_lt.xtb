@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
-<translation id="1857850044054738019">Pasirinkite šią parinktį, jei įrenginys vėl bus pridėtas prie atsargų arba bus atnaujintas, kad jį būtų galima
-        perduoti naujam klientui.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Aparatinės įrangos taisymas</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
 <translation id="3583278742022654445">Silpnas signalas. Pabandykite prieiti arčiau „Wi-Fi“ signalo šaltinio.</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
-<translation id="360089215033199597">Kad taisymo procesas būtų paprastesnis, rekomenduojama prisijungti prie „Wi-Fi“.
-        Jūsų tinklas bus išsaugotas.</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
@@ -436,9 +432,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
-<translation id="7451112128070628323">Pasirinkite šią parinktį, jei įrenginio nuosavybės teisė nėra keičiama.
-        Pvz., įrenginys perduodamas kitam asmeniui
-        organizacijoje.</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7487067081878637334">Technologija</translation>
 <translation id="7490813197707563893">MAC adresas</translation>

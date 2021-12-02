@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanlama ləğv edilir</translation>
 <translation id="1851218745569890714">Video Konfrans</translation>
-<translation id="1857850044054738019">Cihaz yeni müştəriyə verilmək üçün ehtiyatda saxlansa və ya yenilənsə, bu seçimi edin.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3583278742022654445">Siqnal gücü zəifdir. Wi-Fi siqnal mənbəyinə yaxınlaşmağa çalışın.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
-<translation id="360089215033199597">Təmir prosesini asanlaşdırmaq üçün Wi-Fi şəbəkəsinə qoşulmaq tövsiyə olunur.
-        Şəbəkəniz yadda saxlanılacaq.</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
@@ -434,8 +431,6 @@
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
-<translation id="7451112128070628323">Cihazın mülkiyyəti dəyişmirsə, bu seçimi edin.
-        Məsələn, cihaz təşkilat daxilində başqa bir şəxsə ötürüldükdə.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC ünvanı</translation>

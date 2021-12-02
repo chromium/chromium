@@ -606,7 +606,6 @@
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> はこのデバイスにありません。</translation>
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4952936045814352993">アラーム音が無効になっている場合、スマートフォンを探す機能は使用できません</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックするよう求めています。デバイスはリセットされ、データはすべて削除されます。</translation>
@@ -956,7 +955,6 @@
 <translation id="7430878839542012341">この検索キーワードを履歴から削除しますか？</translation>
 <translation id="7434543979546293336">要点としてマークしました</translation>
 <translation id="7452560014878697800">アプリケーションがカメラを使用しています</translation>
-<translation id="7456049842111127849">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>

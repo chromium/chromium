@@ -1601,7 +1601,6 @@
 <translation id="2627424346328942291">共有できません</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android アプリの開発</translation>
-<translation id="2630681426381349926">開始するには Wi-Fi に接続</translation>
 <translation id="2631498379019108537">シェルフに入力オプションを表示</translation>
 <translation id="2633212996805280240">「<ph name="EXTENSION_NAME" />」を削除しますか？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> のインストールを完了できませんでした。ただし、今後もディスク イメージから実行できます。</translation>
@@ -1762,7 +1761,6 @@
 <translation id="2783321960289401138">ショートカットを作成...</translation>
 <translation id="2783829359200813069">暗号化タイプの選択</translation>
 <translation id="2783952358106015700">「<ph name="APP_NAME" />」でセキュリティ キーを使用</translation>
-<translation id="2784407158394623927">モバイル データ サービスを有効にしています</translation>
 <translation id="2785873697295365461">ファイル記述子</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1981,7 +1979,6 @@
 <translation id="3003623123441819449">CSS キャッシュ</translation>
 <translation id="3003828226041301643">デバイスをドメインに追加できません。アカウントにデバイスを追加する権限があるかどうかご確認ください。</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> でプライベート Wi-Fi 接続を確立します。</translation>
-<translation id="3004391367407090544">後でもう一度お試しください</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -2401,7 +2398,6 @@
 <translation id="3451753556629288767">ファイル形式が関連付けられたプログラムを開くことを許可する</translation>
 <translation id="3452999110156026232">保護者によるアクセス</translation>
 <translation id="3453612417627951340">認証が必要です</translation>
-<translation id="3454157711543303649">起動を完了</translation>
 <translation id="3454213325559396544">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。</translation>
 <translation id="3455436146814891176">同期データの暗号化パスワード</translation>
 <translation id="345693547134384690">新しいタブで画像を開く(&amp;I)</translation>
@@ -3710,7 +3706,6 @@
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
 <translation id="485480310608090163">その他の設定と権限</translation>
-<translation id="4856478137399998590">モバイル データ サービスがご利用いただけるようになりました</translation>
 <translation id="4858792381671956233">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
 <translation id="4858913220355269194">フリッツ</translation>
 <translation id="4862642413395066333">OCSP 応答の署名</translation>
@@ -4426,7 +4421,6 @@
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
 <translation id="5616726534702877126">サイズを予約</translation>
 <translation id="561698261642843490">Firefox を閉じる</translation>
-<translation id="5618333180342767515">（数分かかることがあります）</translation>
 <translation id="56197088284879152">リモート デバイス「<ph name="DEVICE_NAME" />」への接続が集中しています。</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
 <translation id="5620568081365989559">デベロッパー ツールでは <ph name="FOLDER_PATH" /> へのフルアクセスがリクエストされます。機密情報の漏えいにご注意ください。</translation>
@@ -6911,7 +6905,6 @@
 <translation id="8188389033983459049">続行するには、デバイスの設定で Bluetooth をオンにしてください</translation>
 <translation id="8189306097519446565">学校用アカウント</translation>
 <translation id="8189750580333936930">プライバシー サンドボックス</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> に接続中</translation>
 <translation id="8191230140820435481">アプリ、拡張機能、テーマを管理する</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

@@ -606,7 +606,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
-<translation id="4947229553198882488"><ph name="UNAVAILABLE_APPS" /> bu cihazda yok.</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
 <translation id="4952936045814352993">Alarm sesleri devre dışıyken telefonu bulma özelliği kullanılamaz</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekmenizi zorunlu tutuyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
@@ -956,7 +955,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7430878839542012341">Bu arama, geçmişinizden silinsin mi?</translation>
 <translation id="7434543979546293336">Temel fikir olarak işaretlendi</translation>
 <translation id="7452560014878697800">Bir uygulama kameranızı kullanıyor</translation>
-<translation id="7456049842111127849">Ekran Görüntüsü Alma Modu, varsayılan <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
@@ -1018,6 +1016,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7868900307798234037">Parmak iziyle kilit açılıyor</translation>
 <translation id="7872786842639831132">Kapalı</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> cihazınızda Bluetooth kapalı görünüyor. Telefon Merkezini kullanmak için lütfen Bluetooth'u açın.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Cihazı şimdi önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme geçirin}other{Cihazı # saniye içinde önceki sürüme geçirin}}</translation>
 <translation id="7886169021410746335">Gizlilik ayarlarını yapma</translation>
 <translation id="7886277072580235377">Oturumu kapattığınızda internet oturumunuz temizlenecektir. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-posta gönder</translation>

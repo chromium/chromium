@@ -270,6 +270,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Tu navegador está administrado</translation>
 <translation id="1746113442205726301">Cambio del eje Y de la imagen</translation>
+<translation id="1747819498338037826">Cambiarla automáticamente</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="1752021286346845558">Buzón 8</translation>
 <translation id="1753706481035618306">Número de página</translation>
@@ -1673,6 +1674,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="643051589346665201">Cambiar la contraseña de Google</translation>
 <translation id="6433490469411711332">Editar la información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rechazó la conexión.</translation>
+<translation id="6438025220577812695">Cambiarla por mi cuenta</translation>
 <translation id="6440503408713884761">Ignorada</translation>
 <translation id="6443406338865242315">Las extensiones y complementos que instalaste</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>

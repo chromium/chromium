@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1851218745569890714">Videoconferências</translation>
-<translation id="1857850044054738019">Selecione esta opção se o stock do dispositivo está a ser reposto ou se o dispositivo está a ser recondicionado para
-        distribuição a um novo cliente.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
 <translation id="3583278742022654445">Intensidade do sinal fraca. Experimente aproximar-se da fonte de sinal de Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
-<translation id="360089215033199597">Recomenda-se estabelecer ligação ao Wi-Fi para facilitar o processo de reparação.
-        A sua rede será guardada.</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página(s) digitalizada(s)}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
-<translation id="7451112128070628323">Selecione esta opção se a propriedade do dispositivo não for alterada.
-        Por exemplo, o dispositivo está a ser transferido para uma pessoa diferente
-        numa organização.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Endereço MAC</translation>

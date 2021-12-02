@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
 <translation id="1851218745569890714">Видео хурал</translation>
-<translation id="1857850044054738019">Хэрэв төхөөрөмжийг шинэ харилцагчдад түгээхээр нөөцлөх эсвэл сэргээж байгаа бол энэ сонголтыг сонгоно уу.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Техник хангамжийн шалгалт</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
 <translation id="3583278742022654445">Дохионы хүч сул байна. Wi-Fi дохионы эх үүсвэр лүү ойртож үзнэ үү.</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
-<translation id="360089215033199597">Засварын явцыг илүү хялбар болгохын тулд Wi-Fi-д холбогдохыг зөвлөж байна.
-        Таны сүлжээг хадгална.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3606583719724308068">HTTPS вебсайтууд руу өндөр хоцролттой</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTP-н маш өндөр хоцролт</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
-<translation id="7451112128070628323">Хэрэв төхөөрөмжийн өмчлөл өөрчлөгдөхгүй бол энэ сонголтыг сонгоно уу.
-        Жишээлбэл төхөөрөмжийг байгууллагын өөр хүн рүү шилжүүлж байна.</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
 <translation id="7487067081878637334">Технологи</translation>
 <translation id="7490813197707563893">MAC хаяг</translation>

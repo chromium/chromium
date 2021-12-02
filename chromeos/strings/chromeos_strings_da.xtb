@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annullerer scanning</translation>
 <translation id="1851218745569890714">Videomøder</translation>
-<translation id="1857850044054738019">Vælg denne mulighed, hvis enheden sendes tilbage til lageret eller renoveres med henblik på
-        distribution til en ny kunde.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3583278742022654445">Svag signalstyrke. Prøv at rykke tættere på kilden til Wi-Fi-signalet.</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
-<translation id="360089215033199597">Det anbefales at oprette forbindelse til Wi-Fi for at gøre reparationsprocessen nemmere.
-        Dit netværk gemmes.</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
@@ -435,9 +431,6 @@
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
-<translation id="7451112128070628323">Vælg denne mulighed, hvis ejerskabet over enheden ikke ændres.
-        Det kan f.eks. være, hvis enheden overdrages til en anden person
-        inden for organisationen.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>

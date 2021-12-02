@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">მიმდინარეობს სკანირების გაუქმება</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
-<translation id="1857850044054738019">აირჩიეთ ეს ვარიანტი, თუ ეს მოწყობილობა გადაიცემა შეკეთების ან მარაგის შევსების მიზნით, ახალ კლიენტთან შემდგომი დისტრიბუციის მიზნით.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3583278742022654445">სიგნალის სიმძლავრე სუსტია. ცადეთ Wi-Fi სიგნალის წყაროსთან მიახლოება.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
-<translation id="360089215033199597">აღდგენის პროცესის გასამარტივებლად რეკომენდებულია Wi-Fi ქსელთან დაკავშირება.
-        თქვენი ქსელი შეინახება.</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
@@ -435,8 +432,6 @@
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
-<translation id="7451112128070628323">აირჩიეთ ეს ვარიანტი, თუ მოწყობილობის მფლობელობა არ იცვლება.
-        მაგალითად, მოწყობილობა გადაეცემა სხვა პიროვნებას იმავე ორგანიზაციაში.</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
 <translation id="7487067081878637334">ტექნოლოგია</translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>

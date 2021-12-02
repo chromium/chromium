@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
-<translation id="1857850044054738019">Sélectionnez cette option si l'appareil est de nouveau en stock ou s'il est remis à neuf pour 
-        être distribué à un nouveau client.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
-<translation id="360089215033199597">Il est recommandé de se connecter au réseau Wi-Fi pour faciliter le processus de réparation.
-        Votre réseau sera enregistré.</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
-<translation id="7451112128070628323">Sélectionnez cette option si la propriété de l'appareil demeure la même.
-        Par exemple, l'appareil est transféré à une autre personne
-        au sein de l'organisation.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>

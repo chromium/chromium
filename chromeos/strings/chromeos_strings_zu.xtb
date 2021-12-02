@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">I-Chrome</translation>
 <translation id="1792647875738159689">Ikhansela ukuskena</translation>
 <translation id="1851218745569890714">Inkomfa ngevidiyo</translation>
-<translation id="1857850044054738019">Khetha le nketho uma idivayisi ifakwa kabusha noma ivuselelwa mayelana
-         nokusatshalaliswa kwekhasimende elisha.</translation>
 <translation id="1874612839560830905">I-MTU</translation>
 <translation id="1887850431809612466">Ukubuyekeza kwezingxenyekazi zekhompuyutha</translation>
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
@@ -161,8 +159,6 @@
 <translation id="357889014807611375">I-Wi-Fi enemitha</translation>
 <translation id="3583278742022654445">Amandla esignali abuthakathaka. Zama ukusondela eduze komthombo wesiginali ye-Wi-Fi.</translation>
 <translation id="3595596368722241419">Ibhethri ligcwele</translation>
-<translation id="360089215033199597">Ukuxhuma ku-Wi-Fi kuyanconywa ukuze kwenziwe inqubo yokulungisa kalula.
-        Inethiwekhi yakho izolondolozwa.</translation>
 <translation id="360565022852130722">Inethiwekhi ye-WiFi ivikelwe ngephrothokholi ebuthakathaka ye-WEP 802.1x</translation>
 <translation id="3606583719724308068">Ukubambezeleka okukhulu kumawebhusayithi we-HTTPS</translation>
 <translation id="3689839747745352263">Ukuhlola kwe-<ph name="TEST_NAME" /></translation>
@@ -435,9 +431,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Ukuskena kuqedile. Ikhasi eli-1 liskeniwe}one{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}other{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}}</translation>
-<translation id="7451112128070628323">Khetha le nketho uma ubunikazi bedivayisi bungashintshi.
-        Ngokwesibonelo, idivayisi idluliselwa kumuntu ohlukile
-         ngaphakathi kwenhlangano.</translation>
 <translation id="7469648432129124067">Iphothali itholakele</translation>
 <translation id="7487067081878637334">Ubuchwepheshe</translation>
 <translation id="7490813197707563893">Ikheli le-MAC</translation>

@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1851218745569890714">Videoconferência</translation>
-<translation id="1857850044054738019">Selecione esta opção caso o dispositivo volte para o estoque ou seja recondicionado e
-        distribuído para um novo cliente.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisão do hardware</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">Wi-Fi limitado</translation>
 <translation id="3583278742022654445">Intensidade do sinal fraca. Tente se aproximar da fonte do sinal Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
-<translation id="360089215033199597">Recomendamos conectar o dispositivo ao Wi-Fi para facilitar o processo de reparo.
-        Sua rede será salva.</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
 <translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
-<translation id="7451112128070628323">Selecione esta opção caso a propriedade do dispositivo continue a mesma.
-        Por exemplo, caso o dispositivo esteja sendo transferido para uma pessoa diferente
-        dentro da organização.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Endereço MAC</translation>

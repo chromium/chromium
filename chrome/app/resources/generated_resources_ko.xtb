@@ -1619,7 +1619,6 @@
 <translation id="2627424346328942291">공유할 수 없음</translation>
 <translation id="2628770867680720336">ADB 디버깅을 사용 설정하려면 이 Chromebook을 초기화해야 합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android 앱 개발</translation>
-<translation id="2630681426381349926">Wi-Fi에 연결하여 시작</translation>
 <translation id="2631498379019108537">실행기에 입력 옵션 표시</translation>
 <translation id="2633212996805280240">'<ph name="EXTENSION_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />에서 설치를 완료하지 못했지만 디스크 이미지에서 계속 실행됩니다.</translation>
@@ -1780,7 +1779,6 @@
 <translation id="2783321960289401138">바로가기 만들기...</translation>
 <translation id="2783829359200813069">암호화 유형 선택</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> 앱에서 보안 키 사용</translation>
-<translation id="2784407158394623927">모바일 데이터 서비스 활성화 중</translation>
 <translation id="2785873697295365461">파일 설명자</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -1999,7 +1997,6 @@
 <translation id="3003623123441819449">CSS 캐시</translation>
 <translation id="3003828226041301643">기기가 도메인에 가입하지 못했습니다. 기기를 추가할 권한이 계정에 있는지 확인하세요.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />에서 비공개 Wi-Fi 연결을 생성합니다.</translation>
-<translation id="3004391367407090544">잠시 후에 다시 시도해 주세요.</translation>
 <translation id="3006881078666935414">사용 데이터 없음</translation>
 <translation id="3007771295016901659">탭 복사</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" />에서 Linux 도구, 편집기, IDE를 실행합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -2419,7 +2416,6 @@
 <translation id="3451753556629288767">여러 유형의 파일을 열 수 있음</translation>
 <translation id="3452999110156026232">부모 액세스</translation>
 <translation id="3453612417627951340">승인 필요</translation>
-<translation id="3454157711543303649">활성화 완료</translation>
 <translation id="3454213325559396544">이 <ph name="DEVICE_TYPE" />의 마지막 자동 소프트웨어 및 보안 업데이트입니다. 향후 업데이트를 받으려면 새 모델로 업그레이드하세요.</translation>
 <translation id="3455436146814891176">동기화된 데이터 암호화 비밀번호</translation>
 <translation id="345693547134384690">새 탭에서 이미지 열기(&amp;I)</translation>
@@ -3731,7 +3727,6 @@
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
-<translation id="4856478137399998590">모바일 데이터 서비스가 활성화되었으며 사용할 준비가 되었습니다.</translation>
 <translation id="4858792381671956233">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>
@@ -4451,7 +4446,6 @@
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5616726534702877126">용량 예약</translation>
 <translation id="561698261642843490">Firefox 닫기</translation>
-<translation id="5618333180342767515">(몇 분이 걸릴 수 있음)</translation>
 <translation id="56197088284879152">원격 기기(<ph name="DEVICE_NAME" />)에 대한 연결이 혼잡합니다.</translation>
 <translation id="5619862035903135339">관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="5620568081365989559">DevTools에서 <ph name="FOLDER_PATH" />에 대한 완전한 액세스를 요청합니다. 민감한 정보를 노출하지 않도록 주의하시기 바랍니다.</translation>
@@ -6946,7 +6940,6 @@
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>
 <translation id="8189306097519446565">학교 계정</translation>
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
-<translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> 앱이 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

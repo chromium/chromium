@@ -63,8 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
-<translation id="1857850044054738019">צריך לבחור באפשרות הזו אם המכשיר מוחזר למלאי או מחודש
-        לצורך הפצה ללקוח חדש.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
@@ -162,8 +160,6 @@
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3583278742022654445">‏עוצמת האות חלשה. כדאי להתקרב למקור של אות ה-Wi-Fi.</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
-<translation id="360089215033199597">‏כדי שתהליך התיקון יהיה פשוט יותר, כדאי להתחבר לרשת Wi-Fi.
-        הרשת שלך תישמר.</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
@@ -436,9 +432,6 @@
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}many{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
-<translation id="7451112128070628323">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה.
-        לדוגמה: המכשיר מועבר למשתמש אחר
-        באותו ארגון.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7487067081878637334">טכנולוגיה</translation>
 <translation id="7490813197707563893">‏כתובת MAC</translation>

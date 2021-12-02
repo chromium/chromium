@@ -63,7 +63,6 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
-<translation id="1857850044054738019">ਜੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸਟਾਕ ਵਿੱਚ ਲਿਆਂਦਾ ਜਾ ਰਿਹਾ ਹੈ ਜਾਂ ਨਵੇਂ ਗਾਹਕ ਨੂੰ ਵੰਡਣ ਲਈ ਠੀਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਤਾਂ ਇਸ ਵਿਕਲਪ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
@@ -161,8 +160,6 @@
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
 <translation id="3583278742022654445">ਸਿਗਨਲ ਦੀ ਕਮਜ਼ੋਰ ਤੀਬਰਤਾ। ਵਾਈ-ਫਾਈ ਸਿਗਨਲ ਸਰੋਤ ਦੇ ਨਜ਼ਦੀਕ ਜਾ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
-<translation id="360089215033199597">ਮੁਰੰਮਤ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਜ਼ਿਆਦਾ ਆਸਾਨ ਬਣਾਉਣ ਲਈ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।
-        ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="3606583719724308068">HTTPS ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਉੱਚ ਵਿਲੰਬਤਾ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
@@ -434,8 +431,6 @@
 <translation id="7415801143053185905">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
-<translation id="7451112128070628323">ਜੇ ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਨਹੀਂ ਬਦਲ ਰਹੀ, ਤਾਂ ਇਹ ਵਿਕਲਪ ਚੁਣੋ।
-        ਉਦਾਹਰਨ ਲਈ, ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਸੰਸਥਾ ਦੇ ਵਿਚਲੇ ਕਿਸੇ ਹੋਰ ਵਿਅਕਤੀ ਨੂੰ ਟ੍ਰਾਂਸਫਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="7487067081878637334">ਤਕਨਾਲੋਜੀ</translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
