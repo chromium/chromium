@@ -276,9 +276,6 @@ class ASH_EXPORT VideoRecordingWatcher
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
 
-  // Register for DisplayObserver callbacks.
-  display::ScopedDisplayObserver display_observer_{this};
-
   // True if the shutting down process has been triggered.
   bool is_shutting_down_ = false;
 };
