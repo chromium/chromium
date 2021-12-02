@@ -1067,7 +1067,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + 'af862024c8c8fa0ae07ced05e89013d881b00596',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + 'c0ba2870c909fb57f97efd7083b5d33d2311d7f9',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '4f7f6dc301f5ffb9765b055d48324dc7629abd5a',
 
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
