@@ -26,7 +26,6 @@
 #include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -256,19 +255,6 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     chromeos::WrongHWIDScreenView::kScreenId,
 };
 
-// The HID detection screen is only allowed for form factors without built-in
-// inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
-bool CanShowHIDDetectionScreen() {
-  switch (GetDeviceType()) {
-    case DeviceType::kChromebase:
-    case DeviceType::kChromebit:
-    case DeviceType::kChromebox:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumableOobeScreens) {
     if (screen_id == resumable_screen)
@@ -458,10 +444,12 @@ void WizardController::Init(OobeScreenId first_screen) {
       is_enterprise_managed ||
       !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
-  if (!device_is_owned && CanShowHIDDetectionScreen() &&
+  if (!device_is_owned && HIDDetectionScreen::CanShowScreen() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {
     // Temp logs for crbug/1274589
     VLOG(1) << "CheckIsScreenRequired";
+    // TODO(https://crbug.com/1275960): Move logic into
+    // HIDDetectionScreen::MaybeSkip.
     GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(
         base::BindOnce(&WizardController::OnHIDScreenNecessityCheck,
                        weak_factory_.GetWeakPtr()));
@@ -622,7 +610,7 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
   append(std::make_unique<LacrosDataMigrationScreen>(
       oobe_ui->GetView<LacrosDataMigrationScreenHandler>()));
 
-  if (CanShowHIDDetectionScreen()) {
+  if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
         oobe_ui->GetView<HIDDetectionScreenHandler>(),
         base::BindRepeating(&WizardController::OnHidDetectionScreenExit,

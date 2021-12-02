@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -56,6 +55,11 @@ class HIDDetectionScreen : public BaseScreen,
   ~HIDDetectionScreen() override;
 
   static std::string GetResultString(Result result);
+
+  // The HID detection screen is only allowed for form factors without built-in
+  // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
+  // Also different testing flags might forcefully skip the screen
+  static bool CanShowScreen();
 
   // This method is called when the view is being destroyed.
   void OnViewDestroyed(HIDDetectionView* view);

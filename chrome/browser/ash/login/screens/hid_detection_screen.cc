@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -80,6 +81,26 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
   }
 }
 
+bool HIDDetectionScreen::CanShowScreen() {
+  if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableHIDDetectionOnOOBEForTesting)) {
+    // Store the flag inside the local state so it persists restart for the
+    // autoupdate tests.
+    StartupUtils::DisableHIDDetectionScreenForTests();
+    return false;
+  }
+
+  switch (ash::GetDeviceType()) {
+    case DeviceType::kChromebase:
+    case DeviceType::kChromebit:
+    case DeviceType::kChromebox:
+      return true;
+    default:
+      return false;
+  }
+}
+
 HIDDetectionScreen::HIDDetectionScreen(HIDDetectionView* view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(HIDDetectionView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -146,12 +167,8 @@ void HIDDetectionScreen::CheckIsScreenRequired(
 }
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
-  if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableHIDDetectionOnOOBEForTesting)) {
-    // Store the flag inside the local state so it persists restart for the
-    // autoupdate tests.
-    StartupUtils::DisableHIDDetectionScreenForTests();
+  if (!CanShowScreen()) {
+    // TODO(https://crbug.com/1275960): Introduce Result::SKIPPED.
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;
   }
