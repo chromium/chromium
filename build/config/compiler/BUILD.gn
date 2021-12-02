@@ -593,10 +593,10 @@ config("compiler") {
       # This is for the pnacl_newlib toolchain. It's only used to build
       # a few independent ppapi test files that don't pull in any other
       # dependencies.
-      cflags_cc += [
-        "-std=${standard_prefix}++14",
-        "-fno-trigraphs",
-      ]
+      cflags_cc += [ "-std=${standard_prefix}++14" ]
+      if (is_clang) {
+        cflags_cc += [ "-fno-trigraphs" ]
+      }
     } else {
       cflags_cc += [ "-std=${standard_prefix}++17" ]
     }
