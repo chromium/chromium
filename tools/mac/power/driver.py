@@ -162,7 +162,7 @@ class DriverContext:
 
     if scenario_driver.browser is None:
       raise ValueError("Scenario must have an associated browser.")
-    if scenario_driver.browser.process_name != "Chromium":
+    if scenario_driver.browser.name not in ["chromium", "canary", "chrome"]:
       raise ValueError("Only Chromium can be profiled! Skipping.")
 
     self.WriteScenarioSummary(scenario_driver)
