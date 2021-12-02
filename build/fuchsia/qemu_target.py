@@ -115,7 +115,7 @@ class QemuTarget(emu_target.EmuTarget):
     # Configure the machine to emulate, based on the target architecture.
     if self._target_cpu == 'arm64':
       emu_command.extend([
-          '-machine','virt,gic_version=3',
+          '-machine','virt,gic-version=3',
       ])
     else:
       emu_command.extend([
