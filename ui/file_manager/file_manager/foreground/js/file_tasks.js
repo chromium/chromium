@@ -368,10 +368,6 @@ export class FileTasks {
           task.iconType = 'tini';
           task.title = loadTimeData.getString('TASK_IMPORT_CROSTINI_IMAGE');
           task.verb = undefined;
-        } else if (parsedActionId === 'view-swf') {
-          task.iconType = 'generic';
-          task.title = loadTimeData.getString('TASK_VIEW');
-          task.verb = undefined;
         } else if (parsedActionId === 'view-pdf') {
           task.iconType = 'pdf';
           task.title = loadTimeData.getString('TASK_VIEW');

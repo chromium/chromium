@@ -68,6 +68,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
 #include "net/base/mime_util.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -331,11 +332,10 @@ void PostProcessFoundTasks(
     }
   }
 
-  // Remove file manager internal view-pdf and view-swf actions if needed.
-  if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".pdf"), ""))
-    disabled_actions.emplace("view-pdf");
-  if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".swf"), ""))
-    disabled_actions.emplace("view-swf");
+#if !BUILDFLAG(ENABLE_PDF)
+  disabled_actions.emplace("view-pdf");
+#endif  // !BUILDFLAG(ENABLE_PDF)
+
   if (!disabled_actions.empty())
     RemoveFileManagerInternalActions(disabled_actions, result_list.get());
 
@@ -351,8 +351,7 @@ void PostProcessFoundTasks(
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
   return isFilesAppId(extension_id) &&
-         (action_id == "view-pdf" || action_id == "view-swf" ||
-          action_id == "view-in-browser" ||
+         (action_id == "view-pdf" || action_id == "view-in-browser" ||
           action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||

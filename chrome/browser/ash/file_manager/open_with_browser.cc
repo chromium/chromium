@@ -36,6 +36,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "net/base/filename_util.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
@@ -44,8 +45,6 @@ using content::PluginService;
 namespace file_manager {
 namespace util {
 namespace {
-
-const base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL(".pdf");
 
 // List of file extensions viewable in the browser.
 constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
@@ -57,6 +56,9 @@ constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
     FILE_PATH_LITERAL(".mhtml"), FILE_PATH_LITERAL(".mht"),
     FILE_PATH_LITERAL(".xhtml"), FILE_PATH_LITERAL(".xht"),
     FILE_PATH_LITERAL(".shtml"), FILE_PATH_LITERAL(".svg"),
+#if BUILDFLAG(ENABLE_PDF)
+    FILE_PATH_LITERAL(".pdf"),
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
@@ -66,30 +68,6 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
       return true;
   }
   return false;
-}
-
-bool IsPepperPluginEnabled(Profile* profile,
-                           const base::FilePath& plugin_path) {
-  DCHECK(profile);
-
-  const content::PepperPluginInfo* pepper_info =
-      PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(plugin_path);
-  if (!pepper_info)
-    return false;
-
-  scoped_refptr<PluginPrefs> plugin_prefs = PluginPrefs::GetForProfile(profile);
-  if (!plugin_prefs.get())
-    return false;
-
-  return plugin_prefs->IsPluginEnabled(pepper_info->ToWebPluginInfo());
-}
-
-bool IsPdfPluginEnabled(Profile* profile) {
-  DCHECK(profile);
-
-  static const base::NoDestructor<base::FilePath> plugin_path(
-      ChromeContentClient::kPDFPluginPath);
-  return IsPepperPluginEnabled(profile, *plugin_path);
 }
 
 void OpenNewTab(Profile* profile, const GURL& url) {
@@ -156,10 +134,8 @@ bool OpenFileWithBrowser(Profile* profile,
 
   const base::FilePath file_path = file_system_url.path();
 
-  // For things supported natively by the browser, we should open it
-  // in a tab.
-  if (IsViewableInBrowser(file_path) ||
-      ShouldBeOpenedWithPlugin(profile, file_path.Extension(), action_id) ||
+  // For things supported natively by the browser, we should open it in a tab.
+  if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
       (action_id == "view-in-browser" && file_path.Extension() == "")) {
     // Use external file URL if it is provided for the file system.
     GURL page_url = chromeos::FileSystemURLToExternalFileURL(file_system_url);
@@ -198,19 +174,6 @@ bool OpenFileWithBrowser(Profile* profile,
 
   // Failed to open the file of unknown type.
   LOG(WARNING) << "Unknown file type: " << file_path.value();
-  return false;
-}
-
-// If a bundled plugin is enabled, we should open pdf/swf files in a tab.
-bool ShouldBeOpenedWithPlugin(Profile* profile,
-                              const base::FilePath::StringType& file_extension,
-                              const std::string& action_id) {
-  DCHECK(profile);
-
-  const base::FilePath file_path =
-      base::FilePath::FromUTF8Unsafe("dummy").AddExtension(file_extension);
-  if (file_path.MatchesExtension(kPdfExtension) || action_id == "view-pdf")
-    return IsPdfPluginEnabled(profile);
   return false;
 }
 
