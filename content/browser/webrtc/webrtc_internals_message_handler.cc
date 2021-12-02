@@ -130,8 +130,10 @@ void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
 }
 
 void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_GE(args_list.size(), 1u);
+
+  const std::string callback_id = args_list[0].GetString();
   AllowJavascript();
 
   webrtc_internals_->UpdateObserver(this);
