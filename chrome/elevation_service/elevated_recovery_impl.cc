@@ -117,7 +117,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
   HRESULT hr =
       OpenFileImpersonated(from,
                            base::File::FLAG_READ | base::File::FLAG_OPEN |
-                               base::File::FLAG_SEQUENTIAL_SCAN,
+                               base::File::FLAG_WIN_SEQUENTIAL_SCAN,
                            &from_file);
   if (FAILED(hr))
     return hr;
