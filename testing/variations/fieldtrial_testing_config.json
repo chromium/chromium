@@ -5492,6 +5492,9 @@
             "experiments": [
                 {
                     "name": "AndroidExperiments",
+                    "params": {
+                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15"
+                    },
                     "enable_features": [
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
