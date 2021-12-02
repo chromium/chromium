@@ -46,6 +46,7 @@ source_set("test_support") {
   public_deps = [
     ":browser",
     "//components/enterprise",
+    "//components/policy/proto",
     "//testing/gmock",
   ]
 }

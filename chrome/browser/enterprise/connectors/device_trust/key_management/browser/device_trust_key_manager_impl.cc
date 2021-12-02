@@ -95,9 +95,14 @@ void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
                                    std::move(callback)));
 }
 
-bool DeviceTrustKeyManagerImpl::IsFullyInitialized() const {
-  return state_ == InitializationState::kDefault && key_pair_ &&
-         key_pair_->key();
+absl::optional<DeviceTrustKeyManagerImpl::KeyMetadata>
+DeviceTrustKeyManagerImpl::GetLoadedKeyMetadata() const {
+  if (!IsFullyInitialized()) {
+    return absl::nullopt;
+  }
+
+  return DeviceTrustKeyManagerImpl::KeyMetadata{key_pair_->trust_level(),
+                                                key_pair_->key()->Algorithm()};
 }
 
 void DeviceTrustKeyManagerImpl::AddPendingRequest(
@@ -209,6 +214,11 @@ void DeviceTrustKeyManagerImpl::ResumeSignString(const std::string& str,
   } else {
     std::move(callback).Run(absl::nullopt);
   }
+}
+
+bool DeviceTrustKeyManagerImpl::IsFullyInitialized() const {
+  return state_ == InitializationState::kDefault && key_pair_ &&
+         key_pair_->key();
 }
 
 }  // namespace enterprise_connectors

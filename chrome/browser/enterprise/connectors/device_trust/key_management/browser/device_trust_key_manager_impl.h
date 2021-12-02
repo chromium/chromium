@@ -39,7 +39,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void ExportPublicKeyAsync(ExportPublicKeyCallback callback) override;
   void SignStringAsync(const std::string& str,
                        SignStringCallback callback) override;
-  bool IsFullyInitialized() const override;
+  absl::optional<KeyMetadata> GetLoadedKeyMetadata() const override;
 
  private:
   enum class InitializationState { kDefault, kLoadingKey, kRotatingKey };
@@ -73,6 +73,8 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void ResumePendingCallbacks();
   void ResumeExportPublicKey(ExportPublicKeyCallback callback);
   void ResumeSignString(const std::string& str, SignStringCallback callback);
+
+  bool IsFullyInitialized() const;
 
   // Owned instance in charge of creating and launching key rotation commands.
   std::unique_ptr<KeyRotationLauncher> key_rotation_launcher_;

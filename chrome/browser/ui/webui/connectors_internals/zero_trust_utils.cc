@@ -7,6 +7,18 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/signature_verifier.h"
+
+using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 namespace enterprise_connectors {
 namespace utils {
@@ -53,6 +65,34 @@ void TrySetSignal(base::flat_map<std::string, std::string>& map,
   map[key] = base::JoinString(
       std::vector<base::StringPiece>(values.begin(), values.end()), ", ");
 }
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+connectors_internals::mojom::KeyTrustLevel ParseTrustLevel(
+    BPKUR::KeyTrustLevel trust_level) {
+  switch (trust_level) {
+    case BPKUR::CHROME_BROWSER_TPM_KEY:
+      return connectors_internals::mojom::KeyTrustLevel::TPM;
+    case BPKUR::CHROME_BROWSER_OS_KEY:
+      return connectors_internals::mojom::KeyTrustLevel::OS;
+    default:
+      return connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED;
+  }
+}
+
+connectors_internals::mojom::KeyType AlgorithmToType(
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+  switch (algorithm) {
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::SignatureVerifier::RSA_PSS_SHA256:
+      return connectors_internals::mojom::KeyType::RSA;
+    case crypto::SignatureVerifier::ECDSA_SHA256:
+      return connectors_internals::mojom::KeyType::EC;
+  }
+}
+
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace
 
@@ -128,6 +168,32 @@ base::flat_map<std::string, std::string> SignalsToMap(
                signals->windows_domain());
 
   return map;
+}
+
+connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  auto* key_manager = g_browser_process->browser_policy_connector()
+                          ->chrome_browser_cloud_management_controller()
+                          ->GetDeviceTrustKeyManager();
+  if (key_manager) {
+    auto metadata = key_manager->GetLoadedKeyMetadata();
+    if (metadata) {
+      return connectors_internals::mojom::KeyInfo::New(
+          connectors_internals::mojom::KeyManagerInitializedValue::KEY_LOADED,
+          ParseTrustLevel(metadata->trust_level),
+          AlgorithmToType(metadata->algorithm));
+    } else {
+      return connectors_internals::mojom::KeyInfo::New(
+          connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY,
+          connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
+          connectors_internals::mojom::KeyType::UNKNOWN);
+    }
+  }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  return connectors_internals::mojom::KeyInfo::New(
+      connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
+      connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
+      connectors_internals::mojom::KeyType::UNKNOWN);
 }
 
 }  // namespace utils

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
@@ -18,6 +20,12 @@ namespace enterprise_connectors {
 class DeviceTrustKeyManager {
  public:
   virtual ~DeviceTrustKeyManager() = default;
+
+  struct KeyMetadata {
+    enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel
+        trust_level;
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  };
 
   // Starts the initialization of the manager which includes trying to load the
   // signing key, or kicking off its creation. This function is idempotent, so
@@ -40,9 +48,9 @@ class DeviceTrustKeyManager {
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
           callback) = 0;
 
-  // Returns true if the manager has loaded a key successfully and is ready
-  // to handle client requests.
-  virtual bool IsFullyInitialized() const = 0;
+  // Returns KeyMetadata for the currently loaded key. If no key is loaded,
+  // returns absl::nullopt.
+  virtual absl::optional<KeyMetadata> GetLoadedKeyMetadata() const = 0;
 };
 
 }  // namespace enterprise_connectors

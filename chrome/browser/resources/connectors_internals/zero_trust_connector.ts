@@ -4,7 +4,19 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {KeyManagerInitializedValue, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
+import {KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
+
+const TrustLevelStringMap = {
+  [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
+  [KeyTrustLevel.TPM]: 'TPM',
+  [KeyTrustLevel.OS]: 'OS'
+};
+
+const KeyTypeStringMap = {
+  [KeyType.UNKNOWN]: 'Unknown',
+  [KeyType.RSA]: 'RSA',
+  [KeyType.EC]: 'EC'
+};
 
 export class ZeroTrustConnectorElement extends CustomElement {
   static get is() {
@@ -24,21 +36,34 @@ export class ZeroTrustConnectorElement extends CustomElement {
     }
   }
 
-  private _keyManagerInitialized: string = '';
-  public set keyManagerInitialized(val: KeyManagerInitializedValue) {
-    const rowEl = (this.$('#key-manager-row') as HTMLElement);
-    const stateEl = (this.$('#key-manager-state') as HTMLElement);
+  public set keyInfo(keyInfo: KeyInfo) {
+    const initRowEl = (this.$('#key-manager-row') as HTMLElement);
+    const initStateEl = (this.$('#key-manager-state') as HTMLElement);
 
-    if (val === KeyManagerInitializedValue.UNSUPPORTED) {
-      this._keyManagerInitialized = 'unsupported';
-      this.hideElement(rowEl);
+    const metadataRowEl = (this.$('#key-metadata-row') as HTMLElement);
+    const trustLevelStateEl = (this.$('#key-trust-level') as HTMLElement);
+    const keyTypeStateEl = (this.$('#key-type') as HTMLElement);
+
+    const initializedValue = keyInfo.isKeyManagerInitialized;
+    if (initializedValue === KeyManagerInitializedValue.UNSUPPORTED) {
+      this.hideElement(initRowEl);
+      this.hideElement(metadataRowEl);
     } else {
-      this._keyManagerInitialized =
-          val === KeyManagerInitializedValue.KEY_LOADED ? 'true' : 'false';
-      this.showElement(rowEl);
-    }
+      const keyLoaded =
+          initializedValue === KeyManagerInitializedValue.KEY_LOADED;
+      initStateEl.innerText = keyLoaded ? 'true' : 'false';
+      this.showElement(initRowEl);
 
-    stateEl.innerText = this._keyManagerInitialized;
+      if (keyLoaded) {
+        trustLevelStateEl.innerText =
+            this.trustLevelToString(keyInfo.trustLevel);
+        keyTypeStateEl.innerText = this.keyTypeToString(keyInfo.keyType);
+
+        this.showElement(metadataRowEl);
+      } else {
+        this.hideElement(metadataRowEl);
+      }
+    }
   }
 
   private _signalsString: string = '';
@@ -85,7 +110,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
 
     this.enabledString = `${state.isEnabled}`;
 
-    this.keyManagerInitialized = state.isKeyManagerInitialized;
+    this.keyInfo = state.keyInfo;
 
     // Pretty print the dictionary as a JSON string.
     this.signalsString = JSON.stringify(state.signalsDictionary, null, 2);
@@ -112,6 +137,14 @@ export class ZeroTrustConnectorElement extends CustomElement {
 
   private hideElement(element: HTMLElement) {
     element?.classList.add('hidden');
+  }
+
+  private trustLevelToString(trustLevel: KeyTrustLevel): string {
+    return TrustLevelStringMap[trustLevel] || 'invalid';
+  }
+
+  private keyTypeToString(keyType: KeyType): string {
+    return KeyTypeStringMap[keyType] || 'invalid';
   }
 }
 
