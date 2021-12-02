@@ -1874,7 +1874,7 @@ enum WebFeature {
   kV8FunctionTokenOffsetTooLongForToString = 2497,
   kServiceWorkerImportScriptNotInstalled = 2498,
   kNestedDedicatedWorker = 2499,
-  kClientHintsMetaAcceptCHLifetime = 2500,
+  kOBSOLETE_ClientHintsMetaAcceptCHLifetime = 2500,
   kCSSFillAvailableLogicalWidth = 2507,
   kCSSFillAvailableLogicalHeight = 2508,
   kPopupOpenWhileFileChooserOpened = 2509,
