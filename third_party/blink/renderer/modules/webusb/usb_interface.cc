@@ -51,10 +51,11 @@ const device::mojom::blink::UsbInterfaceInfo& USBInterface::Info() const {
 }
 
 USBAlternateInterface* USBInterface::alternate() const {
-  if (device_->IsInterfaceClaimed(configuration_index_, interface_index_))
+  if (device_->IsInterfaceClaimed(configuration_index_, interface_index_)) {
     return USBAlternateInterface::Create(
         this, device_->SelectedAlternateInterface(interface_index_));
-  return nullptr;
+  }
+  return USBAlternateInterface::Create(this, 0);
 }
 
 HeapVector<Member<USBAlternateInterface>> USBInterface::alternates() const {
