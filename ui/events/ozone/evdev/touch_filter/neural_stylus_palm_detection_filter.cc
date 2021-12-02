@@ -322,7 +322,8 @@ std::vector<float> NeuralStylusPalmDetectionFilter::ExtractFeatures(
       AppendFeaturesAsNeighbor(strokes_.at(nearest_stroke.second),
                                nearest_stroke.first, &features);
     } else {
-      features.resize(features.size() + features_per_stroke + 2, 0);
+      features.resize(
+          features.size() + features_per_stroke + kExtraFeaturesForNeighbor, 0);
     }
   }
 
