@@ -346,12 +346,20 @@ HRESULT AccessibilityEventRecorderWin::AccessibleObjectFromWindowWrapper(
   if (SUCCEEDED(hr))
     return hr;
 
-  if (!manager_)  // No manager when outside of Chrome tests.
-    return E_FAIL;
+  // There used to be a use after free error here, because manager_ is a raw
+  // pointer but the manager's owner RenderFrameHostImpl would release it when
+  // RenderFrameHostImpl::AccessibilityFatalError() tried to gracefully reset
+  // accessibility. However, it is no longer possible to reach here after an
+  // AccessibilityFatalError(), because that code will force a crash when
+  // developer features such as AccessibleEventRecorder is used.
 
   // The above call to ::AccessibleObjectFromWindow fails for unknown
   // reasons every once in a while on the bots.  Work around it by grabbing
   // the object directly from the BrowserAccessibilityManager.
+
+  if (!manager_)  // No manager when outside of Chrome tests.
+    return E_FAIL;
+
   HWND accessibility_hwnd =
       manager_->delegate()->AccessibilityGetAcceleratedWidget();
   if (accessibility_hwnd != hwnd)

@@ -152,6 +152,16 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);
 
+  // Ensure that any accessibility fatal error crashes the renderer. Once this
+  // is turned on, it stays on all renderers, because at this point it is
+  // assumed that the user is a developer.
+  // TODO(accessibility) This behavior should also be observed by Views when the
+  // Accessibility Inspector is used to inspect the Views layer after we unify
+  // Views and Web. Therefore, this flag and its accessor methods should be
+  // moved to UI, e.g. to AXTreeManager under ui/accessibility.
+  static void AlwaysFailFast() { is_fail_fast_mode_ = true; }
+  static bool IsFailFastMode() { return is_fail_fast_mode_; }
+
   BrowserAccessibilityManager(const BrowserAccessibilityManager&) = delete;
   BrowserAccessibilityManager& operator=(const BrowserAccessibilityManager&) =
       delete;
@@ -621,6 +631,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // SetLastFocusedNode and GetLastFocusedNode methods instead.
   static absl::optional<int32_t> last_focused_node_id_;
   static absl::optional<ui::AXTreeID> last_focused_node_tree_id_;
+
+  // A flag to ensure that accessibility fatal errors crash immediately.
+  static bool is_fail_fast_mode_;
 
   // For debug only: True when handling OnAccessibilityEvents.
 #if DCHECK_IS_ON()

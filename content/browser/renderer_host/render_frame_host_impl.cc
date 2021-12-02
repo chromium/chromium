@@ -2587,7 +2587,8 @@ void RenderFrameHostImpl::AccessibilityReset() {
 }
 
 void RenderFrameHostImpl::AccessibilityFatalError() {
-  browser_accessibility_manager_.reset(nullptr);
+  CHECK(!BrowserAccessibilityManager::IsFailFastMode());
+  browser_accessibility_manager_.reset();
   if (accessibility_reset_token_ || !render_accessibility_)
     return;
 

@@ -253,6 +253,9 @@ void BrowserAccessibilityManager::Initialize(
 bool BrowserAccessibilityManager::never_suppress_or_delay_events_for_testing_ =
     false;
 
+// A flag to ensure that accessibility fatal errors crash immediately.
+bool BrowserAccessibilityManager::is_fail_fast_mode_ = false;
+
 // static
 absl::optional<int32_t> BrowserAccessibilityManager::last_focused_node_id_ = {};
 
