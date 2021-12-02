@@ -81,6 +81,7 @@ void MoveString(ParkableStringImpl* string,
 }  // namespace
 
 const char* ParkableStringManager::kAllocatorDumpName = "parkable_strings";
+const base::TimeDelta ParkableStringManager::kFirstParkingDelay;
 
 // Compares not the pointers, but the arrays. Uses pointers to save space.
 struct ParkableStringManager::SecureDigestHash {
