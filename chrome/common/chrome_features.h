@@ -335,6 +335,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSurveysForDesktopNtpModules;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSurveysForDesktopWhatsNew;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForDesktopWhatsNewTime;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHaTSDesktopDevToolsIssuesCOEP;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

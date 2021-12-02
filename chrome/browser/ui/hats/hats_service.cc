@@ -48,6 +48,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
 constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
+constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -181,6 +182,11 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
                               kHatsSurveyTriggerAutofillCard);
   survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
                               kHatsSurveyTriggerAutofillPassword);
+
+  // What's New survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopWhatsNew,
+      kHatsSurveyTriggerWhatsNew);
 
   return survey_configs;
 }

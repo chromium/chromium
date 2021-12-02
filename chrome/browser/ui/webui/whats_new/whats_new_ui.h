@@ -51,6 +51,10 @@ class WhatsNewUI : public ui::MojoWebUIController,
   void CreateBrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_handler) override;
+
+  // Makes a request to show a HaTS survey.
+  void TryShowHatsSurveyWithTimeout();
+
   std::unique_ptr<BrowserCommandHandler> command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;

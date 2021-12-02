@@ -54,6 +54,7 @@ extern const char kHatsSurveyTriggerTesting[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
 extern const char kHatsSurveyTriggerTrustSafetyTrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyTransactions[];
+extern const char kHatsSurveyTriggerWhatsNew[];
 
 // The Trigger ID for a test HaTS Next survey which is available for testing
 // and demo purposes when the migration feature flag is enabled.
