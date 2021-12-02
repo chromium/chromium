@@ -316,9 +316,8 @@ const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 // Time in seconds before a derelict machines starts demo mode.
 const char kDerelictIdleTimeout[] = "derelict-idle-timeout";
 
-// Prevents any CPU restrictions being set on the ARC container. Only meant to
-// be used by tests as some tests may time out if the ARC container is
-// throttled.
+// Prevents any CPU restrictions being set on ARC[VM]. Only meant to be used by
+// tests as some tests may time out if the ARC container is throttled.
 const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 
 // Disables android user data wipe on opt out.
