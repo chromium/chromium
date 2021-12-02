@@ -179,7 +179,8 @@ class CC_PAINT_EXPORT PaintOp {
                      sk_sp<SkColorSpace> color_space,
                      bool can_use_lcd_text,
                      bool context_supports_distance_field_text,
-                     int max_texture_size);
+                     int max_texture_size,
+                     bool raw_draw = false);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -193,6 +194,7 @@ class CC_PAINT_EXPORT PaintOp {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
+    bool raw_draw = false;
 
     // TODO(crbug.com/1096123): Cleanup after study completion.
     //
@@ -843,6 +845,8 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
   DrawSkottieOp();
 };
 
+// TODO(penghuang): Replace DrawTextBlobOp with DrawSlugOp, when GrSlug can be
+// serialized.
 class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawTextBlob;
@@ -871,6 +875,7 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   SkScalar y;
   // This field isn't serialized.
   NodeId node_id = kInvalidNodeId;
+  absl::optional<SkMatrix> hint;
 
  private:
   DrawTextBlobOp();

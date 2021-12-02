@@ -115,9 +115,7 @@ source_set("gles2_cmd_helper_sources") {
     "gles2_cmd_helper_autogen.h",
   ]
 
-  configs += [
-    "//gpu:gpu_gles2_implementation",
-  ]
+  configs += [ "//gpu:gpu_gles2_implementation" ]
 
   deps = [
     ":client",
@@ -271,6 +269,7 @@ source_set("raster_sources") {
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/common:raster",
+    "//ui/base:features",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/color",

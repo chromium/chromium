@@ -454,6 +454,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   std::unique_ptr<cc::ClientPaintCache> paint_cache_;
 
   raw_ptr<ImageDecodeAcceleratorInterface> image_decode_accelerator_;
+  const bool raw_draw_;
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;

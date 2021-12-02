@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -362,7 +363,8 @@ PaintOp::SerializeOptions::SerializeOptions(
     sk_sp<SkColorSpace> color_space,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
-    int max_texture_size)
+    int max_texture_size,
+    bool raw_draw)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -371,7 +373,8 @@ PaintOp::SerializeOptions::SerializeOptions(
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
-      max_texture_size(max_texture_size) {}
+      max_texture_size(max_texture_size),
+      raw_draw(raw_draw) {}
 
 PaintOp::SerializeOptions::SerializeOptions() = default;
 PaintOp::SerializeOptions::SerializeOptions(const SerializeOptions&) = default;
@@ -733,6 +736,9 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   helper.Write(op->x);
   helper.Write(op->y);
   helper.Write(op->blob);
+  helper.Write(options.raw_draw);
+  if (options.raw_draw)
+    helper.Write(current_ctm.asM33());
   return helper.size();
 }
 
@@ -1246,6 +1252,13 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   deserializer.Read(&deserializer->x);
   deserializer.Read(&deserializer->y);
   deserializer.Read(&deserializer->blob);
+  bool raw_draw = false;
+  deserializer.Read(&raw_draw);
+  if (raw_draw) {
+    SkMatrix hint;
+    deserializer.Read(&hint);
+    deserializer->hint = hint;
+  }
   return deserializer.FinalizeOp();
 }
 
@@ -1694,7 +1707,18 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   if (op->node_id)
     SkPDF::SetNodeId(canvas, op->node_id);
   flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
-    c->drawTextBlob(op->blob.get(), op->x, op->y, p);
+    if (op->hint) {
+      sk_sp<GrSlug> slug;
+      {
+        SkAutoCanvasRestore auto_save(c, true);
+        c->setMatrix(*op->hint);
+        slug = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+        DCHECK(slug);
+      }
+      slug->draw(c);
+    } else {
+      c->drawTextBlob(op->blob.get(), op->x, op->y, p);
+    }
   });
   if (op->node_id)
     SkPDF::SetNodeId(canvas, 0);
