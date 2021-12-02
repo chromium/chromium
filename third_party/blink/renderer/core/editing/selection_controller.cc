@@ -1240,8 +1240,12 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
   if (TextFragmentHandler::IsOverTextFragment(hit_test_result))
     return;
 
-  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress)
+  // Opening the context menu, triggered by long press or keyboard, should not
+  // change the selected text.
+  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress ||
+      mouse_event->GetMenuSourceType() == kMenuSourceKeyboard) {
     return;
+  }
 
   SelectClosestWordOrLinkFromMouseEvent(mouse_event, hit_test_result);
 }

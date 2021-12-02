@@ -1714,6 +1714,34 @@ TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
   EXPECT_TRUE(context_menu_data.opened_from_highlight);
 }
 
+// Test that opening context menu with keyboard does not change text selection.
+TEST_P(ContextMenuControllerTest,
+       KeyboardTriggeredContextMenuPreservesSelection) {
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <p id='first'>This is a sample text."</p>
+    </body>
+  )HTML");
+
+  Node* first_paragraph = GetDocument()->getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 5);
+  const auto& selected_end = Position(first_paragraph, 9);
+
+  GetDocument()->GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(selected_start, selected_end)
+          .Build(),
+      SetSelectionOptions());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceKeyboard));
+  EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
+}
+
 // TODO(crbug.com/1184996): Add additional unit test for blocking frame logging.
 
 }  // namespace blink
