@@ -52,10 +52,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  private:
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
-  // Whether this throttle is deferring the navigation. Only set to true in
-  // AddHeadersIfNeeded if there is a handshake ongoing.
-  bool deferring_ = false;
-
   // Not owned.
   const raw_ptr<DeviceTrustService> device_trust_service_;
 

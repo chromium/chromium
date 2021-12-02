@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -135,6 +136,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
               BuildChallengeResponse(kChallenge, _));
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace enterprise_connectors

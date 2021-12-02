@@ -119,11 +119,23 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       // Call `DeviceTrustService::BuildChallengeResponse` which is one step on
       // the chain that builds the challenge response. In this chain we post a
       // task that won't run in the main thread.
-      device_trust_service_->BuildChallengeResponse(
-          challenge, std::move(resume_navigation_callback));
-
-      CHECK(!deferring_);
-      deferring_ = true;
+      //
+      // Because BuildChallengeResponse() may run the resume callback
+      // synchronously, this call is deferred to ensure that this method returns
+      // DEFER before `resume_navigation_callback` is invoked.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler,
+                 const std::string& challenge,
+                 AttestationCallback resume_navigation_callback) {
+                if (throttler) {
+                  throttler->device_trust_service_->BuildChallengeResponse(
+                      challenge, std::move(resume_navigation_callback));
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr(), challenge,
+              std::move(resume_navigation_callback)));
       return DEFER;
     }
   }
@@ -133,23 +145,16 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
     base::TimeTicks start_time,
     const std::string& challenge_response) {
-  if (!deferring_) {
-    return;
-  }
-  deferring_ = false;
-
   LogAttestationResponseLatency(start_time,
                                 /*success=*/!challenge_response.empty());
 
-  if (challenge_response.empty()) {
-    // Cancel the navigation if challenge signature is invalid.
-    CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
-  } else {
+  if (!challenge_response.empty()) {
     LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
     navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
                                           challenge_response);
-    Resume();
   }
+
+  Resume();
 }
 
 }  // namespace enterprise_connectors
