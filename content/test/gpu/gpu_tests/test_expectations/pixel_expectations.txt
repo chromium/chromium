@@ -489,6 +489,10 @@ crbug.com/1274796 [ win amd-0x7340 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes on NVIDIA Linux SkiaRenderer GL
 crbug.com/1213542 [ linux nvidia-0x1cb3 skia-renderer-gl ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
+# OffscreenCanvas pixel tests flaky crashes on ChromeOS Kevin
+crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
+crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_OffscreenCanvasIBRCWebGLMain [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
