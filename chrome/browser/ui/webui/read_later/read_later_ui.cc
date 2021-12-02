@@ -100,14 +100,19 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
 
   source->AddBoolean("readerModeSidePanelEnabled",
                      features::IsReaderModeSidePanelEnabled());
+  source->AddBoolean("unifiedSidePanel",
+                     base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  const int resource = show_side_panel && !base::FeatureList::IsEnabled(
+                                              features::kUnifiedSidePanel)
+                           ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
+                           : IDR_READ_LATER_READ_LATER_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      show_side_panel ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
-                      : IDR_READ_LATER_READ_LATER_HTML);
+      resource);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

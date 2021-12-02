@@ -33,6 +33,8 @@ generate_grd("build_grd") {
     "images/read_later_empty_dark.svg",
     "images/read_later_empty.svg",
     "read_later.html",
+    "side_panel/bookmarks.html",
+    "side_panel/reader_mode/reader_mode.html",
     "side_panel/side_panel.html",
   ]
   input_files_base_dir = rebase_path(".", "//")

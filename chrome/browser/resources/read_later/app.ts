@@ -67,6 +67,11 @@ export class ReadLaterAppElement extends PolymerElement {
         type: Boolean,
         value: true,
       },
+
+      unifiedSidePanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('unifiedSidePanel'),
+      },
     };
   }
 
