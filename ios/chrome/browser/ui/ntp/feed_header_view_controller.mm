@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -33,13 +34,19 @@ const CGFloat kHeaderMenuButtonInsetSides = 2;
 const CGFloat kDiscoverFeedContentWith = 430;
 // The height of the header container. The content is unaffected.
 const CGFloat kFeedHeaderHeight = 40;
+
+// * Values below are exclusive to Web Channels.
+// The width of the feed selector segments.
+const CGFloat kHeaderSegmentWidth = 150;
+// The height and width of the header menu button. Based on the default
+// UISegmentedControl height.
+const CGFloat kMenuButtonSize = 28;
 }
 
 @interface FeedHeaderViewController ()
 
-// Header constraints for when the feed is hidden.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* feedHiddenConstraints;
+// View containing elements of the header. Handles header sizing.
+@property(nonatomic, strong) UIView* container;
 
 // Title label element for the feed.
 @property(nonatomic, strong) UILabel* titleLabel;
@@ -48,8 +55,8 @@ const CGFloat kFeedHeaderHeight = 40;
 // Redefined to not be readonly.
 @property(nonatomic, strong) UIButton* menuButton;
 
-// View containing elements of the header. Handles header sizing.
-@property(nonatomic, strong) UIView* container;
+// Segmented control for toggling between the two feeds.
+@property(nonatomic, strong) UISegmentedControl* segmentedControl;
 
 @end
 
@@ -67,13 +74,18 @@ const CGFloat kFeedHeaderHeight = 40;
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.titleLabel = [self createTitleLabel];
   self.menuButton = [self createMenuButton];
 
-  [self.container addSubview:self.menuButton];
-  [self.container addSubview:self.titleLabel];
-  [self.view addSubview:self.container];
+  if (IsWebChannelsEnabled()) {
+    self.segmentedControl = [self createSegmentedControl];
+    [self.container addSubview:self.segmentedControl];
+  } else {
+    self.titleLabel = [self createTitleLabel];
+    [self.container addSubview:self.titleLabel];
+  }
 
+  [self.container addSubview:self.menuButton];
+  [self.view addSubview:self.container];
   [self applyHeaderConstraints];
 }
 
@@ -111,21 +123,65 @@ const CGFloat kFeedHeaderHeight = 40;
   menuButton.accessibilityIdentifier = kNTPFeedHeaderButtonIdentifier;
   menuButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
-  [menuButton
-      setImage:[[UIImage imageNamed:@"infobar_settings_icon"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-      forState:UIControlStateNormal];
-  menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
-  menuButton.imageEdgeInsets = UIEdgeInsetsMake(
-      kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
-      kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
+  if (IsWebChannelsEnabled()) {
+    // TODO(crbug.com/1275271): Confirm that this is the correct asset.
+    [menuButton setImage:[UIImage systemImageNamed:@"ellipsis"]
+                forState:UIControlStateNormal];
+    menuButton.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    menuButton.clipsToBounds = YES;
+    menuButton.layer.cornerRadius = kMenuButtonSize / 2;
+  } else {
+    [menuButton
+        setImage:[[UIImage imageNamed:@"infobar_settings_icon"]
+                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+        forState:UIControlStateNormal];
+    menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
+    menuButton.imageEdgeInsets = UIEdgeInsetsMake(
+        kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
+        kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
+  }
   return menuButton;
+}
+
+// Configures and returns the segmented control for toggling between feeds.
+- (UISegmentedControl*)createSegmentedControl {
+  // Create segmented control with labels.
+  // TODO(crbug.com/1275271): Create string properly.
+  NSArray* headerLabels = [NSArray
+      arrayWithObjects:l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE),
+                       l10n_util::GetNSString(IDS_IOS_FOLLOWING_FEED_TITLE),
+                       nil];
+  UISegmentedControl* segmentedControl =
+      [[UISegmentedControl alloc] initWithItems:headerLabels];
+  segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
+  [segmentedControl setApportionsSegmentWidthsByContent:NO];
+  for (NSUInteger i = 0; i < segmentedControl.numberOfSegments; ++i) {
+    [segmentedControl setWidth:kHeaderSegmentWidth forSegmentAtIndex:i];
+  }
+
+  // Set text font and color.
+  UIFont* font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes =
+      [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+  [segmentedControl setTitleTextAttributes:attributes
+                                  forState:UIControlStateNormal];
+  segmentedControl.backgroundColor = [UIColor colorNamed:kGrey100Color];
+
+  // Set selected feed and tap action.
+  // TODO(crbug.com/1275271): Add selected feed enum
+  segmentedControl.selectedSegmentIndex = 0;
+  [segmentedControl addTarget:self
+                       action:@selector(onSegmentSelected:)
+             forControlEvents:UIControlEventValueChanged];
+
+  return segmentedControl;
 }
 
 // Applies constraints for the feed header elements' positioning.
 - (void)applyHeaderConstraints {
+  // Anchor container and menu button.
   [NSLayoutConstraint activateConstraints:@[
-    // Anchor container.
     [self.view.heightAnchor constraintEqualToConstant:kFeedHeaderHeight],
     [self.container.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.container.bottomAnchor
@@ -135,20 +191,38 @@ const CGFloat kFeedHeaderHeight = 40;
     [self.container.widthAnchor
         constraintEqualToConstant:MIN(kDiscoverFeedContentWith,
                                       self.view.frame.size.width)],
-    // Anchors title label and menu button.
-    [self.titleLabel.leadingAnchor
-        constraintEqualToAnchor:self.container.leadingAnchor
-                       constant:kTitleHorizontalMargin],
-    [self.titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.menuButton.leadingAnchor],
     [self.menuButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
                        constant:-kMenuButtonHorizontalMargin],
-    [self.titleLabel.centerYAnchor
-        constraintEqualToAnchor:self.container.centerYAnchor],
     [self.menuButton.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
   ]];
+  if (IsWebChannelsEnabled()) {
+    // Anchor segmented control.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.segmentedControl.centerXAnchor
+          constraintEqualToAnchor:self.container.centerXAnchor],
+      [self.segmentedControl.centerYAnchor
+          constraintEqualToAnchor:self.container.centerYAnchor],
+      [self.menuButton.heightAnchor constraintEqualToConstant:kMenuButtonSize],
+      [self.menuButton.widthAnchor constraintEqualToConstant:kMenuButtonSize],
+    ]];
+  } else {
+    // Anchors title label.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.titleLabel.leadingAnchor
+          constraintEqualToAnchor:self.container.leadingAnchor
+                         constant:kTitleHorizontalMargin],
+      [self.titleLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:self.menuButton.leadingAnchor],
+      [self.titleLabel.centerYAnchor
+          constraintEqualToAnchor:self.container.centerYAnchor],
+    ]];
+  }
+}
+
+- (void)onSegmentSelected:(UISegmentedControl*)segmentedControl {
+  // TODO(crbug.com/1275271): Handle feed change.
 }
 
 @end

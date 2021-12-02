@@ -894,6 +894,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>
+      <message name="IDS_IOS_FOLLOWING_FEED_TITLE" desc="The title in the Following feed header label.">
+        Following
+      </message>
       <message name="IDS_IOS_PHONE_CALL_BUTTON" desc="Text in the confirmation dialog button that will initiate a phone call for the presented number. [Length: 10em] [iOS only]">
         Call
       </message>
