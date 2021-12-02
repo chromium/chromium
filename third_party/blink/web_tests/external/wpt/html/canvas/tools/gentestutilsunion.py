@@ -50,12 +50,17 @@ try:
 except ImportError:
     import yaml
 
-def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOFFSCREENCANVAS):
-
+def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
+    CANVASOUTPUTDIR = '../element'
+    CANVASIMAGEOUTPUTDIR = '../element'
+    OFFSCREENCANVASOUTPUTDIR = '../offscreen'
+    OFFSCREENCANVASIMAGEOUTPUTDIR = '../offscreen'
     MISCOUTPUTDIR = './output'
     SPECOUTPUTDIR = '../'
+    HTMLCanvas_test = True
+    OffscreenCanvas_test = True
 
-    SPECOUTPUTPATH = './' # relative to TESTOUTPUTDIR
+    SPECOUTPUTPATH = './' # relative to CANVASOUTPUTDIR
 
     def simpleEscapeJS(str):
         return str.replace('\\', '\\\\').replace('"', '\\"')
@@ -132,9 +137,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             spec_assertions.append(s)
 
     tests = []
-    test_yaml_directory = "yaml/element"
-    if ISOFFSCREENCANVAS:
-        test_yaml_directory = "yaml/offscreen"
+    test_yaml_directory = "yaml-new"
     TESTSFILES = [
         os.path.join(test_yaml_directory, f) for f in os.listdir(test_yaml_directory)
         if f.endswith(".yaml")]
@@ -163,21 +166,11 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         backrefs.append(name.split('.')[-1])
         return ''.join(backrefs)
 
-    def make_flat_image(filename, w, h, r,g,b,a):
-        if os.path.exists('%s/%s' % (IMAGEOUTPUTDIR, filename)):
-            return filename
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
-        cr = cairo.Context(surface)
-        cr.set_source_rgba(r, g, b, a)
-        cr.rectangle(0, 0, w, h)
-        cr.fill()
-        surface.write_to_png('%s/%s' % (IMAGEOUTPUTDIR, filename))
-        return filename
-
     # Ensure the test output directories exist
-    testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
+    testdirs = [CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR, OFFSCREENCANVASIMAGEOUTPUTDIR, MISCOUTPUTDIR]
     for map_dir in set(name_mapping.values()):
-        testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
+        testdirs.append("%s/%s" % (CANVASOUTPUTDIR, map_dir))
+        testdirs.append("%s/%s" % (OFFSCREENCANVASOUTPUTDIR, map_dir))
     for d in testdirs:
         try: os.mkdir(d)
         except: pass # ignore if it already exists
@@ -196,10 +189,10 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             mapped_name += "-manual"
         return mapped_name
 
-    def expand_test_code(code):
+    def expand_test_code(code, is_offscreencanvas):
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m: expand_nonfinite(m.group(1), m.group(2), m.group(3)), code) # must come before '@assert throws'
 
-        if ISOFFSCREENCANVAS:
+        if is_offscreencanvas:
             code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
                     r'_assertPixel(offscreenCanvas, \1, \2, "\1", "\2");',
                     code)
@@ -208,7 +201,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     r'_assertPixel(canvas, \1, \2, "\1", "\2");',
                     code)
 
-        if ISOFFSCREENCANVAS:
+        if is_offscreencanvas:
             code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
                     r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", 2);',
                     code)
@@ -217,7 +210,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", 2);',
                     code)
 
-        if ISOFFSCREENCANVAS:
+        if is_offscreencanvas:
             code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
                     r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", \3);',
                     code)
@@ -267,6 +260,14 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
     used_tests = {}
     for i in range(len(tests)):
         test = tests[i]
+        if test.get('canvasType', []):
+            HTMLCanvas_test = False
+            OffscreenCanvas_test = False
+            for type in test.get('canvasType'):
+                if type.lower() == 'htmlcanvas':
+                    HTMLCanvas_test = True
+                elif type.lower() == 'offscreencanvas':
+                    OffscreenCanvas_test = True
 
         name = test['name']
         print("\r(%s)" % name, " "*32, "\t")
@@ -277,10 +278,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         mapped_name = map_name(name)
         if not mapped_name:
-            if ISOFFSCREENCANVAS:
-                continue
-            else:
-                mapped_name = name
+            mapped_name = name
 
 
         cat_total = ''
@@ -301,7 +299,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
             print("Probable incorrect pixel test in %s" % name)
 
-        code = expand_test_code(test['code'])
+        code_canvas = expand_test_code(test['code'], False).strip()
+        code_offscreen = expand_test_code(test['code'], True).strip()
 
         expectation_html = ''
         if 'expected' in test and test['expected'] is not None:
@@ -322,8 +321,12 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     png_name = mapped_name[:-len("-manual")]
                 else:
                     png_name = mapped_name
-                expected += "\nsurface.write_to_png('%s/%s.png')\n" % (IMAGEOUTPUTDIR, png_name)
-                eval(compile(expected, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+                expected_canvas = expected + "\nsurface.write_to_png('%s/%s.png')\n" % (CANVASIMAGEOUTPUTDIR, png_name)
+                eval(compile(expected_canvas, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+
+                expected_offscreencanvas = expected + "\nsurface.write_to_png('%s/%s.png')\n" % (OFFSCREENCANVASIMAGEOUTPUTDIR, png_name)
+                eval(compile(expected_offscreencanvas, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+
                 expected_img = "%s.png" % name
 
             if expected_img:
@@ -399,20 +402,25 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 'desc':desc, 'escaped_desc':escaped_desc,
                 'prev':prev, 'next':next, 'refs':refs, 'notes':notes, 'images':images,
                 'fonts':fonts, 'fonthack':fonthack, 'timeout': timeout,
-                'canvas':canvas, 'expected':expectation_html, 'code':code,
+                'canvas':canvas, 'expected':expectation_html, 'code':code_canvas,
                 'scripts':scripts + extra_script,
                 'fallback':fallback, 'attributes':attributes,
                 'context_args': context_args
             }
-            if ISOFFSCREENCANVAS:
-                f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+
+            # Create test cases for canvas and offscreencanvas.
+            if HTMLCanvas_test:
+                f = codecs.open('%s/%s%s.html' % (CANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f.write(templates['w3ccanvas'] % template_params)
+            if OffscreenCanvas_test:
+                template_params['code'] = code_offscreen
+                f = codecs.open('%s/%s%s.html' % (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3coffscreencanvas'] % template_params)
+
+                # Create test case for offscreencanvas worker.
                 timeout = '// META: timeout=%s\n' % test['timeout'] if 'timeout' in test else ''
                 template_params['timeout'] = timeout
-                f = codecs.open('%s/%s%s.worker.js' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f = codecs.open('%s/%s%s.worker.js' % (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3cworker'] % template_params)
-            else:
-                f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
-                f.write(templates['w3ccanvas'] % template_params)
 
     print()
