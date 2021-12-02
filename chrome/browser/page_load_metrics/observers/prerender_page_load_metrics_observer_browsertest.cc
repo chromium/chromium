@@ -161,6 +161,90 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       Activate_Embedder_DirectURLInput) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  const std::string histogram_suffix = "_DirectURLInput";
+
+  // Hold PrerenderHandle while the test is executed to avoid canceling a
+  // prerender host in the destruction of PrerenderHandle.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      prerender_helper_.AddEmbedderTriggeredPrerenderAsync(
+          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          histogram_suffix);
+  EXPECT_TRUE(prerender_handle);
+
+  // Wait until the completion of prerendering navigation.
+  prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
+  int host_id = prerender_helper_.GetHostForUrl(prerender_url);
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Activate and wait for FCP.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  // Simulate a browser-initiated navigation.
+  web_contents()->OpenURL(content::OpenURLParams(
+      prerender_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  waiter->Wait();
+
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderNavigationToActivation,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderActivationToFirstPaint,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderActivationToFirstContentfulPaint,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+
+  // Simulate mouse click and wait for FirstInputDelay.
+  content::SimulateMouseClick(web_contents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstInputDelay);
+  waiter->Wait();
+
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderFirstInputDelay4,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+
+  // Force navigation to another page, which should force logging of
+  // histograms persisted at the end of the page load lifetime.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderCumulativeShiftScore,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
+          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                        CancelledPrerender) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

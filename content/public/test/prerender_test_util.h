@@ -117,6 +117,14 @@ class PrerenderTestHelper {
   int AddPrerender(const GURL& prerendering_url);
   void AddPrerenderAsync(const GURL& prerendering_url);
 
+  // Starts prerendering and returns a PrerenderHandle that should be kept alive
+  // until prerender activation. Note that it returns before the completion of
+  // the prerendering navigation.
+  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
+      const GURL& prerendering_url,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix);
+
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 

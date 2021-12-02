@@ -310,6 +310,23 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
+std::unique_ptr<PrerenderHandle>
+PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
+    const GURL& prerendering_url,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  TRACE_EVENT("test", "PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync",
+              "prerendering_url", prerendering_url, "trigger_type",
+              trigger_type, "embedder_histogram_suffix",
+              embedder_histogram_suffix);
+  if (!content::BrowserThread::CurrentlyOn(BrowserThread::UI))
+    return nullptr;
+
+  WebContents* web_contents = GetWebContents();
+  return web_contents->StartPrerendering(prerendering_url, trigger_type,
+                                         embedder_histogram_suffix);
+}
+
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
                                                   const GURL& gurl) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrerenderedPage", "host_id",
