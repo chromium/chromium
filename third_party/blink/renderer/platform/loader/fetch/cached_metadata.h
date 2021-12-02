@@ -63,17 +63,19 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
         new CachedMetadata(data_type_id, data, SafeCast<wtf_size_t>(size)));
   }
 
-  static Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
-                                           const uint8_t* data,
-                                           size_t size) {
+  // Returns a Vector containing the header of serialized metadata.
+  // Callers should append the body to the Vector to get the full serialized
+  // metadata.
+  // The actual body size can be different from `estimated_body_size`.
+  static Vector<uint8_t> GetSerializedDataHeader(
+      uint32_t data_type_id,
+      wtf_size_t estimated_body_size) {
     Vector<uint8_t> vector;
-    vector.ReserveInitialCapacity(kCachedMetaDataStart +
-                                  SafeCast<wtf_size_t>(size));
+    vector.ReserveInitialCapacity(kCachedMetaDataStart + estimated_body_size);
     uint32_t marker = CachedMetadataHandler::kSingleEntry;
     vector.Append(reinterpret_cast<const uint8_t*>(&marker), sizeof(uint32_t));
     vector.Append(reinterpret_cast<const uint8_t*>(&data_type_id),
                   sizeof(uint32_t));
-    vector.Append(data, SafeCast<wtf_size_t>(size));
     return vector;
   }
 
