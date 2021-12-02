@@ -184,7 +184,10 @@ if (include_js_tests) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
     }
     if (!is_android) {
-      sources += [ "commander/commander_browsertest.js" ]
+      sources += [
+        "access_code_cast/access_code_cast_browsertest.js",
+        "commander/commander_browsertest.js"
+      ]
     }
     if (is_cfm) {
       sources += [

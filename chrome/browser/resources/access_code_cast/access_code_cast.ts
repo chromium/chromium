@@ -2,12 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 
 declare const chrome: any;
+
+enum PageState {
+  CODE_INPUT,
+  QR_INPUT,
+}
+
+interface AccessCodeCastElement {
+  $: {
+    backButton: CrButtonElement;
+    castButton: CrButtonElement;
+    codeInputView: HTMLDivElement;
+    qrInputView: HTMLDivElement;
+  }
+}
 
 class AccessCodeCastElement extends PolymerElement {
   static get is() {
@@ -27,6 +47,11 @@ class AccessCodeCastElement extends PolymerElement {
     this.router = BrowserProxy.getInstance().callbackRouter;
   }
 
+  ready() {
+    super.ready();
+    this.setState(PageState.CODE_INPUT);
+  }
+
   connectedCallback() {
     super.connectedCallback();
   }
@@ -38,6 +63,21 @@ class AccessCodeCastElement extends PolymerElement {
 
   close() {
     chrome.send('dialogClose');
+  }
+
+  switchToCodeInput() {
+    this.setState(PageState.CODE_INPUT);
+  }
+
+  switchToQrInput() {
+    this.setState(PageState.QR_INPUT);
+  }
+
+  private setState(state: PageState) {
+    this.$.codeInputView.hidden = state !== PageState.CODE_INPUT;
+    this.$.castButton.hidden = state !== PageState.CODE_INPUT;
+    this.$.qrInputView.hidden = state !== PageState.QR_INPUT;
+    this.$.backButton.hidden = state !== PageState.QR_INPUT;
   }
 }
 
