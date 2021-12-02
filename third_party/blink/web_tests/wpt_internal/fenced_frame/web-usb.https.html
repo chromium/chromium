@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Test WebUSB navigator.usb.requestDevice()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async () => {
+  const usb_request_device_key = KEYS['usb.requestDevice'];
+
+  attachFencedFrame('resources/web-usb-inner.https.html');
+  // Get the result for the top-level fenced frame.
+  const fenced_frame_result = await nextValueFromServer(usb_request_device_key);
+  // It fails to request a USB device in a fenced frame. Refer to
+  // https://github.com/shivanigithub/fenced-frame#security-considerations.
+  assert_equals(
+    fenced_frame_result,
+        'SecurityError: Failed to execute \'requestDevice\' on \'USB\': '+
+        'Access to the feature "usb" is disallowed by permissions policy.',
+        'fenced frame has the right value' +
+        ' for usb.requestDevice');
+}, 'navigator.usb.requestDevice');
+</script>
+</body>

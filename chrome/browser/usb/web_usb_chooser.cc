@@ -26,6 +26,7 @@ WebUsbChooser::~WebUsbChooser() {}
 void WebUsbChooser::GetPermission(
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
+  DCHECK(!render_frame_host_->IsNestedWithinFencedFrame());
   url::Origin origin =
       render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
   auto* profile =
