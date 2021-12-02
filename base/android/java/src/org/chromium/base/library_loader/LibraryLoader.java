@@ -72,7 +72,7 @@ public class LibraryLoader {
 
     // Compile time switch for sharing RELRO between the browser and the app zygote.
     // TODO(crbug.com/1154224): remove when the issue is closed.
-    private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = false;
+    private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = true;
 
     // Default sampling interval for reached code profiler in microseconds.
     private static final int DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US = 10000;
