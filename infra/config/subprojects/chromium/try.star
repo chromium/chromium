@@ -2430,6 +2430,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-nearby-chrome-fyi",
+)
+
+chrome_internal_verifier(
     builder = "linux-pgo",
     branch_selector = branches.STANDARD_MILESTONE,
 )
