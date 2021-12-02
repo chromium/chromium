@@ -43,9 +43,9 @@ static bool LayerHasValidPropertyTreeIndices(LayerImpl* layer) {
          layer->scroll_tree_index() != ScrollTree::kInvalidNodeId;
 }
 
-static bool LayerWillPushProperties(const CommitState* commit_state,
+static bool LayerWillPushProperties(const ThreadUnsafeCommitState* unsafe_state,
                                     const Layer* layer) {
-  return commit_state->layers_that_should_push_properties.contains(layer);
+  return unsafe_state->layers_that_should_push_properties.contains(layer);
 }
 
 static bool LayerWillPushProperties(const LayerTreeImpl* tree,
@@ -111,12 +111,13 @@ void SynchronizeTreesInternal(LayerTreeType* source_tree,
 
 }  // namespace
 
-void TreeSynchronizer::SynchronizeTrees(const CommitState* commit_state,
-                                        LayerTreeImpl* tree_impl) {
-  if (!commit_state->root_layer) {
+void TreeSynchronizer::SynchronizeTrees(
+    const ThreadUnsafeCommitState& unsafe_state,
+    LayerTreeImpl* tree_impl) {
+  if (!unsafe_state.root_layer) {
     tree_impl->DetachLayers();
   } else {
-    SynchronizeTreesInternal(commit_state, tree_impl);
+    SynchronizeTreesInternal(&unsafe_state, tree_impl);
   }
 }
 
@@ -154,21 +155,24 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 
-void TreeSynchronizer::PushLayerProperties(CommitState* commit_state,
-                                           LayerTreeImpl* impl_tree) {
+void TreeSynchronizer::PushLayerProperties(
+    const CommitState& commit_state,
+    ThreadUnsafeCommitState& unsafe_state,
+    LayerTreeImpl* impl_tree) {
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",
                "layer_count",
-               commit_state->layers_that_should_push_properties.size());
+               unsafe_state.layers_that_should_push_properties.size());
   auto source_layers_begin =
-      commit_state->layers_that_should_push_properties.begin();
+      unsafe_state.layers_that_should_push_properties.begin();
   auto source_layers_end =
-      commit_state->layers_that_should_push_properties.end();
+      unsafe_state.layers_that_should_push_properties.end();
   for (auto it = source_layers_begin; it != source_layers_end; ++it) {
     auto* source_layer = *it;
     LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
     DCHECK(target_layer);
-    source_layer->PushPropertiesTo(target_layer, *commit_state);
+    source_layer->PushPropertiesTo(target_layer, commit_state);
   }
+  unsafe_state.layers_that_should_push_properties.clear();
 }
 
 }  // namespace cc

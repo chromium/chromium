@@ -274,6 +274,7 @@ void ProxyImpl::FrameSinksToThrottleUpdated(
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,
+    ThreadUnsafeCommitState* unsafe_state,
     LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
@@ -304,7 +305,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   data_for_commit_ = std::make_unique<DataForCommit>(
       std::make_unique<ScopedCompletionEvent>(completion_event),
-      std::move(commit_state), commit_timestamps);
+      std::move(commit_state), unsafe_state, commit_timestamps);
 
   DCHECK(!blocked_main_commit().layer_tree_host);
   blocked_main_commit().layer_tree_host = layer_tree_host;
@@ -684,10 +685,11 @@ void ProxyImpl::ScheduledActionCommit() {
   base::ScopedAllowCrossThreadRefCountAccess
       allow_cross_thread_ref_count_access;
 
-  CommitState* commit_state = data_for_commit_->commit_state.get();
+  auto* commit_state = data_for_commit_->commit_state.get();
+  auto* unsafe_state = data_for_commit_->unsafe_state;
   host_impl_->BeginCommit(commit_state->source_frame_number);
   blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
-      host_impl_.get(), *commit_state);
+      host_impl_.get(), *commit_state, *unsafe_state);
   data_for_commit_->commit_timestamps->finish = base::TimeTicks::Now();
 
   // Remove the LayerTreeHost reference before the completion event is signaled
@@ -877,15 +879,17 @@ void ProxyImpl::SetEnableFrameRateThrottling(
 ProxyImpl::DataForCommit::DataForCommit(
     std::unique_ptr<ScopedCompletionEvent> commit_completion_event,
     std::unique_ptr<CommitState> commit_state,
+    ThreadUnsafeCommitState* unsafe_state,
     CommitTimestamps* commit_timestamps)
     : commit_completion_event(std::move(commit_completion_event)),
       commit_state(std::move(commit_state)),
+      unsafe_state(unsafe_state),
       commit_timestamps(commit_timestamps) {}
 
 ProxyImpl::DataForCommit::~DataForCommit() = default;
 
 bool ProxyImpl::DataForCommit::IsValid() const {
-  return commit_completion_event.get() && commit_state.get() &&
+  return commit_completion_event.get() && commit_state.get() && unsafe_state &&
          commit_timestamps;
 }
 

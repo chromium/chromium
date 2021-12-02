@@ -1019,7 +1019,9 @@ class LayerTreeHostPresentationDuringAnimation
 
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {
     PostSetNeedsCommitToMainThread();
-    if (layer_tree_host()->pending_commit_state()->source_frame_number == 2) {
+    if (const_cast<const LayerTreeHost*>(layer_tree_host())
+            ->pending_commit_state()
+            ->source_frame_number == 2) {
       layer_tree_host()->RequestPresentationTimeForNextFrame(base::BindOnce(
           &LayerTreeHostPresentationDuringAnimation::OnPresentation,
           base::Unretained(this)));

@@ -928,15 +928,19 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
         layer_tree_host()->OuterViewportScrollLayerForTesting();
     switch (commit_state.source_frame_number) {
       case 0:
-        EXPECT_TRUE(commit_state.layers_that_should_push_properties.contains(
-            scroll_layer));
+        EXPECT_TRUE(
+            const_cast<const LayerTreeHost*>(layer_tree_host())
+                ->thread_unsafe_commit_state()
+                .layers_that_should_push_properties.contains(scroll_layer));
         break;
       case 1:
         // Even if this layer doesn't need push properties, it should
         // still pick up scrolls that happen on the active layer during
         // commit.
-        EXPECT_FALSE(commit_state.layers_that_should_push_properties.contains(
-            scroll_layer));
+        EXPECT_FALSE(
+            const_cast<const LayerTreeHost*>(layer_tree_host())
+                ->thread_unsafe_commit_state()
+                .layers_that_should_push_properties.contains(scroll_layer));
         break;
     }
   }

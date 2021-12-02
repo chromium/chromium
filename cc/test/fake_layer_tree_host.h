@@ -77,6 +77,11 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   // FakeLayerTreeHostImpl via a proxy.
   void CreateFakeLayerTreeHostImpl();
 
+  CommitState* GetPendingCommitState() { return pending_commit_state(); }
+  ThreadUnsafeCommitState& GetThreadUnsafeCommitState() {
+    return thread_unsafe_commit_state();
+  }
+
   LayerImpl* CommitAndCreateLayerImplTree();
   LayerImpl* CommitAndCreatePendingTree();
 

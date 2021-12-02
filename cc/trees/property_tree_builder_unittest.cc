@@ -53,7 +53,7 @@ class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
     // TODO(https://crbug.com/939968) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
-    LayerTreeHost::PushLayerTreePropertiesTo(host()->pending_commit_state(),
+    LayerTreeHost::PushLayerTreePropertiesTo(*host()->GetPendingCommitState(),
                                              host_impl()->pending_tree());
     UpdateDrawProperties(host_impl()->pending_tree());
   }

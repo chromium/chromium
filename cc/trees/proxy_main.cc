@@ -325,6 +325,8 @@ void ProxyMain::BeginMainFrame(
       base::WaitableEvent::ResetPolicy::MANUAL);
   auto* completion_event = completion_event_ptr.get();
   bool has_updates = (final_pipeline_stage_ == COMMIT_PIPELINE_STAGE);
+  // Must get unsafe_state before calling WillCommit() to avoid deadlock.
+  auto& unsafe_state = layer_tree_host_->GetUnsafeStateForCommit();
   std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
       std::move(completion_event_ptr), has_updates);
   DCHECK_EQ(has_updates, (bool)commit_state.get());
@@ -378,12 +380,13 @@ void ProxyMain::BeginMainFrame(
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
     ImplThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
-                                  base::Unretained(proxy_impl_.get()),
-                                  completion_event, std::move(commit_state),
-                                  layer_tree_host_, begin_main_frame_start_time,
-                                  begin_main_frame_state->begin_frame_args,
-                                  &commit_timestamps));
+        FROM_HERE,
+        base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
+                       base::Unretained(proxy_impl_.get()), completion_event,
+                       std::move(commit_state), &unsafe_state, layer_tree_host_,
+                       begin_main_frame_start_time,
+                       begin_main_frame_state->begin_frame_args,
+                       &commit_timestamps));
     layer_tree_host_->WaitForCommitCompletion();
   }
 

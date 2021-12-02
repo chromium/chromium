@@ -541,9 +541,8 @@ SkColor Layer::SafeOpaqueBackgroundColor(SkColor host_background_color) const {
 
 SkColor Layer::SafeOpaqueBackgroundColor() const {
   SkColor host_background_color =
-      layer_tree_host_
-          ? layer_tree_host_->pending_commit_state()->background_color
-          : layer_tree_inputs()->safe_opaque_background_color;
+      layer_tree_host_ ? layer_tree_host_->background_color()
+                       : layer_tree_inputs()->safe_opaque_background_color;
   return SafeOpaqueBackgroundColor(host_background_color);
 }
 

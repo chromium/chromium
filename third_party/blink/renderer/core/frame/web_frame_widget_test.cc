@@ -131,7 +131,7 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
 
 #if defined(OS_ANDROID)
 TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
-  cc::LayerTreeHost* layer_tree_host =
+  const cc::LayerTreeHost* layer_tree_host =
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   // We should not have any force send metadata requests at start.
   EXPECT_FALSE(

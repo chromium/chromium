@@ -201,6 +201,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   auto completion_event_ptr = std::make_unique<CompletionEvent>(
       base::WaitableEvent::ResetPolicy::MANUAL);
   auto* completion_event = completion_event_ptr.get();
+  auto& unsafe_state = layer_tree_host_->GetUnsafeStateForCommit();
   std::unique_ptr<CommitState> commit_state =
       layer_tree_host_->WillCommit(std::move(completion_event_ptr),
                                    /*has_updates=*/true);
@@ -214,7 +215,8 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
 
     host_impl_->BeginCommit(commit_state->source_frame_number);
 
-    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get(), *commit_state);
+    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get(), *commit_state,
+                                               unsafe_state);
     completion_event->Signal();
 
     if (scheduler_on_impl_thread_) {
@@ -930,8 +932,8 @@ void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
 
-  auto& begin_main_frame_metrics =
-      layer_tree_host_->pending_commit_state()->begin_main_frame_metrics;
+  std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
+      layer_tree_host_->TakeBeginMainFrameMetrics();
   host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,

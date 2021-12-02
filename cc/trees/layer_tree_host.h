@@ -156,13 +156,23 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   int GetId() const;
 
   // The commit state for the frame being assembled by the compositor host.
-  CommitState* pending_commit_state() {
-    DCHECK(task_runner_provider_->IsMainThread());
-    return pending_commit_state_.get();
-  }
   const CommitState* pending_commit_state() const {
     DCHECK(task_runner_provider_->IsMainThread());
     return pending_commit_state_.get();
+  }
+
+  // Additional state required for commit. Unlike pending_commit_state(), this
+  // state is *not* snapshotted. Both the compositor and the host access a
+  // single live version, so care must be taken to avoid collisions.
+  const ThreadUnsafeCommitState& thread_unsafe_commit_state() const {
+    // TODO(szager): DCHECK(task_runner_provider_->IsMainThread());
+    return thread_unsafe_commit_state_;
+  }
+  // This should only be used to get a reference to ThreadUnsafeCommitState for
+  // the purpose of passing to the commit code. All other locations should use
+  // thread_unsafe_commit_state() instead.
+  ThreadUnsafeCommitState& GetUnsafeStateForCommit() {
+    return thread_unsafe_commit_state();
   }
 
   // The current source frame number. This is incremented for each main frame
@@ -210,6 +220,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   size_t saved_events_metrics_count_for_testing() const {
     return events_metrics_manager_.saved_events_metrics_count_for_testing();
+  }
+
+  std::unique_ptr<BeginMainFrameMetrics> TakeBeginMainFrameMetrics() {
+    return std::move(pending_commit_state()->begin_main_frame_metrics);
   }
 
   // Visibility and LayerTreeFrameSink -------------------------------
@@ -369,9 +383,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // attached to it and will be added/removed along with the root Layer. The
   // LayerTreeHost retains ownership of a reference to the root Layer.
   void SetRootLayer(scoped_refptr<Layer> root_layer);
-  Layer* root_layer() { return pending_commit_state()->root_layer.get(); }
+  Layer* root_layer() { return thread_unsafe_commit_state().root_layer.get(); }
   const Layer* root_layer() const {
-    return pending_commit_state()->root_layer.get();
+    return thread_unsafe_commit_state().root_layer.get();
   }
 
   // Sets the collection of viewport property ids, defined to allow viewport
@@ -565,8 +579,18 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Used externally by blink for setting the PropertyTrees when
   // UseLayerLists() is true.
-  PropertyTrees* property_trees() { return &property_trees_; }
-  const PropertyTrees* property_trees() const { return &property_trees_; }
+  PropertyTrees* property_trees() {
+    return &thread_unsafe_commit_state().property_trees;
+  }
+  const PropertyTrees* property_trees() const {
+    return &thread_unsafe_commit_state().property_trees;
+  }
+  MutatorHost* mutator_host() {
+    return thread_unsafe_commit_state().mutator_host;
+  }
+  const MutatorHost* mutator_host() const {
+    return thread_unsafe_commit_state().mutator_host;
+  }
 
   void SetPropertyTreesForTesting(const PropertyTrees* property_trees);
 
@@ -615,16 +639,15 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetPropertyTreesNeedRebuild();
 
-  void PushPropertyTreesTo(const CommitState& commit_state,
+  void PushPropertyTreesTo(CommitState& commit_state,
+                           ThreadUnsafeCommitState& unsafe_state,
                            LayerTreeImpl* tree_impl);
-  static void PushLayerTreePropertiesTo(CommitState* commit_state,
+  static void PushLayerTreePropertiesTo(CommitState& commit_state,
                                         LayerTreeImpl* tree_impl);
   void PushLayerTreeHostPropertiesTo(const CommitState& commit_state,
                                      LayerTreeHostImpl* host_impl);
-  void MoveChangeTrackingToLayers(const CommitState& commit_state,
+  void MoveChangeTrackingToLayers(ThreadUnsafeCommitState& unsafe_state,
                                   LayerTreeImpl* tree_impl);
-
-  MutatorHost* mutator_host() { return mutator_host_; }
 
   // Returns the layer with the given |element_id|. In layer-list mode, only
   // scrollable layers are registered in this map.
@@ -660,7 +683,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
   void RequestMainFrameUpdate(bool report_metrics);
   void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl,
-                                CommitState& commit_state);
+                                CommitState& commit_state,
+                                ThreadUnsafeCommitState& unsafe_state);
   // If has_updates is true, returns the CommitState that will drive the commit.
   // Otherwise, returns nullptr.
   std::unique_ptr<CommitState> WillCommit(
@@ -814,6 +838,16 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // is created in CreateLayerTreeHostImpl().
   TaskGraphRunner* task_graph_runner() const { return task_graph_runner_; }
 
+  CommitState* pending_commit_state() {
+    DCHECK(task_runner_provider_->IsMainThread());
+    return pending_commit_state_.get();
+  }
+  ThreadUnsafeCommitState& thread_unsafe_commit_state() {
+    // TODO(szager): DCHECK(task_runner_provider_->IsMainThread());
+    // TODO(szager): WaitForCommitCompletion();
+    return thread_unsafe_commit_state_;
+  }
+
   void OnCommitForSwapPromises();
 
   void RecordGpuRasterizationHistogram(const LayerTreeHostImpl* host_impl,
@@ -864,6 +898,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       rendering_stats_instrumentation_;
 
   std::unique_ptr<CommitState> pending_commit_state_;
+  ThreadUnsafeCommitState thread_unsafe_commit_state_;
 
   SwapPromiseManager swap_promise_manager_;
 
@@ -898,8 +933,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   uint32_t defer_main_frame_update_count_ = 0;
 
   gfx::Rect visual_device_viewport_intersection_rect_;
-
-  PropertyTrees property_trees_;
 
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 

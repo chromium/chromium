@@ -168,7 +168,7 @@ class TreeSynchronizerTest : public testing::Test {
 // Attempts to synchronizes a null tree. This should not crash, and should
 // return a null tree.
 TEST_F(TreeSynchronizerTest, SyncNullTree) {
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   EXPECT_TRUE(!host_->pending_tree()->root_layer());
 }
@@ -183,7 +183,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeFromEmpty) {
   host_->SetRootLayer(layer_tree_root);
   host_->BuildPropertyTreesForTesting();
 
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
 
   LayerImpl* root = host_->pending_tree()->root_layer();
@@ -206,7 +206,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   host_->SetRootLayer(layer_tree_root);
   host_->BuildPropertyTreesForTesting();
 
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
 
   // First time the main thread layers are synced to pending tree, and all the
@@ -221,7 +221,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
                           host_->pending_tree());
 
   // Push properties to make pending tree have valid property tree index.
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
 
   // Now sync from pending tree to active tree. This would clear the map of
@@ -236,14 +237,15 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   // Set the main thread root layer needs push properties.
   layer_tree_root->SetNeedsPushProperties();
   EXPECT_TRUE(base::Contains(
-      host_->pending_commit_state()->layers_that_should_push_properties,
+      host_->GetThreadUnsafeCommitState().layers_that_should_push_properties,
       layer_tree_root.get()));
 
   // When sync from main thread, the needs push properties status is carried
   // over to pending tree.
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
   EXPECT_TRUE(base::Contains(
       host_->pending_tree()->LayersThatShouldPushProperties(), root));
@@ -263,7 +265,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
   host_->SetRootLayer(layer_tree_root);
   host_->BuildPropertyTreesForTesting();
 
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   LayerImpl* layer_impl_tree_root = host_->pending_tree()->root_layer();
   EXPECT_TRUE(
@@ -274,7 +276,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
                           host_->pending_tree());
 
   // We have to push properties to pick up the destruction list pointer.
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
 
   // Add a new layer to the Layer side
@@ -286,7 +289,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
   // Synchronize again. After the sync the trees should be equivalent and we
   // should have created and destroyed one LayerImpl.
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   layer_impl_tree_root = host_->pending_tree()->root_layer();
 
@@ -317,14 +320,15 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
   host_->SetRootLayer(layer_tree_root);
 
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   LayerImpl* layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
                           host_->active_tree());
 
   // We have to push properties to pick up the destruction list pointer.
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
   host_->active_tree()->ResetAllChangeTracking();
 
@@ -332,7 +336,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
   child2->RemoveFromParent();
   layer_tree_root->AddChild(child2);
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
@@ -340,7 +344,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndTrackStackingOrderChange) {
 
   host_->active_tree()->SetPropertyTrees(
       layer_tree_root->layer_tree_host()->property_trees());
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Check that the impl thread properly tracked the change.
@@ -375,13 +380,14 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndProperties) {
   int second_child_id = layer_tree_root->children()[1]->id();
 
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   LayerImpl* layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
                           host_->active_tree());
 
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Check that the property values we set on the Layer tree are reflected in
@@ -422,14 +428,15 @@ TEST_F(TreeSynchronizerTest, ReuseLayerImplsAfterStructuralChange) {
   host_->SetRootLayer(layer_tree_root);
   host_->BuildPropertyTreesForTesting();
 
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   LayerImpl* layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
                           host_->active_tree());
 
   // We have to push properties to pick up the destruction list pointer.
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Now restructure the tree to look like this:
@@ -449,7 +456,7 @@ TEST_F(TreeSynchronizerTest, ReuseLayerImplsAfterStructuralChange) {
   // After another synchronize our trees should match and we should not have
   // destroyed any LayerImpls
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
@@ -479,14 +486,15 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeThenDestroy) {
   int old_tree_second_child_layer_id = old_layer_tree_root->children()[1]->id();
 
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   LayerImpl* layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(old_layer_tree_root.get(), layer_impl_tree_root,
                           host_->active_tree());
 
   // We have to push properties to pick up the destruction list pointer.
-  TreeSynchronizer::PushLayerProperties(host_->pending_commit_state(),
+  TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
+                                        host_->GetThreadUnsafeCommitState(),
                                         host_->active_tree());
 
   // Remove all children on the Layer side.
@@ -498,7 +506,7 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeThenDestroy) {
   host_->SetRootLayer(new_layer_tree_root);
 
   host_->BuildPropertyTreesForTesting();
-  TreeSynchronizer::SynchronizeTrees(host_->pending_commit_state(),
+  TreeSynchronizer::SynchronizeTrees(host_->GetThreadUnsafeCommitState(),
                                      host_->active_tree());
   layer_impl_tree_root = host_->active_tree()->root_layer();
   ExpectTreesAreIdentical(new_layer_tree_root.get(), layer_impl_tree_root,

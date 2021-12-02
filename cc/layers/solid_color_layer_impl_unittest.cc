@@ -186,11 +186,13 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   layer->SetBackgroundColor(SkColorSetARGB(255, 10, 20, 30));
   EXPECT_TRUE(layer->contents_opaque());
 
+  auto& unsafe_state = host->GetUnsafeStateForCommit();
   std::unique_ptr<CommitState> commit_state =
       host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl(), *commit_state);
+    host->FinishCommitOnImplThread(host->host_impl(), *commit_state,
+                                   unsafe_state);
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
@@ -220,7 +222,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   commit_state = host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl(), *commit_state);
+    host->FinishCommitOnImplThread(host->host_impl(), *commit_state,
+                                   unsafe_state);
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
