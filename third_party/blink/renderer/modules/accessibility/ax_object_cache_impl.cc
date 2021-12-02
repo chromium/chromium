@@ -627,6 +627,11 @@ AXObject* AXObjectCacheImpl::Root() {
   return GetOrCreate(document_);
 }
 
+AXObject* AXObjectCacheImpl::ObjectFromAXID(AXID id) const {
+  auto it = objects_.find(id);
+  return it != objects_.end() ? it->value : nullptr;
+}
+
 Node* AXObjectCacheImpl::FocusedElement() {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)
@@ -879,13 +884,6 @@ AXID AXObjectCacheImpl::GetAXID(Node* node) {
   if (!ax_object)
     return 0;
   return ax_object->AXObjectID();
-}
-
-Element* AXObjectCacheImpl::GetElementFromAXID(AXID axid) {
-  AXObject* ax_object = ObjectFromAXID(axid);
-  if (!ax_object || !ax_object->GetElement())
-    return nullptr;
-  return ax_object->GetElement();
 }
 
 AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {

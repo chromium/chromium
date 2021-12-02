@@ -44,6 +44,7 @@ class AXMode;
 
 namespace blink {
 
+class AXObject;
 class AbstractInlineTextBox;
 class AccessibleNode;
 class HTMLCanvasElement;
@@ -171,7 +172,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void OnTouchAccessibilityHover(const gfx::Point&) = 0;
 
   virtual AXID GetAXID(Node*) = 0;
-  virtual Element* GetElementFromAXID(AXID) = 0;
+  virtual AXObject* ObjectFromAXID(AXID) const = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
                                                         const ui::AXMode&);

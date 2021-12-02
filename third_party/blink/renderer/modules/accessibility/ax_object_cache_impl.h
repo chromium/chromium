@@ -200,10 +200,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void OnTouchAccessibilityHover(const gfx::Point&) override;
 
-  AXObject* ObjectFromAXID(AXID id) const {
-    auto it = objects_.find(id);
-    return it != objects_.end() ? it->value : nullptr;
-  }
+  AXObject* ObjectFromAXID(AXID id) const override;
   AXObject* Root();
 
   // Used for objects without backing DOM nodes, layout objects, etc.
@@ -219,7 +216,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
 
   AXID GetAXID(Node*) override;
-  Element* GetElementFromAXID(AXID) override;
 
   AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
