@@ -6,8 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
+#include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
@@ -53,6 +55,13 @@ const gfx::VectorIcon& GetDeviceIcon(const DeviceType device_type) {
     case DeviceType::kUnknown:
       return ash::kSystemMenuBluetoothIcon;
   }
+}
+
+bool HasMultipleBatteries(
+    const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
+        battery_info) {
+  return battery_info->left_bud_info || battery_info->case_info ||
+         battery_info->right_bud_info;
 }
 
 }  // namespace
@@ -108,13 +117,61 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
 
 void BluetoothDeviceListItemView::UpdateBatteryInfo(
     const DeviceBatteryInfoPtr& battery_info) {
-  if (!battery_info || !battery_info->default_properties) {
+  if (!battery_info || (!battery_info->default_properties &&
+                        !HasMultipleBatteries(battery_info))) {
     sub_row()->RemoveAllChildViews();
     return;
   }
 
+  if (HasMultipleBatteries(battery_info)) {
+    UpdateMultipleBatteryView(battery_info);
+    return;
+  }
+
+  UpdateSingleBatteryView(battery_info);
+}
+
+void BluetoothDeviceListItemView::UpdateMultipleBatteryView(
+    const DeviceBatteryInfoPtr& battery_info) {
+  // Remove battery view if it is not a multiple battery view.
+  if (!sub_row()->children().empty()) {
+    DCHECK(sub_row()->children().size() == 1);
+    if (sub_row()->children().at(0)->GetClassName() !=
+        BluetoothDeviceListItemMultipleBatteryView::kViewClassName) {
+      sub_row()->RemoveAllChildViews();
+    }
+  }
+
+  BluetoothDeviceListItemMultipleBatteryView* battery_view = nullptr;
+
+  // Add multiple battery view if missing.
+  if (sub_row()->children().empty()) {
+    battery_view = sub_row()->AddChildView(
+        std::make_unique<BluetoothDeviceListItemMultipleBatteryView>());
+  } else {
+    DCHECK_EQ(1u, sub_row()->children().size());
+    battery_view = static_cast<BluetoothDeviceListItemMultipleBatteryView*>(
+        sub_row()->children().at(0));
+  }
+
+  // Update multiple battery view.
+  battery_view->UpdateBatteryInfo(battery_info);
+}
+
+void BluetoothDeviceListItemView::UpdateSingleBatteryView(
+    const DeviceBatteryInfoPtr& battery_info) {
+  // Remove battery view if it is not a single battery view.
+  if (!sub_row()->children().empty()) {
+    DCHECK(sub_row()->children().size() == 1);
+    if (sub_row()->children().at(0)->GetClassName() !=
+        BluetoothDeviceListItemBatteryView::kViewClassName) {
+      sub_row()->RemoveAllChildViews();
+    }
+  }
+
   BluetoothDeviceListItemBatteryView* battery_view = nullptr;
 
+  // Add single battery view if missing.
   if (sub_row()->children().empty()) {
     battery_view = sub_row()->AddChildView(
         std::make_unique<BluetoothDeviceListItemBatteryView>());
@@ -124,7 +181,10 @@ void BluetoothDeviceListItemView::UpdateBatteryInfo(
         sub_row()->children().at(0));
   }
 
-  battery_view->UpdateBatteryInfo(battery_info->default_properties);
+  // Update single battery view.
+  battery_view->UpdateBatteryInfo(
+      battery_info->default_properties->battery_percentage,
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL);
 }
 
 const char* BluetoothDeviceListItemView::GetClassName() const {

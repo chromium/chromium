@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
+#include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
@@ -59,10 +60,21 @@ PairedBluetoothDevicePropertiesPtr CreatePairedDeviceProperties() {
   return paired_device_properties;
 }
 
-DeviceBatteryInfoPtr CreateBatteryInfo(uint8_t battery_percentage) {
+DeviceBatteryInfoPtr CreateDefaultBatteryInfo(uint8_t battery_percentage) {
   DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
   battery_info->default_properties = BatteryProperties::New();
   battery_info->default_properties->battery_percentage = battery_percentage;
+  return battery_info;
+}
+
+DeviceBatteryInfoPtr CreateMultipleBatteryInfo(uint8_t battery_percentage) {
+  DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
+  battery_info->left_bud_info = BatteryProperties::New();
+  battery_info->left_bud_info->battery_percentage = battery_percentage;
+  battery_info->case_info = BatteryProperties::New();
+  battery_info->case_info->battery_percentage = battery_percentage;
+  battery_info->right_bud_info = BatteryProperties::New();
+  battery_info->right_bud_info->battery_percentage = battery_percentage;
   return battery_info;
 }
 
@@ -158,7 +170,7 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectSubLabel) {
   EXPECT_EQ(0u, bluetooth_device_list_item()->sub_row()->children().size());
 
   paired_device_properties->device_properties->battery_info =
-      CreateBatteryInfo(kBatteryPercentage);
+      CreateDefaultBatteryInfo(kBatteryPercentage);
   bluetooth_device_list_item()->UpdateDeviceProperties(
       paired_device_properties);
 
@@ -252,6 +264,36 @@ TEST_F(BluetoothDeviceListItemViewTest, NotifiesListenerWhenClicked) {
   EXPECT_FALSE(last_clicked_device_list_item());
   SimulateMouseClickAt(GetEventGenerator(), bluetooth_device_list_item());
   EXPECT_EQ(last_clicked_device_list_item(), bluetooth_device_list_item());
+}
+
+TEST_F(BluetoothDeviceListItemViewTest, MultipleBatteries) {
+  PairedBluetoothDevicePropertiesPtr paired_device_properties =
+      CreatePairedDeviceProperties();
+  paired_device_properties->device_properties->connection_state =
+      DeviceConnectionState::kConnected;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  // There should not be any content in the sub-row unless battery information
+  // is available.
+  EXPECT_EQ(0u, bluetooth_device_list_item()->sub_row()->children().size());
+
+  paired_device_properties->device_properties->battery_info =
+      CreateMultipleBatteryInfo(kBatteryPercentage);
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  EXPECT_EQ(1u, bluetooth_device_list_item()->sub_row()->children().size());
+  EXPECT_TRUE(views::IsViewClass<BluetoothDeviceListItemMultipleBatteryView>(
+      bluetooth_device_list_item()->sub_row()->children().at(0)));
+
+  paired_device_properties->device_properties->battery_info = nullptr;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  // The sub-row should be cleared if the battery information is no longer
+  // available.
+  EXPECT_EQ(0u, bluetooth_device_list_item()->sub_row()->children().size());
 }
 
 }  // namespace ash

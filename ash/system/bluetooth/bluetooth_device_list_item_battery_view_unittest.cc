@@ -40,21 +40,22 @@ class BluetoothDeviceListItemBatteryViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  // Updates the view with |battery_properties|, checks that the label is
+  // Updates the view with |battery_percentage|, checks that the label is
   // correct, and returns whether the icon has been updated.
-  bool UpdateBatteryPercentageAndCheckIfUpdated(
-      const BatteryPropertiesPtr& battery_properties) {
+  bool UpdateBatteryPercentageAndCheckIfUpdated(uint8_t battery_percentage) {
     gfx::Image image;
 
     if (!bluetooth_device_list_battery_item_->children().empty())
       image = gfx::Image(GetIcon()->GetImage());
 
-    bluetooth_device_list_battery_item_->UpdateBatteryInfo(battery_properties);
+    bluetooth_device_list_battery_item_->UpdateBatteryInfo(
+        battery_percentage,
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL);
 
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
             IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL,
-            base::NumberToString16(battery_properties->battery_percentage)),
+            base::NumberToString16(battery_percentage)),
         GetLabel()->GetText());
 
     return !gfx::test::AreImagesEqual(image, gfx::Image(GetIcon()->GetImage()));
@@ -83,28 +84,26 @@ class BluetoothDeviceListItemBatteryViewTest : public AshTestBase {
 };
 
 TEST_F(BluetoothDeviceListItemBatteryViewTest, CorrectlyUpdatesIconAndLabel) {
-  BatteryPropertiesPtr battery_properties = BatteryProperties::New();
-
   EXPECT_EQ(0u, bluetooth_device_list_battery_item()->children().size());
 
-  battery_properties->battery_percentage = 0;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
+  uint8_t battery_percentage = 0;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
 
   // The label should be updated regardless of the change, but the icon should
   // only update if the percentage is different enough.
-  battery_properties->battery_percentage = 3;
-  EXPECT_FALSE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
+  battery_percentage = 3;
+  EXPECT_FALSE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
 
-  battery_properties->battery_percentage = 20;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
+  battery_percentage = 20;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
 
   const uint8_t percent_change_threshold = 20;
 
   // The icon should be updated if there are enough small changes.
   for (int i = 0; i < percent_change_threshold; ++i) {
-    battery_properties->battery_percentage++;
+    battery_percentage++;
 
-    if (UpdateBatteryPercentageAndCheckIfUpdated(battery_properties))
+    if (UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage))
       break;
 
     // Check that the loop isn't ending.
@@ -113,21 +112,21 @@ TEST_F(BluetoothDeviceListItemBatteryViewTest, CorrectlyUpdatesIconAndLabel) {
 
   // The icon should be updated when going to/from 25% since the color should be
   // updated to alert the user.
-  battery_properties->battery_percentage = 24;
-  UpdateBatteryPercentageAndCheckIfUpdated(battery_properties);
-  battery_properties->battery_percentage = 25;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
-  battery_properties->battery_percentage = 24;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
+  battery_percentage = 24;
+  UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage);
+  battery_percentage = 25;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
+  battery_percentage = 24;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
 
   // The icon should be updated when going to/from 100% since the icon shown
   // will be distinct from any other percentage.
-  battery_properties->battery_percentage = 99;
-  UpdateBatteryPercentageAndCheckIfUpdated(battery_properties);
-  battery_properties->battery_percentage = 100;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
-  battery_properties->battery_percentage = 99;
-  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_properties));
+  battery_percentage = 99;
+  UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage);
+  battery_percentage = 100;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
+  battery_percentage = 99;
+  EXPECT_TRUE(UpdateBatteryPercentageAndCheckIfUpdated(battery_percentage));
 }
 
 }  // namespace ash

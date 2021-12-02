@@ -32,10 +32,10 @@ class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
       const BluetoothDeviceListItemBatteryView&) = delete;
   ~BluetoothDeviceListItemBatteryView() override;
 
-  // Update the battery icon and text to reflect |battery_properties|.
-  void UpdateBatteryInfo(
-      const chromeos::bluetooth_config::mojom::BatteryPropertiesPtr&
-          battery_properties);
+  // Update the battery icon and text to reflect |new_battery_percentage|, and
+  // the label will be set to |label_string_id|.
+  void UpdateBatteryInfo(const uint8_t new_battery_percentage,
+                         const int label_string_id);
 
  private:
   // Evaluates whether the |old_charge_percent| and |new_charge_percent| values
@@ -45,7 +45,7 @@ class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
                           uint8_t new_charge_percent) const;
 
   absl::optional<uint8_t> last_shown_battery_percentage_;
-  chromeos::bluetooth_config::mojom::BatteryPropertiesPtr battery_properties_;
+
   views::Label* label_ = nullptr;
   views::ImageView* icon_ = nullptr;
 };

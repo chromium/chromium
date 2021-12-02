@@ -35,7 +35,7 @@ constexpr int kActualBatteryIconWidth = 9;
 
 // The padding between the battery icon and the sub-label, and the sub-label and
 // the end of the container view.
-constexpr int kSpacingBetweenIconAndLabel = 4;
+constexpr int kSpacingBetweenIconAndLabel = 6;
 
 }  // namespace
 
@@ -53,10 +53,8 @@ BluetoothDeviceListItemBatteryView::~BluetoothDeviceListItemBatteryView() =
     default;
 
 void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
-    const chromeos::bluetooth_config::mojom::BatteryPropertiesPtr&
-        battery_properties) {
-  battery_properties_ = mojo::Clone(battery_properties);
-
+    const uint8_t new_battery_percentage,
+    const int message_id) {
   if (!icon_) {
     icon_ = AddChildView(std::make_unique<views::ImageView>());
 
@@ -66,6 +64,7 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
     icon_->SetPreferredSize(gfx::Size(/*width=*/kActualBatteryIconWidth,
                                       /*height=*/kUnifiedTraySubIconSize));
   }
+
   if (!label_) {
     label_ = AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
     label_->SetBorder(views::CreateEmptyBorder(
@@ -73,16 +72,13 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
                     /*bottom=*/0, /*right=*/kSpacingBetweenIconAndLabel)));
   }
 
-  const uint8_t new_battery_percentage =
-      battery_properties_->battery_percentage;
   const AshColorProvider::ContentLayerType content_layer_type =
       new_battery_percentage >= kPositiveBatteryPercentageCutoff
           ? AshColorProvider::ContentLayerType::kTextColorSecondary
           : AshColorProvider::ContentLayerType::kTextColorAlert;
 
   label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL,
-      base::NumberToString16(new_battery_percentage)));
+      message_id, base::NumberToString16(new_battery_percentage)));
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(content_layer_type));

@@ -43,6 +43,14 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
       const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
           battery_info);
 
+  void UpdateSingleBatteryView(
+      const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
+          battery_info);
+
+  void UpdateMultipleBatteryView(
+      const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
+          battery_info);
+
   chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
       device_properties_;
 };
