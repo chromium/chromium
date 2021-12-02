@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -836,6 +837,9 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   ntpMediator.browser = self.browser;
   ntpMediator.ntpViewController = self.ntpViewController;
   ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
+  ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
+      initWithBrowserState:self.browser->GetBrowserState()];
+  ntpMediator.NTPMetrics.webState = self.webState;
   return ntpMediator;
 }
 

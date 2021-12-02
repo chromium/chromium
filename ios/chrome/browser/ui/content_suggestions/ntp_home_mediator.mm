@@ -209,6 +209,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
+  self.NTPMetrics.webState = webState;
   if (_webState && _webStateObserver) {
     if (IsSingleNtpEnabled()) {
       [self setContentOffsetForWebState:webState];
