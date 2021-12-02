@@ -1510,8 +1510,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmAddressSpaceUsageMiB" units="MB"
-    expires_after="2022-02-15">
+<histogram name="V8.WasmAddressSpaceUsageMiB" units="MB" expires_after="M98">
+  <obsolete>
+    Received no values since M79.
+  </obsolete>
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
