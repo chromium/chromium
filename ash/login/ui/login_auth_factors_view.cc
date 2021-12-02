@@ -6,7 +6,6 @@
 
 #include "ash/login/ui/login_auth_factors_view.h"
 
-#include "ash/login/ui/animated_auth_factors_label_wrapper.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -16,10 +15,9 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -130,6 +128,50 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
 
 }  // namespace
 
+class AuthFactorsLabel : public views::Label {
+ public:
+  AuthFactorsLabel() {
+    SetSubpixelRenderingEnabled(false);
+    SetAutoColorReadabilityEnabled(false);
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    SetMultiLine(true);
+    SizeToFit(kAuthFactorsViewWidthDp);
+  }
+
+  AuthFactorsLabel(const AuthFactorsLabel&) = delete;
+  AuthFactorsLabel& operator=(const AuthFactorsLabel&) = delete;
+
+  // views::Label:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kStaticText;
+    node_data->SetName(accessible_name_);
+  }
+
+  // views::Label:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
+  }
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    gfx::Size size = views::View::CalculatePreferredSize();
+    size.set_width(kAuthFactorsViewWidthDp);
+    return size;
+  }
+
+  void SetAccessibleName(const std::u16string& name) {
+    accessible_name_ = name;
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                             /*send_native_event=*/true);
+  }
+
+ private:
+  std::u16string accessible_name_;
+};
+
 LoginAuthFactorsView::TestApi::TestApi(LoginAuthFactorsView* view)
     : view_(view) {}
 
@@ -145,7 +187,7 @@ LoginAuthFactorsView::TestApi::auth_factors() {
 }
 
 views::Label* LoginAuthFactorsView::TestApi::label() {
-  return view_->label_wrapper_->label();
+  return view_->label_;
 }
 
 views::View* LoginAuthFactorsView::TestApi::auth_factor_icon_row() {
@@ -199,8 +241,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
                            AuthIconView::Color::kPositive);
   checkmark_icon_->SetVisible(false);
 
-  label_wrapper_ =
-      AddChildView(std::make_unique<AnimatedAuthFactorsLabelWrapper>());
+  label_ = AddChildView(std::make_unique<AuthFactorsLabel>());
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
@@ -247,16 +288,15 @@ void LoginAuthFactorsView::UpdateState() {
       ShowCheckmark();
       // TODO(crbug.com/1233614): If we're on the login page, show "Signed in"
       // instead of "Unlocked"
-      label_wrapper_->SetLabelTextAndAccessibleName(
-          IDS_AUTH_FACTOR_LABEL_UNLOCKED, IDS_AUTH_FACTOR_LABEL_UNLOCKED);
+      SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
+                                    IDS_AUTH_FACTOR_LABEL_UNLOCKED);
       return;
     case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.
       // TODO(crbug.com/1233614): collapse password/pin
       ShowArrowButton();
-      label_wrapper_->SetLabelTextAndAccessibleName(
-          IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
-          IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
+      SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
+                                    IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
       FireAlert();
 
       // Dismiss any errors in the background.
@@ -267,9 +307,7 @@ void LoginAuthFactorsView::UpdateState() {
       // factors.
       ShowReadyAndDisabledAuthFactors();
       ready_label_id = GetReadyLabelId();
-      label_wrapper_->SetLabelTextAndAccessibleName(ready_label_id,
-                                                    ready_label_id,
-                                                    /*animate=*/true);
+      SetLabelTextAndAccessibleName(ready_label_id, ready_label_id);
       // TODO(crbug.com/1233614): Should FireAlert() be called here?
       FireAlert();
       return;
@@ -277,9 +315,8 @@ void LoginAuthFactorsView::UpdateState() {
       // At least one auth factor is available, but none are ready. Show first
       // available auth factor.
       ShowSingleAuthFactor(active_auth_factor);
-      label_wrapper_->SetLabelTextAndAccessibleName(
-          active_auth_factor->GetLabelId(),
-          active_auth_factor->GetAccessibleNameId(), /*animate=*/true);
+      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
+                                    active_auth_factor->GetAccessibleNameId());
       if (active_auth_factor->ShouldAnnounceLabel()) {
         FireAlert();
       }
@@ -297,9 +334,8 @@ void LoginAuthFactorsView::UpdateState() {
                                         base::Unretained(this)));
 
       ShowSingleAuthFactor(active_auth_factor);
-      label_wrapper_->SetLabelTextAndAccessibleName(
-          active_auth_factor->GetLabelId(),
-          active_auth_factor->GetAccessibleNameId());
+      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
+                                    active_auth_factor->GetAccessibleNameId());
       if (active_auth_factor->ShouldAnnounceLabel()) {
         FireAlert();
       }
@@ -318,15 +354,14 @@ void LoginAuthFactorsView::UpdateState() {
           });
 
       if (num_factors_in_error_background_state == 1) {
-        label_wrapper_->SetLabelTextAndAccessibleName(
+        SetLabelTextAndAccessibleName(
             active_auth_factor->GetLabelId(),
             active_auth_factor->GetAccessibleNameId());
       } else {
         // TODO(crbug.com/1233614): Check if pin is visible and use "enter
         // password or PIN" string if it is.
-        label_wrapper_->SetLabelTextAndAccessibleName(
-            IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD,
-            IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD);
+        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD,
+                                      IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD);
       }
       return;
     case PrioritizedAuthFactorViewState::kUnavailable:
@@ -371,6 +406,13 @@ void LoginAuthFactorsView::ShowCheckmark() {
   checkmark_icon_->SetVisible(true);
   // TODO(crbug.com/1233614): If transitioning from Click Required state, show
   // animation.
+}
+
+void LoginAuthFactorsView::SetLabelTextAndAccessibleName(
+    int label_id,
+    int accessible_name_id) {
+  label_->SetText(l10n_util::GetStringUTF16(label_id));
+  label_->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {
@@ -421,8 +463,8 @@ void LoginAuthFactorsView::OnThemeChanged() {
 }
 
 void LoginAuthFactorsView::FireAlert() {
-  label_wrapper_->label()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                    /*send_native_event=*/true);
+  label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                   /*send_native_event=*/true);
 }
 
 void LoginAuthFactorsView::ArrowButtonPressed(const ui::Event& event) {

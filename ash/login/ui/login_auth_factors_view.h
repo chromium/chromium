@@ -21,7 +21,7 @@ namespace ash {
 
 class AuthIconView;
 class AuthFactorModel;
-class AnimatedAuthFactorsLabelWrapper;
+class AuthFactorsLabel;
 class ArrowButtonView;
 
 // A view that displays a collection of auth factors to be shown on the lock and
@@ -74,6 +74,10 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   void ShowReadyAndDisabledAuthFactors();
   void ShowCheckmark();
 
+  // Sets the text and accessible name of the label using the provided string
+  // IDs.
+  void SetLabelTextAndAccessibleName(int label_id, int accessible_name_id);
+
   // Computes the label to be shown when one or more auth factors are in the
   // Ready state.
   int GetReadyLabelId() const;
@@ -94,8 +98,8 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // A container laying added icons horizontally.
   views::View* auth_factor_icon_row_;
 
-  // An animated label.
-  AnimatedAuthFactorsLabelWrapper* label_wrapper_;
+  // The label shown under the icons. Always visible.
+  AuthFactorsLabel* label_;
 
   // A button with an arrow icon. Only visible when an auth factor is in the
   // kClickRequired state.
