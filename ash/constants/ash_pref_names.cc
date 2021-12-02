@@ -891,7 +891,7 @@ const char kChromadToCloudMigrationEnabled[] =
 // A string pref that tracks the language installed for the Projector creation
 // flow.
 const char kProjectorCreationFlowLanguage[] =
-    "ash.projector.projectorCreationFlowLanguage";
+    "ash.projector.creationFlowLanguage";
 
 // List of Drive Folder Shortcuts in the Files app. Used to sync the shortcuts
 // across devices.
@@ -900,12 +900,12 @@ const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
 // An integer pref counting the number of times the Onboarding flow has been
 // shown to the user inside the Projector Gallery.
 const char kProjectorGalleryOnboardingShowCount[] =
-    "ash.projector.projectorGalleryOnboardingShowCount";
+    "ash.projector.galleryOnboardingShowCount";
 
 // An integer pref counting the number of times the Onboarding flow has been
 // shown to the user inside the Projector Viewer.
 const char kProjectorViewerOnboardingShowCount[] =
-    "ash.projector.projectorViewerOnboardingShowCount";
+    "ash.projector.viewerOnboardingShowCount";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
