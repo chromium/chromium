@@ -1293,7 +1293,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenFractionOnline.Cellular" units="%"
-    expires_after="2022-04-10">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1307,7 +1311,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenFractionOnline.Wifi" units="%"
-    expires_after="2022-04-24">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1321,7 +1329,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Any" units="seconds"
-    expires_after="2022-04-10">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1335,7 +1347,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Cellular" units="seconds"
-    expires_after="2021-12-01">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1349,7 +1365,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Wifi" units="seconds"
-    expires_after="2022-04-10">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1647,7 +1667,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.MonthlyChosenFractionOnline.Cellular" units="%"
-    expires_after="2021-12-01">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1661,7 +1685,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.MonthlyChosenFractionOnline.Wifi" units="%"
-    expires_after="2022-05-01">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1675,7 +1703,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Any" units="seconds"
-    expires_after="2021-12-01">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1689,7 +1721,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Cellular"
-    units="seconds" expires_after="2022-04-17">
+    units="seconds" expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1703,7 +1739,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.MonthlyChosenTimeOnline.Wifi" units="seconds"
-    expires_after="2022-04-24">
+    expires_after="M98">
+  <obsolete>
+    Removed 12/2021. b/172213047: shill's implementation of this metrics never
+    worked.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
