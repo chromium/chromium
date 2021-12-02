@@ -9,6 +9,9 @@
 
 // Accessibility identifier for the identity picker view.
 extern NSString* const kIdentityButtonControlIdentifier;
+// Accessibility identifier for "Add Account" button in the identity picker
+// view.
+extern NSString* const kIdentityPickerAddAccountIdentifier;
 
 // Style for the identity view (modify the avatar size, font sizes and some
 // margins).
