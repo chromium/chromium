@@ -775,8 +775,6 @@ crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conf
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 
-crbug.com/1253962 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/canvas/* [ RetryOnFailure ]
-
 ############
 # ChromeOS #
 ############
