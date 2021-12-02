@@ -173,10 +173,8 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1270474): Make this test work properly with
-// `FencedFrameTestHelper`, as it appears to fail on certain platforms.
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
-                       DISABLED_NotBindingInFencedFrame) {
+                       NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
@@ -190,11 +188,12 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
-  EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
-
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
-  // Fenced frame should keep the unbound state.
+  base::RunLoop run_loop;
+  if (test_browser_client.WaitForBinding(fenced_frame_host,
+                                         run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+  // Fenced frame should not be bound.
   EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
 
   content::SetBrowserClientForTesting(old_browser_client);
