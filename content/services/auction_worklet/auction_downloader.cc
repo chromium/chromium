@@ -47,6 +47,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "These requests triggered by a website."
         })");
 
+const char kWebAssemblyMime[] = "application/wasm";
+
 // Returns the MIME type string to send for the Accept header for `mime_type`.
 // These are the official IANA MIME type strings, though other MIME type strings
 // are allows in the response.
@@ -56,18 +58,34 @@ base::StringPiece MimeTypeToString(AuctionDownloader::MimeType mime_type) {
       return base::StringPiece("application/javascript");
     case AuctionDownloader::MimeType::kJson:
       return base::StringPiece("application/json");
+    case AuctionDownloader::MimeType::kWebAssembly:
+      return base::StringPiece(kWebAssemblyMime);
   }
 }
 
-// Checks if `advertised_mime_type` is consistent with `mime_type`.
-// `advertised_mime_type` must be lowercase.
-bool MimeTypeIsConsistent(AuctionDownloader::MimeType mime_type,
-                          const std::string& advertised_mime_type) {
+// Checks if `response_info` is consistent with `mime_type`.
+bool MimeTypeIsConsistent(
+    AuctionDownloader::MimeType mime_type,
+    const network::mojom::URLResponseHead* response_info) {
   switch (mime_type) {
     case AuctionDownloader::MimeType::kJavascript:
-      return blink::IsSupportedJavascriptMimeType(advertised_mime_type);
+      // ResponseInfo's `mime_type` is always lowercase.
+      return blink::IsSupportedJavascriptMimeType(response_info->mime_type);
     case AuctionDownloader::MimeType::kJson:
-      return blink::IsJSONMimeType(advertised_mime_type);
+      // ResponseInfo's `mime_type` is always lowercase.
+      return blink::IsJSONMimeType(response_info->mime_type);
+    case AuctionDownloader::MimeType::kWebAssembly: {
+      std::string raw_content_type;
+      // Here we use the headers directly, not the parsed mimetype, since we
+      // much check there are no parameters whatsoever. Ref.
+      // https://webassembly.github.io/spec/web-api/#streaming-modules
+      if (!response_info->headers->GetNormalizedHeader(
+              net::HttpRequestHeaders::kContentType, &raw_content_type)) {
+        return false;
+      }
+
+      return base::ToLowerASCII(raw_content_type) == kWebAssemblyMime;
+    }
   }
 }
 
@@ -149,16 +167,15 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
              base::StringPrintf(
                  "Rejecting load of %s due to lack of X-Allow-FLEDGE: true.",
                  source_url_.spec().c_str()));
-  } else if (!MimeTypeIsConsistent(
-                 mime_type_,
-                 // ResponseInfo's `mime_type` is always lowercase.
-                 simple_url_loader->ResponseInfo()->mime_type)) {
+  } else if (!MimeTypeIsConsistent(mime_type_,
+                                   simple_url_loader->ResponseInfo())) {
     std::move(auction_downloader_callback_)
         .Run(nullptr /* body */,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
-  } else if (!IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
+  } else if ((mime_type_ != MimeType::kWebAssembly) &&
+             !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)
         .Run(nullptr /* body */,

@@ -21,10 +21,11 @@ namespace auction_worklet {
 
 class AuctionV8Helper;
 
-// The official Javascript and JSON MIME types. These are not the only supported
-// MIME types for either, however.
+// The official Javascript, JSON, and WASM MIME types. For JS and JSON there are
+// also other supported MIME types.
 extern const char kJavascriptMimeType[];
 extern const char kJsonMimeType[];
+extern const char kWasmMimeType[];
 
 // "X-Allow-Fledge: true" header.
 extern const char kAllowFledgeHeader[];

@@ -30,6 +30,7 @@ class AuctionDownloader {
   enum class MimeType {
     kJavascript,
     kJson,
+    kWebAssembly,
   };
 
   // Passes in nullptr on failure. Always invoked asynchronously. Will not be

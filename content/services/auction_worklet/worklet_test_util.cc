@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "content/services/auction_worklet/auction_downloader.h"
@@ -24,6 +25,7 @@ namespace auction_worklet {
 
 const char kJavascriptMimeType[] = "application/javascript";
 const char kJsonMimeType[] = "application/json";
+const char kWasmMimeType[] = "application/wasm";
 
 const char kAllowFledgeHeader[] = "X-Allow-FLEDGE: true";
 
@@ -36,22 +38,30 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  net::HttpStatusCode http_status,
                  network::TestURLLoaderFactory::Redirects redirects) {
   auto head = network::mojom::URLResponseHead::New();
-  // Don't bother adding these as headers, since the script grabs headers from
-  // URLResponseHead fields instead of the corresponding
-  // net::HttpResponseHeaders fields.
   if (mime_type)
     head->mime_type = *mime_type;
   if (charset)
     head->charset = *charset;
-  if (headers) {
-    std::string full_headers =
-        base::StringPrintf("HTTP/1.1 %d %s\r\n\r\n",
-                           static_cast<int>(http_status),
-                           net::GetHttpReasonPhrase(http_status)) +
-        *headers;
-    head->headers = net::HttpResponseHeaders::TryToCreate(full_headers);
-    CHECK(head->headers);
+
+  std::string full_headers =
+      base::StringPrintf("HTTP/1.1 %d %s\r\n\r\n",
+                         static_cast<int>(http_status),
+                         net::GetHttpReasonPhrase(http_status)) +
+      headers.value_or(std::string());
+  head->headers = net::HttpResponseHeaders::TryToCreate(full_headers);
+  CHECK(head->headers);
+
+  // WASM handling cares about content-type header, so add one if needed.
+  // This doesn't try to escape, and purposefully passes any weird stuff passed
+  // in for easier checking of it.
+  if (mime_type) {
+    std::string content_type_str = *mime_type;
+    if (charset)
+      base::StrAppend(&content_type_str, {";charset=", *charset});
+    head->headers->SetHeader(net::HttpRequestHeaders::kContentType,
+                             content_type_str);
   }
+
   url_loader_factory->AddResponse(url, std::move(head), content,
                                   network::URLLoaderCompletionStatus(),
                                   std::move(redirects));
