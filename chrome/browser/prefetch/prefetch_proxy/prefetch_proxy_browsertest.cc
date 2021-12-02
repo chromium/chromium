@@ -666,16 +666,14 @@ class PrefetchProxyBrowserTest
     }
   }
 
-  bool CheckForResourceInIsolatedCache(const GURL& prefetch_url,
-                                       const GURL& resource_url) {
+  bool CheckForResourceInIsolatedCache(const GURL& url) {
     PrefetchProxyTabHelper* tab_helper =
         PrefetchProxyTabHelper::FromWebContents(GetWebContents());
     DCHECK(tab_helper);
-    DCHECK(tab_helper->GetIsolatedContextForTesting(prefetch_url));
+    DCHECK(tab_helper->GetIsolatedContextForTesting());
     return net::OK ==
-           content::LoadBasicRequest(
-               tab_helper->GetIsolatedContextForTesting(prefetch_url),
-               resource_url, net::LOAD_ONLY_FROM_CACHE);
+           content::LoadBasicRequest(tab_helper->GetIsolatedContextForTesting(),
+                                     url, net::LOAD_ONLY_FROM_CACHE);
   }
 
   absl::optional<int64_t> GetUKMMetric(const GURL& url,
@@ -3178,10 +3176,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   EXPECT_EQ(expected_subresources, manager->successfully_loaded_subresources());
 
   EXPECT_TRUE(CheckForResourceInIsolatedCache(
-      eligible_link,
       GetOriginServerURL("/prefetch/prefetch_proxy/prefetch.js")));
   EXPECT_TRUE(CheckForResourceInIsolatedCache(
-      eligible_link,
       GetOriginServerURL("/prefetch/prefetch_proxy/prefetch-redirect-end.js")));
 
   // Navigate to the predicted site. We expect:
@@ -4330,10 +4326,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   EXPECT_EQ(expected_subresources, manager->successfully_loaded_subresources());
 
   EXPECT_TRUE(CheckForResourceInIsolatedCache(
-      eligible_link,
       GetOriginServerURL("/prefetch/prefetch_proxy/prefetch.js")));
   EXPECT_TRUE(CheckForResourceInIsolatedCache(
-      eligible_link,
       GetOriginServerURL("/prefetch/prefetch_proxy/prefetch-redirect-end.js")));
 
   // Navigate to the predicted site. We expect:
@@ -4624,103 +4618,4 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 0);
-}
-
-class IndividualNetworkContextsPrefetchProxyBrowserTest
-    : public PrefetchProxyBrowserTest {
- public:
-  void SetFeatures() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        "isolated-prerender-unlimited-prefetches");
-
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders,
-        {{"use_individual_network_contexts", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// This test confirms that, when using separate network contexts for each
-// prefetch, we do not encounter the cookie collision issue that is possible
-// when using a single network context for all prefetches from the same main
-// frame. See the SingleNetworkContextPrefetchProxyBrowserTest.CookieCollision
-// test above.
-IN_PROC_BROWSER_TEST_F(IndividualNetworkContextsPrefetchProxyBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(NoCookieCollision)) {
-  GURL starting_page = GetOriginServerURL("/simple.html");
-  SetDataSaverEnabled(true);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
-  WaitForUpdatedCustomProxyConfig();
-
-  PrefetchProxyTabHelper* tab_helper =
-      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
-
-  // The two possible prefetches from the same origin with different cookies.
-  GURL eligible_link_1 =
-      GetOriginServerURL("/prefetch/prefetch_proxy/prefetch_page.html");
-  GURL eligible_link_2 = GetOriginServerURL(
-      "/prefetch/prefetch_proxy/prefetch_page_different_cookie.html");
-
-  TestTabHelperObserver tab_helper_observer(tab_helper);
-  tab_helper_observer.SetExpectedSuccessfulURLs(
-      {eligible_link_1, eligible_link_2});
-
-  base::RunLoop prefetch_run_loop;
-  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
-      prefetch_run_loop.QuitClosure());
-
-  GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {eligible_link_1, eligible_link_2});
-
-  // This run loop will quit when all the prefetch responses have been
-  // successfully done and processed.
-  prefetch_run_loop.Run();
-
-  std::vector<net::test_server::HttpRequest> origin_requests_after_prefetch =
-      origin_server_requests();
-
-  base::HistogramTester histogram_tester;
-
-  // Navigate to first predicted site.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_1));
-
-  std::vector<net::test_server::HttpRequest> origin_requests_after_click =
-      origin_server_requests();
-
-  EXPECT_GT(origin_requests_after_click.size(),
-            origin_requests_after_prefetch.size());
-
-  // Check the cookies used when requesting the image subresource.
-  bool inspected_image_request = false;
-  for (size_t i = origin_requests_after_prefetch.size();
-       i < origin_requests_after_click.size(); ++i) {
-    net::test_server::HttpRequest request = origin_requests_after_click[i];
-    if (request.GetURL().path() != "/prefetch/prefetch_proxy/image.png") {
-      continue;
-    }
-    inspected_image_request = true;
-
-    auto cookie_iter = request.headers.find("Cookie");
-    ASSERT_FALSE(cookie_iter == request.headers.end());
-
-    // Since each prefetch uses its own network context, when |eligible_link_1|
-    // is committed, then we only copy over the cookies added from that prefetch
-    // to the default network context. Any cookies from |eligible_link_2| are
-    // discarded.
-    EXPECT_EQ(cookie_iter->second, "type=ChocolateChip");
-  }
-
-  EXPECT_TRUE(inspected_image_request);
-
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 1, 1);
-
-  EXPECT_EQ("type=ChocolateChip",
-            content::GetCookies(
-                browser()->profile(), eligible_link_1,
-                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
 }

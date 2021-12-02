@@ -6,10 +6,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
-#include "chrome/browser/profiles/profile.h"
 #include "url/gurl.h"
 
 PrefetchContainer::PrefetchContainer(const GURL& url,
@@ -86,14 +84,4 @@ void PrefetchContainer::SetNoStatePrefetchStatus(
           no_state_prefetch_status == NoStatePrefetchStatus::kFailed));
 
   no_state_prefetch_status_ = no_state_prefetch_status;
-}
-
-void PrefetchContainer::CreateNetworkContextForPrefetch(Profile* profile) {
-  network_context_ = std::make_unique<PrefetchProxyNetworkContext>(profile);
-}
-
-std::unique_ptr<PrefetchProxyNetworkContext>
-PrefetchContainer::ReleaseNetworkContext() {
-  DCHECK(network_context_);
-  return std::move(network_context_);
 }

@@ -1296,8 +1296,6 @@ static_library("browser") {
     "prefetch/prefetch_proxy/prefetch_proxy_features.h",
     "prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.h",
-    "prefetch/prefetch_proxy/prefetch_proxy_network_context.cc",
-    "prefetch/prefetch_proxy/prefetch_proxy_network_context.h",
     "prefetch/prefetch_proxy/prefetch_proxy_network_context_client.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h",
     "prefetch/prefetch_proxy/prefetch_proxy_origin_decider.cc",

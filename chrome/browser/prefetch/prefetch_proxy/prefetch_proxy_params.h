@@ -124,9 +124,4 @@ base::TimeDelta PrefetchProxyCacheableDuration();
 // group, this will return an empty string.
 std::string PrefetchProxyServerExperimentGroup();
 
-// Whether each prefetch should have its own isolated network context (return
-// true), or if all prefetches from a main frame should share a single isolated
-// network context (returns false).
-bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch();
-
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_

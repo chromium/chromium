@@ -275,8 +275,3 @@ std::string PrefetchProxyServerExperimentGroup() {
   return base::GetFieldTrialParamValueByFeature(features::kIsolatePrerenders,
                                                 "server_experiment_group");
 }
-
-bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kIsolatePrerenders, "use_individual_network_contexts", false);
-}

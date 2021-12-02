@@ -312,12 +312,8 @@ void PrefetchProxyTabHelper::RemoveObserverForTesting(Observer* observer) {
 }
 
 network::mojom::NetworkContext*
-PrefetchProxyTabHelper::GetIsolatedContextForTesting(const GURL& url) const {
-  PrefetchProxyNetworkContext* network_context =
-      page_->GetNetworkContextForUrl(url);
-  if (!network_context)
-    return nullptr;
-  return network_context->GetNetworkContext();
+PrefetchProxyTabHelper::GetIsolatedContextForTesting() const {
+  return page_->isolated_network_context_.get();
 }
 
 absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics>
@@ -663,18 +659,12 @@ void PrefetchProxyTabHelper::DidFinishNavigation(
         service->TakeSubresourceManagerForURL(url);
     if (manager) {
       new_page->subresource_manager_ = std::move(manager);
-
-      if (PrefetchProxyUseIndividualNetworkContextsForEachPrefetch()) {
-        auto prefetch_container_iter = page_->prefetch_containers_.find(url);
-        if (prefetch_container_iter != page_->prefetch_containers_.end() &&
-            prefetch_container_iter->second->GetNetworkContext()) {
-          new_page->previous_network_context_ =
-              prefetch_container_iter->second->ReleaseNetworkContext();
-        }
-      } else {
-        new_page->previous_network_context_ =
-            std::move(page_->network_context_);
-      }
+      new_page->isolated_cookie_manager_ =
+          std::move(page_->isolated_cookie_manager_);
+      new_page->isolated_url_loader_factory_ =
+          std::move(page_->isolated_url_loader_factory_);
+      new_page->isolated_network_context_ =
+          std::move(page_->isolated_network_context_);
     }
   }
 
@@ -747,16 +737,8 @@ void PrefetchProxyTabHelper::Prefetch() {
               base::TimeDelta());
   }
 
-  if (PrefetchProxyCloseIdleSockets()) {
-    if (page_->network_context_) {
-      page_->network_context_->CloseIdleConnections();
-    }
-
-    for (const auto& iter : page_->prefetch_containers_) {
-      if (iter.second->GetNetworkContext()) {
-        iter.second->GetNetworkContext()->CloseIdleConnections();
-      }
-    }
+  if (PrefetchProxyCloseIdleSockets() && page_->isolated_network_context_) {
+    page_->isolated_network_context_->CloseIdleConnections(base::DoNothing());
   }
 
   if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
@@ -864,7 +846,7 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
   loader->SetAllowHttpErrorResults(true);
   loader->SetTimeoutDuration(PrefetchProxyTimeoutDuration());
   loader->DownloadToString(
-      GetURLLoaderFactory(prefetch_container->GetUrl()),
+      GetURLLoaderFactory(),
       base::BindOnce(&PrefetchProxyTabHelper::OnPrefetchComplete,
                      base::Unretained(this), loader.get(),
                      prefetch_container->GetUrl(), isolation_info),
@@ -1119,11 +1101,9 @@ void PrefetchProxyTabHelper::DoNoStatePrefetch() {
 
   manager->SetPrefetchMetricsCollector(page_->prefetch_metrics_collector_);
 
-  DCHECK(page_->GetNetworkContextForUrl(prefetch_container->GetUrl()));
-  manager->SetCreateIsolatedLoaderFactoryCallback(base::BindRepeating(
-      &PrefetchProxyNetworkContext::CreateNewUrlLoaderFactory,
-      page_->GetNetworkContextForUrl(prefetch_container->GetUrl())
-          ->GetWeakPtr()));
+  manager->SetCreateIsolatedLoaderFactoryCallback(
+      base::BindRepeating(&PrefetchProxyTabHelper::CreateNewURLLoaderFactory,
+                          weak_factory_.GetWeakPtr()));
 
   content::SessionStorageNamespace* session_storage_namespace =
       web_contents()->GetController().GetDefaultSessionStorageNamespace();
@@ -1557,7 +1537,7 @@ void PrefetchProxyTabHelper::CopyIsolatedCookiesOnAfterSRPClick(
     PrefetchContainer* prefetch_container) {
   DCHECK(prefetch_container);
 
-  if (!page_->GetNetworkContextForUrl(prefetch_container->GetUrl())) {
+  if (!page_->isolated_network_context_) {
     // Not set in unit tests.
     return;
   }
@@ -1568,15 +1548,18 @@ void PrefetchProxyTabHelper::CopyIsolatedCookiesOnAfterSRPClick(
 
   page_->cookie_copy_status_ = CookieCopyStatus::kWaitingForCopy;
 
+  if (!page_->isolated_cookie_manager_) {
+    page_->isolated_network_context_->GetCookieManager(
+        page_->isolated_cookie_manager_.BindNewPipeAndPassReceiver());
+  }
+
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  page_->GetNetworkContextForUrl(prefetch_container->GetUrl())
-      ->GetCookieManager()
-      ->GetCookieList(
-          prefetch_container->GetUrl(), options,
-          net::CookiePartitionKeychain::Todo(),
-          base::BindOnce(
-              &PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick,
-              weak_factory_.GetWeakPtr(), prefetch_container->GetUrl()));
+  page_->isolated_cookie_manager_->GetCookieList(
+      prefetch_container->GetUrl(), options,
+      net::CookiePartitionKeychain::Todo(),
+      base::BindOnce(
+          &PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick,
+          weak_factory_.GetWeakPtr(), prefetch_container->GetUrl()));
 }
 
 void PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick(
@@ -1623,12 +1606,95 @@ void PrefetchProxyTabHelper::OnCopiedIsolatedCookiesAfterSRPClick() {
   }
 }
 
-network::mojom::URLLoaderFactory* PrefetchProxyTabHelper::GetURLLoaderFactory(
-    const GURL& url) {
-  if (!page_->GetNetworkContextForUrl(url))
-    page_->CreateNetworkContextForUrl(url);
-  DCHECK(page_->GetNetworkContextForUrl(url));
-  return page_->GetNetworkContextForUrl(url)->GetUrlLoaderFactory();
+network::mojom::URLLoaderFactory*
+PrefetchProxyTabHelper::GetURLLoaderFactory() {
+  if (!page_->isolated_url_loader_factory_) {
+    CreateIsolatedURLLoaderFactory();
+  }
+  DCHECK(page_->isolated_url_loader_factory_);
+  return page_->isolated_url_loader_factory_.get();
+}
+
+void PrefetchProxyTabHelper::CreateNewURLLoaderFactory(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
+    absl::optional<net::IsolationInfo> isolation_info) {
+  DCHECK(page_->isolated_network_context_);
+
+  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = network::mojom::kBrowserProcessId;
+  factory_params->is_trusted = true;
+  factory_params->is_corb_enabled = false;
+  if (isolation_info) {
+    factory_params->isolation_info = *isolation_info;
+  }
+
+  page_->isolated_network_context_->CreateURLLoaderFactory(
+      std::move(pending_receiver), std::move(factory_params));
+}
+
+void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
+  page_->isolated_network_context_.reset();
+  page_->isolated_url_loader_factory_.reset();
+
+  PrefetchProxyService* prefetch_proxy_service =
+      PrefetchProxyServiceFactory::GetForProfile(profile_);
+
+  auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->user_agent = content::GetReducedUserAgent(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMobileUserAgent),
+      version_info::GetMajorVersionNumber());
+  context_params->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
+      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
+  context_params->initial_custom_proxy_config =
+      prefetch_proxy_service->proxy_configurator()->CreateCustomProxyConfig();
+  context_params->custom_proxy_connection_observer_remote =
+      prefetch_proxy_service->proxy_configurator()
+          ->NewProxyConnectionObserverRemote();
+  context_params->cert_verifier_params = content::GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->cors_exempt_header_list = {
+      content::kCorsExemptPurposeHeaderName};
+  context_params->cookie_manager_params =
+      network::mojom::CookieManagerParams::New();
+
+  context_params->http_cache_enabled = true;
+  DCHECK(!context_params->http_cache_path);
+
+  // Also register a client config receiver so that updates to the set of proxy
+  // hosts or proxy headers will be updated.
+  mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
+  context_params->custom_proxy_config_client_receiver =
+      config_client.BindNewPipeAndPassReceiver();
+  prefetch_proxy_service->proxy_configurator()->AddCustomProxyConfigClient(
+      std::move(config_client), base::DoNothing());
+
+  // Explicitly disallow network service features which could cause a privacy
+  // leak.
+  context_params->enable_certificate_reporting = false;
+  context_params->enable_expect_ct_reporting = false;
+  context_params->enable_domain_reliability = false;
+
+  content::CreateNetworkContextInNetworkService(
+      page_->isolated_network_context_.BindNewPipeAndPassReceiver(),
+      std::move(context_params));
+
+  // Configure a context client to ensure Web Reports and other privacy leak
+  // surfaces won't be enabled.
+  mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<PrefetchProxyNetworkContextClient>(),
+      client_remote.InitWithNewPipeAndPassReceiver());
+  page_->isolated_network_context_->SetClient(std::move(client_remote));
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
+
+  CreateNewURLLoaderFactory(
+      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
+
+  page_->isolated_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+          std::move(isolated_factory_remote)));
 }
 
 bool PrefetchProxyTabHelper::HaveCookiesChanged(const GURL& url) const {
@@ -1636,30 +1702,6 @@ bool PrefetchProxyTabHelper::HaveCookiesChanged(const GURL& url) const {
   if (prefetch_container_iter == page_->prefetch_containers_.end())
     return false;
   return prefetch_container_iter->second->HaveCookiesChanged();
-}
-
-void PrefetchProxyTabHelper::CurrentPageLoad::CreateNetworkContextForUrl(
-    const GURL& url) {
-  if (PrefetchProxyUseIndividualNetworkContextsForEachPrefetch()) {
-    auto prefetch_container_iter = prefetch_containers_.find(url);
-    if (prefetch_container_iter != prefetch_containers_.end())
-      prefetch_container_iter->second->CreateNetworkContextForPrefetch(
-          profile_);
-    return;
-  }
-  network_context_ = std::make_unique<PrefetchProxyNetworkContext>(profile_);
-}
-
-PrefetchProxyNetworkContext*
-PrefetchProxyTabHelper::CurrentPageLoad::GetNetworkContextForUrl(
-    const GURL& url) const {
-  if (PrefetchProxyUseIndividualNetworkContextsForEachPrefetch()) {
-    auto prefetch_container_iter = prefetch_containers_.find(url);
-    if (prefetch_container_iter == prefetch_containers_.end())
-      return nullptr;
-    return prefetch_container_iter->second->GetNetworkContext();
-  }
-  return network_context_.get();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefetchProxyTabHelper);
