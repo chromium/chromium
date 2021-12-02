@@ -39,10 +39,20 @@ declare_args() {
   # in that configuration.
   use_chromeos_protected_media = false
 
+  # Indicates if the ChromeOS protected media functionality should also be
+  # utilized by HW video decoding for ARC.
+  use_arc_protected_media = false
+
   # Indicates if ChromeOS protected media supports the AV1 codec. By default
   # H.264, VP9 and HEVC are enabled if protected media is enabled; AV1 is
   # optional.
   use_chromeos_protected_av1 = false
+}
+
+if (use_arc_protected_media) {
+  assert(
+      use_chromeos_protected_media,
+      "use_chromeos_protected_media must be set if use_arc_protected_media is")
 }
 
 if (use_chromeos_protected_av1) {
