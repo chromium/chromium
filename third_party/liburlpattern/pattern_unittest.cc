@@ -330,6 +330,18 @@ TEST(PatternStringTest, RegexpEscapedPatternCharInSuffix) {
   RunPatternStringTest("/foo/{(foo)\\:bar}", "/foo/{(foo)\\:bar}");
 }
 
+TEST(PatternStringTest, RegexpFollowedByWildcard) {
+  RunPatternStringTest("(foo)(.*)", "(foo)(.*)");
+}
+
+TEST(PatternStringTest, RegexpWithOptionalModifierFollowedByWildcard) {
+  RunPatternStringTest("(foo)?(.*)", "(foo)?*");
+}
+
+TEST(PatternStringTest, RegexpWithSuffixModifierFollowedByWildcard) {
+  RunPatternStringTest("{(foo)a}(.*)", "{(foo)a}(.*)");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;

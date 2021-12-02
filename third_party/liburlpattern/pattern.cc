@@ -93,7 +93,8 @@ std::string Pattern::GeneratePatternString() const {
   }
   result.reserve(estimated_length);
 
-  for (const Part& part : part_list_) {
+  for (size_t i = 0; i < part_list_.size(); ++i) {
+    const Part& part = part_list_[i];
     //
     if (part.type == PartType::kFixed) {
       // A simple fixed string part.
@@ -157,10 +158,17 @@ std::string Pattern::GeneratePatternString() const {
         result += ")";
       }
     } else if (part.type == PartType::kFullWildcard) {
-      // We can only use the `*` wildcard card if the automatic
-      // numeric name is used for the group.  A custom name
-      // requires the regexp `(.*)` explicitly.
-      if (!custom_name) {
+      const Part* last_part = i > 0 ? &part_list_[i - 1] : nullptr;
+      // We can only use the `*` wildcard card if we meet a number
+      // of conditions.  We must use an explicit `(.*)` group if:
+      //
+      // 1. A custom name was used; e.g. `:foo(.*)`.
+      // 2. If the preceding group is a matching group without a modifier; e.g.
+      //    `(foo)(.*)`.  In that case we cannot emit the `*` shorthand without
+      //    it being mistakenly interpreted as the modifier for the previous
+      //    group.
+      if (!custom_name && (!last_part || last_part->type == PartType::kFixed ||
+                           last_part->modifier != Modifier::kNone)) {
         result += "*";
       } else {
         result += "(";

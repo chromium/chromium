@@ -2455,5 +2455,29 @@
     "pattern": [],
     "inputs": [],
     "expected_match": { "inputs": [{}] }
+  },
+  {
+    "pattern": [{ "pathname": "(foo)(.*)" }],
+    "inputs": [{ "pathname": "foobarbaz" }],
+    "expected_match": {
+      "pathname": { "input": "foobarbaz", "groups": { "0": "foo", "1": "barbaz" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": "{(foo)bar}(.*)" }],
+    "inputs": [{ "pathname": "foobarbaz" }],
+    "expected_match": {
+      "pathname": { "input": "foobarbaz", "groups": { "0": "foo", "1": "baz" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": "(foo)?(.*)" }],
+    "inputs": [{ "pathname": "foobarbaz" }],
+    "expected_obj": {
+      "pathname": "(foo)?*"
+    },
+    "expected_match": {
+      "pathname": { "input": "foobarbaz", "groups": { "0": "foo", "1": "barbaz" }}
+    }
   }
 ]
