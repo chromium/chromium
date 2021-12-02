@@ -21,8 +21,6 @@ BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 BLINK_TOOLS_DIR = os.path.join(
     SRC_DIR, 'third_party', 'blink', 'tools')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
-DEFAULT_WPT = os.path.join(
-    SRC_DIR, 'third_party', 'wpt_tools', 'wpt', 'wpt')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
 TOMBSTONE_PARSER = os.path.join(SRC_DIR, 'build', 'android', 'tombstones.py')
 
@@ -89,7 +87,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     self.maybe_set_default_isolated_script_test_output()
 
     # Here we add all of the arguments required to run WPT tests on Android.
-    rest_args.extend([self.options.wpt_path])
+    rest_args.extend([self.wpt_binary])
 
     # By default, WPT will treat unexpected passes as errors, so we disable
     # that to be consistent with Chromium CI.
@@ -216,10 +214,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--webdriver-binary', required=True,
                         help='Path of the webdriver binary.  It needs to have'
                         ' the same major version as the apk.')
-    parser.add_argument('--wpt-path', default=DEFAULT_WPT,
-                        help='Controls the path of the WPT runner to use'
-                        ' (therefore tests).  Defaults the revision rolled into'
-                        ' Chromium.')
     parser.add_argument('--additional-expectations',
                         action='append', default=[],
                         help='Paths to additional test expectations files.')

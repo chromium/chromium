@@ -56,6 +56,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.wptreport = None
         self.sink = ResultSinkReporter()
         self.layout_test_results_subdir = 'layout-test-results'
+        default_wpt_binary = os.path.join(
+            common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
+        self.wpt_binary = os.environ.get("WPT_BINARY") or default_wpt_binary
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
