@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
@@ -203,4 +204,5 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   }
 
   WebSessionStateTabHelper::CreateForWebState(web_state);
+  WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
 }

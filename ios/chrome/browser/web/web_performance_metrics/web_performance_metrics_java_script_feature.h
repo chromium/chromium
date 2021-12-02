@@ -7,11 +7,9 @@
 
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
-/**
- * A feature which captures Web Vitals metrics that determine
- * JavaScript injected logic's affect on a user's perception
- * of web performance.
- **/
+// A feature which captures Web Vitals metrics that determine
+// JavaScript injected logic's affect on a user's perception
+// of web performance.
 class WebPerformanceMetricsJavaScriptFeature : public web::JavaScriptFeature {
  public:
   WebPerformanceMetricsJavaScriptFeature();
@@ -24,6 +22,15 @@ class WebPerformanceMetricsJavaScriptFeature : public web::JavaScriptFeature {
   absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
+
+  // Logs the First Contentful Paint time relative to each frame in UMA.
+  void LogRelativeFirstContentfulPaint(double value, bool is_main_frame);
+
+  // Logs the earliest Contentful Paint time across main and sub frames in UMA.
+  void LogAggregateFirstContentfulPaint(web::WebState* web_state,
+                                        double frameNavigationStartTime,
+                                        double relativeFirstContentfulPaint,
+                                        bool is_main_frame);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_JAVA_SCRIPT_FEATURE_H_

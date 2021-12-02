@@ -11,13 +11,32 @@ source_set("web_performance_metrics") {
   deps = [
     ":web_performance_metrics_js",
     "//base",
+    "//ios/web/public:public",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
   ]
 
   sources = [
     "web_performance_metrics_java_script_feature.h",
     "web_performance_metrics_java_script_feature.mm",
+    "web_performance_metrics_java_script_feature_util.h",
+    "web_performance_metrics_java_script_feature_util.mm",
+    "web_performance_metrics_tab_helper.h",
+    "web_performance_metrics_tab_helper.mm",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":web_performance_metrics",
+    "//base",
+    "//testing/gtest",
+  ]
+
+  sources = [ "web_performance_metrics_java_script_feature_unittest.mm" ]
 }
 
 js_compile_bundle("web_performance_metrics_js") {

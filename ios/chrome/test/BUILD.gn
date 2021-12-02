@@ -122,6 +122,7 @@ source_set("ios_chrome_unit_test_suite") {
     "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state:browser_state_impl",
+    "//ios/chrome/browser/web/web_performance_metrics:unit_tests",
     "//ios/chrome/test:test_support",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
