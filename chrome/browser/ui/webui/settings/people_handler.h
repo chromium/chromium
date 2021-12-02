@@ -165,9 +165,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleAttemptUserExit(const base::ListValue* args);
   void HandleTurnOnSync(const base::ListValue* args);
   void HandleTurnOffSync(const base::ListValue* args);
-#endif
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   void HandleStartSignin(const base::ListValue* args);
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void HandleSignout(const base::ListValue* args);
   void HandlePauseSync(const base::ListValue* args);
 #endif

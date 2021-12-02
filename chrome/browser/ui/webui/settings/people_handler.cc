@@ -263,15 +263,17 @@ void PeopleHandler::RegisterMessages() {
                                          base::Unretained(this)));
 #else
   web_ui()->RegisterDeprecatedMessageCallback(
+      "SyncSetupStartSignIn",
+      base::BindRepeating(&PeopleHandler::HandleStartSignin,
+                          base::Unretained(this)));
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
                                               base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupPauseSync", base::BindRepeating(&PeopleHandler::HandlePauseSync,
                                                 base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
-      "SyncSetupStartSignIn",
-      base::BindRepeating(&PeopleHandler::HandleStartSignin,
-                          base::Unretained(this)));
 #endif
   web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupGetStoredAccounts",
@@ -325,6 +327,7 @@ void PeopleHandler::DisplayGaiaLogin(signin_metrics::AccessPoint access_point) {
 
 void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     signin_metrics::AccessPoint access_point) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   if (!browser)
@@ -356,8 +359,12 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     browser->window()->ShowAvatarBubbleFromAvatarButton(
         BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN, access_point, false);
   }
-}
+#else
+  // TODO(https://crbug.com/1260291): Add support for Lacros.
+  NOTIMPLEMENTED();
 #endif
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PeopleHandler::OnDidClosePage(const base::ListValue* args) {
   // Don't mark setup as complete if "didAbort" is true, or if authentication
@@ -609,7 +616,9 @@ void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
 
   DisplayGaiaLogin(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void PeopleHandler::HandleSignout(const base::ListValue* args) {
   bool delete_profile = false;
   if (args->GetList()[0].is_bool())
@@ -667,7 +676,7 @@ void PeopleHandler::HandlePauseSync(const base::ListValue* args) {
       ->InvalidateRefreshTokenForPrimaryAccount(
           signin_metrics::SourceForRefreshTokenOperation::kSettings_PauseSync);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
   Browser* browser =
