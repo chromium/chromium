@@ -10,6 +10,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
@@ -56,6 +58,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/app/vector_icons/vector_icons.h"
+#endif
+
 namespace {
 
 constexpr char kGoogleGIconResourceName[] = "google_g.png";
@@ -89,9 +95,11 @@ constexpr char kDriveSlidesIconResourceName[] =
 constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "realbox/icons/extension_app.svg";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
+#endif
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
@@ -365,28 +373,36 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
   if (icon.name == omnibox::kDriveFormsIcon.name) {
     return kDriveFormIconResourceName;
-  } else if (icon.name == omnibox::kDriveDocsIcon.name) {
-    return kDriveDocsIconResourceName;
-  } else if (icon.name == omnibox::kDriveSheetsIcon.name) {
-    return kDriveSheetsIconResourceName;
-  } else if (icon.name == omnibox::kDriveSlidesIcon.name) {
-    return kDriveSlidesIconResourceName;
-  } else if (icon.name == omnibox::kGoogleCalendarIcon.name) {
-    return kGoogleCalendarIconResourceName;
-  } else if (icon.name == omnibox::kGoogleKeepNoteIcon.name) {
-    return kGoogleKeepNoteIconResourceName;
-  } else if (icon.name == omnibox::kGoogleSitesIcon.name) {
-    return kGoogleSitesIconResourceName;
-  } else if (icon.name == omnibox::kGoogleSuperGIcon.name) {
-    return kGoogleGIconResourceName;
-  } else if (icon.name == omnibox::kPedalIcon.name) {
-    return kPedalsIconResourceName;
-  } else {
-    NOTREACHED()
-        << "Every vector icon returned by OmniboxAction::GetVectorIcon "
-           "must have an equivalent SVG resource for the NTP Realbox.";
-    return "";
   }
+  if (icon.name == omnibox::kDriveDocsIcon.name) {
+    return kDriveDocsIconResourceName;
+  }
+  if (icon.name == omnibox::kDriveSheetsIcon.name) {
+    return kDriveSheetsIconResourceName;
+  }
+  if (icon.name == omnibox::kDriveSlidesIcon.name) {
+    return kDriveSlidesIconResourceName;
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (icon.name == kGoogleCalendarIcon.name) {
+    return kGoogleCalendarIconResourceName;
+  }
+  if (icon.name == kGoogleKeepNoteIcon.name) {
+    return kGoogleKeepNoteIconResourceName;
+  }
+  if (icon.name == kGoogleSitesIcon.name) {
+    return kGoogleSitesIconResourceName;
+  }
+  if (icon.name == kGoogleSuperGIcon.name) {
+    return kGoogleGIconResourceName;
+  }
+#endif
+  if (icon.name == omnibox::kPedalIcon.name) {
+    return kPedalsIconResourceName;
+  }
+  NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
+                  "must have an equivalent SVG resource for the NTP Realbox.";
+  return "";
 }
 
 RealboxHandler::RealboxHandler(
