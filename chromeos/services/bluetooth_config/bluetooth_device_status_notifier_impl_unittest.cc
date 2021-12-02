@@ -91,7 +91,18 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   EXPECT_TRUE(observer->paired_device_properties_list().empty());
 
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices;
-  paired_devices.push_back(GenerateStubPairedDeviceProperties("id1"));
+  paired_devices.push_back(GenerateStubPairedDeviceProperties(
+      "id", /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+
+  // Add a paired but disconnected device and verify that the observer was
+  // not notified.
+  SetPairedDevices(paired_devices);
+  ASSERT_EQ(0u, observer->paired_device_properties_list().size());
+  EXPECT_TRUE(observer->paired_device_properties_list().empty());
+
+  paired_devices.pop_back();
+  paired_devices.push_back(GenerateStubPairedDeviceProperties(
+      "id1", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Add a paired device and verify that the observer was notified.
   SetPairedDevices(paired_devices);
@@ -100,8 +111,10 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
       "id1",
       observer->paired_device_properties_list()[0]->device_properties->id);
 
-  paired_devices.push_back(GenerateStubPairedDeviceProperties("id2"));
-  paired_devices.push_back(GenerateStubPairedDeviceProperties("id3"));
+  paired_devices.push_back(GenerateStubPairedDeviceProperties(
+      "id2", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+  paired_devices.push_back(GenerateStubPairedDeviceProperties(
+      "id3", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Add two paired devices and verify that the observer was notified.
   SetPairedDevices(paired_devices);
@@ -119,7 +132,8 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   ASSERT_EQ(3u, observer->paired_device_properties_list().size());
 
   // Add the same device again.
-  paired_devices.push_back(GenerateStubPairedDeviceProperties("id3"));
+  paired_devices.push_back(GenerateStubPairedDeviceProperties(
+      "id3", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Verify that the observer was notified.
   SetPairedDevices(paired_devices);

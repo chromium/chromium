@@ -52,10 +52,13 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
     auto it = previous_devices_id_to_properties_map.find(
         device->device_properties->id);
 
-    // Check if device is not in previous map. If it is not, this means a new
-    // paired device was found.
+    // Check if device is not in previous map and is connected. If it is not,
+    // this means a new paired device was found.
     if (it == previous_devices_id_to_properties_map.end()) {
-      NotifyDeviceNewlyPaired(device);
+      if (device->device_properties->connection_state ==
+          mojom::DeviceConnectionState::kConnected) {
+        NotifyDeviceNewlyPaired(device);
+      }
       continue;
     }
 
