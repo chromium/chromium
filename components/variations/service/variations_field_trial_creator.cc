@@ -345,24 +345,25 @@ std::string VariationsFieldTrialCreator::LoadPermanentConsistencyCountry(
 
   const base::ListValue* list_value =
       local_state()->GetList(prefs::kVariationsPermanentConsistencyCountry);
-  std::string stored_version_string;
-  std::string stored_country;
+  const std::string* stored_version_string = nullptr;
+  const std::string* stored_country = nullptr;
 
   // Determine if the saved pref value is present and valid.
   const bool is_pref_empty = list_value->GetList().empty();
-  const bool is_pref_valid = list_value->GetList().size() == 2 &&
-                             list_value->GetString(0, &stored_version_string) &&
-                             list_value->GetString(1, &stored_country) &&
-                             base::Version(stored_version_string).IsValid();
+  const bool is_pref_valid =
+      list_value->GetList().size() == 2 &&
+      (stored_version_string = list_value->GetList()[0].GetIfString()) &&
+      (stored_country = list_value->GetList()[1].GetIfString()) &&
+      base::Version(*stored_version_string).IsValid();
 
   // Determine if the version from the saved pref matches |version|.
   const bool does_version_match =
-      is_pref_valid && version == base::Version(stored_version_string);
+      is_pref_valid && version == base::Version(*stored_version_string);
 
   // Determine if the country in the saved pref matches the country in
   // |latest_country|.
   const bool does_country_match = is_pref_valid && !latest_country.empty() &&
-                                  stored_country == latest_country;
+                                  *stored_country == latest_country;
 
   // Record a histogram for how the saved pref value compares to the current
   // version and the country code in the variations seed.
@@ -389,7 +390,7 @@ std::string VariationsFieldTrialCreator::LoadPermanentConsistencyCountry(
   // Use the stored country if one is available and was fetched since the last
   // time Chrome was updated.
   if (does_version_match)
-    return stored_country;
+    return *stored_country;
 
   if (latest_country.empty()) {
     if (!is_pref_valid)
