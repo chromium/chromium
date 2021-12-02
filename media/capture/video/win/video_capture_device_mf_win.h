@@ -147,7 +147,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       VideoCaptureFrameDropReason& frame_drop_reason);
-  void RecreateMFSource();
+  bool RecreateMFSource();
+  void AllocateAndStartLocked(
+      const VideoCaptureParams& params,
+      std::unique_ptr<VideoCaptureDevice::Client> client);
 
   VideoCaptureDeviceDescriptor device_descriptor_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;
@@ -181,6 +184,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   absl::optional<int> camera_rotation_;
   VideoCaptureParams params_;
+  int num_restarts_ = 0;
 
   media::VideoCaptureFeedback last_feedback_;
 

@@ -52,6 +52,9 @@ namespace media {
 
 namespace {
 
+// How many times we try to restart D3D11 path.
+constexpr int kMaxD3DRestarts = 2;
+
 class MFPhotoCallback final
     : public base::RefCountedThreadSafe<MFPhotoCallback>,
       public IMFCaptureEngineOnSampleCallback {
@@ -920,7 +923,6 @@ VideoCaptureDeviceMFWin::~VideoCaptureDeviceMFWin() {
 }
 
 bool VideoCaptureDeviceMFWin::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_initialized_);
   HRESULT hr;
 
@@ -978,7 +980,12 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock lock(lock_);
+  return AllocateAndStartLocked(params, std::move(client));
+}
 
+void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
+    const VideoCaptureParams& params,
+    std::unique_ptr<VideoCaptureDevice::Client> client) {
   params_ = params;
   client_ = std::move(client);
   DCHECK_EQ(false, is_started_);
@@ -1726,60 +1733,68 @@ void VideoCaptureDeviceMFWin::OnFrameDropped(
 }
 
 void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
-  bool need_restart = false;
-  std::unique_ptr<VideoCaptureDevice::Client> client;
-  {
-    base::AutoLock lock(lock_);
+  HRESULT hr;
+  GUID capture_event_guid = GUID_NULL;
 
-    HRESULT hr;
-    GUID capture_event_guid = GUID_NULL;
+  media_event->GetStatus(&hr);
+  media_event->GetExtendedType(&capture_event_guid);
 
-    media_event->GetStatus(&hr);
-    media_event->GetExtendedType(&capture_event_guid);
+  // TODO(http://crbug.com/1093521): Add cases for Start
+  // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
+  // When MF_CAPTURE_ENGINE_ERROR is returned the captureengine object is no
+  // longer valid.
+  if (capture_event_guid == MF_CAPTURE_ENGINE_ERROR || FAILED(hr)) {
+    capture_error_.Signal();
+    // There should always be a valid error
+    hr = SUCCEEDED(hr) ? E_UNEXPECTED : hr;
+  } else if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
+    capture_initialize_.Signal();
+  }
 
-    // TODO(http://crbug.com/1093521): Add cases for Start
-    // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
-    // When MF_CAPTURE_ENGINE_ERROR is returned the captureengine object is no
-    // longer valid.
-    if (capture_event_guid == MF_CAPTURE_ENGINE_ERROR || FAILED(hr)) {
-      capture_error_.Signal();
-      // There should always be a valid error
-      hr = SUCCEEDED(hr) ? E_UNEXPECTED : hr;
-    } else if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
-      capture_initialize_.Signal();
-    }
+  // Lock is taken after events are signalled, because if the capture
+  // is being restarted, lock is currently owned by another thread running
+  // OnEvent().
+  base::AutoLock lock(lock_);
 
-    if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-      Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
+  if (hr == DXGI_ERROR_DEVICE_REMOVED) {
+    // Removed device can happen for external reasons.
+    // We should restart capture.
+    Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
+    const bool try_d3d_path = num_restarts_ < kMaxD3DRestarts;
+    if (try_d3d_path) {
       HRESULT removed_hr = dxgi_device_manager_->CheckDeviceRemovedAndGetDevice(
           &recreated_d3d_device);
       LOG(ERROR) << "OnEvent: Device was Removed. Reason: "
                  << logging::SystemErrorCodeToString(removed_hr);
-      if (recreated_d3d_device) {
-        // successfully recreated the device.
-        hr = S_OK;
-        need_restart = true;
-        engine_ = nullptr;
-        client = std::move(client_);
-        capture_error_.Reset();
-      }
+    } else {
+      // Too many restarts. Fallback to the software path.
+      dxgi_device_manager_ = nullptr;
     }
 
-    if (FAILED(hr)) {
-      base::UmaHistogramSparse("Media.VideoCapture.Win.ErrorEvent", hr);
-      OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
-              FROM_HERE, hr);
+    engine_ = nullptr;
+    is_initialized_ = false;
+    is_started_ = false;
+    source_ = nullptr;
+    capture_error_.Reset();
+    capture_initialize_.Reset();
+
+    if ((!try_d3d_path || recreated_d3d_device) && RecreateMFSource() &&
+        Init()) {
+      AllocateAndStartLocked(params_, std::move(client_));
+      // If AllocateAndStart fails somehow, OnError() will be called
+      // internally. Therefore, it's safe to always override |hr| here.
+      hr = S_OK;
+      ++num_restarts_;
+    } else {
+      LOG(ERROR) << "Failed to re-initialize.";
+      hr = MF_E_UNEXPECTED;
     }
   }
-  if (need_restart) {
-    is_started_ = false;
-    is_initialized_ = false;
-    StopAndDeAllocate();
-    RecreateMFSource();
-    if (!Init()) {
-      LOG(ERROR) << "Failed to initialize.";
-    }
-    AllocateAndStart(params_, std::move(client));
+
+  if (FAILED(hr)) {
+    base::UmaHistogramSparse("Media.VideoCapture.Win.ErrorEvent", hr);
+    OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
+            FROM_HERE, hr);
   }
 }
 
@@ -1838,9 +1853,7 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
   return hr;
 }
 
-void VideoCaptureDeviceMFWin::RecreateMFSource() {
-  base::AutoLock lock(lock_);
-
+bool VideoCaptureDeviceMFWin::RecreateMFSource() {
   const bool is_sensor_api = device_descriptor_.capture_api ==
                              VideoCaptureApi::WIN_MEDIA_FOUNDATION_SENSOR;
   ComPtr<IMFAttributes> attributes;
@@ -1848,7 +1861,7 @@ void VideoCaptureDeviceMFWin::RecreateMFSource() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create attributes: "
                << logging::SystemErrorCodeToString(hr);
-    return;
+    return false;
   }
   attributes->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
                       MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
@@ -1860,10 +1873,15 @@ void VideoCaptureDeviceMFWin::RecreateMFSource() {
       MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
       base::SysUTF8ToWide(device_descriptor_.device_id).c_str());
   hr = MFCreateDeviceSource(attributes.Get(), &source_);
-  LOG_IF(ERROR, FAILED(hr)) << "MFCreateDeviceSource failed: "
-                            << logging::SystemErrorCodeToString(hr);
-  if (SUCCEEDED(hr) && dxgi_device_manager_) {
+  if (FAILED(hr)) {
+    LOG(ERROR) << "MFCreateDeviceSource failed: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  if (dxgi_device_manager_) {
     dxgi_device_manager_->RegisterWithMediaSource(source_);
   }
+  return true;
 }
 }  // namespace media

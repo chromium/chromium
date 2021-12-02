@@ -45,15 +45,6 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
     return S_OK;
   }
 
-  // Checks if the local device was removed, recreates it if needed.
-  // Returns DeviceRemovedReason HRESULT value.
-  // Returns the local device in |new_device|, if it's not nullptr.
-  /*HRESULT CheckDeviceRemovedAndGetDevice(
-      Microsoft::WRL::ComPtr<ID3D11Device>* new_device) override {
-          *new_device = mock_d3d_device_;
-          return S_OK;
-  }*/
-
   // Directly access D3D device stored in DXGI device manager
   Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() override {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
