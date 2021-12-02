@@ -31,6 +31,9 @@ apps::mojom::IntentPtr CreateDriveIntent();
 
 storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file);
 
+storage::FileSystemURL FileInNonNativeFileSystemType(Profile* profile,
+                                                     base::FilePath file);
+
 }  // namespace sharesheet
 
 #endif  // CHROME_BROWSER_SHARESHEET_SHARESHEET_TEST_UTIL_H_

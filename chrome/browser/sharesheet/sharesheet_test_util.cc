@@ -50,4 +50,14 @@ storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file) {
                                                    mount_point_name, file);
 }
 
+storage::FileSystemURL FileInNonNativeFileSystemType(Profile* profile,
+                                                     base::FilePath file) {
+  return storage::FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://xxx"),
+      storage::kFileSystemTypeExternal,
+      base::FilePath("arc-documents-provider").Append(file), "",
+      storage::kFileSystemTypeArcDocumentsProvider, base::FilePath(), "",
+      storage::FileSystemMountOption());
+}
+
 }  // namespace sharesheet

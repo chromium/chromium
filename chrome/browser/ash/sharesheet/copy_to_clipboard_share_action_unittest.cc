@@ -119,5 +119,41 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
   EXPECT_EQ(url2.path(), filenames[1].path);
 }
 
+TEST_F(CopyToClipboardShareActionTest,
+       CopyToClipboardShouldShowActionNonNativeFile) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  storage::FileSystemURL url1 = ::sharesheet::FileInNonNativeFileSystemType(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  EXPECT_FALSE(copy_action->ShouldShowAction(
+      apps_util::CreateShareIntentFromFiles({url1.ToGURL()},
+                                            {::sharesheet::kMimeTypePdf}),
+      /* contains_hosted_document= */ false));
+}
+
+TEST_F(CopyToClipboardShareActionTest,
+       CopyToClipboardShouldShowActionNativeFile) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  EXPECT_TRUE(copy_action->ShouldShowAction(
+      apps_util::CreateShareIntentFromFiles({url1.ToGURL()},
+                                            {::sharesheet::kMimeTypePdf}),
+      /* contains_hosted_document= */ false));
+}
+
+TEST_F(CopyToClipboardShareActionTest,
+       CopyToClipboardShouldShowActionHostedDocument) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  EXPECT_FALSE(
+      copy_action->ShouldShowAction(::sharesheet::CreateDriveIntent(),
+                                    /* contains_hosted_document= */ true));
+}
+
 }  // namespace sharesheet
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
@@ -72,11 +73,14 @@ void CopyToClipboardShareAction::LaunchAction(
   if (has_files) {
     std::vector<ui::FileInfo> file_infos;
     for (const auto& file : intent->files.value()) {
-      file_infos.emplace_back(
-          ui::FileInfo(apps::GetFileSystemURL(profile_, file->url).path(),
-                       base::FilePath()));
+      auto file_url = apps::GetFileSystemURL(profile_, file->url);
+      // TODO(crbug.com/1274983) : Add support for copying from MTP and
+      // FileSystemProviders.
+      if (!file_manager::util::IsNonNativeFileSystemType(file_url.type())) {
+        file_infos.emplace_back(
+            ui::FileInfo(file_url.path(), base::FilePath()));
+      }
     }
-
     clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
   }
 
@@ -91,6 +95,29 @@ void CopyToClipboardShareAction::LaunchAction(
 
 void CopyToClipboardShareAction::OnClosing(
     ::sharesheet::SharesheetController* controller) {}
+
+bool CopyToClipboardShareAction::ShouldShowAction(
+    const apps::mojom::IntentPtr& intent,
+    bool contains_hosted_document) {
+  bool contains_uncopyable_file = false;
+  const bool has_files =
+      (intent->files.has_value() && !intent->files.value().empty());
+  if (has_files) {
+    for (const auto& file : intent->files.value()) {
+      auto file_url = apps::GetFileSystemURL(profile_, file->url);
+      contains_uncopyable_file =
+          file_manager::util::IsNonNativeFileSystemType(file_url.type());
+      if (contains_uncopyable_file) {
+        break;
+      }
+    }
+  }
+  // If |intent| contains a file we can't copy, don't show this action.
+  // Files that are not in a native local file system (e.g. MTP, documents
+  // providers) do not currently support paste outside of the Files app.
+  return !contains_uncopyable_file &&
+         ShareAction::ShouldShowAction(intent, contains_hosted_document);
+}
 
 }  // namespace sharesheet
 }  // namespace ash
