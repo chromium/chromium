@@ -32,6 +32,8 @@ extern const base::Feature kPageContentAnnotations;
 extern const base::Feature kPageTextExtraction;
 extern const base::Feature kPushNotifications;
 extern const base::Feature kOptimizationGuideMetadataValidation;
+extern const base::Feature kPageTopicsBatchAnnotations;
+extern const base::Feature kPageVisibilityBatchAnnotations;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -231,6 +233,12 @@ double NoiseProbabilityForRAPPORMetrics();
 
 // Returns whether the metadata validation fetch feature is host keyed.
 bool ShouldMetadataValidationFetchHostKeyed();
+
+// Returns if Page Topics Batch Annotations are enabled.
+bool PageTopicsBatchAnnotationsEnabled();
+
+// Returns if Page Visibility Batch Annotations are enabled.
+bool PageVisibilityBatchAnnotationsEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide

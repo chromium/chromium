@@ -89,6 +89,11 @@ const base::Feature kPageTextExtraction{
 const base::Feature kOptimizationGuideMetadataValidation{
     "OptimizationGuideMetadataValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPageTopicsBatchAnnotations{
+    "PageTopicsBatchAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kPageVisibilityBatchAnnotations{
+    "PageVisibilityBatchAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -443,6 +448,14 @@ bool ShouldDeferStartupActiveTabsHintsFetch() {
       false
 #endif
   );
+}
+
+bool PageTopicsBatchAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(kPageTopicsBatchAnnotations);
+}
+
+bool PageVisibilityBatchAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
 }
 
 }  // namespace features

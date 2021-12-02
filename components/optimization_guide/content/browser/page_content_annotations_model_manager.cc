@@ -229,6 +229,9 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsModel(
 
 void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  if (!features::PageTopicsBatchAnnotationsEnabled())
+    return;
+
   on_demand_page_topics_model_executor_ =
       std::make_unique<PageTopicsModelExecutor>(
           optimization_guide_model_provider,
@@ -239,6 +242,9 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
 
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  if (!features::PageVisibilityBatchAnnotationsEnabled())
+    return;
+
   page_visibility_model_executor_ =
       std::make_unique<PageVisibilityModelExecutor>(
           optimization_guide_model_provider,
