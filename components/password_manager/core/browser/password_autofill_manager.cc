@@ -243,7 +243,11 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
   suggestion.frontend_id =
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE;
-  suggestion.icon = "google";
+  suggestion.icon =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVisualImprovementsForSuggestionUi)
+          ? "keyIcon"
+          : "google";
   return suggestion;
 }
 
