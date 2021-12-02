@@ -46,6 +46,12 @@
   </popup>
 </selectmenu>
 
+<selectmenu id="selectMenu6">
+  <option id="selectMenu6-option1">one</option>
+  <option selected>two</option>
+  <option>three</option>
+</selectmenu>
+
 <script>
 
 test(() => {
@@ -125,5 +131,25 @@ test(() => {
   option.click();
   assert_equals(selectMenu.value, "one");
 }, "Test that value is correctly updated");
+
+test(() => {
+  const selectMenu = document.getElementById("selectMenu6");
+  let selectMenuOption1 = document.getElementById("selectMenu6-option1");
+
+  assert_equals(selectMenu.value, "two");
+  assert_false(selectMenuOption1.selected);
+  selectMenuOption1.selected = true;
+  assert_equals(selectMenu.value, "one");
+
+  let newOption = document.createElement("option");
+  newOption.innerText = "four";
+  newOption.selected = true;
+  selectMenu.appendChild(newOption);
+  assert_equals(selectMenu.value, "four");
+  assert_false(selectMenuOption1.selected);
+
+  selectMenu.value = "three";
+  assert_false(newOption.selected);
+}, "Test that HTMLOption.selected updates selectmenu.value");
 
 </script>

@@ -656,9 +656,7 @@ void HTMLSelectMenuElement::OptionPartInserted(
   // order.
   option_parts_.insert(new_option_part);
 
-  if (!selected_option_) {
-    // If we didn't have a selected option previously, change the
-    // selection to the first option part.
+  if (!selected_option_ || new_option_part->Selected()) {
     SetSelectedOption(new_option_part);
   }
 }
@@ -697,6 +695,22 @@ HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {
   }
 
   return nullptr;
+}
+
+void HTMLSelectMenuElement::OptionSelectionStateChanged(
+    HTMLOptionElement* option,
+    bool option_is_selected) {
+  DCHECK(option_parts_.Contains(option));
+  if (option_is_selected) {
+    SetSelectedOption(option);
+  } else if (SelectedOption() == option) {
+    // TODO(crbug.com/1121840) We should match the behavior from
+    // https://html.spec.whatwg.org/C/#ask-for-a-reset
+    // If the currently selected option was removed change the
+    // selection to the first option part, if there is one.
+    auto* first_option_part = FirstOptionPart();
+    SetSelectedOption(first_option_part);
+  }
 }
 
 void HTMLSelectMenuElement::EnsureSelectedOptionIsValid() {

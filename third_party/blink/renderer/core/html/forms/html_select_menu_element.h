@@ -44,6 +44,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   // returns that HTMLSelectMenuElement. Else returns null.
   static HTMLSelectMenuElement* OwnerSelectMenu(Node* node);
 
+  // For use in the implementation of HTMLOptionElement.
+  void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
   void OptionElementChildrenChanged(const HTMLOptionElement& option);
 
   PartType AssignedPartType(Node* node) const;

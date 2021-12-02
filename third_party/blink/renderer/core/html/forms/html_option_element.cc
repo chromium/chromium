@@ -256,8 +256,12 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   SetSelectedState(selected);
 
-  if (HTMLSelectElement* select = OwnerSelectElement())
+  if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
+  } else if (HTMLSelectMenuElement* select_menu =
+                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+    select_menu->OptionSelectionStateChanged(this, selected);
+  }
 }
 
 bool HTMLOptionElement::selectedForBinding() const {
