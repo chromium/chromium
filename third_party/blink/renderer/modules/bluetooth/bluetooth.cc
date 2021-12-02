@@ -557,15 +557,18 @@ Bluetooth::~Bluetooth() = default;
 BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
     mojom::blink::WebBluetoothDevicePtr device_ptr,
     ExecutionContext* context) {
-  auto it = device_instance_map_.find(device_ptr->id);
+  // TODO(crbug.com/1275634): convert device_instance_map_ to use
+  // WebBluetoothDeviceId as key
+  auto it =
+      device_instance_map_.find(device_ptr->id.DeviceIdInBase64().c_str());
   if (it != device_instance_map_.end()) {
     return it->value;
   }
 
-  String id = device_ptr->id;
   BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(
       context, std::move(device_ptr), this);
-  auto result = device_instance_map_.insert(id, device);
+  auto result = device_instance_map_.insert(
+      device->GetDevice()->id.DeviceIdInBase64().c_str(), device);
   DCHECK(result.is_new_entry);
   return device;
 }

@@ -13,59 +13,55 @@
 
 namespace blink {
 
-namespace {
-
-enum { kDeviceIdLength = 16 /* 128 bits */ };
-
-}  // namespace
-
 WebBluetoothDeviceId::WebBluetoothDeviceId() {}
 
-WebBluetoothDeviceId::WebBluetoothDeviceId(std::string device_id)
-    : device_id_(std::move(device_id)) {
-  CHECK(IsValid());
+WebBluetoothDeviceId::WebBluetoothDeviceId(
+    const std::string& encoded_device_id) {
+  std::string decoded;
+
+  CHECK(base::Base64Decode(encoded_device_id, &decoded));
+  CHECK(decoded.size() == sizeof(WebBluetoothDeviceIdKey));
+  std::copy_n(decoded.begin(), device_id_.size(), device_id_.begin());
+  is_initialized_ = true;
 }
 
 WebBluetoothDeviceId::~WebBluetoothDeviceId() {}
 
-const std::string& WebBluetoothDeviceId::str() const {
+WebBluetoothDeviceId::WebBluetoothDeviceId(
+    const WebBluetoothDeviceIdKey& device_id)
+    : device_id_(device_id), is_initialized_(true) {}
+
+std::string WebBluetoothDeviceId::DeviceIdInBase64() const {
+  CHECK(IsValid());
+  return base::Base64Encode(device_id_);
+}
+
+std::string WebBluetoothDeviceId::str() const {
+  return WebBluetoothDeviceId::DeviceIdInBase64();
+}
+
+const WebBluetoothDeviceIdKey& WebBluetoothDeviceId::DeviceId() const {
   CHECK(IsValid());
   return device_id_;
 }
 
 // static
 WebBluetoothDeviceId WebBluetoothDeviceId::Create() {
-  std::string bytes(
-      kDeviceIdLength + 1 /* to avoid bytes being reallocated by WriteInto */,
-      '\0');
+  WebBluetoothDeviceIdKey bytes;
 
-  crypto::RandBytes(base::WriteInto(&bytes /* str */,
-                                    kDeviceIdLength + 1 /* length_with_null */),
-                    kDeviceIdLength);
-
-  base::Base64Encode(bytes, &bytes);
+  crypto::RandBytes(bytes);
 
   return WebBluetoothDeviceId(std::move(bytes));
 }
 
 // static
-bool WebBluetoothDeviceId::IsValid(const std::string& device_id) {
+bool WebBluetoothDeviceId::IsValid(const std::string& encoded_device_id) {
   std::string decoded;
-  if (!base::Base64Decode(device_id, &decoded)) {
+  if (!base::Base64Decode(encoded_device_id, &decoded)) {
     return false;
   }
 
-  if (decoded.size() != kDeviceIdLength) {
-    return false;
-  }
-
-  // When base64-encoding a 128bit string, only the two MSB are used for
-  // the 3rd-to-last character. Because of this, the 3rd-to-last character
-  // can only be one of this four characters.
-  if (!(device_id[device_id.size() - 3] == 'A' ||
-        device_id[device_id.size() - 3] == 'Q' ||
-        device_id[device_id.size() - 3] == 'g' ||
-        device_id[device_id.size() - 3] == 'w')) {
+  if (decoded.size() != sizeof(WebBluetoothDeviceIdKey)) {
     return false;
   }
 
@@ -73,12 +69,12 @@ bool WebBluetoothDeviceId::IsValid(const std::string& device_id) {
 }
 
 bool WebBluetoothDeviceId::IsValid() const {
-  return WebBluetoothDeviceId::IsValid(device_id_);
+  return is_initialized_;
 }
 
 bool WebBluetoothDeviceId::operator==(
     const WebBluetoothDeviceId& device_id) const {
-  return str() == device_id.str();
+  return this->DeviceId() == device_id.DeviceId();
 }
 
 bool WebBluetoothDeviceId::operator!=(
@@ -88,7 +84,7 @@ bool WebBluetoothDeviceId::operator!=(
 
 bool WebBluetoothDeviceId::operator<(
     const WebBluetoothDeviceId& device_id) const {
-  return str() < device_id.str();
+  return this->str() < device_id.str();
 }
 
 std::ostream& operator<<(std::ostream& out,
