@@ -268,7 +268,9 @@ void HatsService::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!require_same_origin_ || !navigation_handle ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameOrigin()) {
+      navigation_handle->IsSameDocument() ||
+      (navigation_handle->HasCommitted() &&
+       navigation_handle->IsSameOrigin())) {
     return;
   }
 
