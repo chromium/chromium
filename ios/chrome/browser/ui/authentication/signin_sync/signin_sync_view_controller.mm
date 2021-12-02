@@ -71,19 +71,13 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
-  int titleTextID = self.useOtherStringsSet
-                        ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE
-                        : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE;
-  [self.delegate signinSyncViewController:self addConsentStringID:titleTextID];
-  self.titleText = l10n_util::GetNSString(titleTextID);
-
-  int subtitleTextID = self.useOtherStringsSet
-                           ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE
-                           : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
   [self.delegate signinSyncViewController:self
-                       addConsentStringID:subtitleTextID];
+                       addConsentStringID:[self titleTextID]];
+  self.titleText = l10n_util::GetNSString([self titleTextID]);
 
-  self.subtitleText = l10n_util::GetNSString(subtitleTextID);
+  [self.delegate signinSyncViewController:self
+                       addConsentStringID:[self subtitleTextID]];
+  self.subtitleText = l10n_util::GetNSString([self subtitleTextID]);
 
   if (!self.primaryActionString) {
     // |primaryActionString| could already be set using the consumer methods.
@@ -96,7 +90,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   [self.delegate signinSyncViewController:self
                        addConsentStringID:self.activateSyncButtonID];
 
-  if (self.identityControlInTop) {
+  if ([self identityControlInTop]) {
     [self.topSpecificContentView addSubview:self.identityControl];
   } else {
     [self.specificContentView addSubview:self.identityControl];
@@ -126,11 +120,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   }
 
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
-  int secondaryActionStringID =
-      self.useOtherStringsSet
-          ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION
-          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION;
-  self.secondaryActionString = l10n_util::GetNSString(secondaryActionStringID);
+  self.secondaryActionString =
+      l10n_util::GetNSString([self secondaryActionStringID]);
 
   // Set constraints specific to the identity control button that don't change.
   NSLayoutConstraint* widthConstraint = [self.identityControl.widthAnchor
@@ -148,7 +139,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   // Set constraints that are dependent on the position of the identity
   // controller button and sign-in restrictions.
 
-  if (self.identityControlInTop) {
+  if ([self identityControlInTop]) {
     [self.identityControl.bottomAnchor
         constraintEqualToAnchor:self.identityControl.superview.bottomAnchor
                        constant:-kTopSpecificContentVerticalMargin]
@@ -329,9 +320,14 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   return _advanceSyncSettingsButton;
 }
 
+// Returns the ID of the string of the button that is used to activate sync.
 - (int)activateSyncButtonID {
-  return self.useOtherStringsSet ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
-                                 : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+  switch (self.stringsSet) {
+    case SigninSyncScreenUIStringSet::kOld:
+      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+    case SigninSyncScreenUIStringSet::kNew:
+      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
+  }
 }
 
 #pragma mark - SignInSyncConsumer
@@ -396,6 +392,46 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 // Called when the sync advanced settings button is tapped.
 - (void)showAdvanceSyncSettings {
   [self.delegate signinSyncViewControllerDidTapOnSettings:self];
+}
+
+// Returns the title string ID.
+- (int)titleTextID {
+  switch (self.stringsSet) {
+    case SigninSyncScreenUIStringSet::kOld:
+      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE;
+    case SigninSyncScreenUIStringSet::kNew:
+      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE;
+  }
+}
+
+// Returns the subtitle string ID.
+- (int)subtitleTextID {
+  switch (self.stringsSet) {
+    case SigninSyncScreenUIStringSet::kOld:
+      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
+    case SigninSyncScreenUIStringSet::kNew:
+      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE;
+  }
+}
+
+// Returns the secondary action string ID.
+- (int)secondaryActionStringID {
+  switch (self.stringsSet) {
+    case SigninSyncScreenUIStringSet::kOld:
+      return IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION;
+    case SigninSyncScreenUIStringSet::kNew:
+      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION;
+  }
+}
+
+// Returns YES if the identity control button has to be in top.
+- (BOOL)identityControlInTop {
+  switch (self.identitySwitcherPosition) {
+    case SigninSyncScreenUIIdentitySwitcherPosition::kTop:
+      return YES;
+    case SigninSyncScreenUIIdentitySwitcherPosition::kBottom:
+      return NO;
+  }
 }
 
 #pragma mark - UITextViewDelegate

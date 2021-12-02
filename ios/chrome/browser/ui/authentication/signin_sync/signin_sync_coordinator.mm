@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -158,6 +159,10 @@
   self.viewController.delegate = self;
   self.viewController.enterpriseSignInRestrictions =
       GetEnterpriseSignInRestrictions(browserState);
+  self.viewController.identitySwitcherPosition =
+      fre_field_trial::GetSigninSyncScreenUIIdentitySwitcherPosition();
+  self.viewController.stringsSet =
+      fre_field_trial::GetSigninSyncScreenUIStringSet();
 
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);

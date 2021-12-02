@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @interface SigninSyncViewController
@@ -21,13 +22,12 @@
 @property(nonatomic, assign)
     EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
-// YES if the identity control button has to be in the top of the screen.
-@property(nonatomic, assign) BOOL identityControlInTop;
+// Position of the identity switcher.
+@property(nonatomic, assign)
+    SigninSyncScreenUIIdentitySwitcherPosition identitySwitcherPosition;
 
-// TODO(crbug.com/1271609) This may change for an enum once we determined the
-// API for the feature parameters.
-// YES if the other set of strings should be used.
-@property(nonatomic, assign) BOOL useOtherStringsSet;
+// Set of strings used in the UI.
+@property(nonatomic, assign) SigninSyncScreenUIStringSet stringsSet;
 
 // The ID of the main button activating sync.
 @property(nonatomic, readonly) int activateSyncButtonID;
