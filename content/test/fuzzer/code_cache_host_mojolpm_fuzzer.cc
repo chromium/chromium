@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -164,8 +165,8 @@ class CodeCacheHostTestcase {
   void TearDownOnUIThread(base::OnceClosure done_closure);
   void TearDownOnFuzzerThread(base::OnceClosure done_closure);
 
-  // Used by AddCodeCacheHost to create and bind CodeCacheHostImpl on the UI
-  // thread.
+  // Used by AddCodeCacheHost to create and bind CodeCacheHostImpl on the code
+  // cache thread.
   void AddCodeCacheHostImpl(
       uint32_t id,
       int renderer_id,
@@ -218,10 +219,10 @@ class CodeCacheHostTestcase {
 
   // Mapping from renderer id to CodeCacheHostImpl instances being fuzzed.
   // Access only from UI thread.
-  std::map<
-      int,
-      std::unique_ptr<mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>>>
-      code_cache_host_receivers_;
+  using UniqueCodeCacheReceiverSet =
+      std::unique_ptr<mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>,
+                      base::OnTaskRunnerDeleter>;
+  std::map<int, UniqueCodeCacheReceiverSet> code_cache_host_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -410,10 +411,11 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
       renderer_id, generated_code_cache_context_, nik);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());
-  auto receivers =
-      std::make_unique<mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>>();
+  UniqueCodeCacheReceiverSet receivers(
+      new mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>(),
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   receivers->Add(std::move(code_cache_host), std::move(receiver));
-  code_cache_host_receivers_[renderer_id] = std::move(receivers);
+  code_cache_host_receivers_.insert({renderer_id, std::move(receivers)});
 }
 
 static void AddCodeCacheHostInstance(
@@ -453,13 +455,15 @@ void CodeCacheHostTestcase::AddCodeCacheHost(
 
   // Use of Unretained is safe since `this` is guaranteed to live at least until
   // `run_closure` is invoked.
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&CodeCacheHostTestcase::AddCodeCacheHostImpl,
-                     base::Unretained(this), id, renderer_id, *origin,
-                     net::NetworkIsolationKey(), std::move(receiver)),
-      base::BindOnce(AddCodeCacheHostInstance, id, std::move(remote),
-                     std::move(run_closure)));
+  content::GeneratedCodeCacheContext::GetTaskRunner(
+      generated_code_cache_context_)
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&CodeCacheHostTestcase::AddCodeCacheHostImpl,
+                         base::Unretained(this), id, renderer_id, *origin,
+                         net::NetworkIsolationKey(), std::move(receiver)),
+          base::BindOnce(AddCodeCacheHostInstance, id, std::move(remote),
+                         std::move(run_closure)));
 }
 
 // Helper function to setup and run the testcase, since we need to do that from
