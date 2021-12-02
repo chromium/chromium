@@ -299,17 +299,6 @@ NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingAlways;
 // account the scheme of the site-for-cookies and the request/response url.
 NET_EXPORT extern const base::Feature kSchemefulSameSite;
 
-// When enabled, the Network Quality Estimator (NQE) will notify the operating
-// system whenever it detects that the current default network may have
-// significantly degraded connectivity. Currently only effective on Android.
-NET_EXPORT extern const base::Feature kReportPoorConnectivity;
-
-// When enabled, the NQE may preemptively request that the OS activate a mobile
-// network when requests on the active Wi-Fi connection are stalled. This can be
-// used to warm the radio for a faster transition if/when the OS chooses to drop
-// the Wi-Fi connection.
-NET_EXPORT extern const base::Feature kPreemptiveMobileNetworkActivation;
-
 // Enables a process-wide limit on "open" UDP sockets. See
 // udp_socket_global_limits.h for details on what constitutes an "open" socket.
 NET_EXPORT extern const base::Feature kLimitOpenUDPSockets;

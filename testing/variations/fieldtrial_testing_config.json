@@ -6764,25 +6764,6 @@
             ]
         }
     ],
-    "ReportPoorConnectivity": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2500_v1",
-                    "params": {
-                        "inactivity_threshold_ms": "2500"
-                    },
-                    "enable_features": [
-                        "PreemptiveMobileNetworkActivation",
-                        "ReportPoorConnectivity"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportSaveDataSavings": [
         {
             "platforms": [
