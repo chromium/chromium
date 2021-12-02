@@ -30,7 +30,9 @@ struct PeerConnectionInfo {
 
   // The URL of the blink::WebLocalFrame within which this peer connection
   // lives. Used for debugging purposes (displayed by WebRTC-Internals).
-  string url;
+  // May be null for eg pages with opaque URLs.
+  // TODO(1274640): Use a mojo URL instead of a string.
+  string? url;
 };
 
 // This interface collects data about each peer connection and sends it to the

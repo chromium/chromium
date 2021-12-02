@@ -100,8 +100,11 @@ void PeerConnectionTrackerHost::AddPeerConnection(
     blink::mojom::PeerConnectionInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  const std::string& url =
+      (info->url == absl::nullopt) ? std::string() : *info->url;
+
   for (auto& observer : GetObserverList()) {
-    observer.OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_, info->url,
+    observer.OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_, url,
                                    info->rtc_configuration, info->constraints);
   }
 }
