@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Test evaluation of size features</title>
+<title>Evaluation of size features</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -81,6 +81,9 @@ function test_evaluation(container_class, query, expected) {
 
     test_evaluation(cls, 'size(orientation: landscape)', false);
     test_evaluation(cls, 'size(orientation: portrait)', true);
+
+    test_evaluation(cls, 'size(aspect-ratio: 1/2)', true);
+    test_evaluation(cls, 'size(aspect-ratio: 2/1)', false);
   }
 
 </script>

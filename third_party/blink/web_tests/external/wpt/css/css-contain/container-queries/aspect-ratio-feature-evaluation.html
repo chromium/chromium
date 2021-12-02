@@ -1,5 +1,6 @@
 <!doctype html>
-<title>Tests @container queries with aspect-ratio</title>
+<title>@container queries with aspect-ratio</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#aspect-ratio">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -8,7 +9,6 @@
     height: 100px;
   }
   #inline-size { container-type: inline-size; }
-  #block-size { container-type: block-size; }
   #size { container-type: size; }
   span { color: red }
   @container size(min-aspect-ratio: 1 / 1000) {
@@ -19,7 +19,6 @@
   }
 </style>
 <div id="inline-size" class="container"><span></span></div>
-<div id="block-size" class="container"><span></span></div>
 <div id="size" class="container"><span></span></div>
 <script>
   const red = "rgb(255, 0, 0)";
@@ -28,14 +27,11 @@
   const transparent = "rgba(0, 0, 0, 0)";
 
   const inline_span = document.querySelector("#inline-size > span");
-  const block_span = document.querySelector("#block-size > span");
   const size_span = document.querySelector("#size > span");
 
   test(() => {
     assert_equals(getComputedStyle(inline_span).color, red,
                   "Should not match for inline-size containment");
-    assert_equals(getComputedStyle(block_span).color, red,
-                  "Should not match for block-size containment");
     assert_equals(getComputedStyle(size_span).color, green,
                   "Should match for block-size containment");
     assert_equals(getComputedStyle(size_span).backgroundColor, transparent,
