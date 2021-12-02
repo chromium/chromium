@@ -999,18 +999,20 @@ class AuctionRunnerTest : public testing::Test,
   auction_worklet::mojom::BiddingInterestGroupPtr MakeInterestGroup(
       url::Origin owner,
       std::string name,
-      GURL bidding_url,
+      absl::optional<GURL> bidding_url,
       absl::optional<GURL> trusted_bidding_signals_url,
       std::vector<std::string> trusted_bidding_signals_keys,
-      GURL ad_url,
+      absl::optional<GURL> ad_url,
       absl::optional<std::vector<GURL>> ad_component_urls = absl::nullopt) {
     std::vector<blink::InterestGroup::Ad> ads;
     // Give only kBidder1 an InterestGroupAd ad with non-empty metadata, to
     // better test the `ad_metadata` output.
-    if (owner == kBidder1) {
-      ads.emplace_back(blink::InterestGroup::Ad(ad_url, R"({"ads": true})"));
-    } else {
-      ads.emplace_back(blink::InterestGroup::Ad(ad_url, absl::nullopt));
+    if (ad_url) {
+      if (owner == kBidder1) {
+        ads.emplace_back(blink::InterestGroup::Ad(*ad_url, R"({"ads": true})"));
+      } else {
+        ads.emplace_back(blink::InterestGroup::Ad(*ad_url, absl::nullopt));
+      }
     }
 
     absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components;
@@ -1215,6 +1217,60 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
                   0 /* expected_interest_groups */, 0 /* expected_owners */);
+}
+
+// Runs an standard auction, but with an interest group that does not list any
+// ads.
+TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, /* ad_url= */ absl::nullopt));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders),
+                    R"({"isAuctionSignals": true})" /* auction_signals_json */,
+                    auction_worklet::mojom::BrowserSignals::New(
+                        url::Origin::Create(GURL("https://publisher1.com")),
+                        url::Origin::Create(kSellerUrl)));
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  0 /* expected_interest_groups */, 1 /* expected_owners */);
+}
+
+// Runs an standard auction, but with an interest group that does not list a
+// bidding script.
+TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, /* bidding_url= */ absl::nullopt,
+      kBidder1TrustedSignalsUrl, {"k1", "k2"}, GURL("https://ad1.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders),
+                    R"({"isAuctionSignals": true})" /* auction_signals_json */,
+                    auction_worklet::mojom::BrowserSignals::New(
+                        url::Origin::Create(GURL("https://publisher1.com")),
+                        url::Origin::Create(kSellerUrl)));
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  0 /* expected_interest_groups */, 1 /* expected_owners */);
 }
 
 // Runs the standard auction, but with only adding one of the two standard

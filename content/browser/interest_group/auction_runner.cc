@@ -191,6 +191,11 @@ void AuctionRunner::OnInterestGroupRead(
   if (!interest_groups.empty()) {
     for (auto bidder = std::make_move_iterator(interest_groups.begin());
          bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
+      // Ignore interest groups with no bidding script or no ads.
+      if (!bidder->bidding_group->group.bidding_url)
+        continue;
+      if (bidder->bidding_group->group.ads->empty())
+        continue;
       bid_states_.emplace_back(BidState());
       bid_states_.back().bidder = std::move(*bidder);
     }
