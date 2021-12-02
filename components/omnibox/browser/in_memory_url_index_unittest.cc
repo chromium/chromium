@@ -1215,12 +1215,19 @@ TEST_F(InMemoryURLIndexTest, DISABLED_CacheSaveRestore) {
   ExpectPrivateDataEqual(*old_data, new_data);
 }
 
-TEST_F(InMemoryURLIndexTest, RebuildFromHistoryIfCacheOld) {
-  // Test specifically covers the flag-disabled behavior.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile);
+class InMemoryURLIndexDisabledTest : public InMemoryURLIndexTest {
+ public:
+  InMemoryURLIndexDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(InMemoryURLIndexDisabledTest, RebuildFromHistoryIfCacheOld) {
+  // Test specifically covers the flag-disabled behavior.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   set_history_dir(temp_dir_.GetPath());
 
