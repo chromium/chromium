@@ -98,6 +98,8 @@ class MockCertVerifyProc : public CertVerifyProc {
  public:
   explicit MockCertVerifyProc(const CertVerifyResult& result)
       : result_(result) {}
+  MockCertVerifyProc(const CertVerifyResult& result, int error)
+      : result_(result), error_(error) {}
 
   MockCertVerifyProc(const MockCertVerifyProc&) = delete;
   MockCertVerifyProc& operator=(const MockCertVerifyProc&) = delete;
@@ -120,6 +122,7 @@ class MockCertVerifyProc : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
   const CertVerifyResult result_;
+  const int error_ = OK;
 };
 
 int MockCertVerifyProc::VerifyInternal(
@@ -134,7 +137,7 @@ int MockCertVerifyProc::VerifyInternal(
     const NetLogWithSource& net_log) {
   *verify_result = result_;
   verify_result->verified_cert = cert;
-  return OK;
+  return error_;
 }
 
 // This enum identifies a concrete implemenation of CertVerifyProc.
@@ -1512,6 +1515,72 @@ TEST(CertVerifyProcTest, TestHasTooLongValidity) {
     ASSERT_TRUE(certificate);
     EXPECT_EQ(test.is_valid_too_long,
               CertVerifyProc::HasTooLongValidity(*certificate));
+  }
+}
+
+// Integration test for CertVerifyProc::HasTooLongValidity.
+// There isn't a way to add test entries to the known roots list for testing
+// the full CertVerifyProc implementations, but HasTooLongValidity is checked
+// by the outer CertVerifyProc::Verify. Thus the test can mock the
+// VerifyInternal result to pretend there was a successful verification with
+// is_issued_by_known_root and see that Verify overrides that with error.
+TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
+  scoped_refptr<X509Certificate> cert(ImportCertFromFile(
+      GetTestCertsDirectory(), "900_days_after_2019_07_01.pem"));
+  ASSERT_TRUE(cert);
+
+  {
+    // Locally trusted cert should be ok.
+    CertVerifyResult dummy_result;
+    dummy_result.is_issued_by_known_root = false;
+    auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
+    CertVerifyResult verify_result;
+    int error = verify_proc->Verify(
+        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+        CertificateList(), &verify_result, NetLogWithSource());
+    EXPECT_THAT(error, IsOk());
+    EXPECT_EQ(0u, verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
+  }
+
+  {
+    // Publicly trusted cert that was otherwise okay should get changed to
+    // ERR_CERT_VALIDITY_TOO_LONG.
+    CertVerifyResult dummy_result;
+    dummy_result.is_issued_by_known_root = true;
+    auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
+    CertVerifyResult verify_result;
+    int error = verify_proc->Verify(
+        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+        CertificateList(), &verify_result, NetLogWithSource());
+    EXPECT_THAT(error, IsError(ERR_CERT_VALIDITY_TOO_LONG));
+    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
+    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
+    EXPECT_EQ(CERT_STATUS_VALIDITY_TOO_LONG | CERT_STATUS_NON_UNIQUE_NAME,
+              verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
+  }
+
+  {
+    // Publicly trusted cert that had some other error should retain the
+    // original error, but CERT_STATUS_VALIDITY_TOO_LONG should be added to
+    // cert_status.
+    CertVerifyResult dummy_result;
+    dummy_result.is_issued_by_known_root = true;
+    dummy_result.cert_status = CERT_STATUS_AUTHORITY_INVALID;
+    auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(
+        dummy_result, ERR_CERT_AUTHORITY_INVALID);
+    CertVerifyResult verify_result;
+    int error = verify_proc->Verify(
+        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+        CertificateList(), &verify_result, NetLogWithSource());
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
+    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
+    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID | CERT_STATUS_VALIDITY_TOO_LONG |
+                  CERT_STATUS_NON_UNIQUE_NAME,
+              verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
   }
 }
 
