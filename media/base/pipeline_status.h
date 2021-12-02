@@ -139,6 +139,12 @@ MEDIA_EXPORT inline std::ostream& operator<<(
              << "}";
 }
 
+// Statistics for the media pipeline.
+// Note: Different classes may have different interpretation on the fields.
+// RendererClient.OnStatisticsUpdate() expects *_decoded*, *_dropped and
+// *memory_usage to be the delta since the last OnStatisticsUpdate() call.
+// WebMediaPlayerImpl expects them to be cumulation since playback start.
+// TODO(crbug.com/1275794): Make the meaning consistent.
 struct MEDIA_EXPORT PipelineStatistics {
   PipelineStatistics();
   PipelineStatistics(const PipelineStatistics& other);

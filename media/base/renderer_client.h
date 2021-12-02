@@ -26,7 +26,9 @@ class MEDIA_EXPORT RendererClient {
   // Executed when rendering has reached the end of stream.
   virtual void OnEnded() = 0;
 
-  // Executed periodically with rendering statistics.
+  // Executed periodically with rendering statistics. Fields *_decoded*,
+  // *_dropped and *memory_usage should be the delta since the last
+  // OnStatisticsUpdate() call.
   virtual void OnStatisticsUpdate(const PipelineStatistics& stats) = 0;
 
   // Executed when buffering state is changed. |reason| indicates the cause of
