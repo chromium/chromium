@@ -165,8 +165,9 @@ to the release branch you are merging to (available on
 
 Once the cherry-pick CL is prepared, you can have it approved and landed by
 adding Rubber Stamper (rubber-stamper@appspot.gserviceaccount.com) as a
-reviewer and setting Auto-Submit+1;the Rubber Stamper bot will approve and
-submit the CL to CQ on your behalf.
+reviewer and setting Auto-Submit+1; the Rubber Stamper bot will approve by
+voting *Bot-Commit+1* label and submit the CL to CQ on your behalf.
+*Bot-Commit* is a label voted by bots to bypass code review.
 
 *Note: the Rubber Stamper does not provide OWNERS approval, and only works
 within 7 days of the original change; Googlers can learn more
