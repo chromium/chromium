@@ -97,6 +97,11 @@
 #define GOOGLE_API_KEY_READ_ALOUD DUMMY_API_TOKEN
 #endif
 
+// API key for the Fresnel API.
+#if !defined(GOOGLE_API_KEY_FRESNEL)
+#define GOOGLE_API_KEY_FRESNEL DUMMY_API_TOKEN
+#endif
+
 // These are used as shortcuts for developers and users providing
 // OAuth credentials via preprocessor defines or environment
 // variables.  If set, they will be used to replace any of the client
@@ -153,6 +158,10 @@ class APIKeyCache {
         GOOGLE_API_KEY_READ_ALOUD,
         STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), nullptr,
         std::string(), environment.get(), command_line, gaia_config);
+
+    api_key_fresnel_ = CalculateKeyValue(
+        GOOGLE_API_KEY_FRESNEL, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_FRESNEL),
+        nullptr, std::string(), environment.get(), command_line, gaia_config);
 
     metrics_key_ = CalculateKeyValue(
         GOOGLE_METRICS_SIGNING_KEY,
@@ -221,6 +230,7 @@ class APIKeyCache {
   std::string api_key_sharing() const { return api_key_sharing_; }
   std::string api_key_soda() const { return api_key_soda_; }
   std::string api_key_read_aloud() const { return api_key_read_aloud_; }
+  std::string api_key_fresnel() const { return api_key_fresnel_; }
 
   std::string metrics_key() const { return metrics_key_; }
 
@@ -335,6 +345,7 @@ class APIKeyCache {
   std::string api_key_sharing_;
   std::string api_key_soda_;
   std::string api_key_read_aloud_;
+  std::string api_key_fresnel_;
   std::string metrics_key_;
   std::string client_ids_[CLIENT_NUM_ITEMS];
   std::string client_secrets_[CLIENT_NUM_ITEMS];
@@ -369,6 +380,10 @@ std::string GetSodaAPIKey() {
 
 std::string GetReadAloudAPIKey() {
   return g_api_key_cache.Get().api_key_read_aloud();
+}
+
+std::string GetFresnelAPIKey() {
+  return g_api_key_cache.Get().api_key_fresnel();
 }
 
 #if defined(OS_IOS) || defined(OS_FUCHSIA)

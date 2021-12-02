@@ -88,6 +88,9 @@ std::string GetSodaAPIKey();
 // Retrieves the ReadAloud API Key.
 std::string GetReadAloudAPIKey();
 
+// Retrieves the Fresnel API Key.
+std::string GetFresnelAPIKey();
+
 #if defined(OS_IOS) || defined(OS_FUCHSIA)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
