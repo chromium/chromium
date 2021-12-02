@@ -33,6 +33,10 @@ class Clock;
 class Time;
 }  // namespace base
 
+namespace apps {
+class SvgIconTranscoder;
+}  // namespace apps
+
 namespace vm_tools {
 namespace apps {
 class ApplicationList;
@@ -41,7 +45,6 @@ class ApplicationList;
 
 namespace guest_os {
 
-class SvgIconTranscoder;
 using IconContentCallback = base::OnceCallback<void(std::string)>;
 
 // The GuestOsRegistryService  stores information about Desktop Entries (apps)
@@ -307,7 +310,7 @@ class GuestOsRegistryService : public KeyedService {
       active_icon_requests_;
   std::map<std::string, uint32_t> retry_icon_requests_;
 
-  std::unique_ptr<SvgIconTranscoder> svg_icon_transcoder_;
+  std::unique_ptr<apps::SvgIconTranscoder> svg_icon_transcoder_;
   base::WeakPtrFactory<GuestOsRegistryService> weak_ptr_factory_{this};
 };
 

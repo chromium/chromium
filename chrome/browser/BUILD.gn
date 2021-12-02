@@ -3904,6 +3904,8 @@ static_library("browser") {
       "hid/hid_chooser_context_factory.h",
       "hid/web_hid_histograms.cc",
       "hid/web_hid_histograms.h",
+      "icon_transcoder/svg_icon_transcoder.cc",
+      "icon_transcoder/svg_icon_transcoder.h",
       "importer/external_process_importer_client.cc",
       "importer/external_process_importer_client.h",
       "importer/external_process_importer_host.cc",

@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -42,12 +42,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_process_host_observer.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 using vm_tools::apps::App;
@@ -547,180 +544,12 @@ std::set<std::string> GuestOsRegistryService::Registration::LocalizedList(
   return {};
 }
 
-// SvgIconTranscoder uses WebContents to transform an svg icon (as a file or
-// as string data) into an SkBitmap and thence into png compressed data which
-// can be written to a png file. In principal, this technique should work for
-// any data:image/ mime-types supported by WebContents, but svg is all we need
-// right now. File handling happens in the browser process.
-// Some validation of svg data is performed prior to asking a WebContents
-// renderer process (which could potentially die on bad data) to render the
-// image. Since a renderer process can be destroyed for many valid reasons,
-// SvgIconTranscoder always checks if its WebContents must be recreated.
-class SvgIconTranscoder : public content::RenderProcessHostObserver {
- public:
-  explicit SvgIconTranscoder(Profile* profile) : profile_(profile) {}
-
-  SvgIconTranscoder(const SvgIconTranscoder&) = delete;
-  SvgIconTranscoder& operator=(const SvgIconTranscoder&) = delete;
-  ~SvgIconTranscoder() override = default;
-
-  static std::string ReadSvgOnFileThread(base::FilePath svg_path) {
-    std::string svg_data;
-    if (base::PathExists(svg_path)) {
-      base::ReadFileToString(svg_path, &svg_data);
-    }
-    LOG_IF(ERROR, svg_data.empty()) << "No svg data at path " << svg_path;
-    return svg_data;
-  }
-
-  // Reads the svg data at svg_path and invokes the string Transcode method.
-  // |callback| is invoked with and empty string on failure. Blocking call.
-  void Transcode(base::FilePath svg_path,
-                 base::FilePath png_path,
-                 gfx::Size preferred_size,
-                 IconContentCallback callback) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&SvgIconTranscoder::ReadSvgOnFileThread,
-                       std::move(svg_path)),
-        base::BindOnce(
-            [](base::WeakPtr<SvgIconTranscoder> weak_this,
-               base::FilePath png_path, gfx::Size preferred_size,
-               IconContentCallback callback, std::string svg_data) {
-              if (weak_this && !svg_data.empty()) {
-                weak_this->Transcode(std::move(svg_data), std::move(png_path),
-                                     preferred_size, std::move(callback));
-                return;
-              }
-
-              std::move(callback).Run(std::string());
-            },
-            GetWeakPtr(), std::move(png_path), preferred_size,
-            std::move(callback)));
-  }
-
-  // Validates and trims the svg_data before base64 encoding and dispatching to
-  // |web_contents_| in a data: URI.  |callback| is invoked with and empty
-  // string on failure. Blocking call.
-  void Transcode(std::string svg_data,
-                 base::FilePath png_path,
-                 gfx::Size preferred_size,
-                 IconContentCallback callback) {
-    if (!PrepareWebContents()) {
-      LOG(ERROR) << "Can't transcode svg. WebContents not ready.";
-      std::move(callback).Run(std::string());
-      return;
-    }
-
-    auto pos = svg_data.find("<svg");
-    if (pos == std::string::npos) {
-      LOG(ERROR) << "Invalid data. Couldn't find <svg.";
-      std::move(callback).Run(std::string());
-      return;
-    }
-    // Form a data: uri from the svg_data starting at the <svg. Excess ASCII
-    // whitespace is also removed.
-    std::string base64_svg;
-    base::Base64Encode(
-        base::CollapseWhitespaceASCII(svg_data.substr(pos), false),
-        &base64_svg);
-
-    GURL data_url("data:image/svg+xml;base64," + base64_svg);
-
-    web_contents_->DownloadImage(
-        data_url, false, preferred_size, 0, true,
-        base::BindOnce(&SvgIconTranscoder::OnDownloadImage, GetWeakPtr(),
-                       std::move(png_path), std::move(callback)));
-  }
-
-  base::WeakPtr<SvgIconTranscoder> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  void MaybeCreateWebContents() {
-    if (!web_contents_) {
-      auto params = content::WebContents::CreateParams(profile_);
-      params.initially_hidden = true;
-      params.desired_renderer_state = content::WebContents::CreateParams::
-          kInitializeAndWarmupRendererProcess;
-      web_contents_ = content::WebContents::Create(params);
-      // When we observe RenderProcessExited, we will need to recreate.
-      web_contents_->GetMainFrame()->GetProcess()->AddObserver(this);
-    }
-  }
-
-  bool PrepareWebContents() {
-    if (!web_contents_ready_) {
-      // Old web_contents_ may have been destroyed.
-      MaybeCreateWebContents();
-      if (web_contents_->GetMainFrame()->IsRenderFrameLive()) {
-        web_contents_ready_ = true;
-      }
-      VLOG(1) << "web_contents "
-              << (web_contents_ready_ ? "ready " : "not ready");
-    }
-    return web_contents_ready_;
-  }
-
-  // content::RenderProcessHostObserver:
-  void RenderProcessReady(content::RenderProcessHost* host) override {
-    web_contents_ready_ = true;
-  }
-
-  // content::RenderProcessHostObserver:
-  void RenderProcessExited(
-      content::RenderProcessHost* host,
-      const content::ChildProcessTerminationInfo& info) override {
-    web_contents_ready_ = false;
-    web_contents_->GetMainFrame()->GetProcess()->RemoveObserver(this);
-    web_contents_.reset();
-  }
-
-  // Compresses the first received bitmap and  saves compressed data to
-  // |png_path| if non-empty. If the file can't be saved, that's not considered
-  // and error. Next time lucky.
-  void OnDownloadImage(base::FilePath png_path,
-                       IconContentCallback callback,
-                       int id,
-                       int http_status_code,
-                       const GURL& image_url,
-                       const std::vector<SkBitmap>& bitmaps,
-                       const std::vector<gfx::Size>& sizes) {
-    if (bitmaps.empty()) {
-      VLOG(1) << "status " << http_status_code << " for download id " << id;
-      VLOG(1) << "Failed to download image from " << image_url;
-      std::move(callback).Run(std::string());
-      return;
-    }
-
-    const SkBitmap& bitmap = bitmaps[0];
-
-    // WebContents::DownloadImage returns BGRA bitmaps for data:image/svg URIs.
-    std::vector<unsigned char> compressed;
-    if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &compressed)) {
-      if (!png_path.empty()) {
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(&InstallIconFromFileThread, std::move(png_path),
-                           std::string(compressed.begin(), compressed.end())));
-      }
-    }
-    std::move(callback).Run(std::string(compressed.begin(), compressed.end()));
-  }
-
-  Profile* const profile_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  bool web_contents_ready_{false};
-  base::WeakPtrFactory<SvgIconTranscoder> weak_ptr_factory_{this};
-};
-
 GuestOsRegistryService::GuestOsRegistryService(Profile* profile)
     : profile_(profile),
       prefs_(profile->GetPrefs()),
       base_icon_path_(profile->GetPath().AppendASCII(kCrostiniIconFolder)),
       clock_(base::DefaultClock::GetInstance()),
-      svg_icon_transcoder_(std::make_unique<SvgIconTranscoder>(profile)) {
+      svg_icon_transcoder_(std::make_unique<apps::SvgIconTranscoder>(profile)) {
   RecordStartupMetrics();
 }
 
@@ -1388,20 +1217,20 @@ void GuestOsRegistryService::OnContainerAppIcon(
     // Now install the icon that we received.
     if (is_svg) {
       svg_icon_transcoder_->Transcode(
-          icons[0].content, icon_path, gfx::Size(128, 128),
+          icons[0].content, std::move(icon_path), gfx::Size(128, 128),
           base::BindOnce(&GuestOsRegistryService::OnSvgIconTranscoded,
                          weak_ptr_factory_.GetWeakPtr(), app_id));
       const base::FilePath svg_path = GetIconPath(app_id, ui::kScaleFactorNone);
       base::ThreadPool::PostTask(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(&InstallIconFromFileThread, svg_path,
+          base::BindOnce(&InstallIconFromFileThread, std::move(svg_path),
                          icons[0].content));
       return;
     }
 
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&InstallIconFromFileThread, icon_path,
+        base::BindOnce(&InstallIconFromFileThread, std::move(icon_path),
                        icons[0].content));
     icon_content = std::move(icons[0].content);
   }
