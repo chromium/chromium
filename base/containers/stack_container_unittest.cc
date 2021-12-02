@@ -71,7 +71,8 @@ TEST(StackContainer, Vector) {
   // Copying the small vector to another should use the same allocator and use
   // the now-unused stack buffer. GENERALLY CALLERS SHOULD NOT DO THIS since
   // they have to get the template types just right and it can cause errors.
-  std::vector<int, StackAllocator<int, stack_size> > other(vect.container());
+  std::vector<int, StackAllocator<int, stack_size, std::allocator<int>>> other(
+      vect.container());
   EXPECT_EQ(stack_buffer, &other.front());
   EXPECT_TRUE(vect.stack_data().used_stack_buffer_);
   for (int i = 0; i < stack_size; i++)
@@ -169,6 +170,46 @@ TEST(StackContainer, Iteration) {
   CheckStackVectorElements(vect, {8, 12, 13, 0, 0});
   vect->resize(1);
   CheckStackVectorElements(vect, {8});
+}
+
+namespace {
+struct Allocator : std::allocator<int> {
+  using Base = std::allocator<int>;
+
+  int* allocate(size_t n) {
+    ++allocated;
+    return Base::allocate(n);
+  }
+  void deallocate(int* p, size_t n) {
+    ++deallocated;
+    Base::deallocate(p, n);
+  }
+
+  static int allocated;
+  static int deallocated;
+};
+
+int Allocator::allocated = 0;
+int Allocator::deallocated = 0;
+}  // namespace
+
+TEST(StackContainer, CustomAllocator) {
+  StackVector<int, 2, Allocator> v;
+
+  EXPECT_EQ(0, Allocator::allocated);
+  EXPECT_EQ(0, Allocator::deallocated);
+
+  v->push_back(1);
+  v->push_back(1);
+  EXPECT_EQ(0, Allocator::allocated);
+  v->push_back(1);
+  EXPECT_EQ(1, Allocator::allocated);
+
+  EXPECT_EQ(0, Allocator::deallocated);
+  v->clear();
+  // shrink_to_fit() makes sure to destroy empty backing store.
+  v->shrink_to_fit();
+  EXPECT_EQ(1, Allocator::deallocated);
 }
 
 }  // namespace base
