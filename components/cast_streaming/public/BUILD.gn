@@ -33,6 +33,8 @@ source_set("config_conversions") {
 
 source_set("remoting_utils") {
   sources = [
+    "remoting_message_factories.cc",
+    "remoting_message_factories.h",
     "remoting_proto_enum_utils.cc",
     "remoting_proto_enum_utils.h",
     "remoting_proto_utils.cc",
@@ -70,6 +72,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "config_conversions_unittest.cc",
+    "remoting_message_factories_unittest.cc",
     "remoting_proto_utils_unittest.cc",
   ]
 }
