@@ -92,6 +92,12 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
                               const GPUInfo& gpu_info,
                               std::string enable_by_device_name);
 
+COMPONENT_EXPORT(VULKAN)
+VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout);
+
+COMPONENT_EXPORT(VULKAN)
+uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_

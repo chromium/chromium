@@ -7,51 +7,10 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "gpu/vulkan/vulkan_util.h"
 #include "ui/gl/gl_bindings.h"
 
-#define GL_LAYOUT_GENERAL_EXT 0x958D
-#define GL_LAYOUT_COLOR_ATTACHMENT_EXT 0x958E
-#define GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT 0x958F
-#define GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT 0x9590
-#define GL_LAYOUT_SHADER_READ_ONLY_EXT 0x9591
-#define GL_LAYOUT_TRANSFER_SRC_EXT 0x9592
-#define GL_LAYOUT_TRANSFER_DST_EXT 0x9593
-#define GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT 0x9530
-#define GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT 0x9531
-
 namespace gpu {
-
-namespace {
-
-GLenum ToGLImageLayout(VkImageLayout layout) {
-  switch (layout) {
-    case VK_IMAGE_LAYOUT_UNDEFINED:
-      return GL_NONE;
-    case VK_IMAGE_LAYOUT_GENERAL:
-      return GL_LAYOUT_GENERAL_EXT;
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      return GL_LAYOUT_COLOR_ATTACHMENT_EXT;
-    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-      return GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT;
-    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
-      return GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT;
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      return GL_LAYOUT_SHADER_READ_ONLY_EXT;
-    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-      return GL_LAYOUT_TRANSFER_SRC_EXT;
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      return GL_LAYOUT_TRANSFER_DST_EXT;
-    case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR:
-      return GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT;
-    case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR:
-      return GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT;
-    default:
-      NOTREACHED() << "Invalid image layout " << layout;
-      return GL_NONE;
-  }
-}
-
-}  // namespace
 
 // static
 void ExternalVkImageGLRepresentationShared::AcquireTexture(
@@ -60,7 +19,7 @@ void ExternalVkImageGLRepresentationShared::AcquireTexture(
     VkImageLayout src_layout) {
   GLuint gl_semaphore = semaphore->GetGLSemaphore();
   if (gl_semaphore) {
-    GLenum gl_layout = ToGLImageLayout(src_layout);
+    GLenum gl_layout = VkImageLayoutToGLImageLayout(src_layout);
     auto* api = gl::g_current_gl_context;
     api->glWaitSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1, &texture_id,
                               &gl_layout);
@@ -92,7 +51,7 @@ ExternalSemaphore ExternalVkImageGLRepresentationShared::ReleaseTexture(
     return {};
   }
 
-  GLenum gl_layout = ToGLImageLayout(dst_layout);
+  GLenum gl_layout = VkImageLayoutToGLImageLayout(dst_layout);
   auto* api = gl::g_current_gl_context;
   api->glSignalSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1, &texture_id,
                               &gl_layout);

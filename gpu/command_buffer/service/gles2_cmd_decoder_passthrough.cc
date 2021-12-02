@@ -978,6 +978,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 #if defined(OS_MAC)
       "GL_ANGLE_texture_rectangle",
 #endif
+      "GL_ANGLE_vulkan_image",
     };
     RequestExtensions(api(), requestable_extensions,
                       kRequiredFunctionalityExtensions,
