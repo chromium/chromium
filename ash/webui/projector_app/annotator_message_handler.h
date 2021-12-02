@@ -42,6 +42,7 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler,
  private:
   void OnToolSet(base::Value::ConstListView args);
   void OnUndoRedoAvailabilityChanged(base::Value::ConstListView args);
+  void OnError(base::Value::ConstListView args);
 };
 
 }  // namespace ash

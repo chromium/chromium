@@ -48,6 +48,10 @@ void AnnotatorMessageHandler::RegisterMessages() {
       base::BindRepeating(
           &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "onError", base::BindRepeating(&AnnotatorMessageHandler::OnError,
+                                     base::Unretained(this)));
 }
 
 void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {
@@ -62,6 +66,12 @@ void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
   DCHECK(args[1].is_bool());
   ProjectorController::Get()->OnUndoRedoAvailabilityChanged(args[0].GetBool(),
                                                             args[1].GetBool());
+}
+
+void AnnotatorMessageHandler::OnError(base::Value::ConstListView args) {
+  // TODO(b/200846160): The annotator is in an error state. Show creation flow
+  // error notification and trigger a reload of the WebContent hosting the
+  // annotator to clear the error state.
 }
 
 }  // namespace ash

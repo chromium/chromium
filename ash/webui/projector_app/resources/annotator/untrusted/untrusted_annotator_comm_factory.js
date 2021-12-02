@@ -7,6 +7,16 @@ import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_r
 
 const TARGET_URL = 'chrome://projector/';
 
+/**
+ * Returns the projector app element inside this current DOM.
+ * @return {projectorApp.AnnotatorApi}
+ */
+function getAnnotatorElement() {
+  return /** @type {projectorApp.AnnotatorApi} */ (
+      document.querySelector('projector-ink-canvas-wrapper'));
+}
+
+
 // A client that sends messages to the chrome://projector embedder.
 export class TrustedAnnotatorClient extends PostMessageAPIClient {
   /**
@@ -15,8 +25,6 @@ export class TrustedAnnotatorClient extends PostMessageAPIClient {
    */
   constructor(parentWindow) {
     super(TARGET_URL, parentWindow);
-    // TODO(b/196245932) Register the onUndoRedoAvailabilityChanged as callback
-    // to the ink library wrapper.
   }
 
   /**
@@ -44,23 +52,23 @@ export class UntrustedAnnotatorRequestHandler extends RequestHandler {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
 
-    this.registerMethod('setTool', (tool) => {
-      // TODO(b/196245932) Call into the Ink library to set tool.
+    this.registerMethod('setTool', (args) => {
+      getAnnotatorElement().setTool(args[0]);
       return true;
     });
 
     this.registerMethod('undo', () => {
-      // TODO(b/196245932) Call into the Ink wrapper to undo.
+      getAnnotatorElement().undo();
       return true;
     });
 
     this.registerMethod('redo', () => {
-      // TODO(b/196245932) Call into Ink wrapper to redo.
+      getAnnotatorElement().redo();
       return true;
     });
 
     this.registerMethod('clear', () => {
-      // TODO(b/196245932) call into Ink wrapper to clear.
+      getAnnotatorElement().clear();
       return true;
     });
   }
@@ -90,6 +98,11 @@ export class AnnotatorUntrustedCommFactory {
 
     AnnotatorUntrustedCommFactory.requestHandler_ =
         new UntrustedAnnotatorRequestHandler(window.parent);
+    const elem = getAnnotatorElement();
+    elem.addUndoRedoListener((undoAvailable, redoAvailable) => {
+      AnnotatorUntrustedCommFactory.client_.onUndoRedoAvailabilityChanged(
+          undoAvailable, redoAvailable);
+    });
   }
 
   /**
@@ -109,8 +122,12 @@ export class AnnotatorUntrustedCommFactory {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Create instances of the singletons(PostMessageAPIClient and
-  // RequestHandler) when the document has finished loading.
-  AnnotatorUntrustedCommFactory.maybeCreateInstances();
+const observer = new MutationObserver(() => {
+  if (getAnnotatorElement()) {
+    // Create instances of the singletons(PostMessageAPIClient and
+    // RequestHandler) when the annotator element has been added to DOM tree.
+    AnnotatorUntrustedCommFactory.maybeCreateInstances();
+  }
 });
+
+observer.observe(document, {childList: true, subtree: true});
