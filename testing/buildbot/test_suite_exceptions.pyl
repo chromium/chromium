@@ -633,6 +633,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
       },
+      'Mac11 Tests': {
+        'ci_only': True,
+      },
       'ToTWin(dbg)': {
         'swarming': {
           'shards': 20,

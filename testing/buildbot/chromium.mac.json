@@ -10723,6 +10723,7 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "ci_only": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
