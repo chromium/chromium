@@ -5,9 +5,11 @@
 #include "chromeos/network/metrics/network_metrics_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "chromeos/network/metrics/shill_connect_result.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
@@ -55,8 +57,28 @@ const std::vector<std::string> GetTetherNetworkTypeHistograms(
 
 const std::vector<std::string> GetVpnNetworkTypeHistograms(
     const NetworkState* network_state) {
-  // TODO(b/207589664): Determine histogram variant names for VPN.
-  return {};
+  const std::string kVpnPrefix = "VPN";
+  const std::string kBuiltInInfix = ".TypeBuiltIn";
+  const std::string kThirdPartyInfix = ".TypeThirdParty";
+
+  const std::string& vpn_provider_type = network_state->GetVpnProviderType();
+
+  if (vpn_provider_type.empty())
+    return {};
+
+  std::vector<std::string> vpn_histograms{kVpnPrefix};
+
+  if (vpn_provider_type == shill::kProviderThirdPartyVpn ||
+      vpn_provider_type == shill::kProviderArcVpn) {
+    vpn_histograms.emplace_back(kVpnPrefix + kThirdPartyInfix);
+  } else if (vpn_provider_type == shill::kProviderL2tpIpsec ||
+             vpn_provider_type == shill::kProviderOpenVpn ||
+             vpn_provider_type == shill::kProviderWireGuard) {
+    vpn_histograms.emplace_back(kVpnPrefix + kBuiltInInfix);
+  } else {
+    NOTREACHED();
+  }
+  return vpn_histograms;
 }
 
 const std::vector<std::string> GetNetworkTypeHistogramNames(

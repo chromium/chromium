@@ -30,9 +30,17 @@ const char kCellularESimConnectResultAllHistogram[] =
 const char kCellularPSimConnectResultAllHistogram[] =
     "Network.Cellular.PSim.ConnectionResult.All";
 
+// LogAllConnectionResult() VPN histograms.
+const char kVpnConnectResultAllHistogram[] = "Network.VPN.ConnectionResult.All";
+const char kVpnBuiltInConnectResultAllHistogram[] =
+    "Network.VPN.TypeBuiltIn.ConnectionResult.All";
+const char kVpnThirdPartyConnectResultAllHistogram[] =
+    "Network.VPN.TypeThirdParty.ConnectionResult.All";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
 const char kTestName[] = "network_name";
+const char kTestVpnHost[] = "test host";
 
 }  // namespace
 
@@ -76,7 +84,7 @@ class NetworkMetricsHelperTest : public testing::Test {
 TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularESim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeCellular, shill::kStateIdle,
-                                    /*add_to_visible=*/true);
+                                    /*visible=*/true);
   shill_service_client_->SetServiceProperty(
       kTestServicePath, shill::kEidProperty, base::Value("eid"));
   base::RunLoop().RunUntilIdle();
@@ -93,7 +101,7 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularESim) {
 TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularPSim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeCellular, shill::kStateIdle,
-                                    /*add_to_visible=*/true);
+                                    /*visible=*/true);
   base::RunLoop().RunUntilIdle();
 
   NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
@@ -103,6 +111,52 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularPSim) {
                                       1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
                                       0);
+}
+
+TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
+  const std::vector<const std::string> kProviders{{
+      shill::kProviderL2tpIpsec,
+      shill::kProviderArcVpn,
+      shill::kProviderOpenVpn,
+      shill::kProviderThirdPartyVpn,
+      shill::kProviderWireGuard,
+  }};
+
+  size_t expected_all_count = 0;
+  size_t expected_built_in_count = 0;
+  size_t expected_third_party_count = 0;
+
+  for (const auto& provider : kProviders) {
+    shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                      shill::kTypeVPN, shill::kStateIdle,
+                                      /*visible=*/true);
+    shill_service_client_->SetServiceProperty(
+        kTestServicePath, shill::kProviderTypeProperty, base::Value(provider));
+    shill_service_client_->SetServiceProperty(kTestServicePath,
+                                              shill::kProviderHostProperty,
+                                              base::Value(kTestVpnHost));
+    base::RunLoop().RunUntilIdle();
+
+    if (provider == shill::kProviderThirdPartyVpn ||
+        provider == shill::kProviderArcVpn) {
+      ++expected_third_party_count;
+    } else {
+      ++expected_built_in_count;
+    }
+    ++expected_all_count;
+
+    NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                                 shill::kErrorNotRegistered);
+    histogram_tester_->ExpectTotalCount(kVpnConnectResultAllHistogram,
+                                        expected_all_count);
+    histogram_tester_->ExpectTotalCount(kVpnBuiltInConnectResultAllHistogram,
+                                        expected_built_in_count);
+    histogram_tester_->ExpectTotalCount(kVpnThirdPartyConnectResultAllHistogram,
+                                        expected_third_party_count);
+
+    shill_service_client_->RemoveService(kTestServicePath);
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 }  // namespace chromeos
