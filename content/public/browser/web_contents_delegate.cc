@@ -158,6 +158,12 @@ bool WebContentsDelegate::IsFullscreenForTabOrPending(
   return false;
 }
 
+bool WebContentsDelegate::CanEnterFullscreenModeForTab(
+    RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  return true;
+}
+
 blink::mojom::DisplayMode WebContentsDelegate::GetDisplayMode(
     const WebContents* web_contents) {
   return blink::mojom::DisplayMode::kBrowser;
