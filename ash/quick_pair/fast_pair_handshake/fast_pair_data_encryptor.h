@@ -8,13 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <array>
-
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
