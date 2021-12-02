@@ -75,7 +75,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
       kAddressSpaceSize / kBytesPer1BitOfRegularPoolBitmap;
 
   // Returns false for nullptr.
-  static bool IsManagedByRegularPool(uintptr_t address) {
+  static bool IsManagedByRegularPool(const void* address) {
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     static_assert(
         std::numeric_limits<uintptr_t>::max() >> kBitShiftOfRegularPoolBitmap <
             regular_pool_bits_.size(),
@@ -85,11 +86,12 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
     return TS_UNCHECKED_READ(
-        regular_pool_bits_)[address >> kBitShiftOfRegularPoolBitmap];
+        regular_pool_bits_)[address_as_uintptr >> kBitShiftOfRegularPoolBitmap];
   }
 
   // Returns false for nullptr.
-  static bool IsManagedByBRPPool(uintptr_t address) {
+  static bool IsManagedByBRPPool(const void* address) {
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     static_assert(std::numeric_limits<uintptr_t>::max() >>
                       kBitShiftOfBRPPoolBitmap < brp_pool_bits_.size(),
                   "The bitmap is too small, will result in unchecked out of "
@@ -98,7 +100,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
     return TS_UNCHECKED_READ(
-        brp_pool_bits_)[address >> kBitShiftOfBRPPoolBitmap];
+        brp_pool_bits_)[address_as_uintptr >> kBitShiftOfBRPPoolBitmap];
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -171,7 +173,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 }  // namespace internal
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
   // No need to add IsManagedByConfigurablePool, because Configurable Pool
   // doesn't exist on 32-bit.
@@ -186,18 +188,18 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByRegularPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
 }
 
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
-    uintptr_t address) {
+    const void* address) {
   // The Configurable Pool is only available on 64-bit builds.
   return false;
 }

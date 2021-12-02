@@ -948,9 +948,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                   reinterpret_cast<uintptr_t>(ptr) + offset),
-               slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -970,9 +970,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                   reinterpret_cast<uintptr_t>(ptr) + offset),
-               slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -997,9 +997,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                   reinterpret_cast<uintptr_t>(ptr) + offset),
-               slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1017,9 +1017,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                   reinterpret_cast<uintptr_t>(ptr) + offset),
-               slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1043,9 +1043,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
     EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                     reinterpret_cast<uintptr_t>(ptr) + offset),
-                 slot_start);
+      EXPECT_PEQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     allocator.root()->Free(ptr);
@@ -1082,9 +1082,9 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
     char* slot_start =
         reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_PEQ(PartitionAllocGetSlotStartInBRPPool(
-                     reinterpret_cast<uintptr_t>(ptr) + offset),
-                 slot_start);
+      EXPECT_PEQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
     allocator.root()->Free(ptr);
   }
@@ -3386,80 +3386,79 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
       reinterpret_cast<uintptr_t>(slot_start) - PartitionPageSize();
   EXPECT_EQ(0U, reservation_start & DirectMapAllocationGranularityOffsetMask());
 
-  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  for (uintptr_t a = address; a < address + large_size; ++a) {
-    uintptr_t address2 = GetDirectMapReservationStart(a) + PartitionPageSize();
-    EXPECT_EQ(reinterpret_cast<uintptr_t>(slot_start), address2);
+  for (char* p = static_cast<char*>(ptr); p < (char*)ptr + large_size; ++p) {
+    void* ptr2 = reinterpret_cast<char*>(GetDirectMapReservationStart(p)) +
+                 PartitionPageSize();
+    EXPECT_EQ(slot_start, ptr2);
   }
 
-  EXPECT_EQ(reservation_start, GetDirectMapReservationStart(
-                                   reinterpret_cast<uintptr_t>(slot_start)));
+  EXPECT_EQ(reservation_start, reinterpret_cast<uintptr_t>(
+                                   GetDirectMapReservationStart(slot_start)));
 
   allocator.root()->Free(ptr);
 }
 
 TEST_F(PartitionAllocTest, CheckReservationType) {
-  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  char* ptr = reinterpret_cast<char*>(
+      allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr);
-  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  uintptr_t address_to_check = address;
-  EXPECT_FALSE(IsReservationStart(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = address + kTestAllocSize - 1;
-  EXPECT_FALSE(IsReservationStart(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
-  EXPECT_TRUE(IsReservationStart(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
+  void* ptr_to_check = ptr;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = ptr + kTestAllocSize - 1;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
   allocator.root()->Free(ptr);
   // Freeing keeps a normal-bucket super page in memory.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
-  EXPECT_TRUE(IsReservationStart(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 
   size_t large_size = 2 * kSuperPageSize;
   ASSERT_GT(large_size, kMaxBucketed);
-  ptr = allocator.root()->Alloc(large_size, type_name);
+  ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
   EXPECT_TRUE(ptr);
-  address = reinterpret_cast<uintptr_t>(ptr);
-  address_to_check = address;
-  EXPECT_FALSE(IsReservationStart(address_to_check));
-  EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignUp(address, kSuperPageSize);
-  EXPECT_FALSE(IsReservationStart(address_to_check));
-  EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = address + large_size - 1;
-  EXPECT_FALSE(IsReservationStart(address_to_check));
-  EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
-  EXPECT_TRUE(IsReservationStart(address_to_check));
-  EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
-  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
+  ptr_to_check = ptr;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignUp(ptr, kSuperPageSize);
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = ptr + large_size - 1;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
   allocator.root()->Free(ptr);
   // Freeing releases direct-map super pages.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
 #if DCHECK_IS_ON()
   // Expect to DCHECK on unallocated region.
-  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
+  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(ptr_to_check), "");
 #endif
-  EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
-  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 }
 
 // Test for crash http://crbug.com/1169003.

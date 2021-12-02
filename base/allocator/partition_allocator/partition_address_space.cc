@@ -82,12 +82,14 @@ void PartitionAddressSpace::Init() {
   setup_.regular_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       setup_.regular_pool_base_address_, kRegularPoolSize);
   PA_CHECK(setup_.regular_pool_ == kRegularPoolHandle);
-  PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
-  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
-  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
-                            kRegularPoolSize - 1));
-  PA_DCHECK(
-      !IsInRegularPool(setup_.regular_pool_base_address_ + kRegularPoolSize));
+  PA_DCHECK(!IsInRegularPool(
+      reinterpret_cast<void*>(setup_.regular_pool_base_address_ - 1)));
+  PA_DCHECK(IsInRegularPool(
+      reinterpret_cast<void*>(setup_.regular_pool_base_address_)));
+  PA_DCHECK(IsInRegularPool(reinterpret_cast<void*>(
+      setup_.regular_pool_base_address_ + kRegularPoolSize - 1)));
+  PA_DCHECK(!IsInRegularPool(reinterpret_cast<void*>(
+      setup_.regular_pool_base_address_ + kRegularPoolSize)));
 
   // Reserve an extra allocation granularity unit before the BRP pool, but keep
   // the pool aligned at kBRPPoolSize. A pointer immediately past an allocation
@@ -106,10 +108,14 @@ void PartitionAddressSpace::Init() {
   setup_.brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       setup_.brp_pool_base_address_, kBRPPoolSize);
   PA_CHECK(setup_.brp_pool_ == kBRPPoolHandle);
-  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
-  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
-  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + kBRPPoolSize - 1));
-  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + kBRPPoolSize));
+  PA_DCHECK(
+      !IsInBRPPool(reinterpret_cast<void*>(setup_.brp_pool_base_address_ - 1)));
+  PA_DCHECK(
+      IsInBRPPool(reinterpret_cast<void*>(setup_.brp_pool_base_address_)));
+  PA_DCHECK(IsInBRPPool(reinterpret_cast<void*>(setup_.brp_pool_base_address_ +
+                                                kBRPPoolSize - 1)));
+  PA_DCHECK(!IsInBRPPool(
+      reinterpret_cast<void*>(setup_.brp_pool_base_address_ + kBRPPoolSize)));
 
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.

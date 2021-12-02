@@ -113,8 +113,7 @@ struct RawPtrNoOpImpl {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-BASE_EXPORT void CheckThatAddressIsntWithinFirstPartitionPage(
-    uintptr_t address);
+BASE_EXPORT void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr);
 #endif
 
 struct BackupRefPtrImpl {
@@ -122,9 +121,16 @@ struct BackupRefPtrImpl {
   // modify the same smart pointer object without synchronization, a data race
   // will occur.
 
-  static RAW_PTR_FUNC_ATTRIBUTES bool IsSupportedAndNotNull(uintptr_t address) {
+  static RAW_PTR_FUNC_ATTRIBUTES bool IsSupportedAndNotNull(
+      const volatile void* cv_ptr) {
+    // |const volatile| qualifiers are used only to compile with |T*| pointers
+    // passed by the caller that may have those qualifiers. From now on, the
+    // pointer value is used, but is never dereferenced.
+    //
+    // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
+    void* ptr = const_cast<void*>(cv_ptr);
     // This covers the nullptr case, as address 0 is never in GigaCage.
-    bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
+    bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(ptr);
 
     // There are many situations where the compiler can prove that
     // ReleaseWrappedPtr is called on a value that is always nullptr, but the
@@ -135,16 +141,16 @@ struct BackupRefPtrImpl {
     // to the compiler that is_in_brp_pool will always be false for nullptr.
     //
     // This condition would look nicer and might also theoretically be nicer for
-    // the optimizer if it was written as "if (!address) { ... }", but
+    // the optimizer if it was written as "if (ptr == nullptr) { ... }", but
     // LLVM currently has issues with optimizing that away properly; see:
     // https://bugs.llvm.org/show_bug.cgi?id=49403
     // https://reviews.llvm.org/D97848
     // https://chromium-review.googlesource.com/c/chromium/src/+/2727400/2/base/memory/checked_ptr.h#120
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CHECK(address || !is_in_brp_pool);
+    CHECK(ptr != nullptr || !is_in_brp_pool);
 #endif
 #if HAS_BUILTIN(__builtin_assume)
-    __builtin_assume(address || !is_in_brp_pool);
+    __builtin_assume(ptr != nullptr || !is_in_brp_pool);
 #endif
 
     // There may be pointers immediately after the allocation, e.g.
@@ -166,7 +172,7 @@ struct BackupRefPtrImpl {
     // page.
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (is_in_brp_pool) {
-      CheckThatAddressIsntWithinFirstPartitionPage(address);
+      CheckThatAddressIsntWithinFirstPartitionPage(ptr);
     }
 #endif
 
@@ -176,16 +182,16 @@ struct BackupRefPtrImpl {
   // Wraps a pointer.
   template <typename T>
   static RAW_PTR_FUNC_ATTRIBUTES T* WrapRawPtr(T* ptr) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-    if (IsSupportedAndNotNull(address)) {
+    if (IsSupportedAndNotNull(ptr)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(ptr != nullptr);
 #endif
-      AcquireInternal(address);
+      AcquireInternal(ptr);
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
     else {
-      AddressPoolManagerBitmap::IncrementOutsideOfBRPPoolPtrRefCount(address);
+      AddressPoolManagerBitmap::IncrementOutsideOfBRPPoolPtrRefCount(
+          reinterpret_cast<uintptr_t>(ptr));
     }
 #endif
 
@@ -195,16 +201,16 @@ struct BackupRefPtrImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   static RAW_PTR_FUNC_ATTRIBUTES void ReleaseWrappedPtr(T* wrapped_ptr) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
-    if (IsSupportedAndNotNull(address)) {
+    if (IsSupportedAndNotNull(wrapped_ptr)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(wrapped_ptr != nullptr);
 #endif
-      ReleaseInternal(address);
+      ReleaseInternal(wrapped_ptr);
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
     else {
-      AddressPoolManagerBitmap::DecrementOutsideOfBRPPoolPtrRefCount(address);
+      AddressPoolManagerBitmap::DecrementOutsideOfBRPPoolPtrRefCount(
+          reinterpret_cast<uintptr_t>(wrapped_ptr));
     }
 #endif
   }
@@ -215,10 +221,9 @@ struct BackupRefPtrImpl {
   static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
-    if (IsSupportedAndNotNull(address)) {
+    if (IsSupportedAndNotNull(wrapped_ptr)) {
       CHECK(wrapped_ptr != nullptr);
-      CHECK(IsPointeeAlive(address));
+      CHECK(IsPointeeAlive(wrapped_ptr));
     }
 #endif
     return wrapped_ptr;
@@ -255,9 +260,8 @@ struct BackupRefPtrImpl {
   static RAW_PTR_FUNC_ATTRIBUTES T* Advance(T* wrapped_ptr,
                                             ptrdiff_t delta_elem) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
-    if (IsSupportedAndNotNull(address))
-      CHECK(IsValidDelta(address, delta_elem * sizeof(T)));
+    if (IsSupportedAndNotNull(wrapped_ptr))
+      CHECK(IsValidDelta(wrapped_ptr, delta_elem * sizeof(T)));
 #endif
     T* new_wrapped_ptr = WrapRawPtr(wrapped_ptr + delta_elem);
     ReleaseWrappedPtr(wrapped_ptr);
@@ -282,10 +286,10 @@ struct BackupRefPtrImpl {
   // lightweight |IsManagedByPartitionAllocBRPPool()| check was inlined.
   // Therefore, we've extracted the rest into the functions below and marked
   // them as NOINLINE to prevent unintended LTO effects.
-  static BASE_EXPORT NOINLINE void AcquireInternal(uintptr_t address);
-  static BASE_EXPORT NOINLINE void ReleaseInternal(uintptr_t address);
-  static BASE_EXPORT NOINLINE bool IsPointeeAlive(uintptr_t address);
-  static BASE_EXPORT NOINLINE bool IsValidDelta(uintptr_t address,
+  static BASE_EXPORT NOINLINE void AcquireInternal(const volatile void* cv_ptr);
+  static BASE_EXPORT NOINLINE void ReleaseInternal(const volatile void* cv_ptr);
+  static BASE_EXPORT NOINLINE bool IsPointeeAlive(const volatile void* cv_ptr);
+  static BASE_EXPORT NOINLINE bool IsValidDelta(const volatile void* cv_ptr,
                                                 ptrdiff_t delta_in_bytes);
 };
 

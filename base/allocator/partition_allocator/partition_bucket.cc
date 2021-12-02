@@ -142,8 +142,7 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
   // If `MarkUsed` was called earlier, the other thread could incorrectly
   // determine that the allocation had come form PartitionAlloc.
   if (ptr)
-    AddressPoolManager::GetInstance()->MarkUsed(
-        pool, reinterpret_cast<uintptr_t>(ptr), requested_size);
+    AddressPoolManager::GetInstance()->MarkUsed(pool, ptr, requested_size);
 #endif
 
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize));
@@ -294,8 +293,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     auto* super_page_extent =
         reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
-            PartitionSuperPageToMetadataArea(
-                reinterpret_cast<uintptr_t>(reservation_start)));
+            PartitionSuperPageToMetadataArea(reservation_start));
     super_page_extent->root = root;
     // The new structures are all located inside a fresh system page so they
     // will all be zeroed out. These DCHECKs are for documentation and to assert
@@ -358,9 +356,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Note that we didn't check above, because if we cannot even commit a
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(
-        reinterpret_cast<uintptr_t>(slot_start), slot_size,
-        PageUpdatePermissions);
+    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
+                                                        PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);
@@ -369,9 +366,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       {
         ScopedSyscallTimer<thread_safe> timer{root};
 #if !defined(PA_HAS_64_BITS_POINTERS)
-        AddressPoolManager::GetInstance()->MarkUnused(
-            pool, reinterpret_cast<uintptr_t>(reservation_start),
-            reservation_size);
+        AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                      reservation_size);
 #endif
         AddressPoolManager::GetInstance()->UnreserveAndDecommit(
             pool, reservation_start, reservation_size);
@@ -552,9 +548,8 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
     PA_DEBUG_DATA_ON_STACK("spansize", slot_span_reservation_size);
     PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
 
-    root->RecommitSystemPagesForData(
-        reinterpret_cast<uintptr_t>(slot_span_start), slot_span_committed_size,
-        PageUpdatePermissions);
+    root->RecommitSystemPagesForData(slot_span_start, slot_span_committed_size,
+                                     PageUpdatePermissions);
   }
 
   PA_CHECK(get_slots_per_span() <=
@@ -644,8 +639,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // First check if this is a new extent or not.
   auto* latest_extent =
       reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
-          PartitionSuperPageToMetadataArea(
-              reinterpret_cast<uintptr_t>(super_page)));
+          PartitionSuperPageToMetadataArea(super_page));
   // By storing the root in every extent metadata object, we have a fast way
   // to go from a pointer within the partition to the root object.
   latest_extent->root = root;
@@ -761,8 +755,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // Windows anyway).
   if (root->use_lazy_commit) {
     // TODO(lizeb): Handle commit failure.
-    root->RecommitSystemPagesForData(reinterpret_cast<uintptr_t>(commit_start),
-                                     commit_end - commit_start,
+    root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
                                      PageUpdatePermissions);
   }
 
@@ -975,8 +968,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       // If lazy commit is enabled, pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne(), not here.
       if (!root->use_lazy_commit) {
-        uintptr_t address = reinterpret_cast<uintptr_t>(
-            SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span));
+        void* addr =
+            SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span);
         // If lazy commit was never used, we have a guarantee that all slot span
         // pages have been previously committed, and then decommitted using
         // PageKeepPermissionsIfPossible, so use the same option as an
@@ -985,7 +978,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         // used on Windows and this flag is ignored there, thus no perf impact.)
         // TODO(lizeb): Handle commit failure.
         root->RecommitSystemPagesForData(
-            address, new_slot_span->bucket->get_bytes_per_span(),
+            addr, new_slot_span->bucket->get_bytes_per_span(),
             root->never_used_lazy_commit ? PageKeepPermissionsIfPossible
                                          : PageUpdatePermissions);
       }

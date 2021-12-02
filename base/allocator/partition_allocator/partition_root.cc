@@ -457,8 +457,8 @@ static void PartitionDumpBucketStats(
 }
 
 #if DCHECK_IS_ON()
-void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {
-  PA_DCHECK(IsManagedByPartitionAllocBRPPool(address));
+void DCheckIfManagedByPartitionAllocBRPPool(void* ptr) {
+  PA_DCHECK(IsManagedByPartitionAllocBRPPool(ptr));
 }
 #endif
 
@@ -723,8 +723,7 @@ void PartitionRoot<thread_safe>::ConfigureLazyCommit(bool enabled) {
                 char* slot_span_start = reinterpret_cast<char*>(
                     SlotSpan::ToSlotSpanStartPtr(slot_span));
                 RecommitSystemPagesForData(
-                    reinterpret_cast<uintptr_t>(slot_span_start +
-                                                already_committed_size),
+                    slot_span_start + already_committed_size,
                     size_to_commit - already_committed_size,
                     PageUpdatePermissions);
               }
@@ -741,8 +740,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     internal::SlotSpanMetadata<thread_safe>* slot_span,
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
-  PA_DCHECK(
-      internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
+  PA_DCHECK(internal::IsManagedByDirectMap(slot_span));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
@@ -780,16 +778,16 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   size_t current_slot_size = slot_span->bucket->slot_size;
   char* slot_start =
       static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
-  uintptr_t slot_start_as_uintptr = reinterpret_cast<uintptr_t>(slot_start);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =
       current_reservation_size - extent->padding_for_alignment -
       PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
 #if DCHECK_IS_ON()
-  uintptr_t reservation_start = slot_start_as_uintptr & kSuperPageBaseMask;
+  char* reservation_start = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(slot_start) & kSuperPageBaseMask);
   PA_DCHECK(internal::IsReservationStart(reservation_start));
-  PA_DCHECK(slot_start_as_uintptr + available_reservation_size ==
+  PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
 #endif
@@ -800,15 +798,15 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   } else if (new_slot_size < current_slot_size) {
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-    DecommitSystemPagesForData(slot_start_as_uintptr + new_slot_size,
-                               decommit_size, PageUpdatePermissions);
+    DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
+                               PageUpdatePermissions);
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
   } else if (new_slot_size <= available_reservation_size) {
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start_as_uintptr + current_slot_size,
+    RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
     // The recommited system pages had been already reserved and all the
@@ -846,8 +844,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     void* ptr,
     SlotSpan* slot_span,
     size_t new_size) {
-  PA_DCHECK(
-      internal::IsManagedByNormalBuckets(reinterpret_cast<uintptr_t>(ptr)));
+  PA_DCHECK(internal::IsManagedByNormalBuckets(ptr));
 
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we

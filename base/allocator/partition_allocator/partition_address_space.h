@@ -55,7 +55,7 @@ class BASE_EXPORT PartitionAddressSpace {
   }
 
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
-      uintptr_t address) {
+      const void* address) {
     address = memory::UnmaskPtr(address);
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -77,7 +77,8 @@ class BASE_EXPORT PartitionAddressSpace {
     } else {
       PA_NOTREACHED();
     }
-    return std::make_pair(pool, address - base);
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+    return std::make_pair(pool, address_as_uintptr - base);
   }
   static ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
@@ -115,8 +116,8 @@ class BASE_EXPORT PartitionAddressSpace {
   }
 
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
-    return (address & kRegularPoolBaseMask) ==
+  static ALWAYS_INLINE bool IsInRegularPool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kRegularPoolBaseMask) ==
            setup_.regular_pool_base_address_;
   }
 
@@ -125,12 +126,14 @@ class BASE_EXPORT PartitionAddressSpace {
   }
 
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
-    return (address & kBRPPoolBaseMask) == setup_.brp_pool_base_address_;
+  static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
+           setup_.brp_pool_base_address_;
   }
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
-    return (address & setup_.configurable_pool_base_mask_) ==
+  static ALWAYS_INLINE bool IsInConfigurablePool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) &
+            setup_.configurable_pool_base_mask_) ==
            setup_.configurable_pool_base_address_;
   }
 
@@ -138,9 +141,10 @@ class BASE_EXPORT PartitionAddressSpace {
     return setup_.configurable_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+  static ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
     PA_DCHECK(IsInBRPPool(address));
-    return memory::UnmaskPtr(address) - setup_.brp_pool_base_address_;
+    return reinterpret_cast<uintptr_t>(memory::UnmaskPtr(address)) -
+           setup_.brp_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -242,15 +246,15 @@ class BASE_EXPORT PartitionAddressSpace {
 };
 
 ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
-    uintptr_t address) {
+    const void* address) {
   return PartitionAddressSpace::GetPoolAndOffset(address);
 }
 
-ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
+ALWAYS_INLINE pool_handle GetPool(const void* address) {
   return std::get<0>(GetPoolAndOffset(address));
 }
 
-ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
@@ -260,7 +264,7 @@ ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
@@ -273,18 +277,18 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(const void* address) {
   return internal::PartitionAddressSpace::IsInRegularPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
-    uintptr_t address) {
+    const void* address) {
   return internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 

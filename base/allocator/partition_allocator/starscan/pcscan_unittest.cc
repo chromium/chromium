@@ -701,8 +701,7 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
 
   // Initialize scannable pointers with addresses of guard pages and metadata.
   pointers->super_page_base = super_page;
-  pointers->metadata_page =
-      PartitionSuperPageToMetadataArea(reinterpret_cast<uintptr_t>(super_page));
+  pointers->metadata_page = PartitionSuperPageToMetadataArea(super_page);
   pointers->guard_page1 =
       static_cast<char*>(pointers->metadata_page) + SystemPageSize();
   pointers->scan_bitmap = SuperPageStateBitmap(super_page);

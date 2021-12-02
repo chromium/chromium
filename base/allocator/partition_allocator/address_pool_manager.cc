@@ -320,8 +320,9 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
 }
 
 void AddressPoolManager::MarkUsed(pool_handle handle,
-                                  uintptr_t address,
+                                  const void* address,
                                   size_t length) {
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -350,11 +351,12 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
     // Suppose that |ptr| points to an address inside B after the loop. If
     // IsManagedByBRPPoolPool(ptr) were to return true, ~raw_ptr<T>() would
     // crash, since the memory is not allocated by PartitionAlloc.
-    SetBitmap(AddressPoolManagerBitmap::brp_pool_bits_,
-              (address >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
-                  AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
-              (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
-                  AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
+    SetBitmap(
+        AddressPoolManagerBitmap::brp_pool_bits_,
+        (ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
+            AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
+        (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
+            AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
@@ -363,19 +365,21 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
         (length % AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap) ==
         0);
     SetBitmap(AddressPoolManagerBitmap::regular_pool_bits_,
-              address >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+              ptr_as_uintptr >>
+                  AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
               length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
 
 void AddressPoolManager::MarkUnused(pool_handle handle,
-                                    uintptr_t address,
+                                    const void* address,
                                     size_t length) {
   // Address regions allocated for normal buckets are never released, so this
   // function can only be called for direct map. However, do not DCHECK on
   // IsManagedByDirectMap(address), because many tests test this function using
   // small allocations.
 
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -388,7 +392,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
     // (See MarkUsed comment)
     ResetBitmap(
         AddressPoolManagerBitmap::brp_pool_bits_,
-        (address >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
+        (ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
             AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
         (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
             AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
@@ -401,7 +405,8 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
         0);
     ResetBitmap(
         AddressPoolManagerBitmap::regular_pool_bits_,
-        address >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+        ptr_as_uintptr >>
+            AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
         length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
