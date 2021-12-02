@@ -3021,70 +3021,85 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                               "a.test", "/interest_group/decision_logic.js"))));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
-  // Start by adding a placeholder bidder in domain b.test, used for
-  // perBuyerSignals validation.
-  GURL test_url_b = https_server_->GetURL("b.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
-  url::Origin test_origin_b = url::Origin::Create(test_url_b);
+// Use bidder and seller worklet files that validate their arguments all have
+// the expected values.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
+  // Use different hostnames for each participant, since
+  // `trusted_bidding_signals` only checks the hostname of certain parameters.
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kSellerHost[] = "b.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kSecondBidderHost[] = "d.test";
+  content_browser_client_.AddToAllowList(
+      {url::Origin::Create(https_server_->GetURL(kSecondBidderHost, "/"))});
 
-  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
-      /*expiry=*/base::Time(),
-      /*owner=*/test_origin_b,
+  // Start by adding a placeholder bidder in domain d.test, used for
+  // perBuyerSignals validation.
+  GURL second_bidder_url = https_server_->GetURL(kSecondBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), second_bidder_url));
+  url::Origin second_bidder_origin = url::Origin::Create(second_bidder_url);
+
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/second_bidder_origin,
       /*name=*/"boats",
       /*bidding_url=*/
-      https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
-      /*update_url=*/absl::nullopt,
-      /*trusted_bidding_signals_url=*/
-      https_server_->GetURL("b.test",
-                            "/interest_group/trusted_bidding_signals.json"),
-      /*trusted_bidding_signals_keys=*/{{"key1"}},
-      /*user_bidding_signals=*/"{some: 'json', data: {here:[1, 2, 3]}}",
+      https_server_->GetURL(kSecondBidderHost,
+                            "/interest_group/bidding_logic.js"),
       /*ads=*/
-      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
-      /*ad_components=*/absl::nullopt)));
+      {{{GURL("https://should-not-be-returned/"),
+         /*metadata=*/absl::nullopt}}}));
 
   // This is the primary interest group that wins the auction because
   // bidding_argument_validator.js bids 2, whereas bidding_logic.js bids 1, and
   // decision_logic.js just returns the bid as the rank -- highest rank wins.
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
-      /*owner=*/test_origin,
+      /*owner=*/bidder_origin,
       /*name=*/"cars",
       /*bidding_url=*/
-      https_server_->GetURL("a.test",
+      https_server_->GetURL(kBidderHost,
                             "/interest_group/bidding_argument_validator.js"),
       /*update_url=*/absl::nullopt,
       /*trusted_bidding_signals_url=*/
-      https_server_->GetURL("a.test",
+      https_server_->GetURL(kBidderHost,
                             "/interest_group/trusted_bidding_signals.json"),
       /*trusted_bidding_signals_keys=*/{{"key1"}},
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
       /*ads=*/
       {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
-      /*ad_components=*/absl::nullopt)));
+      /*ad_components=*/
+      {{{GURL("https://example.com/render-component"),
+         /*metadata=*/absl::nullopt}}})));
 
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, "/echo")));
+  GURL seller_script_url = https_server_->GetURL(
+      kSellerHost, "/interest_group/decision_argument_validator.js");
   EXPECT_EQ(
       "https://example.com/render",
-      EvalJs(shell(), JsReplace(
-                          R"(
+      EvalJs(
+          shell(),
+          JsReplace(
+              R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $3,
-    interestGroupBuyers: [$1, $2],
+    decisionLogicUrl: $2,
+    trustedScoringSignalsUrl: $3,
+    interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
-    perBuyerSignals: {$1: {signalsForBuyer: 1}, $2: {signalsForBuyer: 2}}
+    perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}}
   });
 })())",
-                          test_origin, test_origin_b,
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/decision_logic.js"))));
+              url::Origin::Create(seller_script_url), seller_script_url,
+              https_server_->GetURL(
+                  kSellerHost, "/interest_group/trusted_scoring_signals.json"),
+              bidder_origin, second_bidder_origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -3124,55 +3139,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                  test_origin,
                  https_server_->GetURL(
                      "a.test", "/interest_group/decision_logic_throws.js"))));
-}
-
-// Use bidder and seller worklet files that validate their arguments all have
-// the expected values.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-
-  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
-      /*expiry=*/base::Time(),
-      /*owner=*/test_origin,
-      /*name=*/"cars",
-      /*bidding_url=*/
-      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-      /*update_url=*/absl::nullopt,
-      /*trusted_bidding_signals_url=*/
-      https_server_->GetURL("a.test",
-                            "/interest_group/trusted_bidding_signals.json"),
-      /*trusted_bidding_signals_keys=*/{{"key1"}},
-      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-      /*ads=*/
-      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
-      /*ad_components=*/
-      {{{GURL("https://example.com/render-component"),
-         /*metadata=*/absl::nullopt}}})));
-
-  EXPECT_EQ(
-      "https://example.com/render",
-      EvalJs(
-          shell(),
-          JsReplace(
-              R"(
-(async function() {
-  return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicUrl: $2,
-    trustedScoringSignalsUrl: $3,
-    interestGroupBuyers: [$1],
-    auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
-    sellerSignals: {signals: 'from', the: ['seller']},
-    perBuyerSignals: {$1: {signalsForBuyer: 1}}
-  });
-})())",
-              test_origin,
-              https_server_->GetURL(
-                  "a.test", "/interest_group/decision_argument_validator.js"),
-              https_server_->GetURL(
-                  "a.test", "/interest_group/trusted_scoring_signals.json"))));
 }
 
 // JSON fields of joinAdInterestGroup() and runAdAuction() should support

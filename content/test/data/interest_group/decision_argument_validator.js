@@ -21,21 +21,21 @@ function validateAdMetadata(adMetadata) {
 }
 
 function validateBid(bid) {
-  if (bid !== 1)
+  if (bid !== 2)
     throw 'Wrong bid ' + bid;
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (!auctionConfig.seller.includes('a.test'))
+  if (!auctionConfig.seller.includes('b.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
   // TODO(crbug.com/1186444): Consider validating URL fields like
   // auctionConfig.decisionLogicUrl once we decide what to do about URL
   // normalization.
-  // TODO(crbug.com/1186444): Test `trustedScoringSignals` once implemented.
-  if (auctionConfig.interestGroupBuyers.length !== 1)
+  if (auctionConfig.interestGroupBuyers.length !== 2 ||
+      auctionConfig.interestGroupBuyers[0] !== 'a.test' ||
+      auctionConfig.interestGroupBuyers[1] !== 'd.test') {
     throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
-  if (!auctionConfig.interestGroupBuyers[0].includes('a.test'))
-    throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
+  }
   // If auctionSignals is passed as a JSON string instead of an object,
   // stringify() will wrap it in another layer of quotes, causing the test to
   // fail. The order of properties produced by stringify() isn't guaranteed by
@@ -67,9 +67,9 @@ function validateTrustedScoringSignals(signals) {
 }
 
 function validateBrowserSignals(browserSignals) {
-  if (!browserSignals.topWindowHostname.includes('a.test'))
+  if (browserSignals.topWindowHostname !== 'c.test')
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
-  if (!browserSignals.interestGroupOwner.includes('a.test'))
+  if (!browserSignals.interestGroupOwner.startsWith('https://a.test'))
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
   if (browserSignals.renderUrl !== "https://example.com/render")
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
