@@ -3607,7 +3607,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.CancelSystemTouches" enum="BooleanHit"
-    expires_after="2022-01-02">
+    expires_after="M98">
+  <obsolete>
+    Removed in M98 as the Context menu implementation changed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/OWNERS</owner>
   <summary>
@@ -3617,7 +3620,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.DelayedElementDetails"
-    enum="ContextMenuDelayedElementDetails" expires_after="2022-01-02">
+    enum="ContextMenuDelayedElementDetails" expires_after="M98">
+  <obsolete>
+    Removed in M98 as the context menu implementation changed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/OWNERS</owner>
   <summary>
@@ -3630,7 +3636,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.DOMElementFrame" enum="ContextMenuDOMElementFrame"
-    expires_after="2022-01-02">
+    expires_after="M98">
+  <obsolete>
+    Removed in M98 as the ContextMenu implementation changed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/OWNERS</owner>
   <summary>
@@ -3754,9 +3763,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ContextMenu.SelectedOptionIOS"
-    enum="ContextMenuOptionIOS" expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
+    enum="ContextMenuOptionIOS" expires_after="M98">
+  <obsolete>
+    Replaced by Mobile.ContextMenu.WebImage.Actions,
+    Mobile.ContextMenu.WebImageLink.Actions and
+    Mobile.ContextMenu.WebLink.Actions in M98
+  </obsolete>
   <owner>avi@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -3855,7 +3867,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.WaitingForElementDetails" enum="BooleanHit"
-    expires_after="2021-12-12">
+    expires_after="M98">
+  <obsolete>
+    Removed in M98 as the context menu implementation changed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/OWNERS</owner>
   <summary>

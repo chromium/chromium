@@ -53,9 +53,6 @@ extern const base::Feature kRecordSnapshotSize;
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 extern const base::Feature kSetRequestAttribution;
 
-// When enabled, use the native context menu in web content.
-extern const base::Feature kWebViewNativeContextMenu;
-
 // When enabled, display non-live preview for context menus in web content.
 extern const base::Feature kWebViewNativeContextMenuPhase2;
 
@@ -91,10 +88,6 @@ bool UseWebClientDefaultUserAgent();
 
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();
-
-// When true, the custom implementation of context menu using native ContextMenu
-// for the web content is used.
-bool UseWebViewNativeContextMenuSystem();
 
 // When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
 bool ShouldTakeScreenshotOnNonHTMLContent();

@@ -514,11 +514,6 @@ extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 extern const char kWebPageAlternativeTextZoomName[];
 extern const char kWebPageAlternativeTextZoomDescription[];
 
-// Title and description for the flag to enable the native context menus in the
-// WebView.
-extern const char kWebViewNativeContextMenuName[];
-extern const char kWebViewNativeContextMenuDescription[];
-
 // Title and description for the flag to enable the phase 2 of context menus in
 // the WebView.
 extern const char kWebViewNativeContextMenuPhase2Name[];

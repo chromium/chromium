@@ -574,12 +574,6 @@ const char kWebPageAlternativeTextZoomName[] =
 const char kWebPageAlternativeTextZoomDescription[] =
     "When enabled, switches the method used to zoom web pages.";
 
-const char kWebViewNativeContextMenuName[] =
-    "Use the native Context Menus in the WebView";
-const char kWebViewNativeContextMenuDescription[] =
-    "When enabled, the native context menu are displayed when the user long "
-    "press on a link or an image.";
-
 const char kWebViewNativeContextMenuPhase2Name[] =
     "Context Menu with non-live preview";
 const char kWebViewNativeContextMenuPhase2Description[] =

@@ -46,12 +46,6 @@ class WebStateDelegate {
   virtual WebState* OpenURLFromWebState(WebState* source,
                                         const WebState::OpenURLParams& params);
 
-  // Notifies the delegate that the user triggered the context menu with the
-  // given |ContextMenuParams|. If the delegate does not implement this method,
-  // no context menu will be displayed.
-  virtual void HandleContextMenu(WebState* source,
-                                 const ContextMenuParams& params);
-
   // Requests the repost form confirmation dialog. Clients must call |callback|
   // with true to allow repost and with false to cancel the repost. If this
   // method is not implemented then WebState will repost the form.

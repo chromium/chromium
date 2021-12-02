@@ -79,8 +79,6 @@ class FakeWebStateDelegate : public WebStateDelegate {
   WebState* OpenURLFromWebState(WebState*,
                                 const WebState::OpenURLParams&) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(WebState*) override;
-  void HandleContextMenu(WebState* source,
-                         const ContextMenuParams& params) override;
   void ShowRepostFormWarningDialog(
       WebState* source,
       base::OnceCallback<void(bool)> callback) override;
@@ -102,11 +100,6 @@ class FakeWebStateDelegate : public WebStateDelegate {
 
   // Returns list of all popups requested via CreateNewWebState.
   const std::vector<FakePopup>& popups() const { return popups_; }
-
-  // True if the WebStateDelegate HandleContextMenu method has been called.
-  bool handle_context_menu_called() const {
-    return handle_context_menu_called_;
-  }
 
   // Returns the last Web State creation request passed to |CreateNewWebState|.
   FakeCreateNewWebStateRequest* last_create_new_web_state_request() const {
@@ -157,7 +150,6 @@ class FakeWebStateDelegate : public WebStateDelegate {
   // A page can open popup if its URL is in this set.
   std::set<GURL> allowed_popups_;
   std::vector<FakePopup> popups_;
-  bool handle_context_menu_called_ = false;
   std::unique_ptr<FakeCreateNewWebStateRequest>
       last_create_new_web_state_request_;
   std::unique_ptr<FakeCloseWebStateRequest> last_close_web_state_request_;

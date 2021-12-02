@@ -336,8 +336,6 @@
 
   [self.pageInfoCoordinator stop];
 
-  [self.contextMenuProvider dismissLegacyContextMenu];
-
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
 }

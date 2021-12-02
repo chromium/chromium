@@ -456,12 +456,6 @@ TEST_F(WebStateImplTest, DelegateTest) {
       PageTransitionCoreTypeIs(params.transition, actual_params.transition));
   EXPECT_EQ(params.is_renderer_initiated, actual_params.is_renderer_initiated);
 
-  // Test that HandleContextMenu() is called.
-  EXPECT_FALSE(delegate.handle_context_menu_called());
-  web::ContextMenuParams context_menu_params;
-  web_state_->HandleContextMenu(context_menu_params);
-  EXPECT_TRUE(delegate.handle_context_menu_called());
-
   // Test that ShowRepostFormWarningDialog() is called.
   EXPECT_FALSE(delegate.last_repost_form_request());
   base::OnceCallback<void(bool)> repost_callback;

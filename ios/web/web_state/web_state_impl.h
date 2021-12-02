@@ -38,7 +38,6 @@
 namespace web {
 
 class BrowserState;
-struct ContextMenuParams;
 struct FaviconURL;
 class NavigationContextImpl;
 class NavigationManager;
@@ -199,9 +198,6 @@ class WebStateImpl final : public WebState {
 
   // Notifies the delegate that the load progress was updated.
   void SendChangeLoadProgress(double progress);
-
-  // Notifies the delegate that a context menu needs handling.
-  void HandleContextMenu(const ContextMenuParams& params);
 
   // Notifies the delegate that a Form Repost dialog needs to be presented.
   void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);

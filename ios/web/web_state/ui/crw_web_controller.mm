@@ -51,7 +51,6 @@
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_state/page_viewport_state.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
-#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 #import "ios/web/web_state/ui/crw_web_request_controller.h"
@@ -1512,16 +1511,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           requireGestureRecognizerToFail:swipeRecognizer];
     }
 
-    if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
-        self.contextMenuController = [[CRWContextMenuController alloc]
-            initWithWebView:self.webView
-                   webState:self.webStateImpl];
-    } else {
-      // Default to legacy implementation.
-      self.UIHandler.contextMenuController =
-          [[CRWLegacyContextMenuController alloc]
-              initWithWebView:self.webView
-                     webState:self.webStateImpl];
+    if (web::GetWebClient()->EnableLongPressUIContextMenu() &&
+        web::GetWebClient()->EnableLongPressAndForceTouchHandling()) {
+      self.contextMenuController =
+          [[CRWContextMenuController alloc] initWithWebView:self.webView
+                                                   webState:self.webStateImpl];
     }
 
     // WKWebViews with invalid or empty frames have exhibited rendering bugs, so

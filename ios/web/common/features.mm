@@ -43,9 +43,6 @@ const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
 const base::Feature kSetRequestAttribution{"SetRequestAttribution",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kWebViewNativeContextMenuPhase2{
     "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -77,11 +74,6 @@ bool UseWebClientDefaultUserAgent() {
 
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
-}
-
-bool UseWebViewNativeContextMenuSystem() {
-  return base::FeatureList::IsEnabled(kWebViewNativeContextMenu) ||
-         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2);
 }
 
 bool ShouldTakeScreenshotOnNonHTMLContent() {

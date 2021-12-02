@@ -15097,6 +15097,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextMenuOptionIOS">
+  <obsolete>
+    Deprecated in M94
+  </obsolete>
   <summary>The item selected from a context menu on iOS.</summary>
   <int value="0" label="Open in new tab"/>
   <int value="1" label="Open in incognito tab"/>

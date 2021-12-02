@@ -92,8 +92,6 @@ class WebStateDelegateBrowserAgent
   web::WebState* OpenURLFromWebState(
       web::WebState* source,
       const web::WebState::OpenURLParams& params) override;
-  void HandleContextMenu(web::WebState* source,
-                         const web::ContextMenuParams& params) override;
   void ShowRepostFormWarningDialog(
       web::WebState* source,
       base::OnceCallback<void(bool)> callback) override;

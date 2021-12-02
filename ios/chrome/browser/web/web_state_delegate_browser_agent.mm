@@ -225,13 +225,6 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
   };
 }
 
-void WebStateDelegateBrowserAgent::HandleContextMenu(
-    web::WebState* source,
-    const web::ContextMenuParams& params) {
-  [context_menu_provider_ showLegacyContextMenuForWebState:source
-                                                    params:params];
-}
-
 void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     web::WebState* source,
     base::OnceCallback<void(bool)> callback) {

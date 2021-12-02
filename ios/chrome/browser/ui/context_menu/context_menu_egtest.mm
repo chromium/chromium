@@ -449,12 +449,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       // Tap the tools menu to dismiss the popover.
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
           performAction:grey_tap()];
-    } else if (web::features::UseWebViewNativeContextMenuSystem()) {
-      // Tap the drop shadow to dismiss the popover.
-      chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
-    } else {
-      TapOnContextMenuButton(chrome_test_util::CancelButton());
     }
+    // Tap the drop shadow to dismiss the popover.
+    chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
 
     // Make sure the context menu disappeared.
     ConditionBlock condition = ^{
@@ -493,28 +490,18 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (![ChromeEarlGrey isIPadIdiom] &&
-      !web::features::UseWebViewNativeContextMenuSystem()) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
 }
 
 // Checks that "open in new window" shows up on a long press of a url link
@@ -589,11 +576,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   LongPressElement(kInitialPageDestinationLinkId);
 
   // Check the different buttons.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Make sure that the open action is not displayed.
@@ -611,11 +596,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   LongPressElement(kInitialPageDestinationLinkId);
 
   // Check the different buttons.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

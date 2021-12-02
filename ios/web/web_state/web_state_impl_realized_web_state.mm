@@ -386,13 +386,6 @@ void WebStateImpl::RealizedWebState::SendChangeLoadProgress(double progress) {
     observer.LoadProgressChanged(owner_, progress);
 }
 
-void WebStateImpl::RealizedWebState::HandleContextMenu(
-    const ContextMenuParams& params) {
-  if (delegate_) {
-    delegate_->HandleContextMenu(owner_, params);
-  }
-}
-
 void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
     base::OnceCallback<void(bool)> callback) {
   if (delegate_) {

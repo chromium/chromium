@@ -5646,11 +5646,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "web-view-native-context-menu",
-    "owners": ["gambard","bling-flags@google.com"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "webnotes-publish",
     "owners": [ "sebsg", "gayane"],
     "expiry_milestone": 97

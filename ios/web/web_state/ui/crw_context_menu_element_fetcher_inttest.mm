@@ -11,7 +11,6 @@
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/test/web_test_with_web_controller.h"
-#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,16 +36,6 @@ const CGFloat kFetcherJSTimeout = 1.0;
 namespace web {
 class CRWContextMenuElementFetcherTest : public WebTestWithWebController {
  public:
-  CRWContextMenuElementFetcherTest() {
-    // Disable the existing long press handling to avoid duplicating message
-    // handlers.
-    swizzler_ = std::make_unique<ScopedBlockSwizzler>(
-        [CRWLegacyContextMenuController class],
-        @selector(initWithWebView:webState:), ^id(id self) {
-          return nil;
-        });
-  }
-
   void SetUp() override {
     WebTestWithWebState::SetUp();
     WKWebView* web_view = [web_controller() ensureWebViewCreated];

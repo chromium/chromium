@@ -398,7 +398,7 @@ bool ChromeWebClient::EnableLongPressAndForceTouchHandling() const {
 }
 
 bool ChromeWebClient::EnableLongPressUIContextMenu() const {
-  return web::features::UseWebViewNativeContextMenuSystem();
+  return true;
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(

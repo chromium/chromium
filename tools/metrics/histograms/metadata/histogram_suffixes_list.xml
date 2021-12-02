@@ -3067,6 +3067,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextMenuTypeIOS" separator=".">
+  <obsolete>
+    Deprecated as of M98.
+  </obsolete>
   <suffix name="Image"
       label="The context menu was shown for a (non-link) image"/>
   <suffix name="ImageLink"

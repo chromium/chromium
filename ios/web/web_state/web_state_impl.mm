@@ -219,10 +219,6 @@ void WebStateImpl::SendChangeLoadProgress(double progress) {
   RealizedState()->SendChangeLoadProgress(progress);
 }
 
-void WebStateImpl::HandleContextMenu(const ContextMenuParams& params) {
-  RealizedState()->HandleContextMenu(params);
-}
-
 void WebStateImpl::ShowRepostFormWarningDialog(
     base::OnceCallback<void(bool)> callback) {
   RealizedState()->ShowRepostFormWarningDialog(std::move(callback));
