@@ -36,6 +36,17 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
+
+ private:
+  std::unique_ptr<blink::URLLoaderThrottle> CreateUrlRewriteRulesThrottle(
+      content::WebContents* web_contents);
 };
 
 }  // namespace chromecast

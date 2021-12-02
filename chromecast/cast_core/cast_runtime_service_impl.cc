@@ -64,4 +64,8 @@ CastWebService* CastRuntimeServiceImpl::GetCastWebService() {
   return web_service_;
 }
 
+RuntimeApplication* CastRuntimeServiceImpl::GetRuntimeApplication() {
+  return app_dispatcher_.GetRuntimeApplication();
+}
+
 }  // namespace chromecast

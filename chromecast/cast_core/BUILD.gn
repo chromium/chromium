@@ -13,7 +13,6 @@ group("cast_core") {
     ":renderer",
     ":runtime_service",
     ":streaming_receiver_session_client",
-    ":url_rewrite",
   ]
 
   if (is_linux) {
@@ -23,6 +22,17 @@ group("cast_core") {
   if (enable_cast_media_runtime) {
     deps += [ ":cast_runtime_content_client_factories" ]
   }
+}
+
+cast_source_set("cors_exempt_headers") {
+  sources = [
+    "cors_exempt_headers.cc",
+    "cors_exempt_headers.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//chromecast/common:cors_exempt_headers" ]
 }
 
 cast_source_set("grpc_support") {
@@ -58,23 +68,6 @@ cast_source_set("grpc_impl") {
     "//third_party/cast_core/public/src/proto/v2:runtime_message_port_application_service_proto",
     "//third_party/grpc:grpc++",
   ]
-}
-
-cast_source_set("url_rewrite") {
-  sources = [
-    "url_rewrite_rules_adapter.cc",
-    "url_rewrite_rules_adapter.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//chromecast/common",
-    "//chromecast/common/mojom",
-    "//mojo/public/cpp/bindings",
-    "//third_party/cast_core/public/src/proto/v2:url_rewrite_proto",
-  ]
-
-  deps = [ "//url" ]
 }
 
 cast_source_set("message_port") {
@@ -181,8 +174,6 @@ if (is_linux) {
 
   cast_source_set("application_dispatch") {
     sources = [
-      "runtime_application.cc",
-      "runtime_application.h",
       "runtime_application_base.cc",
       "runtime_application_base.h",
       "runtime_application_dispatcher.cc",
@@ -198,10 +189,12 @@ if (is_linux) {
       ":grpc_support",
       ":grpc_webui",
       ":metrics_recorder",
+      ":runtime_application",
       "//base",
       "//chromecast/browser:public",
       "//chromecast/common:feature_constants",
       "//components/cast_streaming/public/mojom",
+      "//components/url_rewrite/browser",
       "//media/mojo/mojom",
       "//third_party/cast_core/public/src/proto/common:application_config_proto",
       "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
@@ -213,7 +206,6 @@ if (is_linux) {
     deps = [
       ":core_service_bindings",
       ":streaming_receiver_session_client",
-      ":url_rewrite",
       "//chromecast/browser:browser_base",
       "//chromecast/cast_core/url_rewrite",
       "//components/cast/message_port",
@@ -231,14 +223,21 @@ cast_source_set("renderer") {
   sources = [
     "cast_runtime_content_renderer_client.cc",
     "cast_runtime_content_renderer_client.h",
+    "cast_runtime_url_loader_throttle_provider.cc",
+    "cast_runtime_url_loader_throttle_provider.h",
+    "url_rewrite_rules_provider.cc",
+    "url_rewrite_rules_provider.h",
   ]
 
   deps = [
+    ":cors_exempt_headers",
     "//base",
     "//chromecast/renderer:renderer_base",
     "//components/cast_streaming/public",
     "//components/cast_streaming/renderer",
     "//components/cast_streaming/renderer:renderer_controller_proxy_factory",
+    "//components/url_rewrite/common",
+    "//components/url_rewrite/renderer",
     "//content/public/renderer",
     "//media",
   ]
@@ -252,12 +251,16 @@ cast_source_set("browser") {
   ]
 
   deps = [
+    ":cors_exempt_headers",
+    ":runtime_application",
     ":runtime_service",
     "//base",
     "//chromecast/browser",
-    "//chromecast/common:cors_exempt_headers",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
     "//content/public/common",
     "//media",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
   ]
 
   if (chromecast_branding == "public") {
@@ -287,6 +290,19 @@ cast_source_set("streaming_receiver_session_client") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
+  ]
+}
+
+cast_source_set("runtime_application") {
+  sources = [
+    "runtime_application.cc",
+    "runtime_application.h",
+  ]
+
+  public_deps = [
+    "//third_party/cast_core/public/src/proto/common:application_config_proto",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+    "//url",
   ]
 }
 
@@ -336,10 +352,10 @@ if (enable_cast_media_runtime) {
 
     deps = [
       ":browser",
+      ":cors_exempt_headers",
       ":renderer",
       "//base",
       "//chromecast/browser",
-      "//chromecast/common:cors_exempt_headers",
       "//chromecast/renderer:renderer_base",
     ]
 
@@ -406,18 +422,18 @@ cast_source_set("cast_core_test_utils") {
 test("cast_cast_core_unittests") {
   sources = [
     "cast_runtime_histogram_flattener_unittest.cc",
+    "cors_exempt_headers_unittest.cc",
     "grpc_resource_data_source_unittest.cc",
     "streaming_receiver_session_client_unittest.cc",
-    "url_rewrite_rules_adapter_unittests.cc",
   ]
 
   deps = [
     ":browser",
     ":cast_core_test_utils",
+    ":cors_exempt_headers",
     ":grpc_webui",
     ":metrics_recorder",
     ":streaming_receiver_session_client",
-    ":url_rewrite",
     "//base",
     "//base/test:test_support",
     "//chromecast/base/metrics",
@@ -425,6 +441,7 @@ test("cast_cast_core_unittests") {
     "//chromecast/browser:simple_main_parts",
     "//chromecast/browser:test_support",
     "//chromecast/cast_core/url_rewrite:unit_tests",
+    "//chromecast/common:cors_exempt_headers",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",

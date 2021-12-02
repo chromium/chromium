@@ -257,4 +257,12 @@ RuntimeApplicationDispatcher::GetCastMediaServiceGrpcEndpoint() const {
   return app_->cast_media_service_grpc_endpoint();
 }
 
+CastWebService* RuntimeApplicationDispatcher::GetCastWebService() const {
+  return web_service_;
+}
+
+RuntimeApplication* RuntimeApplicationDispatcher::GetRuntimeApplication() {
+  return app_.get();
+}
+
 }  // namespace chromecast

@@ -14,8 +14,8 @@
 namespace chromecast {
 
 class CastWebService;
-
 class CastEventBuilder;
+class RuntimeApplication;
 
 // This interface is to be used for building the Cast Runtime Service and act as
 // the border between shared Chromium code and the specifics of that
@@ -33,6 +33,7 @@ class CastRuntimeServiceImpl
   void StopInternal() override;
   const std::string& GetAudioChannelEndpoint() override;
   CastWebService* GetCastWebService() override;
+  RuntimeApplication* GetRuntimeApplication() override;
 
  protected:
   // CastRuntimeMetricsRecorder::EventBuilderFactory overrides.

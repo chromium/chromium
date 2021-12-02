@@ -4,11 +4,15 @@
 
 #include "chromecast/cast_core/cast_runtime_content_browser_client.h"
 
+#include "base/ranges/algorithm.h"
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/cast_runtime_service.h"
-#include "chromecast/common/cors_exempt_headers.h"
+#include "chromecast/cast_core/cors_exempt_headers.h"
+#include "chromecast/cast_core/runtime_application.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/cdm_factory.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -78,6 +82,44 @@ void CastRuntimeContentBrowserClient::AppendExtraCommandLineSwitches(
 bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
     const url::Origin& origin) {
   return origin.host() == kCastWebUIHomeHost;
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  auto url_rewrite_rules_throttle =
+      CreateUrlRewriteRulesThrottle(wc_getter.Run());
+  if (url_rewrite_rules_throttle) {
+    throttles.emplace_back(std::move(url_rewrite_rules_throttle));
+  }
+  return throttles;
+}
+
+std::unique_ptr<blink::URLLoaderThrottle>
+CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
+    content::WebContents* web_contents) {
+  RuntimeApplication* app =
+      CastRuntimeService::GetInstance()->GetRuntimeApplication();
+  DCHECK(app);
+
+  url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager =
+      app->GetUrlRewriteRulesManager();
+  DCHECK(url_rewrite_rules_manager);
+
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
+      url_rewrite_rules_manager->GetCachedRules();
+  if (!rules) {
+    LOG(WARNING) << "Can't create URL throttle as URL rules are not available";
+    return nullptr;
+  }
+
+  return std::make_unique<url_rewrite::URLLoaderThrottle>(
+      rules, base::BindRepeating(&IsHeaderCorsExempt));
 }
 
 }  // namespace chromecast

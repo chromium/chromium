@@ -10,15 +10,10 @@
 
 #include "base/containers/span.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-#include "chromecast/common/cors_exempt_headers.h"
+#include "chromecast/cast_core/cors_exempt_headers.h"
 
 namespace chromecast {
 namespace shell {
-namespace {
-
-constexpr char kAcceptLanguageHeader[] = "Accept-Language";
-
-}  // namespace
 
 // static
 std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
@@ -28,10 +23,7 @@ std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
 
 // static
 std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
-  base::span<const char*> base_headers = GetLegacyCorsExemptHeaders();
-  std::vector<std::string> headers{base_headers.begin(), base_headers.end()};
-  headers.emplace_back(kAcceptLanguageHeader);
-  return headers;
+  return GetCastCoreCorsExemptHeadersList();
 }
 
 }  // namespace shell

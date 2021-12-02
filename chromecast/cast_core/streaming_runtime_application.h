@@ -34,8 +34,8 @@ class StreamingRuntimeApplication final
   // RuntimeApplicationBase implementation:
   void HandleMessage(const cast::web::Message& message,
                      cast::web::MessagePortStatus* response) override;
-  GURL InitializeAndGetInitialURL(CoreApplicationServiceGrpc* grpc_stub,
-                                  CastWebContents* cast_web_contents) override;
+  void InitializeApplication(CoreApplicationServiceGrpc* grpc_stub,
+                             CastWebContents* cast_web_contents) override;
   void StopApplication() override;
 
   // StreamingReceiverSessionClient::Handler implementation:

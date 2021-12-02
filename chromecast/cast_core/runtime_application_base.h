@@ -15,7 +15,7 @@
 #include "chromecast/cast_core/runtime_application.h"
 #include "chromecast/cast_core/runtime_application_service_grpc_impl.h"
 #include "chromecast/cast_core/runtime_message_port_application_service_grpc_impl.h"
-#include "chromecast/cast_core/url_rewrite_rules_adapter.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
 
 namespace chromecast {
@@ -56,10 +56,12 @@ class RuntimeApplicationBase
   // Returns a pointer to CastWebService.
   CastWebService* cast_web_service() const { return web_service_; }
 
-  // Returns UrlRewriteAdapter.
-  UrlRewriteRulesAdapter* url_rewrite_adapter() {
-    return url_rewrite_adapter_.get();
-  }
+  // Returns a pointer to a CastWebView.
+  CastWebView* cast_web_view() { return cast_web_view_.get(); }
+
+  // RuntimeApplication implementation:
+  url_rewrite::UrlRequestRewriteRulesManager* GetUrlRewriteRulesManager()
+      override;
 
   // RuntimeApplicationServiceDelegate implementation:
   void SetUrlRewriteRules(const cast::v2::SetUrlRewriteRulesRequest& request,
@@ -72,15 +74,11 @@ class RuntimeApplicationBase
                              cast::web::MessagePortStatus* response) = 0;
 
   // Called following the creation of a CastWebView, with which
-  // |cast_web_contents  is associated. Returns the GURL to which the
-  // CastWebView should navigate.
-  virtual GURL InitializeAndGetInitialURL(
-      CoreApplicationServiceGrpc* grpc_stub,
-      CastWebContents* cast_web_contents) = 0;
+  // |cast_web_contents  is associated. Must set the application URL as a
+  // result.
+  virtual void InitializeApplication(CoreApplicationServiceGrpc* grpc_stub,
+                                     CastWebContents* cast_web_contents) = 0;
 
-  // The WebView associated with the window in which the Cast application is
-  // displayed.
-  CastWebView::Scoped cast_web_view_;
   std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
 
  private:
@@ -106,8 +104,12 @@ class RuntimeApplicationBase
 
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;
+  // The WebView associated with the window in which the Cast application is
+  // displayed.
+  CastWebView::Scoped cast_web_view_;
 
-  std::unique_ptr<UrlRewriteRulesAdapter> url_rewrite_adapter_;
+  std::unique_ptr<url_rewrite::UrlRequestRewriteRulesManager>
+      url_rewrite_rules_manager_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

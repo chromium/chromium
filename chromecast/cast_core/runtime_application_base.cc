@@ -7,7 +7,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/grpc_method.h"
-#include "chromecast/cast_core/url_rewrite_rules_adapter.h"
+#include "chromecast/cast_core/url_rewrite/url_request_rewrite_type_converters.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
@@ -66,23 +66,22 @@ bool RuntimeApplicationBase::Load(
             << ", endpoint=" << grpc_address;
 
   CreateCastWebView();
-  url_rewrite_adapter_ =
-      std::make_unique<UrlRewriteRulesAdapter>(request.url_rewrite_rules());
+  url_rewrite_rules_manager_ =
+      std::make_unique<url_rewrite::UrlRequestRewriteRulesManager>();
+  if (!url_rewrite_rules_manager_->AddWebContents(
+          cast_web_view_->cast_web_contents()->web_contents())) {
+    LOG(ERROR) << "Failed to attach WebContets to URL rewrite rules";
+    return false;
+  }
 
-  auto* web_service = cast_web_service();
-  if (web_service) {
-    MojoIdentificationSettings params(request.url_rewrite_rules());
-    web_service->CreateSessionWithSubstitutions(
-        cast_session_id(), std::move(params.substitutable_params));
-    web_service->UpdateAppSettingsForSession(
-        cast_session_id(), std::move(params.application_settings));
-    web_service->UpdateDeviceSettingsForSession(
-        cast_session_id(), std::move(params.device_settings));
-    LOG(INFO) << "CastWebService initialized: " << *this;
+  url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
+      mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
+          request.url_rewrite_rules());
+  if (!url_rewrite_rules_manager_->OnRulesUpdated(std::move(mojom_rules))) {
+    LOG(ERROR) << "Failed to update URL rewrite rules";
   }
 
   LOG(INFO) << "Successfully loaded: " << *this;
-
   return true;
 }
 
@@ -114,18 +113,20 @@ void RuntimeApplicationBase::FinishLaunch(
   core_app_stub_ =
       cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
 
-  GURL cast_application_url = InitializeAndGetInitialURL(
-      core_app_stub_.get(), cast_web_view_->cast_web_contents());
-  LOG(INFO) << "Initialized initial URL: " << *this
-            << ", url=" << cast_application_url;
+  InitializeApplication(core_app_stub_.get(),
+                        cast_web_view_->cast_web_contents());
+  DCHECK(!app_url().is_empty());
+
+  LOG(INFO) << "Application is initialized: " << *this;
+
   const std::vector<int32_t> feature_permissions;
   const std::vector<std::string> additional_feature_permission_origins;
   // TODO(b/203580094): Currently we assume the app is not audio only.
   cast_web_view_->cast_web_contents()->SetAppProperties(
       app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
-      cast_application_url, false /*enforce_feature_permissions*/,
-      feature_permissions, additional_feature_permission_origins);
-  cast_web_view_->cast_web_contents()->LoadUrl(cast_application_url);
+      app_url(), false /*enforce_feature_permissions*/, feature_permissions,
+      additional_feature_permission_origins);
+  cast_web_view_->cast_web_contents()->LoadUrl(app_url());
   cast_web_view_->window()->GrantScreenAccess();
   cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
@@ -146,6 +147,11 @@ void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
   callback->StepGRPC(grpc::Status::OK);
 }
 
+url_rewrite::UrlRequestRewriteRulesManager*
+RuntimeApplicationBase::GetUrlRewriteRulesManager() {
+  return url_rewrite_rules_manager_.get();
+}
+
 void RuntimeApplicationBase::SetUrlRewriteRules(
     const cast::v2::SetUrlRewriteRulesRequest& request,
     cast::v2::SetUrlRewriteRulesResponse* response,
@@ -157,7 +163,12 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
     return;
   }
   if (request.has_rules()) {
-    url_rewrite_adapter_->UpdateRules(request.rules());
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
+        mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
+            request.rules());
+    if (!url_rewrite_rules_manager_->OnRulesUpdated(std::move(mojom_rules))) {
+      LOG(ERROR) << "Failed to update URL rewrite rules";
+    }
   }
   callback->StepGRPC(grpc::Status::OK);
 }

@@ -27,6 +27,7 @@ namespace chromecast {
 
 class CastWebService;
 class WebCryptoServer;
+class RuntimeApplication;
 
 namespace media {
 class MediaPipelineBackendManager;
@@ -66,6 +67,8 @@ class CastRuntimeService
   // Returns a pointer to CastWebService object with lifespan
   // equal to CastRuntimeService main object.
   virtual CastWebService* GetCastWebService();
+  // Returns a pointer to RuntimeApplication.
+  virtual RuntimeApplication* GetRuntimeApplication();
 
   // CastService overrides.
   void InitializeInternal() override;

@@ -72,9 +72,11 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
                                        std::move(message_port));
 }
 
-GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
+void StreamingRuntimeApplication::InitializeApplication(
     CoreApplicationServiceGrpc* grpc_stub,
     CastWebContents* cast_web_contents) {
+  DCHECK(app_url().is_empty());
+
   message_port_service_ =
       std::make_unique<MessagePortService>(grpc_cq_, grpc_stub);
 
@@ -98,8 +100,8 @@ GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
 
   std::string streaming_url =
       cast_streaming::GetCastStreamingMediaSourceUrl().spec();
-  return GURL(
-      base::StringPrintf(kStreamingPageUrlTemplate, streaming_url.c_str()));
+  set_app_url(GURL(
+      base::StringPrintf(kStreamingPageUrlTemplate, streaming_url.c_str())));
 }
 
 void StreamingRuntimeApplication::StopApplication() {
