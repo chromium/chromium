@@ -287,6 +287,11 @@ bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
   return true;
 }
 
+bool PdfMetafileCg::ShouldCopySharedMemoryRegionData() const {
+  // Since `InitFromData()` copies the data, the caller doesn't have to.
+  return false;
+}
+
 mojom::MetafileDataType PdfMetafileCg::GetDataType() const {
   return mojom::MetafileDataType::kPDF;
 }

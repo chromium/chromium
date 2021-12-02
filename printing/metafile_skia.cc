@@ -46,6 +46,10 @@
 
 namespace {
 
+// `InitFromData()` should make a copy of data for the safety of all operations
+// which would then operate upon that.
+constexpr bool kInitFromDataCopyData = true;
+
 bool WriteAssetToBuffer(const SkStreamAsset* asset, void* buffer, size_t size) {
   // Calling duplicate() keeps original asset state unchanged.
   std::unique_ptr<SkStreamAsset> assetCopy(asset->duplicate());
@@ -120,7 +124,7 @@ void MetafileSkia::UtilizeTypefaceContext(
 // MetafileSkia does.
 bool MetafileSkia::InitFromData(base::span<const uint8_t> data) {
   data_->data_stream = std::make_unique<SkMemoryStream>(
-      data.data(), data.size(), /*copy_data=*/true);
+      data.data(), data.size(), kInitFromDataCopyData);
   return true;
 }
 
@@ -264,6 +268,11 @@ bool MetafileSkia::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
     return false;
   return WriteAssetToBuffer(data_->data_stream.get(), dst_buffer,
                             base::checked_cast<size_t>(dst_buffer_size));
+}
+
+bool MetafileSkia::ShouldCopySharedMemoryRegionData() const {
+  // When `InitFromData()` copies the data, the caller doesn't have to.
+  return !kInitFromDataCopyData;
 }
 
 mojom::MetafileDataType MetafileSkia::GetDataType() const {

@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* buffer, uint32_t size) const override;
+  bool ShouldCopySharedMemoryRegionData() const override;
   mojom::MetafileDataType GetDataType() const override;
 
   // Should be passed to Playback to keep the exact same size.

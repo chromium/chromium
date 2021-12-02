@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "printing/native_drawing_context.h"
@@ -65,6 +66,21 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafilePlayer {
   // Populates the buffer with the underlying data. This function should ONLY be
   // called after the metafile is closed. Returns true if writing succeeded.
   virtual bool GetDataAsVector(std::vector<char>* buffer) const = 0;
+
+  // Generates a read-only shared memory region for the underlying data. This
+  // function should ONLY be called after the metafile is closed.  The returned
+  // region will be invalid if there is an error trying to generate the mapping.
+  virtual base::MappedReadOnlyRegion GetDataAsSharedMemoryRegion() const = 0;
+
+  // Determine if a copy of the data should be explicitly made before operating
+  // on metafile data.  For security purposes it is important to not operate
+  // directly on the metafile data shared across processes, but instead work on
+  // a local copy made of such data.  This query determines if such a copy needs
+  // to be made by the caller, since not all implementations are required to
+  // automatically do so.
+  // TODO(crbug.com/1135729)  Eliminate concern about making a copy when the
+  // shared memory can't be written by the sender.
+  virtual bool ShouldCopySharedMemoryRegionData() const = 0;
 
   // Identifies the type of encapsulated.
   virtual mojom::MetafileDataType GetDataType() const = 0;
@@ -144,8 +160,9 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
                         const RECT* rect) const = 0;
 #endif  // OS_WIN
 
-  // MetfilePlayer
+  // MetfilePlayer implementation.
   bool GetDataAsVector(std::vector<char>* buffer) const override;
+  base::MappedReadOnlyRegion GetDataAsSharedMemoryRegion() const override;
 #if !defined(OS_ANDROID)
   bool SaveTo(base::File* file) const override;
 #endif  // !defined(OS_ANDROID)

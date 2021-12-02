@@ -158,6 +158,13 @@ bool Emf::GetData(void* buffer, uint32_t size) const {
   return size2 == size && size2 != 0;
 }
 
+bool Emf::ShouldCopySharedMemoryRegionData() const {
+  // `InitFromData()` operates directly upon memory provide to it, so any
+  // caller for cases where this data is shared cross-process should have the
+  // data copied before it is operated upon.
+  return true;
+}
+
 mojom::MetafileDataType Emf::GetDataType() const {
   return mojom::MetafileDataType::kEMF;
 }
