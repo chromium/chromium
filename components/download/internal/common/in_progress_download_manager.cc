@@ -55,6 +55,9 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       entry.download_info->in_progress_info;
   if (!in_progress_info)
     return nullptr;
+
+  // TODO(xingliu): Persists |range_request_from| and |range_request_to| into
+  // databases.
   return std::make_unique<DownloadItemImpl>(
       delegate, entry.download_info->guid, entry.download_info->id,
       in_progress_info->current_path, in_progress_info->target_path,

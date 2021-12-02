@@ -64,7 +64,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 const std::string& remote_address,
                 base::Time start_time,
                 ::network::mojom::CredentialsMode credentials_mode,
-                const absl::optional<net::IsolationInfo>& isolation_info);
+                const absl::optional<net::IsolationInfo>& isolation_info,
+                int64_t range_request_from,
+                int64_t range_request_to);
     RequestInfo();
     explicit RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
@@ -115,6 +117,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
     // Isolation info for the request.
     absl::optional<net::IsolationInfo> isolation_info;
+
+    // Range request offsets. Used only for explicitly download part of the
+    // content.
+    int64_t range_request_from = kInvalidRange;
+    int64_t range_request_to = kInvalidRange;
   };
 
   // Information about the current state of the download destination.

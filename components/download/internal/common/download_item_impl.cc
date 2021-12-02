@@ -242,7 +242,9 @@ DownloadItemImpl::RequestInfo::RequestInfo(
     const std::string& remote_address,
     base::Time start_time,
     ::network::mojom::CredentialsMode credentials_mode,
-    const absl::optional<net::IsolationInfo>& isolation_info)
+    const absl::optional<net::IsolationInfo>& isolation_info,
+    int64_t range_request_from,
+    int64_t range_request_to)
     : url_chain(url_chain),
       referrer_url(referrer_url),
       site_url(site_url),
@@ -256,7 +258,9 @@ DownloadItemImpl::RequestInfo::RequestInfo(
       remote_address(remote_address),
       start_time(start_time),
       credentials_mode(credentials_mode),
-      isolation_info(isolation_info) {}
+      isolation_info(isolation_info),
+      range_request_from(range_request_from),
+      range_request_to(range_request_to) {}
 
 DownloadItemImpl::RequestInfo::RequestInfo(const GURL& url)
     : url_chain(std::vector<GURL>(1, url)), start_time(base::Time::Now()) {}
@@ -341,7 +345,9 @@ DownloadItemImpl::DownloadItemImpl(
                     std::string(),
                     start_time,
                     ::network::mojom::CredentialsMode::kInclude,
-                    absl::nullopt),
+                    absl::nullopt,
+                    kInvalidRange,
+                    kInvalidRange),
       guid_(guid),
       download_id_(download_id),
       mime_type_(mime_type),
@@ -405,7 +411,9 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
                     info.remote_address,
                     info.start_time,
                     info.credentials_mode,
-                    info.isolation_info),
+                    info.isolation_info,
+                    info.save_info->range_request_from,
+                    info.save_info->range_request_to),
       guid_(info.guid.empty() ? base::GenerateGUID() : info.guid),
       download_id_(download_id),
       response_headers_(info.response_headers),
@@ -2649,13 +2657,16 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   std::unique_ptr<DownloadUrlParameters> download_params(
       new DownloadUrlParameters(GetURL(), traffic_annotation));
   download_params->set_file_path(GetFullPath());
+  int64_t offset = 0;
   if (received_slices_.size() > 0) {
     std::vector<DownloadItem::ReceivedSlice> slices_to_download =
         FindSlicesToDownload(received_slices_);
-    download_params->set_offset(slices_to_download[0].offset);
+    offset = slices_to_download[0].offset;
   } else {
-    download_params->set_offset(GetReceivedBytes());
+    offset = GetReceivedBytes();
   }
+
+  download_params->set_offset(offset);
   download_params->set_last_modified(GetLastModifiedTime());
   download_params->set_etag(GetETag());
   download_params->set_hash_of_partial_file(GetHash());
@@ -2686,6 +2697,19 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   for (const auto& header : request_headers_) {
     download_params->add_request_header(header.first, header.second);
   }
+
+  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
+      (request_info_.range_request_from != kInvalidRange ||
+       request_info_.range_request_to != kInvalidRange)) {
+    // Arbitrary range request doesn't use If-Range header and resumption
+    // invalidation.
+    download_params->set_range_request_offset(request_info_.range_request_from,
+                                              request_info_.range_request_to);
+    download_params->set_use_if_range(false);
+    download_params->set_offset(offset);
+    download_params->set_file_offset(offset);
+  }
+
   // The offset is calculated after decompression, so the range request cannot
   // involve any compression,
   download_params->add_request_header("Accept-Encoding", "identity");

@@ -178,6 +178,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//crypto",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",

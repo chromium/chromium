@@ -80,13 +80,55 @@ DownloadItem::DownloadRenameResult RenameDownloadedFileForContentUri(
 
 void AppendExtraHeaders(net::HttpRequestHeaders* headers,
                         DownloadUrlParameters* params) {
+  // Some headers like "Range" or "If-Ranage", etc are managed by download
+  // system, which might be ignored when adding to the actual request.
+  // TODO(xingliu): Print out the conflict headers here.
   for (const auto& header : params->request_headers())
     headers->SetHeaderIfMissing(header.first, header.second);
 }
 
 // Return whether the download is explicitly to fetch part of the file.
 bool IsArbitraryRangeRequest(DownloadSaveInfo* save_info) {
+  if (!base::FeatureList::IsEnabled(features::kDownloadRange))
+    return false;
   return save_info && save_info->IsArbitraryRangeRequest();
+}
+
+bool IsArbitraryRangeRequest(DownloadUrlParameters* parameters) {
+  DCHECK(parameters);
+  if (!base::FeatureList::IsEnabled(features::kDownloadRange))
+    return false;
+  auto offsets = parameters->range_request_offset();
+  return offsets.first != kInvalidRange || offsets.second != kInvalidRange;
+}
+
+void AppendRangeHeader(net::HttpRequestHeaders* headers,
+                       DownloadUrlParameters* params) {
+  std::string range_header =
+      base::StringPrintf("bytes=%" PRId64 "-", params->offset());
+
+  if (IsArbitraryRangeRequest(params)) {
+    DCHECK(!params->use_if_range());
+    auto range_offsets = params->range_request_offset();
+    std::string range_from, range_to;
+    DCHECK_GE(params->offset(), 0);
+    if (range_offsets.first != kInvalidRange) {
+      // Have a starting byte in the range request.
+      range_from = base::NumberToString(range_offsets.first + params->offset());
+      range_to = range_offsets.second != kInvalidRange
+                     ? base::NumberToString(range_offsets.second)
+                     : "";
+    } else {
+      // Have no starting byte, trying to fetch the last x bytes.
+      DCHECK_NE(range_offsets.second, kInvalidRange);
+      DCHECK_GE(range_offsets.second, params->offset())
+          << "All the bytes have been fetched.";
+      range_to = base::NumberToString(range_offsets.second - params->offset());
+    }
+    range_header = "bytes=" + range_from + "-" + range_to;
+  }
+
+  headers->SetHeader(net::HttpRequestHeaders::kRange, range_header);
 }
 
 }  // namespace
@@ -196,8 +238,7 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
   int64_t length = -1;
 
   // Explicitly range request.
-  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
-      IsArbitraryRangeRequest(save_info)) {
+  if (IsArbitraryRangeRequest(save_info)) {
     // Only 206 response is allowed.
     if (http_headers.response_code() != net::HTTP_PARTIAL_CONTENT) {
       return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
@@ -374,7 +415,8 @@ int GetLoadFlags(DownloadUrlParameters* params, bool has_upload_data) {
 std::unique_ptr<net::HttpRequestHeaders> GetAdditionalRequestHeaders(
     DownloadUrlParameters* params) {
   auto headers = std::make_unique<net::HttpRequestHeaders>();
-  if (params->offset() == 0) {
+
+  if (params->offset() == 0 && !IsArbitraryRangeRequest(params)) {
     AppendExtraHeaders(headers.get(), params);
     return headers;
   }
@@ -385,20 +427,19 @@ std::unique_ptr<net::HttpRequestHeaders> GetAdditionalRequestHeaders(
   // Strong validator(i.e. etag or last modified) is required in range requests
   // for download resumption and parallel download, unless
   // |kAllowDownloadResumptionWithoutStrongValidators| is enabled.
+  // For arbitrary range request, always allow to send range headers.
   bool allow_resumption =
       has_etag || has_last_modified ||
       base::FeatureList::IsEnabled(
           features::kAllowDownloadResumptionWithoutStrongValidators);
-  if (!allow_resumption) {
+  if (!allow_resumption && !IsArbitraryRangeRequest(params)) {
     DVLOG(1) << "Creating partial request without strong validators.";
     AppendExtraHeaders(headers.get(), params);
     return headers;
   }
 
   // Add "Range" header.
-  std::string range_header =
-      base::StringPrintf("bytes=%" PRId64 "-", params->offset());
-  headers->SetHeader(net::HttpRequestHeaders::kRange, range_header);
+  AppendRangeHeader(headers.get(), params);
 
   // Add "If-Range" headers.
   if (params->use_if_range()) {
