@@ -1263,6 +1263,11 @@ void LayoutBox::UpdateAfterLayout() {
     document.IncLayoutCallsCounterNG();
 }
 
+bool LayoutBox::ShouldUseAutoIntrinsicSize() const {
+  DisplayLockContext* context = GetDisplayLockContext();
+  return context && context->IsAuto() && context->IsLocked();
+}
+
 bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
   if (!ShouldApplySizeContainment())
@@ -1286,7 +1291,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   const absl::optional<StyleIntrinsicLength>& intrinsic_length =
       style.ContainIntrinsicWidth();
   DCHECK(intrinsic_length);
-  if (intrinsic_length->HasAuto()) {
+  if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
     const Element* elem = DynamicTo<Element>(GetNode());
     const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
     if (size)
@@ -1304,7 +1309,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   const absl::optional<StyleIntrinsicLength>& intrinsic_length =
       style.ContainIntrinsicHeight();
   DCHECK(intrinsic_length);
-  if (intrinsic_length->HasAuto()) {
+  if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
     const Element* elem = DynamicTo<Element>(GetNode());
     const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
     if (size)
