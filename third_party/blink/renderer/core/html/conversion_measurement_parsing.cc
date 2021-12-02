@@ -25,10 +25,42 @@ namespace blink {
 
 namespace {
 
-absl::optional<int64_t> ParseInt64(const String& string) {
+absl::optional<int64_t> ParseInt64(const String& string,
+                                   LocalFrame* frame,
+                                   HTMLElement* element,
+                                   AttributionReportingIssueType issue_type) {
+  if (string.IsNull())
+    return absl::nullopt;
+
   bool valid = false;
   int64_t value = string.ToInt64Strict(&valid);
-  return valid ? absl::make_optional(value) : absl::nullopt;
+
+  if (valid)
+    return value;
+
+  if (frame) {
+    AuditsIssue::ReportAttributionIssue(frame->DomWindow(), issue_type,
+                                        frame->GetDevToolsFrameToken(), element,
+                                        absl::nullopt, string);
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<int64_t> ParseExpiry(const String& string,
+                                    LocalFrame* frame,
+                                    HTMLElement* element = nullptr) {
+  return ParseInt64(
+      string, frame, element,
+      AttributionReportingIssueType::kInvalidAttributionSourceExpiry);
+}
+
+absl::optional<int64_t> ParsePriority(const String& string,
+                                      LocalFrame* frame,
+                                      HTMLElement* element = nullptr) {
+  return ParseInt64(
+      string, frame, element,
+      AttributionReportingIssueType::kInvalidAttributionSourcePriority);
 }
 
 absl::optional<WebImpression> WebImpressionOrErrorToWebImpression(
@@ -37,6 +69,11 @@ absl::optional<WebImpression> WebImpressionOrErrorToWebImpression(
     return std::move(*impression);
 
   return absl::nullopt;
+}
+
+LocalFrame* GetFrame(ExecutionContext* execution_context) {
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  return window ? window->GetFrame() : nullptr;
 }
 
 // If `allow_invalid_impression_data` is `true` and `impression_data_string` is
@@ -61,10 +98,7 @@ WebImpressionOrError GetImpression(
     return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
-  LocalFrame* frame = nullptr;
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context))
-    frame = window->GetFrame();
-
+  LocalFrame* frame = GetFrame(execution_context);
   if (!frame) {
     // TODO(apaseltiner): Perhaps this should be something like `kUnknown`.
     return mojom::blink::RegisterImpressionError::kNotAllowed;
@@ -153,11 +187,9 @@ WebImpressionOrError GetImpression(
   UseCounter::Count(execution_context,
                     mojom::blink::WebFeature::kImpressionRegistration);
 
-  int64_t priority =
-      attribution_source_priority ? *attribution_source_priority : 0;
-
   return WebImpression{conversion_destination, reporting_origin,
-                       impression_data, expiry, priority};
+                       impression_data, expiry,
+                       attribution_source_priority.value_or(0)};
 }
 
 }  // namespace
@@ -167,6 +199,8 @@ absl::optional<WebImpression> GetImpressionForAnchor(
   DCHECK(element->FastHasAttribute(html_names::kAttributiondestinationAttr));
   DCHECK(element->FastHasAttribute(html_names::kAttributionsourceeventidAttr));
 
+  LocalFrame* frame = GetFrame(element->GetExecutionContext());
+
   return WebImpressionOrErrorToWebImpression(GetImpression(
       element->GetExecutionContext(),
       element->FastGetAttribute(html_names::kAttributionsourceeventidAttr)
@@ -175,11 +209,13 @@ absl::optional<WebImpression> GetImpressionForAnchor(
           .GetString(),
       element->FastGetAttribute(html_names::kAttributionreporttoAttr)
           .GetString(),
-      ParseInt64(element->FastGetAttribute(html_names::kAttributionexpiryAttr)
-                     .GetString()),
-      ParseInt64(
+      ParseExpiry(element->FastGetAttribute(html_names::kAttributionexpiryAttr)
+                      .GetString(),
+                  frame, element),
+      ParsePriority(
           element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
-              .GetString()),
+              .GetString(),
+          frame, element),
       element, /*allow_invalid_impression_data=*/true));
 }
 
@@ -190,10 +226,13 @@ absl::optional<WebImpression> GetImpressionFromWindowFeatures(
       features.conversion_destination.IsNull())
     return absl::nullopt;
 
+  LocalFrame* frame = GetFrame(execution_context);
+
   return WebImpressionOrErrorToWebImpression(
       GetImpression(execution_context, features.impression_data,
                     features.conversion_destination, features.reporting_origin,
-                    ParseInt64(features.expiry), ParseInt64(features.priority),
+                    ParseExpiry(features.expiry, frame),
+                    ParsePriority(features.priority, frame),
                     /*element=*/nullptr,
                     /*allow_invalid_impression_data=*/true));
 }

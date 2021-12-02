@@ -153,6 +153,12 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionUntrustworthyOrigin;
+    case AttributionReportingIssueType::kInvalidAttributionSourceExpiry:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourceExpiry;
+    case AttributionReportingIssueType::kInvalidAttributionSourcePriority:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourcePriority;
   }
 }
 
