@@ -369,6 +369,58 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
   // TODO(https://crbug/1226050): Test all other fields.
 }
 
+TEST_F(ProfilePickerHandlerTest, ProfilePickerObservesAvailableAccounts) {
+  // AccountProfileMapper only allows available accounts if there are
+  // multiple profiles.
+  CreateTestingProfile("Primary");
+  CreateTestingProfile("Secondary");
+
+  // Add some available accounts into the facade.
+  const std::string kGaiaId1 = "some_gaia_id1";
+  const std::string kGaiaId2 = "some_gaia_id2";
+  account_manager::Account account1{
+      account_manager::AccountKey{kGaiaId1,
+                                  account_manager::AccountType::kGaia},
+      "example1@gmail.com"};
+  account_manager::Account account2{
+      account_manager::AccountKey{kGaiaId2,
+                                  account_manager::AccountType::kGaia},
+      "example2@gmail.com"};
+  CompleteFacadeGetAccounts({account1, account2});
+
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  LOG(INFO) << web_ui()->call_data().size();
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetList().size(), 2u);
+
+  // Add another account.
+  const std::string kGaiaId = "some_gaia_id3";
+  account_manager::Account new_account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      "example3@gmail.com"};
+  profile_manager()
+      ->profile_manager()
+      ->GetAccountProfileMapper()
+      ->OnAccountUpserted(new_account);
+  CompleteFacadeGetAccounts({account1, account2, new_account});
+
+  // Check that the profile picker handler picked up the new account, and
+  // forwarded it to the Web UI.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  LOG(INFO) << web_ui()->call_data().size();
+  const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ(data2.arg2()->GetList().size(), 3u);
+}
+
 TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   // Lacros always expects a default profile.
   CreateTestingProfile("Default");
