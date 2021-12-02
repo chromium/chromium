@@ -3331,7 +3331,6 @@ crbug.com/626703 [ Win ] external/wpt/density-size-correction/image-set-003.html
 crbug.com/626703 external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
 crbug.com/626703 [ Mac11 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
@@ -3627,7 +3626,6 @@ crbug.com/626703 [ Mac10.13 ] wpt_internal/modal-close-watcher/basic.html [ Cras
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys-combinations.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Skip Timeout ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webmessaging/with-ports/011.html [ Timeout ]
@@ -3690,8 +3688,6 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-color/t425-hsla-basic-a.xht [ Fa
 crbug.com/626703 external/wpt/wasm/jsapi/functions/incumbent.html [ Crash ]
 crbug.com/626703 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/Worker-replace-self.any.html [ Timeout ]
@@ -7341,4 +7337,6 @@ crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failur
 
 # Sheriff 2021-12-02
 crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Failure Pass ]
+crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Failure Pass ]
+crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Failure Pass ]
 crbug.com/1275967 [ Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
