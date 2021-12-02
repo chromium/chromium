@@ -58,6 +58,7 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   void OnLoadEventFired(const page::LoadEventFiredParams& params) override;
 
   void Detach();
+  void ShutdownSoon();
   void Shutdown();
 
   void FetchTimeout();
@@ -109,6 +110,7 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   bool processed_page_ready_ = false;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<base::FileProxy> file_proxy_;
+  bool shutdown_pending_ = false;
   base::WeakPtrFactory<HeadlessShell> weak_factory_{this};
 };
 

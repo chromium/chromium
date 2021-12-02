@@ -176,6 +176,7 @@ class NestedMessagePumpAndroid;
 class NetworkServiceInstancePrivate;
 class PepperPrintSettingsManagerImpl;
 class RenderProcessHostImpl;
+class RenderProcessHost;
 class RenderWidgetHostViewMac;
 class RTCVideoDecoder;
 class SandboxHostLinux;
@@ -635,6 +636,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
   friend class content::WaitForProcessesToDumpProfilingInfo;
+  friend class content::RenderProcessHost;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
   friend class media::PaintCanvasVideoRenderer;

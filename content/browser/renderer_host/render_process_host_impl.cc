@@ -4319,6 +4319,8 @@ void RenderProcessHost::SetRunRendererInProcess(bool value) {
 
 // static
 void RenderProcessHost::ShutDownInProcessRenderer() {
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
+      allow_base_sync_primitives;
   RenderProcessHostImpl::ShutDownInProcessRenderer();
 }
 

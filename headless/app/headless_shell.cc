@@ -32,6 +32,7 @@
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell.h"
 #include "headless/app/headless_shell_switches.h"
@@ -235,9 +236,7 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {
   if (policy::HeadlessModePolicy::IsHeadlessDisabled(
           static_cast<HeadlessBrowserImpl*>(browser)->GetPrefs())) {
     LOG(ERROR) << "Headless mode is disabled by policy.";
-    browser_->BrowserMainThread()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+    ShutdownSoon();
     return;
   }
 #endif
@@ -318,12 +317,23 @@ void HeadlessShell::Detach() {
   web_contents_ = nullptr;
 }
 
-void HeadlessShell::Shutdown() {
+void HeadlessShell::ShutdownSoon() {
+  if (shutdown_pending_)
+    return;
+  shutdown_pending_ = true;
   DCHECK(browser_);
   if (web_contents_)
-    Detach();
-  if (browser_context_)
-    browser_context_->Close();
+    web_contents_->Close();
+  DCHECK(!web_contents_);
+  browser_->BrowserMainThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+}
+
+void HeadlessShell::Shutdown() {
+  DCHECK(!web_contents_);
+  if (content::RenderProcessHost::run_renderer_in_process())
+    content::RenderProcessHost::ShutDownInProcessRenderer();
   browser_->Shutdown();
 }
 
@@ -333,9 +343,7 @@ void HeadlessShell::DevToolsTargetReady() {
   target->AttachClient(devtools_client_.get());
   if (!target->IsAttached()) {
     LOG(ERROR) << "Could not attach DevTools target.";
-    browser_->BrowserMainThread()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+    ShutdownSoon();
     return;
   }
 
@@ -407,9 +415,7 @@ void HeadlessShell::HeadlessWebContentsDestroyed() {
   // Detach now, but defer shutdown till the HeadlessWebContents
   // removal is complete.
   Detach();
-  browser_->BrowserMainThread()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+  ShutdownSoon();
 }
 
 void HeadlessShell::FetchTimeout() {
@@ -427,7 +433,7 @@ void HeadlessShell::OnTargetCrashed(
     const inspector::TargetCrashedParams& params) {
   LOG(ERROR) << "Abnormal renderer termination.";
   // NB this never gets called if remote debugging is enabled.
-  Shutdown();
+  ShutdownSoon();
 }
 
 void HeadlessShell::PollReadyState() {
@@ -492,7 +498,7 @@ void HeadlessShell::OnPageReady() {
                  switches::kPrintToPDF)) {
     PrintToPDF();
   } else {
-    Shutdown();
+    ShutdownSoon();
   }
 }
 
@@ -513,7 +519,7 @@ void HeadlessShell::OnDomFetched(
   } else {
     printf("%s\n", result->GetResult()->GetValue()->GetString().c_str());
   }
-  Shutdown();
+  ShutdownSoon();
 }
 
 void HeadlessShell::InputExpression() {
@@ -530,7 +536,7 @@ void HeadlessShell::InputExpression() {
       // If there's no expression, then quit.
       if (expression.str().size() == 0) {
         printf("\n");
-        Shutdown();
+        ShutdownSoon();
         return;
       }
       break;
@@ -538,7 +544,7 @@ void HeadlessShell::InputExpression() {
     expression << static_cast<char>(c);
   }
   if (expression.str() == "quit") {
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   devtools_client_->GetRuntime()->Evaluate(
@@ -567,7 +573,7 @@ void HeadlessShell::OnScreenshotCaptured(
     std::unique_ptr<page::CaptureScreenshotResult> result) {
   if (!result) {
     LOG(ERROR) << "Capture screenshot failed";
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   WriteFile(switches::kScreenshot, kDefaultScreenshotFileName,
@@ -593,7 +599,7 @@ void HeadlessShell::OnPDFCreated(
     std::unique_ptr<page::PrintToPDFResult> result) {
   if (!result) {
     LOG(ERROR) << "Print to PDF failed";
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   WriteFile(switches::kPrintToPDF, kDefaultPDFFileName, result->GetData());
@@ -660,7 +666,7 @@ void HeadlessShell::OnFileWritten(const base::FilePath file_name,
 }
 
 void HeadlessShell::OnFileClosed(base::File::Error error_code) {
-  Shutdown();
+  ShutdownSoon();
 }
 
 bool HeadlessShell::RemoteDebuggingEnabled() const {
