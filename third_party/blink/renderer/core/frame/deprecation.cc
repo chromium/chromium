@@ -61,6 +61,7 @@ enum Milestone {
   kM98 = 98,
   kM99 = 99,
   kM100 = 100,
+  kM101 = 101,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -139,6 +140,8 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2022, 3, 0, 1, 4};
     case kM100:
       return {2022, 3, 0, 29, 4};
+    case kM101:
+      return {2022, 4, 0, 26, 4};
   }
 
   NOTREACHED();
@@ -686,6 +689,16 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "A VideoFrame was constructed without a timestamp. Support for this  "
           "may be removed in the future. Please provide an explicit timestamp "
           "via VideoFrameInit.");
+
+    case WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader:
+      return DeprecationInfo::WithDetails(
+          "WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader",
+          kM101,
+          "Relaxing the same-origin policy by setting \"document.domain\" is "
+          "deprecated, and will be disabled by default in M101. "
+          "To continue use this feature, please opt-out of origin-keyed agent "
+          "clusters by sending a `Origin-Agent-Cluster: ?0` header along "
+          "with the HTTP response for the document.");
 
     // Features that aren't deprecated don't have a deprecation message.
     default:

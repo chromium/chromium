@@ -48,6 +48,7 @@
     "Location",
     "Origin",
     "Origin-Trial",
+    "Origin-Agent-Cluster",
     "Permissions-Policy",
     "Permissions-Policy-Report-Only",
     "Ping-From",

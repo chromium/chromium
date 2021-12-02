@@ -1245,6 +1245,7 @@ test("content_browsertests") {
     "../browser/renderer_host/navigation_controller_impl_browsertest.cc",
     "../browser/renderer_host/navigation_handle_user_data_browsertest.cc",
     "../browser/renderer_host/navigation_request_browsertest.cc",
+    "../browser/renderer_host/origin_agent_cluster_browsertest.cc",
     "../browser/renderer_host/page_impl_browsertest.cc",
     "../browser/renderer_host/page_lifecycle_state_manager_browsertest.cc",
     "../browser/renderer_host/panel_rotation_browsertest.cc",

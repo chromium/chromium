@@ -2626,14 +2626,28 @@ bool NavigationRequest::IsOptInIsolationRequested() {
   if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
     return false;
 
-  // Origin agent cluster defaults to false, so comparing against kTrue
-  // handle both cases.
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kTrue;
 }
 
-void NavigationRequest::DetermineOriginAgentClusterEndResult(
-    bool is_requested) {
+bool NavigationRequest::IsIsolationImplied() {
+  if (!response())
+    return false;
+
+  // Do not attempt isolation if the feature is not enabled.
+  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
+    return false;
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kOriginAgentClusterDefaultEnabled)) {
+    return false;
+  }
+
+  return response_head_->parsed_headers->origin_agent_cluster ==
+         network::mojom::OriginAgentClusterValue::kAbsent;
+}
+
+void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2647,12 +2661,14 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult(
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
 
+  bool is_requested = IsOptInIsolationRequested();
+  bool expects_origin_agent_cluster = is_requested || IsIsolationImplied();
   bool requires_origin_keyed_process =
       is_requested &&
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
 
   OriginAgentClusterIsolationState requested_isolation_state =
-      is_requested /* is_origin_agent_cluster */
+      expects_origin_agent_cluster
           ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
                 requires_origin_keyed_process)
           : OriginAgentClusterIsolationState::CreateNonIsolated();
@@ -2812,15 +2828,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // active simultaneously for the same navigation.
   uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
 
-  // TODO(wjmaclean): allow kOriginAgentCluster to be set independently of
-  // kRequiresOriginKeyedProcess, to allow for logical OAC even when
-  // process-isolation for origins is available.
-  if (IsOptInIsolationRequested()) {
+  // An origin-keyed agent cluster is used if requested by header
+  // (or possibly by default, if no opt-out is requested), while an
+  // origin-keyed process is currently only used if requested by header.
+  if (IsOptInIsolationRequested() || IsIsolationImplied())
     isolation_flags |= UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
-    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
-      isolation_flags |=
-          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
-    }
+  if (IsOptInIsolationRequested() &&
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+    isolation_flags |=
+        UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
   }
 
   if (ShouldRequestSiteIsolationForCOOP())
@@ -3199,7 +3215,7 @@ void NavigationRequest::OnResponseStarted(
     DCHECK(!response_should_be_rendered_);
 
   if (render_frame_host_)
-    DetermineOriginAgentClusterEndResult(IsOptInIsolationRequested());
+    DetermineOriginAgentClusterEndResult();
 
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 

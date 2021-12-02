@@ -1149,6 +1149,12 @@ const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
 const base::Feature kClientHintsMetaNameAcceptCH{
     "ClientHintsMetaNameAcceptCH", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOriginAgentClusterDefaultEnabled{
+    "OriginAgentClusterDefaultEnable", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOriginAgentClusterDefaultWarning{
+    "OriginAgentClusterDefaultWarning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allow third-party delegation of client hint information.
 const base::Feature kClientHintThirdPartyDelegation{
     "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};

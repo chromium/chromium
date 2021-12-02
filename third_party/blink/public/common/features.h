@@ -542,6 +542,18 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsMetaNameAcceptCH;
 
+// If enabled, an absent Origin-Agent-Cluster: header is interpreted as
+// requesting an origin agent cluster, but in the same process.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kOriginAgentClusterDefaultEnabled;
+
+// This flag enables a console warning in cases where document.domain is set
+// without origin agent clustering being explicitly disabled.
+// (This is a transitory behaviour on the road to perma-enabling
+// kOriginAgentClusterDefaultEnabled above.)
+BLINK_COMMON_EXPORT extern const base::Feature
+    kOriginAgentClusterDefaultWarning;
+
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintThirdPartyDelegation;
 
 #if defined(OS_ANDROID)
