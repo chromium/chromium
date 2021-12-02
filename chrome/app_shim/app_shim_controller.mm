@@ -480,12 +480,12 @@ void AppShimController::SetBadgeLabel(const std::string& badge_label) {
 void AppShimController::UpdateProfileMenu(
     std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items) {
   profile_menu_items_ = std::move(profile_menu_items);
-  // Make a deep copy of the gfx::ImageSkias in `profile_menu_items_`,
-  // because their lifetime is scoped to their mojo message.
-  // https://crbug.com/1274236
+  // Erase the gfx::ImageSkias in `profile_menu_items_`, because keeping them
+  // around causes crashes for unknown reasons.
+  // TODO(https://crbug.com/1274236): Investigate this.
   for (auto& item : profile_menu_items_) {
     if (item)
-      item->icon = item->icon.DeepCopy();
+      item->icon = gfx::ImageSkia();
   }
 
   NSMenuItem* cocoa_profile_menu =
@@ -514,7 +514,7 @@ void AppShimController::UpdateProfileMenu(
     [item setState:mojo_item->active ? NSOnState : NSOffState];
     [item setTarget:profile_menu_target_.get()];
     gfx::Image icon(mojo_item->icon);
-    [item setImage:icon.ToNSImage()];
+    [item setImage:icon.AsNSImage()];
     [menu insertItem:item atIndex:i];
   }
 }
