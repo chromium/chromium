@@ -5,7 +5,7 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
-import {str, strf} from '../../../common/js/util.js';
+import {str, strf, util} from '../../../common/js/util.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
 
@@ -221,11 +221,11 @@ export class ProgressCenterPanel {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
 
+    const locale = util.getCurrentLocaleOrDefault();
     const hourFormatter = new Intl.NumberFormat(
-        navigator.language, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
+        locale, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
     const minuteFormatter = new Intl.NumberFormat(
-        navigator.language,
-        {style: 'unit', unit: 'minute', unitDisplay: 'short'});
+        locale, {style: 'unit', unit: 'minute', unitDisplay: 'short'});
 
     if (hours > 0 && minutes > 0) {
       return strf(

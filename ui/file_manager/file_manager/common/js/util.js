@@ -981,15 +981,13 @@ util.getLastVisitedURL = () => {
   return util.lastVisitedURL;
 };
 
-
 /**
  * Returns normalized current locale, or default locale - 'en'.
  * @return {string} Current locale
  */
 util.getCurrentLocaleOrDefault = () => {
-  // chrome.i18n.getMessage('@@ui_locale') can't be used in packed app.
-  // Instead, we pass it from C++-side with strings.
-  return str('UI_LOCALE') || 'en';
+  const locale = str('UI_LOCALE') || 'en';
+  return locale.replace(/_/g, '-');
 };
 
 /**
