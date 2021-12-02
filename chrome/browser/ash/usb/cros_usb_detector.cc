@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -246,6 +247,11 @@ std::u16string CombineVmNames(const std::vector<std::u16string>& vm_names) {
   return res;
 }
 
+// Returns true if user enables ARC on ARCVM enabled devices.
+bool IsPlayStoreEnabledWithArcVmForProfile(const Profile* profile) {
+  return arc::IsArcPlayStoreEnabledForProfile(profile) && arc::IsArcVmEnabled();
+}
+
 void ShowNotificationForDevice(const std::string& guid,
                                const std::u16string& label) {
   message_center::RichNotificationData rich_notification_data;
@@ -281,7 +287,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  if (arc::IsArcVmEnabled()) {
+  if (IsPlayStoreEnabledWithArcVmForProfile(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
     vm_name_button_text =
         l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
@@ -291,7 +297,8 @@ void ShowNotificationForDevice(const std::string& guid,
             vm_name_button_text)));
     vm_names.emplace_back(arc::kArcVmName);
     vm_names_in_notification.emplace_back(vm_name);
-    settings_sub_page = std::string();
+    settings_sub_page =
+        chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
   }
 
   DCHECK(vm_names_in_notification.size());
@@ -497,7 +504,7 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
       !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
-      !arc::IsArcVmEnabled()) {
+      !IsPlayStoreEnabledWithArcVmForProfile(profile())) {
     return false;
   }
   if (!device.shareable) {

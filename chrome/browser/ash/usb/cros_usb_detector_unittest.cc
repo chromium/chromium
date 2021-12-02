@@ -14,9 +14,11 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/disks/mock_disk_mount_manager.h"
+#include "ash/constants/ash_switches.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -361,10 +363,23 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Should have 3 buttions when ARCVM is enabled.
+  // Should have 2 buttions when ARCVM is enabled but user disables ARC.
+  // ARC is disabled by default in test.
+  arc::ResetArcAllowedCheckForTesting(profile());
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--enable-arcvm"});
+  command_line->InitFromArgv(
+      {"", "--enable-arcvm", "--arc-availability=officially-supported"});
   EXPECT_TRUE(arc::IsArcVmEnabled());
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(notification->buttons().size(), 2u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Should have 3 buttions when ARCVM is enabled and user enables ARC.
+  ASSERT_TRUE(arc::SetArcPlayStoreEnabledForProfile(profile(), true));
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
