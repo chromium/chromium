@@ -1234,10 +1234,6 @@ const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
 const base::Feature kUserActivityPrediction{"UserActivityPrediction",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable the Virtual Keyboard API.
-const base::Feature kVirtualKeyboardApi{"VirtualKeyboardApi",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable or disable bordered key for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardBorderedKey{
     "VirtualKeyboardBorderedKey", base::FEATURE_ENABLED_BY_DEFAULT};

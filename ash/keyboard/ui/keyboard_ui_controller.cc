@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/container_floating_behavior.h"
 #include "ash/keyboard/ui/container_full_width_behavior.h"
 #include "ash/keyboard/ui/display_util.h"
@@ -850,12 +849,10 @@ void KeyboardUIController::OnShowVirtualKeyboardIfEnabled() {
 
 void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(
     bool should_show) {
-  if (base::FeatureList::IsEnabled(chromeos::features::kVirtualKeyboardApi)) {
-    if (should_show) {
-      OnShowVirtualKeyboardIfEnabled();
-    } else {
-      HideKeyboardExplicitlyBySystem();
-    }
+  if (should_show) {
+    OnShowVirtualKeyboardIfEnabled();
+  } else {
+    HideKeyboardExplicitlyBySystem();
   }
 }
 
