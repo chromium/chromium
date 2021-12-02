@@ -667,6 +667,12 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "PaymentRequestBasicCard", kM100, "The 'basic-card' payment method",
           "5730051011117056");
 
+    case WebFeature::kPaymentRequestShowWithoutGesture:
+      return DeprecationInfo::WithFeatureAndChromeStatusID(
+          "PaymentRequestShowWithoutGesture", kM99,
+          "Calling PaymentRequest.show() without user activation",
+          "5948593429020672");
+
     case WebFeature::kHostCandidateAttributeGetter:
       return DeprecationInfo::WithFeatureAndReplacement(
           "HostCandidateAttributeGetter", kUnknown,
