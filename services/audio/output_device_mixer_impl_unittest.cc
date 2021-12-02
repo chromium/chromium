@@ -49,10 +49,10 @@ class MockAudioOutputStream : public AudioOutputStream {
 
   void Start(AudioSourceCallback* callback) override {
     provided_callback_ = callback;
-    StartCalled(provided_callback_);
+    StartCalled();
   }
 
-  MOCK_METHOD1(StartCalled, void(AudioSourceCallback*));
+  MOCK_METHOD0(StartCalled, void());
   MOCK_METHOD0(Stop, void());
   MOCK_METHOD0(Open, bool());
   void SetVolume(double volume) final { volume_ = volume; }
@@ -281,8 +281,7 @@ class OutputDeviceMixerImplTestBase {
         .WillOnce(Return(true));
     EXPECT_CALL(mock_mixing_graph_output_stream_, Open())
         .WillOnce(Return(true));
-    EXPECT_CALL(mock_mixing_graph_output_stream_,
-                StartCalled(mock_mixing_graph_.get()));
+    EXPECT_CALL(mock_mixing_graph_output_stream_, StartCalled());
     mixing_graph_output_stream_not_running_ = false;
   }
 
@@ -305,8 +304,7 @@ class OutputDeviceMixerImplTestBase {
             .WillOnce(Return(true));
         mix_track_mock->independent_rendergin_stream_was_open = true;
       }
-      EXPECT_CALL(mix_track_mock->rendering_stream,
-                  StartCalled(&mix_track_mock->source_callback));
+      EXPECT_CALL(mix_track_mock->rendering_stream, StartCalled());
     } else {
       EXPECT_CALL(mix_track_mock->graph_input,
                   Start(&mix_track_mock->source_callback));
@@ -358,13 +356,11 @@ class OutputDeviceMixerImplTestBase {
   // Sets "no playback change" expectations for a given set of mocks.
   void ExpectNoPlaybackModeChange(const std::set<MixTrackMock*>& mocks) {
     EXPECT_CALL(mock_mixing_graph_output_stream_, Stop).Times(0);
-    EXPECT_CALL(mock_mixing_graph_output_stream_,
-                StartCalled(mock_mixing_graph_.get()))
-        .Times(0);
+    EXPECT_CALL(mock_mixing_graph_output_stream_, StartCalled()).Times(0);
 
     for (MixTrackMock* mock : mocks) {
       EXPECT_CALL(mock->graph_input, Stop).Times(0);
-      EXPECT_CALL(mock->rendering_stream, StartCalled(_)).Times(0);
+      EXPECT_CALL(mock->rendering_stream, StartCalled()).Times(0);
       EXPECT_CALL(mock->graph_input, Start(_)).Times(0);
       EXPECT_CALL(mock->rendering_stream, Stop).Times(0);
     }

@@ -88,6 +88,15 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
     }
   };
 
+  // Do not change: used for UMA reporting, matches
+  // AudioOutputDeviceMixerMixedPlaybackStatus from enums.xml.
+  enum class MixingError {
+    kNone = 0,
+    kOpenFailed,
+    kPlaybackFailed,
+    kMaxValue = kPlaybackFailed
+  };
+
   using MixTracks =
       std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;
   using ActiveTracks = std::set<MixTrack*>;
@@ -108,13 +117,15 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
                             base::TimeDelta delay);
   // Processes |mixing_output_stream_| rendering errors; provided as a callback
   // to MixingGraph.
-  void OnError(ErrorType error);
+  void OnMixingGraphError(ErrorType error);
 
   // Helpers to manage audio playback.
   bool HasListeners() const;
   void StartMixingGraphPlayback();
-  void StopMixingGraphPlayback();
+  void StopMixingGraphPlayback(MixingError mixing_error);
   void SwitchToUnmixedPlaybackTimerHelper();
+
+  static const char* ErrorToString(MixingError error);
 
   SEQUENCE_CHECKER(owning_sequence_);
 

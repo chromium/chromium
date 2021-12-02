@@ -21,6 +21,7 @@ constexpr base::TimeDelta OutputDeviceMixerImpl::kSwitchToUnmixedPlaybackDelay;
 constexpr double OutputDeviceMixerImpl::kDefaultVolume;
 
 namespace {
+
 const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
   switch (latency) {
     case media::AudioLatency::LATENCY_EXACT_MS:
@@ -35,6 +36,34 @@ const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
       return "LatencyUnknown";
   }
 }
+
+// Do not change: used for UMA reporting, matches
+// AudioOutputDeviceMixerStreamStatus from enums.xml.
+enum class TrackError {
+  kNone = 0,
+  kIndependentOpenFailed,
+  kIndependentPlaybackFailed,
+  kMixedOpenFailed,
+  kMixedPlaybackFailed,
+  kMaxValue = kMixedPlaybackFailed
+};
+
+const char* TrackErrorToString(TrackError error) {
+  switch (error) {
+    case TrackError::kIndependentOpenFailed:
+      return "Failed to open independent rendering stream";
+    case TrackError::kIndependentPlaybackFailed:
+      return "Error during independent playback";
+    case TrackError::kMixedOpenFailed:
+      return "Failed to open mixing rendering stream";
+    case TrackError::kMixedPlaybackFailed:
+      return "Error during mixed playback";
+    default:
+      NOTREACHED();
+      return "No error";
+  }
+}
+
 }  // namespace
 
 // Audio data flow though the mixer:
@@ -52,7 +81,8 @@ const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
 // Helper class which stores all the data associated with a specific audio
 // output managed by the mixer. To the clients such an audio output is
 // represented as MixableOutputStream (below).
-class OutputDeviceMixerImpl::MixTrack {
+class OutputDeviceMixerImpl::MixTrack final
+    : public media::AudioOutputStream::AudioSourceCallback {
  public:
   MixTrack(OutputDeviceMixerImpl* mixer,
            std::unique_ptr<MixingGraph::Input> graph_input,
@@ -61,7 +91,11 @@ class OutputDeviceMixerImpl::MixTrack {
         on_device_change_callback_(std::move(on_device_change_callback)),
         graph_input_(std::move(graph_input)) {}
 
-  ~MixTrack() { DCHECK(!audio_source_callback_); }
+  ~MixTrack() final {
+    DCHECK(!audio_source_callback_);
+    base::UmaHistogramEnumeration(
+        "Media.Audio.OutputDeviceMixer.StreamPlaybackStatus", error_);
+  }
 
   void SetSource(
       media::AudioOutputStream::AudioSourceCallback* audio_source_callback) {
@@ -99,16 +133,14 @@ class OutputDeviceMixerImpl::MixTrack {
           mixer_->CreateAndOpenDeviceStream(graph_input_->GetParams()));
 
       if (!rendering_stream_) {
-        LOG(ERROR) << "Failed to open individual rendering stream";
-        audio_source_callback_->OnError(
-            ErrorType::kUnknown);  // TODO(olka): add dedicated error type.
+        ReportError(TrackError::kIndependentOpenFailed);
         return;
       }
       rendering_stream_->SetVolume(volume_);
     }
 
     RegisterPlaybackStarted();
-    rendering_stream_->Start(audio_source_callback_);
+    rendering_stream_->Start(this);
   }
 
   void StopIndependentRenderingStream() {
@@ -125,9 +157,12 @@ class OutputDeviceMixerImpl::MixTrack {
     rendering_stream_.reset();
   }
 
-  void OnError(ErrorType error) {
+  void ReportError(TrackError error) {
     DCHECK(audio_source_callback_);
-    audio_source_callback_->OnError(error);
+    DCHECK_NE(error, TrackError::kNone);
+    LOG(ERROR) << "MixableOutputStream: " << TrackErrorToString(error);
+    error_ = error;
+    audio_source_callback_->OnError(ErrorType::kUnknown);
   }
 
   void OnDeviceChange() {
@@ -159,6 +194,23 @@ class OutputDeviceMixerImpl::MixTrack {
     playback_activation_time_for_uma_ = base::TimeTicks();
   }
 
+  // media::AudioOutputStream::AudioSourceCallback implementation to intercept
+  // error reporting during independent playback.
+  int OnMoreData(base::TimeDelta delay,
+                 base::TimeTicks delay_timestamp,
+                 int prior_frames_skipped,
+                 media::AudioBus* dest) final {
+    DCHECK(audio_source_callback_);
+    return audio_source_callback_->OnMoreData(delay, delay_timestamp,
+                                              prior_frames_skipped, dest);
+  }
+
+  void OnError(ErrorType type) final {
+    // Device change events are intercepted by the underlying physical streams.
+    DCHECK_EQ(type, ErrorType::kUnknown);
+    ReportError(TrackError::kIndependentPlaybackFailed);
+  }
+
   double volume_ = kDefaultVolume;
 
   const raw_ptr<OutputDeviceMixerImpl> mixer_;
@@ -185,6 +237,8 @@ class OutputDeviceMixerImpl::MixTrack {
       nullptr;
 
   base::TimeTicks playback_activation_time_for_uma_;
+
+  TrackError error_ = TrackError::kNone;
 };
 
 // A proxy which represents MixTrack as media::AudioOutputStream.
@@ -375,14 +429,14 @@ OutputDeviceMixerImpl::OutputDeviceMixerImpl(
     : OutputDeviceMixer(device_id),
       create_stream_callback_(std::move(create_stream_callback)),
       mixing_graph_output_params_(output_params),
-      mixing_graph_(
-          std::move(create_mixing_graph_callback)
-              .Run(output_params,
-                   base::BindRepeating(
-                       &OutputDeviceMixerImpl::BroadcastToListeners,
-                       base::Unretained(this)),
-                   base::BindRepeating(&OutputDeviceMixerImpl::OnError,
-                                       base::Unretained(this)))) {
+      mixing_graph_(std::move(create_mixing_graph_callback)
+                        .Run(output_params,
+                             base::BindRepeating(
+                                 &OutputDeviceMixerImpl::BroadcastToListeners,
+                                 base::Unretained(this)),
+                             base::BindRepeating(
+                                 &OutputDeviceMixerImpl::OnMixingGraphError,
+                                 base::Unretained(this)))) {
   DCHECK(mixing_graph_output_params_.IsValid());
   DCHECK_EQ(mixing_graph_output_params_.format(),
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
@@ -431,7 +485,7 @@ void OutputDeviceMixerImpl::ProcessDeviceChange() {
 
   // Stop and close all audio playback.
   if (mixing_graph_output_stream_) {
-    StopMixingGraphPlayback();
+    StopMixingGraphPlayback(MixingError::kNone);
   } else {
     for (MixTrack* mix_track : active_tracks_)
       mix_track->StopIndependentRenderingStream();
@@ -529,7 +583,7 @@ void OutputDeviceMixerImpl::StopListening(Listener* listener) {
   if (!active_tracks_.size()) {
     // There is no actual playback: we were just sending silence to the
     // listener as a reference.
-    StopMixingGraphPlayback();
+    StopMixingGraphPlayback(MixingError::kNone);
   } else {
     // No listeners left, and we are playing via the mixing graph. Schedule
     // switching to independent playback.
@@ -659,17 +713,16 @@ void OutputDeviceMixerImpl::BroadcastToListeners(
   }
 }
 
-// Processes errors for the cases when the playback via the mixing graph is
-// attempted to start or ongoing.
-void OutputDeviceMixerImpl::OnError(ErrorType error) {
+// Processes errors coming from |mixing_graph_| during mixed playback.
+void OutputDeviceMixerImpl::OnMixingGraphError(ErrorType error) {
+  // |mixing_graph_output_stream_| guarantees this.
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  LOG(ERROR) << "Error when mixing audio for device [" << device_id() << "]";
+  // Device change events are intercepted by the underlying physical stream.
+  DCHECK_EQ(error, ErrorType::kUnknown);
+  // This call is expected only during mixed playback.
+  DCHECK(mixing_graph_output_stream_);
 
-  if (mixing_graph_output_stream_)
-    StopMixingGraphPlayback();
-
-  for (MixTrack* mix_track : active_tracks_)
-    mix_track->OnError(error);
+  StopMixingGraphPlayback(MixingError::kPlaybackFailed);
 }
 
 bool OutputDeviceMixerImpl::HasListeners() const {
@@ -702,8 +755,7 @@ void OutputDeviceMixerImpl::StartMixingGraphPlayback() {
   mixing_graph_output_stream_.reset(
       CreateAndOpenDeviceStream(mixing_graph_output_params_));
   if (!mixing_graph_output_stream_) {
-    LOG(ERROR) << "Failed to open output stream for mixing";
-    OnError(ErrorType::kUnknown);
+    StopMixingGraphPlayback(MixingError::kOpenFailed);
     return;
   }
 
@@ -719,29 +771,47 @@ void OutputDeviceMixerImpl::StartMixingGraphPlayback() {
   DVLOG(1) << " Mixing started for device [" << device_id() << "]";
 }
 
-void OutputDeviceMixerImpl::StopMixingGraphPlayback() {
+void OutputDeviceMixerImpl::StopMixingGraphPlayback(MixingError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  DCHECK(mixing_graph_output_stream_);
 
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"),
-               "OutputDeviceMixerImpl::StopMixingGraphPlayback", "device_id",
-               device_id());
+  if (mixing_graph_output_stream_) {
+    // Mixing was in progress, we should stop it.
+    DCHECK_NE(error, MixingError::kOpenFailed);
 
-  switch_to_unmixed_playback_delay_timer_.Stop();
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"),
+                 "OutputDeviceMixerImpl::StopMixingGraphPlayback", "device_id",
+                 device_id());
 
-  mixing_graph_output_stream_->Stop();
-  mixing_graph_output_stream_.reset();  // Auto-close the stream.
+    switch_to_unmixed_playback_delay_timer_.Stop();
 
-  DCHECK(mixing_stats_);
-  mixing_stats_.reset();
+    mixing_graph_output_stream_->Stop();
+    mixing_graph_output_stream_.reset();  // Auto-close the stream.
 
-  DVLOG(1) << " Mixing stopped for device [" << device_id() << "]";
+    DCHECK(mixing_stats_);
+    mixing_stats_.reset();
 
-  for (MixTrack* mix_track : active_tracks_)
-    mix_track->StopProvidingAudioToMixingGraph();
+    DVLOG(1) << " Mixing stopped for device [" << device_id() << "]";
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(TRACE_DISABLED_BY_DEFAULT("audio"),
-                                  "OutputDeviceMixerImpl mixing", this);
+    for (MixTrack* mix_track : active_tracks_)
+      mix_track->StopProvidingAudioToMixingGraph();
+
+    TRACE_EVENT_NESTABLE_ASYNC_END0(TRACE_DISABLED_BY_DEFAULT("audio"),
+                                    "OutputDeviceMixerImpl mixing", this);
+  }
+
+  DCHECK(!mixing_graph_output_stream_);
+
+  if (error != MixingError::kNone) {
+    LOG(ERROR) << ErrorToString(error) << " for device [" << device_id() << "]";
+    TrackError track_error = (error == MixingError::kOpenFailed)
+                                 ? TrackError::kMixedOpenFailed
+                                 : TrackError::kMixedPlaybackFailed;
+    for (MixTrack* mix_track : active_tracks_)
+      mix_track->ReportError(track_error);
+  }
+
+  base::UmaHistogramEnumeration(
+      "Media.Audio.OutputDeviceMixer.MixedPlaybackStatus", error);
 }
 
 void OutputDeviceMixerImpl::SwitchToUnmixedPlaybackTimerHelper() {
@@ -750,9 +820,22 @@ void OutputDeviceMixerImpl::SwitchToUnmixedPlaybackTimerHelper() {
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
 #endif
-  StopMixingGraphPlayback();
+  StopMixingGraphPlayback(MixingError::kNone);
   for (MixTrack* mix_track : active_tracks_)
     mix_track->StartIndependentRenderingStream();
+}
+
+// static
+const char* OutputDeviceMixerImpl::ErrorToString(MixingError error) {
+  switch (error) {
+    case MixingError::kOpenFailed:
+      return "Failed to open mixing rendering stream";
+    case MixingError::kPlaybackFailed:
+      return "Error during mixed playback";
+    default:
+      NOTREACHED();
+      return "No error";
+  }
 }
 
 }  // namespace audio

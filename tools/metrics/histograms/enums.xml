@@ -5112,6 +5112,20 @@ others/histograms.xml -->
   <int value="4" label="Document destroyed"/>
 </enum>
 
+<enum name="AudioOutputDeviceMixerMixedPlaybackStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to open rendering stream"/>
+  <int value="2" label="Error during rendering"/>
+</enum>
+
+<enum name="AudioOutputDeviceMixerStreamStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to open independent rendering stream"/>
+  <int value="2" label="Error during independent rendering"/>
+  <int value="3" label="Failed to start mixed playback"/>
+  <int value="4" label="Error during mixed playback"/>
+</enum>
+
 <enum name="AudioOutputProxyStreamFormat">
   <int value="0" label="Bitstream"/>
   <int value="1" label="Linear PCM"/>

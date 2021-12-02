@@ -689,6 +689,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.OutputDeviceMixer.MixedPlaybackStatus"
+    enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Health status of the mixed playback. Recorded when mixed playback stopped or
+    failed to start.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.OutputDeviceMixer.MixingDuration" units="ms"
     expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
@@ -740,6 +750,16 @@ chromium-metrics-reviews@google.com.
     <variant name="LatencyRtc"/>
     <variant name="LatencyUnknown"/>
   </token>
+</histogram>
+
+<histogram name="Media.Audio.OutputDeviceMixer.StreamStatus"
+    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Health status of each output stream managed by mixer. Recorded when the
+    stream is closed.
+  </summary>
 </histogram>
 
 <histogram name="Media.Audio.PhysicalProcessorsMac" units="units"
