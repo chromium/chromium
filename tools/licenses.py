@@ -86,6 +86,9 @@ PRUNE_PATHS = set([
     # Chrome for Android proprietary code.
     os.path.join('clank'),
 
+    # Proprietary barcode detection library.
+    os.path.join('third_party', 'barhopper'),
+
     # Proprietary DevTools code.
     os.path.join('third_party', 'devtools-frontend-internal'),
 
