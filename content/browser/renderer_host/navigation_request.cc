@@ -1811,9 +1811,10 @@ void NavigationRequest::BeginNavigationImpl() {
                                         pending_ad_components_map);
 
     if (!mapped_url) {
+      StartNavigation();
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
-          true /* skip_throttles */, absl::nullopt /* error_page_content*/,
+          false /* skip_throttles */, absl::nullopt /* error_page_content*/,
           false /* collapse_frame */);
       return;
     }
@@ -3540,8 +3541,7 @@ void NavigationRequest::OnRequestFailedInternal(
   // The check for WebUI should be performed only if error page isolation is
   // enabled for this failed navigation. It is possible for subframe error page
   // to be committed in a WebUI process as shown in https://crbug.com/944086.
-  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          frame_tree_node_->IsMainFrame())) {
+  if (frame_tree_node_->IsErrorPageIsolationEnabled()) {
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
@@ -3565,10 +3565,8 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
     int net_error) {
   // By policy we can isolate all error pages from both the current and
   // destination processes.
-  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          frame_tree_node_->IsMainFrame())) {
+  if (frame_tree_node_->IsErrorPageIsolationEnabled())
     return ErrorPageProcess::kIsolatedProcess;
-  }
 
   // Decide whether to leave the error page in the original process.
   // * If this was a renderer-initiated navigation, and the request is blocked

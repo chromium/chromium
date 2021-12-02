@@ -523,6 +523,9 @@ class CONTENT_EXPORT FrameTreeNode {
     replication_state_->name = name;
   }
 
+  // Returns true if error page isolation is enabled.
+  bool IsErrorPageIsolationEnabled() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);

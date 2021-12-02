@@ -60,7 +60,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -153,12 +152,13 @@ bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
   return current_partition_config != dest_partition_config;
 }
 
-bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
-                                                bool is_main_frame,
-                                                bool is_failure) {
+bool IsSiteInstanceCompatibleWithErrorIsolation(
+    SiteInstance* site_instance,
+    const FrameTreeNode& frame_tree_node,
+    bool is_failure) {
   // With no error isolation all SiteInstances are compatible with any
   // |is_failure|.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame))
+  if (!frame_tree_node.IsErrorPageIsolationEnabled())
     return true;
 
   // When error page isolation is enabled, don't reuse |site_instance| if it's
@@ -1671,8 +1671,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // relationship for it (for isolated error pages).
   // See https://crbug.com/803367.
   bool is_for_isolated_error_page =
-      is_failure &&
-      SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame);
+      is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
 
   if (current_instance->HasSite() &&
       !render_frame_host_->IsNavigationSameSite(destination_url_info) &&
@@ -2126,7 +2125,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // error page navigations, so we cannot rely on it to return correct value
     // when error pages are involved.
     if (IsSiteInstanceCompatibleWithErrorIsolation(
-            dest_instance, frame_tree_node_->IsMainFrame(), is_failure)) {
+            dest_instance, *frame_tree_node_, is_failure)) {
       if (IsSiteInstanceCompatibleWithWebExposedIsolation(
               dest_instance, frame_tree_node_->IsMainFrame(), dest_url_info,
               is_speculative)) {
@@ -2154,8 +2153,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If error page navigations should be isolated, ensure a dedicated
   // SiteInstance is used for them.
-  if (is_failure && SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-                        frame_tree_node_->IsMainFrame())) {
+  if (is_failure && frame_tree_node_->IsErrorPageIsolationEnabled()) {
     // If the target URL requires a BrowsingInstance swap, put the error page
     // in a new BrowsingInstance, since the scripting relationships would
     // have been broken anyway if there were no error. Otherwise, we keep it
@@ -2521,7 +2519,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // Make sure that error isolation is taken into account.  See also
   // ChromeNavigationBrowserTest.RedirectErrorPageReloadToAboutBlank.
   if (!IsSiteInstanceCompatibleWithErrorIsolation(
-          source_instance, frame_tree_node_->IsMainFrame(), is_failure)) {
+          source_instance, *frame_tree_node_, is_failure)) {
     return false;
   }
 

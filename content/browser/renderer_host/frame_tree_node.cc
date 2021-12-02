@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -873,6 +874,17 @@ void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
       parent_->frame_tree_node()->fenced_frame_nonce();
   DCHECK(nonce.has_value());
   fenced_frame_nonce_ = nonce;
+}
+
+bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
+  // Enable error page isolation for fenced frames in both MPArch and ShadowDOM
+  // modes to address the issue with invalid urn:uuid (crbug.com/1264224).
+  //
+  // Note that `IsMainFrame()` only covers MPArch, therefore we add explicit
+  // `IsFencedFrameRoot()` check for ShadowDOM, at least until error page
+  // isolation is supported for subframes in crbug.com/1092524.
+  return SiteIsolationPolicy::IsErrorPageIsolationEnabled(IsMainFrame() ||
+                                                          IsFencedFrameRoot());
 }
 
 }  // namespace content
