@@ -7282,6 +7282,20 @@ TEST_F(URLLoaderFakeTransportInfoTest, AcceptCHFrameIgnoreMalformed) {
 
 #if defined(OS_ANDROID)
 
+namespace {
+
+void CheckRadioWakeupTriggerHistograms(base::HistogramTester& histograms,
+                                       size_t expected_count) {
+  histograms.ExpectTotalCount(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestDestination, expected_count);
+  histograms.ExpectTotalCount(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority, expected_count);
+  histograms.ExpectTotalCount(
+      kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId, expected_count);
+}
+
+}  // namespace
+
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
   base::HistogramTester histograms;
 
@@ -7292,7 +7306,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 1);
+  CheckRadioWakeupTriggerHistograms(histograms, /*expected_count=*/1);
 }
 
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
@@ -7305,7 +7319,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 0);
+  CheckRadioWakeupTriggerHistograms(histograms, /*expected_count=*/0);
 }
 
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
@@ -7318,7 +7332,22 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 0);
+  CheckRadioWakeupTriggerHistograms(histograms, /*expected_count=*/0);
+}
+
+TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
+  base::HistogramTester histograms;
+
+  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
+      base::android::RadioDataActivity::kDormant);
+  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+  RadioMonitorAndroid::GetInstance().OverrideLastRecordTimeForTesting(
+      base::TimeTicks::Now());
+
+  LoadAndCompareFile("simple_page.html");
+
+  CheckRadioWakeupTriggerHistograms(histograms, /*expected_count=*/0);
 }
 
 #endif  // defined(OS_ANDROID)

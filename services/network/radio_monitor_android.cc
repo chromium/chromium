@@ -6,10 +6,21 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace network {
+
+namespace {
+
+// The minimum interval for recording possible radio wake-ups. It's unlikely
+// that radio state transitions happen in seconds.
+constexpr static base::TimeDelta
+    kMinimumRecordIntervalForPossibleWakeupTrigger = base::Seconds(1);
+
+}  // namespace
 
 // static
 RadioMonitorAndroid& RadioMonitorAndroid::GetInstance() {
@@ -19,7 +30,8 @@ RadioMonitorAndroid& RadioMonitorAndroid::GetInstance() {
 
 RadioMonitorAndroid::RadioMonitorAndroid() = default;
 
-void RadioMonitorAndroid::MaybeRecordURLLoaderAnnotationId(
+void RadioMonitorAndroid::MaybeRecordURLLoader(
+    const ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
   if (!ShouldRecordRadioWakeupTrigger())
@@ -29,7 +41,14 @@ void RadioMonitorAndroid::MaybeRecordURLLoaderAnnotationId(
                        TRACE_EVENT_SCOPE_THREAD, "traffic_annotation",
                        traffic_annotation.unique_id_hash_code);
 
-  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoader,
+  base::UmaHistogramEnumeration(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestDestination,
+      request.destination);
+  base::UmaHistogramEnumeration(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority, request.priority,
+      static_cast<net::RequestPriority>(
+          net::RequestPrioritySize::NUM_PRIORITIES));
+  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId,
                            traffic_annotation.unique_id_hash_code);
 }
 
@@ -58,6 +77,13 @@ bool RadioMonitorAndroid::IsRadioUtilsSupported() {
 }
 
 bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
+  // Check recording interval first to reduce overheads of calling Android's
+  // platform APIs.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!last_record_time_.is_null() &&
+      now - last_record_time_ < kMinimumRecordIntervalForPossibleWakeupTrigger)
+    return false;
+
   if (!IsRadioUtilsSupported())
     return false;
 
@@ -80,7 +106,9 @@ bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
   bool should_record =
       *radio_activity == base::android::RadioDataActivity::kDormant &&
       last_radio_data_activity_ != base::android::RadioDataActivity::kDormant;
+
   last_radio_data_activity_ = *radio_activity;
+  last_record_time_ = now;
 
   return should_record;
 }

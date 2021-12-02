@@ -8,16 +8,23 @@
 #include "base/android/radio_utils.h"
 #include "base/component_export.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
-constexpr char kUmaNamePossibleWakeupTriggerURLLoader[] =
-    "Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId";
+struct ResourceRequest;
+
+constexpr char kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId[] =
+    "Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId2";
+constexpr char kUmaNamePossibleWakeupTriggerURLLoaderRequestDestination[] =
+    "Network.Radio.PossibleWakeupTrigger.URLLoaderRequestDestination";
+constexpr char kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority[] =
+    "Network.Radio.PossibleWakeupTrigger.URLLoaderRequestPriority";
 constexpr char kUmaNamePossibleWakeupTriggerResolveHost[] =
-    "Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose";
+    "Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose2";
 
 // Checks radio states and records histograms when network activities may
 // trigger power-consuming radio state changes like wake-ups.
@@ -30,16 +37,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
   RadioMonitorAndroid(RadioMonitorAndroid&&) = delete;
   RadioMonitorAndroid& operator=(RadioMonitorAndroid&&) = delete;
 
-  // Records a traffic annotation hash ID when a network request annotated with
-  // `traffic_annotation` likely wake-ups radio.
-  void MaybeRecordURLLoaderAnnotationId(
+  // Records UMAs when a network request initiated by a URLLoader likely
+  // wake-ups radio.
+  void MaybeRecordURLLoader(
+      const ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   // Records a host resolve request when the request likely wake-ups radio.
   void MaybeRecordResolveHost(
       const mojom::ResolveHostParametersPtr& parameters);
 
-  // These override radio states for testing.
+  // These override internal members for testing.
   void OverrideRadioActivityForTesting(
       absl::optional<base::android::RadioDataActivity> radio_activity) {
     radio_activity_override_for_testing_ = radio_activity;
@@ -47,6 +55,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
   void OverrideRadioTypeForTesting(
       absl::optional<base::android::RadioConnectionType> radio_type) {
     radio_type_override_for_testing_ = radio_type;
+  }
+  void OverrideLastRecordTimeForTesting(base::TimeTicks last_record_time) {
+    last_record_time_ = last_record_time;
   }
 
  private:
@@ -67,6 +78,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
   // Updated when ShouldRecordRadioWakeupTrigger() is called.
   base::android::RadioDataActivity last_radio_data_activity_ =
       base::android::RadioDataActivity::kNone;
+  base::TimeTicks last_record_time_;
 
   // Radio state overrides for testing.
   absl::optional<base::android::RadioDataActivity>

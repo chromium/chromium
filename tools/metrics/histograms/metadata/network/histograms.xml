@@ -963,7 +963,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose"
-    enum="ResolveHostPurpose" expires_after="2022-04-10">
+    enum="ResolveHostPurpose" expires_after="2021-12-01">
+  <obsolete>
+    Removed 12/2021. Use ResolveHostPurpose2 instead.
+  </obsolete>
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the purpose of a host resolve request. Recorded when
+    NetworkContext::ResolveHost() is called while the radio state is dormant.
+    Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose2"
+    enum="ResolveHostPurpose" expires_after="2022-06-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -974,12 +988,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2022-04-10">
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2021-12-01">
+  <obsolete>
+    Removed 12/2021. Use URLLoaderAnnotationId2 instead.
+  </obsolete>
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Records a traffic annotation ID hash when a URLLoader is created and the
     radio state is dormant. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId2"
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2022-06-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records a traffic annotation ID hash when a URLLoader is created and the
+    radio state is dormant. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Radio.PossibleWakeupTrigger.URLLoaderRequestDestination"
+    enum="RequestDestination" expires_after="2022-06-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records a request destination when a URLLoader is created and the radio
+    state is dormant. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderRequestPriority"
+    enum="NetRequestPriority" expires_after="2022-06-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records a request priority when a URLLoader is created and the radio state
+    is dormant. Only recorded on Android.
   </summary>
 </histogram>
 
