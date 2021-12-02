@@ -1979,6 +1979,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ANDROID_APPS_MANAGE_APP_LINKS" desc="Label for accessing app preferrences on ARC side.">
     Manage Play app links
   </message>
+  <message name="IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'ARCVM'.">
+    Let Android apps access USB devices on this Chromebook. Permission will be requested each time you plug in a USB device. Individual Android apps will ask for additional permissions.
+  </message>
 
   <!-- Device Stylus (OS settings) -->
   <message name="IDS_SETTINGS_STYLUS_TITLE" desc="Title of the stylus settings page.">

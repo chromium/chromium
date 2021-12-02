@@ -185,6 +185,12 @@ cr.define('settings', function() {
       r.ANDROID_APPS_DETAILS = createSubpage(
           r.APPS, mojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH,
           Subpage.kGooglePlayStore);
+      if (loadTimeData.valueExists('showArcvmManageUsb') &&
+          loadTimeData.getBoolean('showArcvmManageUsb')) {
+        r.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES = createSubpage(
+            r.ANDROID_APPS_DETAILS, mojom.ARC_VM_USB_PREFERENCES_SUBPAGE_PATH,
+            Subpage.kArcVmUsbPreferences);
+      }
     }
     if (loadTimeData.valueExists('showPluginVm') &&
         loadTimeData.getBoolean('showPluginVm')) {

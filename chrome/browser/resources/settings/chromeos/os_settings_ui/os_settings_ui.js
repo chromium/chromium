@@ -111,6 +111,9 @@ Polymer({
     showAndroidApps_: Boolean,
 
     /** @private */
+    showArcvmManageUsb_: Boolean,
+
+    /** @private */
     showCrostini_: Boolean,
 
     /** @private */
@@ -197,6 +200,7 @@ Polymer({
 
     this.havePlayStoreApp_ = loadTimeData.getBoolean('havePlayStoreApp');
     this.showAndroidApps_ = loadTimeData.getBoolean('androidAppsVisible');
+    this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
     this.showCrostini_ = loadTimeData.getBoolean('showCrostini');
     this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');

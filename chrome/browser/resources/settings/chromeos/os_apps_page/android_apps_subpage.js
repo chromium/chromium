@@ -63,6 +63,9 @@ Polymer({
       }
     },
 
+    /** Whether Arc VM manage usb subpage should be shown. */
+    showArcvmManageUsb: Boolean,
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -157,5 +160,11 @@ Polymer({
     const isKeyboardAction = event.detail === 0;
     AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
+  },
+
+  /** @private */
+  onSharedUsbDevicesClick_() {
+    Router.getInstance().navigateTo(
+        routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES);
   },
 });

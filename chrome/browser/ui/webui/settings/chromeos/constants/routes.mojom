@@ -98,6 +98,7 @@ enum Subpage {
   kPluginVmUsbPreferences = 704,
   // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
+  kArcVmUsbPreferences = 707,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -215,6 +216,8 @@ const string kPluginVmSharedPathsSubpagePath =
     "app-management/pluginVm/sharedPaths";
 const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
+const string kArcVmUsbPreferencesSubpagePath =
+     "androidAppsDetails/sharedUsbDevices";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";

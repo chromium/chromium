@@ -87,6 +87,8 @@ Polymer({
 
     showAndroidApps: Boolean,
 
+    showArcvmManageUsb: Boolean,
+
     showCrostini: Boolean,
 
     showReset: Boolean,

@@ -64755,6 +64755,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="704" label="Plugin Vm USB Preferences"/>
   <int value="705" label="On Startup (Deprecated)"/>
   <int value="706" label="App Notifications"/>
+  <int value="707" label="Arc Vm USB Preferences"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
   <int value="802" label="Crostini Usb Preferences"/>

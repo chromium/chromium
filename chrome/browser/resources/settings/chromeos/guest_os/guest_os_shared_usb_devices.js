@@ -105,7 +105,11 @@ Polymer({
    * @return {string} The name of the VM to share devices with.
    */
   vmName_() {
-    return {crostini: 'termina', pluginVm: 'PvmDefault'}[this.guestOsType];
+    return {
+      crostini: 'termina',
+      pluginVm: 'PvmDefault',
+      arcvm: 'arcvm'
+    }[this.guestOsType];
   },
 
   /**

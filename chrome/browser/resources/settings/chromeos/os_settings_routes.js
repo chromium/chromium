@@ -22,6 +22,7 @@
  *   APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES: !settings.Route,
  *   APPS: !settings.Route,
  *   ANDROID_APPS_DETAILS: !settings.Route,
+ *   ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: !settings.Route,
  *   CROSTINI: !settings.Route,
  *   CROSTINI_ANDROID_ADB: !settings.Route,
  *   CROSTINI_DETAILS: !settings.Route,

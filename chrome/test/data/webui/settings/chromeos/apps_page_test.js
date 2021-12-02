@@ -559,5 +559,17 @@ suite('AppsPageTests', function() {
           deepLinkElement, getDeepActiveElement(),
           'Remove play store button should be focused for settingId=701.');
     });
+
+    test('ManageUsbDevice', function() {
+      // ARCVM is not enabled
+      subpage.showArcvmManageUsb = false;
+      Polymer.dom.flush();
+      assertFalse(!!subpage.$$('#manageArcvmShareUsbDevices'));
+
+      // ARCMV is enabled
+      subpage.showArcvmManageUsb = true;
+      Polymer.dom.flush();
+      assertTrue(!!subpage.$$('#manageArcvmShareUsbDevices'));
+    });
   });
 });

@@ -115,8 +115,19 @@
     <template is="dom-if" route-path="/androidAppsDetails">
       <settings-subpage page-title="$i18n{androidAppsPageLabel}">
         <settings-android-apps-subpage
-            android-apps-info="[[androidAppsInfo]]" prefs="{{prefs}}">
+          android-apps-info="[[androidAppsInfo]]"
+          prefs="{{prefs}}"
+          show-arcvm-manage-usb="[[showArcvmManageUsb]]">
         </settings-android-apps-subpage>
+      </settings-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[showArcvmManageUsb]]" restamp>
+    <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
+      <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+         <settings-guest-os-shared-usb-devices guest-os-type="arcvm">
+         </settings-guest-os-shared-usb-devices>
       </settings-subpage>
     </template>
   </template>

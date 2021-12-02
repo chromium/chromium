@@ -122,6 +122,12 @@ Polymer({
     showAndroidApps: Boolean,
 
     /**
+     * Show ARCVM Manage USB related settings and sub-page.
+     * @type {boolean}
+     */
+    showArcvmManageUsb: Boolean,
+
+    /**
      * Whether the App Notifications page should be shown.
      * @type {boolean}
      */
