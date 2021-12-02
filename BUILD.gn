@@ -531,7 +531,7 @@ group("gn_all") {
   }
 
   # TODO(GYP): Figure out which of these should (and can) build
-  # for chromeos/ios.
+  # for Chrome OS, iOS, and Fuchsia.
   if (!is_chromeos_ash && !is_ios && !is_fuchsia) {
     deps += [
       "//base:build_utf8_validator_tables",

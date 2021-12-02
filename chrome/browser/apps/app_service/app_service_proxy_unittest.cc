@@ -514,6 +514,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
             proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
 }
 
-#endif  // !BUILDFLAG(OS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps
