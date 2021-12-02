@@ -220,6 +220,11 @@
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #endif
 
+#if defined(OS_MAC)
+#include "chrome/browser/ui/cocoa/screentime/history_bridge_factory.h"
+#include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -461,6 +466,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance();
+#endif
+#if defined(OS_MAC)
+  if (screentime::IsScreenTimeEnabled())
+    screentime::HistoryBridgeFactory::GetInstance();
 #endif
   SCTReportingServiceFactory::GetInstance();
 #if defined(OS_ANDROID)

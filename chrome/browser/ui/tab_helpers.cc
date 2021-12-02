@@ -180,6 +180,10 @@
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
+#if defined(OS_MAC)
+#include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
+#endif
+
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
@@ -442,6 +446,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);
   }
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+#endif
+
+#if defined(OS_MAC)
+  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile))
+    screentime::TabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -3475,6 +3475,24 @@ static_library("ui") {
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.mm",
       "cocoa/scoped_menu_bar_lock.h",
       "cocoa/scoped_menu_bar_lock.mm",
+      "cocoa/screentime/fake_webpage_controller.h",
+      "cocoa/screentime/fake_webpage_controller.mm",
+      "cocoa/screentime/history_bridge.h",
+      "cocoa/screentime/history_bridge.mm",
+      "cocoa/screentime/history_bridge_factory.h",
+      "cocoa/screentime/history_bridge_factory.mm",
+      "cocoa/screentime/history_deleter.h",
+      "cocoa/screentime/history_deleter_impl.h",
+      "cocoa/screentime/history_deleter_impl.mm",
+      "cocoa/screentime/screentime_features.cc",
+      "cocoa/screentime/screentime_features.h",
+      "cocoa/screentime/screentime_policy.cc",
+      "cocoa/screentime/screentime_policy.h",
+      "cocoa/screentime/tab_helper.h",
+      "cocoa/screentime/tab_helper.mm",
+      "cocoa/screentime/webpage_controller.h",
+      "cocoa/screentime/webpage_controller_impl.h",
+      "cocoa/screentime/webpage_controller_impl.mm",
       "cocoa/share_menu_controller.h",
       "cocoa/share_menu_controller.mm",
       "cocoa/simple_message_box_cocoa.h",
@@ -3541,6 +3559,7 @@ static_library("ui") {
       "Carbon.framework",
       "Quartz.framework",
     ]
+    weak_frameworks = [ "ScreenTime.framework" ]
 
     if (enable_chromium_updater) {
       deps += [
