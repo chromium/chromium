@@ -20,7 +20,7 @@ namespace password_manager {
 
 namespace {
 
-struct IsLess {
+struct IsPasswordLess {
   bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
     return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
   }
@@ -35,6 +35,12 @@ IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
       std::move(callback));
 }
 
+bool IsInitialMigrationNeeded(PrefService* prefs) {
+  return features::kMigrationVersion.Get() >
+         prefs->GetInteger(
+             prefs::kCurrentMigrationVersionToGoogleMobileServices);
+}
+
 }  // namespace
 
 struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
@@ -45,10 +51,13 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
     return absl::holds_alternative<PasswordStoreBackendError>(logins_result);
   }
 
-  base::flat_set<const PasswordForm*, IsLess> GetLogins() {
+  // Converts std::vector<std::unique_ptr<PasswordForms>> into
+  // base::flat_set<const PasswordForm*> for quick look up comparing only
+  // primary keys.
+  base::flat_set<const PasswordForm*, IsPasswordLess> GetLogins() {
     DCHECK(!HasError());
 
-    return base::MakeFlatSet<const PasswordForm*, IsLess>(
+    return base::MakeFlatSet<const PasswordForm*, IsPasswordLess>(
         absl::get<LoginsResult>(logins_result), {},
         &std::unique_ptr<PasswordForm>::get);
   }
@@ -80,28 +89,19 @@ BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
-  bool is_initial_migration_needed =
-      features::kMigrationVersion.Get() >
-      prefs_->GetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices);
-
   // For syncing users, we don't need to move passwords between the built-in
   // and the Android backends, since both backends should be able to
   // retrieve the same passwords from the sync server.
-  if (is_syncing_passwords_callback_.Run()) {
-    if (is_initial_migration_needed) {
-      // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
-      UpdateMigrationVersionInPref();
-    }
+  if (is_syncing_passwords_callback_.Run() &&
+      IsInitialMigrationNeeded(prefs_)) {
+    // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
+    UpdateMigrationVersionInPref();
     return;
   }
 
-  // For non-syncing user migrate password from |built_in_backend_| to
-  // |android_backend_|.
-  if (is_initial_migration_needed) {
-    PrepareForMigration();
-  } else {
-    // TODO:(crbug.com/1252443) Start rolling migration.
-  }
+  // For non-syncing users we should migrate passwords between backends.
+  // TODO:(crbug.com/1252443) Prepare for migration only if it's required.
+  PrepareForMigration();
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
@@ -112,7 +112,7 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
   auto barrier_callback = base::BarrierCallback<BackendAndLoginsResults>(
       2, base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                            StartBuiltInToAndroidBackendMigration,
+                            MigratePasswordsBetweenAndroidAndBuiltInBackends,
                         weak_ptr_factory_.GetWeakPtr()));
 
   auto bind_backend_to_logins = [](PasswordStoreBackend* backend,
@@ -130,7 +130,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
 }
 
 void BuiltInBackendToAndroidBackendMigrator::
-    StartBuiltInToAndroidBackendMigration(
+    MigratePasswordsBetweenAndroidAndBuiltInBackends(
         std::vector<BackendAndLoginsResults> results) {
   DCHECK_EQ(2u, results.size());
   // TODO:(crbug.com/1252443) Record that migration was canceled due to an
@@ -138,47 +138,65 @@ void BuiltInBackendToAndroidBackendMigrator::
   if (results[0].HasError() || results[1].HasError())
     return;
 
-  auto built_in_backend_logins = (results[0].backend == built_in_backend_)
-                                     ? results[0].GetLogins()
-                                     : results[1].GetLogins();
+  base::flat_set<const PasswordForm*, IsPasswordLess> built_in_backend_logins =
+      (results[0].backend == built_in_backend_) ? results[0].GetLogins()
+                                                : results[1].GetLogins();
 
-  auto android_logins = (results[0].backend == android_backend_)
-                            ? results[0].GetLogins()
-                            : results[1].GetLogins();
+  base::flat_set<const PasswordForm*, IsPasswordLess> android_logins =
+      (results[0].backend == android_backend_) ? results[0].GetLogins()
+                                               : results[1].GetLogins();
 
-  // This method merges password from the built in backend and password from the
-  // android backend based on their primary keys. For a form |F|, there are
-  // three cases to handle:
-  // 1. |F| exists only in the built in backend --> |F| should be added to the
-  // 'android_backend'.
-  // 2. |F| exists only in the android backend --> |F| should be added to the
-  // 'built_in_backend'.
-  // 3. |F| exists in both the built in and android backends --> both versions
-  //    should be merged by accepting the most recently created one, and update
-  //    built in and android backends accordingly.
-  // In most of the cases there shouldn't be any passwords in 'android_backend'.
+  bool is_initial_migration = IsInitialMigrationNeeded(prefs_);
 
-  // After all operations are finished we should update preference to mark the
-  // completion of the migration. Callbacks are chained in a LIFO way. Callbacks
-  // are chained by passing 'callback_chain' as a completion for the next
-  // operation.
-  base::OnceClosure callbacks_chain = base::BindOnce(
-      &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
-      weak_ptr_factory_.GetWeakPtr());
+  // For a form |F|, there are three cases to handle:
+  // 1. |F| exists only in the |built_in_backend_|
+  // 2. |F| exists only in the |android_backend_|
+  // 3. |F| exists in both |built_in_backend_| and |android_backend_|.
+  //
+  // In initial migration is required:
+  // 1. |F| should be added to the |android_backend_|.
+  // 2. |F| should be added to the |built_in_backend_|.
+  // 3. Both versions should be merged by accepting the most recently created
+  //    one*, and update either |built_in_backend_| and |android_backend_|
+  //    accordingly.
+  //    * it should happen only if password values differs between backends.
+  // Otherwise:
+  // 1. |F| should be removed from the |built_in_backend_|.
+  // 2. |F| should be added to the |built_in_backend_|.
+  // 3. version from |built_in_backend_| should be updated with version from the
+  // |android_backend_|.
+
+  // Callbacks are chained in a LIFO way by passing 'callback_chain' as a
+  // completion for the next operation. If it is initial migration - update pref
+  // to mark successful completion.
+  base::OnceClosure callbacks_chain =
+      is_initial_migration
+          ? base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                               UpdateMigrationVersionInPref,
+                           weak_ptr_factory_.GetWeakPtr())
+          : base::DoNothing();
   for (auto* const login : built_in_backend_logins) {
     auto android_login_iter = android_logins.find(login);
 
     if (android_login_iter == android_logins.end()) {
-      // Local password doesn't exist in the android backend, add it to the
-      // 'android_backend_'.
-      callbacks_chain = base::BindOnce(
-          &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
-          *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+      // Password from the |built_in_backend_| doesn't exist in the
+      // |android_backend_|.
+      if (is_initial_migration) {
+        callbacks_chain = base::BindOnce(
+            &PasswordStoreBackend::AddLoginAsync,
+            android_backend_->GetWeakPtr(), *login,
+            IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+      } else {
+        callbacks_chain = base::BindOnce(
+            &PasswordStoreBackend::RemoveLoginAsync,
+            built_in_backend_->GetWeakPtr(), *login,
+            IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+      }
+
       continue;
     }
 
-    // Local password exists in the android backend as well. A merge is
-    // required.
+    // Password from the |built_in_backend_| exists in the |android_backend_|.
     auto* const android_login = (*android_login_iter);
 
     if (login->password_value == android_login->password_value) {
@@ -186,31 +204,37 @@ void BuiltInBackendToAndroidBackendMigrator::
       continue;
     }
 
-    // Passwords aren't identical, pick the most recently created one.
-    if (login->date_created > android_login->date_created) {
+    // Passwords aren't identical.
+    if (is_initial_migration &&
+        login->date_created > android_login->date_created) {
+      // // During initial migration, pick the most recently created one. This
+      // is aligned with the merge sync logic in PasswordSyncBridge.
       callbacks_chain = base::BindOnce(
-          &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
-          *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+          &PasswordStoreBackend::UpdateLoginAsync,
+          android_backend_->GetWeakPtr(), *login,
+          IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
     } else {
+      // During rolling migration, update the built-in version to match the
+      // Android version.
       callbacks_chain = base::BindOnce(
-          &PasswordStoreBackend::AddLoginAsync, built_in_backend_->GetWeakPtr(),
-          *android_login,
+          &PasswordStoreBackend::UpdateLoginAsync,
+          built_in_backend_->GetWeakPtr(), *android_login,
           IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
     }
   }
 
-  // At this point, we have processed all passwords from the built in backend.
-  // In addition, we also have processed all passwords from 'android_backend_'
-  // that exist in the 'built_in_backend_'. What's remaining is to process
-  // passwords from 'android_backend_' that don't exist in the
-  // 'built_in_backend_'.
+  // At this point, we have processed all passwords from the |built_in_backend_|
+  // In addition, we also have processed all passwords from the
+  // |android_backend_| which exist in the |built_in_backend_|. What's remaining
+  // is to process passwords from |android_backend_| that don't exist in the
+  // |built_in_backend_|.
   for (auto* const android_login : android_logins) {
     if (built_in_backend_logins.contains(android_login)) {
       continue;
     }
 
-    // Add to 'built_in_backend_' any passwords from 'android_backend_' that
-    // doesn't exist in the 'built_in_backend_'
+    // Add to the |built_in_backend_| any passwords from the |android_backend_|
+    // that doesn't exist in the |built_in_backend_|.
     callbacks_chain = base::BindOnce(
         &PasswordStoreBackend::AddLoginAsync, built_in_backend_->GetWeakPtr(),
         *android_login,

@@ -83,7 +83,11 @@ void FakePasswordStoreBackend::UpdateLoginAsync(
 void FakePasswordStoreBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  NOTREACHED();
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::RemoveLoginInternal,
+                     base::Unretained(this), form),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
@@ -241,6 +245,22 @@ void FakePasswordStoreBackend::DisableAutoSignInForOriginsInternal(
       }
     }
   }
+}
+
+PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
+  auto it = forms.begin();
+  while (it != forms.end()) {
+    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
+      it = forms.erase(it);
+      changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+    } else {
+      ++it;
+    }
+  }
+  return changes;
 }
 
 }  // namespace password_manager

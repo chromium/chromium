@@ -48,8 +48,12 @@ class BuiltInBackendToAndroidBackendMigrator {
   // Schedules async calls to read of all passwords from both backends.
   void PrepareForMigration();
 
-  // Migrates passwords from the |built_in_backend_| to the |android_backend|.
-  void StartBuiltInToAndroidBackendMigration(
+  // Migrates password between |built_in_backend_| and |android_backend_|.
+  // |result| consists of passwords from the |built_in_backend_| let's call them
+  // |A| and passwords from the |android_backend_| - |B|. If initial migration
+  // needed this function will update both backends with |A|U|B| otherwise it
+  // will replace passwords from the |built_in_backend_| with |B|.
+  void MigratePasswordsBetweenAndroidAndBuiltInBackends(
       std::vector<BackendAndLoginsResults> result);
 
   const raw_ptr<PasswordStoreBackend> built_in_backend_;

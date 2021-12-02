@@ -75,6 +75,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+  PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
 
   PasswordMap stored_passwords_;
   base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
