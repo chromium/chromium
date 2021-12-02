@@ -98,17 +98,6 @@ class LiteVideoUserBlocklistTest : public ChromeRenderViewHostTestHarness {
         nullptr, &test_clock_, &blocklist_delegate_);
   }
 
-  void ConfigBlocklistParamsForTesting() {
-    int max_user_blocklist_hosts = 1;
-    int user_blocklist_opt_out_history_threshold = 1;
-
-    ConfigBlocklistWithParams(
-        {{"user_blocklist_opt_out_history_threshold",
-          base::NumberToString(user_blocklist_opt_out_history_threshold)},
-         {"max_user_blocklist_hosts",
-          base::NumberToString(max_user_blocklist_hosts)}});
-  }
-
   void SeedBlocklist(const std::string& key, LiteVideoBlocklistType type) {
     blocklist_->AddEntry(key, true, static_cast<int>(type));
   }
@@ -141,10 +130,26 @@ class LiteVideoUserBlocklistTest : public ChromeRenderViewHostTestHarness {
 
  private:
   EmptyOptOutBlocklistDelegate blocklist_delegate_;
+  // All modificaitons to scoped_feature_list_ need to happen in SetUp or the
+  // test constructor to avoid race conditions with thread initializations.
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::SimpleTestClock test_clock_;
   std::unique_ptr<TestLiteVideoUserBlocklist> blocklist_;
+};
+
+class LiteVideoUserBlocklistWithParamsTest : public LiteVideoUserBlocklistTest {
+ public:
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    int max_user_blocklist_hosts = 1;
+    int user_blocklist_opt_out_history_threshold = 1;
+    ConfigBlocklistWithParams(
+        {{"user_blocklist_opt_out_history_threshold",
+          base::NumberToString(user_blocklist_opt_out_history_threshold)},
+         {"max_user_blocklist_hosts",
+          base::NumberToString(max_user_blocklist_hosts)}});
+  }
 };
 
 TEST_F(LiteVideoUserBlocklistTest, NavigationNotEligibile) {
@@ -153,8 +158,8 @@ TEST_F(LiteVideoUserBlocklistTest, NavigationNotEligibile) {
             LiteVideoBlocklistReason::kNavigationNotEligibile);
 }
 
-TEST_F(LiteVideoUserBlocklistTest, NavigationBlocklistedByNavigationBlocklist) {
-  ConfigBlocklistParamsForTesting();
+TEST_F(LiteVideoUserBlocklistWithParamsTest,
+       NavigationBlocklistedByNavigationBlocklist) {
   GURL url("https://test.com");
   content::MockNavigationHandle nav_handle;
   nav_handle.set_url(url);
@@ -163,8 +168,8 @@ TEST_F(LiteVideoUserBlocklistTest, NavigationBlocklistedByNavigationBlocklist) {
             LiteVideoBlocklistReason::kNavigationBlocklisted);
 }
 
-TEST_F(LiteVideoUserBlocklistTest, NavigationUnblocklistedByNavigation) {
-  ConfigBlocklistParamsForTesting();
+TEST_F(LiteVideoUserBlocklistWithParamsTest,
+       NavigationUnblocklistedByNavigation) {
   GURL url("https://test.com");
   content::MockNavigationHandle nav_handle;
   nav_handle.set_url(url);
@@ -178,25 +183,22 @@ TEST_F(LiteVideoUserBlocklistTest, NavigationUnblocklistedByNavigation) {
             LiteVideoBlocklistReason::kAllowed);
 }
 
-TEST_F(LiteVideoUserBlocklistTest,
+TEST_F(LiteVideoUserBlocklistWithParamsTest,
        MainframeNavigationBlocklistedByRebufferBlocklist) {
-  ConfigBlocklistParamsForTesting();
   GURL url("https://test.com");
   blocklist()->AddRebufferToBlocklist(url, absl::nullopt, true);
   EXPECT_EQ(CheckBlocklistForMainframeNavigation(url),
             LiteVideoBlocklistReason::kRebufferingBlocklisted);
 }
 
-TEST_F(LiteVideoUserBlocklistTest, MainframeNavigationAllowed) {
-  ConfigBlocklistParamsForTesting();
+TEST_F(LiteVideoUserBlocklistWithParamsTest, MainframeNavigationAllowed) {
   GURL url("https://test.com");
   EXPECT_EQ(CheckBlocklistForMainframeNavigation(url),
             LiteVideoBlocklistReason::kAllowed);
 }
 
-TEST_F(LiteVideoUserBlocklistTest,
+TEST_F(LiteVideoUserBlocklistWithParamsTest,
        SubframeNavigationBlocklistedByRebufferBlocklist) {
-  ConfigBlocklistParamsForTesting();
   GURL mainframe_url("https://test.com");
   GURL subframe_url("https://subframe.com");
   blocklist()->AddRebufferToBlocklist(mainframe_url, subframe_url, true);
@@ -204,8 +206,7 @@ TEST_F(LiteVideoUserBlocklistTest,
             LiteVideoBlocklistReason::kRebufferingBlocklisted);
 }
 
-TEST_F(LiteVideoUserBlocklistTest, SubframeNavigationAllowed) {
-  ConfigBlocklistParamsForTesting();
+TEST_F(LiteVideoUserBlocklistWithParamsTest, SubframeNavigationAllowed) {
   GURL mainframe_url("https://test.com");
   GURL subframe_url("https://subframe.com");
   EXPECT_EQ(CheckBlocklistForSubframeNavigation(mainframe_url, subframe_url),
