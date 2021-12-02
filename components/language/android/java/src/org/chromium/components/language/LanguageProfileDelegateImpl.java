@@ -21,13 +21,12 @@ public class LanguageProfileDelegateImpl implements LanguageProfileDelegate {
     }
 
     /**
-     * The default implementation always returns an empty list.
      * @param accountName Account to get profile or null if the default profile should be returned.
-     * @return A list of language preferences for |accountName|
+     * @return A list of language tags ordered by preference for |accountName|
      */
     @Override
-    public List<LanguageProfileDelegate.LanguagePreference> getLanguagePreferences(
-            String accountName) {
-        return new ArrayList<LanguageProfileDelegate.LanguagePreference>();
+    public List<String> getLanguagePreferences(String accountName) {
+        // The default implementation always returns an empty list.
+        return new ArrayList<String>();
     }
 }
