@@ -227,7 +227,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
     pos.longitude = -(id + 1);
     pos.altitude = 2 * id;
     pos.accuracy = 3 * id;
-    pos.timestamp = base::Time::Now();
+    // Ensure last_position.timestamp be earlier than any future calls to
+    // base::time::Now() as well as not old enough to be considered invalid
+    // (kLastPositionMaxAgeSeconds)
+    pos.timestamp = base::Time::Now() - base::Minutes(5);
     return pos;
   }
 
