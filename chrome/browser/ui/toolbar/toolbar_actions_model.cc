@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
@@ -362,14 +361,21 @@ void ToolbarActionsModel::InitializeActionList() {
   // have changed even though they haven't.
   pinned_action_ids_ = GetFilteredPinnedActionIds();
 
-  if (!profile_->IsOffTheRecord() && !action_ids_.empty()) {
-    base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
-                                pinned_action_ids_.size());
-    double percentage_double = static_cast<double>(pinned_action_ids_.size()) /
-                               action_ids_.size() * 100.0;
-    base::UmaHistogramPercentageObsoleteDoNotUse(
-        "Extensions.Toolbar.PinnedExtensionPercentage3",
-        base::ClampRound(percentage_double));
+  if (!profile_->IsOffTheRecord()) {
+    // Prefixed with "ExtensionToolbarModel" rather than
+    // "Extensions.Toolbar" for historical reasons.
+    base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
+                                action_ids_.size());
+    if (!action_ids_.empty()) {
+      base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
+                                  pinned_action_ids_.size());
+      double percentage_double =
+          static_cast<double>(pinned_action_ids_.size()) / action_ids_.size() *
+          100.0;
+      base::UmaHistogramPercentageObsoleteDoNotUse(
+          "Extensions.Toolbar.PinnedExtensionPercentage3",
+          base::ClampRound(percentage_double));
+    }
   }
 }
 
@@ -384,19 +390,6 @@ void ToolbarActionsModel::Populate() {
     if (!ShouldAddExtension(extension.get()))
       continue;
     action_ids_.insert(extension->id());
-  }
-
-  // Histogram names are prefixed with "ExtensionToolbarModel" rather than
-  // "ToolbarActionsModel" for historical reasons.
-  UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsCount",
-                           action_ids_.size());
-
-  if (!action_ids_.empty()) {
-    // If all actions are pinned, report kSampleType_MAX.
-    UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsVisible",
-                             pinned_action_ids_.size() == action_ids_.size()
-                                 ? base::HistogramBase::kSampleType_MAX
-                                 : pinned_action_ids_.size());
   }
 }
 

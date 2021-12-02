@@ -259,19 +259,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExtensionToolbarModel.BrowserActionsCount" units="units"
-    expires_after="2021-12-01">
+<histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
+    expires_after="never">
+<!-- expires-never: Monitoring core user behavior with extensions. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    The number of icons the Browser Actions Container knows about (visible or in
-    the overflow bucket). Does not count icons that have been permanently hidden
-    by the user. Measured once per startup per (non-incognito) profile.
+    The total number of extensions that have an icon in the extension toolbar,
+    including those that are unpinned and only show in the extensions menu.
+    Measured once per startup per (non-incognito) profile.
   </summary>
 </histogram>
 
 <histogram name="ExtensionToolbarModel.BrowserActionsVisible" units="units"
     expires_after="2021-12-01">
+  <obsolete>
+    Replaced by Extensions.Toolbar.PinnedExtensionCount2 and
+    Extensions.Toolbar.PinnedExtensionPercentage3. Code removed 2021/11.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
