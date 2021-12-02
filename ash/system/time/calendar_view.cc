@@ -41,9 +41,8 @@ constexpr int kContentHorizontalPadding = 20;
 constexpr int kMonthVerticalPadding = 10;
 constexpr int kLabelVerticalPadding = 10;
 constexpr int kLabelTextInBetweenPadding = 10;
-
-// The insets within the content view.
-constexpr gfx::Insets kContentInsets{kContentVerticalPadding};
+constexpr int kWeekRowHorizontalPadding =
+    kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 
 // The pixel that will be applied to indicate that we can see this is the view's
 // bottom if there's this much pixel left.
@@ -108,8 +107,8 @@ class MonthHeaderView : public views::View {
       auto label =
           std::make_unique<CalendarLabel>(l10n_util::GetStringUTF16(week_day));
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-      label->SetBorder(
-          views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
+      label->SetBorder((views::CreateEmptyBorder(
+          gfx::Insets(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
       label->SetTextContext(CONTEXT_CALENDAR_DATE);
@@ -153,8 +152,9 @@ class CalendarView::MonthYearHeaderView : public views::View {
 
     month_label_->SetText(month_name_);
     SetupLabel(month_label_);
-    month_label_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kLabelVerticalPadding, 0)));
+    month_label_->SetBorder(views::CreateEmptyBorder(
+        kLabelVerticalPadding, calendar_utils::kDateHorizontalPadding,
+        kLabelVerticalPadding, 0));
 
     if (calendar_utils::GetExplodedLocal(date_).year !=
         calendar_utils::GetExplodedLocal(base::Time::Now()).year) {
@@ -292,7 +292,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   // Add month header.
   auto month_header = std::make_unique<MonthHeaderView>();
   month_header->SetBorder(views::CreateEmptyBorder(
-      0, kContentHorizontalPadding, 0, kContentHorizontalPadding));
+      0, kWeekRowHorizontalPadding, 0, kWeekRowHorizontalPadding));
   AddChildView(std::move(month_header));
 
   // Add scroll view.
@@ -310,7 +310,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   content_view_ = scroll_view_->SetContents(std::make_unique<views::View>());
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  content_view_->SetBorder(views::CreateEmptyBorder(kContentInsets));
+  content_view_->SetBorder(views::CreateEmptyBorder(
+      kContentVerticalPadding, kWeekRowHorizontalPadding,
+      kContentVerticalPadding, kWeekRowHorizontalPadding));
   // Focusable nodes must have an accessible name.
   content_view_->GetViewAccessibility().OverrideName(GetClassName());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);

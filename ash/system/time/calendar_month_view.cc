@@ -205,7 +205,8 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   }
 
   cc::PaintFlags indicator_paint_flags;
-  indicator_paint_flags.setColor(calendar_utils::GetPrimaryTextColor());
+  indicator_paint_flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
   indicator_paint_flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawCircle(GetEventsPresentIndicatorCenterPosition(),
                      kEventsPresentRoundedRadius, indicator_paint_flags);

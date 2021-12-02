@@ -64,6 +64,7 @@ std::u16string GetMonthName(const base::Time date) {
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {
+  layout->AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
   for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
     layout
         ->AddColumn(views::LayoutAlignment::kStretch,
