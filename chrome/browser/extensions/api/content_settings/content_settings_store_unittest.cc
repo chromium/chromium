@@ -10,7 +10,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_api_constants.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -25,8 +24,6 @@
 using ::testing::Mock;
 
 namespace extensions {
-
-namespace keys = content_settings_api_constants;
 
 namespace {
 
@@ -250,27 +247,36 @@ TEST_F(ContentSettingsStoreTest, SetFromList) {
   // {"primaryPattern": pattern, "secondaryPattern": pattern, "type": "cookies",
   //  "setting": "allow"}
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString(keys::kPrimaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kSecondaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kContentSettingsTypeKey, "cookies");
-  dict_value->SetString(keys::kContentSettingKey, "allow");
+  dict_value->SetString(ContentSettingsStore::kPrimaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kSecondaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kContentSettingsTypeKey,
+                        "cookies");
+  dict_value->SetString(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
   // Test content settings types that have been removed. Should be ignored.
   // {"primaryPattern": pattern, "secondaryPattern": pattern,
   //  "type": "fullscreen", "setting": "allow"}
   dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString(keys::kPrimaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kSecondaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kContentSettingsTypeKey, "fullscreen");
-  dict_value->SetString(keys::kContentSettingKey, "allow");
+  dict_value->SetString(ContentSettingsStore::kPrimaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kSecondaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kContentSettingsTypeKey,
+                        "fullscreen");
+  dict_value->SetString(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
   // {"primaryPattern": pattern, "secondaryPattern": pattern,
   //  "type": "mouselock", "setting": "allow"}
   dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString(keys::kPrimaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kSecondaryPatternKey, pattern.ToString());
-  dict_value->SetString(keys::kContentSettingsTypeKey, "mouselock");
-  dict_value->SetString(keys::kContentSettingKey, "allow");
+  dict_value->SetString(ContentSettingsStore::kPrimaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kSecondaryPatternKey,
+                        pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kContentSettingsTypeKey,
+                        "mouselock");
+  dict_value->SetString(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
 
   store()->SetExtensionContentSettingFromList(ext_id, &pref_list,
@@ -308,19 +314,23 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   // Build a preference list in JSON format.
   base::ListValue pref_list;
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString(keys::kPrimaryPatternKey, primary_pattern.ToString());
-  dict_value->SetString(keys::kSecondaryPatternKey,
+  dict_value->SetString(ContentSettingsStore::kPrimaryPatternKey,
+                        primary_pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kSecondaryPatternKey,
                         secondary_pattern.ToString());
-  dict_value->SetString(keys::kContentSettingsTypeKey, "cookies");
-  dict_value->SetString(keys::kContentSettingKey, "allow");
+  dict_value->SetString(ContentSettingsStore::kContentSettingsTypeKey,
+                        "cookies");
+  dict_value->SetString(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
 
   dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString(keys::kPrimaryPatternKey, primary_pattern.ToString());
-  dict_value->SetString(keys::kSecondaryPatternKey,
+  dict_value->SetString(ContentSettingsStore::kPrimaryPatternKey,
+                        primary_pattern.ToString());
+  dict_value->SetString(ContentSettingsStore::kSecondaryPatternKey,
                         secondary_pattern.ToString());
-  dict_value->SetString(keys::kContentSettingsTypeKey, "geolocation");
-  dict_value->SetString(keys::kContentSettingKey, "allow");
+  dict_value->SetString(ContentSettingsStore::kContentSettingsTypeKey,
+                        "geolocation");
+  dict_value->SetString(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
 
   store()->SetExtensionContentSettingFromList(ext_id, &pref_list,

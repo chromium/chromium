@@ -171,8 +171,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
   DCHECK(!setting_string.empty());
-  result->SetString(content_settings_api_constants::kContentSettingKey,
-                    setting_string);
+  result->SetString(ContentSettingsStore::kContentSettingKey, setting_string);
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));

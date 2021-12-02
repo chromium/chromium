@@ -49,6 +49,11 @@ class ContentSettingsStore
         bool incognito) = 0;
   };
 
+  static constexpr char kContentSettingKey[] = "setting";
+  static constexpr char kContentSettingsTypeKey[] = "type";
+  static constexpr char kPrimaryPatternKey[] = "primaryPattern";
+  static constexpr char kSecondaryPatternKey[] = "secondaryPattern";
+
   ContentSettingsStore();
 
   ContentSettingsStore(const ContentSettingsStore&) = delete;

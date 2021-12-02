@@ -10,19 +10,11 @@
 namespace extensions {
 namespace content_settings_api_constants {
 
-// Keys.
-extern const char kContentSettingKey[];
-extern const char kContentSettingsTypeKey[];
-extern const char kDescriptionKey[];
-extern const char kIdKey[];
-extern const char kPrimaryPatternKey[];
-extern const char kResourceIdentifierKey[];
-extern const char kSecondaryPatternKey[];
-
 // Errors.
 extern const char kIncognitoContextError[];
 extern const char kIncognitoSessionOnlyError[];
 extern const char kInvalidUrlError[];
+
 }  // namespace content_settings_api_constants
 }  // namespace extensions
 
