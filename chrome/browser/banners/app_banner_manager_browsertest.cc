@@ -834,10 +834,8 @@ class AppBannerManagerFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1270942): Re-enable this test once it works with
-// `FencedFrameTestHelper` again.
 IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
-                       DISABLED_FencedFrameShouldNotUpdateState) {
+                       FencedFrameShouldNotUpdateState) {
   // Navigate to an initial page.
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -847,7 +845,9 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 
   // Create a fenced frame.
-  const GURL fenced_frame_url = GetBannerURL();
+  GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "/banners/fenced_frames/manifest_test_page.html?manifest=/banners/"
+      "manifest.json");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           GetWebContents()->GetMainFrame(), fenced_frame_url);
