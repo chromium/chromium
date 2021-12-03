@@ -1088,26 +1088,41 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   }
 }
 
-// Tests `GetTopmostAncestorFormElement(element)`.
-TEST_F(FormAutofillUtilsTest, GetTopmostAncestorFormElement) {
+// Tests `GetClosestAncestorFormElement(element)`.
+TEST_F(FormAutofillUtilsTest, GetClosestAncestorFormElement) {
   LoadHTML(R"(
       <body>
         <iframe id=unowned></iframe>
-        <form id=topmost_form>
-          <iframe id=owned></iframe>
-          <form id=inner_form>
-            <iframe id=nested></iframe>
+        <form id=outer_form>
+          <iframe id=owned1></iframe>
+          <!-- A nested 'inner_form' with an iframe 'owned2' will be
+               created dynamically. -->
+          <form id=non_existent>
+            <iframe id=owned3></iframe>
           </form>
         </form>
       </body>)");
+  ExecuteJavaScriptForTests(R"(
+      const inner_form = document.createElement('form');
+      inner_form.id = 'inner_form';
+      const owned2 = document.createElement('iframe');
+      owned2.id = 'owned2';
+      inner_form.appendChild(owned2);
+      document.getElementById('outer_form').appendChild(inner_form);
+    )");
+  content::RunAllTasksUntilIdle();
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "unowned")),
+  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "unowned")),
             WebFormElement());
-  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "owned")),
-            GetFormElementById(doc, "topmost_form"));
-  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "nested")),
-            GetFormElementById(doc, "topmost_form"));
+  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned1")),
+            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned2")),
+            GetFormElementById(doc, "inner_form"));
+  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned3")),
+            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(WebFormControlElement(),
+            GetFormElementById(doc, "non_existent_form", AllowNull(true)));
 }
 
 // Tests that `IsDomPredecessor(lhs, rhs, common_ancestor)` holds iff a DOM

@@ -96,17 +96,18 @@ bool IsVisibleIframe(const blink::WebElement& iframe_element);
 
 // Returns the topmost <form> ancestor of |node|, or an IsNull() pointer.
 //
-// Generally, WebFormElements must not be nested [1]. If forms are nested, Blink
-// essentially ignores the inner form; in particular, it does not associate any
-// fields with the inner form.
+// Generally, WebFormElements must not be nested [1]. When parsing HTML, Blink
+// ignores nested form tags; the inner forms therefore never make it into the
+// DOM. Howevery, nested forms can be created and added to the DOM dynamically,
+// in which case Blink associates each field with its closest ancestor.
 //
-// For some elements Autofill determines the associated form without Blink's
+// For some elements, Autofill determines the associated form without Blink's
 // help (currently, these are only iframe elements). For consistency with
-// Blink's behaviour, we associate them with their topmost (and not the closest)
-// form element ancestor.
+// Blink's behaviour, we associate them with their closest form element
+// ancestor.
 //
 // [1] https://html.spec.whatwg.org/multipage/forms.html#the-form-element
-blink::WebFormElement GetTopmostAncestorFormElement(blink::WebNode node);
+blink::WebFormElement GetClosestAncestorFormElement(blink::WebNode node);
 
 // Returns true if a DOM traversal (pre-order, depth-first) visits |x| before
 // |y|. |common_ancestor| can be any shared ancestor of |x| and |y| (including
