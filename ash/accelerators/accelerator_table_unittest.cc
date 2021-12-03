@@ -16,10 +16,10 @@ namespace ash {
 namespace {
 
 // The number of non-Search-based accelerators.
-constexpr int kNonSearchAcceleratorsNum = 104;
+constexpr int kNonSearchAcceleratorsNum = 105;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "6b27f4e06b2cb15eb1d1597691269dbb";
+    "5b40544d68a2355cf33f4afdf32568f1";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -127,8 +127,8 @@ TEST(AcceleratorTableTest, CheckDeprecatedAccelerators) {
   for (size_t i = 0; i < kDeprecatedAcceleratorsDataLength; ++i) {
     // There must never be any duplicated actions.
     const DeprecatedAcceleratorData& data = kDeprecatedAcceleratorsData[i];
-    EXPECT_TRUE(actions.insert(data.action).second) << "Deprecated action: "
-                                                    << data.action;
+    EXPECT_TRUE(actions.insert(data.action).second)
+        << "Deprecated action: " << data.action;
 
     // The UMA histogram name must be of the format "Ash.Accelerators.*"
     std::string uma_histogram(data.uma_histogram_name);

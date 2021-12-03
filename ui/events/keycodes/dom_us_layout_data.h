@@ -420,6 +420,8 @@ const struct DomCodeToKeyboardCodeEntry {
      VKEY_PRIVACY_SCREEN_TOGGLE},  // 0x000017 PrivacyScreenToggle
     {DomCode::MICROPHONE_MUTE_TOGGLE,
      VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x000018 MicrophoneMuteToggle
+    {DomCode::KEYBOARD_BACKLIGHT_TOGGLE,
+     VKEY_KBD_BACKLIGHT_TOGGLE},  // 0x000019 KeyboardBacklightToggle
 #endif
     {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp

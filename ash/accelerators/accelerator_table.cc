@@ -132,7 +132,9 @@ const AcceleratorAction kPreferredActions[] = {
 const size_t kPreferredActionsLength = base::size(kPreferredActions);
 
 const AcceleratorAction kReservedActions[] = {
-    POWER_PRESSED, POWER_RELEASED, SUSPEND,
+    POWER_PRESSED,
+    POWER_RELEASED,
+    SUSPEND,
 };
 
 const size_t kReservedActionsLength = base::size(kReservedActions);
@@ -149,6 +151,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     DEBUG_TOGGLE_TABLET_MODE,
     DEV_ADD_REMOVE_DISPLAY,
     DISABLE_CAPS_LOCK,
+    KEYBOARD_BACKLIGHT_TOGGLE,
     KEYBOARD_BRIGHTNESS_DOWN,
     KEYBOARD_BRIGHTNESS_UP,
     MAGNIFIER_ZOOM_IN,   // Control+F7
@@ -220,6 +223,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     DEV_ADD_REMOVE_DISPLAY,
     DISABLE_CAPS_LOCK,
     EXIT,
+    KEYBOARD_BACKLIGHT_TOGGLE,
     KEYBOARD_BRIGHTNESS_DOWN,
     KEYBOARD_BRIGHTNESS_UP,
     LOCK_SCREEN,
@@ -301,6 +305,7 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     DEBUG_TOGGLE_TOUCH_SCREEN,
     DEV_ADD_REMOVE_DISPLAY,
     DISABLE_CAPS_LOCK,
+    KEYBOARD_BACKLIGHT_TOGGLE,
     KEYBOARD_BRIGHTNESS_DOWN,
     KEYBOARD_BRIGHTNESS_UP,
     MAGNIFIER_ZOOM_IN,   // Control+F7
@@ -395,6 +400,7 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     DESKS_NEW_DESK,
     DESKS_REMOVE_CURRENT_DESK,
     DISABLE_CAPS_LOCK,
+    KEYBOARD_BACKLIGHT_TOGGLE,
     KEYBOARD_BRIGHTNESS_DOWN,
     KEYBOARD_BRIGHTNESS_UP,
     MEDIA_FAST_FORWARD,

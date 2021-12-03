@@ -35,6 +35,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::EF_NONE, PRIVACY_SCREEN_TOGGLE},
     {true, ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_NONE,
      MICROPHONE_MUTE_TOGGLE},
+    {true, ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE,
+     KEYBOARD_BACKLIGHT_TOGGLE},
     {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE, KEYBOARD_BRIGHTNESS_DOWN},
     {true, ui::VKEY_KBD_BRIGHTNESS_UP, ui::EF_NONE, KEYBOARD_BRIGHTNESS_UP},
     // Maximize button.

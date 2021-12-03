@@ -1952,6 +1952,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case FOCUS_NEXT_PANE:
     case FOCUS_PREVIOUS_PANE:
     case FOCUS_SHELF:
+    case KEYBOARD_BACKLIGHT_TOGGLE:
     case KEYBOARD_BRIGHTNESS_DOWN:
     case KEYBOARD_BRIGHTNESS_UP:
     case LAUNCH_APP_0:
@@ -2132,6 +2133,10 @@ void AcceleratorControllerImpl::PerformAction(
     case FOCUS_PIP:
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));
       accelerators::FocusPip();
+      break;
+    case KEYBOARD_BACKLIGHT_TOGGLE:
+      base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+      accelerators::ToggleKeyboardBacklight();
       break;
     case KEYBOARD_BRIGHTNESS_DOWN: {
       KeyboardBrightnessControlDelegate* delegate =
