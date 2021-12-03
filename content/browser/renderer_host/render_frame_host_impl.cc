@@ -5457,17 +5457,14 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
 
 void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
     bool vk_overlays_content) {
-  should_virtual_keyboard_overlay_content_ = vk_overlays_content;
-}
-
-bool RenderFrameHostImpl::ShouldVirtualKeyboardOverlayContent() const {
-  const RenderFrameHostImpl* root_frame_host = GetMainFrame();
-  return root_frame_host->should_virtual_keyboard_overlay_content_;
+  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  DCHECK(is_main_frame());
+  GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
 }
 
 void RenderFrameHostImpl::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  DCHECK(ShouldVirtualKeyboardOverlayContent());
+  DCHECK(GetPage().virtual_keyboard_overlays_content());
 
   // Notify each SiteInstance a single time. Renderer will take care of ensuring
   // the event is dispatched to all relevant listeners in the grouping of frames

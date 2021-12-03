@@ -152,6 +152,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   void set_page_scale_factor(float scale) { page_scale_factor_ = scale; }
   float page_scale_factor() const { return page_scale_factor_; }
 
+  void set_virtual_keyboard_overlays_content(bool vk_overlays_content) {
+    virtual_keyboard_overlays_content_ = vk_overlays_content;
+  }
+  bool virtual_keyboard_overlays_content() const {
+    return virtual_keyboard_overlays_content_;
+  }
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -246,6 +253,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // scale factor when performing session history navigations (see
   // blink::PageState).
   float page_scale_factor_ = 1.f;
+
+  // If true, then the Virtual keyboard rectangle that occludes the content is
+  // sent to the VirtualKeyboard API where it fires overlaygeometrychange JS
+  // event notifying the web authors that Virtual keyboard has occluded the
+  // content.
+  bool virtual_keyboard_overlays_content_ = false;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

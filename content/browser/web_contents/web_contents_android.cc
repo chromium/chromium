@@ -525,9 +525,8 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(
   auto* input_handler = web_contents_->GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
     return;
-  RenderFrameHostImpl* rfh = web_contents_->GetMainFrame();
   bool should_overlay_content =
-      rfh && rfh->ShouldVirtualKeyboardOverlayContent();
+      web_contents_->GetPrimaryPage().virtual_keyboard_overlays_content();
   if (!should_overlay_content)
     input_handler->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
 }

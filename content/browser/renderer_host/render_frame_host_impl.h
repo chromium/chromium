@@ -1510,7 +1510,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if the frame is embedded in a Portal.
   bool InsidePortal();
 
-  bool ShouldVirtualKeyboardOverlayContent() const;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
   // Returns the keyboard layout mapping.
@@ -3578,12 +3577,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // signal. If false, all audio streams are currently silent (or there are no
   // audio streams).
   bool is_audible_ = false;
-
-  // If true, then the Virtual keyboard rectangle that occludes the content is
-  // sent to the VirtualKeyboard API where it fires overlaygeometrychange JS
-  // event notifying the web authors that Virtual keyboard has occluded the
-  // content.
-  bool should_virtual_keyboard_overlay_content_ = false;
 
   // If true, then this RenderFrameHost is waiting to update its
   // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to

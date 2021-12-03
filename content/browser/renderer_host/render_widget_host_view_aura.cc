@@ -2338,7 +2338,7 @@ bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() {
   if (!frame)
     return false;
 
-  return frame->ShouldVirtualKeyboardOverlayContent();
+  return frame->GetPage().virtual_keyboard_overlays_content();
 }
 
 void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
@@ -2346,7 +2346,7 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
   // geometrychange event can only be fired on main frame and not focused frame
   // which could be an iframe.
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
-  if (!frame || !frame->ShouldVirtualKeyboardOverlayContent())
+  if (!frame || !frame->GetPage().virtual_keyboard_overlays_content())
     return;
   gfx::Rect keyboard_root_relative_rect = keyboard_rect;
   if (!keyboard_root_relative_rect.IsEmpty()) {

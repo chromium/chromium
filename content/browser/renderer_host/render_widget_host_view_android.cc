@@ -338,9 +338,8 @@ void RenderWidgetHostViewAndroid::InitAsPopup(
 
 void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  RenderFrameHostImpl* frame_host =
-      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
-  if (!frame_host || !frame_host->ShouldVirtualKeyboardOverlayContent())
+  RenderFrameHostImpl* frame_host = host()->frame_tree()->GetMainFrame();
+  if (!frame_host || !frame_host->GetPage().virtual_keyboard_overlays_content())
     return;
   gfx::Rect keyboard_rect_with_scale;
   if (!keyboard_rect.IsEmpty()) {
@@ -354,9 +353,9 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
-  RenderFrameHostImpl* frame_host =
-      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
-  return frame_host && frame_host->ShouldVirtualKeyboardOverlayContent();
+  RenderFrameHostImpl* frame_host = host()->frame_tree()->GetMainFrame();
+  return frame_host &&
+         frame_host->GetPage().virtual_keyboard_overlays_content();
 }
 
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
