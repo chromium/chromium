@@ -7013,7 +7013,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/opened-document-security-o
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/runtime/runtime-install-binding.js [ Failure Pass ]
 
 # mac-arm CI 10-05-2021
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/fast/canvas/canvas-lost-gpu-context.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-svg.html [ Failure Pass ]
@@ -7308,10 +7307,19 @@ crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Fa
 crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failure Pass ]
 
 # Sheriff 2021-12-02
-crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Failure Pass ]
-crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Failure Pass ]
-crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Failure Pass ]
+crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Skip ]
+crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Skip ]
+crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Skip ]
 crbug.com/1275967 [ Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276044 [ Linux ] virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Failure Pass ]
 crbug.com/1275944 [ Mac ] http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Failure Pass ]
 crbug.com/1275944 [ Win7 ] http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Failure Pass ]
+crbug.com/1276199 [ Linux ] external/wpt/fetch/private-network-access/secure-context.https.window.html [ Pass Timeout ]
+crbug.com/1276199 [ Linux ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/secure-context.https.window.html [ Pass Timeout ]
+crbug.com/1276199 [ Linux ] virtual/private-network-access-preflights/external/wpt/fetch/private-network-access/secure-context.https.window.html [ Pass Timeout ]
+crbug.com/1276206 http/tests/inspector-protocol/network/blocked-cookie-same-party.js [ Failure Pass Timeout ]
+crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
+crbug.com/1276208 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Pass Timeout ]
+crbug.com/1276209 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
+crbug.com/1276209 virtual/change-service-worker-priority-when-client-foreground-state-change/external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
+crbug.com/1276209 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
