@@ -7313,3 +7313,5 @@ crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-
 crbug.com/1275944 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Failure Pass ]
 crbug.com/1275967 [ Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276044 [ Linux ] virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Failure Pass ]
+crbug.com/1275944 [ Mac ] http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Failure Pass ]
+crbug.com/1275944 [ Win7 ] http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Failure Pass ]
