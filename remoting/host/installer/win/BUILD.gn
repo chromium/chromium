@@ -4,6 +4,7 @@
 
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
+import("//remoting/host/installer/win/wix_path.gni")
 
 action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
@@ -129,7 +130,10 @@ action("remoting_me2me_host_archive") {
 
 # We do not release a 64 bits binary. So to avoid any potential
 # misunderstanding, we only build 32 bits MSI file.
-if (is_chrome_branded && !is_component_build && target_cpu == "x86") {
+# TODO(yuweih): Replace the remoting_wix_path check with is_chrome_branded once
+# everyone is able to use their Google machines again, or remove the check
+# altogether if we decide to build the MSI with non-official builders.
+if (remoting_wix_path != "" && !is_component_build && target_cpu == "x86") {
   # The script uses "ia32" instead of "x86".
   msi_script_arch = "ia32"
 
@@ -139,7 +143,7 @@ if (is_chrome_branded && !is_component_build && target_cpu == "x86") {
     outputs = [ "$root_out_dir/chromoting.msi" ]
     args = [
       "--wix_path",
-      rebase_path("//third_party/wix", root_build_dir),
+      remoting_wix_path,
       "--intermediate_dir",
       rebase_path("$root_gen_dir/remoting_installation", root_build_dir),
       "--target_arch",
