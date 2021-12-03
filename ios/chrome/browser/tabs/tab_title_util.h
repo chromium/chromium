@@ -16,7 +16,7 @@ namespace tab_util {
 
 // Get the tab title based on the |web_state|.
 // |web_state| can't be null.
-NSString* GetTabTitle(web::WebState* web_state);
+NSString* GetTabTitle(const web::WebState* web_state);
 
 }  // namespace tab_util
 
