@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
+#include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,14 +78,11 @@ void InitInputMethod() {
   InitializeForTesting(manager);
 }
 
-// TODO(crbug.com/1148157): Use StubInputMethodEngineObserver.
-class TestObserver : public InputMethodEngineBase::Observer {
+class TestObserver : public StubInputMethodEngineObserver {
  public:
   TestObserver() : calls_bitmap_(NONE) {}
-
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-
   ~TestObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {
@@ -104,33 +102,16 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnBlur(const std::string& engine_id, int context_id) override {
     calls_bitmap_ |= ONBLUR;
   }
-  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
     std::move(callback).Run(/* handled */ true);
   }
-  void OnCandidateClicked(
-      const std::string& engine_id,
-      int candidate_id,
-      InputMethodEngineBase::MouseButtonEvent button) override {}
-  void OnMenuItemActivated(const std::string& engine_id,
-                           const std::string& menu_id) override {}
-  void OnSurroundingTextChanged(const std::string& engine_id,
-                                const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos,
-                                int offset) override {}
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {
     calls_bitmap_ |= ONCOMPOSITIONBOUNDSCHANGED;
   }
-  void OnScreenProjectionChanged(bool is_projected) override {}
-
-  void OnSuggestionsChanged(
-      const std::vector<std::string>& suggestions) override {}
-  void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
 
   void OnReset(const std::string& engine_id) override {
     calls_bitmap_ |= RESET;
