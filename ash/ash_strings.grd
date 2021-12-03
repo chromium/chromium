@@ -1383,6 +1383,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS" desc="The accessible name for a view representing an in-progress download holding space item which is dangerous. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
         Download dangerous <ph name="FILENAME">$1<ex>example.txt</ex></ph>
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_SCANNING" desc="The accessible name for a view representing an in-progress download holding space item which is being scanned. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
+        Download being scanned <ph name="FILENAME">$1<ex>example.txt</ex></ph>
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED" desc="The accessible name for a view representing an in-progress download holding space item which is paused. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
         Download paused <ph name="FILENAME">$1<ex>example.txt</ex></ph>
       </message>
@@ -1397,6 +1400,9 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE" desc="Text displayed in a holding space download chip to indicate that the downloaded file will be opened when complete.">
         Open when complete
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SCANNING" desc="Text displayed in a holding space download chip to indicate the underlying download is being scanned.">
+        Being scanned
       </message>
 
       <!-- Phone Hub tray-->

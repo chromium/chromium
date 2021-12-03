@@ -106,6 +106,14 @@ bool IsInProgress(const download::DownloadItem* download_item) {
   return download_item->GetState() == download::DownloadItem::IN_PROGRESS;
 }
 
+// Returns whether the specified `mojo_download_item` is being scanned.
+bool IsScanning(const crosapi::mojom::DownloadItem* mojo_download_item) {
+  return IsInProgress(mojo_download_item) &&
+         mojo_download_item->danger_type ==
+             crosapi::mojom::DownloadDangerType::
+                 kDownloadDangerTypeAsyncScanning;
+}
+
 }  // namespace
 
 // HoldingSpaceDownloadsDelegate::InProgressDownload ---------------------------
@@ -163,11 +171,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     if (IsComplete(mojo_download_item_.get()))
       return absl::nullopt;
     return l10n_util::GetStringFUTF16(
-        IsDangerous() || IsMixedContent()
-            ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS
-            : IsPaused()
-                  ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED
-                  : IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME,
+        IsScanning(mojo_download_item_.get())
+            ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_SCANNING
+            : IsDangerous() || IsMixedContent()
+                  ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS
+                  : IsPaused()
+                        ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED
+                        : IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME,
         mojo_download_item_->target_file_path.BaseName().LossyDisplayName());
   }
 
@@ -189,10 +199,16 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
   // Returns the current progress of the underlying download.
-  // NOTE: Progress is hidden if the download is dangerous or mixed content.
+  // NOTE:
+  //   * Progress is indeterminate if the download is being scanned.
+  //   * Progress is hidden if the download is dangerous or mixed content.
   HoldingSpaceProgress GetProgress() const {
     if (IsComplete(mojo_download_item_.get()))
       return HoldingSpaceProgress();
+    if (IsScanning(mojo_download_item_.get())) {
+      return HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
+                                  /*total_bytes=*/absl::nullopt);
+    }
     return HoldingSpaceProgress(GetReceivedBytes(), GetTotalBytes(),
                                 /*complete=*/false,
                                 /*hidden=*/IsDangerous() || IsMixedContent());
@@ -284,6 +300,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     // Only in-progress download items have secondary text.
     if (!IsInProgress(mojo_download_item_.get()))
       return absl::nullopt;
+
+    // In-progress download items which are being scanned have a special
+    // secondary text treatment.
+    if (IsScanning(mojo_download_item_.get())) {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SCANNING);
+    }
 
     // In-progress download items which are dangerous or mixed content have a
     // special secondary text treatment.

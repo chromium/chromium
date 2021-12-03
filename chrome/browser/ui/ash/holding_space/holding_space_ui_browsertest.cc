@@ -1566,6 +1566,12 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     switch (GetDownloadTypeToUse()) {
       case DownloadTypeToUse::kAsh: {
         auto& in_progress_ash_download = absl::get<0>(*in_progress_download);
+        ON_CALL(*in_progress_ash_download, GetDangerType())
+            .WillByDefault(testing::Return(
+                is_dangerous ? download::DownloadDangerType::
+                                   DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE
+                             : download::DownloadDangerType::
+                                   DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
         ON_CALL(*in_progress_ash_download, IsDangerous())
             .WillByDefault(testing::Return(is_dangerous));
         ON_CALL(*in_progress_ash_download, IsMixedContent())
@@ -1575,9 +1581,58 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
       }
       case DownloadTypeToUse::kLacros: {
         auto& in_progress_lacros_download = absl::get<1>(*in_progress_download);
+        in_progress_lacros_download->danger_type =
+            is_dangerous ? crosapi::mojom::DownloadDangerType::
+                               kDownloadDangerTypeDangerousFile
+                         : crosapi::mojom::DownloadDangerType::
+                               kDownloadDangerTypeNotDangerous;
         in_progress_lacros_download->is_dangerous = is_dangerous;
         in_progress_lacros_download->is_mixed_content = is_mixed_content;
         NotifyObserversLacrosDownloadUpdated(in_progress_lacros_download.get());
+        return;
+      }
+    }
+  }
+
+  // Updates whether the specified `in_progress_download` of the appropriate
+  // type for Ash or Lacros given test parameterization is scanning.
+  void UpdateInProgressDownloadIsScanning(
+      AshOrLacrosDownload* in_progress_download,
+      bool is_scanning) {
+    switch (GetDownloadTypeToUse()) {
+      case DownloadTypeToUse::kAsh: {
+        auto& in_progress_ash_download = absl::get<0>(*in_progress_download);
+        const bool was_scanning =
+            in_progress_ash_download->GetDangerType() ==
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
+        if (is_scanning != was_scanning) {
+          ON_CALL(*in_progress_ash_download, GetDangerType())
+              .WillByDefault(testing::Return(
+                  is_scanning ? download::DownloadDangerType::
+                                    DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING
+                              : download::DownloadDangerType::
+                                    DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+          ON_CALL(*in_progress_ash_download, IsDangerous())
+              .WillByDefault(testing::Return(false));
+          NotifyObserversAshDownloadUpdated(in_progress_ash_download.get());
+        }
+        return;
+      }
+      case DownloadTypeToUse::kLacros: {
+        auto& in_progress_lacros_download = absl::get<1>(*in_progress_download);
+        const bool was_scanning = in_progress_lacros_download->danger_type ==
+                                  crosapi::mojom::DownloadDangerType::
+                                      kDownloadDangerTypeAsyncScanning;
+        if (is_scanning != was_scanning) {
+          in_progress_lacros_download->danger_type =
+              is_scanning ? crosapi::mojom::DownloadDangerType::
+                                kDownloadDangerTypeAsyncScanning
+                          : crosapi::mojom::DownloadDangerType::
+                                kDownloadDangerTypeNotDangerous;
+          in_progress_lacros_download->is_dangerous = false;
+          NotifyObserversLacrosDownloadUpdated(
+              in_progress_lacros_download.get());
+        }
         return;
       }
     }
@@ -2023,6 +2078,20 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // The accessible name should indicate that the download is dangerous.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
             base::UTF16ToUTF8(u"Download dangerous " + target_file_name));
+
+  // Mark the download as being scanned.
+  UpdateInProgressDownloadIsScanning(in_progress_download.get(), true);
+
+  // Because the download is marked as being scanned, that should be indicated
+  // in the `secondary_label` of the holding space item chip view.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Being scanned");
+
+  // The accessible name should indicate that the download is being scanning.
+  EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
+            base::UTF16ToUTF8(u"Download being scanned " + target_file_name));
 
   // Mark the download as safe.
   UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
